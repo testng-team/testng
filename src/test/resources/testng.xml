@@ -97,6 +97,7 @@
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
       <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
+      <class name="test.github1405.TestExclusionOfMainMethod"/>
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->

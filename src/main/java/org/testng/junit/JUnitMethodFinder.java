@@ -6,6 +6,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Constructor;
@@ -80,7 +81,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     //
     Class current = cls;
     while(!(current == Object.class)) {
-      Method[] allMethods = current.getDeclaredMethods();
+      Method[] allMethods = ReflectionHelper.excludingMain(current);
       for(Method allMethod : allMethods) {
         ITestNGMethod m = new TestNGMethod(/* allMethods[i].getDeclaringClass(), */ allMethod,
             m_annotationFinder, null,
