@@ -8,8 +8,8 @@ public class GeneratedClassFactory {
   public static final int SIZE = 20;
 
   @DataProvider(name = "ids", parallel = true)
-  public Integer[][] ids() {
-    final Integer[][] params = new Integer[SIZE][1];
+  public Object[][] ids() {
+    Integer[][] params = new Integer[SIZE][1];
     for (int id = 0; id < params.length; id++) {
       params[id] = new Integer[]{id};
     }

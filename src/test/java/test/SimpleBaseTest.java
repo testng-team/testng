@@ -126,13 +126,27 @@ public class SimpleBaseTest {
     return suite;
   }
 
-  protected static XmlTest createXmlTestWithPackages(XmlSuite suite, String name, String ...packageName) {
+  protected static XmlTest createXmlTestWithPackages(XmlSuite suite, String name, String... packageName) {
     XmlTest result = createXmlTest(suite, name);
     List<XmlPackage> xmlPackages = Lists.newArrayList();
 
     for (String each : packageName) {
       XmlPackage xmlPackage = new XmlPackage();
       xmlPackage.setName(each);
+      xmlPackages.add(xmlPackage);
+    }
+    result.setPackages(xmlPackages);
+
+    return result;
+  }
+
+  protected static XmlTest createXmlTestWithPackages(XmlSuite suite, String name, Class<?>... packageName) {
+    XmlTest result = createXmlTest(suite, name);
+    List<XmlPackage> xmlPackages = Lists.newArrayList();
+
+    for (Class<?> each : packageName) {
+      XmlPackage xmlPackage = new XmlPackage();
+      xmlPackage.setName(each.getPackage().getName());
       xmlPackages.add(xmlPackage);
     }
     result.setPackages(xmlPackages);

@@ -4,13 +4,10 @@ import org.testng.annotations.Test;
 
 @Test(groups = "B", dependsOnGroups = "A")
 public class ClassInGroupB {
+
   @Test
-  public void groupB_1() {
-    System.out.println("ClassInGroupB.groupB_1");
-  }
+  public void groupB_1() { }
 
   @Test(dependsOnMethods = "groupB_1")
-  public void groupB_2() {
-    System.out.println("ClassInGroupB.groupB_2");
-  }
+  public void groupB_2() { }
 }
