@@ -3,7 +3,6 @@ package test.groupbug;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
@@ -22,9 +21,9 @@ public class GroupBugTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(listener.getInvokedMethodNames()).containsExactly(
-            "beforeClassOne", "one1", "one2", "afterClassOne",
-            "beforeClassTwo", "two1", "two2", "afterClassTwo"
-    );
+    assertThat(listener.getInvokedMethodNames())
+        .containsSequence("beforeClassOne", "one1", "one2", "afterClassOne")
+        .containsSequence("beforeClassTwo", "two1", "two2", "afterClassTwo")
+    ;
   }
 }
