@@ -1,4 +1,5 @@
-Current
+﻿Current
+Fixed: GITHUB-565: Deadlock when using group dependency (plus other factors) (@ken-p & Vladislav Rassokhin)
 Fixed: GITHUB-799: @Factory with dataProvider changes order of iterations (Krishnan Mahadevan & Julien Herr)
 New: Enhance XML Reporter to be able to customize the file name (Krishnan Mahadevan)
 Fixed: GITHUB-1417: Class param injection is not working with @BeforeClass (Krishnan Mahadevan)
