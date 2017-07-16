@@ -21,8 +21,7 @@ public class TestExclusionOfMainMethod extends SimpleBaseTest {
         XmlSuite xmlSuite = createXmlSuite("suite");
         xmlSuite.setJunit(true);
         createXmlTest(xmlSuite, "test", JUnitTestClassSample.class);
-        TestNG tng = create();
-        tng.setXmlSuites(Collections.singletonList(xmlSuite));
+        TestNG tng = create(xmlSuite);
         tng.run();
         Assert.assertEquals(tng.getStatus(), 0);
     }

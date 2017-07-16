@@ -52,7 +52,7 @@ public class ReflectionHelper {
       }
       pruned.add(declaredMethod);
     }
-    return pruned.toArray(new Method[0]);
+    return pruned.toArray(new Method[pruned.size()]);
   }
 
   private static boolean isStaticVoid(Method method) {
