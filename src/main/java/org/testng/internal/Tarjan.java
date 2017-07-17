@@ -52,28 +52,6 @@ public class Tarjan<T> {
 
   }
 
-  public static void main(String[] args) {
-    Graph<String> g = new Graph<>();
-    g.addNode("a");
-    g.addNode("b");
-    g.addNode("c");
-    g.addNode("d");
-
-    String[] edges = new String[] {
-        "a", "b",
-        "b", "a",
-        "c", "d",
-        "d", "a",
-        "a", "c",
-    };
-
-    for (int i = 0; i < edges.length; i += 2) {
-      g.addPredecessor(edges[i], edges[i+1]);
-    }
-
-    new Tarjan<>(g, "a");
-  }
-
   public List<T> getCycle() {
     return m_cycle;
   }

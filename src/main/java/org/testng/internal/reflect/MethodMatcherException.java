@@ -2,6 +2,7 @@ package org.testng.internal.reflect;
 
 import org.testng.TestNGException;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -28,12 +29,35 @@ public class MethodMatcherException extends TestNGException {
     super(cause);
   }
 
-  private static String generateMessage(final String message, final Method method, final Object[] args) {
-    final StringBuilder sb = new StringBuilder();
-    sb.append(message).append("\n").append("Method: ");
+  static String generateMessage(final String message, final Constructor constructor, final Object[] args) {
+    Parameter[] parameter = null;
+    String name = null;
+    if (constructor != null) {
+      parameter = ReflectionRecipes.getConstructorParameters(constructor);
+      name = constructor.getName();
+    }
+    return generateMessage(message, name, "Constructor", parameter, args);
+  }
+
+  public static String generateMessage(final String message, final Method method, final Object[] args) {
+    Parameter[] parameter = null;
+    String name = null;
     if (method != null) {
-      final Parameter[] parameter = ReflectionRecipes.getMethodParameters(method);
-      sb.append(method.getName()).append("(").append(Arrays.toString(parameter)).append(")");
+      parameter = ReflectionRecipes.getMethodParameters(method);
+      name = method.getName();
+    }
+    return generateMessage(message, name, "Method", parameter, args);
+  }
+
+  private static String generateMessage(final String message,
+                                        final String name,
+                                        final String prefix,
+                                        Parameter[] parameter,
+                                        final Object[] args) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(message).append("\n").append(prefix).append(": ");
+    if (name != null) {
+      sb.append(name).append("(").append(Arrays.toString(parameter)).append(")");
     } else {
       sb.append("null");
     }
@@ -43,7 +67,7 @@ public class MethodMatcherException extends TestNGException {
       for (int i = 0; i < args.length; i++) {
         final Object arg = args[i];
         if (arg != null) {
-          sb.append("(").append(arg.getClass().getName()).append(")").append(arg);
+          sb.append("(").append(arg.getClass().getName()).append(") ").append(stringify(arg));
         } else {
           sb.append("null");
         }
@@ -57,4 +81,13 @@ public class MethodMatcherException extends TestNGException {
     }
     return sb.toString();
   }
+
+  private static String stringify(Object object) {
+    if (object.getClass().isArray()) {
+      return Arrays.toString((Object[]) object);
+    } else {
+      return object.toString();
+    }
+  }
+
 }

@@ -1,4 +1,6 @@
 Current
+Fixed: GITHUB-799: @Factory with dataProvider changes order of iterations (Krishnan Mahadevan & Julien Herr)
+New: Enhance XML Reporter to be able to customize the file name (Krishnan Mahadevan)
 Fixed: GITHUB-1417: Class param injection is not working with @BeforeClass (Krishnan Mahadevan)
 Fixed: GITHUB-1440: Improve error message when wrong params on configuration methods (Krishnan Mahadevan)
 Fixed: GITHUB-1433: Missing encoding for emailable reports (Shaburov Oleg)
@@ -17,6 +19,8 @@ Fixed: GITHUB-1144: Add Class and Constructor as legal native dependency injecti
 Fixed: GITHUB-1380: Circular dependencies may fail in parallel (Julien Herr)
 Fixed: GITHUB-1400: TestNG, Multiple duplicate listener warnings on implementing multiple listener interfaces (@bipo1980 & Nick Tan)
 Fixed: GITHUB-1426: @AfterMethod(alwaysRun = true) is not getting called if we have exception in @BeforeMethod (@dipak-pawar)
+Fixed: GITHUB-128: Using Object[] and Method as parameters for a test in a certain order yields an IllegalArgumentException, citing a type mismatch (@leef590 & Julien Herr,Krishnan Mahadevan)
+Fixed: GITHUB-1393: Revert commit 50d534a to allow fail a test from onTestStart method
 
 6.11
 2017/02/27

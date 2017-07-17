@@ -35,8 +35,8 @@ val p = project {
         })
         scm = Scm().apply {
             url = "http://github.com/cbeust/testng"
-            connection = "https://github.com/cbeust/testng.git"
-            developerConnection = "git@github.com:cbeust/testng.git"
+            connection = "scm:git:https://github.com/cbeust/testng.git"
+            developerConnection = "scm:git:git@github.com:cbeust/testng.git"
         }
         developers = listOf(Developer().apply {
             name = "Cedric Beust"
@@ -73,7 +73,7 @@ val p = project {
     }
 
     javaCompiler {
-        args("-target", "1.7", "-source", "1.7")
+        args("-target", "1.7", "-source", "1.7", "-encoding", "UTF-8")
     }
 
     assemble {
