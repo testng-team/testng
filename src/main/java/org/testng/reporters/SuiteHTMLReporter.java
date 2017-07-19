@@ -40,6 +40,8 @@ public class SuiteHTMLReporter implements IReporter {
   public static final String REPORTER_OUTPUT = "reporter-output.html";
   public static final String METHODS_NOT_RUN = "methods-not-run.html";
   public static final String TESTNG_XML = "testng.xml.html";
+  private static final String TD_A_TARGET_MAIN_FRAME_HREF = "<td><a target='mainFrame' href='";
+  private static final String TD = "</td>";
 
   private Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
@@ -145,9 +147,9 @@ public class SuiteHTMLReporter implements IReporter {
       suiteBuf.append("<tr align='center' class='").append(cls).append("'>")
         .append("<td><a href='").append(name).append("/index.html'>")
         .append(name).append("</a></td>\n");
-      suiteBuf.append("<td>").append(passedTests).append("</td>")
-        .append("<td>").append(failedTests).append("</td>")
-        .append("<td>").append(skippedTests).append("</td>")
+      suiteBuf.append("<td>").append(passedTests).append(TD)
+        .append("<td>").append(failedTests).append(TD)
+        .append("<td>").append(skippedTests).append(TD)
         .append("<td><a href='").append(name).append("/").append(TESTNG_XML).append("'>Link").append("</a></td>")
         .append("</tr>");
 
@@ -441,7 +443,7 @@ public class SuiteHTMLReporter implements IReporter {
       result.append("</td> \n");
     }
     else {
-      result.append("<td>").append(SP).append("</td>");
+      result.append("<td>").append(SP).append(TD);
     }
 
     return result.toString();
@@ -465,7 +467,7 @@ public class SuiteHTMLReporter implements IReporter {
       Arrays.sort(groupNames);
       for (String group : groupNames) {
         Collection<ITestNGMethod> methods = groups.get(group);
-        sb.append("<tr><td>").append(group).append("</td>");
+        sb.append("<tr><td>").append(group).append(TD);
         StringBuilder methodNames = new StringBuilder();
         Map<ITestNGMethod, ITestNGMethod> uniqueMethods = Maps.newHashMap();
         for (ITestNGMethod tm : methods) {
@@ -484,7 +486,7 @@ public class SuiteHTMLReporter implements IReporter {
 
   private void generateIndex(XmlSuite xmlSuite, ISuite sr) {
 
-    String index = String.format("<html><head><title>Results for %s</title></head>\n", sr.getName())
+    String index = String.format("<html><head><title>Results for %s</title></head>%n", sr.getName())
     + "<frameset cols=\"26%,74%\">\n"
     + "<frame src=\"toc.html\" name=\"navFrame\">\n"
     + "<frame src=\"main.html\" name=\"mainFrame\">\n"
@@ -499,7 +501,7 @@ public class SuiteHTMLReporter implements IReporter {
   }
 
   private void generateMain(XmlSuite xmlSuite, ISuite sr) {
-    String index = String.format("<html><head><title>Results for %s</title></head>\n", sr.getName())
+    String index = String.format("<html><head><title>Results for %s</title></head>%n", sr.getName())
     + "<body>Select a result on the left-hand pane.</body>"
     + "</html>\n";
 
@@ -560,9 +562,9 @@ public class SuiteHTMLReporter implements IReporter {
         .append("</tr>\n")
 
         .append("<tr>\n")
-        .append("<td><a target='mainFrame' href='").append(GROUPS).append("'>").append(groupCount).append(pluralize(groupCount, " group")).append("</a></td>\n")
-        .append("<td><a target='mainFrame' href='").append(REPORTER_OUTPUT).append("'>reporter output</a></td>\n")
-        .append("<td><a target='mainFrame' href='").append(TESTNG_XML).append("'>testng.xml</a></td>\n")
+        .append(TD_A_TARGET_MAIN_FRAME_HREF).append(GROUPS).append("'>").append(groupCount).append(pluralize(groupCount, " group")).append("</a></td>\n")
+        .append(TD_A_TARGET_MAIN_FRAME_HREF).append(REPORTER_OUTPUT).append("'>reporter output</a></td>\n")
+        .append(TD_A_TARGET_MAIN_FRAME_HREF).append(TESTNG_XML).append("'>testng.xml</a></td>\n")
         .append("</tr>")
         .append("</table>");
 
@@ -655,10 +657,10 @@ public class SuiteHTMLReporter implements IReporter {
       .append("<table style='width: 100%'><tr>")
       .append("<td valign='top'>")
       .append(suiteName).append(" (").append(passed).append("/").append(failed).append("/").append(skipped).append(")")
-      .append("</td>")
+      .append(TD)
       .append("<td valign='top' align='right'>\n")
       .append("  <a href='").append(baseFile).append(".html' target='mainFrame'>Results</a>\n")
-      .append("</td>")
+      .append(TD)
       .append("</tr></table>\n")
       .append("</td></tr><p/>\n")
       ;

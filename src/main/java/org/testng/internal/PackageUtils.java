@@ -9,9 +9,10 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -31,7 +32,7 @@ public class PackageUtils {
   private static String[] testClassPaths;
 
   /** The additional class loaders to find classes in. */
-  private static final List<ClassLoader> classLoaders = new Vector<>();
+  private static final Collection<ClassLoader> classLoaders = new ConcurrentLinkedDeque<>();
 
   private PackageUtils() {
     //Utility class. Defeat instantiation.

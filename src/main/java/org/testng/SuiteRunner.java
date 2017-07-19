@@ -54,10 +54,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   private transient Injector parentInjector;
 
   private transient List<ITestListener> testListeners = Lists.newArrayList();
-  private transient final Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
+  private final transient  Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
   private transient ITestRunnerFactory tmpRunnerFactory;
 
-  private transient  ITestRunnerFactory runnerFactory;
   private transient boolean useDefaultListeners = true;
 
   // The remote host where this suite was run, or null if run locally
@@ -216,7 +215,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     if (comparator == null) {
       throw new IllegalArgumentException("comparator must not be null");
     }
-    this.runnerFactory = buildRunnerFactory(comparator);
+    ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
 
     // Order the <test> tags based on their order of appearance in testng.xml
     List<XmlTest> xmlTests = xmlSuite.getTests();
@@ -228,7 +227,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     });
 
     for (XmlTest test : xmlTests) {
-      TestRunner tr = this.runnerFactory.newTestRunner(this, test, invokedMethodListeners.values(), Lists.newArrayList(
+      TestRunner tr = iTestRunnerFactory.newTestRunner(this, test, invokedMethodListeners.values(), Lists.newArrayList(
           this.classListeners.values()));
 
       //

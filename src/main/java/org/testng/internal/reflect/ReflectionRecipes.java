@@ -145,7 +145,7 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] getMethodParameters(final Method method) {
     if (method == null) {
-      return null;
+      return new Parameter[]{};
     }
     return getParameters(method.getParameterTypes(), method.getParameterAnnotations());
   }
@@ -158,7 +158,7 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] getConstructorParameters(final Constructor constructor) {
     if (constructor == null) {
-      return null;
+      return new Parameter[]{};
     }
     return getParameters(constructor.getParameterTypes(), constructor.getParameterAnnotations());
   }
