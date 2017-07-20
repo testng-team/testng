@@ -154,12 +154,12 @@ public final class Utils {
    * outDir does not exist, it is created.
    *
    * @param outputFolder the output directory (may not exist). If <tt>null</tt> then current directory is used.
-   * @param filename the filename
+   * @param fileNameParameter the filename
    * @param sb the file content
    */
-  private static void writeFile(@Nullable File outputFolder, String filename, String sb, @Nullable String encoding) {
+  private static void writeFile(@Nullable File outputFolder, String fileNameParameter, String sb, @Nullable String encoding) {
     File outDir = outputFolder;
-    String fileName = filename;
+    String fileName = fileNameParameter;
     try {
       if (outDir == null) {
         outDir = new File("").getAbsoluteFile();
@@ -219,11 +219,11 @@ public final class Utils {
    * exist, it is created. If the output file exists, it is deleted. The output file is
    * created in any case.
    * @param outputDir output directory. If <tt>null</tt>, then current directory is used
-   * @param filename file name
+   * @param fileNameParameter file name
    * @throws IOException if anything goes wrong while creating files.
    */
-  public static BufferedWriter openWriter(@Nullable String outputDir, String filename) throws IOException {
-    String fileName = filename;
+  public static BufferedWriter openWriter(@Nullable String outputDir, String fileNameParameter) throws IOException {
+    String fileName = fileNameParameter;
     String outDirPath= outputDir != null ? outputDir : "";
     File outDir= new File(outDirPath);
     if (!outDir.exists()) {
@@ -720,11 +720,11 @@ public final class Utils {
    * In order to have the same behavior of testng on the all platforms, characters like * will
    * be replaced on all platforms whether they are causing the problem or not.
    *
-   * @param filename file name that could contain special characters.
+   * @param fileNameParameter file name that could contain special characters.
    * @return fileName with special characters replaced
    */
-  public static String replaceSpecialCharacters(String filename) {
-   String fileName = filename;
+  public static String replaceSpecialCharacters(String fileNameParameter) {
+   String fileName = fileNameParameter;
    if (fileName == null || fileName.length() == 0) {
      return fileName;
    }

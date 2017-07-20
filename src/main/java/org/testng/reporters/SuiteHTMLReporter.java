@@ -41,7 +41,7 @@ public class SuiteHTMLReporter implements IReporter {
   public static final String METHODS_NOT_RUN = "methods-not-run.html";
   public static final String TESTNG_XML = "testng.xml.html";
   private static final String TD_A_TARGET_MAIN_FRAME_HREF = "<td><a target='mainFrame' href='";
-  private static final String TD = "</td>";
+  private static final String CLOSE_TD = "</td>";
 
   private Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
@@ -147,9 +147,9 @@ public class SuiteHTMLReporter implements IReporter {
       suiteBuf.append("<tr align='center' class='").append(cls).append("'>")
         .append("<td><a href='").append(name).append("/index.html'>")
         .append(name).append("</a></td>\n");
-      suiteBuf.append("<td>").append(passedTests).append(TD)
-        .append("<td>").append(failedTests).append(TD)
-        .append("<td>").append(skippedTests).append(TD)
+      suiteBuf.append("<td>").append(passedTests).append(CLOSE_TD)
+        .append("<td>").append(failedTests).append(CLOSE_TD)
+        .append("<td>").append(skippedTests).append(CLOSE_TD)
         .append("<td><a href='").append(name).append("/").append(TESTNG_XML).append("'>Link").append("</a></td>")
         .append("</tr>");
 
@@ -443,7 +443,7 @@ public class SuiteHTMLReporter implements IReporter {
       result.append("</td> \n");
     }
     else {
-      result.append("<td>").append(SP).append(TD);
+      result.append("<td>").append(SP).append(CLOSE_TD);
     }
 
     return result.toString();
@@ -467,7 +467,7 @@ public class SuiteHTMLReporter implements IReporter {
       Arrays.sort(groupNames);
       for (String group : groupNames) {
         Collection<ITestNGMethod> methods = groups.get(group);
-        sb.append("<tr><td>").append(group).append(TD);
+        sb.append("<tr><td>").append(group).append(CLOSE_TD);
         StringBuilder methodNames = new StringBuilder();
         Map<ITestNGMethod, ITestNGMethod> uniqueMethods = Maps.newHashMap();
         for (ITestNGMethod tm : methods) {
@@ -657,10 +657,10 @@ public class SuiteHTMLReporter implements IReporter {
       .append("<table style='width: 100%'><tr>")
       .append("<td valign='top'>")
       .append(suiteName).append(" (").append(passed).append("/").append(failed).append("/").append(skipped).append(")")
-      .append(TD)
+      .append(CLOSE_TD)
       .append("<td valign='top' align='right'>\n")
       .append("  <a href='").append(baseFile).append(".html' target='mainFrame'>Results</a>\n")
-      .append(TD)
+      .append(CLOSE_TD)
       .append("</tr></table>\n")
       .append("</td></tr><p/>\n")
       ;
