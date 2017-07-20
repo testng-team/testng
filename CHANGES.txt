@@ -22,6 +22,7 @@ Fixed: GITHUB-1400: TestNG, Multiple duplicate listener warnings on implementing
 Fixed: GITHUB-1426: @AfterMethod(alwaysRun = true) is not getting called if we have exception in @BeforeMethod (@dipak-pawar)
 Fixed: GITHUB-128: Using Object[] and Method as parameters for a test in a certain order yields an IllegalArgumentException, citing a type mismatch (@leef590 & Julien Herr,Krishnan Mahadevan)
 Fixed: GITHUB-1393: Revert commit 50d534a to allow fail a test from onTestStart method
+Fixed: GITHUB-1461: TestNG not getting garbage collected (@kiru)
 
 6.11
 2017/02/27
