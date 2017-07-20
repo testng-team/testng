@@ -18,9 +18,6 @@ import org.testng.xml.XmlTest;
 /**
  * The default strategy for finding test methods:  look up
  * annotations @Test in front of methods.
- *
- * @author Cedric Beust, May 3, 2004
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TestNGMethodFinder implements ITestMethodFinder {
   private static final int BEFORE_SUITE = 1;
@@ -34,9 +31,20 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   private static final int BEFORE_GROUPS = 9;
   private static final int AFTER_GROUPS = 10;
 
+  private static final Comparator<ITestNGMethod> NO_COMPARISON = new Comparator<ITestNGMethod>() {
+    @Override
+    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+      return 0;
+    }
+  };
+
   private RunInfo runInfo = null;
   private IAnnotationFinder annotationFinder = null;
   private final Comparator<ITestNGMethod> comparator;
+
+  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
+    this(runInfo, annotationFinder, NO_COMPARISON);
+  }
 
   public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder,
       Comparator<ITestNGMethod> comparator) {

@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -71,13 +70,7 @@ public class FactoryMethod extends BaseTestMethod {
   private static String[] getAllGroups(Class<?> declaringClass, XmlTest xmlTest,
       IAnnotationFinder annotationFinder) {
     // Find the groups of the factory => all groups of all test methods
-    ITestMethodFinder testMethodFinder
-        = new TestNGMethodFinder(new RunInfo(), annotationFinder, new Comparator<ITestNGMethod>() {
-      @Override
-      public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-        return 0;
-      }
-    });
+    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(new RunInfo(), annotationFinder);
     ITestNGMethod[] testMethods = testMethodFinder.getTestMethods(declaringClass, xmlTest);
     Set<String> groups = new HashSet<>();
     for (ITestNGMethod method : testMethods) {
