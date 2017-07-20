@@ -23,6 +23,7 @@ Fixed: GITHUB-1426: @AfterMethod(alwaysRun = true) is not getting called if we h
 Fixed: GITHUB-128: Using Object[] and Method as parameters for a test in a certain order yields an IllegalArgumentException, citing a type mismatch (@leef590 & Julien Herr,Krishnan Mahadevan)
 Fixed: GITHUB-1393: Revert commit 50d534a to allow fail a test from onTestStart method
 Fixed: GITHUB-1461: TestNG not getting garbage collected (@kiru)
+Fixed: GITHUB-328: Attempt to fix unnecessary execution of @Factory-ctors (@beverage & Julien Herr)
 
 6.11
 2017/02/27
