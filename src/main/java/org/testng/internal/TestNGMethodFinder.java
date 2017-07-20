@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import static org.testng.internal.TestNGMethodFinder.MethodType.*;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -20,16 +21,10 @@ import org.testng.xml.XmlTest;
  * annotations @Test in front of methods.
  */
 public class TestNGMethodFinder implements ITestMethodFinder {
-  private static final int BEFORE_SUITE = 1;
-  private static final int AFTER_SUITE = 2;
-  private static final int BEFORE_TEST = 3;
-  private static final int AFTER_TEST = 4;
-  private static final int BEFORE_CLASS = 5;
-  private static final int AFTER_CLASS = 6;
-  private static final int BEFORE_TEST_METHOD = 7;
-  private static final int AFTER_TEST_METHOD = 8;
-  private static final int BEFORE_GROUPS = 9;
-  private static final int AFTER_GROUPS = 10;
+  enum MethodType {
+    BEFORE_SUITE, AFTER_SUITE, BEFORE_TEST, AFTER_TEST, BEFORE_CLASS, AFTER_CLASS,
+    BEFORE_TEST_METHOD, AFTER_TEST_METHOD, BEFORE_GROUPS, AFTER_GROUPS
+  }
 
   private static final Comparator<ITestNGMethod> NO_COMPARISON = new Comparator<ITestNGMethod>() {
     @Override
@@ -108,7 +103,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     return findConfiguration(clazz, AFTER_GROUPS);
   }
 
-  private ITestNGMethod[] findConfiguration(final Class clazz, final int configurationType) {
+  private ITestNGMethod[] findConfiguration(final Class clazz, final MethodType configurationType) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
 
     Set<Method> methods = ClassHelper.getAvailableMethods(clazz);
