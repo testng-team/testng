@@ -25,12 +25,6 @@ import org.testng.annotations.Test;
     dataProvider = "dp", description = "Class level description")
 public class MTest1 {
 
-  @Test(enabled = true, groups = {"group5", "group6"},
-      alwaysRun = true, parameters = {"param5", "param6"},
-      dependsOnGroups = {"dg5", "dg6"}, dependsOnMethods = {"dm5", "dm6"},
-      timeOut = 242, invocationCount = 243, successPercentage = 62,
-      dataProvider = "dp3", description = "Constructor description",
-      expectedExceptions = NumberFormatException.class)
   public MTest1() {}
 
   @Test(enabled = true, groups = {"group3", "group4"},
@@ -59,7 +53,7 @@ public class MTest1 {
       description = "beforeSuite description")
    @DataProvider(name = "dp4")
    @ExpectedExceptions({MTest1.class, MTest2.class })
-  public void otherConfigurations() {}
+  public Object[][] otherConfigurations() { return null;}
 
   @Factory(parameters = {"pf1", "pf2"})
   public void factory() {}
