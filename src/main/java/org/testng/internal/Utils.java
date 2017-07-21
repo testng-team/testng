@@ -398,6 +398,10 @@ public final class Utils {
     LOG.error("[Error] " + errorMessage);
   }
 
+  public static void warn(String errorMessage) {
+    LOG.warn("[Warning] " + errorMessage);
+  }
+
   public static int calculateInvokedMethodCount(ITestNGMethod[] methods) {
     return methods.length;
   }

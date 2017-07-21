@@ -7,6 +7,7 @@ import org.testng.IObjectFactory2;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
+import org.testng.annotations.Factory;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -416,6 +418,14 @@ public final class ClassHelper {
           parameters = new Object[] { "Default test name" };
           // If ct == null here, we'll pass a null
           // constructor to the factory and hope it can deal with it
+          String msg = "Unable to find:\n" +
+                  "1. @" + Factory.class.getSimpleName() + " annotated constructor (or)\n" +
+                  "2. @" + org.testng.annotations.Parameters.class.getSimpleName() + " annotated constructor.\n" +
+                  "Defaulting to invoking the constructor : " + ct.getName() + "(String).\n" +
+                  "Please be informed that this mechanism will be removed soon.";
+
+          Utils.warn(msg);
+
         }
         result = objectFactory.newInstance(ct, parameters);
       }
