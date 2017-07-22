@@ -19,7 +19,6 @@ tests:
       - test.expectedexceptions.ExpectedExceptionsTest
       - test.access.PrivateAccessConfigurationMethods
       - test.expectedexceptions.WrappedExpectedException
-      - test.parameters.OptionalParameterTest
 
   - name: Regression2
     excludedGroups: [ broken ]
