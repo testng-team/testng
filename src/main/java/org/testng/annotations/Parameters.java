@@ -1,6 +1,5 @@
 package org.testng.annotations;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -14,7 +13,7 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
 @Retention(RUNTIME)
-@Target({METHOD, CONSTRUCTOR, TYPE })
+@Target({METHOD, TYPE})
 public @interface Parameters {
   /**
    * The list of variables used to fill the parameters of this method.

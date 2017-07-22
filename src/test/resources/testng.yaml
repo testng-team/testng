@@ -19,7 +19,6 @@ tests:
       - test.expectedexceptions.ExpectedExceptionsTest
       - test.access.PrivateAccessConfigurationMethods
       - test.expectedexceptions.WrappedExpectedException
-      - test.parameters.OptionalParameterTest
 
   - name: Regression2
     excludedGroups: [ broken ]
@@ -219,10 +218,6 @@ tests:
     classes:
       - test.objectfactory.CustomFactoryTest
       - test.objectfactory.CombinedTestAndObjectFactoryTest
-
-  - name: Parameters for constructors
-    classes:
-      - test.ParameterConstructorTest
 
   - name: Excluded methods
     includedGroups: [ group1, group2 ]
