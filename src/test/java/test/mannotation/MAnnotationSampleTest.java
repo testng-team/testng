@@ -14,10 +14,9 @@ import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IBeforeSuite;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-@Test(enabled = true)
+@Test
 public class MAnnotationSampleTest {
   private IConfiguration m_configuration = new org.testng.internal.Configuration();
   private IAnnotationFinder m_finder;
@@ -79,30 +78,6 @@ public class MAnnotationSampleTest {
     Class[] exceptions = test1.getExpectedExceptions();
     Assert.assertEquals(exceptions.length, 1);
     Assert.assertEquals(exceptions[0], NullPointerException.class);
-  }
-
-  public void verifyTestConstructorLevel() throws SecurityException, NoSuchMethodException
-  {
-    //
-    // Tests on MTest1SampleTest
-    //
-    Constructor constructor = MTest1.class.getConstructor(new Class[0]);
-    ITestAnnotation test1 = (ITestAnnotation) m_finder.findAnnotation(constructor, ITestAnnotation.class);
-    Assert.assertNotNull(test1);
-    Assert.assertTrue(test1.getEnabled());
-    Assert.assertEqualsNoOrder(test1.getGroups(), new String[] { "group5", "group1", "group6", "group2" });
-    Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEquals(test1.getParameters(), new String[] { "param5", "param6" });
-    Assert.assertEqualsNoOrder(test1.getDependsOnGroups(), new String[] { "dg1", "dg2", "dg5", "dg6" });
-    Assert.assertEqualsNoOrder(test1.getDependsOnMethods(), new String[] { "dm1", "dm2", "dm5", "dm6" });
-    Assert.assertEquals(test1.getTimeOut(), 242);
-    Assert.assertEquals(test1.getInvocationCount(), 243);
-    Assert.assertEquals(test1.getSuccessPercentage(), 62);
-    Assert.assertEquals(test1.getDataProvider(), "dp3");
-    Assert.assertEquals(test1.getDescription(), "Constructor description");
-    Class[] exceptions = test1.getExpectedExceptions();
-    Assert.assertEquals(exceptions.length, 1);
-    Assert.assertEquals(exceptions[0], NumberFormatException.class);
   }
 
   public void verifyConfigurationBefore() throws SecurityException, NoSuchMethodException
@@ -247,7 +222,4 @@ public class MAnnotationSampleTest {
     Assert.assertFalse(configuration.getAlwaysRun());
   }
 
-  private static void ppp(String s) {
-    System.out.println("[MAnnotationSampleTest] " + s);
-  }
 }

@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1484: Remove irrelevant "targets" for TestNG annotations (Krishnan Mahadevan)
 Fixed: GITHUB-1405: Skip considering main() method when @Test used at class level (Krishnan Mahadevan)
 Fixed: GITHUB-799: @Factory with dataProvider changes order of iterations (Krishnan Mahadevan & Julien Herr)
 New: Enhance XML Reporter to be able to customize the file name (Krishnan Mahadevan)
