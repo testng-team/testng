@@ -26,24 +26,22 @@ public final class Utils {
 
   private static final String LINE_SEP = System.getProperty("line.separator");
 
-  public static final char[] SPECIAL_CHARACTERS =
-      {'*','/','\\','?','%',':',';','<','>','&','~','|'};
+  private static final char[] SPECIAL_CHARACTERS = {'*','/','\\','?','%',':',';','<','>','&','~','|'};
   public static final char CHAR_REPLACEMENT = '_';
   public static final char UNICODE_REPLACEMENT = 0xFFFD;
   private static final String FORMAT = String.format("[%s]", Utils.class.getSimpleName());
 
   private static final Logger LOG = Logger.getLogger(Utils.class);
 
-  private static final Map<Character, String> ESCAPES = new HashMap<Character, String>() {
-    private static final long serialVersionUID = 1285607660247157523L;
+  private static final Map<Character, String> ESCAPES = new HashMap<>();
 
-    {
-      put('<', "&lt;");
-      put('>', "&gt;");
-      put('\'', "&apos;");
-      put('"', "&quot;");
-      put('&', "&amp;");
-    }};
+  static {
+    ESCAPES.put('<', "&lt;");
+    ESCAPES.put('>', "&gt;");
+    ESCAPES.put('\'', "&apos;");
+    ESCAPES.put('"', "&quot;");
+    ESCAPES.put('&', "&amp;");
+  }
 
   /**
    * Hide constructor for utility class.
@@ -155,11 +153,13 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir. If
    * outDir does not exist, it is created.
    *
-   * @param outDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
-   * @param fileName the filename
+   * @param outputFolder the output directory (may not exist). If <tt>null</tt> then current directory is used.
+   * @param fileNameParameter the filename
    * @param sb the file content
    */
-  private static void writeFile(@Nullable File outDir, String fileName, String sb, @Nullable String encoding) {
+  private static void writeFile(@Nullable File outputFolder, String fileNameParameter, String sb, @Nullable String encoding) {
+    File outDir = outputFolder;
+    String fileName = fileNameParameter;
     try {
       if (outDir == null) {
         outDir = new File("").getAbsoluteFile();
@@ -219,10 +219,11 @@ public final class Utils {
    * exist, it is created. If the output file exists, it is deleted. The output file is
    * created in any case.
    * @param outputDir output directory. If <tt>null</tt>, then current directory is used
-   * @param fileName file name
+   * @param fileNameParameter file name
    * @throws IOException if anything goes wrong while creating files.
    */
-  public static BufferedWriter openWriter(@Nullable String outputDir, String fileName) throws IOException {
+  public static BufferedWriter openWriter(@Nullable String outputDir, String fileNameParameter) throws IOException {
+    String fileName = fileNameParameter;
     String outDirPath= outputDir != null ? outputDir : "";
     File outDir= new File(outDirPath);
     if (!outDir.exists()) {
@@ -719,10 +720,11 @@ public final class Utils {
    * In order to have the same behavior of testng on the all platforms, characters like * will
    * be replaced on all platforms whether they are causing the problem or not.
    *
-   * @param fileName file name that could contain special characters.
+   * @param fileNameParameter file name that could contain special characters.
    * @return fileName with special characters replaced
    */
-  public static String replaceSpecialCharacters(String fileName) {
+  public static String replaceSpecialCharacters(String fileNameParameter) {
+   String fileName = fileNameParameter;
    if (fileName == null || fileName.length() == 0) {
      return fileName;
    }
@@ -808,14 +810,14 @@ public final class Utils {
 
   private static String toString(Class<?>[] classes) {
     StringBuilder sb = new StringBuilder("[ ");
-    for (int i=0; i<classes.length;) {
+    for (int i=0; i<classes.length; i++) {
       Class<?> clazz = classes[i];
       if (clazz.isArray()) {
         sb.append(clazz.getComponentType().getName()).append("[]");
       } else {
         sb.append(clazz.getName());
       }
-      if (++i < classes.length) { // increment and compare
+      if ( (i+1) < classes.length) { // increment and compare
         sb.append(" or ");
       }
     }

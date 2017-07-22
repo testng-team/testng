@@ -41,7 +41,7 @@ public class AnnotationHelper {
       IBeforeGroups.class, IAfterGroups.class
   };
 
-  public static final Class[] CONFIGURATION_CLASSES = new Class[] {
+  private static final Class[] CONFIGURATION_CLASSES = new Class[] {
       IConfigurationAnnotation.class,
       IBeforeSuite.class, IAfterSuite.class,
       IBeforeTest.class, IAfterTest.class,
