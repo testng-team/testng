@@ -8,9 +8,11 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample;
+import test.thread.parallelization.sample.TestClassCSixMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassDThreeMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassEFiveMethodsWithNoDepsSample;
@@ -21,6 +23,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.testng.Assert.assertEquals;
 
@@ -65,6 +69,13 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 7) There are no method exclusions
  */
 public class ParallelByMethodsTestCase7Scenario2 extends BaseParallelizationTest {
+
+    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase7Scenario2.class.getCanonicalName());
+
+    {
+        logger.setLevel(Level.INFO);
+    }
+
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
 
@@ -156,6 +167,28 @@ public class ParallelByMethodsTestCase7Scenario2 extends BaseParallelizationTest
 
         TestNG tng = create(suiteOne, suiteTwo);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
+
+        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase7Scenario2. This test scenario consists of two " +
+                "suites with 1 and 2 tests respectively. One suite with two tests has a test consisting of a single " +
+                "test class without a factory while the other consists of factories using data providers with " +
+                "varying numbers of data sets which provide multiple instances of multiple test classes. One suite " +
+                "shall consist of a single test with multiple test classes which use factories with data providers " +
+                "with varying numbers of data sets. There are no dependencies.");
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_A,SUITE_A_TEST_A,
+                        TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                        ", " + TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName(), 25});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+                new Object[]{SUITE_B,SUITE_B_TEST_A,TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName(), 3});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_B,SUITE_B_TEST_B,
+                        TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample.class + ", " +
+                                TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample.class + ", " +
+                                TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample.class,
+                        40});
 
         tng.run();
 
