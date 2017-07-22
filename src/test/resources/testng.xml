@@ -450,12 +450,6 @@
   <parameter name="long" value="46" />
   <parameter name="short" value="47" />
 
-  <test name="Parameters for constructors">
-    <classes>
-      <class name="test.ParameterConstructorTest" />
-    </classes>
-  </test>
-
   <test name="Excluded methods" >
     <groups>
       <run>
