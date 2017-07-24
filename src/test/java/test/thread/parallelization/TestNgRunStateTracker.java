@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class TestNgRunStateTracker {
 
-    private static List<EventLog> eventLogs = new ArrayList<>();
+    private static final List<EventLog> eventLogs = new ArrayList<>();
 
     public static void logEvent(EventLog eventLog) {
         synchronized(eventLogs) {
@@ -754,7 +754,7 @@ public class TestNgRunStateTracker {
 
 
     public static void reset() {
-        eventLogs = new ArrayList<>();
+        eventLogs.clear();
     }
 
     private static boolean isSuiteLevelEventLog(EventLog eventLog) {
@@ -872,12 +872,35 @@ public class TestNgRunStateTracker {
 
         @Override
         public String toString() {
-            return "EventLog{" +
-                    "event=" + event +
-                    ", timeOfEvent=" + timeOfEvent +
-                    ", threadId=" + threadId +
-                    ", data=" + data +
-                    '}';
+            final StringBuffer sb = new StringBuffer("EventLog{");
+            sb.append("Event: ").append(event);
+
+            sb.append(", Suite: ").append(getData(EventInfo.SUITE_NAME));
+
+            if(getData(EventInfo.TEST_NAME) != null) {
+                sb.append(", Test: ").append(getData(EventInfo.TEST_NAME));
+            }
+
+            if(getData(EventInfo.CLASS_NAME) != null) {
+                sb.append(", Class: ").append(getData(EventInfo.CLASS_NAME));
+            }
+
+            if(getData(EventInfo.CLASS_INSTANCE) != null) {
+                sb.append(", Class instance hash code: ").append(getData(EventInfo.CLASS_INSTANCE).hashCode());
+            }
+
+            if(getData(EventInfo.METHOD_NAME) != null) {
+                sb.append(", Method name: ").append(getData(EventInfo.METHOD_NAME));
+            }
+
+            if(getData(EventInfo.DATA_PROVIDER_PARAM) != null) {
+                sb.append(", Data provider param: ").append(getData(EventInfo.DATA_PROVIDER_PARAM));
+            }
+
+            sb.append(", Time of event: ").append(timeOfEvent);
+            sb.append(", Thread ID: ").append(threadId);
+            sb.append("}");
+            return sb.toString();
         }
     }
 
