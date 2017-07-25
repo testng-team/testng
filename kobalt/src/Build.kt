@@ -2,9 +2,8 @@
 import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
-import com.beust.kobalt.buildScript
-import com.beust.kobalt.plugin.osgi.*
 import com.beust.kobalt.plugin.java.javaCompiler
+import com.beust.kobalt.plugin.osgi.osgi
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.publish.autoGitTag
 import com.beust.kobalt.plugin.publish.bintray
