@@ -12,8 +12,11 @@ import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.testng.Assert.assertEquals;
+
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteAndTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -24,6 +27,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerF
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartThreadId;
 
+import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
 /** This class covers PTP_TC_7, Scenario 1 in the Parallelization Test Plan.
@@ -48,6 +52,13 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 8) There are no method exclusions
  */
 public class ParallelByMethodsTestCase7Scenario1 extends BaseParallelizationTest {
+
+    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase7Scenario1.class.getCanonicalName());
+
+    {
+        logger.setLevel(Level.INFO);
+    }
+
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
 
@@ -79,6 +90,14 @@ public class ParallelByMethodsTestCase7Scenario1 extends BaseParallelizationTest
         TestNG tng = create(suite);
 
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
+
+        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase7Scenario1. This test scenario consists of a " +
+                "single suite with a single test consisting of a single test class with five methods with a " +
+                "factory method using a data provider specifying 3 sets of data. There are no dependencies.");
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+                new Object[]{SUITE,TEST,
+                        TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName(), 15});
 
         tng.run();
 
@@ -176,7 +195,6 @@ public class ParallelByMethodsTestCase7Scenario1 extends BaseParallelizationTest
     //Verifies that the test methods execute in different threads in parallel fashion.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
-        verifySimultaneousTestMethods(testMethodLevelEventLogs, TEST, 15);
+        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE, TEST), TEST, 15);
     }
-
 }

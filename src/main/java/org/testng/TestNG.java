@@ -1143,6 +1143,9 @@ public class TestNG {
         usage();
       }
     }
+
+    m_instance = null;
+    m_jCommander = null;
   }
 
   /**

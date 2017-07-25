@@ -1,17 +1,19 @@
 package test.thread.parallelization;
 
-import com.google.common.collect.Multimap;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.testng.Assert.assertEquals;
 
@@ -46,6 +48,12 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  */
 public class ParallelByMethodsTestCase1Scenario1 extends BaseParallelizationTest {
 
+    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase1Scenario1.class.getCanonicalName());
+
+    {
+        logger.setLevel(Level.INFO);
+    }
+
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
 
@@ -76,6 +84,13 @@ public class ParallelByMethodsTestCase1Scenario1 extends BaseParallelizationTest
 
         TestNG tng = create(suite);
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
+
+        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase1Scenario1. This test scenario consists of a " +
+                "single suite with a single test which consists of one test class with five test methods. There " +
+                "are no dependencies, data providers or factories.");
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+                new Object[]{SUITE,TEST,TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), 5});
 
         tng.run();
 

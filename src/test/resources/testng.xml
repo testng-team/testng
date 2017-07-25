@@ -97,6 +97,7 @@
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
       <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
+      <class name="test.github1405.TestExclusionOfMainMethod"/>
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->
@@ -159,7 +160,8 @@
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
       <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
       <class name="test.order.OrderTest" />
-      <class name="test.issue565.Issue565Test"/>
+      <class name="test.github1461.MemoryLeakTestNg" />
+      <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
     </classes>
   </test>
 

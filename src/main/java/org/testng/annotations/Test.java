@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * @author Cedric Beust, Apr 26, 2004
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Target({METHOD, TYPE, CONSTRUCTOR})
+@Target({METHOD, TYPE})
 public @interface Test {
   /**
    * The list of groups this class/method belongs to.

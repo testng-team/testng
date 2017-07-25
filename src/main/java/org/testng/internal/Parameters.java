@@ -85,7 +85,7 @@ public class Parameters {
 
  */
   static {
-    List<Class<?>> ctxTest = Arrays.asList(new Class<?>[]{ITestContext.class, XmlTest.class});
+    List<Class<?>> ctxTest = Arrays.<Class<?>>asList(ITestContext.class, XmlTest.class);
     List<Class<?>> beforeAfterMethod = Arrays.asList(ITestContext.class, XmlTest.class, Method.class,
             Object[].class, ITestResult.class);
     mapping.put(BeforeSuite.class.getSimpleName(), ctxTest);
@@ -102,7 +102,7 @@ public class Parameters {
 
     mapping.put(BeforeMethod.class.getSimpleName(), beforeAfterMethod);
     mapping.put(AfterMethod.class.getSimpleName(), beforeAfterMethod);
-    mapping.put(Test.class.getSimpleName(), Arrays.asList(new Class<?>[] {ITestContext.class}));
+    mapping.put(Test.class.getSimpleName(), Collections.<Class<?>>singletonList(ITestContext.class));
 
   }
 
