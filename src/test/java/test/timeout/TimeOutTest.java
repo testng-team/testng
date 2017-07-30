@@ -1,13 +1,22 @@
 package test.timeout;
 
+import org.testng.Assert;
+import org.testng.ITestNGListener;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.xml.XmlSuite;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import test.BaseTest;
+import test.timeout.github1493.TestClassSample;
 
 public class TimeOutTest extends BaseTest {
   private final long m_id;
@@ -66,6 +75,19 @@ public class TimeOutTest extends BaseTest {
     verifyPassedTests("shouldPass");
     verifyFailedTests("shouldFail");
   }
+
+  @Test
+  public void testWithOnlyOneThread() {
+    addClass(TestClassSample.class);
+    run();
+    Collection<List<ITestResult>> failed = getFailedTests().values();
+    Assert.assertEquals(failed.size(), 1);
+    ITestResult failedResult = failed.iterator().next().get(0);
+    Assert.assertTrue(failedResult.getThrowable() instanceof ThreadTimeoutException);
+    Assert.assertEquals(failedResult.getThrowable().getMessage(),
+            String.format("Method %s.testMethod() didn't finish within the time-out 1000", TestClassSample.class.getName()));
+  }
+
 
   @Override
   public Long getId() {
