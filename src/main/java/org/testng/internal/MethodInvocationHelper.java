@@ -288,7 +288,10 @@ public class MethodInvocationHelper {
       ThreadTimeoutException exception = new ThreadTimeoutException("Method "
           + tm.getQualifiedName() + "()"
           + " didn't finish within the time-out " + realTimeOut);
-      exception.setStackTrace(exec.getStackTraces()[0]);
+      StackTraceElement[][] stacktraces = exec.getStackTraces();
+      if (stacktraces.length > 0) {
+        exception.setStackTrace(stacktraces[0]);
+      }
       testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
     } else {
