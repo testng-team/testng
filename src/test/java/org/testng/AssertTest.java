@@ -104,7 +104,8 @@ public class AssertTest {
   /**
    * Testing comparison algorithm using big arrays.
    *
-   * @see <a href="https://github.com/cbeust/testng/issues/1384">Issue #1384 – Huge performance issue between 6.5.2 and 6.11</a>
+   * @see <a href="https://github.com/cbeust/testng/issues/1384">Issue #1384 – Huge performance issue between 6.5.2
+   * and 6.11</a>
    */
   @Test
   public void compareLargeArrays() {
@@ -124,6 +125,55 @@ public class AssertTest {
     // assertEquals() with Object-type requires ~3Mb of memory when comparing 100Kb arrays.
     // choosing 100Kb as a threshold
     Assert.assertTrue(memoryUsage < 100 * 1024, "Amount of used memory should be approximately 65Kb");
+  }
+
+  @Test
+  public void compareShortArrays() {
+    short[] actual = {Short.MIN_VALUE, 0, Short.MAX_VALUE};
+    short[] expected = {Short.MIN_VALUE, 0, Short.MAX_VALUE};
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareIntArrays() {
+    int[] actual = {Integer.MIN_VALUE, 0, Integer.MAX_VALUE};
+    int[] expected = {Integer.MIN_VALUE, 0, Integer.MAX_VALUE};
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareLongArrays() {
+    long[] actual = {Long.MIN_VALUE, 0, Long.MAX_VALUE};
+    long[] expected = {Long.MIN_VALUE, 0, Long.MAX_VALUE};
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareBooleanArrays() {
+    boolean[] actual = {true, false};
+    boolean[] expected = {true, false};
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareCharacterArrays() {
+    char[] actual = {'a', '1', '#'};
+    char[] expected = {'a', '1', '#'};
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareFloatArrays() {
+    float[] actual = {(float) Math.PI, (float) Math.E};
+    float[] expected = {(float) Math.PI, (float) Math.E};
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareDoubleArrays() {
+    double[] actual = {Math.PI, Math.E};
+    double[] expected = {Math.PI, Math.E};
+    Assert.assertEquals(actual, expected);
   }
 
   @Test(expectedExceptions = AssertionError.class)

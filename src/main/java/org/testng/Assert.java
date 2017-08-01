@@ -175,7 +175,7 @@ public class Assert {
    * @param actual   the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(final byte[] actual, final byte[] expected) {
+  static public void assertEquals(byte[] actual, byte[] expected) {
     assertEquals(actual, expected, "");
   }
 
@@ -187,27 +187,250 @@ public class Assert {
    * @param expected the expected value
    * @param message  the assertion error message
    */
-  static public void assertEquals(final byte[] actual, final byte[] expected, final String message) {
-    if (expected == actual) {
-      return;
-    }
-    if (null == expected) {
-      fail("expected a null array, but not null found. " + message);
-    }
-    if (null == actual) {
-      fail("expected not null array, but null found. " + message);
-    }
-
-    assertEquals(actual.length, expected.length, "arrays don't have the same size. " + message);
+  static public void assertEquals(byte[] actual, byte[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail("arrays differ firstly at element [" + i + "]; "
-          + "expected value is <" + expected[i] + "> but was <"
-          + actual[i] + ">. "
-          + message);
+        failOnArrayMismatch(actual, expected, i, message);
       }
     }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(short[] actual, short[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(short[] actual, short[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(int[] actual, int[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(int[] actual, int[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(boolean[] actual, boolean[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(boolean[] actual, boolean[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(char[] actual, char[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(char[] actual, char[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(float[] actual, float[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(float[] actual, float[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(double[] actual, double[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(double[] actual, double[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(long[] actual, long[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(long[] actual, long[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        failOnArrayMismatch(actual, expected, i, message);
+      }
+    }
+  }
+
+  static private void failOnArrayMismatch(Object actual, Object expected, int idx, String message) {
+    fail("arrays differ firstly at element [" + idx + "]; "
+        + "expected value is <" + Array.get(expected, idx) + "> but was <"
+        + Array.get(actual, idx) + ">. "
+        + message);
+  }
+
+  /**
+   * This methods check referential equality of given arguments as well as references length (assuming they are arrays).
+   * Successful execution of this method guaranties arrays length equality.
+   *
+   * @param actualArray array of elements
+   * @param expectedArray array of elements
+   * @param message the assertion error message
+   * @return {@code true} if {@code actualArray} and {@code expectedArray} are the same, {@code false} otherwise. If
+   * references are different and arrays length are different {@link AssertionError} is thrown.
+   */
+  private static boolean checkRefEqualityAndLength(Object actualArray, Object expectedArray, String message) {
+    if (expectedArray == actualArray) {
+      return true;
+    }
+    if (null == expectedArray) {
+      fail("expectedArray a null array, but not null found. " + message);
+    }
+    if (null == actualArray) {
+      fail("expectedArray not null array, but null found. " + message);
+    }
+
+    assertEquals(Array.getLength(actualArray), Array.getLength(expectedArray),
+        "arrays don't have the same size. " + message);
+    return false;
   }
 
   /**
