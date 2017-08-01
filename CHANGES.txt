@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-1493: Wrong exception msg when timeout on test (Krishnan Mahadevan)
+Fixed: GITHUB-1384: Huge performance issue between 6.5.2 and 6.11
 
 6.12
 Fixed: GITHUB-1484: Remove irrelevant "targets" for TestNG annotations (Krishnan Mahadevan)
