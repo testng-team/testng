@@ -169,6 +169,48 @@ public class Assert {
   }
 
   /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  static public void assertEquals(final byte[] actual, final byte[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  static public void assertEquals(final byte[] actual, final byte[] expected, final String message) {
+    if (expected == actual) {
+      return;
+    }
+    if (null == expected) {
+      fail("expected a null array, but not null found. " + message);
+    }
+    if (null == actual) {
+      fail("expected not null array, but null found. " + message);
+    }
+
+    assertEquals(actual.length, expected.length, "arrays don't have the same size. " + message);
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail("arrays differ firstly at element [" + i + "]; "
+          + "expected value is <" + expected[i] + "> but was <"
+          + actual[i] + ">. "
+          + message);
+      }
+    }
+  }
+
+  /**
    * Asserts that two objects are equal. If they are not,
    * an AssertionError is thrown.
    * @param actual the actual value
