@@ -23,6 +23,9 @@ import org.testng.collections.Lists;
  */
 public class Assert {
 
+  public static final String ARRAY_MISMATCH_TEMPLATE = "arrays differ firstly at element [%d]; "
+      + "expected value is <%s> but was <%s>. %s";
+
   /**
    * Protect constructor since it is a static only class
    */
@@ -192,7 +195,7 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Byte.toString(expected[i]), Byte.toString(actual[i]), message));
       }
     }
   }
@@ -221,7 +224,8 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Short.toString(expected[i]), Short.toString(actual[i]),
+            message));
       }
     }
   }
@@ -250,7 +254,8 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Integer.toString(expected[i]), Integer.toString(actual[i]),
+            message));
       }
     }
   }
@@ -279,7 +284,8 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Boolean.toString(expected[i]), Boolean.toString(actual[i]),
+            message));
       }
     }
   }
@@ -308,7 +314,8 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Character.toString(expected[i]), Character.toString(actual[i]),
+            message));
       }
     }
   }
@@ -337,7 +344,8 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Float.toString(expected[i]), Float.toString(actual[i]),
+            message));
       }
     }
   }
@@ -366,7 +374,8 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Double.toString(expected[i]), Double.toString(actual[i]),
+            message));
       }
     }
   }
@@ -395,16 +404,9 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        failOnArrayMismatch(actual, expected, i, message);
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Long.toString(expected[i]), Long.toString(actual[i]), message));
       }
     }
-  }
-
-  static private void failOnArrayMismatch(Object actual, Object expected, int idx, String message) {
-    fail("arrays differ firstly at element [" + idx + "]; "
-        + "expected value is <" + Array.get(expected, idx) + "> but was <"
-        + Array.get(actual, idx) + ">. "
-        + message);
   }
 
   /**
