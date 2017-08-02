@@ -6,12 +6,11 @@ import java.lang.management.ManagementFactory;
 
 public class PerformanceUtils {
 
-  private static ThreadMXBean THREAD_MX_BEAN;
+  private static final ThreadMXBean THREAD_MX_BEAN = initThreadBean();
 
-  static {
+  private static ThreadMXBean initThreadBean() {
     Object bean = ManagementFactory.getThreadMXBean();
-    if (bean instanceof ThreadMXBean)
-      THREAD_MX_BEAN = (ThreadMXBean) bean;
+    return bean instanceof ThreadMXBean ? (ThreadMXBean) bean : null;
   }
 
   /**
