@@ -1,14 +1,17 @@
 package org.testng.internal;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
 import org.testng.IObjectFactory2;
 import org.testng.ITestContext;
+import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -61,6 +64,19 @@ public class FactoryMethod extends BaseTestMethod {
     tc.setTestClass(declaringClass);
     m_testClass = tc;
     this.objectFactory = objectFactory;
+    m_groups = getAllGroups(declaringClass, xmlTest, annotationFinder);
+  }
+
+  private static String[] getAllGroups(Class<?> declaringClass, XmlTest xmlTest,
+      IAnnotationFinder annotationFinder) {
+    // Find the groups of the factory => all groups of all test methods
+    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(new RunInfo(), annotationFinder);
+    ITestNGMethod[] testMethods = testMethodFinder.getTestMethods(declaringClass, xmlTest);
+    Set<String> groups = new HashSet<>();
+    for (ITestNGMethod method : testMethods) {
+      groups.addAll(Arrays.asList(method.getGroups()));
+    }
+    return groups.toArray(new String[groups.size()]);
   }
 
   public Object[] invoke() {

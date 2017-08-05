@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,27 +153,31 @@ public class TestNGClassFinder extends BaseClassFinder {
                       m_testContext, objectFactory);
               ClassInfoMap moreClasses = new ClassInfoMap();
 
-              // If the factory returned IInstanceInfo, get the class from it,
-              // otherwise, just call getClass() on the returned instances
-              int i = 0;
-              for (Object o : fm.invoke()) {
-                if (o == null) {
-                  throw new TestNGException("The factory " + fm + " returned a null instance" +
-                          "at index " + i);
+              boolean excludeFactory = fm.getGroups().length != 0
+                  && xmlTest.getExcludedGroups().containsAll(Arrays.asList(fm.getGroups()));
+              if (!excludeFactory) {
+                // If the factory returned IInstanceInfo, get the class from it,
+                // otherwise, just call getClass() on the returned instances
+                int i = 0;
+                for (Object o : fm.invoke()) {
+                  if (o == null) {
+                    throw new TestNGException("The factory " + fm + " returned a null instance" +
+                        "at index " + i);
+                  }
+                  Class<?> oneMoreClass;
+                  if (IInstanceInfo.class.isAssignableFrom(o.getClass())) {
+                    IInstanceInfo<?> ii = (IInstanceInfo) o;
+                    addInstance(ii);
+                    oneMoreClass = ii.getInstanceClass();
+                  } else {
+                    addInstance(o);
+                    oneMoreClass = o.getClass();
+                  }
+                  if (!classExists(oneMoreClass)) {
+                    moreClasses.addClass(oneMoreClass);
+                  }
+                  i++;
                 }
-                Class<?> oneMoreClass;
-                if(IInstanceInfo.class.isAssignableFrom(o.getClass())) {
-                  IInstanceInfo<?> ii = (IInstanceInfo) o;
-                  addInstance(ii);
-                  oneMoreClass = ii.getInstanceClass();
-                } else {
-                  addInstance(o);
-                  oneMoreClass = o.getClass();
-                }
-                if(!classExists(oneMoreClass)) {
-                  moreClasses.addClass(oneMoreClass);
-                }
-                i++;
               }
 
               if(!moreClasses.isEmpty()) {
