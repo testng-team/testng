@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.testng.IMethodSelector;
@@ -100,7 +101,6 @@ public class XmlMethodSelector implements IMethodSelector {
       boolean isIncludedInGroups = isIncluded(groups, m_includedGroups.values(), noGroupsSpecified);
       boolean isExcludedInGroups = isExcluded(groups, m_excludedGroups.values());
 
-
       //
       // Calculate the run methods by groups first
       //
@@ -109,7 +109,6 @@ public class XmlMethodSelector implements IMethodSelector {
       } else if (isExcludedInGroups) {
         result = false;
       }
-
 
       if(isTestMethod) {
         //
@@ -205,15 +204,15 @@ public class XmlMethodSelector implements IMethodSelector {
     return result;
   }
 
-  private List<String> createQualifiedMethodNames(XmlClass xmlClass,
+  private static List<String> createQualifiedMethodNames(XmlClass xmlClass,
       List<String> methods) {
     List<String> vResult = Lists.newArrayList();
-    Class cls = xmlClass.getSupportClass();
+    Class<?> cls = xmlClass.getSupportClass();
 
     while (null != cls) {
       for (String im : methods) {
+        Pattern pattern = Pattern.compile(methodName(im));
         Method[] allMethods = ReflectionHelper.getLocalMethods(cls);
-        Pattern pattern = Pattern.compile(im);
         for (Method m : allMethods) {
           if (pattern.matcher(m.getName()).matches()) {
             vResult.add(makeMethodName(m.getDeclaringClass().getName(), m.getName()));
@@ -226,7 +225,15 @@ public class XmlMethodSelector implements IMethodSelector {
     return vResult;
   }
 
-  private String makeMethodName(String className, String methodName) {
+  private static final String QUOTED_DOLLAR = Matcher.quoteReplacement("\\$");
+  private static String methodName(String methodName) {
+    if (methodName.contains("\\$")) {
+      return methodName;
+    }
+    return methodName.replaceAll("\\Q$\\E", QUOTED_DOLLAR);
+  }
+
+  private static String makeMethodName(String className, String methodName) {
     return className + "." + methodName;
   }
 
@@ -298,10 +305,9 @@ public class XmlMethodSelector implements IMethodSelector {
    */
   private static boolean isMemberOf(String[] groups, Collection<String> list) {
     for (String group : groups) {
-      for (Object o : list) {
-        String regexpStr = o.toString();
-        boolean match = Pattern.matches(regexpStr, group);
-        if (match) {
+      for (String o : list) {
+        String regexpStr = methodName(o);
+        if (Pattern.matches(regexpStr, group)) {
           return true;
         }
       }
