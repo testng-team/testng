@@ -14,10 +14,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class ClonedMethod implements ITestNGMethod {
-  private static final long serialVersionUID = 1L;
 
-  private ITestNGMethod m_method;
-  transient private Method m_javaMethod;
+  private final ITestNGMethod m_method;
+  private final Method m_javaMethod;
   private String m_id;
   private int m_currentInvocationCount;
   private long m_date;

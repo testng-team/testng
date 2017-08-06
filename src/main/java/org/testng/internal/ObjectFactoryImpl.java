@@ -14,8 +14,6 @@ import java.lang.reflect.Constructor;
  */
 public class ObjectFactoryImpl implements IObjectFactory {
 
-  private static final long serialVersionUID = -4547389328475540017L;
-
   @Override
   public Object newInstance(Constructor constructor, Object... params) {
     try {

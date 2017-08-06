@@ -8,8 +8,6 @@ import java.util.List;
  */
 public class ArrayComparisonFailure extends AssertionError {
 
-    private static final long serialVersionUID= 1L;
-    
     private final List<Integer> fIndices= new ArrayList<>();
     private final String fMessage;
     private final AssertionError fCause;

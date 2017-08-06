@@ -8,15 +8,10 @@ import java.util.Set;
 
 /**
  * Simple implementation of IAttributes.
- *
- * @author cbeust@google.com (Cedric Beust), March 16th, 2010
  */
 public class Attributes implements IAttributes {
-  /**
-   *
-   */
-  private static final long serialVersionUID = 6701159979281335152L;
-  private Map<String, Object> m_attributes = Maps.newHashMap();
+
+  private final Map<String, Object> m_attributes = Maps.newHashMap();
 
   @Override
   public Object getAttribute(String name) {

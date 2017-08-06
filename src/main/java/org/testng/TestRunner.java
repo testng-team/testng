@@ -61,34 +61,30 @@ import com.google.inject.Module;
  * This class takes care of running one Test.
  */
 public class TestRunner
-    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>
-{
+    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
 
   public static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
-
-  /* generated */
-  private static final long serialVersionUID = 4247820024988306670L;
 
   private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
   private XmlTest m_xmlTest;
   private String m_testName;
 
-  transient private List<XmlClass> m_testClassesFromXml= null;
-  transient private List<XmlPackage> m_packageNamesFromXml= null;
+  private List<XmlClass> m_testClassesFromXml= null;
+  private List<XmlPackage> m_packageNamesFromXml= null;
 
-  transient private IInvoker m_invoker= null;
-  transient private IAnnotationFinder m_annotationFinder= null;
+  private IInvoker m_invoker= null;
+  private IAnnotationFinder m_annotationFinder= null;
 
   /** ITestListeners support. */
-  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
-  transient private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private List<ITestListener> m_testListeners = Lists.newArrayList();
+  private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
 
-  transient private IConfigurationListener m_confListener= new ConfigurationListener();
-  transient private boolean m_skipFailedInvocationCounts;
+  private IConfigurationListener m_confListener= new ConfigurationListener();
+  private boolean m_skipFailedInvocationCounts;
 
-  transient private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
-  transient private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
+  private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -103,7 +99,7 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
+  private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= DEFAULT_PROP_OUTPUT_DIR;
@@ -143,11 +139,11 @@ public class TestRunner
   private String m_host;
 
   // Defined dynamically depending on <test preserve-order="true/false">
-  private transient List<IMethodInterceptor> m_methodInterceptors;
+  private List<IMethodInterceptor> m_methodInterceptors;
 
-  private transient ClassMethodMap m_classMethodMap;
-  private transient TestNGClassFinder m_testClassFinder;
-  private transient IConfiguration m_configuration;
+  private ClassMethodMap m_classMethodMap;
+  private TestNGClassFinder m_testClassFinder;
+  private IConfiguration m_configuration;
   private IMethodInterceptor builtinInterceptor;
 
   private enum PriorityWeight {

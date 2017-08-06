@@ -7,46 +7,40 @@ import com.google.inject.Module;
 import com.google.inject.Stage;
 
 import org.testng.IClass;
-import org.testng.IModuleFactory;
 import org.testng.ISuite;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.annotations.Guice;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
-import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Implementation of an IClass.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class ClassImpl implements IClass {
-  private static final long serialVersionUID = 1118178273317520344L;
-  transient private Class m_class = null;
-  transient private Object m_defaultInstance = null;
-  private XmlTest m_xmlTest = null;
-  transient private IAnnotationFinder m_annotationFinder = null;
-  transient private List<Object> m_instances = Lists.newArrayList();
-  transient private Map<Class<?>, IClass> m_classes = null;
+
+  private final Class<?> m_class;
+  private Object m_defaultInstance = null;
+  private final XmlTest m_xmlTest;
+  private final IAnnotationFinder m_annotationFinder;
+  private List<Object> m_instances = Lists.newArrayList();
+  private final Map<Class<?>, IClass> m_classes;
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
-  private transient Object m_instance;
-  private ITestObjectFactory m_objectFactory;
+  private final Object m_instance;
+  private final ITestObjectFactory m_objectFactory;
   private String m_testName = null;
-  private XmlClass m_xmlClass;
-  private ITestContext m_testContext;
+  private final XmlClass m_xmlClass;
+  private final ITestContext m_testContext;
   private final boolean m_hasParentModule;
 
   public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
@@ -70,10 +64,6 @@ public class ClassImpl implements IClass {
       }
     }
     m_hasParentModule = isStringNotEmpty(m_testContext.getSuite().getParentModule());
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[ClassImpl] " + s);
   }
 
   @Override

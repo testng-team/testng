@@ -5,6 +5,7 @@ import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.internal.TestResult;
 import org.testng.internal.reflect.MethodMatcherException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;

@@ -9,24 +9,16 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-
 /**
  * This class represents a test method.
- *
- * @author Cedric Beust, May 3, 2004
- * @author <a href = "mailto:the_mindstorm&#64;evolva.ro">Alexandru Popescu</a>
  */
-public class TestNGMethod extends BaseTestMethod implements Serializable {
-  /**
-   *
-   */
-  private static final long serialVersionUID = -1742868891986775307L;
+public class TestNGMethod extends BaseTestMethod {
+
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;

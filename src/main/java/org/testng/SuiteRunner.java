@@ -18,7 +18,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,45 +33,40 @@ import com.google.inject.Injector;
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
  * suite. The test start is triggered by {@link #run()} method.
- *
- * @author Cedric Beust, Apr 26, 2004
  */
-public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener {
-
-  /* generated */
-  private static final long serialVersionUID = 5284208932089503131L;
+public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
   private Map<String, ISuiteResult> suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
-  private transient List<TestRunner> testRunners = Lists.newArrayList();
-  private transient Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
-  private transient TestListenerAdapter textReporter = new TestListenerAdapter();
+  private List<TestRunner> testRunners = Lists.newArrayList();
+  private Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
+  private TestListenerAdapter textReporter = new TestListenerAdapter();
 
   private String outputDir;
   private XmlSuite xmlSuite;
-  private transient Injector parentInjector;
+  private Injector parentInjector;
 
-  private transient List<ITestListener> testListeners = Lists.newArrayList();
-  private final transient  Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
-  private transient ITestRunnerFactory tmpRunnerFactory;
+  private List<ITestListener> testListeners = Lists.newArrayList();
+  private final  Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
+  private ITestRunnerFactory tmpRunnerFactory;
 
-  private transient boolean useDefaultListeners = true;
+  private boolean useDefaultListeners = true;
 
   // The remote host where this suite was run, or null if run locally
   private String remoteHost;
 
   // The configuration
-  private transient  IConfiguration configuration;
+  private  IConfiguration configuration;
 
-  private transient ITestObjectFactory objectFactory;
-  private transient Boolean skipFailedInvocationCounts = Boolean.FALSE;
-  private transient List<IReporter> reporters = Lists.newArrayList();
+  private ITestObjectFactory objectFactory;
+  private Boolean skipFailedInvocationCounts = Boolean.FALSE;
+  private List<IReporter> reporters = Lists.newArrayList();
 
-  private transient Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> invokedMethodListeners;
+  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */
-  private transient List<IInvokedMethod> invokedMethods = Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
+  private List<IInvokedMethod> invokedMethods = Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
 
   private List<ITestNGMethod> allTestMethods = Lists.newArrayList();
   private SuiteRunState suiteState = new SuiteRunState();

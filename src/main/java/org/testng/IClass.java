@@ -3,14 +3,10 @@ package org.testng;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.io.Serializable;
-
 /**
  * <code>IClass</code> represents a test class and a collection of its instances.
- *
- * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
-public interface IClass extends Serializable {
+public interface IClass {
 
   /**
    * @return this test class name.  This is the name of the

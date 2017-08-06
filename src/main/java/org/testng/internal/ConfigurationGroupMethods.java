@@ -5,7 +5,6 @@ import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +14,9 @@ import java.util.Map;
  * since they are passed around the various invokers and potentially
  * modified in different threads.
  *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  * @since 5.3 (Mar 2, 2006)
  */
-public class ConfigurationGroupMethods implements Serializable {
-  /** Use serialVersionUID for interoperability. */
-  private final static long serialVersionUID= 1660798519864898480L;
+public class ConfigurationGroupMethods {
 
   /** The list of beforeGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_beforeGroupsMethods;

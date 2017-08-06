@@ -13,11 +13,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResultMap implements IResultMap {
-  /**
-   *
-   */
-  private static final long serialVersionUID = 80134376515999093L;
-  private Map<ITestResult, ITestNGMethod> m_map = new ConcurrentHashMap<>();
+
+  private final Map<ITestResult, ITestNGMethod> m_map = new ConcurrentHashMap<>();
 
   @Override
   public void addResult(ITestResult result, ITestNGMethod method) {

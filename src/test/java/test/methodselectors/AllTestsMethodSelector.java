@@ -8,11 +8,6 @@ import java.util.List;
 
 public class AllTestsMethodSelector implements IMethodSelector {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 8059117082807260868L;
-
   @Override
   public boolean includeMethod(IMethodSelectorContext context,
       ITestNGMethod method, boolean isTestMethod)

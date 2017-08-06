@@ -15,16 +15,12 @@ import java.util.List;
  * - The test methods
  * - The configuration methods (test and method)
  * - The class file
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 class TestClass extends NoOpTestClass implements ITestClass {
-	/* generated */
-	private static final long serialVersionUID = -8077917128278361294L;
-  private transient  IAnnotationFinder annotationFinder = null;
+
+  private  IAnnotationFinder annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
-  private transient ITestMethodFinder testMethodFinder = null;
+  private ITestMethodFinder testMethodFinder = null;
 
   private IClass iClass = null;
   private String testName;

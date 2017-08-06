@@ -16,11 +16,10 @@ import java.util.Date;
  * You can customize this by using the specialized constructors. Suppported date
  * formats are according to the {@code SimpleDateFormat}.
  *
- * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  * @since 5.6
  */
 public class TimeBombSkipException extends SkipException {
-  private static final long serialVersionUID = -8599821478834048537L;
+
   private static final SimpleDateFormat SDF= new SimpleDateFormat("yyyy/MM/dd");
   private Calendar m_expireDate;
   private DateFormat m_inFormat= SDF;

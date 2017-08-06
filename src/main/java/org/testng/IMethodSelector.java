@@ -1,16 +1,12 @@
 package org.testng;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * This interface is used to augment or replace TestNG's algorithm to
  * decide whether a test method should be included in a test run.
- *
- * Created on Sep 26, 2005
- * @author cbeust
  */
-public interface IMethodSelector extends Serializable {
+public interface IMethodSelector {
 
   /**
    * @param context The selector context.  The implementation of this method
@@ -24,7 +20,7 @@ public interface IMethodSelector extends Serializable {
    * @return true if this method should be included in the test run, false
    * otherwise
    */
-  public boolean includeMethod(IMethodSelectorContext context,
+  boolean includeMethod(IMethodSelectorContext context,
       ITestNGMethod method, boolean isTestMethod);
 
   /**
@@ -32,6 +28,6 @@ public interface IMethodSelector extends Serializable {
    * can perform additional work, such as adding the transitive closure of
    * all the groups being included and depended upon.
    */
-  public void setTestMethods(List<ITestNGMethod> testMethods);
+  void setTestMethods(List<ITestNGMethod> testMethods);
 
 }

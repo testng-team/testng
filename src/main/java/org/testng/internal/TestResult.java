@@ -16,15 +16,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
-
 /**
  * This class represents the result of a test.
- *
- * @author Cedric Beust, May 2, 2004
  */
 public class TestResult implements ITestResult, IAlterTestName {
 
-  private static final long serialVersionUID = 6273017418233324556L;
   private IClass m_testClass = null;
   private ITestNGMethod m_method = null;
   private int m_status = CREATED;
@@ -33,8 +29,8 @@ public class TestResult implements ITestResult, IAlterTestName {
   private long m_endMillis = 0;
   private String m_name = null;
   private String m_host;
-  transient private Object[] m_parameters = {};
-  transient private Object m_instance;
+  private Object[] m_parameters = {};
+  private Object m_instance;
   private String m_instanceName;
   private ITestContext m_context;
   private int parameterIndex;

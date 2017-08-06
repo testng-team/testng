@@ -7,24 +7,19 @@ import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-/**
- *
- * @author lukas
- */
 //NO JUnit specific code here to avoid runtime errors
 public abstract class JUnitTestClass implements ITestClass {
 
-    private static final long serialVersionUID = 405598615794850925L;
     private List<ITestNGMethod> m_testMethods = Lists.newArrayList();
     private List<ITestNGMethod> m_beforeClass = Lists.newArrayList();
     private List<ITestNGMethod> m_afterClass = Lists.newArrayList();
     private List<ITestNGMethod> m_beforeTest = Lists.newArrayList();
     private List<ITestNGMethod> m_afterTest = Lists.newArrayList();
-    private Class m_realClass;
-    private Object[] m_instances;
-    private long[] m_instanceHashes;
+    private final Class<?> m_realClass;
+    private final Object[] m_instances;
+    private final long[] m_instanceHashes;
 
-    public JUnitTestClass(Class test) {
+    public JUnitTestClass(Class<?> test) {
         m_realClass = test;
         m_instances = new Object[]{test};
         m_instanceHashes = new long[]{test.hashCode()};
