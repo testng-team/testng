@@ -10,6 +10,8 @@ package org.testng;
  */
 public class SkipException extends RuntimeException {
 
+  private static final long serialVersionUID = 4052142657885527260L;
+
   private StackTraceElement[] m_stackTrace;
   private volatile boolean m_stackReduced;
 

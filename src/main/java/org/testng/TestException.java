@@ -6,6 +6,8 @@ package org.testng;
  */
 public class TestException extends TestNGException {
 
+  private static final long serialVersionUID = -7946644025188038804L;
+
   public TestException(String s) {
     super(s);
   }

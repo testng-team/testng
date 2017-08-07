@@ -20,6 +20,8 @@ import java.util.Date;
  */
 public class TimeBombSkipException extends SkipException {
 
+  private static final long serialVersionUID = -8599821478834048537L;
+
   private static final SimpleDateFormat SDF= new SimpleDateFormat("yyyy/MM/dd");
   private Calendar m_expireDate;
   private DateFormat m_inFormat= SDF;

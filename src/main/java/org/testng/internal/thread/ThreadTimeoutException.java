@@ -5,6 +5,8 @@ package org.testng.internal.thread;
  */
 public class ThreadTimeoutException extends Exception {
 
+   private static final long serialVersionUID = 7009400729783393548L;
+
    public ThreadTimeoutException(String msg) {
       super(msg);
    }
