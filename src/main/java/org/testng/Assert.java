@@ -23,6 +23,9 @@ import org.testng.collections.Lists;
  */
 public class Assert {
 
+  public static final String ARRAY_MISMATCH_TEMPLATE = "arrays differ firstly at element [%d]; "
+      + "expected value is <%s> but was <%s>. %s";
+
   /**
    * Protect constructor since it is a static only class
    */
@@ -36,7 +39,7 @@ public class Assert {
    * @param condition the condition to evaluate
    * @param message the assertion error message
    */
-  static public void assertTrue(boolean condition, String message) {
+  public static void assertTrue(boolean condition, String message) {
     if(!condition) {
       failNotEquals(condition, Boolean.TRUE, message);
     }
@@ -47,7 +50,7 @@ public class Assert {
    * an AssertionError is thrown.
    * @param condition the condition to evaluate
    */
-  static public void assertTrue(boolean condition) {
+  public static void assertTrue(boolean condition) {
     assertTrue(condition, null);
   }
 
@@ -57,7 +60,7 @@ public class Assert {
    * @param condition the condition to evaluate
    * @param message the assertion error message
    */
-  static public void assertFalse(boolean condition, String message) {
+  public static void assertFalse(boolean condition, String message) {
     if(condition) {
       failNotEquals(condition, Boolean.FALSE, message); // TESTNG-81
     }
@@ -68,7 +71,7 @@ public class Assert {
    * an AssertionError is thrown.
    * @param condition the condition to evaluate
    */
-  static public void assertFalse(boolean condition) {
+  public static void assertFalse(boolean condition) {
     assertFalse(condition, null);
   }
 
@@ -78,7 +81,7 @@ public class Assert {
    * @param message the assertion error message
    * @param realCause the original exception
    */
-  static public void fail(String message, Throwable realCause) {
+  public static void fail(String message, Throwable realCause) {
     AssertionError ae = new AssertionError(message);
     ae.initCause(realCause);
 
@@ -89,14 +92,14 @@ public class Assert {
    * Fails a test with the given message.
    * @param message the assertion error message
    */
-  static public void fail(String message) {
+  public static void fail(String message) {
     throw new AssertionError(message);
   }
 
   /**
    * Fails a test with no message.
    */
-  static public void fail() {
+  public static void fail() {
     fail(null);
   }
 
@@ -169,6 +172,270 @@ public class Assert {
   }
 
   /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(byte[] actual, byte[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(byte[] actual, byte[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Byte.toString(expected[i]), Byte.toString(actual[i]), message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(short[] actual, short[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(short[] actual, short[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Short.toString(expected[i]), Short.toString(actual[i]),
+            message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(int[] actual, int[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(int[] actual, int[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Integer.toString(expected[i]), Integer.toString(actual[i]),
+            message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(boolean[] actual, boolean[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(boolean[] actual, boolean[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Boolean.toString(expected[i]), Boolean.toString(actual[i]),
+            message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(char[] actual, char[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(char[] actual, char[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Character.toString(expected[i]), Character.toString(actual[i]),
+            message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(float[] actual, float[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(float[] actual, float[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Float.toString(expected[i]), Float.toString(actual[i]),
+            message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(double[] actual, double[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(double[] actual, double[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Double.toString(expected[i]), Double.toString(actual[i]),
+            message));
+      }
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(long[] actual, long[] expected) {
+    assertEquals(actual, expected, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the same elements in the same order. If they do not,
+   * an AssertionError, with the given message, is thrown.
+   *
+   * @param actual   the actual value
+   * @param expected the expected value
+   * @param message  the assertion error message
+   */
+  public static void assertEquals(long[] actual, long[] expected, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) return;
+
+    for (int i = 0; i < expected.length; i++) {
+      if (expected[i] != actual[i]) {
+        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Long.toString(expected[i]), Long.toString(actual[i]), message));
+      }
+    }
+  }
+
+  /**
+   * This methods check referential equality of given arguments as well as references length (assuming they are arrays).
+   * Successful execution of this method guaranties arrays length equality.
+   *
+   * @param actualArray array of elements
+   * @param expectedArray array of elements
+   * @param message the assertion error message
+   * @return {@code true} if {@code actualArray} and {@code expectedArray} are the same, {@code false} otherwise. If
+   * references are different and arrays length are different {@link AssertionError} is thrown.
+   */
+  private static boolean checkRefEqualityAndLength(Object actualArray, Object expectedArray, String message) {
+    if (expectedArray == actualArray) {
+      return true;
+    }
+    if (null == expectedArray) {
+      fail("expectedArray a null array, but not null found. " + message);
+    }
+    if (null == actualArray) {
+      fail("expectedArray not null array, but null found. " + message);
+    }
+
+    assertEquals(Array.getLength(actualArray), Array.getLength(expectedArray),
+        "arrays don't have the same size. " + message);
+    return false;
+  }
+
+  /**
    * Asserts that two objects are equal. If they are not,
    * an AssertionError is thrown.
    * @param actual the actual value
@@ -185,7 +452,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(String actual, String expected, String message) {
+  public static void assertEquals(String actual, String expected, String message) {
     assertEquals((Object) actual, (Object) expected, message);
   }
 
@@ -195,7 +462,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(String actual, String expected) {
+  public static void assertEquals(String actual, String expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -208,7 +475,7 @@ public class Assert {
    * @param delta the absolute tolerable difference between the actual and expected values
    * @param message the assertion error message
    */
-  static public void assertEquals(double actual, double expected, double delta, String message) {
+  public static void assertEquals(double actual, double expected, double delta, String message) {
     // handle infinity specially since subtracting to infinite values gives NaN and the
     // the following test fails
     if(Double.isInfinite(expected)) {
@@ -234,7 +501,7 @@ public class Assert {
    * @param expected the expected value
    * @param delta the absolute tolerable difference between the actual and expected values
    */
-  static public void assertEquals(double actual, double expected, double delta) {
+  public static void assertEquals(double actual, double expected, double delta) {
     assertEquals(actual, expected, delta, null);
   }
 
@@ -247,7 +514,7 @@ public class Assert {
    * @param delta the absolute tolerable difference between the actual and expected values
    * @param message the assertion error message
    */
-  static public void assertEquals(float actual, float expected, float delta, String message) {
+  public static void assertEquals(float actual, float expected, float delta, String message) {
     // handle infinity specially since subtracting to infinite values gives NaN and the
     // the following test fails
     if(Float.isInfinite(expected)) {
@@ -268,7 +535,7 @@ public class Assert {
    * @param expected the expected value
    * @param delta the absolute tolerable difference between the actual and expected values
    */
-  static public void assertEquals(float actual, float expected, float delta) {
+  public static void assertEquals(float actual, float expected, float delta) {
     assertEquals(actual, expected, delta, null);
   }
 
@@ -279,7 +546,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(long actual, long expected, String message) {
+  public static void assertEquals(long actual, long expected, String message) {
     assertEquals(Long.valueOf(actual), Long.valueOf(expected), message);
   }
 
@@ -289,7 +556,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(long actual, long expected) {
+  public static void assertEquals(long actual, long expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -300,7 +567,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(boolean actual, boolean expected, String message) {
+  public static void assertEquals(boolean actual, boolean expected, String message) {
     assertEquals( Boolean.valueOf(actual), Boolean.valueOf(expected), message);
   }
 
@@ -310,7 +577,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(boolean actual, boolean expected) {
+  public static void assertEquals(boolean actual, boolean expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -321,7 +588,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(byte actual, byte expected, String message) {
+  public static void assertEquals(byte actual, byte expected, String message) {
     assertEquals(Byte.valueOf(actual), Byte.valueOf(expected), message);
   }
 
@@ -331,7 +598,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(byte actual, byte expected) {
+  public static void assertEquals(byte actual, byte expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -342,7 +609,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(char actual, char expected, String message) {
+  public static void assertEquals(char actual, char expected, String message) {
     assertEquals(Character.valueOf(actual), Character.valueOf(expected), message);
   }
 
@@ -352,7 +619,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(char actual, char expected) {
+  public static void assertEquals(char actual, char expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -363,7 +630,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(short actual, short expected, String message) {
+  public static void assertEquals(short actual, short expected, String message) {
     assertEquals(Short.valueOf(actual), Short.valueOf(expected), message);
   }
 
@@ -373,7 +640,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(short actual, short expected) {
+  public static void assertEquals(short actual, short expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -384,7 +651,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(int actual,  int expected, String message) {
+  public static void assertEquals(int actual,  int expected, String message) {
     assertEquals(Integer.valueOf(actual), Integer.valueOf(expected), message);
   }
 
@@ -394,7 +661,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(int actual, int expected) {
+  public static void assertEquals(int actual, int expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -403,7 +670,7 @@ public class Assert {
    * an AssertionError is thrown.
    * @param object the assertion object
    */
-  static public void assertNotNull(Object object) {
+  public static void assertNotNull(Object object) {
     assertNotNull(object, null);
   }
 
@@ -413,7 +680,7 @@ public class Assert {
    * @param object the assertion object
    * @param message the assertion error message
    */
-  static public void assertNotNull(Object object, String message) {
+  public static void assertNotNull(Object object, String message) {
     if (object == null) {
       String formatted = "";
       if(message != null) {
@@ -429,7 +696,7 @@ public class Assert {
    * an AssertionError, with the given message, is thrown.
    * @param object the assertion object
    */
-  static public void assertNull(Object object) {
+  public static void assertNull(Object object) {
     assertNull(object, null);
   }
 
@@ -439,7 +706,7 @@ public class Assert {
    * @param object the assertion object
    * @param message the assertion error message
    */
-  static public void assertNull(Object object, String message) {
+  public static void assertNull(Object object, String message) {
     if (object != null) {
       failNotSame(object, null, message);
     }
@@ -452,7 +719,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertSame(Object actual, Object expected, String message) {
+  public static void assertSame(Object actual, Object expected, String message) {
     if(expected == actual) {
       return;
     }
@@ -465,7 +732,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertSame(Object actual, Object expected) {
+  public static void assertSame(Object actual, Object expected) {
     assertSame(actual, expected, null);
   }
 
@@ -476,7 +743,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertNotSame(Object actual, Object expected, String message) {
+  public static void assertNotSame(Object actual, Object expected, String message) {
     if(expected == actual) {
       failSame(actual, expected, message);
     }
@@ -488,7 +755,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertNotSame(Object actual, Object expected) {
+  public static void assertNotSame(Object actual, Object expected) {
     assertNotSame(actual, expected, null);
   }
 
@@ -528,7 +795,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(Collection<?> actual, Collection<?> expected) {
+  public static void assertEquals(Collection<?> actual, Collection<?> expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -539,7 +806,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(Collection<?> actual, Collection<?> expected, String message) {
+  public static void assertEquals(Collection<?> actual, Collection<?> expected, String message) {
     if(actual == expected) {
       return;
     }
@@ -574,7 +841,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(Iterator<?> actual, Iterator<?> expected) {
+  public static void assertEquals(Iterator<?> actual, Iterator<?> expected) {
     assertEquals(actual, expected, null);
   }
   
@@ -585,7 +852,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
+  public static void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
     if(actual == expected) {
       return;
     }
@@ -632,7 +899,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(Iterable<?> actual, Iterable<?> expected) {
+  public static void assertEquals(Iterable<?> actual, Iterable<?> expected) {
     assertEquals(actual, expected, null);
   }
   
@@ -642,7 +909,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(Iterable<?> actual, Iterable<?> expected, String message) {
+  public static void assertEquals(Iterable<?> actual, Iterable<?> expected, String message) {
     if(actual == expected) {
       return;
     }
@@ -671,7 +938,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEquals(Object[] actual, Object[] expected, String message) {
+  public static void assertEquals(Object[] actual, Object[] expected, String message) {
     if(actual == expected) {
       return;
     }
@@ -693,7 +960,7 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  static public void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
+  public static void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
     if(actual == expected) {
       return;
     }
@@ -739,7 +1006,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEquals(Object[] actual, Object[] expected) {
+  public static void assertEquals(Object[] actual, Object[] expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -749,7 +1016,7 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  static public void assertEqualsNoOrder(Object[] actual, Object[] expected) {
+  public static void assertEqualsNoOrder(Object[] actual, Object[] expected) {
     assertEqualsNoOrder(actual, expected, null);
   }
 
@@ -958,7 +1225,7 @@ public class Assert {
     assertNotEquals(actual1, actual2, null);
   }
 
-  static public void assertNotEquals(float actual1, float actual2, float delta, String message) {
+  public static void assertNotEquals(float actual1, float actual2, float delta, String message) {
     boolean fail;
     try {
       Assert.assertEquals(actual1, actual2, delta, message);
@@ -972,11 +1239,11 @@ public class Assert {
     }
   }
 
-  static public void assertNotEquals(float actual1, float actual2, float delta) {
+  public static void assertNotEquals(float actual1, float actual2, float delta) {
     assertNotEquals(actual1, actual2, delta, null);
   }
 
-  static public void assertNotEquals(double actual1, double actual2, double delta, String message) {
+  public static void assertNotEquals(double actual1, double actual2, double delta, String message) {
     boolean fail;
     try {
       Assert.assertEquals(actual1, actual2, delta, message);
@@ -1062,7 +1329,7 @@ public class Assert {
     }
   }
 
-  static public void assertNotEquals(double actual1, double actual2, double delta) {
+  public static void assertNotEquals(double actual1, double actual2, double delta) {
     assertNotEquals(actual1, actual2, delta, null);
   }
 
