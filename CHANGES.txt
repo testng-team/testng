@@ -2,6 +2,7 @@ Current
 Fixed: GITHUB-1493: Wrong exception msg when timeout on test (Krishnan Mahadevan)
 Fixed: GITHUB-328: Attempt to fix unnecessary execution of @Factory-ctors (@beverage & Julien Herr)
 Fixed: GITHUB-1384: Huge performance issue between 6.5.2 and 6.11 (Denis Bazhenov)
+New: Remove Serializable (Julien Herr)
 
 6.12
 Fixed: GITHUB-1484: Remove irrelevant "targets" for TestNG annotations (Krishnan Mahadevan)

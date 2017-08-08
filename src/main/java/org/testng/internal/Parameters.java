@@ -293,22 +293,15 @@ public class Parameters {
     return !("@" + Test.class.getSimpleName()).equalsIgnoreCase(annotation);
   }
 
+  private static final List<Class<?>> INJECTED_TYPES = Arrays.asList(
+      ITestContext.class, ITestResult.class, XmlTest.class, Method.class, Object[].class
+  );
   private static void checkParameterTypes(String methodName,
       Class<?>[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
-    Set<Class> injectedTypes = new HashSet<Class>() {
-      private static final long serialVersionUID = -5324894581793435812L;
-
-    {
-      add(ITestContext.class);
-      add(ITestResult.class);
-      add(XmlTest.class);
-      add(Method.class);
-      add(Object[].class);
-    }};
     for (Class parameterType : parameterTypes) {
-      if (injectedTypes.contains(parameterType)) {
+      if (INJECTED_TYPES.contains(parameterType)) {
         totalLength--;
       }
     }

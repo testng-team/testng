@@ -329,8 +329,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
     System.out.println("[TestHTMLReporter] " + s);
   }
 
-  private static class NameComparator implements Comparator<ITestResult>, Serializable {
-    private static final long serialVersionUID = 381775815838366907L;
+  private static class NameComparator implements Comparator<ITestResult> {
 
     @Override
     public int compare(ITestResult o1, ITestResult o2) {
@@ -341,8 +340,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
 
   }
 
-  private static class ConfigurationComparator implements Comparator<ITestResult>, Serializable {
-    private static final long serialVersionUID = 5558550850685483455L;
+  private static class ConfigurationComparator implements Comparator<ITestResult> {
 
     @Override
     public int compare(ITestResult o1, ITestResult o2) {

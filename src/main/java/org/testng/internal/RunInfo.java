@@ -5,7 +5,6 @@ import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,12 +13,10 @@ import java.util.List;
  * what methods should be run.  It gets invoked by the TestRunner
  * and then goes through its list of method selectors to decide what methods
  * need to be run.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class RunInfo implements Serializable {
-  private static final long serialVersionUID = -9085221672822562888L;
-  transient private List<MethodSelectorDescriptor>
+public class RunInfo {
+
+  private final List<MethodSelectorDescriptor>
     m_methodSelectors = Lists.newArrayList();
 
   public void addMethodSelector(IMethodSelector selector, int priority) {

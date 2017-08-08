@@ -1,7 +1,5 @@
 package org.testng;
 
-import java.io.Serializable;
-
 /**
  * This class represents a test class:
  * <ul>
@@ -15,10 +13,8 @@ import java.io.Serializable;
  * they might differ from what the ITestMethodFinder returned
  * since ITestClass will take into account the groups being
  * included and excluded.
- *
- * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
-public interface ITestClass extends IClass, Serializable {
+public interface ITestClass extends IClass {
 
   /**
    * Returns all the applicable test methods.

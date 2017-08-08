@@ -1,7 +1,6 @@
 package org.testng.xml;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,15 +11,9 @@ import org.testng.reporters.XMLStringBuffer;
 
 /**
  * This class describes the tag <package>  in testng.xml.
- *
- * @author Cedric
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class XmlPackage implements Serializable {
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1996341670354923204L;
+public class XmlPackage {
+
   private String m_name;
   private List<String> m_include = Lists.newArrayList();
   private List<String> m_exclude = Lists.newArrayList();

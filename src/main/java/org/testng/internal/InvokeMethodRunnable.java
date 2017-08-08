@@ -71,9 +71,7 @@ public class InvokeMethodRunnable implements Runnable {
   }
 
   public static class TestNGRuntimeException extends RuntimeException {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = -8619899270785596231L;
 
     public TestNGRuntimeException(Throwable rootCause) {

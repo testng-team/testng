@@ -86,7 +86,7 @@ public class MethodInstanceTest {
   }
 
   public static class XmlClassStub extends XmlClass {
-    private static final long serialVersionUID = 1L;
+
     private int index;
     private String name;
 
@@ -112,7 +112,7 @@ public class MethodInstanceTest {
   }
 
   public static class XmlTestStub extends XmlTest {
-    private static final long serialVersionUID = 1L;
+
     private String name;
 
     public XmlTestStub(String name) {
@@ -126,7 +126,6 @@ public class MethodInstanceTest {
   }
 
   public static class TestClassStub implements ITestClass {
-    private static final long serialVersionUID = 1L;
 
     private XmlTest xmlTest;
     private XmlClass xmlClass;
@@ -156,9 +155,8 @@ public class MethodInstanceTest {
       return null;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public Class getRealClass() {
+    public Class<?> getRealClass() {
       return null;
     }
 
@@ -240,7 +238,7 @@ public class MethodInstanceTest {
   }
 
   public static class TestNGMethodStub implements ITestNGMethod {
-    private static final long serialVersionUID = 1L;
+
     private TestClassStub testClassStub;
     private String methodName;
 
@@ -255,9 +253,8 @@ public class MethodInstanceTest {
       return (TestNGMethodStub) this;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public Class getRealClass() {
+    public Class<?> getRealClass() {
       return null;
     }
 

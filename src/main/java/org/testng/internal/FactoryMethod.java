@@ -26,8 +26,6 @@ import org.testng.xml.XmlTest;
  */
 public class FactoryMethod extends BaseTestMethod {
 
-  private static final long serialVersionUID = -7329918821346197099L;
-
   private final IFactoryAnnotation factoryAnnotation;
   private final Object m_instance;
   private final XmlTest m_xmlTest;

@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -25,10 +24,8 @@ import org.testng.xml.XmlInclude;
  * given in testng.xml.
  *
  * Created on Sep 30, 2005
- * @author cbeust
  */
 public class XmlMethodSelector implements IMethodSelector {
-  private static final long serialVersionUID = -9030548178025605629L;
 
   // Groups included and excluded for this run
   private Map<String, String> m_includedGroups = Maps.newHashMap();
@@ -37,8 +34,8 @@ public class XmlMethodSelector implements IMethodSelector {
   // The BeanShell expression for this test, if any
   private String m_expression = null;
   // List of methods included implicitly
-  private ListMultiMap<String, XmlInclude> m_includedMethods = Maps.newListMultiMap();
-  private IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
+  private final ListMultiMap<String, XmlInclude> m_includedMethods = Maps.newListMultiMap();
+  private final IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
 
   @Override
   public boolean includeMethod(IMethodSelectorContext context,
