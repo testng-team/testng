@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nullable;
+
+import org.testng.DataProviderInformation;
+import org.testng.IDataProviderListener;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -584,15 +587,32 @@ public class Parameters {
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance)
-  {
+      Object fedInstance) {
+    return handleParameters(testMethod, allParameterNames, instance, methodParams, xmlSuite, annotationFinder, fedInstance,
+            Collections.<IDataProviderListener>emptyList());
+  }
+
+  /**
+   * If the method has parameters, fill them in. Either by using a @DataProvider
+   * if any was provided, or by looking up <parameters> in testng.xml
+   * @return An Iterator over the values for each parameter of this
+   * method.
+   */
+  public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
+                                                 Map<String, String> allParameterNames,
+                                                 Object instance,
+                                                 MethodParameters methodParams,
+                                                 XmlSuite xmlSuite,
+                                                 IAnnotationFinder annotationFinder,
+                                                 Object fedInstance,
+                                                 Collection<IDataProviderListener> dataProviderListeners) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
      */
     final DataProviderHolder dataProviderHolder =
-        findDataProvider(instance, testMethod.getTestClass(),
-            testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
+            findDataProvider(instance, testMethod.getTestClass(),
+                    testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
     if (null != dataProviderHolder) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
@@ -601,14 +621,24 @@ public class Parameters {
         String n = "param" + i;
         allParameterNames.put(n, n);
       }
+      DataProviderInformation information = new DataProviderInformation(
+              dataProviderHolder.method, dataProviderHolder.instance);
+
+      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+        dataProviderListener.beforeDataProviderExecution(testMethod, information);
+      }
 
       final Iterator<Object[]> parameters = MethodInvocationHelper.invokeDataProvider(
-          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
-          dataProviderHolder.method,
-          testMethod,
-          methodParams.context,
-          fedInstance,
-          annotationFinder);
+              dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
+              dataProviderHolder.method,
+              testMethod,
+              methodParams.context,
+              fedInstance,
+              annotationFinder);
+
+      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+        dataProviderListener.afterDataProviderExecution(testMethod, information);
+      }
 
       // If the data provider is restricting the indices to return, filter them out
       final List<Integer> allIndices = new ArrayList<>();
@@ -653,7 +683,7 @@ public class Parameters {
       });
 
       return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
-          dataProviderHolder);
+              dataProviderHolder);
     }
     else {
       //
@@ -663,7 +693,7 @@ public class Parameters {
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
       allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
-          methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
+              methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
 
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups

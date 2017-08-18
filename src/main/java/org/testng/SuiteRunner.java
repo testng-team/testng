@@ -49,6 +49,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private List<ITestListener> testListeners = Lists.newArrayList();
   private final  Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners = Maps.newHashMap();
   private ITestRunnerFactory tmpRunnerFactory;
 
   private boolean useDefaultListeners = true;
@@ -137,6 +138,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   {
     init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
         methodInterceptors, invokedMethodListeners, testListeners, classListeners,
+        Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(),
         Systematiser.getComparator());
   }
 
@@ -151,7 +153,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collection<ITestListener> testListeners,
       Collection<IClassListener> classListeners)
   {
-    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners, classListeners, Systematiser.getComparator());
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+            methodInterceptors, invokedMethodListeners, testListeners, classListeners,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(),
+            Systematiser.getComparator());
   }
 
   protected SuiteRunner(IConfiguration configuration,
@@ -164,8 +169,25 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collection<ITestListener> testListeners,
       Collection<IClassListener> classListeners, Comparator<ITestNGMethod> comparator)
   {
+    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+        methodInterceptors, invokedMethodListeners, testListeners, classListeners,
+        Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(), comparator);
+  }
+
+  protected SuiteRunner(IConfiguration configuration,
+                        XmlSuite suite,
+                        String outputDir,
+                        ITestRunnerFactory runnerFactory,
+                        boolean useDefaultListeners,
+                        List<IMethodInterceptor> methodInterceptors,
+                        Collection<IInvokedMethodListener> invokedMethodListeners,
+                        Collection<ITestListener> testListeners,
+                        Collection<IClassListener> classListeners,
+                        Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners,
+                        Comparator<ITestNGMethod> comparator)
+  {
     init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
-        methodInterceptors, invokedMethodListeners, testListeners, classListeners, comparator);
+            methodInterceptors, invokedMethodListeners, testListeners, classListeners, dataProviderListeners, comparator);
   }
 
   private void init(IConfiguration configuration,
@@ -176,7 +198,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     List<IMethodInterceptor> methodInterceptors,
     Collection<IInvokedMethodListener> invokedMethodListener,
     Collection<ITestListener> testListeners,
-    Collection<IClassListener> classListeners, Comparator<ITestNGMethod> comparator) {
+    Collection<IClassListener> classListeners,
+    Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners,
+    Comparator<ITestNGMethod> comparator) {
     this.configuration = configuration;
     xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
@@ -206,6 +230,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         this.classListeners.put(classListener.getClass(), classListener);
       }
     }
+    if (null != dataProviderListeners) {
+      this.dataProviderListeners.putAll(dataProviderListeners);
+    }
     if (comparator == null) {
       throw new IllegalArgumentException("comparator must not be null");
     }
@@ -220,9 +247,17 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       }
     });
 
+    boolean isNewVariant = (iTestRunnerFactory instanceof ITestRunnerFactory2);
+
     for (XmlTest test : xmlTests) {
-      TestRunner tr = iTestRunnerFactory.newTestRunner(this, test, invokedMethodListeners.values(), Lists.newArrayList(
-          this.classListeners.values()));
+      TestRunner tr;
+      if (isNewVariant) {
+        tr = ((ITestRunnerFactory2)iTestRunnerFactory).newTestRunner(this, test, invokedMethodListeners.values(),
+                Lists.newArrayList(this.classListeners.values()), this.dataProviderListeners);
+      }else {
+        tr = iTestRunnerFactory.newTestRunner(this, test, invokedMethodListeners.values(), Lists.newArrayList(
+                this.classListeners.values()));
+      }
 
       //
       // Install the method interceptor, if any was passed
@@ -589,7 +624,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   /**
    * The default implementation of {@link ITestRunnerFactory}.
    */
-  private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
+  private static class DefaultTestRunnerFactory implements ITestRunnerFactory2 {
     private ITestListener[] failureGenerators;
     private boolean useDefaultListeners;
     private boolean skipFailedInvocationCounts;
@@ -611,13 +646,21 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
+      return newTestRunner(suite, test, listeners, classListeners,
+              Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    }
+
+    @Override
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners,
+        Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
       boolean skip = skipFailedInvocationCounts;
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
       }
       TestRunner testRunner = new TestRunner(configuration, suite, test,
-          suite.getOutputDirectory(), suite.getAnnotationFinder(), skip,
-          listeners, classListeners, comparator);
+              suite.getOutputDirectory(), suite.getAnnotationFinder(), skip,
+              listeners, classListeners, comparator, dataProviderListeners);
 
       if (useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -642,7 +685,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-  private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
+  private static class ProxyTestRunnerFactory implements ITestRunnerFactory2 {
     private ITestListener[] failureGenerators;
     private ITestRunnerFactory target;
 
@@ -654,7 +697,20 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
-      TestRunner testRunner= target.newTestRunner(suite, test, listeners, classListeners);
+      return newTestRunner(suite, test, listeners, classListeners,
+              Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    }
+
+    @Override
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+                                    Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners,
+                                    Map<Class<? extends IDataProviderListener>,IDataProviderListener> dataProviderListeners) {
+      TestRunner testRunner;
+      if (target instanceof ITestRunnerFactory2) {
+        testRunner = ((ITestRunnerFactory2)target).newTestRunner(suite, test, listeners, classListeners, dataProviderListeners);
+      } else {
+        testRunner = target.newTestRunner(suite, test, listeners, classListeners);
+      }
 
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
 
