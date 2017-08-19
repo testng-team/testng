@@ -117,6 +117,8 @@ public class XmlMethodSelector implements IMethodSelector {
         }
       }
 
+      boolean noGroupsSpecified = (m_includedGroups.isEmpty() && m_excludedGroups.isEmpty());
+
       if(isTestMethod) {
         //
         // Now filter by method name
@@ -142,14 +144,19 @@ public class XmlMethodSelector implements IMethodSelector {
 
           List<String> includedMethods =
               createQualifiedMethodNames(xmlClass, toStringList(xmlClass.getIncludedMethods()));
-          boolean isIncludedInMethods = isIncluded(fullyQualifiedMethodName, includedMethods);
+          boolean isIncludedInMethods = isIncluded(fullyQualifiedMethodName, includedMethods, noGroupsSpecified);
           List<String> excludedMethods = createQualifiedMethodNames(xmlClass,
               xmlClass.getExcludedMethods());
           boolean isExcludedInMethods = isExcluded(fullyQualifiedMethodName, excludedMethods);
           if (result) {
             // If we're about to include this method by group, make sure
             // it's included by method and not excluded by method
-            result = isIncludedInMethods && ! isExcludedInMethods;
+            if (!xmlClass.getIncludedMethods().isEmpty()) {
+              result = isIncludedInMethods;
+            }
+            if (!xmlClass.getExcludedMethods().isEmpty()) {
+              result = result && !isExcludedInMethods;
+            }
           }
           // otherwise it's already excluded and nothing will bring it back,
           // since exclusions preempt inclusions
@@ -283,6 +290,13 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private static boolean isIncluded(String[] groups, Collection<String> includedGroups) {
+    return isIncluded(groups, includedGroups, false);
+  }
+
+  private static boolean isIncluded(String[] groups, Collection<String> includedGroups, boolean noGroupsSpecified) {
+    if (noGroupsSpecified) {
+      return isMemberOf(groups, includedGroups);
+    }
     if (includedGroups.size() == 0) {
       return true;
     }
