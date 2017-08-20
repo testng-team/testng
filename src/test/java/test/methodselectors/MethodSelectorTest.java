@@ -80,10 +80,6 @@ public class MethodSelectorTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
   }
 
-  public static void ppp(String s) {
-    System.out.println("[MethodSelectorTest] " + s);
-  }
-
   @Test(description = "GITHUB-1507")
   public void testNoMethodsAreExecutedWithNoMatchFound() {
     String className = ClassWithManyMethodsSample.class.getName();
