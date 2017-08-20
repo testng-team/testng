@@ -6,8 +6,8 @@ import java.lang.reflect.Method;
  * Represents information pertaining to a data provider that would be invoked.
  */
 public class DataProviderInformation {
-    private Object instance;
-    private Method method;
+    private final Object instance;
+    private final Method method;
 
     public DataProviderInformation(Method method, Object instance) {
         this.method = method;

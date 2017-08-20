@@ -93,7 +93,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         new ArrayList<IMethodInterceptor>() /* method interceptor */,
         null /* invoked method listeners */,
         null /* test listeners */,
-        null /* class listeners */, comparator);
+        null /* class listeners */, Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(), comparator);
   }
 
   @Deprecated
@@ -117,7 +117,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         new ArrayList<IMethodInterceptor>() /* method interceptor */,
         null /* invoked method listeners */,
         null /* test listeners */,
-        null /* class listeners */, Systematiser.getComparator());
+        null /* class listeners */, Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(), Systematiser.getComparator());
   }
 
   /**
@@ -159,6 +159,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
             Systematiser.getComparator());
   }
 
+  /**
+   * @deprecated - This constructor stands deprecated as of TestNG v6.13.
+   */
+  @Deprecated
+  //There are no external callers for this constructor but for TestNG. But since this method is a protected method
+  //we are following a proper deprecation strategy.
   protected SuiteRunner(IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
@@ -236,7 +242,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (comparator == null) {
       throw new IllegalArgumentException("comparator must not be null");
     }
-    ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
+    ITestRunnerFactory2 iTestRunnerFactory = buildRunnerFactory(comparator);
 
     // Order the <test> tags based on their order of appearance in testng.xml
     List<XmlTest> xmlTests = xmlSuite.getTests();
@@ -247,17 +253,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       }
     });
 
-    boolean isNewVariant = (iTestRunnerFactory instanceof ITestRunnerFactory2);
-
     for (XmlTest test : xmlTests) {
-      TestRunner tr;
-      if (isNewVariant) {
-        tr = ((ITestRunnerFactory2)iTestRunnerFactory).newTestRunner(this, test, invokedMethodListeners.values(),
-                Lists.newArrayList(this.classListeners.values()), this.dataProviderListeners);
-      }else {
-        tr = iTestRunnerFactory.newTestRunner(this, test, invokedMethodListeners.values(), Lists.newArrayList(
-                this.classListeners.values()));
-      }
+      TestRunner tr = iTestRunnerFactory.newTestRunner(this, test, invokedMethodListeners.values(),
+              Lists.newArrayList(this.classListeners.values()), this.dataProviderListeners);
 
       //
       // Install the method interceptor, if any was passed
@@ -314,8 +312,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         : null;
   }
 
-  private ITestRunnerFactory buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
-    ITestRunnerFactory factory;
+  private ITestRunnerFactory2 buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
+    ITestRunnerFactory2 factory;
 
     if (null == tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(configuration,

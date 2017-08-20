@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import test.listeners.github1490.DataProviderInfoProvider;
 
 @Listeners(DataProviderInfoProvider.class)
 public class StaticDataProviderWithListenerAnnotationSample {

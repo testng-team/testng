@@ -1,4 +1,4 @@
-package test.github1490;
+package test.listeners.github1490;
 
 import org.testng.DataProviderInformation;
 import org.testng.IDataProviderListener;
@@ -9,12 +9,12 @@ public class DataProviderInfoProvider implements IDataProviderListener {
     public static DataProviderInformation after;
 
     @Override
-    public void beforeDataProviderExecution(ITestNGMethod method, DataProviderInformation dataProviderInformation) {
+    public void beforeDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method) {
         before = dataProviderInformation;
     }
 
     @Override
-    public void afterDataProviderExecution(ITestNGMethod method, DataProviderInformation dataProviderInformation) {
+    public void afterDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method) {
         after = dataProviderInformation;
     }
 }

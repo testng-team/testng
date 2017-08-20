@@ -1,4 +1,4 @@
-package test.github1490;
+package test.listeners.github1490;
 
 import org.testng.DataProviderInformation;
 import org.testng.IDataProviderListener;
@@ -8,15 +8,15 @@ import org.testng.collections.Lists;
 import java.util.List;
 
 public class LocalDataProviderListener implements IDataProviderListener {
-    static List<String> messages = Lists.newArrayList();
+    public static List<String> messages = Lists.newArrayList();
 
     @Override
-    public void beforeDataProviderExecution(ITestNGMethod method, DataProviderInformation dataProviderInformation) {
+    public void beforeDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method) {
         log(method, "before:");
     }
 
     @Override
-    public void afterDataProviderExecution(ITestNGMethod method, DataProviderInformation dataProviderInformation) {
+    public void afterDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method) {
         log(method, "after:");
     }
 

@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import test.listeners.github1490.LocalDataProviderListener;
 
 @Listeners(SimpleDataProviderWithListenerAnnotationSample1.class)
 public class SimpleDataProviderWithListenerAnnotationSample1 extends LocalDataProviderListener {

@@ -599,13 +599,13 @@ public class Parameters {
    * method.
    */
   public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
-                                                 Map<String, String> allParameterNames,
-                                                 Object instance,
-                                                 MethodParameters methodParams,
-                                                 XmlSuite xmlSuite,
-                                                 IAnnotationFinder annotationFinder,
-                                                 Object fedInstance,
-                                                 Collection<IDataProviderListener> dataProviderListeners) {
+                                                 final Map<String, String> allParameterNames,
+                                                 final Object instance,
+                                                 final MethodParameters methodParams,
+                                                 final XmlSuite xmlSuite,
+                                                 final IAnnotationFinder annotationFinder,
+                                                 final Object fedInstance,
+                                                 final Collection<IDataProviderListener> dataProviderListeners) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
@@ -625,7 +625,7 @@ public class Parameters {
               dataProviderHolder.method, dataProviderHolder.instance);
 
       for (IDataProviderListener dataProviderListener : dataProviderListeners) {
-        dataProviderListener.beforeDataProviderExecution(testMethod, information);
+        dataProviderListener.beforeDataProviderExecution(information, testMethod);
       }
 
       final Iterator<Object[]> parameters = MethodInvocationHelper.invokeDataProvider(
@@ -637,7 +637,7 @@ public class Parameters {
               annotationFinder);
 
       for (IDataProviderListener dataProviderListener : dataProviderListeners) {
-        dataProviderListener.afterDataProviderExecution(testMethod, information);
+        dataProviderListener.afterDataProviderExecution(information, testMethod);
       }
 
       // If the data provider is restricting the indices to return, filter them out

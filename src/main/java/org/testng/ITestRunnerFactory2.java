@@ -20,7 +20,7 @@ public interface ITestRunnerFactory2 extends ITestRunnerFactory {
      * @param dataProviderListeners - A Map of {@link IDataProviderListener} listeners.
      * @return - A {@link TestRunner} object.
      */
-    TestRunner newTestRunner(final ISuite suite, final XmlTest test,
+    TestRunner newTestRunner(ISuite suite, XmlTest test,
                              Collection<IInvokedMethodListener> listeners,
                              List<IClassListener> classListeners,
                              Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners);
