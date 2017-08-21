@@ -41,22 +41,16 @@ public class XmlMethodSelector implements IMethodSelector {
   public boolean includeMethod(IMethodSelectorContext context,
       ITestNGMethod tm, boolean isTestMethod)
   {
-//    ppp("XML METHOD SELECTOR " + tm + " " + m_isInitialized);
 
     if (! m_isInitialized) {
       m_isInitialized = true;
       init(context);
     }
 
-    boolean result = false;
     if (null != m_expression) {
       return m_bsh.includeMethodFromExpression(m_expression, tm);
     }
-    else {
-      result = includeMethodFromIncludeExclude(tm, isTestMethod);
-    }
-
-    return result;
+    return includeMethodFromIncludeExclude(tm, isTestMethod);
   }
 
   private boolean includeMethodFromIncludeExclude(ITestNGMethod tm, boolean isTestMethod) {
@@ -102,31 +96,33 @@ public class XmlMethodSelector implements IMethodSelector {
       // Only add this method if it belongs to an included group and not
       // to an excluded group
       //
-      {
-        boolean isIncludedInGroups = isIncluded(groups, m_includedGroups.values());
-        boolean isExcludedInGroups = isExcluded(groups, m_excludedGroups.values());
+      boolean noGroupsSpecified = false; /* Explicitly disable logic to consider size for groups */
+      boolean isIncludedInGroups = isIncluded(groups, m_includedGroups.values(), noGroupsSpecified);
+      boolean isExcludedInGroups = isExcluded(groups, m_excludedGroups.values());
 
-        //
-        // Calculate the run methods by groups first
-        //
-        if (isIncludedInGroups && !isExcludedInGroups) {
-          result = true;
-        }
-        else if (isExcludedInGroups) {
-          result = false;
-        }
+
+      //
+      // Calculate the run methods by groups first
+      //
+      if (isIncludedInGroups && !isExcludedInGroups) {
+        result = true;
+      } else if (isExcludedInGroups) {
+        result = false;
       }
+
 
       if(isTestMethod) {
         //
         // Now filter by method name
         //
         Class methodClass = method.getDeclaringClass();
-        String fullMethodName =  methodClass.getName()
-                + "."
-                + method.getName();
+        String fullMethodName = methodClass.getName() + "." + method.getName();
 
         String[] fullyQualifiedMethodName = new String[] { fullMethodName };
+
+        //Check if groups was involved or not. If groups was not involved then we should not be
+        // involving the size of the list for evaluation of "isIncluded"
+        noGroupsSpecified = (m_includedGroups.isEmpty() && m_excludedGroups.isEmpty());
 
         //
         // Iterate through all the classes so we can gather all the included and
@@ -136,20 +132,23 @@ public class XmlMethodSelector implements IMethodSelector {
           // Only consider included/excluded methods that belong to the same class
           // we are looking at
           Class cls = xmlClass.getSupportClass();
-          if(!assignable(methodClass, cls)) {
+          if (!assignable(methodClass, cls)) {
             continue;
           }
 
-          List<String> includedMethods =
-              createQualifiedMethodNames(xmlClass, toStringList(xmlClass.getIncludedMethods()));
-          boolean isIncludedInMethods = isIncluded(fullyQualifiedMethodName, includedMethods);
-          List<String> excludedMethods = createQualifiedMethodNames(xmlClass,
-              xmlClass.getExcludedMethods());
+          List<String> includedMethods = createQualifiedMethodNames(xmlClass, toStringList(xmlClass.getIncludedMethods()));
+          boolean isIncludedInMethods = isIncluded(fullyQualifiedMethodName, includedMethods, noGroupsSpecified);
+          List<String> excludedMethods = createQualifiedMethodNames(xmlClass, xmlClass.getExcludedMethods());
           boolean isExcludedInMethods = isExcluded(fullyQualifiedMethodName, excludedMethods);
           if (result) {
             // If we're about to include this method by group, make sure
             // it's included by method and not excluded by method
-            result = isIncludedInMethods && ! isExcludedInMethods;
+            if (!xmlClass.getIncludedMethods().isEmpty()) {
+              result = isIncludedInMethods;
+            }
+            if (!xmlClass.getExcludedMethods().isEmpty()) {
+              result = result && !isExcludedInMethods;
+            }
           }
           // otherwise it's already excluded and nothing will bring it back,
           // since exclusions preempt inclusions
@@ -213,9 +212,8 @@ public class XmlMethodSelector implements IMethodSelector {
 
     while (null != cls) {
       for (String im : methods) {
-        String methodName = im;
         Method[] allMethods = ReflectionHelper.getLocalMethods(cls);
-        Pattern pattern = Pattern.compile(methodName);
+        Pattern pattern = Pattern.compile(im);
         for (Method m : allMethods) {
           if (pattern.matcher(m.getName()).matches()) {
             vResult.add(makeMethodName(m.getDeclaringClass().getName(), m.getName()));
@@ -282,13 +280,11 @@ public class XmlMethodSelector implements IMethodSelector {
     m_includedGroups = includedGroups;
   }
 
-  private static boolean isIncluded(String[] groups, Collection<String> includedGroups) {
-    if (includedGroups.size() == 0) {
-      return true;
-    }
-    else {
+  private static boolean isIncluded(String[] groups, Collection<String> includedGroups, boolean noGroupsSpecified) {
+    if (noGroupsSpecified) {
       return isMemberOf(groups, includedGroups);
     }
+    return (includedGroups.isEmpty() || isMemberOf(groups, includedGroups));
   }
 
   private static boolean isExcluded(String[] groups, Collection<String> excludedGroups) {
@@ -316,10 +312,6 @@ public class XmlMethodSelector implements IMethodSelector {
 
   private static void log(int level, String s) {
     Utils.log("XmlMethodSelector", level, s);
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[XmlMethodSelector] " + s);
   }
 
   public void setExpression(String expression) {
