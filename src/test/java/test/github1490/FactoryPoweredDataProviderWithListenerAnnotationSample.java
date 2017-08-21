@@ -9,7 +9,7 @@ import test.listeners.github1490.LocalDataProviderListener;
 
 @Listeners(LocalDataProviderListener.class)
 public class FactoryPoweredDataProviderWithListenerAnnotationSample {
-    private int i;
+    private final int i;
 
     @Factory(dataProvider = "dp")
     public FactoryPoweredDataProviderWithListenerAnnotationSample(int i) {

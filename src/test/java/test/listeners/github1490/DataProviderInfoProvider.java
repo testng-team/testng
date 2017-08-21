@@ -1,20 +1,21 @@
 package test.listeners.github1490;
 
-import org.testng.DataProviderInformation;
 import org.testng.IDataProviderListener;
+import org.testng.IDataProviderMethod;
+import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 
 public class DataProviderInfoProvider implements IDataProviderListener {
-    public static DataProviderInformation before;
-    public static DataProviderInformation after;
+    public static IDataProviderMethod before;
+    public static IDataProviderMethod after;
 
     @Override
-    public void beforeDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method) {
-        before = dataProviderInformation;
+    public void beforeDataProviderExecution(IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
+        before = dataProviderMethod;
     }
 
     @Override
-    public void afterDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method) {
-        after = dataProviderInformation;
+    public void afterDataProviderExecution(IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
+        after = dataProviderMethod;
     }
 }

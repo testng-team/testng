@@ -7,19 +7,19 @@ public interface IDataProviderListener extends ITestNGListener {
 
     /**
      * This method gets invoked just before a data provider is invoked.
-     *
-     * @param dataProviderInformation - A {@link DataProviderInformation} object that contains details about the
+     * @param dataProviderMethod - A {@link IDataProviderMethod} object that contains details about the
      *                                data provider that is about to be executed.
      * @param method                  - The {@link ITestNGMethod} method that is going to consume the data
- *                                provided by the data provider.
+     * @param iTestContext - The current test context
      */
-    void beforeDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method);
+    void beforeDataProviderExecution(IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext);
 
     /**
      * This method gets invoked just after a data provider is invoked.
-     * @param dataProviderInformation - A {@link DataProviderInformation} object that contains details about the
+     * @param dataProviderMethod - A {@link IDataProviderMethod} object that contains details about the
+     *                                data provider that got executed.
      * @param method             - The {@link ITestNGMethod} method that received the data
- *                           provided by the data provider.
+     * @param iTestContext - The current test context
      */
-    void afterDataProviderExecution(DataProviderInformation dataProviderInformation, ITestNGMethod method);
+    void afterDataProviderExecution(IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext);
 }

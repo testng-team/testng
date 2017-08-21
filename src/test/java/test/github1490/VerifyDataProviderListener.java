@@ -3,7 +3,7 @@ package test.github1490;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.Assert;
-import org.testng.DataProviderInformation;
+import org.testng.IDataProviderMethod;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -11,9 +11,12 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 import test.listeners.github1490.DataProviderInfoProvider;
+import test.listeners.github1490.InstanceAwareLocalDataProviderListener;
 import test.listeners.github1490.LocalDataProviderListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class VerifyDataProviderListener extends SimpleBaseTest {
 
@@ -21,8 +24,8 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     public void testInstanceBasedDataProviderInformation() {
         TestNG tng = create(InstanceBasedDataProviderWithListenerAnnotationSample.class);
         tng.run();
-        DataProviderInformation before = DataProviderInfoProvider.before;
-        DataProviderInformation after = DataProviderInfoProvider.after;
+        IDataProviderMethod before = DataProviderInfoProvider.before;
+        IDataProviderMethod after = DataProviderInfoProvider.after;
         Assert.assertEquals(before, after);
         Assert.assertEquals(before.getInstance(), after.getInstance());
         Assert.assertEquals(before.getMethod().getName(), "getData");
@@ -32,11 +35,40 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     public void testStaticDataProviderInformation() {
         TestNG tng = create(StaticDataProviderWithListenerAnnotationSample.class);
         tng.run();
-        DataProviderInformation before = DataProviderInfoProvider.before;
-        DataProviderInformation after = DataProviderInfoProvider.after;
+        IDataProviderMethod before = DataProviderInfoProvider.before;
+        IDataProviderMethod after = DataProviderInfoProvider.after;
         Assert.assertEquals(before, after);
         Assert.assertNull(before.getInstance());
         Assert.assertEquals(before.getMethod().getName(), "getStaticData");
+    }
+
+    @Test
+    public void testMultipleTestMethodsShareSameDataProvider() {
+        Class<?> clazz = TwoTestMethodsShareSameDataProviderSample.class;
+        runTest(1, clazz);
+        String[] prefixes = {"before", "after"};
+        String[] methods = {"testHowMuchMasterShifuAte", "testHowMuchPoAte"};
+        List<String> expected = new ArrayList<>();
+        for (String prefix : prefixes) {
+            for (String method : methods) {
+                String txt = prefix + ":" + clazz.getName() + "." + method;
+                expected.add(txt);
+            }
+        }
+        assertThat(InstanceAwareLocalDataProviderListener.messages).containsAll(expected);
+    }
+
+    @Test
+    public void testMultipleFactoriesShareSameDataProvider() {
+        Class<?>[] classes = {TwoFactoriesShareSameDataProviderSampleOne.class, TwoFactoriesShareSameDataProviderSampleTwo.class};
+        runTest(0,classes);
+    }
+
+    @Test
+    public void testMultipleMethodsFactoriesShareSampleDataProvider() {
+        Class<?>[] classes = {TwoFactoriesShareSameDataProviderSampleOne.class, TwoFactoriesShareSameDataProviderSampleTwo.class,
+                TwoTestMethodsShareSameDataProviderSampleTwo.class};
+        runTest(1,classes);
     }
 
     @Test
@@ -84,6 +116,7 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
                 .containsExactlyElementsOf(Arrays.asList("before" + prefix, "after" + prefix));
     }
 
+
     @AfterMethod
     public void resetListenerMessages() {
         LocalDataProviderListener.messages.clear();
@@ -109,5 +142,14 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
         assertThat(LocalDataProviderListener.messages)
                 .containsExactlyElementsOf(Arrays.asList("before" + prefix, "after" + prefix));
     }
+
+    private static void runTest(int expected, Class<?>... classes) {
+        TestNG tng = create(classes);
+        tng.addListener(new InstanceAwareLocalDataProviderListener());
+        tng.run();
+        assertThat(InstanceAwareLocalDataProviderListener.instanceCollectionBeforeExecution).size().isEqualTo(expected);
+        assertThat(InstanceAwareLocalDataProviderListener.instanceCollectionAfterExecution).size().isEqualTo(expected);
+    }
+
 
 }
