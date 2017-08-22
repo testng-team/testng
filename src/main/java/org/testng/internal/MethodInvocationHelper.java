@@ -113,6 +113,9 @@ public class MethodInvocationHelper {
       IAnnotationFinder annotationFinder) {
     List<Object> parameters = getParameters(dataProvider, method, testContext, fedInstance, annotationFinder);
     Object result = invokeMethodNoCheckedException(dataProvider, instance, parameters);
+    if (result == null) {
+      throw new TestNGException("Data Provider " + dataProvider + " returned a null value");
+    }
     // If it returns an Object[][] or Object[], convert it to an Iterator<Object[]>
     if (result instanceof Object[][]) {
       return new ArrayIterator((Object[][]) result);
