@@ -229,9 +229,8 @@ public final class ClassHelper {
               //there's no JUnit on the classpath
               throw new TestNGException("Cannot create JUnit runner", ex);
           }
-      } finally {
-        return tr;
       }
+      return tr;
   }
 
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
