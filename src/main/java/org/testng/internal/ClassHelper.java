@@ -413,7 +413,7 @@ public final class ClassHelper {
         }
         catch (NoSuchMethodException ex) {
           ct = declaringClass.getDeclaredConstructor(String.class);
-          parameters = new Object[] { "Default test name" };
+          parameters = new Object[] { xmlTest.getName() };
           // If ct == null here, we'll pass a null
           // constructor to the factory and hope it can deal with it
         }
