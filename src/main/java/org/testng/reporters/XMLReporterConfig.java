@@ -50,11 +50,13 @@ public class XMLReporterConfig {
   public static final String TEST_FAILED = "FAIL";
   public static final String TEST_SKIPPED = "SKIP";
 
-  private static Map<String, Integer> STATUSES = new HashMap<String, Integer>() {{
-    put(TEST_PASSED, ITestResult.SUCCESS);
-    put(TEST_FAILED, ITestResult.FAILURE);
-    put(TEST_SKIPPED, ITestResult.SKIP);
-  }};
+  private static Map<String, Integer> STATUSES = new HashMap<>();
+
+  static {
+    STATUSES.put(TEST_PASSED, ITestResult.SUCCESS);
+    STATUSES.put(TEST_FAILED, ITestResult.FAILURE);
+    STATUSES.put(TEST_SKIPPED, ITestResult.SKIP);
+  }
 
   public static Integer getStatus(String status) {
     return STATUSES.get(status);
