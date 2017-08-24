@@ -892,34 +892,32 @@ public class Invoker implements IInvoker {
                                                 Map<String, String> params,
                                                 Object instance)
   {
-    synchronized(groupMethods) {
-      List<ITestNGMethod> filteredMethods = Lists.newArrayList();
-      String[] groups = currentTestMethod.getGroups();
-      Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
+    List<ITestNGMethod> filteredMethods = Lists.newArrayList();
+    String[] groups = currentTestMethod.getGroups();
+    Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
 
-      for (String group : groups) {
-        List<ITestNGMethod> methods = beforeGroupMap.get(group);
-        if (methods != null) {
-          filteredMethods.addAll(methods);
-        }
+    for (String group : groups) {
+      List<ITestNGMethod> methods = beforeGroupMap.get(group);
+      if (methods != null) {
+        filteredMethods.addAll(methods);
       }
-
-      ITestNGMethod[] beforeMethodsArray = filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
-      //
-      // Invoke the right groups methods
-      //
-      if(beforeMethodsArray.length > 0) {
-        // don't pass the IClass or the instance as the method may be external
-        // the invocation must be similar to @BeforeTest/@BeforeSuite
-        invokeConfigurations(null, beforeMethodsArray, suite, params,
-            /* no parameter values */ null, instance);
-      }
-
-      //
-      // Remove them so they don't get run again
-      //
-      groupMethods.removeBeforeGroups(groups);
     }
+
+    ITestNGMethod[] beforeMethodsArray = filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
+    //
+    // Invoke the right groups methods
+    //
+    if (beforeMethodsArray.length > 0) {
+      // don't pass the IClass or the instance as the method may be external
+      // the invocation must be similar to @BeforeTest/@BeforeSuite
+      invokeConfigurations(null, beforeMethodsArray, suite, params,
+            /* no parameter values */ null, instance);
+    }
+
+    //
+    // Remove them so they don't get run again
+    //
+    groupMethods.removeBeforeGroups(groups);
   }
 
   private void invokeAfterGroupsConfigurations(ITestClass testClass,
@@ -940,45 +938,43 @@ public class Invoker implements IInvoker {
     // it belongs to
     Map<String, String> filteredGroups = Maps.newHashMap();
     String[] groups = currentTestMethod.getGroups();
-    synchronized(groupMethods) {
-      for (String group : groups) {
-        if (groupMethods.isLastMethodForGroup(group, currentTestMethod)) {
-          filteredGroups.put(group, group);
+    for (String group : groups) {
+      if (groupMethods.isLastMethodForGroup(group, currentTestMethod)) {
+        filteredGroups.put(group, group);
+      }
+    }
+
+    if (filteredGroups.isEmpty()) {
+      return;
+    }
+
+    // The list of afterMethods to run
+    Map<ITestNGMethod, ITestNGMethod> afterMethods = Maps.newHashMap();
+
+    // Now filteredGroups contains all the groups for which we need to run the afterGroups
+    // method.  Find all the methods that correspond to these groups and invoke them.
+    Map<String, List<ITestNGMethod>> map = groupMethods.getAfterGroupsMap();
+    for (String g : filteredGroups.values()) {
+      List<ITestNGMethod> methods = map.get(g);
+      // Note:  should put them in a map if we want to make sure the same afterGroups
+      // doesn't get run twice
+      if (methods != null) {
+        for (ITestNGMethod m : methods) {
+          afterMethods.put(m, m);
         }
       }
+    }
 
-      if(filteredGroups.isEmpty()) {
-        return;
-      }
-
-      // The list of afterMethods to run
-      Map<ITestNGMethod, ITestNGMethod> afterMethods = Maps.newHashMap();
-
-      // Now filteredGroups contains all the groups for which we need to run the afterGroups
-      // method.  Find all the methods that correspond to these groups and invoke them.
-      Map<String, List<ITestNGMethod>> map = groupMethods.getAfterGroupsMap();
-      for (String g : filteredGroups.values()) {
-        List<ITestNGMethod> methods = map.get(g);
-        // Note:  should put them in a map if we want to make sure the same afterGroups
-        // doesn't get run twice
-        if (methods != null) {
-          for (ITestNGMethod m : methods) {
-            afterMethods.put(m, m);
-          }
-        }
-      }
-
-      // Got our afterMethods, invoke them
-      ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
-      // don't pass the IClass or the instance as the method may be external
-      // the invocation must be similar to @BeforeTest/@BeforeSuite
-      invokeConfigurations(null, afterMethodsArray, suite, params,
+    // Got our afterMethods, invoke them
+    ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
+    // don't pass the IClass or the instance as the method may be external
+    // the invocation must be similar to @BeforeTest/@BeforeSuite
+    invokeConfigurations(null, afterMethodsArray, suite, params,
           /* no parameter values */ null, instance);
 
-      // Remove the groups so they don't get run again
-      groupMethods.removeAfterGroups(filteredGroups.keySet());
+    // Remove the groups so they don't get run again
+    groupMethods.removeAfterGroups(filteredGroups.keySet());
     }
-  }
 
   private Object[] getParametersFromIndex(Iterator<Object[]> parametersValues, int index) {
     while (parametersValues.hasNext()) {
