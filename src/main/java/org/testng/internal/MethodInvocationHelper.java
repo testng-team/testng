@@ -62,7 +62,7 @@ public class MethodInvocationHelper {
     // TESTNG-326, allow IObjectFactory to load from non-standard classloader
     // If the instance has a different classloader, its class won't match the
     // method's class
-    if (instance == null || !thisMethod.getDeclaringClass().isAssignableFrom(instance.getClass())) {
+    if (instance != null && !thisMethod.getDeclaringClass().isAssignableFrom(instance.getClass())) {
       // for some reason, we can't call this method on this class
       // is it static?
       boolean isStatic = Modifier.isStatic(thisMethod.getModifiers());
@@ -85,9 +85,8 @@ public class MethodInvocationHelper {
           }
           if (!found) {
             // should we assert here? Or just allow it to fail on invocation?
-            if (thisMethod.getDeclaringClass().getName().equals(instance.getClass().getName())) {
-              throw new RuntimeException("Can't invoke method " + thisMethod
-                  + ", probably due to classloader mismatch");
+            if (thisMethod.getDeclaringClass().equals(instance.getClass())) {
+              throw new RuntimeException("Can't invoke method " + thisMethod + ", probably due to classloader mismatch");
             }
             throw new RuntimeException("Can't invoke method " + thisMethod
                 + " on this instance of " + instance.getClass() + " due to class mismatch");

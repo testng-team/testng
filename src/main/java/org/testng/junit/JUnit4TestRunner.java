@@ -134,6 +134,9 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testFailure(Failure failure) throws Exception {
+            if (failure == null) {
+                return;
+            }
             if (isAssumptionFailed(failure)) {
                 this.testAssumptionFailure(failure);
                 return;
@@ -230,9 +233,6 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     }
 
     private static boolean isAssumptionFailed(Failure failure) {
-        if (failure == null) {
-            return false;
-        }
         //noinspection ThrowableResultOfMethodCallIgnored
         final Throwable exception = failure.getException();
         //noinspection SimplifiableIfStatement
