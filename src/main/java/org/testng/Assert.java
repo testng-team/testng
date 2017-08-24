@@ -148,27 +148,24 @@ public class Assert {
       fail("expected not null array, but null found. " + message);
     }
     //is called only when expected is an array
-    if (actual.getClass().isArray()) {
-      int expectedLength = Array.getLength(expected);
-      if (expectedLength == Array.getLength(actual)) {
-         for (int i = 0 ; i < expectedLength ; i++) {
-            Object _actual = Array.get(actual, i);
-            Object _expected = Array.get(expected, i);
-            try {
-               assertEquals(_actual, _expected);
-            } catch (AssertionError ae) {
-               failNotEquals(actual, expected, message == null ? "" : message
-                        + " (values at index " + i + " are not the same)");
-            }
-         }
-         //array values matched
-         return;
-      } else {
-         failNotEquals(Array.getLength(actual), expectedLength, message == null ? "" : message
-                  + " (Array lengths are not the same)");
+    if (!actual.getClass().isArray()) {
+      failNotEquals(actual, expected, message);
+    }
+    int expectedLength = Array.getLength(expected);
+    if (expectedLength != Array.getLength(actual)) {
+      failNotEquals(Array.getLength(actual), expectedLength, message == null ? "" : message
+              + " (Array lengths are not the same)");
+    }
+    for (int i = 0; i < expectedLength; i++) {
+      Object _actual = Array.get(actual, i);
+      Object _expected = Array.get(expected, i);
+      try {
+        assertEquals(_actual, _expected);
+      } catch (AssertionError ae) {
+        failNotEquals(actual, expected, message == null ? "" : message
+                + " (values at index " + i + " are not the same)");
       }
     }
-    failNotEquals(actual, expected, message);
   }
 
   /**
@@ -853,16 +850,16 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
-    if(actual == expected) {
+    if (actual == null && expected == null) {
       return;
     }
-    
     if(actual == null || expected == null) {
-      if(message != null) {
-        fail(message);
-      } else {
-        fail("Iterators not equal: expected: " + expected + " and actual: " + actual);
-      }
+      String msg = message != null ? message : "Iterators not equal: expected: " + expected + " and actual: " + actual;
+      fail(msg);
+    }
+
+    if(actual == expected) {
+      return;
     }
 
     int i = -1;
