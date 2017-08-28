@@ -23,10 +23,10 @@ public class TimeBombSkipException extends SkipException {
   private static final long serialVersionUID = -8599821478834048537L;
 
   private static final String FORMAT = "yyyy/MM/dd";
-  private final SimpleDateFormat SDF= new SimpleDateFormat(FORMAT);
+  private final SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
   private Calendar m_expireDate;
-  private DateFormat m_inFormat= SDF;
-  private DateFormat m_outFormat= SDF;
+  private DateFormat m_inFormat = sdf;
+  private DateFormat m_outFormat = sdf;
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <tt>expirationDate</tt>.
@@ -182,8 +182,6 @@ public class TimeBombSkipException extends SkipException {
 
   private void initExpireDate(String date) {
     try {
-      // SimpleDateFormat is not thread-safe, and m_inFormat 
-      // is, by default, connected to the static SDF variable
       Date d = m_inFormat.parse(date);
       initExpireDate(d);
     }

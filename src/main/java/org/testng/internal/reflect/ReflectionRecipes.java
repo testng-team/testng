@@ -303,9 +303,6 @@ public final class ReflectionRecipes {
       for (final Parameter parameter : parameters) {
         boolean omit = false;
         for (final InjectableParameter injectableParameter : filters) {
-          if (injectableParameter == null) {
-            continue;
-          }
           omit = canInject(parameter, injectableParameter);
           switch (injectableParameter) {
             case CURRENT_TEST_METHOD:
@@ -367,9 +364,6 @@ public final class ReflectionRecipes {
       boolean inject = false;
       Object injectObject = null;
       for (final InjectableParameter injectableParameter : filters) {
-        if (injectableParameter == null) {
-          continue;
-        }
         inject = canInject(parameter, injectableParameter);
         switch (injectableParameter) {
           case CURRENT_TEST_METHOD:
@@ -444,7 +438,7 @@ public final class ReflectionRecipes {
 
   private static boolean canInject(final Parameter parameter, final InjectableParameter injectableParameter) {
     boolean canInject = false;
-    if (parameter != null && injectableParameter != null) {
+    if (parameter != null ) {
       final boolean inject = !parameter.isAnnotationPresent(NoInjection.class);
       switch (injectableParameter) {
         case CURRENT_TEST_METHOD:
