@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1456: Remove/Warn support of constructor with String param (Krishnan Mahadevan)
 Fixed: GITHUB-1509: Improve error message when data provider returns a null value (Krishnan Mahadevan)
 Fixed: GITHUB-1507: TestNG runs all methods when filtering via <include> fails (Krishnan Mahadevan)
 Fixed: GITHUB-1493: Wrong exception msg when timeout on test (Krishnan Mahadevan)
