@@ -4,11 +4,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.testng.IClass;
+import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
@@ -32,22 +34,42 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private final ITestContext m_testContext;
   private final Map<Class<?>, List<Object>> m_instanceMap = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
 
   public TestNGClassFinder(ClassInfoMap cim,
                            XmlTest xmlTest,
                            IConfiguration configuration,
-                           ITestContext testContext)
-  {
-    this(cim,  Maps.<Class<?>, List<Object>>newHashMap(), xmlTest, configuration, testContext);
+                           ITestContext testContext) {
+    this(cim,  xmlTest, configuration, testContext,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+  }
+
+  public TestNGClassFinder(ClassInfoMap cim,
+                           XmlTest xmlTest,
+                           IConfiguration configuration,
+                           ITestContext testContext,
+                           Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
+    this(cim,  Maps.<Class<?>, List<Object>>newHashMap(), xmlTest, configuration, testContext, dataProviderListeners);
+  }
+
+
+  public TestNGClassFinder(ClassInfoMap cim,
+                           Map<Class<?>, List<Object>> instanceMap,
+                           XmlTest xmlTest,
+                           IConfiguration configuration,
+                           ITestContext testContext) {
+    this(cim, instanceMap, xmlTest, configuration, testContext,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
   }
 
   public TestNGClassFinder(ClassInfoMap cim,
                            Map<Class<?>, List<Object>> instanceMap,
                            XmlTest xmlTest,
                            IConfiguration configuration,
-                           ITestContext testContext)
-  {
+                           ITestContext testContext,
+                           Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
     m_testContext = testContext;
+    m_dataProviderListeners = dataProviderListeners;
 
     if (instanceMap == null) {
       throw new IllegalArgumentException("instanceMap must not be null");
@@ -150,7 +172,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                       instance,
                       xmlTest,
                       annotationFinder,
-                      m_testContext, objectFactory);
+                      m_testContext, objectFactory, m_dataProviderListeners);
               ClassInfoMap moreClasses = new ClassInfoMap();
 
               boolean excludeFactory = fm.getGroups().length != 0
@@ -213,7 +235,9 @@ public class TestNGClassFinder extends BaseClassFinder {
         }
       }
     }
+
   }
+
 
   /**
    * @return true if this class contains TestNG annotations (either on itself

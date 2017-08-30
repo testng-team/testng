@@ -2,20 +2,25 @@ package org.testng.internal;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
 import org.testng.IObjectFactory2;
 import org.testng.ITestContext;
 import org.testng.ITestMethodFinder;
+import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -31,10 +36,47 @@ public class FactoryMethod extends BaseTestMethod {
   private final XmlTest m_xmlTest;
   private final ITestContext m_testContext;
   private final ITestObjectFactory objectFactory;
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
 
   public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
                        ITestContext testContext, ITestObjectFactory objectFactory) {
+    this(com, instance, xmlTest, annotationFinder, testContext, objectFactory,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+  }
+
+  private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
+    IListenersAnnotation annotation = annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
+    if (annotation == null) {
+      return;
+    }
+    Class<? extends ITestNGListener>[] listeners = annotation.getValue();
+    for (Class<? extends ITestNGListener> listener : listeners) {
+      if (! IDataProviderListener.class.isAssignableFrom(listener)) {
+        continue;
+      }
+      if (m_dataProviderListeners.containsKey(listener)){
+        continue;
+      }
+
+      if (instance != null && IDataProviderListener.class.isAssignableFrom(instance.getClass())) {
+        m_dataProviderListeners.put((Class<? extends IDataProviderListener>) listener, (IDataProviderListener) instance);
+        continue;
+      }
+
+      Object object = ClassHelper.newInstanceOrNull(listener);
+      if (object != null) {
+        m_dataProviderListeners.put((Class<? extends IDataProviderListener>) listener, (IDataProviderListener) object);
+      }
+    }
+
+  }
+
+  public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
+                       ITestContext testContext, ITestObjectFactory objectFactory,
+                       Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
     super(com.getName(), com, annotationFinder, instance);
+    m_dataProviderListeners = dataProviderListeners;
+    init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
@@ -81,17 +123,19 @@ public class FactoryMethod extends BaseTestMethod {
     List<Object> result = Lists.newArrayList();
 
     Map<String, String> allParameterNames = Maps.newHashMap();
-    Iterator<Object[]> parameterIterator =
-      Parameters.handleParameters(this,
-          allParameterNames,
-          m_instance,
-          new Parameters.MethodParameters(m_xmlTest.getAllParameters(),
-              findMethodParameters(m_xmlTest),
-              null, null, m_testContext,
-              null /* testResult */),
-          m_xmlTest.getSuite(),
-          m_annotationFinder,
-          null /* fedInstance */).parameters;
+    Parameters.MethodParameters methodParameters = new Parameters.MethodParameters(m_xmlTest.getAllParameters(),
+            findMethodParameters(m_xmlTest),
+            null, null, m_testContext,
+            null /* testResult */);
+
+    Iterator<Object[]> parameterIterator = Parameters.handleParameters(this,
+            allParameterNames,
+            m_instance,
+            methodParameters,
+            m_xmlTest.getSuite(),
+            m_annotationFinder,
+            null /* fedInstance */,
+            m_dataProviderListeners.values()).parameters;
 
     try {
       List<Integer> indices = factoryAnnotation.getIndices();
@@ -102,9 +146,7 @@ public class FactoryMethod extends BaseTestMethod {
         if (com.getMethod() != null) {
           Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
           if (indices == null || indices.isEmpty()) {
-            for (Object testInstance : testInstances) {
-              result.add(testInstance);
-            }
+            result.addAll(Arrays.asList(testInstances));
           } else {
             for (Integer index : indices) {
               int i = index - position;

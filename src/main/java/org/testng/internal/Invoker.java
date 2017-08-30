@@ -14,6 +14,7 @@ import org.testng.IClassListener;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IConfigurationListener2;
+import org.testng.IDataProviderListener;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -71,6 +72,7 @@ public class Invoker implements IInvoker {
   private final Collection<IInvokedMethodListener> m_invokedMethodListeners;
   private final boolean m_continueOnFailedConfiguration;
   private final List<IClassListener> m_classListeners;
+  private final Collection<IDataProviderListener> m_dataproviderListeners;
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private Map<String, Boolean> m_beforegroupsFailures = Maps.newHashtable();
@@ -113,7 +115,8 @@ public class Invoker implements IInvoker {
                  SuiteRunState state,
                  boolean skipFailedInvocationCounts,
                  Collection<IInvokedMethodListener> invokedMethodListeners,
-                 List<IClassListener> classListeners) {
+                 List<IClassListener> classListeners,
+                 Collection<IDataProviderListener> dataProviderListeners) {
     m_configuration = configuration;
     m_testContext= testContext;
     m_suiteState= state;
@@ -123,6 +126,7 @@ public class Invoker implements IInvoker {
     m_invokedMethodListeners = invokedMethodListeners;
     m_continueOnFailedConfiguration = testContext.getSuite().getXmlSuite().getConfigFailurePolicy() == XmlSuite.FailurePolicy.CONTINUE;
     m_classListeners = classListeners;
+    m_dataproviderListeners = dataProviderListeners;
   }
 
   /**
@@ -1154,7 +1158,7 @@ public class Invoker implements IInvoker {
 
         try {
           if (bag.parameterHolder.origin == ParameterOrigin.ORIGIN_DATA_PROVIDER &&
-              bag.parameterHolder.dataProviderHolder.annotation.isParallel()) {
+              bag.parameterHolder.dataProviderHolder.isParallel()) {
             List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
             while (allParameterValues.hasNext()) {
               Object[] next = allParameterValues.next();
@@ -1322,7 +1326,7 @@ public class Invoker implements IInvoker {
                 testMethod.getConstructorOrMethod().getMethod(), testContext, testResult),
             suite,
             m_annotationFinder,
-            fedInstance));
+            fedInstance, m_dataproviderListeners));
     }
     catch(Throwable cause) {
       String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
