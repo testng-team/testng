@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nullable;
+
+import org.testng.IDataProviderListener;
+import org.testng.IDataProviderMethod;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -415,10 +418,10 @@ public class Parameters {
     throw new TestNGException("Unsupported type parameter : " + type);
   }
 
-  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+  private static IDataProviderMethod findDataProvider(Object instance, ITestClass clazz,
                                                      ConstructorOrMethod m,
                                                      IAnnotationFinder finder, ITestContext context) {
-    DataProviderHolder result = null;
+    IDataProviderMethod result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
     if (dp != null) {
@@ -476,12 +479,12 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
-                                                     IAnnotationFinder finder,
-                                                     String name, Class<?> dataProviderClass,
-                                                     ITestContext context)
+  private static IDataProviderMethod findDataProvider(Object instance, ITestClass clazz,
+                                                      IAnnotationFinder finder,
+                                                      String name, Class<?> dataProviderClass,
+                                                      ITestContext context)
   {
-    DataProviderHolder result = null;
+    IDataProviderMethod result = null;
 
     Class<?> cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
@@ -512,7 +515,7 @@ public class Parameters {
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderHolder(dp, m, instanceToUse);
+        result = new DataProviderMethod(instanceToUse, m, dp);
       }
     }
 
@@ -584,17 +587,34 @@ public class Parameters {
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance)
-  {
+      Object fedInstance) {
+    return handleParameters(testMethod, allParameterNames, instance, methodParams, xmlSuite, annotationFinder, fedInstance,
+            Collections.<IDataProviderListener>emptyList());
+  }
+
+  /**
+   * If the method has parameters, fill them in. Either by using a @DataProvider
+   * if any was provided, or by looking up <parameters> in testng.xml
+   * @return An Iterator over the values for each parameter of this
+   * method.
+   */
+  public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
+                                                 final Map<String, String> allParameterNames,
+                                                 final Object instance,
+                                                 final MethodParameters methodParams,
+                                                 final XmlSuite xmlSuite,
+                                                 final IAnnotationFinder annotationFinder,
+                                                 final Object fedInstance,
+                                                 final Collection<IDataProviderListener> dataProviderListeners) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
      */
-    final DataProviderHolder dataProviderHolder =
-        findDataProvider(instance, testMethod.getTestClass(),
-            testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
+    final IDataProviderMethod dataProviderMethod =
+            findDataProvider(instance, testMethod.getTestClass(),
+                    testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
-    if (null != dataProviderHolder) {
+    if (null != dataProviderMethod) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {
@@ -602,18 +622,26 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
+      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+        dataProviderListener.beforeDataProviderExecution(dataProviderMethod, testMethod, methodParams.context);
+      }
+
       final Iterator<Object[]> parameters = MethodInvocationHelper.invokeDataProvider(
-          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
-          dataProviderHolder.method,
-          testMethod,
-          methodParams.context,
-          fedInstance,
-          annotationFinder);
+              dataProviderMethod.getInstance(), /* a test instance or null if the dataprovider is static*/
+              dataProviderMethod.getMethod(),
+              testMethod,
+              methodParams.context,
+              fedInstance,
+              annotationFinder);
+
+      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+        dataProviderListener.afterDataProviderExecution(dataProviderMethod, testMethod, methodParams.context);
+      }
 
       // If the data provider is restricting the indices to return, filter them out
       final List<Integer> allIndices = new ArrayList<>();
       allIndices.addAll(testMethod.getInvocationNumbers());
-      allIndices.addAll(dataProviderHolder.annotation.getIndices());
+      allIndices.addAll(dataProviderMethod.getIndices());
 
       final Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
         int index = 0;
@@ -623,7 +651,7 @@ public class Parameters {
         public boolean hasNext() {
           if (index == 0 && !parameters.hasNext() && !hasWarn) {
             hasWarn = true;
-            Utils.log("", 2,  "Warning: the data provider '" + dataProviderHolder.annotation.getName() + "' returned an empty array or iterator, so this test is not doing anything");
+            Utils.log("", 2,  "Warning: the data provider '" + dataProviderMethod.getName() + "' returned an empty array or iterator, so this test is not doing anything");
           }
           return parameters.hasNext();
         }
@@ -652,8 +680,7 @@ public class Parameters {
         }
       });
 
-      return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
-          dataProviderHolder);
+      return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER, dataProviderMethod);
     }
     else {
       //
@@ -663,7 +690,7 @@ public class Parameters {
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
       allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
-          methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
+              methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
 
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups

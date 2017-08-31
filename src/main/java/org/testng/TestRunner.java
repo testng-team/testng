@@ -63,7 +63,7 @@ import com.google.inject.Module;
 public class TestRunner
     implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
 
-  public static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
+  private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
 
   private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
@@ -71,7 +71,6 @@ public class TestRunner
   private String m_testName;
 
   private List<XmlClass> m_testClassesFromXml= null;
-  private List<XmlPackage> m_packageNamesFromXml= null;
 
   private IInvoker m_invoker= null;
   private IAnnotationFinder m_annotationFinder= null;
@@ -81,10 +80,10 @@ public class TestRunner
   private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
 
   private IConfigurationListener m_confListener= new ConfigurationListener();
-  private boolean m_skipFailedInvocationCounts;
 
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -161,6 +160,7 @@ public class TestRunner
                     List<IClassListener> classListeners)
   {
     this.comparator = Systematiser.getComparator();
+    this.m_dataProviderListeners = Collections.emptyMap();
     init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
         invokedMethodListeners, classListeners);
   }
@@ -171,11 +171,13 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners) {
     this.comparator = Systematiser.getComparator();
+    this.m_dataProviderListeners = Collections.emptyMap();
     init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(),
         skipFailedInvocationCounts, invokedMethodListeners, classListeners);
   }
 
+  @Deprecated
   protected TestRunner(IConfiguration configuration,
                     ISuite suite,
                     XmlTest test,
@@ -183,17 +185,35 @@ public class TestRunner
                     IAnnotationFinder finder,
                     boolean skipFailedInvocationCounts,
                     Collection<IInvokedMethodListener> invokedMethodListeners,
-                    List<IClassListener> classListeners, Comparator<ITestNGMethod> comparator) {
-    this.comparator = comparator;
-    init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
-        invokedMethodListeners, classListeners);
+                    List<IClassListener> classListeners,
+                    Comparator<ITestNGMethod> comparator) {
+    this(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
+            invokedMethodListeners, classListeners, comparator,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
   }
+
+  protected TestRunner(IConfiguration configuration,
+                       ISuite suite,
+                       XmlTest test,
+                       String outputDirectory,
+                       IAnnotationFinder finder,
+                       boolean skipFailedInvocationCounts,
+                       Collection<IInvokedMethodListener> invokedMethodListeners,
+                       List<IClassListener> classListeners, Comparator<ITestNGMethod> comparator,
+                       Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
+    this.comparator = comparator;
+    this.m_dataProviderListeners = Maps.newHashMap(dataProviderListeners);
+    init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
+            invokedMethodListeners, classListeners);
+  }
+
 
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners, Comparator<ITestNGMethod> comparator) {
     this.comparator = comparator;
+    this.m_dataProviderListeners = Collections.emptyMap();
     init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(),
         skipFailedInvocationCounts, invokedMethodListeners, classListeners);
@@ -214,7 +234,6 @@ public class TestRunner
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
-    m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     setVerbose(test.getVerbose());
 
 
@@ -222,7 +241,7 @@ public class TestRunner
     m_methodInterceptors = new ArrayList<>();
     builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
 
-    m_packageNamesFromXml= test.getXmlPackages();
+    List<XmlPackage> m_packageNamesFromXml = test.getXmlPackages();
     if(null != m_packageNamesFromXml) {
       for(XmlPackage xp: m_packageNamesFromXml) {
         m_testClassesFromXml.addAll(xp.getXmlClasses());
@@ -236,7 +255,7 @@ public class TestRunner
       m_classListeners.put(classListener.getClass(), classListener);
     }
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
-        m_skipFailedInvocationCounts, invokedMethodListeners, classListeners);
+            skipFailedInvocationCounts, invokedMethodListeners, classListeners, m_dataProviderListeners.values());
 
     if (test.getParallel() != null) {
       log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
@@ -429,7 +448,7 @@ public class TestRunner
     m_testClassFinder= new TestNGClassFinder(classMap,
                                              m_xmlTest,
                                              m_configuration,
-                                             this);
+                                             this, m_dataProviderListeners);
     ITestMethodFinder testMethodFinder
       = new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
 
@@ -1491,6 +1510,10 @@ public class TestRunner
       IExecutionListener iel = (IExecutionListener) listener;
       iel.onExecutionStart();
       m_configuration.addExecutionListener(iel);
+    }
+    if (listener instanceof IDataProviderListener) {
+      IDataProviderListener dataProviderListener = (IDataProviderListener) listener;
+      m_dataProviderListeners.put(dataProviderListener.getClass(), dataProviderListener);
     }
     m_suite.addListener(listener);
   }

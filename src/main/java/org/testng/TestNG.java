@@ -139,6 +139,7 @@ public class TestNG {
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners = Maps.newHashMap();
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners = Maps.newHashMap();
 
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
@@ -765,6 +766,10 @@ public class TestNG {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
       maybeAddListener(m_alterSuiteListeners, alter);
     }
+    if (listener instanceof IDataProviderListener) {
+      IDataProviderListener dataProvider = (IDataProviderListener) listener;
+      maybeAddListener(m_dataProviderListeners, dataProvider);
+    }
   }
 
   /**
@@ -942,8 +947,7 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    m_testListeners.put(ExitCodeListener.class, new ExitCodeListener(this));
-
+    addListener((ITestNGListener) new ExitCodeListener(this));
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
@@ -1397,7 +1401,9 @@ public class TestNG {
         m_methodInterceptors,
         m_invokedMethodListeners.values(),
         m_testListeners.values(),
-        m_classListeners.values(), Systematiser.getComparator());
+        m_classListeners.values(),
+        m_dataProviderListeners,
+        Systematiser.getComparator());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);
