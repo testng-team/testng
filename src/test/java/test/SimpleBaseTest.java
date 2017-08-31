@@ -42,6 +42,16 @@ public class SimpleBaseTest {
   public static InvokedMethodNameListener run(Class<?>... testClasses) {
     TestNG tng = create(testClasses);
 
+    return run(tng);
+  }
+
+  public static InvokedMethodNameListener run(XmlSuite... suites) {
+    TestNG tng = create(suites);
+
+    return run(tng);
+  }
+
+  private static InvokedMethodNameListener run(TestNG tng) {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
 

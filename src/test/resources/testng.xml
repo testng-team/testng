@@ -164,7 +164,8 @@
       <class name="test.github1461.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.factory.github328.GitHub328Test" />
-      <class name="test.github1490.VerifyDataProviderListener"/>
+      <class name="test.github1490.VerifyDataProviderListener"/>      
+      <class name="test.methodselection.MethodSelectionTest"/>
     </classes>
   </test>
 
