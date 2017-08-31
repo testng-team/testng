@@ -947,8 +947,7 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    m_testListeners.put(ExitCodeListener.class, new ExitCodeListener(this));
-
+    addListener((ITestNGListener) new ExitCodeListener(this));
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
