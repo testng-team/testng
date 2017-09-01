@@ -34,15 +34,25 @@ public abstract class BaseClassFinder implements ITestClassFinder {
    * @param cls
    * @return An IClass for the given class, or null if we have
    * already treated this class.
+   * @deprecated - This method stands deprecated as of TestNG v6.13
    */
+  @Deprecated
+  @SuppressWarnings("unused")
   protected IClass findOrCreateIClass(ITestContext context, Class<?> cls, XmlClass xmlClass,
       Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory)
   {
+    return findOrCreateIClass(context, cls, xmlClass, instance, annotationFinder, objectFactory);
+  }
+
+  protected IClass findOrCreateIClass(ITestContext context, Class<?> cls, XmlClass xmlClass,
+                                      Object instance, IAnnotationFinder annotationFinder,
+                                      ITestObjectFactory objectFactory)
+  {
     IClass result = m_classes.get(cls);
     if (null == result) {
-      result = new ClassImpl(context, cls, xmlClass, instance, m_classes, xmlTest, annotationFinder,
-          objectFactory);
+      result = new ClassImpl(context, cls, xmlClass, instance, m_classes, annotationFinder,
+              objectFactory);
       m_classes.put(cls, result);
     }
 
