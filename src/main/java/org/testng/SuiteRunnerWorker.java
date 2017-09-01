@@ -63,9 +63,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
     //
     if (xmlSuite.getVerbose() > 0) {
       SuiteResultCounts counts = new SuiteResultCounts();
-      synchronized (suiteRunnerMap) {
-        counts.calculateResultCounts(xmlSuite, suiteRunnerMap);
-      }
+      counts.calculateResultCounts(xmlSuite, suiteRunnerMap);
 
       StringBuilder bufLog = new StringBuilder("\n===============================================\n")
           .append(xmlSuite.getName());

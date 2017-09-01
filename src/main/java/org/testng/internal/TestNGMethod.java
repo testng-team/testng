@@ -66,10 +66,6 @@ public class TestNGMethod extends BaseTestMethod {
     return true;
   }
 
-  private void ppp(String s) {
-    System.out.println("[TestNGMethod] " + s);
-  }
-
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
     setInvocationNumbers(xmlTest.getInvocationNumbers(

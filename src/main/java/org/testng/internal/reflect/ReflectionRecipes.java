@@ -438,7 +438,7 @@ public final class ReflectionRecipes {
 
   private static boolean canInject(final Parameter parameter, final InjectableParameter injectableParameter) {
     boolean canInject = false;
-    if (parameter != null && injectableParameter != null) {
+    if (parameter != null ) {
       final boolean inject = !parameter.isAnnotationPresent(NoInjection.class);
       switch (injectableParameter) {
         case CURRENT_TEST_METHOD:

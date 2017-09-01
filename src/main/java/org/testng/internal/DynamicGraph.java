@@ -82,9 +82,7 @@ public class DynamicGraph<T> {
       if (existingEdge != null && existingEdge.weight == edge.weight) {
         throw new IllegalStateException("Circular dependency: " + edge.from + " <-> " + edge.to);
       }
-      if (existingEdge == null) {
-        m_edges.put(edge.from, edge);
-      } else if (existingEdge.weight < edge.weight) {
+      if ((existingEdge == null) || (existingEdge.weight < edge.weight)) {
         m_edges.put(edge.from, edge);
       }
       // else: existingEdge.weight > edge.weight and ignore
