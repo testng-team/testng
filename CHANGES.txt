@@ -1,4 +1,5 @@
 Current
+New  : GITHUB-1515: Add an ITestInstance in the model (Krishnan Mahadevan)
 Fixed: GITHUB-1517: TestNG exits with a zero when there are configuration failures (Krishnan Mahadevan)
 New  : GITHUB-1490: Add a listener for data provider interception (Krishnan Mahadevan)
 Fixed: GITHUB-1456: Remove/Warn support of constructor with String param (Krishnan Mahadevan)

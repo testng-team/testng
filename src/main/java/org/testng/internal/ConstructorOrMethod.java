@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import org.testng.IFactoryMethod;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -8,7 +10,7 @@ import java.lang.reflect.Method;
  *
  * @author Cedric Beust <cedric@beust.com>
  */
-public class ConstructorOrMethod {
+public class ConstructorOrMethod implements IFactoryMethod {
 
   private Method m_method;
   private Constructor m_constructor;
@@ -22,22 +24,27 @@ public class ConstructorOrMethod {
     m_constructor = c;
   }
 
+  @Override
   public Class<?> getDeclaringClass() {
     return getMethod() != null ? getMethod().getDeclaringClass() : getConstructor().getDeclaringClass();
   }
 
+  @Override
   public String getName() {
     return getMethod() != null ? getMethod().getName() : getConstructor().getName();
   }
 
+  @Override
   public Class[] getParameterTypes() {
     return getMethod() != null ? getMethod().getParameterTypes() : getConstructor().getParameterTypes();
   }
 
+  @Override
   public Method getMethod() {
     return m_method;
   }
 
+  @Override
   public Constructor getConstructor() {
     return m_constructor;
   }
@@ -77,6 +84,7 @@ public class ConstructorOrMethod {
     m_enabled = enabled;
   }
 
+  @Override
   public boolean getEnabled() {
     return m_enabled;
   }

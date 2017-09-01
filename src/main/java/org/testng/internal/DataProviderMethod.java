@@ -1,9 +1,10 @@
 package org.testng.internal;
 
 import org.testng.IDataProviderMethod;
-import org.testng.ITestContext;
+import org.testng.IFactoryMethod;
 import org.testng.annotations.IDataProviderAnnotation;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -15,11 +16,13 @@ class DataProviderMethod implements IDataProviderMethod {
     private final Object instance;
     private final Method method;
     private final IDataProviderAnnotation annotation;
+    private final IFactoryMethod factoryMethod;
 
-    DataProviderMethod(Object instance, Method method, IDataProviderAnnotation annotation) {
+    DataProviderMethod(Object instance, Method method, IDataProviderAnnotation annotation, IFactoryMethod factoryMethod) {
         this.instance = instance;
         this.method = method;
         this.annotation = annotation;
+        this.factoryMethod = factoryMethod;
     }
 
     @Override
@@ -47,4 +50,8 @@ class DataProviderMethod implements IDataProviderMethod {
         return annotation.getIndices();
     }
 
+    @Override
+    public IFactoryMethod getFactoryMethod() {
+        return factoryMethod;
+    }
 }
