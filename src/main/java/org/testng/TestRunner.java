@@ -445,12 +445,9 @@ public class TestRunner
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
-    m_testClassFinder= new TestNGClassFinder(classMap,
-                                             m_xmlTest,
-                                             m_configuration,
-                                             this, m_dataProviderListeners);
-    ITestMethodFinder testMethodFinder
-      = new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
+    m_testClassFinder= new TestNGClassFinder(classMap,Maps.<Class<?>, List<Object>>newHashMap(),
+                                             m_configuration, this, m_dataProviderListeners);
+    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
 
     m_runInfo.setTestMethods(testMethods);
 

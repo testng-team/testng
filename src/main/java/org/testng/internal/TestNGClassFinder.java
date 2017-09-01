@@ -170,7 +170,6 @@ public class TestNGClassFinder extends BaseClassFinder {
               FactoryMethod fm = new FactoryMethod(
                       factoryMethod,
                       instance,
-                      xmlTest,
                       annotationFinder,
                       m_testContext, objectFactory, m_dataProviderListeners);
               ClassInfoMap moreClasses = new ClassInfoMap();
