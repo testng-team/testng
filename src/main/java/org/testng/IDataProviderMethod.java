@@ -34,4 +34,9 @@ public interface IDataProviderMethod {
      */
     List<Integer> getIndices();
 
+    /**
+     * @return - The {@link IFactoryMethod} to which the data was injected for instantiating an object.
+     */
+    IFactoryMethod getFactoryMethod();
+
 }

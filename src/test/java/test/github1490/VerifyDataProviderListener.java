@@ -3,9 +3,12 @@ package test.github1490;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.Assert;
+import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
+import org.testng.IFactoryMethod;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -19,6 +22,34 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VerifyDataProviderListener extends SimpleBaseTest {
+
+    @Test(dataProvider = "getdata")
+    public void testFactoryMethodRetrieval(Class<?> clazz, String factoryName, IDataProviderListener listener) {
+        TestNG tng = create(clazz);
+        if (listener != null) {
+            tng.addListener(listener);
+        }
+        tng.run();
+        IFactoryMethod factory = DataProviderInfoProvider.before.getFactoryMethod();
+        Assert.assertNotNull(factory);
+        if (factoryName == null) {
+            Assert.assertEquals(factory.getName(), clazz.getName());
+        } else {
+            Assert.assertEquals(factory.getName(), factoryName);
+        }
+        Class<?>[] params = factory.getParameterTypes();
+        Assert.assertEquals(params.length, 1);
+        Assert.assertEquals(params[0], int.class);
+    }
+
+    @DataProvider(name = "getdata")
+    public Object[][] getData() {
+        return new Object[][] {
+                {StaticDataProviderWithListenerAnnotationSample.class, null, null},
+                {FactoryMethodSample.class, "newInstance", null},
+                {SimpleDataProviderWithoutListenerAnnotationSample.class, "testMethod", new DataProviderInfoProvider()},
+        };
+    }
 
     @Test
     public void testInstanceBasedDataProviderInformation() {
