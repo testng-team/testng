@@ -65,8 +65,15 @@ public class XmlMethodSelector implements IMethodSelector {
     ConstructorOrMethod method = tm.getConstructorOrMethod();
     Map<String, String> includedGroups = m_includedGroups;
     Map<String, String> excludedGroups = m_excludedGroups;
-    List<XmlInclude> includeList =
-        m_includedMethods.get(MethodHelper.calculateMethodCanonicalName(tm));
+    String key;
+    boolean hasTestClass = tm.getTestClass() != null;
+    if (hasTestClass) {
+      key = makeMethodName(tm.getTestClass().getRealClass().getName(), method.getName());
+    } else {
+      key = MethodHelper.calculateMethodCanonicalName(tm);
+    }
+    List<XmlInclude> includeList = m_includedMethods.get(key);
+
 
     // No groups were specified:
     if (includedGroups.isEmpty() && excludedGroups.isEmpty()
