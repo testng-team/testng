@@ -700,11 +700,13 @@ public class Invoker implements IInvoker {
     finally {
       // Set end time ASAP
       testResult.setEndMillis(System.currentTimeMillis());
-
       ExpectedExceptionsHolder expectedExceptionClasses
           = new ExpectedExceptionsHolder(m_annotationFinder, tm, new RegexpExpectedExceptionsHolder(m_annotationFinder, tm));
-      List<ITestResult> results = Lists.<ITestResult>newArrayList(testResult);
-      handleInvocationResults(tm, results, expectedExceptionClasses, failureContext);
+      StatusHolder holder = considerExceptions(tm, testResult, expectedExceptionClasses, failureContext);
+
+      // Run invokedMethodListeners after updating TestResult
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+      handleInvocationResults(tm, testResult, expectedExceptionClasses, failureContext, holder);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -721,8 +723,6 @@ public class Invoker implements IInvoker {
       //
       tm.incrementCurrentInvocationCount();
 
-      // Run invokedMethodListeners after updating TestResult
-      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       runTestListeners(testResult);
 
       collectResults(tm, testResult);
@@ -1380,89 +1380,84 @@ public class Invoker implements IInvoker {
     List<Object> instances = Lists.newArrayList();
   }
 
+  private static class StatusHolder {
+    boolean handled = false;
+    int status;
+  }
+
+  private StatusHolder considerExceptions(ITestNGMethod tm, ITestResult testresult, ExpectedExceptionsHolder
+          exceptionsHolder, FailureContext failure) {
+    StatusHolder holder = new StatusHolder();
+    holder.status = testresult.getStatus();
+    holder.handled = false;
+
+    Throwable ite = testresult.getThrowable();
+    if (holder.status == ITestResult.FAILURE && ite != null) {
+
+      //  Invocation caused an exception, see if the method was annotated with @ExpectedException
+      if (exceptionsHolder != null) {
+        if (exceptionsHolder.isExpectedException(ite)) {
+          testresult.setStatus(ITestResult.SUCCESS);
+          holder.status = ITestResult.SUCCESS;
+        } else {
+          if (isSkipExceptionAndSkip(ite)) {
+            holder.status = ITestResult.SKIP;
+          } else {
+            testresult.setThrowable(exceptionsHolder.wrongException(ite));
+            holder.status = ITestResult.FAILURE;
+          }
+        }
+      } else {
+        handleException(ite, tm, testresult, failure.count++);
+        holder.handled = true;
+        holder.status = testresult.getStatus();
+      }
+    } else if (holder.status != ITestResult.SKIP && exceptionsHolder != null) {
+      TestException exception = exceptionsHolder.noException(tm);
+      if (exception != null) {
+        testresult.setThrowable(exception);
+        holder.status = ITestResult.FAILURE;
+      }
+    }
+    return holder;
+  }
+
   void handleInvocationResults(ITestNGMethod testMethod,
-                               List<ITestResult> result,
+                               ITestResult testResult,
                                ExpectedExceptionsHolder expectedExceptionsHolder,
-                               FailureContext failure)
-  {
+                               FailureContext failure,
+                               StatusHolder holder) {
     //
     // Go through all the results and create a TestResult for each of them
     //
     List<ITestResult> resultsToRetry = Lists.newArrayList();
 
-    for (ITestResult testResult : result) {
-      Throwable ite= testResult.getThrowable();
-      int status= testResult.getStatus();
+    Throwable ite = testResult.getThrowable();
+    int status = holder.status;
+    boolean handled = holder.handled;
 
-      boolean handled = false;
+    IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
+    boolean willRetry = retryAnalyzer != null && status == ITestResult.FAILURE && failure.instances != null && retryAnalyzer.retry(testResult);
 
-      // Exception thrown?
-      if (status == ITestResult.FAILURE && ite != null) {
-
-        //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-        if (expectedExceptionsHolder != null) {
-          if (expectedExceptionsHolder.isExpectedException(ite)) {
-            testResult.setStatus(ITestResult.SUCCESS);
-            status = ITestResult.SUCCESS;
-          } else {
-            if (isSkipExceptionAndSkip(ite)){
-              status = ITestResult.SKIP;
-            } else {
-              testResult.setThrowable(expectedExceptionsHolder.wrongException(ite));
-              status = ITestResult.FAILURE;
-            }
-          }
-        } else {
-          handleException(ite, testMethod, testResult, failure.count++);
-          handled = true;
-          status = testResult.getStatus();
-        }
+    if (willRetry) {
+      resultsToRetry.add(testResult);
+      Object instance = testResult.getInstance();
+      if (!failure.instances.contains(instance)) {
+        failure.instances.add(instance);
       }
-
-      // No exception thrown, make sure we weren't expecting one
-      else if(status != ITestResult.SKIP && expectedExceptionsHolder != null) {
-        TestException exception = expectedExceptionsHolder.noException(testMethod);
-        if (exception != null) {
-          testResult.setThrowable(exception);
-          status= ITestResult.FAILURE;
-        }
+      testResult.setStatus(ITestResult.SKIP);
+    } else {
+      testResult.setStatus(status);
+      if (status == ITestResult.FAILURE && !handled) {
+        handleException(ite, testMethod, testResult, failure.count++);
       }
-
-      IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
-      boolean willRetry = retryAnalyzer != null && status == ITestResult.FAILURE && failure.instances != null && retryAnalyzer.retry(testResult);
-
-      if (willRetry) {
-        resultsToRetry.add(testResult);
-        failure.count++;
-        Object instance = testResult.getInstance();
-        if (!failure.instances.contains(instance)) {
-          failure.instances.add(instance);
-        }
-        testResult.setStatus(ITestResult.SKIP);
-      } else {
-        testResult.setStatus(status);
-        if (status == ITestResult.FAILURE && !handled) {
-          handleException(ite, testMethod, testResult, failure.count++);
-        }
-      }
-    } // for results
-
-    removeResultsToRetryFromResult(resultsToRetry, result, failure);
+    }
   }
 
   private boolean isSkipExceptionAndSkip(Throwable ite) {
     return SkipException.class.isAssignableFrom(ite.getClass()) && ((SkipException) ite).isSkip();
   }
 
-  private void removeResultsToRetryFromResult(List<ITestResult> resultsToRetry,
-                                              List<ITestResult> result, FailureContext failure) {
-    if (resultsToRetry != null) {
-      for (ITestResult res : resultsToRetry) {
-        result.remove(res);
-        failure.count--;
-      }
-    }
-  }
 
   /**
    * To reduce thread contention and also to correctly handle thread-confinement
