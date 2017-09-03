@@ -1629,7 +1629,7 @@ public class Invoker implements IInvoker {
                                ITestNGMethod testMethod,
                                ITestResult testResult,
                                int failureCount) {
-    if (throwable != null) {
+    if (throwable != null && testResult.getThrowable() == null) {
       testResult.setThrowable(throwable);
     }
     int successPercentage= testMethod.getSuccessPercentage();
