@@ -1,12 +1,12 @@
 package test.retryAnalyzer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -44,6 +44,6 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
         TestNG tng = create(TestClassSample.class);
         tng.addListener((ITestNGListener)new MyListener());
         tng.run();
-        Assertions.assertThat(TestClassSample.messages).containsExactly("afterInvocation", "retry","afterInvocation");
+        assertThat(TestClassSample.messages).containsExactly("afterInvocation", "retry", "afterInvocation");
     }
 }
