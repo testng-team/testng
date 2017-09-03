@@ -1,6 +1,7 @@
 sudo: false
 language: java
 
+
 env:
   global:
     - GRADLE_OPTS=-Xmx512m
@@ -29,7 +30,9 @@ matrix:
             - oracle-java9-installer
       env: JDK=9
     - jdk: oraclejdk7
+      dist: precise
     - jdk: openjdk7
+      dist: precise
 
 script:
   - ./gradlew check --stacktrace
