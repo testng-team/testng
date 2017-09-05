@@ -279,6 +279,7 @@
       <class name="test.inheritance.testng739.TestNG739"/>
       <class name="test.inheritance.testng234.PolymorphicFailureTest" />
       <class name="test.inheritance.testng471.TestNG471" />
+      <class name="test.inheritance.github980.Github980Test"/>
     </classes>
   </test>
 

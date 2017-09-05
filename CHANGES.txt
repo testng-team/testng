@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-980: TestNG run inherited method twice (Krishnan Mahadevan)
 Fixed: GITHUB-1409: Regression: on expectedExceptionsMessageRegExp expected and actual messages are not printed (Krishnan Mahadevan)
 Fixed: GITHUB-1517: TestNG exits with a zero when there are configuration failures (Krishnan Mahadevan)
 New  : GITHUB-1490: Add a listener for data provider interception (Krishnan Mahadevan)
