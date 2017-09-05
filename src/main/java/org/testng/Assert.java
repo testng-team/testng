@@ -850,16 +850,12 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
-    if (actual == null && expected == null) {
+    if(actual == expected) {
       return;
     }
     if(actual == null || expected == null) {
       String msg = message != null ? message : "Iterators not equal: expected: " + expected + " and actual: " + actual;
       fail(msg);
-    }
-
-    if(actual == expected) {
-      return;
     }
 
     int i = -1;

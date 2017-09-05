@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -1240,7 +1241,7 @@ public class TestNG {
       setStatus(HAS_NO_TEST);
       error("No test suite found. Nothing to run");
       usage();
-      return Lists.newArrayList();
+      return Collections.emptyList();
     }
 
     SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();
