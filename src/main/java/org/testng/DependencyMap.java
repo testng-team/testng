@@ -49,6 +49,13 @@ public class DependencyMap {
 
   public ITestNGMethod getMethodDependingOn(String methodName, ITestNGMethod fromMethod) {
     List<ITestNGMethod> l = m_dependencies.get(methodName);
+    if (l.isEmpty()) {
+      // Try to fetch dependencies by using the test class in the method name.
+      // This is usually needed in scenarios wherein a child class overrides a base class method
+      // So the dependency name needs to be adjusted to use the test class name instead of using the
+      //declared class.
+      l = m_dependencies.get(constructMethodNameUsingTestClass(methodName, fromMethod));
+    }
     if (l.isEmpty() && fromMethod.ignoreMissingDependencies()){
     	return fromMethod;
     }
@@ -65,4 +72,13 @@ public class DependencyMap {
     throw new TestNGException("Method \"" + fromMethod
         + "\" depends on nonexistent method \"" + methodName + "\"");
   }
+
+  private static String constructMethodNameUsingTestClass(String currentMethodName, ITestNGMethod m) {
+    int lastIndex = currentMethodName.lastIndexOf('.');
+    if (lastIndex != -1) {
+      return m.getTestClass().getRealClass().getName() + currentMethodName.substring(lastIndex);
+    }
+    return currentMethodName;
+  }
+
 }

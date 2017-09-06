@@ -65,10 +65,10 @@ public class MethodHelper {
    * @param methods list of methods to search for depended upon methods
    * @return list of methods that match the criteria
    */
-  protected static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m,
-      ITestNGMethod[] methods)
-  {
+  protected static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, ITestNGMethod[] methods) {
+
     String canonicalMethodName = calculateMethodCanonicalName(m);
+
     List<ITestNGMethod> vResult = Lists.newArrayList();
     String regexp = null;
     for (String fullyQualifiedRegexp : m.getMethodsDependedUpon()) {
@@ -77,24 +77,19 @@ public class MethodHelper {
       if (null != fullyQualifiedRegexp) {
         // Escapes $ in regexps as it is not meant for end - line matching, but inner class matches.
         regexp = fullyQualifiedRegexp.replace("$", "\\$");
-        boolean usePackage = regexp.indexOf('.') != -1;
-        Pattern pattern = Pattern.compile(regexp);
-
-        for (ITestNGMethod method : methods) {
-          ConstructorOrMethod thisMethod = method.getConstructorOrMethod();
-          String thisMethodName = thisMethod.getName();
-          String methodName = usePackage ?
-              calculateMethodCanonicalName(method)
-              : thisMethodName;
-          Pair<String, String> cacheKey = Pair.create(regexp, methodName);
-          Boolean match = MATCH_CACHE.get(cacheKey);
-          if (match == null) {
-              match = pattern.matcher(methodName).matches();
-              MATCH_CACHE.put(cacheKey, match);
-          }
-          if (match) {
-            vResult.add(method);
-            foundAtLeastAMethod = true;
+        MatchResults results = matchMethod(methods, regexp);
+        foundAtLeastAMethod = results.foundAtLeastAMethod;
+        vResult.addAll(results.matchedMethods);
+        if (!foundAtLeastAMethod) {
+          //Replace the declaring class name in the dependsOnMethods value with
+          //the fully qualified test class name and retry the method matching.
+          int lastIndex = regexp.lastIndexOf('.');
+          String newMethodName;
+          if (lastIndex != -1) {
+            newMethodName = m.getTestClass().getRealClass().getName()  + regexp.substring(lastIndex);
+            results =  matchMethod(methods, newMethodName);
+            foundAtLeastAMethod = results.foundAtLeastAMethod;
+            vResult.addAll(results.matchedMethods);
           }
         }
       }
@@ -330,5 +325,32 @@ public class MethodHelper {
   protected static long calculateTimeOut(ITestNGMethod tm) {
     long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
     return result;
+  }
+
+  private static MatchResults matchMethod(ITestNGMethod[] methods, String regexp) {
+    MatchResults results = new MatchResults();
+    boolean usePackage = regexp.indexOf('.') != -1;
+    Pattern pattern = Pattern.compile(regexp);
+    for (ITestNGMethod method : methods) {
+      ConstructorOrMethod thisMethod = method.getConstructorOrMethod();
+      String thisMethodName = thisMethod.getName();
+      String methodName = usePackage ? calculateMethodCanonicalName(method) : thisMethodName;
+      Pair<String, String> cacheKey = Pair.create(regexp, methodName);
+      Boolean match = MATCH_CACHE.get(cacheKey);
+      if (match == null) {
+        match = pattern.matcher(methodName).matches();
+        MATCH_CACHE.put(cacheKey, match);
+      }
+      if (match) {
+        results.matchedMethods.add(method);
+        results.foundAtLeastAMethod = true;
+      }
+    }
+    return results;
+  }
+
+  private static class MatchResults {
+    private List<ITestNGMethod> matchedMethods = Lists.newArrayList();
+    private boolean foundAtLeastAMethod = false;
   }
 }
