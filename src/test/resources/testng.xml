@@ -195,6 +195,7 @@
       <class name="test.multiplelisteners.TestMaker" />
       <class name="test.listeners.github1130.GitHub1130Test"/>
       <class name="test.listeners.github1296.GitHub1296Test"/>
+      <class name="test.listeners.github1465.IssueTest"/>
     </classes>
   </test>
 
