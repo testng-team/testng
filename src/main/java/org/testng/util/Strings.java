@@ -1,31 +1,35 @@
 package org.testng.util;
 
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.collections.Pair;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class Strings {
+public final class Strings {
+  private Strings() {
+    //Utility class. Defeat instantiation.
+  }
   public static boolean isNullOrEmpty(String string) {
-    return string == null || string.trim().length() == 0; // string.isEmpty() in Java 6
+    return string == null || string.trim().isEmpty();
   }
 
   public static boolean isNotNullAndNotEmpty(String string) {
     return ! (isNullOrEmpty(string));
   }
 
-  private static List<String> ESCAPE_HTML_LIST = Lists.newArrayList(
-    "&", "&amp;",
-    "<", "&lt;",
-    ">", "&gt;"
+  private static List<Pair<String, String>> ESCAPE_HTML_LIST = Arrays.asList(
+          Pair.create("&", "&amp;"),
+          Pair.create("<", "&lt;"),
+          Pair.create(">", "&gt;")
   );
-  
+
   private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();
 
   static {
-    for (int i = 0; i < ESCAPE_HTML_LIST.size(); i += 2) {
-      ESCAPE_HTML_MAP.put(ESCAPE_HTML_LIST.get(i), ESCAPE_HTML_LIST.get(i + 1));
+    for (Pair<String,String> each : ESCAPE_HTML_LIST) {
+      ESCAPE_HTML_MAP.put(each.first(), each.second());
     }
   }
 
@@ -37,7 +41,4 @@ public class Strings {
     return result;
   }
 
-  public static void main(String[] args) {
-    System.out.println(escapeHtml("10 < 20 && 30 > 20"));
-  }
 }

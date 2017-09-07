@@ -1,45 +1,62 @@
 package test.xml;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
+import java.lang.reflect.Method;
+import java.util.Collections;
 
 public class XmlVerifyTest extends SimpleBaseTest {
+  static {
+    System.setProperty("testng.testmode", "true");
+  }
 
-//  private String getFinalPath(String file) {
-//    File currentDir = new File(".");
-//    String path = currentDir.getAbsolutePath();
-//    char s = File.separatorChar;
-//    String testDir = System.getProperty("test.dir");
-//    System.out.println("[XmlVerifyTest] test.dir:" + testDir);
-//    Assert.assertNotNull(testDir);
-//    path = path + s + testDir + s;
-//    return path + file;
-//  }
+  private static final String COMMAND_LINE_TEST = "<!-- command_line_test -->";
+  private static final String DEFAULT_SUITE = "<!-- Default Suite -->";
 
-  @Test
-  public void simple() {
+  @Test(description = "github-1455")
+  public void testToXmlWithComments() {
+    XmlSuite suite = createSuite();
+    String xml = suite.toXml();
+    assertThat(xml).contains(COMMAND_LINE_TEST);
+    assertThat(xml).contains(DEFAULT_SUITE);
+  }
+
+  @Test(description = "github-1455", dependsOnMethods = "testToXmlWithComments")
+  public void testToXmlWithoutComments() {
+    System.setProperty("testng.xml.weaver", "org.testng.xml.CommentDisabledXmlWeaver");
+    XmlSuite suite = createSuite();
+    String xml = suite.toXml();
+    assertThat(xml).doesNotContain(COMMAND_LINE_TEST);
+    assertThat(xml).doesNotContain(DEFAULT_SUITE);
+  }
+
+  @AfterMethod
+  public void reset(Method method) {
+    if (method.getName().equals("testToXmlWithoutComments")) {
+      System.setProperty("testng.xml.weaver", "org.testng.xml.DefaultXmlWeaver");
+    }
+  }
+
+  private static XmlSuite createSuite() {
     XmlSuite suite = new XmlSuite();
     XmlTest test = new XmlTest(suite);
+    test.setName("command_line_test");
     XmlClass xClass = new XmlClass(XmlVerifyTest.class);
     test.getXmlClasses().add(xClass);
     test.addExcludedGroup("fast");
     test.setVerbose(5);
-
-    suite.toXml();
+    return suite;
   }
 
   @Test(description="Ensure that TestNG stops without running any tests if some class" +
@@ -49,8 +66,8 @@ public class XmlVerifyTest extends SimpleBaseTest {
      try {
         TestNG tng = create();
         String testngXmlPath = getPathToResource("suite1.xml");
-        tng.setTestSuites(Arrays.asList(testngXmlPath));
-        tng.addListener(tla);
+        tng.setTestSuites(Collections.singletonList(testngXmlPath));
+       tng.addListener((ITestNGListener) tla);
         tng.run();
      } catch (TestNGException ex) {
         Assert.assertEquals(tla.getPassedTests().size(), 0);

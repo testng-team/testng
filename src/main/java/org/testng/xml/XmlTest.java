@@ -5,14 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.ParentSetter;
 
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
@@ -177,7 +175,7 @@ public class XmlTest implements Cloneable {
   }
 
   /**
-   * @param v
+   * @param v - Verbosity level.
    */
   public void setVerbose(int v) {
     m_verbose = v;
@@ -351,7 +349,7 @@ public class XmlTest implements Cloneable {
   }
 
   /**
-   * @param parameters
+   * @param parameters - A {@link Map} of parameters.
    */
   public void setParameters(Map<String, String> parameters) {
     m_parameters = parameters;
@@ -423,12 +421,9 @@ public class XmlTest implements Cloneable {
   }
 
   public String getTimeOut() {
-    String result = null;
+    String result = m_suite.getTimeOut();
     if (null != m_timeOut) {
       result = m_timeOut;
-    }
-    else {
-      result = m_suite.getTimeOut();
     }
 
     return result;
@@ -477,189 +472,9 @@ public class XmlTest implements Cloneable {
   }
 
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    Properties p = new Properties();
-    p.setProperty("name", getName());
-    if (m_isJUnit != null) {
-      XmlUtils.setProperty(p, "junit", m_isJUnit.toString(), XmlSuite.DEFAULT_JUNIT.toString());
-    }
-    if (m_parallel != null) {
-      XmlUtils.setProperty(p, "parallel", m_parallel.toString(), XmlSuite.DEFAULT_PARALLEL.toString());
-    }
-    if (m_verbose != null) {
-      XmlUtils.setProperty(p, "verbose", m_verbose.toString(), XmlSuite.DEFAULT_VERBOSE.toString());
-    }
-    if (null != m_timeOut) {
-      p.setProperty("time-out", m_timeOut.toString());
-    }
-    if (m_preserveOrder != null && ! XmlSuite.DEFAULT_PRESERVE_ORDER.equals(m_preserveOrder)) {
-      p.setProperty("preserve-order", m_preserveOrder.toString());
-    }
-    if (m_threadCount != -1) {
-      p.setProperty("thread-count", Integer.toString(m_threadCount));
-    }
-    if (m_groupByInstances != null) {
-      XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
-          XmlSuite.DEFAULT_GROUP_BY_INSTANCES.toString());
-    }
-
-    xsb.push("test", p);
-
-
-    if (null != getMethodSelectors() && !getMethodSelectors().isEmpty()) {
-      xsb.push("method-selectors");
-      for (XmlMethodSelector selector: getMethodSelectors()) {
-        xsb.getStringBuffer().append(selector.toXml(indent + "    "));
-      }
-
-      xsb.pop("method-selectors");
-    }
-
-    XmlUtils.dumpParameters(xsb, m_parameters);
-
-    // groups
-    if ((m_xmlGroups != null &&
-            (!m_xmlGroups.getDefines().isEmpty() ||
-            (m_xmlGroups.getRun() != null && (!m_xmlGroups.getRun().getIncludes().isEmpty() || !m_xmlGroups.getRun().getExcludes().isEmpty()))
-            )
-        ) || !m_xmlDependencyGroups.isEmpty()) {
-      xsb.push("groups");
-
-      // define
-      if (m_xmlGroups != null) {
-        for (XmlDefine define : m_xmlGroups.getDefines()) {
-          Properties metaGroupProp = new Properties();
-          metaGroupProp.setProperty("name", define.getName());
-
-          xsb.push("define", metaGroupProp);
-
-          for (String groupName : define.getIncludes()) {
-            Properties includeProps = new Properties();
-            includeProps.setProperty("name", groupName);
-
-            xsb.addEmptyElement("include", includeProps);
-          }
-
-          xsb.pop("define");
-        }
-      }
-
-      // run
-      if ((m_xmlGroups != null && m_xmlGroups.getRun() != null) && (!m_xmlGroups.getRun().getIncludes().isEmpty() || !m_xmlGroups.getRun().getExcludes().isEmpty())) {
-        xsb.push("run");
-
-        for (String includeGroupName: m_xmlGroups.getRun().getIncludes()) {
-          Properties includeProps = new Properties();
-          includeProps.setProperty("name", includeGroupName);
-
-          xsb.addEmptyElement("include", includeProps);
-        }
-
-        for (String excludeGroupName : m_xmlGroups.getRun().getExcludes()) {
-          Properties excludeProps = new Properties();
-          excludeProps.setProperty("name", excludeGroupName);
-
-          xsb.addEmptyElement("exclude", excludeProps);
-        }
-
-        xsb.pop("run");
-      }
-
-      // group dependencies
-      if (m_xmlDependencyGroups != null && ! m_xmlDependencyGroups.isEmpty()) {
-        xsb.push("dependencies");
-        for (Map.Entry<String, String> entry : m_xmlDependencyGroups.entrySet()) {
-          xsb.addEmptyElement("group", "name", entry.getKey(), "depends-on", entry.getValue());
-        }
-        xsb.pop("dependencies");
-      }
-
-      xsb.pop("groups");
-    }
-
-    if (null != m_xmlPackages && !m_xmlPackages.isEmpty()) {
-      xsb.push("packages");
-
-      for (XmlPackage pack: m_xmlPackages) {
-        xsb.getStringBuffer().append(pack.toXml("      "));
-      }
-
-      xsb.pop("packages");
-    }
-
-    // classes
-    if (null != getXmlClasses() && !getXmlClasses().isEmpty()) {
-      xsb.push("classes");
-      for (XmlClass cls : getXmlClasses()) {
-        xsb.getStringBuffer().append(cls.toXml(indent + "    "));
-      }
-      xsb.pop("classes");
-    }
-
-    xsb.pop("test");
-
-    return xsb.toXML();
+    return XmlWeaver.asXml(this, indent);
   }
 
-  @Override
-  public String toString() {
-    StringBuilder result = new StringBuilder("[Test: \"")
-            .append(m_name)
-            .append("\"")
-            .append(" verbose:")
-            .append(m_verbose);
-
-    result.append("[parameters:");
-    for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
-      result.append(entry.getKey()).append("=>").append(entry.getValue()).append(",");
-    }
-
-    result.append("]");
-    result.append("[metagroups:");
-    if (m_xmlGroups != null) {
-      for (XmlDefine define : m_xmlGroups.getDefines()) {
-        result.append(define.getName()).append("=");
-        for (String n : define.getIncludes()) {
-          result.append(n).append(",");
-        }
-      }
-    }
-    result.append("] ");
-
-    result.append("[included: ");
-    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
-      for (String g : m_xmlGroups.getRun().getIncludes()) {
-        result.append(g).append(" ");
-      }
-    }
-    result.append("]");
-
-    result.append("[excluded: ");
-    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
-      for (String g : m_xmlGroups.getRun().getExcludes()) {
-        result.append(g).append(" ");
-      }
-    }
-    result.append("] ");
-
-    result.append(" classes:");
-    for (XmlClass cl : m_xmlClasses) {
-      result.append(cl).append(" ");
-    }
-
-    result.append(" packages:");
-    for (XmlPackage p : m_xmlPackages) {
-      result.append(p).append(" ");
-    }
-
-    result.append("] ");
-
-    return result.toString();
-  }
-
-  static void ppp(String s) {
-    System.out.println("[XmlTest] " + s);
-  }
 
   /**
    * Clone the <TT>source</TT> <CODE>XmlTest</CODE> by including:
@@ -934,4 +749,7 @@ public class XmlTest implements Cloneable {
     m_xmlGroups = xmlGroups;
   }
 
+  public XmlGroups getXmlGroups() {
+    return m_xmlGroups;
+  }
 }

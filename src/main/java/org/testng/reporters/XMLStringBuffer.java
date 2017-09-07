@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  */
 public class XMLStringBuffer {
   /** End of line, value of 'line.separator' system property or '\n' */
-  private static final String EOL = System.getProperty("line.separator", "\n");
+  public static final String EOL = System.getProperty("line.separator", "\n");
 
   /** Tab space indent for XML document */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
@@ -27,6 +27,8 @@ public class XMLStringBuffer {
 
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
+
+  private String defaultComment = null;
 
   public XMLStringBuffer() {
     init(Buffer.create(), "", "1.0", "UTF-8");
@@ -178,8 +180,12 @@ public class XMLStringBuffer {
             "Popping the wrong tag: " + t.tagName + " but expected " + tagName);
       }
     }
-    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName,
-        XMLUtils.extractComment(tagName, t.properties));
+
+    String comment = defaultComment;
+    if (comment == null) {
+        comment = XMLUtils.extractComment(tagName, t.properties);
+    }
+      XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName, comment);
   }
 
   /**
@@ -291,7 +297,11 @@ public class XMLStringBuffer {
     m_buffer.append(s);
   }
 
-  private static void ppp(String s) {
+    public void setDefaultComment(String defaultComment) {
+        this.defaultComment = defaultComment;
+    }
+
+    private static void ppp(String s) {
     System.out.println("[XMLStringBuffer] " + s);
   }
 
@@ -339,25 +349,6 @@ public class XMLStringBuffer {
     return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
   }
 
-  public static void main(String[] argv) {
-    IBuffer result = Buffer.create();
-    XMLStringBuffer sb = new XMLStringBuffer(result, "");
-
-    sb.push("family");
-    Properties p = new Properties();
-    p.setProperty("prop1", "value1");
-    p.setProperty("prop2", "value2");
-    sb.addRequired("cedric", "true", p);
-    sb.addRequired("alois", "true");
-    sb.addOptional("anne-marie", (String) null);
-    sb.pop();
-
-    System.out.println(result.toString());
-
-    assert ("<family>" + EOL + "<cedric>true</cedric>" + EOL + "<alois>true</alois>" + EOL + "</family>"  + EOL)
-      .equals(result.toString());
-  }
-
   public String getCurrentIndent() {
     return m_currentIndent;
   }
@@ -366,7 +357,6 @@ public class XMLStringBuffer {
     m_buffer.toWriter(fw);
   }
 }
-
 
 ////////////////////////
 

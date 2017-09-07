@@ -3,7 +3,6 @@ package org.testng.xml;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.testng.ITestObjectFactory;
@@ -11,13 +10,10 @@ import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
-import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
 import org.testng.xml.dom.Tag;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-import static org.testng.internal.Utils.isStringNotEmpty;
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
@@ -43,12 +39,12 @@ public class XmlSuite implements Cloneable {
 
     public static XmlSuite.ParallelMode getValidParallel(String parallel) {
       if (parallel == null) {
-        return null;
+        return ParallelMode.NONE;
       }
       try {
         return XmlSuite.ParallelMode.valueOf(parallel.toUpperCase());
       } catch (IllegalArgumentException e) {
-        return null;
+        return ParallelMode.NONE;
       }
     }
 
@@ -519,116 +515,11 @@ public class XmlSuite implements Cloneable {
    * @return A String representation of this XML suite.
    */
   public String toXml() {
-    XMLStringBuffer xsb = new XMLStringBuffer();
-    xsb.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
-    Properties p = new Properties();
-    p.setProperty("name", getName());
-    if (getVerbose() != null) {
-      XmlUtils.setProperty(p, "verbose", getVerbose().toString(), DEFAULT_VERBOSE.toString());
-    }
-    final ParallelMode parallel= getParallel();
-    if(parallel != null && !DEFAULT_PARALLEL.equals(parallel)) {
-      p.setProperty("parallel", parallel.toString());
-    }
-    XmlUtils.setProperty(p, "group-by-instances", String.valueOf(getGroupByInstances()),
-        DEFAULT_GROUP_BY_INSTANCES.toString());
-    XmlUtils.setProperty(p, "configfailurepolicy", getConfigFailurePolicy().toString(),
-        DEFAULT_CONFIG_FAILURE_POLICY.toString());
-    XmlUtils.setProperty(p, "thread-count", String.valueOf(getThreadCount()),
-        DEFAULT_THREAD_COUNT.toString());
-    XmlUtils.setProperty(p, "data-provider-thread-count", String.valueOf(getDataProviderThreadCount()),
-        DEFAULT_DATA_PROVIDER_THREAD_COUNT.toString());
-    if (! DEFAULT_JUNIT.equals(m_isJUnit)) {
-      p.setProperty("junit", m_isJUnit != null ? m_isJUnit.toString() : "false"); // TESTNG-141
-    }
-    XmlUtils.setProperty(p, "skipfailedinvocationcounts", m_skipFailedInvocationCounts.toString(),
-        DEFAULT_SKIP_FAILED_INVOCATION_COUNTS.toString());
-    if(null != m_objectFactory) {
-      p.setProperty("object-factory", m_objectFactory.getClass().getName());
-    }
-    if (isStringNotEmpty(m_parentModule)) {
-      p.setProperty("parent-module", getParentModule());
-    }
-    if (isStringNotEmpty(m_guiceStage)) {
-      p.setProperty("guice-stage", getGuiceStage());
-    }
-    XmlUtils.setProperty(p, "allow-return-values", String.valueOf(getAllowReturnValues()),
-        DEFAULT_ALLOW_RETURN_VALUES.toString());
-    xsb.push("suite", p);
+    return XmlWeaver.asXml(this);
+  }
 
-    XmlUtils.dumpParameters(xsb, m_parameters);
-
-    if (hasElements(m_listeners)) {
-      xsb.push("listeners");
-      for (String listenerName: m_listeners) {
-        Properties listenerProps = new Properties();
-        listenerProps.setProperty("class-name", listenerName);
-        xsb.addEmptyElement("listener", listenerProps);
-      }
-      xsb.pop("listeners");
-    }
-
-    if (hasElements(getXmlPackages())) {
-      xsb.push("packages");
-
-      for (XmlPackage pack : getXmlPackages()) {
-        xsb.getStringBuffer().append(pack.toXml("    "));
-      }
-
-      xsb.pop("packages");
-    }
-
-    if (getXmlMethodSelectors() != null) {
-      xsb.getStringBuffer().append(getXmlMethodSelectors().toXml("  "));
-    } else {
-      // deprecated
-      if (hasElements(getMethodSelectors())) {
-        xsb.push("method-selectors");
-        for (XmlMethodSelector selector : getMethodSelectors()) {
-          xsb.getStringBuffer().append(selector.toXml("  "));
-        }
-
-        xsb.pop("method-selectors");
-      }
-    }
-
-    List<String> suiteFiles = getSuiteFiles();
-    if (suiteFiles.size() > 0) {
-      xsb.push("suite-files");
-      for (String sf : suiteFiles) {
-        Properties prop = new Properties();
-        prop.setProperty("path", sf);
-        xsb.addEmptyElement("suite-file", prop);
-      }
-      xsb.pop("suite-files");
-    }
-
-    List<String> included = getIncludedGroups();
-    List<String> excluded = getExcludedGroups();
-    if (hasElements(included) || hasElements(excluded)) {
-      xsb.push("groups");
-      xsb.push("run");
-      for (String g : included) {
-        xsb.addEmptyElement("include", "name", g);
-      }
-      for (String g : excluded) {
-        xsb.addEmptyElement("exclude", "name", g);
-      }
-      xsb.pop("run");
-      xsb.pop("groups");
-    }
-
-    if (m_xmlGroups != null) {
-      xsb.getStringBuffer().append(m_xmlGroups.toXml("  "));
-    }
-
-    for (XmlTest test : getTests()) {
-      xsb.getStringBuffer().append(test.toXml("  "));
-    }
-
-    xsb.pop("suite");
-
-    return xsb.toXML();
+  public List<String> getListenersList() {
+    return m_listeners;
   }
 
   @Tag(name = "method-selectors")
@@ -636,7 +527,7 @@ public class XmlSuite implements Cloneable {
     m_xmlMethodSelectors = xms;
   }
 
-  private XmlMethodSelectors getXmlMethodSelectors() {
+  public XmlMethodSelectors getXmlMethodSelectors() {
     return m_xmlMethodSelectors;
   }
 
