@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ExampleClassListener implements IInvokedMethodListener {
-    List<String> messages = new LinkedList<>();
-    List<String> configMsgs = new LinkedList<>();
+    final List<String> messages = new LinkedList<>();
+    final List<String> configMsgs = new LinkedList<>();
 
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
@@ -46,18 +46,20 @@ public class ExampleClassListener implements IInvokedMethodListener {
 
     private static String parameters(ITestResult testResult) {
         Object[] parameters = testResult.getParameters();
-        if (parameters != null) {
-            StringBuilder builder = new StringBuilder();
-            for (Object parameter : parameters) {
-                if (parameter instanceof Method) {
-                    builder.append(((Method) parameter).getName());
-                }
-            }
-            if (builder.length() != 0) {
-                return "[" + builder.toString() + "]";
+        if (parameters == null) {
+            return "";
+        }
+        String returnValue = "";
+        StringBuilder builder = new StringBuilder();
+        for (Object parameter : parameters) {
+            if (parameter instanceof Method) {
+                builder.append(((Method) parameter).getName());
             }
         }
-        return "";
+        if (builder.length() != 0) {
+            returnValue =  "[" + builder.toString() + "]";
+        }
+        return returnValue;
 
     }
 }

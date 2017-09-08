@@ -18,13 +18,11 @@ public class IssueTest extends SimpleBaseTest {
         ExampleClassListener listener = new ExampleClassListener();
         testNG.addListener((ITestNGListener) listener);
         testNG.run();
-        assertThat(listener.messages.size()).isEqualTo(4);
         String[] expected = new String[]{
                 "beforeInvocation:_test_method: test1", "afterInvocation:_test_method: test1",
                 "beforeInvocation:_test_method: test2", "afterInvocation:_test_method: test2"
         };
         assertThat(listener.messages).containsExactly(expected);
-        assertThat(listener.configMsgs.size()).isEqualTo(expectedMsgs.length);
         assertThat(listener.configMsgs).containsExactly(expectedMsgs);
     }
 
