@@ -263,6 +263,9 @@ public class TestNG {
 
   private void parseSuiteFiles() {
     for (XmlSuite s : m_suites) {
+      if (s.isParsed()) {
+        continue;
+      }
       for (String suiteFile : s.getSuiteFiles()) {
         try {
           Collection<XmlSuite> childSuites;
