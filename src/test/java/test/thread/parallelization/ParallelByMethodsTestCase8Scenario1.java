@@ -1,6 +1,5 @@
 package test.thread.parallelization;
 
-import com.google.common.collect.Multimap;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
@@ -8,18 +7,12 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import test.thread.parallelization.sample.FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassCSixMethodsWithFactoryUsingDataProviderAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassCSixMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassDThreeMethodsWithFactoryUsingDataProviderAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassDThreeMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassEFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassFSixMethodsWithFactoryUsingDataProviderAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassFSixMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassGThreeMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassHFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassIFiveMethodsWithNoDepsSample;
@@ -30,7 +23,6 @@ import test.thread.parallelization.sample.TestClassMFourMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassNFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassOSixMethodsWithNoDepsSample;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +43,6 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEven
 import static test.thread.parallelization.TestNgRunStateTracker.getTestLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerFinishEventLog;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestListenerStartEventLog;
-import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;

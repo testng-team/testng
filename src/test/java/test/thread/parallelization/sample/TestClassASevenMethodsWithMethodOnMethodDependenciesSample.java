@@ -16,7 +16,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
-public class TestClassHFourMethodsWithNoDepsSample {
+public class TestClassASevenMethodsWithMethodOnMethodDependenciesSample {
     @Parameters({ "suiteName", "testName", "sleepFor" })
     @Test
     public void testMethodA(String suiteName, String testName, String sleepFor) throws InterruptedException {
@@ -42,7 +42,7 @@ public class TestClassHFourMethodsWithNoDepsSample {
     }
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
-    @Test
+    @Test(dependsOnMethods = "testMethodA")
     public void testMethodB(String suiteName, String testName, String sleepFor) throws InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -57,7 +57,7 @@ public class TestClassHFourMethodsWithNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(GROUPS_DEPENDED_ON, new String[0])
-                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[]{this.getClass().getCanonicalName() + ".testMethodA"})
                         .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );
@@ -66,7 +66,7 @@ public class TestClassHFourMethodsWithNoDepsSample {
     }
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
-    @Test
+    @Test(dependsOnMethods = "testMethodB")
     public void testMethodC(String suiteName, String testName, String sleepFor) throws InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -81,7 +81,7 @@ public class TestClassHFourMethodsWithNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(GROUPS_DEPENDED_ON, new String[0])
-                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[]{this.getClass().getCanonicalName() + ".testMethodB"})
                         .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );
@@ -90,7 +90,7 @@ public class TestClassHFourMethodsWithNoDepsSample {
     }
 
     @Parameters({ "suiteName", "testName", "sleepFor" })
-    @Test
+    @Test(dependsOnMethods = "testMethodC")
     public void testMethodD(String suiteName, String testName, String sleepFor) throws InterruptedException {
         long time = System.currentTimeMillis();
 
@@ -105,7 +105,79 @@ public class TestClassHFourMethodsWithNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(GROUPS_DEPENDED_ON, new String[0])
-                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[]{this.getClass().getCanonicalName() + ".testMethodC"})
+                        .addData(GROUPS_BELONGING_TO, new String[0])
+                        .build()
+        );
+
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+    }
+
+    @Parameters({ "suiteName", "testName", "sleepFor" })
+    @Test(dependsOnMethods = "testMethodC")
+    public void testMethodE(String suiteName, String testName, String sleepFor) throws InterruptedException {
+        long time = System.currentTimeMillis();
+
+        TestNgRunStateTracker.logEvent(
+                TestNgRunStateTracker.EventLog.builder()
+                        .setEvent(TEST_METHOD_EXECUTION)
+                        .setTimeOfEvent(time)
+                        .setThread(Thread.currentThread())
+                        .addData(METHOD_NAME, "testMethodE")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[]{this.getClass().getCanonicalName() + ".testMethodC"})
+                        .addData(GROUPS_BELONGING_TO, new String[0])
+                        .build()
+        );
+
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+    }
+
+    @Parameters({ "suiteName", "testName", "sleepFor" })
+    @Test(dependsOnMethods = "testMethodC")
+    public void testMethodF(String suiteName, String testName, String sleepFor) throws InterruptedException {
+        long time = System.currentTimeMillis();
+
+        TestNgRunStateTracker.logEvent(
+                TestNgRunStateTracker.EventLog.builder()
+                        .setEvent(TEST_METHOD_EXECUTION)
+                        .setTimeOfEvent(time)
+                        .setThread(Thread.currentThread())
+                        .addData(METHOD_NAME, "testMethodF")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[]{this.getClass().getCanonicalName() + ".testMethodC"})
+                        .addData(GROUPS_BELONGING_TO, new String[0])
+                        .build()
+        );
+
+        TimeUnit.MILLISECONDS.sleep(Integer.parseInt(sleepFor));
+    }
+
+    @Parameters({ "suiteName", "testName", "sleepFor" })
+    @Test(dependsOnMethods = "testMethodC")
+    public void testMethodG(String suiteName, String testName, String sleepFor) throws InterruptedException {
+        long time = System.currentTimeMillis();
+
+        TestNgRunStateTracker.logEvent(
+                TestNgRunStateTracker.EventLog.builder()
+                        .setEvent(TEST_METHOD_EXECUTION)
+                        .setTimeOfEvent(time)
+                        .setThread(Thread.currentThread())
+                        .addData(METHOD_NAME, "testMethodG")
+                        .addData(CLASS_NAME, getClass().getCanonicalName())
+                        .addData(CLASS_INSTANCE, this)
+                        .addData(TEST_NAME, testName)
+                        .addData(SUITE_NAME, suiteName)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[]{this.getClass().getCanonicalName() + ".testMethodC"})
                         .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );

@@ -823,6 +823,7 @@
       <class name="test.thread.parallelization.ParallelByMethodsTestCase7Scenario1"/>
       <class name="test.thread.parallelization.ParallelByMethodsTestCase7Scenario2"/>
       <class name="test.thread.parallelization.ParallelByMethodsTestCase8Scenario1"/>
+      <class name="test.thread.parallelization.ParallelByMethodsTestCase9Scenario1"/>
     </classes>
   </test>
 

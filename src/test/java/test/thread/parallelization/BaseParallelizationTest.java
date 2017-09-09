@@ -11,6 +11,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,9 @@ import static org.testng.Assert.assertTrue;
 
 import static org.testng.Assert.fail;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_BELONGING_TO;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_DEPENDED_ON;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHODS_DEPENDED_ON;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_SUITE_START;
@@ -38,6 +42,8 @@ import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.L
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.LISTENER_TEST_START;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
+import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethodsBelongingToGroupsDependedOn;
+import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethodsDependedOn;
 
 public class BaseParallelizationTest extends SimpleBaseTest {
 
@@ -391,14 +397,12 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             //Verify that all the events in the sublist extracted for the start events of the block of methods expected
             //to execute in parallel all have the test method start event type and that they all executed in different
             //threads.
-            verifySimultaneousTestMethodListenerStartEvents(eventLogMethodListenerStartSublist, testName,
-                    blockSize);
+            verifySimultaneousTestMethodListenerStartEvents(eventLogMethodListenerStartSublist, testName, blockSize);
 
             //Verify that all the events in the sublist extracted for the test method execution events of the block of
             //methods expected to execute in parallel all have the test method execution event type and that they all
             //executed in different threads.
-            verifySimultaneousTestMethodExecutionEvents(eventLogMethodExecuteSublist, testName,
-                    blockSize);
+            verifySimultaneousTestMethodExecutionEvents(eventLogMethodExecuteSublist, testName, blockSize);
 
             //Verify that the test method start events and the test method execution events in the two sublists belong
             //to the same methods. This is done by verifying that the test class names and method names are the same for
@@ -413,8 +417,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             //Verify that all the events in the sublist extracted for the test method pass events of the block of
             //methods expected to execute in parallel all have the test method pass event type and that they all
             //executed in different threads.
-            verifySimultaneousTestMethodListenerPassEvents(eventLogMethodListenerPassSublist, testName,
-                    blockSize);
+            verifySimultaneousTestMethodListenerPassEvents(eventLogMethodListenerPassSublist, testName, blockSize);
 
             //Verify that the test method execution events and the test method pass events in the two sublists belong
             //to the same methods. This is done by verifying that the test class names and method names are the same for
@@ -600,6 +603,130 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         }
     }
 
+    public void verifyParallelMethodsWithDependencies(List<EventLog> testMethodEventLogs, String testName, int
+            maxSimultaneousTestMethods) {
+
+        Map<String, EventLog> freeMethods = new HashMap<>();
+        Map<String, EventLog> methodsCompleted = new HashMap<>();
+
+        //Determine which methods have no dependencies and add them to the list of free methods. The first block of
+        //methods to execute should consist only of methods on this list
+        for(EventLog log : testMethodEventLogs) {
+            String classAndMethodName = (String)log.getData(CLASS_NAME) + "." +
+                    (String)log.getData(METHOD_NAME);
+
+            if(freeMethods.get(classAndMethodName) == null) {
+                if (((String[]) log.getData(METHODS_DEPENDED_ON)).length == 0 &&
+                        ((String[]) log.getData(GROUPS_DEPENDED_ON)).length == 0) {
+                    freeMethods.put(classAndMethodName, log);
+                }
+            }
+        }
+
+        //If there are fewer free methods than the thread count, the size of the first block of methods executing
+        //in parallel should be equal to the number of free methods. Otherwise, it should be equal to the thread count.
+        int blockSize = freeMethods.size() < maxSimultaneousTestMethods ? freeMethods.size() :
+                maxSimultaneousTestMethods;
+
+        for (int i = 1; i < testMethodEventLogs.size(); i = i + blockSize * 3) {
+
+            //If the current block of methods is not the first one, the list of free methods to execute needs to be
+            //re-created.
+            if(i != 1) {
+                freeMethods = new HashMap<>();
+
+                //Start processing the test method logs, starting the first log in the current block of method
+                //executions.
+                for(int j = i - 1; j < testMethodEventLogs.size(); j++) {
+                    EventLog log = testMethodEventLogs.get(j);
+                    String classAndMethodName = (String)log.getData(CLASS_NAME) + "." +
+                            (String)log.getData(METHOD_NAME);
+
+                    //If the event log is for a method that is not already on the list of free methods, we need to\
+                    //determine if it is a free method
+                    if(freeMethods.get(classAndMethodName) == null) {
+                        List<String> methodsDependedOn =
+                                new ArrayList<>(Arrays.asList((String[]) log.getData(METHODS_DEPENDED_ON)));
+                        List<String> groupsDependedOn =
+                                new ArrayList<>(Arrays.asList((String[]) log.getData(GROUPS_DEPENDED_ON)));
+
+                        if (methodsDependedOn.size() == 0 && groupsDependedOn.size() == 0) {
+                            //If the method has no dependencies, it is a free method
+                            freeMethods.put(classAndMethodName, log);
+                        } else {
+                            //Otherwise, we need to determine which methods belong to the groups this method depends on
+                            methodsDependedOn.addAll(getMethodsBelongingToGroups(groupsDependedOn, testMethodEventLogs));
+
+                            //Now that there is a complete list of methods this method depends on, check to see if all
+                            //of those methods have completed executed.
+                            if (methodsCompleted.keySet().containsAll(methodsDependedOn)) {
+                                //If so, then this method can execute because all the methods it depends on have
+                                //already run
+                                freeMethods.put(classAndMethodName, log);
+                            }
+                        }
+                    }
+                }
+
+                //If there are fewer free methods than the thread count, the size of the first block of methods executing
+                //in parallel should be equal to the number of free methods. Otherwise, it should be equal to the thread count.
+                blockSize = freeMethods.size() < maxSimultaneousTestMethods ? freeMethods.size() :
+                        maxSimultaneousTestMethods;
+            }
+
+            int offsetOne = i - 1;
+
+            int offsetTwo = i + blockSize - 1;
+
+            List<EventLog> eventLogMethodListenerStartSublist = testMethodEventLogs.subList(offsetOne, offsetTwo);
+            List<EventLog> eventLogMethodExecuteSublist = testMethodEventLogs.subList(offsetTwo, offsetTwo + blockSize);
+            List<EventLog> eventLogMethodListenerPassSublist = testMethodEventLogs.subList(offsetTwo + blockSize,
+                    offsetTwo + 2 * blockSize);
+
+            verifySimultaneousTestMethodListenerStartEvents(eventLogMethodListenerStartSublist, testName, freeMethods,
+                    blockSize);
+
+            verifySimultaneousTestMethodExecutionEventsForMethodsWithDependencies(eventLogMethodExecuteSublist,
+                    testName, freeMethods, blockSize);
+
+            verifyEventsBelongToSameMethods(eventLogMethodListenerStartSublist, eventLogMethodExecuteSublist, "The " +
+                    "expected maximum number of methods to execute simultaneously is " + maxSimultaneousTestMethods +
+                    " for " + testName + " so no more than " + maxSimultaneousTestMethods + " methods should be " +
+                    "running at the same time. The test execution event logs for a block of simultaneously running " +
+                    "test methods should all belong to the same methods as the test method listener onTestStart " +
+                    "event logs immediately preceding");
+
+            verifySimultaneousTestMethodListenerPassEvents(eventLogMethodListenerPassSublist, testName,
+                    freeMethods, methodsCompleted, blockSize);
+
+            verifyEventsBelongToSameMethods(eventLogMethodExecuteSublist, eventLogMethodListenerPassSublist, "The " +
+                    "expected maximum number of methods to execute simultaneously is " + maxSimultaneousTestMethods +
+                    " for " + testName + " so no more than " + maxSimultaneousTestMethods + " methods should be " +
+                    "running at the same time. The test method listener on onTestSuccess event logs for a block of " +
+                    "simultaneously running test methods should all belong to the same methods as the test method " +
+                    "execution event logs immediately preceding");
+
+        }
+
+
+    }
+
+    public static void verifySimultaneousTestMethodListenerStartEvents(List<EventLog> listenerStartEventLogs, String
+            testName, Map<String, EventLog> freeMethods, int blockSize) {
+
+        verifySimultaneousTestMethodListenerStartEvents(listenerStartEventLogs, testName, blockSize);
+
+        //Verify that the current block of listener start events belong to the list of free methods, that is, methods
+        //with no dependencies or methods whose dependencies have already executed.
+        for (EventLog eventLog : listenerStartEventLogs) {
+            String classAndMethodName = (String)eventLog.getData(CLASS_NAME) + "." +
+                    (String)eventLog.getData(METHOD_NAME);
+
+            assertTrue(freeMethods.get(classAndMethodName) != null, "Currently executing methods should have no " +
+                    "dependencies or all methods they depend on should have already executed and passed.");
+        }
+    }
+
     public static int verifySimultaneousTestMethodListenerStartEvents(List<EventLog> listenerStartEventLogs, String
             testName, int blockSize, Map<String, EventLog> methodsExecuting, Map<String, Long>
             executingMethodThreadIds, Map<String, Integer> methodInvocationsCounts, Map<String, Integer>
@@ -648,6 +775,22 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         return decrement;
     }
 
+    public static void verifySimultaneousTestMethodExecutionEventsForMethodsWithDependencies(List<EventLog>
+            testMethodExecutionEventLogs, String testName, Map<String, EventLog> freeMethods, int blockSize) {
+
+        verifySimultaneousTestMethodExecutionEvents(testMethodExecutionEventLogs, testName, blockSize);
+
+        //Verify that the current block of test method execution events belong to the list of free methods, that is,
+        //methods with no dependencies or methods whose dependencies have already executed.
+        for (EventLog eventLog : testMethodExecutionEventLogs) {
+            String classAndMethodName = (String)eventLog.getData(CLASS_NAME) + "." +
+                    (String)eventLog.getData(METHOD_NAME);
+
+            assertTrue(freeMethods.get(classAndMethodName) != null, "Currently executing methods should have no " +
+                    "dependencies or all methods they depend on should have already executed and passed.");
+        }
+    }
+
     public static void verifySimultaneousTestMethodExecutionEvents(List<EventLog> testMethodExecutionEventLogs, String
             testName, Map<String, Long> executingMethodThreadIds, int blockSize) {
 
@@ -665,12 +808,33 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     }
 
     public static void verifySimultaneousTestMethodListenerPassEvents(List<EventLog> testMethodListenerPassEventLogs,
+            String testName,  Map<String, EventLog> freeMethods, Map<String, EventLog> methodsCompleted, int
+            blockSize) {
+
+        verifySimultaneousTestMethodListenerPassEvents(testMethodListenerPassEventLogs, testName,
+                blockSize);
+
+        //Verify that the current block of test method pass events belong to the list of free methods, that is,
+        //methods with no dependencies or methods whose dependencies have already executed.
+        for(EventLog eventLog : testMethodListenerPassEventLogs) {
+            String classAndMethodName = (String)eventLog.getData(CLASS_NAME) + "." +
+                    (String)eventLog.getData(METHOD_NAME);
+
+            assertTrue(freeMethods.get(classAndMethodName) != null, "Currently executing methods should have no " +
+                    "dependencies or all methods they depend on should have already executed and passed.");
+
+            //Add this method to the list of methods that have completed execution, so that the list of free methods can
+            //be determined for the next block of methods executing in parallel
+            methodsCompleted.put(classAndMethodName, eventLog);
+        }
+    }
+
+    public static void verifySimultaneousTestMethodListenerPassEvents(List<EventLog> testMethodListenerPassEventLogs,
             String testName, int blockSize, Map<String, EventLog> methodsExecuting,
             Map<String, EventLog> methodsCompleted, Map<String, Long> executingMethodThreadIds, Map<String, Integer>
             methodInvocationsCounts, Map<String, Integer> expectedInvocationCounts) {
 
-        verifySimultaneousTestMethodListenerPassEvents(testMethodListenerPassEventLogs, testName,
-                blockSize);
+        verifySimultaneousTestMethodListenerPassEvents(testMethodListenerPassEventLogs, testName, blockSize);
 
         for(EventLog eventLog : testMethodListenerPassEventLogs) {
             String classAndMethodName = (String)eventLog.getData(CLASS_NAME) + "." +
@@ -741,34 +905,22 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifyEventsForTestMethodsRunInTheSameThread(Class<?> testClass, String suiteName, String
             testName) {
 
-        for (Method method : testClass.getMethods()) {
-            boolean isTestMethod = false;
+        for (Method method : getTestMethods(testClass)) {
+            Multimap<Object, EventLog> testMethodEventLogs = getTestMethodEventLogsForMethod(suiteName, testName,
+                    testClass.getCanonicalName(), method.getName());
 
-            Annotation[] annotations = method.getDeclaredAnnotations();
+            for (Object instanceKey : testMethodEventLogs.keySet()) {
 
-            for(Annotation a : annotations) {
-                if(Test.class.isAssignableFrom(a.getClass())) {
-                    isTestMethod = true;
-                }
-            }
+                long threadId = -1;
 
-            if (method.getDeclaringClass().equals(testClass) && isTestMethod) {
-                Multimap<Object, EventLog> testMethodEventLogs = getTestMethodEventLogsForMethod(suiteName, testName,
-                        testClass.getCanonicalName(), method.getName());
+                for (EventLog eventLog : testMethodEventLogs.get(instanceKey)) {
 
-                for (Object instanceKey : testMethodEventLogs.keySet()) {
-
-                    long threadId = -1;
-
-                    for (EventLog eventLog : testMethodEventLogs.get(instanceKey)) {
-
-                        if (threadId == -1) {
-                            threadId = eventLog.getThreadId();
-                        } else {
-                            assertEquals(eventLog.getThreadId(), threadId, "All of the method level events for the test " +
-                                    "method " + method.getName() + " in the test class " + testClass.getCanonicalName() +
-                                    " for the test " + suiteName + " should be run in the same thread");
-                        }
+                    if (threadId == -1) {
+                        threadId = eventLog.getThreadId();
+                    } else {
+                        assertEquals(eventLog.getThreadId(), threadId, "All of the method level events for the test " +
+                                "method " + method.getName() + " in the test class " + testClass.getCanonicalName() +
+                                " for the test " + suiteName + " should be run in the same thread");
                     }
                 }
             }
@@ -939,6 +1091,41 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 " currently executing suites should be different");
     }
 
+    public static void verifyThatTestMethodsRunAfterMethodsTheyDependOn(String suiteName, String testName,
+            List<Class<?>> classes) {
+
+        for(Class<?> clazz : classes) {
+            for(Method method : getTestMethods(clazz)) {
+                Multimap<Object, EventLog> eventLogsForMethod = getTestMethodEventLogsForMethod(suiteName, testName,
+                        clazz.getCanonicalName(), method.getName());
+
+                Multimap<Object, EventLog> eventLogsForMethodsDependedOn =
+                        getTestMethodEventLogsForMethodsDependedOn(suiteName, testName, clazz.getCanonicalName(),
+                                method.getName());
+
+                Multimap<Object, EventLog> eventLogsForMethodsBelongingToGroupsDependedOn =
+                        getTestMethodEventLogsForMethodsBelongingToGroupsDependedOn(suiteName, testName,
+                                clazz.getCanonicalName(), method.getName());
+
+                for(Object instance : eventLogsForMethod.keySet()) {
+                    EventLog startEventOfDependingMethod = (EventLog)eventLogsForMethod.get(instance).toArray()[0];
+
+                    for(EventLog eventLog : eventLogsForMethodsDependedOn.get(instance)) {
+                        assertTrue(eventLog.getTimeOfEvent() < startEventOfDependingMethod.getTimeOfEvent(), "All " +
+                                "methods that a method depends on should execute before it: " + eventLog + ", " +
+                                startEventOfDependingMethod);
+                    }
+
+                    for(EventLog eventLog : eventLogsForMethodsBelongingToGroupsDependedOn.get(instance)) {
+                        assertTrue(eventLog.getTimeOfEvent() < startEventOfDependingMethod.getTimeOfEvent(), "All " +
+                                "methods belonging to groups that a method depends on should execute before it: " +
+                                eventLog + ", " + startEventOfDependingMethod);
+                    }
+                }
+            }
+        }
+    }
+
     private static void verifyFirstBlockOfSimultaneouslyExecutingSuites(List<EventLog> suiteListenerStartEventLogs,
             int threadPoolSize) {
 
@@ -1001,6 +1188,45 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         }
 
         return true;
+    }
+
+    private static List<Method> getTestMethods(Class<?> testClass) {
+        List<Method> methods = new ArrayList<>();
+
+        for (Method method : testClass.getMethods()) {
+
+            Annotation[] annotations = method.getDeclaredAnnotations();
+
+            for (Annotation a : annotations) {
+                if (Test.class.isAssignableFrom(a.getClass())) {
+                    methods.add(method);
+                }
+            }
+        }
+
+        return methods;
+    }
+
+    private static List<String> getMethodsBelongingToGroups(List<String> groups, List<EventLog> logs) {
+        List<String> methods = new ArrayList<>();
+
+        for (EventLog log : logs) {
+            String classAndMethodName = (String) log.getData(CLASS_NAME) + "." +
+                    (String) log.getData(METHOD_NAME);
+
+            if (!methods.contains(classAndMethodName)) {
+                for (String group : (String[]) log.getData(GROUPS_BELONGING_TO)) {
+                    if (groups.contains(group)) {
+
+                        if (!methods.contains(classAndMethodName)) {
+                            methods.add(classAndMethodName);
+                        }
+                    }
+                }
+            }
+        }
+
+        return methods;
     }
 
     private static void log(int offsetOne, int offsetTwo, int blockSize, List<EventLog> eventLogMethodListenerStartSublist,
