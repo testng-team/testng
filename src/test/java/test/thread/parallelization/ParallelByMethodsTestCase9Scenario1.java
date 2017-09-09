@@ -45,6 +45,29 @@ import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLev
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodLevelEventLogsForTest;
 import static test.thread.parallelization.TestNgRunStateTracker.reset;
 
+/** This class covers PTP_TC_9, Scenario 1 in the Parallelization Test Plan.
+ *
+ * Test Case Summary: Parallel by methods mode with sequential test suites with no factories or data providers. There
+ *                    are method-on-method, intra-class group and inter-class group dependencies.
+ *
+ * Scenario Description: Two suites with two tests each. One suite consists of only method-on-method dependencies and
+ *                       one of its tests contains a test class with no dependencies at all. The other suite has a test
+ *                       with both inter and intra-class group dependencies as well as a class with no dependencies at
+ *                       all. Its other test consists of classes with intra-class group dependencies only.
+ *
+ * 1) For one suite, the thread count is specified at the test level and for the other, the thread count is specified
+ *    at the suite level.
+ * 2) One test has fewer methods available that can execute than its thread count due to dependencies when it starts,
+ *    but the bottleneck clears and the maximum number of methods executes in a subsequent block of parallel methods
+ * 3) One test has more methods available that can execute than its thread count when it starts, but in a subsequent
+ *    block of parallel methods, a bottleneck develops due to dependencies so fewer methods execute in parallel than
+ *    he thread count would allow
+ * 4) There are NO configuration methods
+ * 5) All test methods pass
+ * 6) NO ordering is specified
+ * 7) `group-by-instances is NOT set
+ * 8) here are no method exclusions
+ */
 public class ParallelByMethodsTestCase9Scenario1 extends BaseParallelizationTest {
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
@@ -438,8 +461,9 @@ public class ParallelByMethodsTestCase9Scenario1 extends BaseParallelizationTest
 
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
-        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 3);
-        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, 6);
-        verifySimultaneousTestMethods(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, 20);
+        verifyParallelMethodsWithDependencies(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A), SUITE_A_TEST_A, 3);
+        verifyParallelMethodsWithDependencies(getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_B), SUITE_A_TEST_B, 7);
+        verifyParallelMethodsWithDependencies(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_A), SUITE_B_TEST_A, 7);
+        verifyParallelMethodsWithDependencies(getTestMethodLevelEventLogsForTest(SUITE_B, SUITE_B_TEST_B), SUITE_B_TEST_B, 7);
     }
 }

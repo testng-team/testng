@@ -1,6 +1,5 @@
 package test.thread.parallelization;
 
-import com.google.common.collect.Multimap;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
@@ -10,7 +9,6 @@ import org.testng.xml.XmlSuite;
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;

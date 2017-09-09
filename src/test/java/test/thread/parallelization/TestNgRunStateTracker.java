@@ -430,21 +430,12 @@ public class TestNgRunStateTracker {
     }
 
     public static Multimap<Object, EventLog> getTestMethodEventLogsForMethodsBelongingToGroup(String groupName) {
-        System.out.println("\nProcessing " + groupName);
-
         Multimap<Object,EventLog> testMethodEventLogs = ArrayListMultimap.create();
 
         for(EventLog eventLog : getAllTestMethodLevelEventLogs()) {
-            System.out.println("\nProcessing " + (String)eventLog.getData(EventInfo.CLASS_NAME) + "." +
-                    (String)eventLog.getData(EventInfo.METHOD_NAME));
-
             String[] groupsBelongingTo = (String[])eventLog.getData(EventInfo.GROUPS_BELONGING_TO);
 
-            System.out.println("Belongs to groups: " + Arrays.toString(groupsBelongingTo));
-
             if(Arrays.asList(groupsBelongingTo).contains(groupName)) {
-                System.out.println("Adding: " + (String)eventLog.getData(EventInfo.CLASS_NAME) + "." +
-                        (String)eventLog.getData(EventInfo.METHOD_NAME));
                 testMethodEventLogs.put(eventLog.getData(EventInfo.CLASS_INSTANCE), eventLog);
             }
         }
@@ -477,8 +468,6 @@ public class TestNgRunStateTracker {
     public static Multimap<Object, EventLog> getTestMethodEventLogsForMethodsBelongingToGroupsDependedOn(String
             suiteName, String testName, String className, String methodName) {
 
-        System.out.println("\nProcessing " + className + ", " + methodName);
-
         Multimap<Object,EventLog> testMethodEventLogs = ArrayListMultimap.create();
         Map<Object,EventLog> startEventLogs = getTestMethodListenerStartEventLogsForMethod(suiteName, testName,
                 className, methodName);
@@ -486,9 +475,6 @@ public class TestNgRunStateTracker {
         EventLog eventLog = new ArrayList<>(startEventLogs.values()).get(0);
 
         String[] groupsDependedOn =  (String[])eventLog.getData(EventInfo.GROUPS_DEPENDED_ON);
-
-        System.out.println("Groups depended on(" + className + ", " + methodName + "):" +
-                Arrays.toString(groupsDependedOn));
 
         for(String groupDependedOn : groupsDependedOn) {
             testMethodEventLogs.putAll(getTestMethodEventLogsForMethodsBelongingToGroup(groupDependedOn));
