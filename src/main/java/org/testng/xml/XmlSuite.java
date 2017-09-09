@@ -518,7 +518,11 @@ public class XmlSuite implements Cloneable {
     return XmlWeaver.asXml(this);
   }
 
-  public List<String> getListenersList() {
+  /**
+   *
+   * @return - The list of listener names that are local to the current &lt;suite&gt;
+   */
+  public List<String> getLocalListeners() {
     return m_listeners;
   }
 

@@ -114,7 +114,7 @@ public final class XMLUtils {
 
   public static void xmlClose(IBuffer result, String indent, String tag, String comment) {
     result.append(indent).append("</").append(tag).append(">")
-        .append(Strings.isNotNullAndNotEmpty(comment) ? comment : "")
+        .append(Strings.getValueOrEmpty(comment))
         .append(EOL);
   }
 

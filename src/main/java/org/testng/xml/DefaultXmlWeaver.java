@@ -16,7 +16,7 @@ import static org.testng.xml.XmlSuite.*;
  */
 class DefaultXmlWeaver implements IWeaveXml {
 
-    private String defaultComment;
+    private final String defaultComment;
 
     DefaultXmlWeaver(){
         this(null);
@@ -70,7 +70,7 @@ class DefaultXmlWeaver implements IWeaveXml {
 
         if (hasElements(xmlSuite.getListeners())) {
             xsb.push("listeners");
-            for (String listenerName : xmlSuite.getListenersList()) {
+            for (String listenerName : xmlSuite.getLocalListeners()) {
                 Properties listenerProps = new Properties();
                 listenerProps.setProperty("class-name", listenerName);
                 xsb.addEmptyElement("listener", listenerProps);
@@ -103,7 +103,7 @@ class DefaultXmlWeaver implements IWeaveXml {
         }
 
         List<String> suiteFiles = xmlSuite.getSuiteFiles();
-        if (suiteFiles.size() > 0) {
+        if (!suiteFiles.isEmpty()) {
             xsb.push("suite-files");
             for (String sf : suiteFiles) {
                 Properties prop = new Properties();

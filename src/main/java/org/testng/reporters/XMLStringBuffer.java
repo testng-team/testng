@@ -301,10 +301,6 @@ public class XMLStringBuffer {
         this.defaultComment = defaultComment;
     }
 
-    private static void ppp(String s) {
-    System.out.println("[XMLStringBuffer] " + s);
-  }
-
   /**
    * Add a CDATA tag.
    */

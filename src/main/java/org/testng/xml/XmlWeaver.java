@@ -9,7 +9,7 @@ import org.testng.internal.reflect.ReflectionRecipes;
  */
 final class XmlWeaver {
     private static IWeaveXml instance = null;
-    private static boolean testMode = Boolean.parseBoolean(System.getProperty("testng.testmode"));
+    private static final boolean testMode = Boolean.parseBoolean(System.getProperty("testng.testmode"));
 
     private XmlWeaver() {
     }
