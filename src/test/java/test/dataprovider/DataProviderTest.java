@@ -3,6 +3,8 @@ package test.dataprovider;
 import org.assertj.core.api.Condition;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
@@ -309,5 +311,27 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(DataProviderIntegrationSample.class);
     Throwable exception = listener.getResult("theTest").getThrowable();
     assertThat(exception).isInstanceOf(MethodMatcherException.class);
+  }
+
+  @Test
+  public void mixedVarArgsDataProviderTest() {
+    InvokedMethodNameListener listener = run(GitHub513Sample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactly(
+        "test(a,b,[c,d])"
+    );
+  }
+
+  @Test(description = "GITHUB1509")
+  public void testDataProvidersThatReturnNull() {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG tng = create(Github1509TestClassSample.class);
+    tng.addListener((ITestNGListener) tla);
+    tng.run();
+    assertThat(tla.getFailedTests()).size().isEqualTo(1);
+    ITestResult result = tla.getFailedTests().get(0);
+    String className = Github1509TestClassSample.class.getName() + ".getData()";
+    String msg = "Data Provider public java.lang.Object[][] " + className + " returned a null value";
+    assertThat(result.getThrowable().getMessage()).contains(msg);
   }
 }

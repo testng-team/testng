@@ -229,9 +229,8 @@ public final class ClassHelper {
               //there's no JUnit on the classpath
               throw new TestNGException("Cannot create JUnit runner", ex);
           }
-      } finally {
-        return tr;
       }
+      return tr;
   }
 
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
@@ -413,7 +412,7 @@ public final class ClassHelper {
         }
         catch (NoSuchMethodException ex) {
           ct = declaringClass.getDeclaredConstructor(String.class);
-          parameters = new Object[] { "Default test name" };
+          parameters = new Object[] { xmlTest.getName() };
           // If ct == null here, we'll pass a null
           // constructor to the factory and hope it can deal with it
         }

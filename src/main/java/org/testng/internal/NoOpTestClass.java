@@ -1,15 +1,13 @@
 package org.testng.internal;
 
-
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 public class NoOpTestClass implements ITestClass {
-  private static final long serialVersionUID = -4544061405329040593L;
 
-  protected Class m_testClass= null;
+  protected Class<?> m_testClass = null;
 
   // Test methods
   protected ITestNGMethod[] m_beforeClassMethods = new ITestNGMethod[0];
@@ -24,14 +22,17 @@ public class NoOpTestClass implements ITestClass {
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected ITestNGMethod[] m_afterGroupsMethods = new ITestNGMethod[0];
 
-  private transient Object[] m_instances;
-  private long[] m_instanceHashes;
+  private final Object[] m_instances;
+  private final long[] m_instanceHashes;
 
-  private XmlTest m_xmlTest;
-
-  private XmlClass m_xmlClass;
+  private final XmlTest m_xmlTest;
+  private final XmlClass m_xmlClass;
 
   protected NoOpTestClass() {
+    m_instances = null;
+    m_instanceHashes = null;
+    m_xmlTest = null;
+    m_xmlClass = null;
   }
 
   public NoOpTestClass(ITestClass testClass) {

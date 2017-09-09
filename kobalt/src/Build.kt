@@ -2,9 +2,8 @@
 import com.beust.kobalt.TaskResult
 import com.beust.kobalt.api.Project
 import com.beust.kobalt.api.annotation.Task
-import com.beust.kobalt.buildScript
-import com.beust.kobalt.plugin.osgi.*
 import com.beust.kobalt.plugin.java.javaCompiler
+import com.beust.kobalt.plugin.osgi.osgi
 import com.beust.kobalt.plugin.packaging.assemble
 import com.beust.kobalt.plugin.publish.autoGitTag
 import com.beust.kobalt.plugin.publish.bintray
@@ -16,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.11.1-SNAPSHOT"
+val VERSION = "6.12"
 
 val p = project {
     name = "testng"
@@ -35,8 +34,8 @@ val p = project {
         })
         scm = Scm().apply {
             url = "http://github.com/cbeust/testng"
-            connection = "https://github.com/cbeust/testng.git"
-            developerConnection = "git@github.com:cbeust/testng.git"
+            connection = "scm:git:https://github.com/cbeust/testng.git"
+            developerConnection = "scm:git:git@github.com:cbeust/testng.git"
         }
         developers = listOf(Developer().apply {
             name = "Cedric Beust"
@@ -73,7 +72,7 @@ val p = project {
     }
 
     javaCompiler {
-        args("-target", "1.7", "-source", "1.7")
+        args("-target", "1.7", "-source", "1.7", "-encoding", "UTF-8")
     }
 
     assemble {

@@ -99,6 +99,13 @@ public class ThreadUtil {
     }
 
     @Override
+    public Thread newThread(Runnable r) {
+      Thread t = super.newThread(r);
+      threads.add(t);
+      return t;
+    }
+
+    @Override
     public List<Thread> getThreads() {
       return threads;
     }

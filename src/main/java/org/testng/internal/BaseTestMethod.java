@@ -29,7 +29,7 @@ import org.testng.xml.XmlTest;
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
  */
 public abstract class BaseTestMethod implements ITestNGMethod {
-  private static final long serialVersionUID = -2666032602580652173L;
+
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
   /**
@@ -38,12 +38,12 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   protected ITestClass m_testClass;
 
-  protected final transient Class<?> m_methodClass;
-  protected final transient ConstructorOrMethod m_method;
-  private transient String m_signature;
+  protected final Class<?> m_methodClass;
+  protected final ConstructorOrMethod m_method;
+  private String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
-  protected final transient IAnnotationFinder m_annotationFinder;
+  protected final IAnnotationFinder m_annotationFinder;
   protected String[] m_groups = {};
   protected String[] m_groupsDependedUpon = {};
   protected String[] m_methodsDependedUpon = {};

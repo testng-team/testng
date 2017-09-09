@@ -1,17 +1,15 @@
 package org.testng.internal;
 
-import java.io.Serializable;
-
 import org.testng.IInvokedMethod;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
-public class InvokedMethod implements Serializable, IInvokedMethod {
-  private static final long serialVersionUID = 2126127194102819222L;
-  transient private Object m_instance;
-  private ITestNGMethod m_testMethod;
-  private long m_date = System.currentTimeMillis();
-  private ITestResult m_testResult;
+public class InvokedMethod implements IInvokedMethod {
+
+  private final Object m_instance;
+  private final ITestNGMethod m_testMethod;
+  private final long m_date;
+  private final ITestResult m_testResult;
 
   public InvokedMethod(Object instance,
                        ITestNGMethod method,

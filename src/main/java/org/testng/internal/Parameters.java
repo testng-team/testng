@@ -9,6 +9,9 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nullable;
+
+import org.testng.IDataProviderListener;
+import org.testng.IDataProviderMethod;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -26,6 +29,9 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.reflect.InjectableParameter;
+import org.testng.internal.reflect.Parameter;
+import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -52,11 +58,39 @@ public class Parameters {
       AfterMethod.class
   };
 
-  private static Map<String, List<Class>> mapping = Maps.newHashMap();
+  private static Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+/*
+          +--------------+--------------+---------+--------+----------+-------------+
+          |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeSuite  | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeTest   | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeGroups | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeClass  | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | BeforeMethod | Yes          | Yes     | Yes    | Yes      | Yes         |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterSuite   | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterTest    | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterGroups  | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterClass   | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | AfterMethod  | Yes          | Yes     | Yes    | Yes      | Yes         |
+          +--------------+--------------+---------+--------+----------+-------------+
+          | Test         | Yes          | No      | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
 
+ */
   static {
-    List<Class> ctxTest = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class});
-    List<Class> mParams = Arrays.asList(new Class[] {ITestContext.class, XmlTest.class,Method.class,Object[].class});
+    List<Class<?>> ctxTest = Arrays.<Class<?>>asList(ITestContext.class, XmlTest.class);
+    List<Class<?>> beforeAfterMethod = Arrays.asList(ITestContext.class, XmlTest.class, Method.class,
+            Object[].class, ITestResult.class);
     mapping.put(BeforeSuite.class.getSimpleName(), ctxTest);
     mapping.put(AfterSuite.class.getSimpleName(), ctxTest);
 
@@ -69,12 +103,11 @@ public class Parameters {
     mapping.put(BeforeClass.class.getSimpleName(), ctxTest);
     mapping.put(AfterClass.class.getSimpleName(), ctxTest);
 
-    mapping.put(BeforeMethod.class.getSimpleName(), mParams);
-    mapping.put(AfterMethod.class.getSimpleName(), mParams);
+    mapping.put(BeforeMethod.class.getSimpleName(), beforeAfterMethod);
+    mapping.put(AfterMethod.class.getSimpleName(), beforeAfterMethod);
+    mapping.put(Test.class.getSimpleName(), Collections.<Class<?>>singletonList(ITestContext.class));
 
   }
-
-
 
   /**
    * Creates the parameters needed for constructing a test class instance.
@@ -86,8 +119,9 @@ public class Parameters {
       String[] parameterNames,
       Map<String, String> params, XmlSuite xmlSuite)
   {
-    return createParameters(ctor.toString(), ctor.getParameterTypes(),
-        finder.findOptionalValues(ctor), methodAnnotation, finder, parameterNames,
+
+    return createParametersForConstructor(ctor, ctor.getParameterTypes(),
+        finder.findOptionalValues(ctor), methodAnnotation, parameterNames,
             new MethodParameters(params, Collections.<String, String>emptyMap()),
             xmlSuite);
   }
@@ -137,6 +171,10 @@ public class Parameters {
 
   ////////////////////////////////////////////////////////
 
+  /**
+   * @deprecated - This method stands deprecated as of TestNG v6.11. There are no alternatives.
+   */
+  @Deprecated
   public static Object getInjectedParameter(Class<?> c, Method method, ITestContext context,
       ITestResult testResult) {
     Object result = null;
@@ -155,97 +193,145 @@ public class Parameters {
     return result;
   }
 
+  private static Object[] createParametersForConstructor(Constructor constructor,
+                                                         Class<?>[] parameterTypes,
+                                                         String[] optionalValues,
+                                                         String methodAnnotation,
+                                                         String[] parameterNames, MethodParameters params, XmlSuite xmlSuite) {
+    if (parameterTypes.length == 0) {
+      return new Object[0];
+    }
+
+    checkParameterTypes(constructor.getName(), parameterTypes, methodAnnotation, parameterNames);
+    List<Object> vResult = Lists.newArrayList();
+
+    if (canInject(methodAnnotation)) {
+      Parameter[] paramsArray = ReflectionRecipes.getConstructorParameters(constructor);
+      Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
+              new Object[0], constructor, params.context, params.testResult);
+      if (inject != null) {
+        vResult.addAll(Arrays.asList(inject));
+      }
+    }
+    List<Object> consParams = createParams(constructor.getName(), "constructor", methodAnnotation,
+            parameterTypes, optionalValues, parameterNames, params, xmlSuite);
+    vResult.addAll(consParams);
+
+    return vResult.toArray(new Object[vResult.size()]);
+  }
+
+  private static List<Object> createParams(String name,
+                                       String prefix,
+                                       String methodAnnotation,
+                                       Class<?>[] parameterTypes,
+                                       String[] optionalValues,
+                                       String[] parameterNames,
+                                       MethodParameters params,
+                                       XmlSuite xmlSuite) {
+    List<Object> vResult = Lists.newArrayList();
+    for (int i = 0, j = 0; i < parameterTypes.length; i++) {
+      if (j < parameterNames.length) {
+        String p = parameterNames[j];
+        String value = params.xmlParameters.get(p);
+        if (null == value) {
+          // try SysEnv entries
+          value = System.getProperty(p);
+        }
+        if (null == value) {
+          if (optionalValues != null) {
+            value = optionalValues[i];
+          }
+          if (null == value) {
+            throw new TestNGException("Parameter '" + p + "' is required by "
+                    + methodAnnotation
+                    + " on " + prefix + " "
+                    + name
+                    + " but has not been marked @Optional or defined\n"
+                    + (xmlSuite.getFileName() != null ? "in "
+                    + xmlSuite.getFileName() : ""));
+          }
+        }
+
+        vResult.add(convertType(parameterTypes[i], value, p));
+        j++;
+      }
+    }
+
+    return vResult;
+  }
+
   /**
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
    */
-  private static Object[] createParameters(String methodName,
-      Class[] parameterTypes,
+  private static Object[] createParametersForMethod(Method method,
+      Class<?>[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
-      IAnnotationFinder finder,
       String[] parameterNames, MethodParameters params, XmlSuite xmlSuite)
   {
-    Object[] result = new Object[0];
-    if(parameterTypes.length > 0) {
-      List<Object> vResult = Lists.newArrayList();
-
-      checkParameterTypes(methodName, parameterTypes, methodAnnotation, parameterNames);
-
-      for(int i = 0, j = 0; i < parameterTypes.length; i++) {
-        Object inject = getInjectedParameter(parameterTypes[i], params.currentTestMethod,
-            params.context, params.testResult);
-        if (inject != null) {
-          vResult.add(inject);
-        }
-        else {
-          if (j < parameterNames.length) {
-            String p = parameterNames[j];
-            String value = params.xmlParameters.get(p);
-            if(null == value) {
-              // try SysEnv entries
-              value= System.getProperty(p);
-            }
-            if (null == value) {
-              if (optionalValues != null) {
-                value = optionalValues[i];
-              }
-              if (null == value) {
-              throw new TestNGException("Parameter '" + p + "' is required by "
-                  + methodAnnotation
-                  + " on method "
-                  + methodName
-                  + " but has not been marked @Optional or defined\n"
-                  + (xmlSuite.getFileName() != null ? "in "
-                  + xmlSuite.getFileName() : ""));
-              }
-            }
-
-            vResult.add(convertType(parameterTypes[i], value, p));
-            j++;
-          }
-        }
-      }
-
-      result = vResult.toArray(new Object[vResult.size()]);
+    if (parameterTypes.length == 0) {
+      return new Object[0];
     }
 
-    return result;
+    checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
+    List<Object> vResult = Lists.newArrayList();
+
+    if (canInject(methodAnnotation)) {
+      Parameter[] paramsArray = ReflectionRecipes.getMethodParameters(method);
+      Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
+              new Object[0], params.currentTestMethod, params.context, params.testResult);
+      if (inject != null) {
+        vResult.addAll(Arrays.asList(inject));
+      }
+    }
+
+    List<Object> consParams = createParams(method.getName(), "method", methodAnnotation, parameterTypes,
+            optionalValues, parameterNames, params, xmlSuite);
+    vResult.addAll(consParams);
+    return vResult.toArray(new Object[vResult.size()]);
   }
 
+  private static boolean canInject(String annotation) {
+    return !("@" + Test.class.getSimpleName()).equalsIgnoreCase(annotation);
+  }
+
+  private static final List<Class<?>> INJECTED_TYPES = Arrays.asList(
+      ITestContext.class, ITestResult.class, XmlTest.class, Method.class, Object[].class
+  );
   private static void checkParameterTypes(String methodName,
-      Class[] parameterTypes, String methodAnnotation, String[] parameterNames)
+      Class<?>[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
-    Set<Class> injectedTypes = new HashSet<Class>() {
-      private static final long serialVersionUID = -5324894581793435812L;
-
-    {
-      add(ITestContext.class);
-      add(ITestResult.class);
-      add(XmlTest.class);
-      add(Method.class);
-      add(Object[].class);
-    }};
     for (Class parameterType : parameterTypes) {
-      if (injectedTypes.contains(parameterType)) {
+      if (INJECTED_TYPES.contains(parameterType)) {
         totalLength--;
       }
     }
 
-    if ( (parameterNames.length ==0) && (totalLength != 0) ) {
+
+    if (parameterNames.length == 0) {
       //parameterNames is usually populated via the @Parameters annotation, so we would need to
       //apply our logic only when @Parameters annotation is not involved.
-      String errPrefix = "Cannot inject " + methodAnnotation + " annotated Method [" + methodName + "] with "
-            + Arrays.toString(parameterTypes);
-      if (mapping.containsKey(methodAnnotation)) {
-        errPrefix = "Can inject only one of " + prettyFormat(mapping.get(methodAnnotation)) +
-            " into a " + methodAnnotation + " annotated " + methodName;
+      boolean invalid = (totalLength != 0) || (!validParameters(methodAnnotation, parameterTypes));
+      if (invalid) {
+        String annotation = methodAnnotation;
+        if (!methodAnnotation.startsWith("@")) {
+          annotation = "@" + methodAnnotation;
+        }
+        String errPrefix;
+        if (mapping.containsKey(methodAnnotation)) {
+          errPrefix = "Can inject only one of " + prettyFormat(mapping.get(methodAnnotation)) +
+                  " into a " + annotation + " annotated " + methodName;
+        } else {
+          errPrefix = "Cannot inject " + annotation + " annotated Method [" + methodName + "] with "
+                  + Arrays.toString(parameterTypes);
+        }
+        throw new TestNGException(errPrefix
+                + ".\nFor more information on native dependency injection please refer to " +
+                "http://testng.org/doc/documentation-main.html#native-dependency-injection"
+        );
       }
-      throw new TestNGException( errPrefix
-          + ".\nFor more information on native dependency injection please refer to " +
-          "http://testng.org/doc/documentation-main.html#native-dependency-injection"
-      );
     }
 
     if (parameterNames.length != totalLength) {
@@ -258,7 +344,20 @@ public class Parameters {
     }
   }
 
-  private static String prettyFormat(List<Class> classes) {
+  private static boolean validParameters(String methodAnnotation, Class[] parameterTypes) {
+    List<Class<?>> localMapping = mapping.get(methodAnnotation.replace("@", ""));
+    if (localMapping == null) {
+      return false;
+    }
+    for (Class<?> parameterType : parameterTypes) {
+      if (!localMapping.contains(parameterType)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static String prettyFormat(List<Class<?>> classes) {
     StringBuilder builder = new StringBuilder("<");
     if (classes.size() == 1) {
       builder.append(classes.get(0));
@@ -319,10 +418,10 @@ public class Parameters {
     throw new TestNGException("Unsupported type parameter : " + type);
   }
 
-  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
+  private static IDataProviderMethod findDataProvider(Object instance, ITestClass clazz,
                                                      ConstructorOrMethod m,
                                                      IAnnotationFinder finder, ITestContext context) {
-    DataProviderHolder result = null;
+    IDataProviderMethod result = null;
 
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
     if (dp != null) {
@@ -380,12 +479,12 @@ public class Parameters {
   /**
    * Find a method that has a @DataProvider(name=name)
    */
-  private static DataProviderHolder findDataProvider(Object instance, ITestClass clazz,
-                                                     IAnnotationFinder finder,
-                                                     String name, Class<?> dataProviderClass,
-                                                     ITestContext context)
+  private static IDataProviderMethod findDataProvider(Object instance, ITestClass clazz,
+                                                      IAnnotationFinder finder,
+                                                      String name, Class<?> dataProviderClass,
+                                                      ITestContext context)
   {
-    DataProviderHolder result = null;
+    IDataProviderMethod result = null;
 
     Class<?> cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
@@ -416,7 +515,7 @@ public class Parameters {
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderHolder(dp, m, instanceToUse);
+        result = new DataProviderMethod(instanceToUse, m, dp);
       }
     }
 
@@ -441,8 +540,8 @@ public class Parameters {
     Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      extraParameters = createParameters(m.getName(), types,
-          finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
+      extraParameters = createParametersForMethod(m, types,
+          finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
     }
 
     //
@@ -452,12 +551,11 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
-        extraParameters = createParameters(m.getName(), types,
-            finder.findOptionalValues(m), atName, finder, parameterNames, params, xmlSuite);
+        extraParameters = createParametersForMethod(m, types,
+            finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
       }
       else {
-        extraParameters = createParameters(m.getName(), types,
-            finder.findOptionalValues(m), atName, finder, new String[0], params, xmlSuite);
+        extraParameters = createParametersForMethod(m, types, finder.findOptionalValues(m), atName, new String[0], params, xmlSuite);
       }
     }
 
@@ -489,17 +587,34 @@ public class Parameters {
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance)
-  {
+      Object fedInstance) {
+    return handleParameters(testMethod, allParameterNames, instance, methodParams, xmlSuite, annotationFinder, fedInstance,
+            Collections.<IDataProviderListener>emptyList());
+  }
+
+  /**
+   * If the method has parameters, fill them in. Either by using a @DataProvider
+   * if any was provided, or by looking up <parameters> in testng.xml
+   * @return An Iterator over the values for each parameter of this
+   * method.
+   */
+  public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
+                                                 final Map<String, String> allParameterNames,
+                                                 final Object instance,
+                                                 final MethodParameters methodParams,
+                                                 final XmlSuite xmlSuite,
+                                                 final IAnnotationFinder annotationFinder,
+                                                 final Object fedInstance,
+                                                 final Collection<IDataProviderListener> dataProviderListeners) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
      */
-    final DataProviderHolder dataProviderHolder =
-        findDataProvider(instance, testMethod.getTestClass(),
-            testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
+    final IDataProviderMethod dataProviderMethod =
+            findDataProvider(instance, testMethod.getTestClass(),
+                    testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
 
-    if (null != dataProviderHolder) {
+    if (null != dataProviderMethod) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {
@@ -507,18 +622,26 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
+      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+        dataProviderListener.beforeDataProviderExecution(dataProviderMethod, testMethod, methodParams.context);
+      }
+
       final Iterator<Object[]> parameters = MethodInvocationHelper.invokeDataProvider(
-          dataProviderHolder.instance, /* a test instance or null if the dataprovider is static*/
-          dataProviderHolder.method,
-          testMethod,
-          methodParams.context,
-          fedInstance,
-          annotationFinder);
+              dataProviderMethod.getInstance(), /* a test instance or null if the dataprovider is static*/
+              dataProviderMethod.getMethod(),
+              testMethod,
+              methodParams.context,
+              fedInstance,
+              annotationFinder);
+
+      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+        dataProviderListener.afterDataProviderExecution(dataProviderMethod, testMethod, methodParams.context);
+      }
 
       // If the data provider is restricting the indices to return, filter them out
       final List<Integer> allIndices = new ArrayList<>();
       allIndices.addAll(testMethod.getInvocationNumbers());
-      allIndices.addAll(dataProviderHolder.annotation.getIndices());
+      allIndices.addAll(dataProviderMethod.getIndices());
 
       final Iterator<Object[]> filteredParameters = new Iterator<Object[]>() {
         int index = 0;
@@ -528,7 +651,7 @@ public class Parameters {
         public boolean hasNext() {
           if (index == 0 && !parameters.hasNext() && !hasWarn) {
             hasWarn = true;
-            Utils.log("", 2,  "Warning: the data provider '" + dataProviderHolder.annotation.getName() + "' returned an empty array or iterator, so this test is not doing anything");
+            Utils.log("", 2,  "Warning: the data provider '" + dataProviderMethod.getName() + "' returned an empty array or iterator, so this test is not doing anything");
           }
           return parameters.hasNext();
         }
@@ -557,8 +680,7 @@ public class Parameters {
         }
       });
 
-      return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER,
-          dataProviderHolder);
+      return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER, dataProviderMethod);
     }
     else {
       //
@@ -568,7 +690,7 @@ public class Parameters {
       // Create an Object[][] containing just one row of parameters
       Object[][] allParameterValuesArray = new Object[1][];
       allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
-          methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
+              methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
 
       // Mark that this method needs to have at least a certain
       // number of invocations (needed later to call AfterGroups

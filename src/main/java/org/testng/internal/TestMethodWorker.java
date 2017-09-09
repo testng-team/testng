@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -149,27 +148,24 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     // the whole invocation must be synchronized as other threads must
     // get a full initialized test object (not the same for @After)
-    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
-        m_classMethodMap.getInvokedBeforeClassMethods();
-    synchronized(testClass) {
-      Set<Object> instances= invokedBeforeClassMethods.get(testClass);
-      if(null == instances) {
-        instances= new HashSet<>();
-        invokedBeforeClassMethods.put(testClass, instances);
+    Map<ITestClass, Set<Object>> invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
+    Set<Object> instances = invokedBeforeClassMethods.get(testClass);
+    if (null == instances) {
+      instances = new HashSet<>();
+      invokedBeforeClassMethods.put(testClass, instances);
+    }
+    Object instance = mi.getInstance();
+    if (!instances.contains(instance)) {
+      instances.add(instance);
+      for (IClassListener listener : m_listeners) {
+        listener.onBeforeClass(testClass);
       }
-      Object instance = mi.getInstance();
-      if (! instances.contains(instance)) {
-        instances.add(instance);
-        for (IClassListener listener : m_listeners) {
-          listener.onBeforeClass(testClass);
-        }
-        m_invoker.invokeConfigurations(testClass,
-                                       testClass.getBeforeClassMethods(),
-                                       m_suite,
-                                       m_parameters,
-                                       null, /* no parameter values */
-                                       instance);
-      }
+      m_invoker.invokeConfigurations(testClass,
+              testClass.getBeforeClassMethods(),
+              m_suite,
+              m_parameters,
+              null, /* no parameter values */
+              instance);
     }
   }
 

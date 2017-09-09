@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.SuiteRunnerMap;
+import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -138,6 +140,7 @@ public class TestNG {
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners = Maps.newHashMap();
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners = Maps.newHashMap();
 
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
@@ -258,31 +261,66 @@ public class TestNG {
     m_xmlPathInJar = xmlPathInJar;
   }
 
-  public void initializeSuitesAndJarFile() {
-    if (m_suites.size() > 0) {
-    	//to parse the suite files (<suite-file>), if any
-    	for (XmlSuite s: m_suites) {
-        for (String suiteFile : s.getSuiteFiles()) {
-            try {
-                Collection<XmlSuite> childSuites;
-                if (s.getFileName() != null) {
-                  Path rootPath = Paths.get(s.getFileName()).getParent();
-                  try (InputStream is = Files.newInputStream(rootPath.resolve(suiteFile))) {
-                    childSuites = getParser(is).parse();
-                  }
-                } else {
-                  childSuites = getParser(suiteFile).parse();
-                }
-                for (XmlSuite cSuite : childSuites){
-                    cSuite.setParentSuite(s);
-                    s.getChildSuites().add(cSuite);
-                }
-            } catch (IOException e) {
-                e.printStackTrace(System.out);
+  private void parseSuiteFiles() {
+    for (XmlSuite s : m_suites) {
+      for (String suiteFile : s.getSuiteFiles()) {
+        try {
+          Collection<XmlSuite> childSuites;
+          if (s.getFileName() != null) {
+            Path rootPath = Paths.get(s.getFileName()).getParent();
+            try (InputStream is = Files.newInputStream(rootPath.resolve(suiteFile))) {
+              childSuites = getParser(is).parse();
             }
+          } else {
+            childSuites = getParser(suiteFile).parse();
+          }
+          for (XmlSuite cSuite : childSuites) {
+            cSuite.setParentSuite(s);
+            s.getChildSuites().add(cSuite);
+          }
+        } catch (IOException e) {
+          e.printStackTrace(System.out);
         }
+      }
 
-    	}
+    }
+
+  }
+
+  private void parseSuite(String suitePath) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
+    }
+    try {
+      Collection<XmlSuite> allSuites = getParser(suitePath).parse();
+
+      for (XmlSuite s : allSuites) {
+        // If test names were specified, only run these test names
+        if (m_testNames != null) {
+          m_suites.add(extractTestNames(s, m_testNames));
+        } else {
+          m_suites.add(s);
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace(System.out);
+    } catch (Exception ex) {
+      // Probably a Yaml exception, unnest it
+      Throwable t = ex;
+      while (t.getCause() != null) {
+        t = t.getCause();
+      }
+      if (t instanceof TestNGException) {
+        throw (TestNGException) t;
+      }
+      throw new TestNGException(t);
+    }
+
+  }
+
+  public void initializeSuitesAndJarFile() {
+    if (!m_suites.isEmpty()) {
+      parseSuiteFiles(); //to parse the suite files (<suite-file>), if any
       return;
     }
 
@@ -290,32 +328,7 @@ public class TestNG {
     // Parse the suites that were passed on the command line
     //
     for (String suitePath : m_stringSuites) {
-      if(LOGGER.isDebugEnabled()) {
-        LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
-      }
-      try {
-        Collection<XmlSuite> allSuites = getParser(suitePath).parse();
-
-        for (XmlSuite s : allSuites) {
-          // If test names were specified, only run these test names
-          if (m_testNames != null) {
-            m_suites.add(extractTestNames(s, m_testNames));
-          }
-          else {
-            m_suites.add(s);
-          }
-        }
-      }
-      catch(IOException e) {
-        e.printStackTrace(System.out);
-      } catch(Exception ex) {
-        // Probably a Yaml exception, unnest it
-        Throwable t = ex;
-        while (t.getCause() != null) t = t.getCause();
-//        t.printStackTrace();
-        if (t instanceof TestNGException) throw (TestNGException) t;
-        else throw new TestNGException(t);
-      }
+      parseSuite(suitePath);
     }
 
     //
@@ -323,7 +336,7 @@ public class TestNG {
     //
     // If suites were passed on the command line, they take precedence over the suite file
     // inside that jar path
-    if (m_jarPath != null && m_stringSuites.size() > 0) {
+    if (m_jarPath != null && !m_stringSuites.isEmpty()) {
       StringBuilder suites = new StringBuilder();
       for (String s : m_stringSuites) {
         suites.append(s);
@@ -764,6 +777,10 @@ public class TestNG {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
       maybeAddListener(m_alterSuiteListeners, alter);
     }
+    if (listener instanceof IDataProviderListener) {
+      IDataProviderListener dataProvider = (IDataProviderListener) listener;
+      maybeAddListener(m_dataProviderListeners, dataProvider);
+    }
   }
 
   /**
@@ -941,8 +958,7 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    m_testListeners.put(ExitCodeListener.class, new ExitCodeListener(this));
-
+    addListener((ITestNGListener) new ExitCodeListener(this));
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
@@ -1142,6 +1158,9 @@ public class TestNG {
         usage();
       }
     }
+
+    m_instance = null;
+    m_jCommander = null;
   }
 
   /**
@@ -1218,60 +1237,63 @@ public class TestNG {
    * until an alternative mechanism is found.
    */
   public List<ISuite> runSuitesLocally() {
-    SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();
-    if (m_suites.size() > 0) {
-      if (m_suites.get(0).getVerbose() >= 2) {
-        Version.displayBanner();
-      }
-
-      // First initialize the suite runners to ensure there are no configuration issues.
-      // Create a map with XmlSuite as key and corresponding SuiteRunner as value
-      for (XmlSuite xmlSuite : m_suites) {
-        createSuiteRunners(suiteRunnerMap, xmlSuite);
-      }
-
-      //
-      // Run suites
-      //
-      if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
-        // Single threaded and not randomized: run the suites in order
-        for (XmlSuite xmlSuite : m_suites) {
-          runSuitesSequentially(xmlSuite, suiteRunnerMap, getVerbose(xmlSuite),
-              getDefaultSuiteName());
-        }
-      } else {
-        // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
-        // used to run related suites in specific order. Parent suites are run only
-        // once all the child suites have completed execution
-        DynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
-        for (XmlSuite xmlSuite : m_suites) {
-          populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
-        }
-
-        IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
-          0 /* verbose hasn't been set yet */, getDefaultSuiteName());
-        GraphThreadPoolExecutor<ISuite> pooledExecutor =
-                new GraphThreadPoolExecutor<>("suites", suiteGraph, factory, m_suiteThreadPoolSize,
-                        m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>());
-
-        Utils.log("TestNG", 2, "Starting executor for all suites");
-        // Run all suites in parallel
-        pooledExecutor.run();
-        try {
-          pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-          pooledExecutor.shutdownNow();
-        }
-        catch (InterruptedException handled) {
-          Thread.currentThread().interrupt();
-          error("Error waiting for concurrent executors to finish " + handled.getMessage());
-        }
-      }
-    }
-    else {
+    if (m_suites.isEmpty()) {
       setStatus(HAS_NO_TEST);
       error("No test suite found. Nothing to run");
       usage();
+      return Collections.emptyList();
+    }
+
+    SuiteRunnerMap suiteRunnerMap = new SuiteRunnerMap();
+
+    if (m_suites.get(0).getVerbose() >= 2) {
+      Version.displayBanner();
+    }
+
+    // First initialize the suite runners to ensure there are no configuration issues.
+    // Create a map with XmlSuite as key and corresponding SuiteRunner as value
+    for (XmlSuite xmlSuite : m_suites) {
+      createSuiteRunners(suiteRunnerMap, xmlSuite);
+    }
+
+    //
+    // Run suites
+    //
+    if (m_suiteThreadPoolSize == 1 && !m_randomizeSuites) {
+      // Single threaded and not randomized: run the suites in order
+      for (XmlSuite xmlSuite : m_suites) {
+        runSuitesSequentially(xmlSuite, suiteRunnerMap, getVerbose(xmlSuite),
+                getDefaultSuiteName());
+      }
+      //
+      // Generate the suites report
+      //
+      return Lists.newArrayList(suiteRunnerMap.values());
+    }
+    // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
+    // used to run related suites in specific order. Parent suites are run only
+    // once all the child suites have completed execution
+    DynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
+    for (XmlSuite xmlSuite : m_suites) {
+      populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
+    }
+
+    IThreadWorkerFactory<ISuite> factory = new SuiteWorkerFactory(suiteRunnerMap,
+            0 /* verbose hasn't been set yet */, getDefaultSuiteName());
+    GraphThreadPoolExecutor<ISuite> pooledExecutor =
+            new GraphThreadPoolExecutor<>("suites", suiteGraph, factory, m_suiteThreadPoolSize,
+                    m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
+                    new LinkedBlockingQueue<Runnable>());
+
+    Utils.log("TestNG", 2, "Starting executor for all suites");
+    // Run all suites in parallel
+    pooledExecutor.run();
+    try {
+      pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+      pooledExecutor.shutdownNow();
+    } catch (InterruptedException handled) {
+      Thread.currentThread().interrupt();
+      error("Error waiting for concurrent executors to finish " + handled.getMessage());
     }
 
     //
@@ -1393,7 +1415,9 @@ public class TestNG {
         m_methodInterceptors,
         m_invokedMethodListeners.values(),
         m_testListeners.values(),
-        m_classListeners.values());
+        m_classListeners.values(),
+        m_dataProviderListeners,
+        Systematiser.getComparator());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);

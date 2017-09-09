@@ -16,15 +16,17 @@ import java.util.Date;
  * You can customize this by using the specialized constructors. Suppported date
  * formats are according to the {@code SimpleDateFormat}.
  *
- * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  * @since 5.6
  */
 public class TimeBombSkipException extends SkipException {
+
   private static final long serialVersionUID = -8599821478834048537L;
-  private static final SimpleDateFormat SDF= new SimpleDateFormat("yyyy/MM/dd");
+
+  private static final String FORMAT = "yyyy/MM/dd";
+  private final SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
   private Calendar m_expireDate;
-  private DateFormat m_inFormat= SDF;
-  private DateFormat m_outFormat= SDF;
+  private DateFormat m_inFormat = sdf;
+  private DateFormat m_outFormat = sdf;
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <tt>expirationDate</tt>.
@@ -33,8 +35,7 @@ public class TimeBombSkipException extends SkipException {
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
    */
   public TimeBombSkipException(String msg, Date expirationDate) {
-    super(msg);
-    initExpireDate(expirationDate);
+    this(msg, expirationDate, FORMAT);
   }
 
   /**
@@ -181,12 +182,8 @@ public class TimeBombSkipException extends SkipException {
 
   private void initExpireDate(String date) {
     try {
-      // SimpleDateFormat is not thread-safe, and m_inFormat 
-      // is, by default, connected to the static SDF variable
-      synchronized( m_inFormat ){
-        Date d = m_inFormat.parse(date);
-        initExpireDate(d);
-      }
+      Date d = m_inFormat.parse(date);
+      initExpireDate(d);
     }
     catch(ParseException pex) {
       throw new TestNGException("Cannot parse date:" + date + " using pattern: " + m_inFormat, pex);

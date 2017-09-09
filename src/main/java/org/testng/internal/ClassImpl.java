@@ -7,56 +7,59 @@ import com.google.inject.Module;
 import com.google.inject.Stage;
 
 import org.testng.IClass;
-import org.testng.IModuleFactory;
 import org.testng.ISuite;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.annotations.Guice;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
-import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Implementation of an IClass.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class ClassImpl implements IClass {
-  private static final long serialVersionUID = 1118178273317520344L;
-  transient private Class m_class = null;
-  transient private Object m_defaultInstance = null;
-  private XmlTest m_xmlTest = null;
-  transient private IAnnotationFinder m_annotationFinder = null;
-  transient private List<Object> m_instances = Lists.newArrayList();
-  transient private Map<Class<?>, IClass> m_classes = null;
+
+  private final Class<?> m_class;
+  private Object m_defaultInstance = null;
+  private final IAnnotationFinder m_annotationFinder;
+  private List<Object> m_instances = Lists.newArrayList();
+  private final Map<Class<?>, IClass> m_classes;
   private int m_instanceCount;
   private long[] m_instanceHashCodes;
-  private transient Object m_instance;
-  private ITestObjectFactory m_objectFactory;
+  private final Object m_instance;
+  private final ITestObjectFactory m_objectFactory;
   private String m_testName = null;
-  private XmlClass m_xmlClass;
-  private ITestContext m_testContext;
+  private final XmlClass m_xmlClass;
+  private final ITestContext m_testContext;
   private final boolean m_hasParentModule;
 
+  /**
+   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
+   */
+  @Deprecated
+  @SuppressWarnings("unused")
   public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
       Map<Class<?>, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
+    this(context, cls, xmlClass, instance, classes, annotationFinder, objectFactory);
+  }
+
+  public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
+                   Map<Class<?>, IClass> classes, IAnnotationFinder annotationFinder,
+                   ITestObjectFactory objectFactory) {
     m_testContext = context;
     m_class = cls;
     m_classes = classes;
     m_xmlClass = xmlClass;
-    m_xmlTest = xmlTest;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_objectFactory = objectFactory;
@@ -70,10 +73,6 @@ public class ClassImpl implements IClass {
       }
     }
     m_hasParentModule = isStringNotEmpty(m_testContext.getSuite().getParentModule());
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[ClassImpl] " + s);
   }
 
   @Override
@@ -104,7 +103,7 @@ public class ClassImpl implements IClass {
 
   @Override
   public XmlTest getXmlTest() {
-    return m_xmlTest;
+    return m_testContext.getCurrentXmlTest();
   }
 
   @Override
@@ -123,7 +122,7 @@ public class ClassImpl implements IClass {
           m_defaultInstance = instance;
         } else {
           m_defaultInstance =
-              ClassHelper.createInstance(m_class, m_classes, m_xmlTest,
+              ClassHelper.createInstance(m_class, m_classes, m_testContext.getCurrentXmlTest(),
                   m_annotationFinder, m_objectFactory);
         }
       }
@@ -157,7 +156,7 @@ public class ClassImpl implements IClass {
       if (m_hasParentModule) {
         Class<Module> parentModule = (Class<Module>) ClassHelper.forName(suite.getParentModule());
         if (parentModule == null) {
-          throw new TestNGException("Cannot load parent Guice module class: " + parentModule);
+          throw new TestNGException("Cannot load parent Guice module class: " + suite.getParentModule());
         }
         Module module = newModule(parentModule);
         injector = com.google.inject.Guice.createInjector(stage, module);
@@ -182,10 +181,10 @@ public class ClassImpl implements IClass {
   public Object[] getInstances(boolean create) {
     Object[] result = {};
 
-    if (m_xmlTest.isJUnit()) {
+    if (m_testContext.getCurrentXmlTest().isJUnit()) {
       if (create) {
         result = new Object[] { ClassHelper.createInstance(m_class, m_classes,
-            m_xmlTest, m_annotationFinder, m_objectFactory) };
+                m_testContext.getCurrentXmlTest(), m_annotationFinder, m_objectFactory) };
       }
     } else {
       Object defaultInstance = getDefaultInstance();

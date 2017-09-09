@@ -6,6 +6,7 @@ import org.testng.collections.Maps;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,11 +22,16 @@ public class Graph<T> {
   private static boolean m_verbose = false;
   private Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
+  private final Comparator<Node<T>> comparator;
 
   //  A map of nodes that are not the predecessors of any node
   // (not needed for the algorithm but convenient to calculate
   // the parallel/sequential lists in TestNG).
   private Map<T, Node<T>> m_independentNodes = null;
+
+  public Graph(Comparator<Node<T>> comparator) {
+    this.comparator = comparator;
+  }
 
   public void addNode(T tm) {
     ppp("ADDING NODE " + tm + " " + tm.hashCode());
@@ -121,7 +127,7 @@ public class Graph<T> {
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    Collections.sort(nodes2);
+    Collections.sort(nodes2, comparator);
 
     //
     // Sort
@@ -158,9 +164,9 @@ public class Graph<T> {
     if (null == m_independentNodes) {
       List<Node<T>> list = Lists.newArrayList(m_nodes.values());
       // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
-      // dependent nodes. Therefore, all the nodes were mostly sorted alphabetically. So we need to keep
-      // the behavior for now.
-      Collections.sort(list);
+      // dependent nodes.
+      Collections.sort(list, comparator);
+
       m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {
         m_independentNodes.put(node.getObject(), node);
@@ -255,7 +261,7 @@ public class Graph<T> {
   /////
   // class Node
   //
-  public static class Node<T> implements Comparable<Node<T>> {
+  public static class Node<T>  {
     private T m_object = null;
     private Map<T, T> m_predecessors = Maps.newHashMap();
 
@@ -335,9 +341,5 @@ public class Graph<T> {
       return m_predecessors.containsKey(m);
     }
 
-    @Override
-    public int compareTo(Node<T> o) {
-      return getObject().toString().compareTo(o.getObject().toString());
-    }
   }
 }

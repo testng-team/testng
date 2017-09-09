@@ -1,6 +1,5 @@
 package org.testng.xml;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +22,8 @@ import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
  * This class describes the tag &lt;suite&gt; in testng.xml.
- *
- * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
- * @author <a href = 'mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class XmlSuite implements Serializable, Cloneable {
+public class XmlSuite implements Cloneable {
   /** Parallel modes */
   public enum ParallelMode {
     TESTS("tests", false), METHODS("methods"), CLASSES("classes"), INSTANCES("instances"), NONE("none", false),
@@ -186,8 +182,6 @@ public class XmlSuite implements Serializable, Cloneable {
   private ITestObjectFactory m_objectFactory;
 
   private List<String> m_listeners = Lists.newArrayList();
-
-  private static final long serialVersionUID = 4999962288272750226L;
 
   public static final Boolean DEFAULT_PRESERVE_ORDER = Boolean.TRUE;
   private Boolean m_preserveOrder = DEFAULT_PRESERVE_ORDER;

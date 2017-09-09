@@ -36,6 +36,7 @@ import org.testng.internal.MethodHelper;
 import org.testng.internal.MethodInstance;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
+import org.testng.internal.Systematiser;
 import org.testng.internal.TestMethodWorker;
 import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
@@ -60,32 +61,29 @@ import com.google.inject.Module;
  * This class takes care of running one Test.
  */
 public class TestRunner
-    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>
-{
+    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
 
-  public static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
+  private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
 
-  /* generated */
-  private static final long serialVersionUID = 4247820024988306670L;
+  private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
   private XmlTest m_xmlTest;
   private String m_testName;
 
-  transient private List<XmlClass> m_testClassesFromXml= null;
-  transient private List<XmlPackage> m_packageNamesFromXml= null;
+  private List<XmlClass> m_testClassesFromXml= null;
 
-  transient private IInvoker m_invoker= null;
-  transient private IAnnotationFinder m_annotationFinder= null;
+  private IInvoker m_invoker= null;
+  private IAnnotationFinder m_annotationFinder= null;
 
   /** ITestListeners support. */
-  transient private List<ITestListener> m_testListeners = Lists.newArrayList();
-  transient private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private List<ITestListener> m_testListeners = Lists.newArrayList();
+  private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
 
-  transient private IConfigurationListener m_confListener= new ConfigurationListener();
-  transient private boolean m_skipFailedInvocationCounts;
+  private IConfigurationListener m_confListener= new ConfigurationListener();
 
-  transient private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
-  transient private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
+  private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
+  private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
 
   /**
    * All the test methods we found, associated with their respective classes.
@@ -100,7 +98,7 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  transient private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
+  private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory= DEFAULT_PROP_OUTPUT_DIR;
@@ -140,17 +138,18 @@ public class TestRunner
   private String m_host;
 
   // Defined dynamically depending on <test preserve-order="true/false">
-  private transient List<IMethodInterceptor> m_methodInterceptors;
+  private List<IMethodInterceptor> m_methodInterceptors;
 
-  private transient ClassMethodMap m_classMethodMap;
-  private transient TestNGClassFinder m_testClassFinder;
-  private transient IConfiguration m_configuration;
+  private ClassMethodMap m_classMethodMap;
+  private TestNGClassFinder m_testClassFinder;
+  private IConfiguration m_configuration;
   private IMethodInterceptor builtinInterceptor;
 
   private enum PriorityWeight {
     groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
   }
 
+  @Deprecated
   protected TestRunner(IConfiguration configuration,
                     ISuite suite,
                     XmlTest test,
@@ -160,14 +159,61 @@ public class TestRunner
                     Collection<IInvokedMethodListener> invokedMethodListeners,
                     List<IClassListener> classListeners)
   {
+    this.comparator = Systematiser.getComparator();
+    this.m_dataProviderListeners = Collections.emptyMap();
     init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
         invokedMethodListeners, classListeners);
   }
 
+  @Deprecated
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners) {
+    this.comparator = Systematiser.getComparator();
+    this.m_dataProviderListeners = Collections.emptyMap();
+    init(configuration, suite, test, suite.getOutputDirectory(),
+        suite.getAnnotationFinder(),
+        skipFailedInvocationCounts, invokedMethodListeners, classListeners);
+  }
+
+  @Deprecated
+  protected TestRunner(IConfiguration configuration,
+                    ISuite suite,
+                    XmlTest test,
+                    String outputDirectory,
+                    IAnnotationFinder finder,
+                    boolean skipFailedInvocationCounts,
+                    Collection<IInvokedMethodListener> invokedMethodListeners,
+                    List<IClassListener> classListeners,
+                    Comparator<ITestNGMethod> comparator) {
+    this(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
+            invokedMethodListeners, classListeners, comparator,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+  }
+
+  protected TestRunner(IConfiguration configuration,
+                       ISuite suite,
+                       XmlTest test,
+                       String outputDirectory,
+                       IAnnotationFinder finder,
+                       boolean skipFailedInvocationCounts,
+                       Collection<IInvokedMethodListener> invokedMethodListeners,
+                       List<IClassListener> classListeners, Comparator<ITestNGMethod> comparator,
+                       Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
+    this.comparator = comparator;
+    this.m_dataProviderListeners = Maps.newHashMap(dataProviderListeners);
+    init(configuration, suite, test, outputDirectory, finder, skipFailedInvocationCounts,
+            invokedMethodListeners, classListeners);
+  }
+
+
+  public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
+      boolean skipFailedInvocationCounts,
+      Collection<IInvokedMethodListener> invokedMethodListeners,
+      List<IClassListener> classListeners, Comparator<ITestNGMethod> comparator) {
+    this.comparator = comparator;
+    this.m_dataProviderListeners = Collections.emptyMap();
     init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(),
         skipFailedInvocationCounts, invokedMethodListeners, classListeners);
@@ -188,7 +234,6 @@ public class TestRunner
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml= test.getXmlClasses();
-    m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     setVerbose(test.getVerbose());
 
 
@@ -196,7 +241,7 @@ public class TestRunner
     m_methodInterceptors = new ArrayList<>();
     builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
 
-    m_packageNamesFromXml= test.getXmlPackages();
+    List<XmlPackage> m_packageNamesFromXml = test.getXmlPackages();
     if(null != m_packageNamesFromXml) {
       for(XmlPackage xp: m_packageNamesFromXml) {
         m_testClassesFromXml.addAll(xp.getXmlClasses());
@@ -210,7 +255,7 @@ public class TestRunner
       m_classListeners.put(classListener.getClass(), classListener);
     }
     m_invoker = new Invoker(m_configuration, this, this, m_suite.getSuiteState(),
-        m_skipFailedInvocationCounts, invokedMethodListeners, classListeners);
+            skipFailedInvocationCounts, invokedMethodListeners, classListeners, m_dataProviderListeners.values());
 
     if (test.getParallel() != null) {
       log(3, "Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
@@ -400,12 +445,9 @@ public class TestRunner
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
-    m_testClassFinder= new TestNGClassFinder(classMap,
-                                             m_xmlTest,
-                                             m_configuration,
-                                             this);
-    ITestMethodFinder testMethodFinder
-      = new TestNGMethodFinder(m_runInfo, m_annotationFinder);
+    m_testClassFinder= new TestNGClassFinder(classMap,Maps.<Class<?>, List<Object>>newHashMap(),
+                                             m_configuration, this, m_dataProviderListeners);
+    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
 
     m_runInfo.setTestMethods(testMethods);
 
@@ -462,21 +504,21 @@ public class TestRunner
                                                               m_runInfo,
                                                               m_annotationFinder,
                                                               true /* unique */,
-                                                              m_excludedMethods);
+                                                              m_excludedMethods, comparator);
 
     m_beforeXmlTestMethods = MethodHelper.collectAndOrderMethods(beforeXmlTestMethods,
                                                               false /* forTests */,
                                                               m_runInfo,
                                                               m_annotationFinder,
                                                               true /* unique (CQ added by me)*/,
-                                                              m_excludedMethods);
+                                                              m_excludedMethods, comparator);
 
     m_allTestMethods = MethodHelper.collectAndOrderMethods(testMethods,
                                                                 true /* forTest? */,
                                                                 m_runInfo,
                                                                 m_annotationFinder,
                                                                 false /* unique */,
-                                                                m_excludedMethods);
+                                                                m_excludedMethods, comparator);
     m_classMethodMap = new ClassMethodMap(testMethods, m_xmlMethodSelector);
 
     m_afterXmlTestMethods = MethodHelper.collectAndOrderMethods(afterXmlTestMethods,
@@ -484,14 +526,14 @@ public class TestRunner
                                                               m_runInfo,
                                                               m_annotationFinder,
                                                               true /* unique (CQ added by me)*/,
-                                                              m_excludedMethods);
+                                                              m_excludedMethods, comparator);
 
     m_afterSuiteMethods = MethodHelper.collectAndOrderMethods(afterSuiteMethods,
                                                               false /* forTests */,
                                                               m_runInfo,
                                                               m_annotationFinder,
                                                               true /* unique */,
-                                                              m_excludedMethods);
+                                                              m_excludedMethods, comparator);
     // shared group methods
     m_groupMethods = new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
 
@@ -829,12 +871,16 @@ public class TestRunner
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
 
-
-    Map<String, String> params = m_xmlTest.getAllParameters();
-
     Set<Class<?>> processedClasses = Sets.newHashSet();
+    Map<String, String> params = null;
+    Class<?> prevClass = null;
     for (IMethodInstance im : methodInstances) {
       Class<?> c = im.getMethod().getTestClass().getRealClass();
+      if (!c.equals(prevClass)) {
+        //Calculate the parameters to be injected only once per Class and NOT for every iteration.
+        params = getParameters(im);
+        prevClass = c;
+      }
       if (sequentialClasses.contains(c)) {
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
@@ -860,6 +906,11 @@ public class TestRunner
     }
 
     return result;
+  }
+
+  private static Map<String, String> getParameters(IMethodInstance im) {
+    XmlTest xmlTest = im.getMethod().getXmlTest();
+    return im.getMethod().findMethodParameters(xmlTest);
   }
 
 
@@ -1189,15 +1240,11 @@ public class TestRunner
    */
   private void fireEvent(boolean isStart) {
     for (ITestListener itl : m_testListeners) {
-      try {
-        if (isStart) {
-          itl.onStart(this);
-        }
-        else {
-          itl.onFinish(this);
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (isStart) {
+        itl.onStart(this);
+      }
+      else {
+        itl.onFinish(this);
       }
     }
   }
@@ -1460,6 +1507,10 @@ public class TestRunner
       IExecutionListener iel = (IExecutionListener) listener;
       iel.onExecutionStart();
       m_configuration.addExecutionListener(iel);
+    }
+    if (listener instanceof IDataProviderListener) {
+      IDataProviderListener dataProviderListener = (IDataProviderListener) listener;
+      m_dataProviderListeners.put(dataProviderListener.getClass(), dataProviderListener);
     }
     m_suite.addListener(listener);
   }

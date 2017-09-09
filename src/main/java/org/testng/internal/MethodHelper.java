@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +15,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.internal.Graph.Node;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
@@ -43,8 +45,8 @@ public class MethodHelper {
    */
   public static ITestNGMethod[] collectAndOrderMethods(List<ITestNGMethod> methods,
       boolean forTests, RunInfo runInfo, IAnnotationFinder finder,
-      boolean unique, List<ITestNGMethod> outExcludedMethods)
-  {
+      boolean unique, List<ITestNGMethod> outExcludedMethods,
+      Comparator<ITestNGMethod> comparator) {
     List<ITestNGMethod> includedMethods = Lists.newArrayList();
     MethodGroupsHelper.collectMethodsByGroup(methods.toArray(new ITestNGMethod[methods.size()]),
         forTests,
@@ -54,7 +56,7 @@ public class MethodHelper {
         finder,
         unique);
 
-    return sortMethods(forTests, includedMethods, finder).toArray(new ITestNGMethod[]{});
+    return sortMethods(forTests, includedMethods, comparator).toArray(new ITestNGMethod[]{});
   }
 
   /**
@@ -63,10 +65,10 @@ public class MethodHelper {
    * @param methods list of methods to search for depended upon methods
    * @return list of methods that match the criteria
    */
-  protected static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m,
-      ITestNGMethod[] methods)
-  {
+  protected static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, ITestNGMethod[] methods) {
+
     String canonicalMethodName = calculateMethodCanonicalName(m);
+
     List<ITestNGMethod> vResult = Lists.newArrayList();
     String regexp = null;
     for (String fullyQualifiedRegexp : m.getMethodsDependedUpon()) {
@@ -75,24 +77,19 @@ public class MethodHelper {
       if (null != fullyQualifiedRegexp) {
         // Escapes $ in regexps as it is not meant for end - line matching, but inner class matches.
         regexp = fullyQualifiedRegexp.replace("$", "\\$");
-        boolean usePackage = regexp.indexOf('.') != -1;
-        Pattern pattern = Pattern.compile(regexp);
-
-        for (ITestNGMethod method : methods) {
-          ConstructorOrMethod thisMethod = method.getConstructorOrMethod();
-          String thisMethodName = thisMethod.getName();
-          String methodName = usePackage ?
-              calculateMethodCanonicalName(method)
-              : thisMethodName;
-          Pair<String, String> cacheKey = Pair.create(regexp, methodName);
-          Boolean match = MATCH_CACHE.get(cacheKey);
-          if (match == null) {
-              match = pattern.matcher(methodName).matches();
-              MATCH_CACHE.put(cacheKey, match);
-          }
-          if (match) {
-            vResult.add(method);
-            foundAtLeastAMethod = true;
+        MatchResults results = matchMethod(methods, regexp);
+        foundAtLeastAMethod = results.foundAtLeastAMethod;
+        vResult.addAll(results.matchedMethods);
+        if (!foundAtLeastAMethod) {
+          //Replace the declaring class name in the dependsOnMethods value with
+          //the fully qualified test class name and retry the method matching.
+          int lastIndex = regexp.lastIndexOf('.');
+          String newMethodName;
+          if (lastIndex != -1) {
+            newMethodName = m.getTestClass().getRealClass().getName()  + regexp.substring(lastIndex);
+            results =  matchMethod(methods, newMethodName);
+            foundAtLeastAMethod = results.foundAtLeastAMethod;
+            vResult.addAll(results.matchedMethods);
           }
         }
       }
@@ -186,8 +183,14 @@ public class MethodHelper {
   }
 
   private static Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
-      List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList) {
-    Graph<ITestNGMethod> result = new Graph<>();
+      List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList,
+      final Comparator<ITestNGMethod> comparator) {
+    Graph<ITestNGMethod> result = new Graph<>(new Comparator<Node<ITestNGMethod>>() {
+      @Override
+      public int compare(Node<ITestNGMethod> o1, Node<ITestNGMethod> o2) {
+        return comparator.compare(o1.getObject(), o2.getObject());
+      }
+    });
 
     if (methods.length == 0) {
       return result;
@@ -265,7 +268,7 @@ public class MethodHelper {
   }
 
   private static List<ITestNGMethod> sortMethods(boolean forTests,
-      List<ITestNGMethod> allMethods, IAnnotationFinder finder) {
+      List<ITestNGMethod> allMethods, Comparator<ITestNGMethod> comparator) {
     List<ITestNGMethod> sl = Lists.newArrayList();
     List<ITestNGMethod> pl = Lists.newArrayList();
     ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[allMethods.size()]);
@@ -281,7 +284,7 @@ public class MethodHelper {
       MethodInheritance.fixMethodInheritance(allMethodsArray, before);
     }
 
-    topologicalSort(allMethodsArray, sl, pl);
+    topologicalSort(allMethodsArray, sl, pl, comparator);
 
     List<ITestNGMethod> result = Lists.newArrayList();
     result.addAll(sl);
@@ -292,12 +295,13 @@ public class MethodHelper {
   /**
    * @return A sorted array containing all the methods 'method' depends on
    */
-  public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method, ITestNGMethod[] methods) {
+  public static List<ITestNGMethod> getMethodsDependedUpon(ITestNGMethod method,
+      ITestNGMethod[] methods, Comparator<ITestNGMethod> comparator) {
     Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
     if (g == null) {
       List<ITestNGMethod> parallelList = Lists.newArrayList();
       List<ITestNGMethod> sequentialList = Lists.newArrayList();
-      g = topologicalSort(methods, sequentialList, parallelList);
+      g = topologicalSort(methods, sequentialList, parallelList, comparator);
       GRAPH_CACHE.put(methods, g);
     }
 
@@ -321,5 +325,32 @@ public class MethodHelper {
   protected static long calculateTimeOut(ITestNGMethod tm) {
     long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
     return result;
+  }
+
+  private static MatchResults matchMethod(ITestNGMethod[] methods, String regexp) {
+    MatchResults results = new MatchResults();
+    boolean usePackage = regexp.indexOf('.') != -1;
+    Pattern pattern = Pattern.compile(regexp);
+    for (ITestNGMethod method : methods) {
+      ConstructorOrMethod thisMethod = method.getConstructorOrMethod();
+      String thisMethodName = thisMethod.getName();
+      String methodName = usePackage ? calculateMethodCanonicalName(method) : thisMethodName;
+      Pair<String, String> cacheKey = Pair.create(regexp, methodName);
+      Boolean match = MATCH_CACHE.get(cacheKey);
+      if (match == null) {
+        match = pattern.matcher(methodName).matches();
+        MATCH_CACHE.put(cacheKey, match);
+      }
+      if (match) {
+        results.matchedMethods.add(method);
+        results.foundAtLeastAMethod = true;
+      }
+    }
+    return results;
+  }
+
+  private static class MatchResults {
+    private List<ITestNGMethod> matchedMethods = Lists.newArrayList();
+    private boolean foundAtLeastAMethod = false;
   }
 }

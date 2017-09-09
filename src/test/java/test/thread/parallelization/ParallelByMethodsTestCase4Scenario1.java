@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.testng.Assert.assertEquals;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogsForSuite;
@@ -78,6 +80,13 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 11) There are no method exclusions
  */
 public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest {
+
+    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase4Scenario1.class.getCanonicalName());
+
+    {
+        logger.setLevel(Level.INFO);
+    }
+
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
     private static final String SUITE_C = "TestSuiteC";
@@ -223,6 +232,50 @@ public class ParallelByMethodsTestCase4Scenario1 extends BaseParallelizationTest
         TestNG tng = create(suiteOne, suiteTwo, suiteThree);
         tng.setSuiteThreadPoolSize(2);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
+
+        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase4Scenario1. This test scenario consists of three " +
+                "suites with 1, 2 and 3 tests respectively. The suites run in parallel and the thread pool size is " +
+                "2. One test for a suite shall consist of a single test class while the rest shall consist of more " +
+                "han one test class. Some test classes have a mixture of some methods that use a data provider and " +
+                "some which do not. The data providers provide data sets of varying sizes. There are no " +
+                "dependencies or factories.");
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_A,SUITE_A_TEST_A,
+                        TestClassAFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() +
+                                ", " + TestClassBSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName(), 3});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+                new Object[]{SUITE_B,SUITE_B_TEST_A,
+                        TestClassCFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName(), 6});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_B,SUITE_B_TEST_B,
+                        TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class + ", " +
+                                TestClassEFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class + ", " +
+                                TestClassFSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
+                        20});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_C,SUITE_C_TEST_A,
+                        TestClassDThreeMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
+                                TestClassGFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
+                                TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class,
+                        10});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_C,SUITE_C_TEST_B,
+                        TestClassBFourMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
+                                TestClassHFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class,
+                        5});
+
+        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+                new Object[]{SUITE_C,SUITE_C_TEST_C,
+                        TestClassIThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
+                                TestClassJFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
+                                TestClassKFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
+                                TestClassBSixMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(),
+                        12});
 
         tng.run();
 

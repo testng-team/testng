@@ -40,6 +40,9 @@ public class PropertyUtils {
       LOGGER.warn("Cannot retrieve property class for " + propertyName + ". Target instance class is null");
     }
     PropertyDescriptor propDesc = getPropertyDescriptor(instanceClass, propertyName);
+    if (propDesc == null) {
+      return null;
+    }
     return propDesc.getPropertyType();
   }
 

@@ -7,6 +7,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
+import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
@@ -17,7 +18,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,59 +33,80 @@ import com.google.inject.Injector;
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one
  * suite. The test start is triggered by {@link #run()} method.
- *
- * @author Cedric Beust, Apr 26, 2004
  */
-public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener {
-
-  /* generated */
-  private static final long serialVersionUID = 5284208932089503131L;
+public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
   private Map<String, ISuiteResult> suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
-  private transient List<TestRunner> testRunners = Lists.newArrayList();
-  private transient Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
-  private transient TestListenerAdapter textReporter = new TestListenerAdapter();
+  private List<TestRunner> testRunners = Lists.newArrayList();
+  private Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
+  private TestListenerAdapter textReporter = new TestListenerAdapter();
 
   private String outputDir;
   private XmlSuite xmlSuite;
-  private transient Injector parentInjector;
+  private Injector parentInjector;
 
-  private transient List<ITestListener> testListeners = Lists.newArrayList();
-  private transient final Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
-  private transient ITestRunnerFactory tmpRunnerFactory;
+  private List<ITestListener> testListeners = Lists.newArrayList();
+  private final  Map<Class<? extends IClassListener>, IClassListener> classListeners = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners = Maps.newHashMap();
+  private ITestRunnerFactory tmpRunnerFactory;
 
-  private transient  ITestRunnerFactory runnerFactory;
-  private transient boolean useDefaultListeners = true;
+  private boolean useDefaultListeners = true;
 
   // The remote host where this suite was run, or null if run locally
   private String remoteHost;
 
   // The configuration
-  private transient  IConfiguration configuration;
+  private  IConfiguration configuration;
 
-  private transient ITestObjectFactory objectFactory;
-  private transient Boolean skipFailedInvocationCounts = Boolean.FALSE;
-  private transient List<IReporter> reporters = Lists.newArrayList();
+  private ITestObjectFactory objectFactory;
+  private Boolean skipFailedInvocationCounts = Boolean.FALSE;
+  private List<IReporter> reporters = Lists.newArrayList();
 
-  private transient Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> invokedMethodListeners;
+  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */
-  private transient List<IInvokedMethod> invokedMethods = Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
+  private List<IInvokedMethod> invokedMethods = Collections.synchronizedList(Lists.<IInvokedMethod>newArrayList());
 
   private List<ITestNGMethod> allTestMethods = Lists.newArrayList();
   private SuiteRunState suiteState = new SuiteRunState();
   private IAttributes attributes = new Attributes();
 
-  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir) {
-    this(configuration, suite, outputDir, null);
+  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir,
+      Comparator<ITestNGMethod> comparator) {
+    this(configuration, suite, outputDir, null, comparator);
   }
 
+  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir,
+      ITestRunnerFactory runnerFactory, Comparator<ITestNGMethod> comparator) {
+    this(configuration, suite, outputDir, runnerFactory, false, comparator);
+  }
+
+  public SuiteRunner(IConfiguration configuration,
+      XmlSuite suite,
+      String outputDir,
+      ITestRunnerFactory runnerFactory,
+      boolean useDefaultListeners, Comparator<ITestNGMethod> comparator)
+  {
+    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+        new ArrayList<IMethodInterceptor>() /* method interceptor */,
+        null /* invoked method listeners */,
+        null /* test listeners */,
+        null /* class listeners */, Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(), comparator);
+  }
+
+  @Deprecated
+  public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir) {
+    this(configuration, suite, outputDir, (ITestRunnerFactory) null);
+  }
+
+  @Deprecated
   public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir, ITestRunnerFactory runnerFactory) {
     this(configuration, suite, outputDir, runnerFactory, false);
   }
 
+  @Deprecated
   public SuiteRunner(IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
@@ -96,7 +117,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         new ArrayList<IMethodInterceptor>() /* method interceptor */,
         null /* invoked method listeners */,
         null /* test listeners */,
-        null /* class listeners */);
+        null /* class listeners */, Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(), Systematiser.getComparator());
   }
 
   /**
@@ -115,9 +136,13 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       List<ITestListener> testListeners,
       List<IClassListener> classListeners)
   {
-    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners, classListeners);
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+        methodInterceptors, invokedMethodListeners, testListeners, classListeners,
+        Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(),
+        Systematiser.getComparator());
   }
 
+  @Deprecated
   protected SuiteRunner(IConfiguration configuration,
       XmlSuite suite,
       String outputDir,
@@ -128,7 +153,47 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
       Collection<ITestListener> testListeners,
       Collection<IClassListener> classListeners)
   {
-    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners, methodInterceptors, invokedMethodListeners, testListeners, classListeners);
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+            methodInterceptors, invokedMethodListeners, testListeners, classListeners,
+            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(),
+            Systematiser.getComparator());
+  }
+
+  /**
+   * @deprecated - This constructor stands deprecated as of TestNG v6.13.
+   */
+  @Deprecated
+  //There are no external callers for this constructor but for TestNG. But since this method is a protected method
+  //we are following a proper deprecation strategy.
+  protected SuiteRunner(IConfiguration configuration,
+      XmlSuite suite,
+      String outputDir,
+      ITestRunnerFactory runnerFactory,
+      boolean useDefaultListeners,
+      List<IMethodInterceptor> methodInterceptors,
+      Collection<IInvokedMethodListener> invokedMethodListeners,
+      Collection<ITestListener> testListeners,
+      Collection<IClassListener> classListeners, Comparator<ITestNGMethod> comparator)
+  {
+    this(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+        methodInterceptors, invokedMethodListeners, testListeners, classListeners,
+        Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap(), comparator);
+  }
+
+  protected SuiteRunner(IConfiguration configuration,
+                        XmlSuite suite,
+                        String outputDir,
+                        ITestRunnerFactory runnerFactory,
+                        boolean useDefaultListeners,
+                        List<IMethodInterceptor> methodInterceptors,
+                        Collection<IInvokedMethodListener> invokedMethodListeners,
+                        Collection<ITestListener> testListeners,
+                        Collection<IClassListener> classListeners,
+                        Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners,
+                        Comparator<ITestNGMethod> comparator)
+  {
+    init(configuration, suite, outputDir, runnerFactory, useDefaultListeners,
+            methodInterceptors, invokedMethodListeners, testListeners, classListeners, dataProviderListeners, comparator);
   }
 
   private void init(IConfiguration configuration,
@@ -139,8 +204,9 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     List<IMethodInterceptor> methodInterceptors,
     Collection<IInvokedMethodListener> invokedMethodListener,
     Collection<ITestListener> testListeners,
-    Collection<IClassListener> classListeners)
-  {
+    Collection<IClassListener> classListeners,
+    Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners,
+    Comparator<ITestNGMethod> comparator) {
     this.configuration = configuration;
     xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
@@ -170,7 +236,13 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         this.classListeners.put(classListener.getClass(), classListener);
       }
     }
-    this.runnerFactory = buildRunnerFactory();
+    if (null != dataProviderListeners) {
+      this.dataProviderListeners.putAll(dataProviderListeners);
+    }
+    if (comparator == null) {
+      throw new IllegalArgumentException("comparator must not be null");
+    }
+    ITestRunnerFactory2 iTestRunnerFactory = buildRunnerFactory(comparator);
 
     // Order the <test> tags based on their order of appearance in testng.xml
     List<XmlTest> xmlTests = xmlSuite.getTests();
@@ -182,8 +254,8 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     });
 
     for (XmlTest test : xmlTests) {
-      TestRunner tr = this.runnerFactory.newTestRunner(this, test, invokedMethodListeners.values(), Lists.newArrayList(
-          this.classListeners.values()));
+      TestRunner tr = iTestRunnerFactory.newTestRunner(this, test, invokedMethodListeners.values(),
+              Lists.newArrayList(this.classListeners.values()), this.dataProviderListeners);
 
       //
       // Install the method interceptor, if any was passed
@@ -240,13 +312,13 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
         : null;
   }
 
-  private ITestRunnerFactory buildRunnerFactory() {
-    ITestRunnerFactory factory;
+  private ITestRunnerFactory2 buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
+    ITestRunnerFactory2 factory;
 
     if (null == tmpRunnerFactory) {
       factory = new DefaultTestRunnerFactory(configuration,
           testListeners.toArray(new ITestListener[testListeners.size()]),
-          useDefaultListeners, skipFailedInvocationCounts);
+          useDefaultListeners, skipFailedInvocationCounts, comparator);
     }
     else {
       factory = new ProxyTestRunnerFactory(
@@ -550,33 +622,43 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
   /**
    * The default implementation of {@link ITestRunnerFactory}.
    */
-  private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
+  private static class DefaultTestRunnerFactory implements ITestRunnerFactory2 {
     private ITestListener[] failureGenerators;
     private boolean useDefaultListeners;
     private boolean skipFailedInvocationCounts;
     private IConfiguration configuration;
+    private final Comparator<ITestNGMethod> comparator;
 
     public DefaultTestRunnerFactory(IConfiguration configuration,
         ITestListener[] failureListeners,
         boolean useDefaultListeners,
-        boolean skipFailedInvocationCounts)
+        boolean skipFailedInvocationCounts, Comparator<ITestNGMethod> comparator)
     {
       this.configuration = configuration;
       failureGenerators = failureListeners;
       this.useDefaultListeners = useDefaultListeners;
       this.skipFailedInvocationCounts = skipFailedInvocationCounts;
+      this.comparator = comparator;
     }
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
+      return newTestRunner(suite, test, listeners, classListeners,
+              Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    }
+
+    @Override
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners,
+        Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
       boolean skip = skipFailedInvocationCounts;
       if (! skip) {
         skip = test.skipFailedInvocationCounts();
       }
       TestRunner testRunner = new TestRunner(configuration, suite, test,
-          suite.getOutputDirectory(), suite.getAnnotationFinder(), skip,
-          listeners, classListeners);
+              suite.getOutputDirectory(), suite.getAnnotationFinder(), skip,
+              listeners, classListeners, comparator, dataProviderListeners);
 
       if (useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -601,7 +683,7 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     }
   }
 
-  private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
+  private static class ProxyTestRunnerFactory implements ITestRunnerFactory2 {
     private ITestListener[] failureGenerators;
     private ITestRunnerFactory target;
 
@@ -613,7 +695,20 @@ public class SuiteRunner implements ISuite, Serializable, IInvokedMethodListener
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
-      TestRunner testRunner= target.newTestRunner(suite, test, listeners, classListeners);
+      return newTestRunner(suite, test, listeners, classListeners,
+              Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    }
+
+    @Override
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+                                    Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners,
+                                    Map<Class<? extends IDataProviderListener>,IDataProviderListener> dataProviderListeners) {
+      TestRunner testRunner;
+      if (target instanceof ITestRunnerFactory2) {
+        testRunner = ((ITestRunnerFactory2)target).newTestRunner(suite, test, listeners, classListeners, dataProviderListeners);
+      } else {
+        testRunner = target.newTestRunner(suite, test, listeners, classListeners);
+      }
 
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
 

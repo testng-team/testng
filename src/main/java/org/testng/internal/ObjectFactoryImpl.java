@@ -14,10 +14,11 @@ import java.lang.reflect.Constructor;
  */
 public class ObjectFactoryImpl implements IObjectFactory {
 
-  private static final long serialVersionUID = -4547389328475540017L;
-
   @Override
   public Object newInstance(Constructor constructor, Object... params) {
+    if (constructor == null) {
+      throw new IllegalArgumentException("Constructor cannot be null.");
+    }
     try {
       constructor.setAccessible(true);
       return constructor.newInstance(params);
@@ -26,11 +27,7 @@ public class ObjectFactoryImpl implements IObjectFactory {
     } catch (SecurityException e) {
       throw new TestNGException(constructor.getName() + " must be public", e);
     } catch(Exception ex) {
-      throw new TestNGException("Cannot instantiate class "
-          + (constructor != null
-                ? constructor.getDeclaringClass().getName()
-                : ": couldn't find a suitable constructor"),
-                    ex);
+      throw new TestNGException("Cannot instantiate class " + constructor.getDeclaringClass().getName(), ex);
     }
   }
 }

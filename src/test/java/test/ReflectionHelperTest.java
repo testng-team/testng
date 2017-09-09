@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.internal.reflect.ReflectionHelper;
+import test.github1405.TestClassSample;
 import test.github765.DuplicateCallsSample;
 
 import java.lang.reflect.Method;
@@ -28,6 +29,10 @@ public class ReflectionHelperTest {
         //Abstract methods should be included.
         methods = prune(ReflectionHelper.getLocalMethods(Dragon.class));
         Assert.assertEquals(methods.length, 2);
+
+        //main methods should be pruned
+        methods = prune(ReflectionHelper.getLocalMethods(TestClassSample.class));
+        Assert.assertEquals(methods.length, 1);
     }
 
     /**

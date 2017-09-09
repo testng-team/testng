@@ -1,5 +1,6 @@
 package test.methodselectors;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import test.BaseTest;
@@ -79,7 +80,16 @@ public class MethodSelectorTest extends BaseTest {
     verifyTests("Failed", failed, getFailedTests());
   }
 
-  public static void ppp(String s) {
-    System.out.println("[MethodSelectorTest] " + s);
+  @Test(description = "GITHUB-1507")
+  public void testNoMethodsAreExecutedWithNoMatchFound() {
+    String className = ClassWithManyMethodsSample.class.getName();
+    addClass(className);
+    addIncludedMethod(className, "cars_sedan");
+    addIncludedMethod(className, "train_Local");
+    addIncludedMethod(className, "flight_Domestic");
+    run();
+    Assert.assertTrue(getPassedTests().isEmpty());
+    Assert.assertTrue(getFailedTests().isEmpty());
+    Assert.assertTrue(getSkippedTests().isEmpty());
   }
 }

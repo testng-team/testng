@@ -97,6 +97,8 @@
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
       <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
+      <class name="test.github1405.TestExclusionOfMainMethod"/>
+      <class name="test.cli.github1517.ExitCodeListenerBehaviorTest"/>
 <!--
       <class name="test.thread.ParallelSuiteTest"/>
 -->
@@ -157,6 +159,13 @@
       <class name="test_result.GitHub1197Test"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
+      <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
+      <class name="test.order.OrderTest" />
+      <class name="test.github1461.MemoryLeakTestNg" />
+      <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
+      <class name="test.factory.github328.GitHub328Test" />
+      <class name="test.github1490.VerifyDataProviderListener"/>      
+      <class name="test.methodselection.MethodSelectionTest"/>
     </classes>
   </test>
 
@@ -270,6 +279,8 @@
       <class name="test.inheritance.testng739.TestNG739"/>
       <class name="test.inheritance.testng234.PolymorphicFailureTest" />
       <class name="test.inheritance.testng471.TestNG471" />
+      <class name="test.inheritance.github980.Github980Test"/>
+      <class name="test.inheritance.github949.Github949Test"/>
     </classes>
   </test>
 
@@ -684,7 +695,7 @@
   <test name="Utils">
     <classes>
       <class name="org.testng.internal.UtilsTest" />
-      <class name="test.issue1339.ClassHelperTest"/>
+      <class name="org.testng.internal.ClassHelperTest"/>
       <class name="test.issue1430.TestFileToClass"/>
     </classes>
   </test>
@@ -815,5 +826,20 @@
       <class name="test.thread.parallelization.ParallelByMethodsTestCase9Scenario1"/>
     </classes>
   </test>
+
+  <!--This test depends on System properties. So its intentionally being run at the end
+  because the toggling of the system property will affect other tests -->
+  <test name = "RunAtLast">
+    <classes>
+      <class name="test.dataprovider.issue128.DataProviderParametersMismatchTest"/>
+    </classes>
+  </test>
+
+  <test name="RunOrderingTest">
+    <classes>
+      <class name="test.github799.EnsureInstancesAreOrderedViaFactories"/>
+    </classes>
+  </test>
+
 </suite>
 

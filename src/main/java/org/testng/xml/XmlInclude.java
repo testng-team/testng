@@ -4,13 +4,11 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class XmlInclude implements Serializable {
-  private static final long serialVersionUID = 1L;
+public class XmlInclude {
 
   private final String m_name;
   private final List<Integer> m_invocationNumbers;

@@ -1,6 +1,5 @@
 package org.testng.xml;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,8 +20,7 @@ import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 /**
  * This class describes the tag &lt;test&gt; in testng.xml.
  */
-public class XmlTest implements Serializable, Cloneable {
-  private static final long serialVersionUID = 6533504325942417606L;
+public class XmlTest implements Cloneable {
 
   public static final int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
 
@@ -935,4 +933,5 @@ public class XmlTest implements Serializable, Cloneable {
   public void setGroups(XmlGroups xmlGroups) {
     m_xmlGroups = xmlGroups;
   }
+
 }

@@ -6,11 +6,12 @@ package org.testng;
  * return of {@link #isSkip()}.
  * Users may provide extensions to this mechanism by extending this class.
  *
- * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  * @since 5.6
  */
 public class SkipException extends RuntimeException {
+
   private static final long serialVersionUID = 4052142657885527260L;
+
   private StackTraceElement[] m_stackTrace;
   private volatile boolean m_stackReduced;
 

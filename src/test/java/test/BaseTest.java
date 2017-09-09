@@ -1,10 +1,6 @@
 package test;
 
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.testng.Assert;
 import org.testng.IClassListener;
@@ -27,6 +22,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.collections.Lists;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.Systematiser;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -185,7 +181,7 @@ public class BaseTest extends BaseDistributedTest {
 
     m_suite.setVerbose(m_verbose != null ? m_verbose : 0);
     SuiteRunner suite = new SuiteRunner(m_configuration,
-        m_suite, m_outputDirectory, m_testRunnerFactory);
+        m_suite, m_outputDirectory, m_testRunnerFactory, Systematiser.getComparator());
 
     suite.run();
   }
@@ -401,14 +397,11 @@ public class BaseTest extends BaseDistributedTest {
       m_baseTest= baseTest;
     }
 
-    /**
-     * @see org.testng.ITestRunnerFactory#newTestRunner(org.testng.ISuite, org.testng.xml.XmlTest)
-     */
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
       TestRunner testRunner= new TestRunner(m_baseTest.getConfiguration(), suite, test, false,
-          listeners, classListeners);
+          listeners, classListeners, Systematiser.getComparator());
 
       testRunner.addListener(new TestHTMLReporter());
       testRunner.addListener(new JUnitXMLReporter());

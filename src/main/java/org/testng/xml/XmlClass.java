@@ -7,19 +7,15 @@ import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
  * This class describes the tag <class> in testng.xml.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class XmlClass implements Serializable, Cloneable {
+public class XmlClass implements Cloneable {
 
-  private static final long serialVersionUID = 8885360896966149897L;
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
   private String m_name = null;
@@ -282,8 +278,9 @@ public class XmlClass implements Serializable, Cloneable {
    */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
-    Map<String, String> parameters = m_xmlTest.getLocalParameters();
-    result.putAll(parameters);
+    if (m_xmlTest != null) {
+      result.putAll(m_xmlTest.getLocalParameters());
+    }
     result.putAll(m_parameters);
     return result;
   }
