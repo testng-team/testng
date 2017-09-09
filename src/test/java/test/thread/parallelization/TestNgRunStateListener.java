@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_BELONGING_TO;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_DEPENDED_ON;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHODS_DEPENDED_ON;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
@@ -104,10 +107,14 @@ public class TestNgRunStateListener implements ISuiteListener, ITestListener {
     }
 
     private TestNgRunStateTracker.EventLogBuilder buildEventLog(ITestResult result, TestNgRunEvent event) {
+
         return(buildEventLog(result.getTestContext(), event))
                 .addData(METHOD_NAME, result.getMethod().getMethodName())
                 .addData(CLASS_NAME, result.getMethod().getRealClass().getCanonicalName())
-                .addData(CLASS_INSTANCE, result.getMethod().getInstance());
+                .addData(CLASS_INSTANCE, result.getMethod().getInstance())
+                .addData(GROUPS_DEPENDED_ON, result.getMethod().getGroupsDependedUpon())
+                .addData(METHODS_DEPENDED_ON, result.getMethod().getMethodsDependedUpon())
+                .addData(GROUPS_BELONGING_TO, result.getMethod().getGroups());
     }
 
     private void delayAfterEvent(TestNgRunEvent event) {
