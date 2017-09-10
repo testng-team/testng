@@ -3,8 +3,10 @@ package test.thread.parallelization;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -949,7 +951,10 @@ public class TestNgRunStateTracker {
                 sb.append(", Data provider param: ").append(getData(EventInfo.DATA_PROVIDER_PARAM));
             }
 
-            sb.append(", Time of event: ").append(timeOfEvent);
+            Date now = new Date(timeOfEvent);
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            sb.append(", Time of event: ").append(sdfDate.format(timeOfEvent));
             sb.append(", Thread ID: ").append(threadId);
             sb.append("}");
             return sb.toString();

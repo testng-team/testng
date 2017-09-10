@@ -9,6 +9,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
