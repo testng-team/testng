@@ -10,7 +10,6 @@ import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 
 import java.util.HashMap;
 import java.util.List;
@@ -115,13 +114,21 @@ public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest
 
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
-        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase3Scenario1. This test scenario consists of a " +
+//        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase3Scenario1. This test scenario consists of a " +
+//                "single suite with a single test consisting of a single test class with five methods with a data " +
+//                "provider specifying 3 sets of data. There are no dependencies or factories.");
+
+        System.out.println("Beginning ParallelByMethodsTestCase3Scenario1. This test scenario consists of a " +
                 "single suite with a single test consisting of a single test class with five methods with a data " +
                 "provider specifying 3 sets of data. There are no dependencies or factories.");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-                new Object[]{SUITE,TEST,
-                        TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), 15});
+//        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+//                new Object[]{SUITE,TEST,
+//                        TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), 15});
+
+        System.out.println("Suite: " + SUITE + ", Test: " + TEST + ", Test class: "
+                + TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
+                ". Thread count: 15");
 
         tng.run();
 

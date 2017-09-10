@@ -444,7 +444,6 @@ public class TestNgRunStateTracker {
 
     public static Multimap<Object, EventLog> getTestMethodEventLogsForMethodsDependedOn(String suiteName, String
             testName, String className, String methodName) {
-        //System.out.println("\nProcessing " + className + ", " + methodName);
 
         Multimap<Object,EventLog> testMethodEventLogs = ArrayListMultimap.create();
         Map<Object,EventLog> startEventLogs = getTestMethodListenerStartEventLogsForMethod(suiteName, testName,
@@ -453,9 +452,6 @@ public class TestNgRunStateTracker {
         EventLog eventLog = new ArrayList<>(startEventLogs.values()).get(0);
 
         String[] methodsDependedOn =  (String[])eventLog.getData(EventInfo.METHODS_DEPENDED_ON);
-
-        //System.out.println("Methods depended on(" + className + ", " + methodName + "):" +
-        //        Arrays.toString(methodsDependedOn));
 
         for(String methodDependOn : methodsDependedOn) {
             testMethodEventLogs.putAll(getTestMethodEventLogsForMethod(suiteName, testName, className,

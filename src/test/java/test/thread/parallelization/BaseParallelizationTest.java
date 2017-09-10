@@ -48,8 +48,6 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         logger.setLevel(Level.INFO);
     }
 
-//    String x = "%1$tF %1$tT";
-
     //Get a list of the names of declared methods with the @Test annotation from the specified class
     public static List<String> getDeclaredTestMethods(Class<?> clazz) {
         List<String> methodNames = new ArrayList<>();
@@ -320,11 +318,16 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifySimultaneousTestMethods(List<EventLog> testMethodEventLogs, String testName, int
             maxSimultaneousTestMethods) {
 
-        logger.log(Level.INFO,"Verifying parallel execution of test methods for test named {0} with thread count {1}",
-                new Object[] {testName, maxSimultaneousTestMethods});
+//        logger.log(Level.INFO,"Verifying parallel execution of test methods for test named {0} with thread count {1}",
+//                new Object[] {testName, maxSimultaneousTestMethods});
+//
+//        logger.log(Level.INFO, "{0} test method event logs for {1} test methods: ",
+//                new Object[]{ testMethodEventLogs.size(), testMethodEventLogs.size()/3} );
 
-        logger.log(Level.INFO, "{0} test method event logs for {1} test methods: ",
-                new Object[]{ testMethodEventLogs.size(), testMethodEventLogs.size()/3} );
+        System.out.println("Verifying parallel execution of test methods for test named " + testName  + " with " +
+                "thread count " + maxSimultaneousTestMethods);
+        System.out.println(testMethodEventLogs.size() + " test method event logs for " + testMethodEventLogs.size()/3
+                + " test methods");
 
         //There are three test method events expected per test method: a start event, an execution event, and a test
         //method pass event. All methods take exactly the same amount of time to execute. Each one of their events
@@ -353,7 +356,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         //test method.
         for (int i = 1; i < testMethodEventLogs.size(); i = i + maxSimultaneousTestMethods * 3) {
 
-            logger.log(Level.INFO, "Processing block {0} of {1}", new Object[] {loopNum, numBlocks});
+//            logger.log(Level.INFO, "Processing block {0} of {1}", new Object[] {loopNum, numBlocks});
+
+            System.out.println("Processing block " + loopNum + " of " + numBlocks);
 
             //The size of the block is equal to the thread count or the number of methods left over in the last block
             //if the total number of methods is not a multiple of the thread count. Example: For a test run with 19
@@ -377,8 +382,11 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     testMethodEventLogs.size() - (remainder * 3) + blockSize :
                     i + maxSimultaneousTestMethods - 1;
 
-            logger.log(Level.INFO, "Expecting {0} test method start events, followed by {0} test method execution " +
-                    "events, followed by {0} test method pass events", blockSize);
+//            logger.log(Level.INFO, "Expecting {0} test method start events, followed by {0} test method execution " +
+//                    "events, followed by {0} test method pass events", blockSize);
+
+            System.out.println("Expecting " + blockSize + " test method start events, followed by " + blockSize +
+                    " test method execution events , followed by " + blockSize + " test method pass events");
 
             List<EventLog> eventLogMethodListenerStartSublist = testMethodEventLogs.subList(offsetOne, offsetTwo);
             List<EventLog> eventLogMethodExecuteSublist = testMethodEventLogs.subList(offsetTwo, offsetTwo + blockSize);
@@ -440,11 +448,17 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             testName, Map<String, Integer> expectedInvocationCounts, int numUniqueMethods, int
             maxSimultaneousTestMethods) {
 
-        logger.log(Level.INFO,"Verifying parallel execution of test methods using non-parallel data providers for " +
-                "test named {0} with thread count {1}", new Object[] {testName, maxSimultaneousTestMethods});
+//        logger.log(Level.INFO,"Verifying parallel execution of test methods using non-parallel data providers for " +
+//                "test named {0} with thread count {1}", new Object[] {testName, maxSimultaneousTestMethods});
+//
+//        logger.log(Level.INFO, "{0} test method event logs for {1} unique methods: ",
+//                new Object[] {testMethodEventLogs.size(), numUniqueMethods});
 
-        logger.log(Level.INFO, "{0} test method event logs for {1} unique methods: ",
-                new Object[] {testMethodEventLogs.size(), numUniqueMethods});
+        System.out.println("Verifying parallel execution of test methods using non-parallel data providers for " +
+                "test named " + testName + " with thread count " + maxSimultaneousTestMethods);
+        System.out.println(testMethodEventLogs.size() + " test method event logs for " + numUniqueMethods +
+                " unique methods");
+
 
         //Some of the test methods use non-parallel data providers without factories. All the invocations of those
         //test methods will occur serially within the same thread on the same class instances. In order to ensure that
@@ -487,7 +501,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
         for (int i = 1; i < testMethodEventLogs.size(); i = i + blockSize * 3) {
 
-            logger.log(Level.INFO, "Processing block {0}", loopNum);
+//            logger.log(Level.INFO, "Processing block {0}", loopNum);
+
+            System.out.println("Processing block " + loopNum);
 
             //If the loop is executing more than once, then the block size needs to be updated. The number of remaining
             //unique methods to execute determines the block size of parallel methods expected to execute
@@ -533,8 +549,11 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
             int offsetTwo = i + blockSize - 1;
 
-            logger.log(Level.INFO, "Expecting {0} test method start events, followed by {0} test method execution " +
-                    "events, followed by {0} test method pass events", blockSize);
+//            logger.log(Level.INFO, "Expecting {0} test method start events, followed by {0} test method execution " +
+//                    "events, followed by {0} test method pass events", blockSize);
+
+            System.out.println("Expecting " + blockSize + " test method start events, followed by " + blockSize
+                    + " test method execution, followed by " + blockSize + " test method pass events");
 
             List<EventLog> eventLogMethodListenerStartSublist = testMethodEventLogs.subList(offsetOne, offsetTwo);
             List<EventLog> eventLogMethodExecuteSublist = testMethodEventLogs.subList(offsetTwo, offsetTwo + blockSize);
@@ -574,9 +593,13 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     "event logs immediately preceding");
 
             for(String method : methodsExecuting.keySet()) {
-                logger.log(Level.INFO, "{0} has executed {1} times. Expected to execute {2} more times.",
-                        new Object[]{method, methodInvocationsCounts.get(method),
-                                expectedInvocationCounts.get(method) - methodInvocationsCounts.get(method)});
+//                logger.log(Level.INFO, "{0} has executed {1} times. Expected to execute {2} more times.",
+//                        new Object[]{method, methodInvocationsCounts.get(method),
+//                                expectedInvocationCounts.get(method) - methodInvocationsCounts.get(method)});
+
+                System.out.println(method + " has executed " + methodInvocationsCounts.get(method) + " times. "
+                        + "Expected to execute " +
+                        (expectedInvocationCounts.get(method) - methodInvocationsCounts.get(method)) + " more times");
             }
 
             //Verify that all the events in the sublist extracted for the test method pass events of the block of
@@ -1005,64 +1028,87 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
     private static void log(int offsetOne, int offsetTwo, int blockSize, List<EventLog> eventLogMethodListenerStartSublist,
                 List<EventLog> eventLogMethodExecuteSublist, List<EventLog> eventLogMethodListenerPassSublist) {
-        logger.log(Level.INFO, "Event logs extracted from event log list between index {0} and index {1} should " +
-                        "be the test method start event logs for a block of {2} simultaneously executing methods",
-                new Object[] {offsetOne, offsetTwo - 1, blockSize});
+//        logger.log(Level.INFO, "Event logs extracted from event log list between index {0} and index {1} should " +
+//                        "be the test method start event logs for a block of {2} simultaneously executing methods",
+//                new Object[] {offsetOne, offsetTwo - 1, blockSize});
+
+        System.out.println("Event logs extracted from event log list between index " + offsetOne + " and index "
+                + (offsetTwo - 1) + " should be the test method start event logs for a block of " + blockSize +
+                " simultaneously executing methods");
 
         int j = offsetOne;
 
         for(EventLog eventLog : eventLogMethodListenerStartSublist) {
-            logger.log(Level.INFO, "Event logged at index {0}: {1}", new Object[] {j, eventLog.toString()});
+//            logger.log(Level.INFO, "Event logged at index {0}: {1}", new Object[] {j, eventLog.toString()});
+            System.out.println("Event logged at index " + j + ": " + eventLog.toString());
             j++;
         }
 
-        logger.log(Level.INFO, "Event logs extracted from event log list between index {0} and index {1} should " +
-                        "be the test method execution event logs for a block of {2} simultaneously executing methods",
-                new Object[] {offsetTwo, offsetTwo + blockSize - 1, blockSize});
+//        logger.log(Level.INFO, "Event logs extracted from event log list between index {0} and index {1} should " +
+//                        "be the test method execution event logs for a block of {2} simultaneously executing methods",
+//                new Object[] {offsetTwo, offsetTwo + blockSize - 1, blockSize});
+
+        System.out.println("Event logs extracted from event log list between index " + offsetTwo + " and index "
+                + (offsetTwo + blockSize - 1) + " should be the test method execution event logs for a block of " +
+                blockSize + " simultaneously executing methods");
 
         j = offsetTwo;
 
         for(EventLog eventLog : eventLogMethodExecuteSublist) {
-            logger.log(Level.INFO, "Event logged at index {0}: {1}", new Object[] {j, eventLog.toString()});
+//            logger.log(Level.INFO, "Event logged at index {0}: {1}", new Object[] {j, eventLog.toString()});
+            System.out.println("Event logged at index " + j + ": " + eventLog.toString());
             j++;
         }
 
-        logger.log(Level.INFO, "Event logs extracted from event log list between index {0} and index {1} should " +
-                        "be the test method pass event logs for a block of {2} simultaneously executing methods",
-                new Object[] {offsetTwo + blockSize, offsetTwo + 2 * blockSize - 1, blockSize});
+//        logger.log(Level.INFO, "Event logs extracted from event log list between index {0} and index {1} should " +
+//                        "be the test method pass event logs for a block of {2} simultaneously executing methods",
+//                new Object[] {offsetTwo + blockSize, offsetTwo + 2 * blockSize - 1, blockSize});
+
+        System.out.println("Event logs extracted from event log list between index " + (offsetTwo + blockSize) +
+                " and index " + (offsetTwo + 2 * blockSize - 1) + " should be the test method pass event " +
+                "logs for a block of " + blockSize + " simultaneously executing methods");
 
         j = offsetTwo + blockSize;
 
         for(EventLog eventLog : eventLogMethodListenerPassSublist) {
-            logger.log(Level.INFO, "Event logged at index {0}: {1}", new Object[] {j, eventLog.toString()});
+//            logger.log(Level.INFO, "Event logged at index {0}: {1}", new Object[] {j, eventLog.toString()});
+            System.out.println("Event logged at index " + j + ": " + eventLog.toString());
             j++;
         }
     }
 
     private static void log(int listSize, int threadCount, int remainder) {
         if(listSize / 3 < threadCount) {
-            logger.log(Level.INFO, "Expecting there to be a single block of {0} parallel methods", listSize / 3);
+//            logger.log(Level.INFO, "Expecting there to be a single block of {0} parallel methods", listSize / 3);
+            System.out.println("Expecting there to be a single block of " + (listSize / 3) + " parallel methods");
         } else {
 
             if(remainder > 0) {
-                logger.log(Level.INFO, "Expecting there to be a series of {0} blocks of {1} parallel methods with a " +
-                                "final block of {2} parallel methods",
+//                logger.log(Level.INFO, "Expecting there to be a series of {0} blocks of {1} parallel methods with a " +
+//                                "final block of {2} parallel methods",
+//
+//                        new Object[]
+//                                {
+//                                        (listSize / 3) / threadCount,
+//                                        threadCount,
+//                                        remainder
+//                                }
+//                );
 
-                        new Object[]
-                                {
-                                        (listSize / 3) / threadCount,
-                                        threadCount,
-                                        remainder
-                                }
-                );
+                System.out.println("Expecting there to be a series of " + ((listSize / 3) / threadCount) + " blocks "
+                        + "of " + threadCount + " parallel methods with a final block of " + remainder + " parallel "
+                        + "methods");
             } else {
-                logger.log(Level.INFO, "Expecting there to be a series of {0} blocks of {1} parallel methods",
-                        new Object[]
-                                {
-                                        (listSize / 3) / threadCount,
-                                        threadCount
-                                }
-                        );
+//                logger.log(Level.INFO, "Expecting there to be a series of {0} blocks of {1} parallel methods",
+//                        new Object[]
+//                                {
+//                                        (listSize / 3) / threadCount,
+//                                        threadCount
+//                                }
+//                        );
+
+                System.out.println("Expecting there to be a series of " + ((listSize / 3) / threadCount) + " blocks "
+                        + "of " + threadCount + " parallel methods");
             }
         }
     }
