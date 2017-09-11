@@ -189,6 +189,19 @@ public class XmlSuite implements Cloneable {
   private List<String> m_includedGroups = Lists.newArrayList();
   private List<String> m_excludedGroups = Lists.newArrayList();
   private XmlMethodSelectors m_xmlMethodSelectors;
+  private boolean parsed = false;
+
+  public void setParsed(boolean parsed) {
+    this.parsed = parsed;
+  }
+
+  /**
+   *
+   * @return - <code>true</code> if the current {@link XmlSuite} has already been parsed.
+   */
+  public boolean isParsed() {
+    return parsed;
+  }
 
   /**
    * @return the fileName

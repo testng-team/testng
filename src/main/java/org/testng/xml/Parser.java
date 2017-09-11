@@ -135,9 +135,7 @@ public class Parser {
    * @throws IOException if an I/O error occurs while parsing the test suite file or
    * if the default testng.xml file is not found.
    */
-  public Collection<XmlSuite> parse()
-    throws IOException
-  {
+  public Collection<XmlSuite> parse() throws IOException {
     // Each suite found is put in this list, using their canonical
     // path to make sure we don't add a same file twice
     // (e.g. "testng.xml" and "./testng.xml")
@@ -157,7 +155,7 @@ public class Parser {
      * Keeps a track of parent XmlSuite for each child suite
      */
     Map<String, XmlSuite> childToParentMap = Maps.newHashMap();
-    while (toBeParsed.size() > 0) {
+    while (!toBeParsed.isEmpty()) {
 
       for (String currentFile : toBeParsed) {
         File currFile = new File(currentFile);
@@ -168,6 +166,7 @@ public class Parser {
 
         IFileParser<XmlSuite> fileParser = getParser(currentFile);
         XmlSuite currentXmlSuite = fileParser.parse(currentFile, inputStream, m_loadClasses);
+        currentXmlSuite.setParsed(true);
         processedSuites.add(currentFile);
         toBeRemoved.add(currentFile);
 
@@ -184,7 +183,7 @@ public class Parser {
         }
 
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
-        if (suiteFiles.size() > 0) {
+        if (!suiteFiles.isEmpty()) {
           for (String path : suiteFiles) {
             String canonicalPath;
             if (parentFile != null && new File(parentFile, path).exists()) {

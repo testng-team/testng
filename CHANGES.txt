@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-1465: Failure policy CONTINUE handling is broken for tests that are skipped in @BeforeMethod method (Krishnan Mahadevan)
+Fixed: GITHUB-1533: Duplicate child suites get added when working with parent/child suite scenario (Krishnan Mahadevan)
 Fixed: GITHUB-949: dependsOnMethods with alwaysRun = true and inheritance fails to find method (Krishnan Mahadevan)
 Fixed: GITHUB-1519: Possibility to retry a test until it FAILED (Krishnan Mahadevan)
 Fixed: GITHUB-980: TestNG run inherited method twice (Krishnan Mahadevan)
