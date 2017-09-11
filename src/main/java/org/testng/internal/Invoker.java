@@ -610,7 +610,8 @@ public class Invoker implements IInvoker {
               getExceptionDetails(instance));
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
-
+      testResult.setMethod(tm);
+      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       invokeConfigurations(testClass, tm,
           filterConfigurationMethods(tm, afterMethods, false /* beforeMethods */),
