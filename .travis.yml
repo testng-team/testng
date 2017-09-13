@@ -5,6 +5,7 @@ language: java
 env:
   global:
     - GRADLE_OPTS=-Xmx512m
+    - CI=true
 
 before_script:
   - if [[ "x$JDK" == *'x9'* ]]; then remove_dir_from_path $JAVA_HOME/bin; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; export PATH=$JAVA_HOME/bin:$PATH; java -Xmx32m -version; fi
@@ -35,7 +36,7 @@ matrix:
       dist: precise
 
 script:
-  - ./gradlew check --stacktrace
+  - ./gradlew check --stacktrace --scan
 after_success:
   - ./travis.sh deploy
   - ./travis.sh sonarqube
