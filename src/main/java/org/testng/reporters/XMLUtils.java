@@ -1,5 +1,7 @@
 package org.testng.reporters;
 
+import org.testng.util.Strings;
+
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
@@ -112,7 +114,7 @@ public final class XMLUtils {
 
   public static void xmlClose(IBuffer result, String indent, String tag, String comment) {
     result.append(indent).append("</").append(tag).append(">")
-        .append(comment != null ? comment : "")
+        .append(Strings.getValueOrEmpty(comment))
         .append(EOL);
   }
 

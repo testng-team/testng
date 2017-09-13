@@ -109,6 +109,7 @@
       <class name="test.jar.JarTest" />
  -->
       <class name="test.xml.XmlVerifyTest" />
+      <class name="test.xml.XMLStringBufferTest"/>
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
       <class name="test.testng249.VerifyTest"/>
       <class name="test.testng195.AfterMethodTest" />

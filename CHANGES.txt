@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1455: Configure XML output of XmlSuite (Krishnan Mahadevan)
 Fixed: GITHUB-1465: Failure policy CONTINUE handling is broken for tests that are skipped in @BeforeMethod method (Krishnan Mahadevan)
 Fixed: GITHUB-1533: Duplicate child suites get added when working with parent/child suite scenario (Krishnan Mahadevan)
 Fixed: GITHUB-949: dependsOnMethods with alwaysRun = true and inheritance fails to find method (Krishnan Mahadevan)

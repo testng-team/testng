@@ -266,7 +266,7 @@ public class SimpleBaseTest {
   }
 
   public static String getPathToResource(String fileName) {
-    String result = System.getProperty(TEST_RESOURCES_DIR);
+    String result = System.getProperty(TEST_RESOURCES_DIR, "src/test/resources");
     if (result == null) {
       throw new IllegalArgumentException("System property " + TEST_RESOURCES_DIR + " was not defined.");
     }
