@@ -26,10 +26,21 @@ buildscript {
 }
 
 plugins {
+    id 'com.gradle.build-scan' version '1.9'
     id "com.jfrog.bintray" version "1.7.3"
     id "com.jfrog.artifactory" version "4.4.10"
     id "nebula.optional-base" version "3.1.0"
     id "nebula.provided-base" version "3.1.0"
+}
+
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
+    link 'GitHub', 'https://github.com/cbeust/testng/tree/master'
+    if (System.getenv('CI')) {
+        publishOnFailure()
+        tag 'CI'
+    }
 }
 
 task wrapper(type: Wrapper) {
@@ -123,9 +134,6 @@ test {
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
 	maxHeapSize = '1500m'
-    afterTest { desc, result ->
-        println "Executed test ==> ${desc.className}.${desc.name}() with result: ${result.resultType}"
-    }
 }
 
 allprojects {
