@@ -91,13 +91,21 @@ public class ParallelByMethodsTestCase7Scenario1 extends BaseParallelizationTest
 
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
-        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase7Scenario1. This test scenario consists of a " +
+//        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase7Scenario1. This test scenario consists of a " +
+//                "single suite with a single test consisting of a single test class with five methods with a " +
+//                "factory method using a data provider specifying 3 sets of data. There are no dependencies.");
+
+        System.out.println("Beginning ParallelByMethodsTestCase7Scenario1. This test scenario consists of a " +
                 "single suite with a single test consisting of a single test class with five methods with a " +
                 "factory method using a data provider specifying 3 sets of data. There are no dependencies.");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-                new Object[]{SUITE,TEST,
-                        TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName(), 15});
+//        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+//                new Object[]{SUITE,TEST,
+//                        TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName(), 15});
+
+        System.out.println("Suite: " + SUITE + ", Test: " + TEST + ", Test class: "
+                + TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
+                ". Thread count: 15");
 
         tng.run();
 

@@ -3,7 +3,10 @@ package test.thread.parallelization;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -428,6 +431,56 @@ public class TestNgRunStateTracker {
         return testMethodEventLogs;
     }
 
+    public static Multimap<Object, EventLog> getTestMethodEventLogsForMethodsBelongingToGroup(String groupName) {
+        Multimap<Object,EventLog> testMethodEventLogs = ArrayListMultimap.create();
+
+        for(EventLog eventLog : getAllTestMethodLevelEventLogs()) {
+            String[] groupsBelongingTo = (String[])eventLog.getData(EventInfo.GROUPS_BELONGING_TO);
+
+            if(Arrays.asList(groupsBelongingTo).contains(groupName)) {
+                testMethodEventLogs.put(eventLog.getData(EventInfo.CLASS_INSTANCE), eventLog);
+            }
+        }
+        return testMethodEventLogs;
+    }
+
+    public static Multimap<Object, EventLog> getTestMethodEventLogsForMethodsDependedOn(String suiteName, String
+            testName, String className, String methodName) {
+
+        Multimap<Object,EventLog> testMethodEventLogs = ArrayListMultimap.create();
+        Map<Object,EventLog> startEventLogs = getTestMethodListenerStartEventLogsForMethod(suiteName, testName,
+                className, methodName);
+
+        EventLog eventLog = new ArrayList<>(startEventLogs.values()).get(0);
+
+        String[] methodsDependedOn =  (String[])eventLog.getData(EventInfo.METHODS_DEPENDED_ON);
+
+        for(String methodDependOn : methodsDependedOn) {
+            testMethodEventLogs.putAll(getTestMethodEventLogsForMethod(suiteName, testName, className,
+                    methodDependOn));
+        }
+
+        return testMethodEventLogs;
+    }
+
+    public static Multimap<Object, EventLog> getTestMethodEventLogsForMethodsBelongingToGroupsDependedOn(String
+            suiteName, String testName, String className, String methodName) {
+
+        Multimap<Object,EventLog> testMethodEventLogs = ArrayListMultimap.create();
+        Map<Object,EventLog> startEventLogs = getTestMethodListenerStartEventLogsForMethod(suiteName, testName,
+                className, methodName);
+
+        EventLog eventLog = new ArrayList<>(startEventLogs.values()).get(0);
+
+        String[] groupsDependedOn =  (String[])eventLog.getData(EventInfo.GROUPS_DEPENDED_ON);
+
+        for(String groupDependedOn : groupsDependedOn) {
+            testMethodEventLogs.putAll(getTestMethodEventLogsForMethodsBelongingToGroup(groupDependedOn));
+        }
+
+        return testMethodEventLogs;
+    }
+
     //Get the test method event logs of the specified type for the specified test class from the specified suite and
     //test in a multimap where the keys are the class instances for the test class
     public static Multimap<Object, EventLog> getTestMethodEventLogsByEventTypeForClass(String suiteName, String
@@ -658,7 +711,7 @@ public class TestNgRunStateTracker {
     //suite, test and test class separated out in a map where the keys are the class instances on which the method was
     //run.
     public static Map<Object, Long> getTestMethodListenerStartThreadIds(String suiteName, String testName,
-            String className, String methodName) {
+                String className, String methodName) {
         Map<Object,Long> testMethodEventThreadIds = new HashMap<>();
         Map<Object,EventLog> testMethodEventLogs = getTestMethodListenerStartEventLogsForMethod(suiteName, testName,
                 className, methodName);
@@ -751,8 +804,6 @@ public class TestNgRunStateTracker {
         return testMethodEventThreadIds;
     }
 
-
-
     public static void reset() {
         eventLogs.clear();
     }
@@ -818,7 +869,10 @@ public class TestNgRunStateTracker {
         CLASS_NAME,
         METHOD_NAME,
         CLASS_INSTANCE,
-        DATA_PROVIDER_PARAM
+        DATA_PROVIDER_PARAM,
+        GROUPS_DEPENDED_ON,
+        METHODS_DEPENDED_ON,
+        GROUPS_BELONGING_TO
     }
 
     public static class EventLog {
@@ -897,7 +951,10 @@ public class TestNgRunStateTracker {
                 sb.append(", Data provider param: ").append(getData(EventInfo.DATA_PROVIDER_PARAM));
             }
 
-            sb.append(", Time of event: ").append(timeOfEvent);
+            Date now = new Date(timeOfEvent);
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+            sb.append(", Time of event: ").append(sdfDate.format(timeOfEvent));
             sb.append(", Thread ID: ").append(threadId);
             sb.append("}");
             return sb.toString();

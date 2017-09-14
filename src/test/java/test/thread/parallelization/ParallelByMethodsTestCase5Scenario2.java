@@ -13,17 +13,11 @@ import test.thread.parallelization.sample.FactoryForTestClassCSixMethodsWithNoDe
 import test.thread.parallelization.sample.FactoryForTestClassDThreeMethodsWithNoDepsFourInstancesSample;
 import test.thread.parallelization.sample.FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample;
 
-import test.thread.parallelization.sample.TestClassAFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassBFourMethodsWithNoDepsSample;
-import test.thread.parallelization.sample.TestClassBSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassCFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassCSixMethodsWithNoDepsSample;
-import test.thread.parallelization.sample.TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassDThreeMethodsWithNoDepsSample;
 import test.thread.parallelization.sample.TestClassEFiveMethodsWithNoDepsSample;
-import test.thread.parallelization.sample.TestClassEFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
-import test.thread.parallelization.sample.TestClassFSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
 import test.thread.parallelization.sample.TestClassFSixMethodsWithNoDepsSample;
 
 import java.util.Arrays;
@@ -160,25 +154,43 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
         TestNG tng = create(suiteOne, suiteTwo);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
-        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase5Scenario2. This test scenario consists of two " +
+//        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase5Scenario2. This test scenario consists of two " +
+//                "suites with 1 and 2 tests respectively. One suite with two tests has a test consisting of a single " +
+//                "test class without a factory while the other consists of factories which provide multiple instances " +
+//                "of multiple test classes. One suite shall consist of a single test with multiple test classes which " +
+//                "uses factories. There are no dependencies or data providers.");
+
+        System.out.println("Beginning ParallelByMethodsTestCase5Scenario2. This test scenario consists of two " +
                 "suites with 1 and 2 tests respectively. One suite with two tests has a test consisting of a single " +
                 "test class without a factory while the other consists of factories which provide multiple instances " +
                 "of multiple test classes. One suite shall consist of a single test with multiple test classes which " +
                 "uses factories. There are no dependencies or data providers.");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_A,SUITE_A_TEST_A,TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() +
-                        ", " + TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName(), 10});
+//        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+//                new Object[]{SUITE_A,SUITE_A_TEST_A,TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+//                        ", " + TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName(), 10});
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-                new Object[]{SUITE_B,SUITE_B_TEST_A,TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName(), 3});
+        System.out.println("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() +
+                ", " + TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 10");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_B,SUITE_B_TEST_B,
-                        TestClassDThreeMethodsWithNoDepsSample.class + ", " +
-                                TestClassBFourMethodsWithNoDepsSample.class + ", " +
-                                TestClassFSixMethodsWithNoDepsSample.class,
-                        20});
+//        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
+//                new Object[]{SUITE_B,SUITE_B_TEST_A,TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName(), 3});
+
+        System.out.println("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_A + ", Test class: " +
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 3");
+
+//        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
+//                new Object[]{SUITE_B,SUITE_B_TEST_B,
+//                        TestClassDThreeMethodsWithNoDepsSample.class + ", " +
+//                                TestClassBFourMethodsWithNoDepsSample.class + ", " +
+//                                TestClassFSixMethodsWithNoDepsSample.class,
+//                        20});
+
+        System.out.println("Suite " + SUITE_B + ", Test: " + SUITE_B_TEST_B + ", Test classes: " +
+                TestClassDThreeMethodsWithNoDepsSample.class + ", " +
+                TestClassBFourMethodsWithNoDepsSample.class + ", " +
+                TestClassFSixMethodsWithNoDepsSample.class + ". Thread count: 20");
 
         tng.run();
 
