@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 language: java
 
 
@@ -33,7 +33,11 @@ matrix:
     - jdk: oraclejdk7
       dist: precise
     - jdk: openjdk7
-      dist: precise
+      env: FLAVOR=openjdk
+
+before_install:
+  - sh ./bin/openjdk7.sh
+
 
 script:
   - ./gradlew check --stacktrace --scan
