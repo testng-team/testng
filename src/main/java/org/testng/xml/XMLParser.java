@@ -9,7 +9,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.testng.TestNGException;
-import org.testng.internal.ClassHelper;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -41,52 +40,18 @@ abstract public class XMLParser<T> implements IFileParser<T> {
   }
 
   /**
-   * Tries to load a <code>SAXParserFactory</code> by trying in order the following:
-   * <tt>com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl</tt> (SUN JDK5)
-   * <tt>org.apache.crimson.jaxp.SAXParserFactoryImpl</tt> (SUN JDK1.4) and
-   * last <code>SAXParserFactory.newInstance()</code>.
+   * Tries to load a <code>SAXParserFactory</code> via <code>SAXParserFactory.newInstance()</code>.
    *
    * @return a <code>SAXParserFactory</code> implementation
    * @throws TestNGException thrown if no <code>SAXParserFactory</code> can be loaded
    */
   private static SAXParserFactory loadSAXParserFactory() {
-    SAXParserFactory spf = null;
 
-    StringBuilder errorLog= new StringBuilder();
     try {
-      Class factoryClass= ClassHelper.forName("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-      spf = (SAXParserFactory) factoryClass.newInstance();
+      return SAXParserFactory.newInstance();
+    } catch (FactoryConfigurationError fcerr) {
+      throw new TestNGException("Cannot initialize a SAXParserFactory. Root cause: " + fcerr.getMessage(), fcerr);
     }
-    catch(Exception ex) {
-      errorLog.append("JDK5 SAXParserFactory cannot be loaded: ").append(ex.getMessage());
-    }
-
-    if(null == spf) {
-      // If running with JDK 1.4
-      try {
-        Class factoryClass = ClassHelper.forName("org.apache.crimson.jaxp.SAXParserFactoryImpl");
-        spf = (SAXParserFactory) factoryClass.newInstance();
-      }
-      catch(Exception ex) {
-        errorLog.append("\n").append("JDK1.4 SAXParserFactory cannot be loaded: ").append(ex.getMessage());
-      }
-    }
-
-    Throwable cause= null;
-    if(null == spf) {
-      try {
-        spf= SAXParserFactory.newInstance();
-      }
-      catch(FactoryConfigurationError fcerr) {
-        cause= fcerr;
-      }
-    }
-
-    if(null == spf) {
-      throw new TestNGException("Cannot initialize a SAXParserFactory\n" + errorLog.toString(), cause);
-    }
-
-    return spf;
   }
 
 
