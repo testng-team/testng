@@ -54,12 +54,6 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  */
 public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest {
 
-    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase3Scenario1.class.getCanonicalName());
-
-    {
-        logger.setLevel(Level.INFO);
-    }
-
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
 
@@ -114,17 +108,9 @@ public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest
 
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
-//        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase3Scenario1. This test scenario consists of a " +
-//                "single suite with a single test consisting of a single test class with five methods with a data " +
-//                "provider specifying 3 sets of data. There are no dependencies or factories.");
-
         System.out.println("Beginning ParallelByMethodsTestCase3Scenario1. This test scenario consists of a " +
                 "single suite with a single test consisting of a single test class with five methods with a data " +
                 "provider specifying 3 sets of data. There are no dependencies or factories.");
-
-//        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-//                new Object[]{SUITE,TEST,
-//                        TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName(), 15});
 
         System.out.println("Suite: " + SUITE + ", Test: " + TEST + ", Test class: "
                 + TestClassAFiveMethodsWithDataProviderOnAllMethodsAndNoDepsSample.class.getCanonicalName() +
@@ -218,13 +204,10 @@ public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest
     //Verifies that the test methods execute in different threads in parallel fashion.
     @Test
     public void verifyThatTestMethodsRunInParallelThreads() {
-
         verifyParallelTestMethodsWithNonParallelDataProvider(
                 getTestMethodLevelEventLogsForTest(SUITE, TEST), TEST, expectedInvocationCounts,
                 5, 5
         );
-
-        //verifySimultaneousTestMethods(testMethodLevelEventLogs, TEST, 5);
     }
 
     //Verifies that all the test method level events for any given test method run in the same thread.
