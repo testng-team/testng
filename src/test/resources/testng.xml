@@ -744,6 +744,7 @@
     <classes>
       <class name="org.testng.xml.SuiteXmlParserTest" />
       <class name="org.testng.xml.XmlSuiteTest"/>
+      <class name="org.testng.xml.ParserTest"/>
     </classes>
   </test>
 

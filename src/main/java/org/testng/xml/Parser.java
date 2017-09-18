@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -147,8 +148,16 @@ public class Parser {
     List<String> toBeRemoved = Lists.newArrayList();
 
     if (m_fileName != null) {
-      File mainFile = new File(m_fileName);
-      toBeParsed.add(mainFile.getCanonicalPath());
+      URI uri = URI.create(m_fileName);
+      if (uri.getScheme() == null) {
+        uri =new File(m_fileName).toURI();
+      }
+      if ("file".equalsIgnoreCase(uri.getScheme())) {
+        File mainFile = new File(uri);
+        toBeParsed.add(mainFile.getCanonicalPath());
+      } else {
+        toBeParsed.add(uri.toString());
+      }
     }
 
     /*
@@ -158,11 +167,17 @@ public class Parser {
     while (!toBeParsed.isEmpty()) {
 
       for (String currentFile : toBeParsed) {
-        File currFile = new File(currentFile);
-        File parentFile = currFile.getParentFile();
-        InputStream inputStream = m_inputStream != null
-            ? m_inputStream
-            : new FileInputStream(currentFile);
+        File parentFile = null;
+        InputStream inputStream = null;
+        String scheme = URI.create(currentFile).getScheme();
+        if (scheme == null) { //scheme would be null if the currentFile was just a file path.
+          scheme = new File(currentFile).toURI().getScheme();
+        }
+        if ("file".equalsIgnoreCase(scheme)) {
+          File currFile = new File(currentFile);
+          parentFile = currFile.getParentFile();
+          inputStream = m_inputStream != null ? m_inputStream : new FileInputStream(currFile);
+        }
 
         IFileParser<XmlSuite> fileParser = getParser(currentFile);
         XmlSuite currentXmlSuite = fileParser.parse(currentFile, inputStream, m_loadClasses);
@@ -185,11 +200,19 @@ public class Parser {
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
         if (!suiteFiles.isEmpty()) {
           for (String path : suiteFiles) {
-            String canonicalPath;
-            if (parentFile != null && new File(parentFile, path).exists()) {
-              canonicalPath = new File(parentFile, path).getCanonicalPath();
-            } else {
-              canonicalPath = new File(path).getCanonicalPath();
+            String canonicalPath = path;
+            //Resort to files only if the scheme is "file"
+            scheme = URI.create(path).getScheme();
+            if (scheme == null) {
+              scheme = new File(path).toURI().getScheme();
+            }
+
+            if ("file".equalsIgnoreCase(scheme)) {
+              if (parentFile != null && new File(parentFile, path).exists()) {
+                canonicalPath = new File(parentFile, path).getCanonicalPath();
+              } else {
+                canonicalPath = new File(path).getCanonicalPath();
+              }
             }
             if (!processedSuites.contains(canonicalPath)) {
               toBeAdded.add(canonicalPath);
