@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.TestNGException;
 import org.testng.xml.ISuiteParser;
+import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 
 import java.io.FileNotFoundException;
@@ -21,7 +22,7 @@ public class YamlParser implements ISuiteParser {
 
   @Override
   public boolean accept(String fileName) {
-    return fileName.endsWith(".yaml");
+    return Parser.hasFileScheme(fileName) && fileName.endsWith(".yaml");
   }
 
 }

@@ -150,7 +150,7 @@ public class Parser {
     if (m_fileName != null) {
       URI uri = URI.create(m_fileName);
       if (uri.getScheme() == null) {
-        uri =new File(m_fileName).toURI();
+        uri = new File(m_fileName).toURI();
       }
       if ("file".equalsIgnoreCase(uri.getScheme())) {
         File mainFile = new File(uri);
@@ -169,11 +169,8 @@ public class Parser {
       for (String currentFile : toBeParsed) {
         File parentFile = null;
         InputStream inputStream = null;
-        String scheme = URI.create(currentFile).getScheme();
-        if (scheme == null) { //scheme would be null if the currentFile was just a file path.
-          scheme = new File(currentFile).toURI().getScheme();
-        }
-        if ("file".equalsIgnoreCase(scheme)) {
+
+        if (hasFileScheme(currentFile)) {
           File currFile = new File(currentFile);
           parentFile = currFile.getParentFile();
           inputStream = m_inputStream != null ? m_inputStream : new FileInputStream(currFile);
@@ -201,13 +198,7 @@ public class Parser {
         if (!suiteFiles.isEmpty()) {
           for (String path : suiteFiles) {
             String canonicalPath = path;
-            //Resort to files only if the scheme is "file"
-            scheme = URI.create(path).getScheme();
-            if (scheme == null) {
-              scheme = new File(path).toURI().getScheme();
-            }
-
-            if ("file".equalsIgnoreCase(scheme)) {
+            if (hasFileScheme(path)) {
               if (parentFile != null && new File(parentFile, path).exists()) {
                 canonicalPath = new File(parentFile, path).getCanonicalPath();
               } else {
@@ -249,6 +240,18 @@ public class Parser {
       return resultList;
     }
 
+  }
+
+  /**
+   *
+   * @param uri - The uri to be verified.
+   * @return - <code>true</code> if the uri has "file:" as its scheme.
+   */
+  public static boolean hasFileScheme(String uri) {
+    String scheme = URI.create(uri).getScheme();
+    //A URI is regarded as having a file scheme if it either has its scheme as "file"
+    //(or) if the scheme is null (which is true when uri's represent local file system path.)
+    return scheme == null || "file".equalsIgnoreCase(scheme);
   }
 
   public List<XmlSuite> parseToList()

@@ -1,6 +1,7 @@
 package org.testng.xml.dom;
 
 import org.testng.xml.ISuiteParser;
+import org.testng.xml.Parser;
 import org.testng.xml.XMLParser;
 import org.testng.xml.XmlSuite;
 import org.w3c.dom.Document;
@@ -29,7 +30,7 @@ public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
 
   @Override
   public boolean accept(String fileName) {
-    return fileName.endsWith(".xml");
+    return Parser.hasFileScheme(fileName) && fileName.endsWith(".xml");
   }
 
   public XmlSuite parse2(String currentFile, InputStream inputStream,
