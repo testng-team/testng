@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-778 : XmlSuite toXml() does NOT add the suite time-out property (Krishnan Mahadevan)
 Fixed: GITHUB-1029: Issue with getting XmlTest from test method (Krishnan Mahadevan)
 Fixed: GITHUB-212: Enable support for providing a URI as suite file location (Krishnan Mahadevan)
 Fixed: GITHUB-161 : Provide a way to customize SAXParserFactory implementation (Krishnan Mahadevan)

@@ -48,6 +48,9 @@ class DefaultXmlWeaver implements IWeaveXml {
                 DEFAULT_THREAD_COUNT.toString());
         XmlUtils.setProperty(p, "data-provider-thread-count", String.valueOf(xmlSuite.getDataProviderThreadCount()),
                 DEFAULT_DATA_PROVIDER_THREAD_COUNT.toString());
+        if (isStringNotEmpty(xmlSuite.getTimeOut())) {
+            p.setProperty("time-out", xmlSuite.getTimeOut());
+        }
         if (!DEFAULT_JUNIT.equals(xmlSuite.isJUnit())) {
             p.setProperty("junit", xmlSuite.isJUnit() != null ? xmlSuite.isJUnit().toString() : "false"); // TESTNG-141
         }
