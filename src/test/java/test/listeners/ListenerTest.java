@@ -2,16 +2,23 @@ package test.listeners;
 
 import org.testng.*;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.listeners.github1029.Issue1029InvokedMethodListener;
+import test.listeners.github1029.Issue1029SampleTestClassWithDataDrivenMethod;
+import test.listeners.github1029.Issue1029SampleTestClassWithFiveInstances;
+import test.listeners.github1029.Issue1029SampleTestClassWithFiveMethods;
+import test.listeners.github1029.Issue1029SampleTestClassWithOneMethod;
 import test.listeners.github1393.Listener1393;
 import test.listeners.github956.ListenerFor956;
 import test.listeners.github956.TestClassContainer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -259,5 +266,32 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(adapter.getPassedTests().size(), 0);
     Assert.assertEquals(adapter.getFailedTests().size(), 1);
+  }
+
+  @Test(dataProvider = "dp", description ="GITHUB-1029" )
+  public void ensureXmlTestIsNotNull(Class<?> clazz, XmlSuite.ParallelMode mode) {
+    XmlSuite xmlSuite = createXmlSuite("Suite");
+    createXmlTest(xmlSuite, "GITHUB-1029-Test", clazz);
+    xmlSuite.setParallel(mode);
+    Issue1029InvokedMethodListener listener = new Issue1029InvokedMethodListener();
+    TestNG testng = create(xmlSuite);
+    testng.addListener((ITestNGListener) listener);
+    testng.setThreadCount(10);
+    testng.setDataProviderThreadCount(10);
+    testng.run();
+    List<String> expected = Collections.nCopies(5, "GITHUB-1029-Test");
+    assertThat(listener.getBeforeInvocation()).containsExactlyElementsOf(expected);
+    assertThat(listener.getAfterInvocation()).containsExactlyElementsOf(expected);
+  }
+
+  @DataProvider(name = "dp")
+  public Object[][] getData() {
+    return new Object[][]{
+            {Issue1029SampleTestClassWithFiveMethods.class, XmlSuite.ParallelMode.METHODS},
+            {Issue1029SampleTestClassWithOneMethod.class, XmlSuite.ParallelMode.METHODS},
+            {Issue1029SampleTestClassWithDataDrivenMethod.class, XmlSuite.ParallelMode.METHODS},
+            {Issue1029SampleTestClassWithFiveInstances.class, XmlSuite.ParallelMode.INSTANCES}
+
+    };
   }
 }
