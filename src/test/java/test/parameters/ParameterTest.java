@@ -1,13 +1,20 @@
 package test.parameters;
 
+import org.assertj.core.api.Assertions;
 import org.testng.ITestNGListener;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,5 +97,23 @@ public class ParameterTest extends SimpleBaseTest {
     assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("testMethod");
     Throwable exception = listener.getResult("testMethod").getThrowable();
     assertThat(exception).isInstanceOf(TestNGException.class).hasCauseInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test(description = "GITHUB-1061")
+  public void testNativeInjection() {
+    TestNG testng = create(Issue1061Sample.class);
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener((ITestNGListener) listener);
+    testng.run();
+    Assertions.assertThat(listener.getFailedTests().size()).isEqualTo(2);
+    List<String> expectedMsgs = Arrays.asList(
+            "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 1000",
+            "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 3000"
+    );
+    List<String> actualMsgs = Lists.newArrayList();
+    for (ITestResult result : listener.getFailedTests()) {
+      actualMsgs.add(result.getThrowable().getMessage());
+    }
+    assertThat(actualMsgs).containsExactlyElementsOf(expectedMsgs);
   }
 }
