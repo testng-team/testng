@@ -342,7 +342,8 @@ public class XMLStringBuffer {
    * @return The String representation of the XML for this XMLStringBuffer.
    */
   public String toXML() {
-    return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
+    StringBuffer sb = new StringBuffer(m_buffer.toString());
+    return INVALID_XML_CHARS.matcher(sb).replaceAll("");
   }
 
   public String getCurrentIndent() {
