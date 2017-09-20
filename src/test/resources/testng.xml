@@ -619,6 +619,7 @@
       <class name="test.JUnitTest1" />
       <class name="test.CommandLineTest"/>
       <class name="test.JUnit4Test" />
+      <class name="test.junit4.listeners.Issue323TestRunner"/>
       <class name="test.groovy.GroovyTest" />
     </classes>
   </test>
