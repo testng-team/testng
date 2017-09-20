@@ -123,6 +123,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         public void testAssumptionFailure(Failure failure) {
             notified.add(failure.getDescription());
             ITestResult tr = m_findedMethods.get(failure.getDescription());
+            runAfterInvocationListeners(tr);
             tr.setStatus(TestResult.SKIP);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
             tr.setThrowable(failure.getException());
@@ -146,6 +147,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             if (tr == null) {
                 // Not a test method, should be a config
                 tr = createTestResult(failure.getDescription());
+                runAfterInvocationListeners(tr);
                 tr.setStatus(TestResult.FAILURE);
                 tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
                 tr.setThrowable(failure.getException());
@@ -156,6 +158,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     testIgnored(childDesc);
                 }
             } else {
+                runAfterInvocationListeners(tr);
                 tr.setStatus(TestResult.FAILURE);
                 tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
                 tr.setThrowable(failure.getException());
@@ -169,6 +172,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         @Override
         public void testFinished(Description description) throws Exception {
             ITestResult tr = m_findedMethods.get(description);
+            runAfterInvocationListeners(tr);
             if (!notified.contains(description)) {
                 tr.setStatus(TestResult.SUCCESS);
                 tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
@@ -185,6 +189,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             if (!notified.contains(description)) {
                 notified.add(description);
                 ITestResult tr = m_findedMethods.get(description);
+                runAfterInvocationListeners(tr);
                 tr.setStatus(TestResult.SKIP);
                 tr.setEndMillis(tr.getStartMillis());
                 m_parentRunner.addSkippedTest(tr.getMethod(), tr);
@@ -208,6 +213,13 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             ITestResult tr = m_findedMethods.get(description);
             for (ITestListener l : m_listeners) {
                 l.onTestStart(tr);
+            }
+        }
+
+        private void  runAfterInvocationListeners(ITestResult tr) {
+            InvokedMethod im = new InvokedMethod(tr.getTestClass(), tr.getMethod(), tr.getEndMillis(), tr);
+            for (IInvokedMethodListener l: m_invokeListeners) {
+                l.afterInvocation(im, tr);
             }
         }
     }

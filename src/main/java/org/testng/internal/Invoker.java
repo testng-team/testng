@@ -206,6 +206,9 @@ public class Invoker implements IInvoker {
             }
 
             log(3, "Invoking " + Utils.detailedMethodName(tm, true));
+            if (testMethodResult != null) {
+              ((TestResult) testMethodResult).setMethod(currentTestMethod);
+            }
 
             Object[] parameters = Parameters.createConfigurationParameters(tm.getConstructorOrMethod().getMethod(),
                 params,
