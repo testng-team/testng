@@ -1,11 +1,17 @@
 package test.conffailure;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertTrue;
 
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import org.testng.xml.XmlSuite;
+import test.SimpleBaseTest;
+import test.conffailure.github990.AbstractBaseSample;
+import test.conffailure.github990.ChildClassSample;
 import testhelper.OutputDirectoryPatch;
 
 /**
@@ -14,38 +20,37 @@ import testhelper.OutputDirectoryPatch;
  * Created on Jul 20, 2005
  * @author cbeust
  */
-public class ConfigurationFailure {
+public class ConfigurationFailure extends SimpleBaseTest {
 
   @Test
   public void beforeTestClassFails() {
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG testng = new TestNG();
-    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] {
-        ClassWithFailedBeforeTestClass.class,
-        ClassWithFailedBeforeTestClassVerification.class
-    });
-    testng.addListener(tla);
-    testng.setVerbose(0);
-    testng.run();
+    runTest(ClassWithFailedBeforeTestClass.class, ClassWithFailedBeforeTestClassVerification.class);
     assertTrue(ClassWithFailedBeforeTestClassVerification.success(),
         "Not all the @Configuration methods of Run2 were run");
   }
 
   @Test
   public void beforeTestSuiteFails() {
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG testng = new TestNG();
-    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] { ClassWithFailedBeforeSuite.class, ClassWithFailedBeforeSuiteVerification.class });
-    testng.addListener(tla);
-    testng.setVerbose(0);
-    testng.run();
+    runTest(ClassWithFailedBeforeSuite.class, ClassWithFailedBeforeSuiteVerification.class );
     assertTrue(ClassWithFailedBeforeSuiteVerification.success(),
         "No @Configuration methods should have run");
   }
 
-  private static void ppp(String s) {
-    System.out.println("[AlwaysRunTest] " + s);
+  private static void runTest(Class<?>... classes) {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = create(classes);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.addListener((ITestNGListener) tla);
+    testng.setVerbose(0);
+    testng.run();
   }
+
+  @Test(description = "GITHUB-990")
+  public void ensureConfigurationRunsFromBaseClass() {
+    TestNG testng = create(ChildClassSample.class);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
+    testng.run();
+    assertThat(AbstractBaseSample.messages).containsExactly("cleanup");
+  }
+
 }
