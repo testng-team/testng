@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -345,7 +346,17 @@ public class SimpleBaseTest {
    */
   protected static List<Integer> grep(File fileName, String regexp, List<String> resultLines) {
     List<Integer> resultLineNumbers = new ArrayList<>();
-    try (BufferedReader fr = new BufferedReader(new FileReader(fileName))) {
+    try(Reader reader = new FileReader(fileName)) {
+      resultLineNumbers =  grep(reader, regexp, resultLines);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return resultLineNumbers;
+  }
+
+  protected  static List<Integer> grep(Reader reader, String regexp, List<String> resultLines) {
+    List<Integer> resultLineNumbers = new ArrayList<>();
+    try (BufferedReader fr = new BufferedReader(reader)) {
       String line;
       int currentLine = 0;
       Pattern p = Pattern.compile(".*" + regexp + ".*");
@@ -356,12 +367,10 @@ public class SimpleBaseTest {
         }
         currentLine++;
       }
-
     } catch (IOException e) {
       e.printStackTrace();
     }
     return resultLineNumbers;
-
   }
 
 }
