@@ -1,5 +1,6 @@
 package org.testng.annotations;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -9,6 +10,7 @@ import java.lang.annotation.Target;
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.CONSTRUCTOR})
+@Documented
 public @interface Factory {
   /**
    * The list of variables used to fill the parameters of this method.
