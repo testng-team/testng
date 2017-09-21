@@ -1,7 +1,7 @@
 package test;
 
 import org.testng.Assert;
-import org.testng.annotations.Configuration;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 
@@ -13,15 +13,13 @@ import org.testng.annotations.Test;
 public class Test2 extends BaseTest {
   private boolean m_initializedCorrectly = false;
 
-  @Configuration(beforeTestMethod = true)
-//  @BeforeMethod
+  @BeforeMethod
   public void correctSetup() {
     m_initializedCorrectly = true;
   }
 
   // Shouldn't be called
-  @Configuration(beforeTestMethod = true, groups = "excludeThisGroup")
-//  @BeforeMethod(groups = { "excludeThisGroup"} )
+  @BeforeMethod(groups = { "excludeThisGroup"} )
   public void incorrectSetup() {
     throw new RuntimeException("Should never be run");
   }

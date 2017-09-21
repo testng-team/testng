@@ -1,7 +1,9 @@
 package test.tmp;
 
 import org.testng.Assert;
-import org.testng.annotations.Configuration;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 @Test(groups = {"sub"})
@@ -9,12 +11,12 @@ public class Sub extends Base {
   boolean m_beforeTest;
   boolean m_afterTest;
 
-    @Configuration(beforeTestClass = true)
+    @BeforeClass
     public void subSetup() {
         System.out.println("sub before class");
     }
 
-    @Configuration(afterTestClass = true)
+    @AfterClass
     public void subTeardown() {
         System.out.println("sub after class");
     }
@@ -23,7 +25,7 @@ public class Sub extends Base {
         System.out.println ("sub test");
     }
 
-    @Configuration(afterSuite = true)
+    @AfterSuite
     public void verify() {
       Assert.assertTrue(m_beforeTest);
       Assert.assertTrue(m_afterTest);

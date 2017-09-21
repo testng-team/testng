@@ -18,12 +18,10 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Configuration;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
 import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
@@ -52,10 +50,7 @@ public class JDK15TagFactory {
     IAnnotation result = null;
 
     if (a != null) {
-      if (annotationClass == IConfigurationAnnotation.class) {
-        result = createConfigurationTag(cls, a);
-      }
-      else if (annotationClass == IDataProviderAnnotation.class) {
+      if (annotationClass == IDataProviderAnnotation.class) {
         result = createDataProviderTag(method, a);
       }
       else if (annotationClass == IExpectedExceptionsAnnotation.class) {
@@ -251,33 +246,6 @@ public class JDK15TagFactory {
           false, bs.lastTimeOnly(),
           bs.timeOut());
     }
-
-    return result;
-  }
-
-  @SuppressWarnings({"deprecation"})
-  private ConfigurationAnnotation createConfigurationTag(Class<?> cls, Annotation a) {
-    ConfigurationAnnotation result = new ConfigurationAnnotation();
-    Configuration c = (Configuration) a;
-    result.setBeforeTestClass(c.beforeTestClass());
-    result.setAfterTestClass(c.afterTestClass());
-    result.setBeforeTestMethod(c.beforeTestMethod());
-    result.setAfterTestMethod(c.afterTestMethod());
-    result.setBeforeTest(c.beforeTest());
-    result.setAfterTest(c.afterTest());
-    result.setBeforeSuite(c.beforeSuite());
-    result.setAfterSuite(c.afterSuite());
-    result.setBeforeGroups(c.beforeGroups());
-    result.setAfterGroups(c.afterGroups());
-    result.setParameters(c.parameters());
-    result.setEnabled(c.enabled());
-
-    result.setGroups(join(c.groups(), findInheritedStringArray(cls, Test.class, "groups")));
-    result.setDependsOnGroups(c.dependsOnGroups());
-    result.setDependsOnMethods(c.dependsOnMethods());
-    result.setAlwaysRun(c.alwaysRun());
-    result.setInheritGroups(c.inheritGroups());
-    result.setDescription(c.description());
 
     return result;
   }

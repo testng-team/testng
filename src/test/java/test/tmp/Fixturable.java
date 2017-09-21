@@ -1,9 +1,9 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.BeforeTest;
 
 public class Fixturable {
-  @Configuration(beforeTest=true, groups="fixture")
+  @BeforeTest(groups="fixture")
   public void setupFixture() {
     ppp("SETUP");
   }

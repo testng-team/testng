@@ -1,6 +1,6 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.BeforeTest;
 
 public class TestFixture {
 
@@ -14,7 +14,7 @@ public class TestFixture {
 
   public int fixtureBeforeTestCallSequence;
 
-  @Configuration(beforeTest=true, groups="fixture")
+  @BeforeTest( groups="fixture")
   public void beforeTest() {
     fixtureBeforeTestCallSequence = printGlobalCallSequence("TestFixture.beforeTest");
   }
