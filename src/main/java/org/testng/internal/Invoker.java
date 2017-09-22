@@ -433,8 +433,24 @@ public class Invoker implements IInvoker {
         if (! m_continueOnFailedConfiguration) {
           result = !classConfigurationFailed(cls);
         } else {
-          synchronized(m_classInvocationResults){
-             result = !m_classInvocationResults.get(cls).contains(instance);
+          synchronized (m_classInvocationResults) {
+            Set<Object> set = m_classInvocationResults.get(cls);
+            //If the set was null, it means that the test method is residing in a child class
+            //and maybe the parent method has configuration methods which may have had a failure
+            //So lets walk up the inheritance tree until either we find failures or till we
+            //reached the Object class.
+            while (set == null || !cls.equals(Object.class)) {
+              cls = cls.getSuperclass();
+              set = m_classInvocationResults.get(cls);
+            }
+            if (set == null) {
+              //This should never happen because we have walked up all the way till Object class
+              //and yet found no failures, but our logic indicates that there was a failure somewhere up the
+              //inheritance order. We don't know what to do at this point.
+              throw new IllegalStateException("No failure logs for " + testClass.getRealClass());
+            }
+            result = !set.contains(instance);
+
           }
         }
       }
