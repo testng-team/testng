@@ -1,11 +1,12 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class Test0 {
 
-  @Configuration(beforeTest = true)
+  @BeforeTest
   public void setup() {
           System.out.println("setup");
   }
@@ -15,7 +16,7 @@ public class Test0 {
           System.out.println("Test0.test");
   }
 
-  @Configuration(afterTest = true)
+  @AfterTest
   public void tearDown() {
           System.out.println("tearDown");
   }

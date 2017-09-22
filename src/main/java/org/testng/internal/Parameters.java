@@ -2,11 +2,13 @@ package org.testng.internal;
 
 import com.google.inject.Injector;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
@@ -17,7 +19,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
-import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
@@ -26,7 +27,17 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.annotations.IAfterClass;
+import org.testng.internal.annotations.IAfterGroups;
+import org.testng.internal.annotations.IAfterMethod;
+import org.testng.internal.annotations.IAfterSuite;
+import org.testng.internal.annotations.IAfterTest;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IBeforeClass;
+import org.testng.internal.annotations.IBeforeGroups;
+import org.testng.internal.annotations.IBeforeMethod;
+import org.testng.internal.annotations.IBeforeSuite;
+import org.testng.internal.annotations.IBeforeTest;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
 import org.testng.internal.reflect.InjectableParameter;
@@ -45,6 +56,22 @@ import org.testng.annotations.*;
  */
 public class Parameters {
   public static final String NULL_VALUE= "null";
+
+  private static final Map<Class<? extends Annotation>, Class<? extends IAnnotation>> ANNOTATION_MAP =
+          new ConcurrentHashMap<>();
+  static {
+    ANNOTATION_MAP.put(BeforeSuite.class, IBeforeSuite.class);
+    ANNOTATION_MAP.put(AfterSuite.class, IAfterSuite.class);
+    ANNOTATION_MAP.put(BeforeTest.class, IBeforeTest.class);
+    ANNOTATION_MAP.put(AfterTest.class, IAfterTest.class);
+    ANNOTATION_MAP.put(BeforeClass.class, IBeforeClass.class);
+    ANNOTATION_MAP.put(AfterClass.class, IAfterClass.class);
+    ANNOTATION_MAP.put(BeforeGroups.class, IBeforeGroups.class);
+    ANNOTATION_MAP.put(AfterGroups.class, IAfterGroups.class);
+    ANNOTATION_MAP.put(BeforeMethod.class, IBeforeMethod.class);
+    ANNOTATION_MAP.put(AfterMethod.class, IAfterMethod.class);
+  }
+
   private static Class<?>[] annotationList = new Class<?>[] {
       BeforeSuite.class,
       AfterSuite.class,
@@ -88,7 +115,7 @@ public class Parameters {
 
  */
   static {
-    List<Class<?>> ctxTest = Arrays.<Class<?>>asList(ITestContext.class, XmlTest.class);
+    List<Class<?>> ctxTest = Arrays.asList(ITestContext.class, XmlTest.class);
     List<Class<?>> beforeAfterMethod = Arrays.asList(ITestContext.class, XmlTest.class, Method.class,
             Object[].class, ITestResult.class);
     mapping.put(BeforeSuite.class.getSimpleName(), ctxTest);
@@ -150,23 +177,28 @@ public class Parameters {
         ? currentTestMethod.findMethodParameters(ctx.getCurrentXmlTest())
         : Collections.<String, String>emptyMap();
 
+    Class<? extends Annotation> annotation = retrieveConfigAnnotation(m);
+    String name = annotation == null ? "" : annotation.getSimpleName();
+    Class<? extends IAnnotation> annotationClass = null;
+    if (annotation != null) {
+      annotationClass = ANNOTATION_MAP.get(annotation);
+    }
+
     return createParameters(m,
         new MethodParameters(params,
             methodParams,
             parameterValues,
             currentTestMeth, ctx, testResult),
-        finder, xmlSuite, IConfigurationAnnotation.class, retrieveConfigAnnotation(m));
+        finder, xmlSuite, annotationClass, name);
   }
 
-  private static String retrieveConfigAnnotation(Method m) {
-    String value = "@Configuration";
+  private static Class<? extends Annotation> retrieveConfigAnnotation(Method m) {
     for (Class annotation : annotationList) {
       if (m.getAnnotation(annotation) != null) {
-        value = annotation.getSimpleName();
-        break;
+        return annotation;
       }
     }
-    return value;
+    return null;
   }
 
   ////////////////////////////////////////////////////////
@@ -549,7 +581,7 @@ public class Parameters {
     //
     else {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
-      if(null != a && a.getParameters().length > 0) {
+      if(null != a && a.getParameters() != null && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
         extraParameters = createParametersForMethod(m, types,
             finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);

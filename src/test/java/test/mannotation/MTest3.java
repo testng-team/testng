@@ -1,6 +1,6 @@
 package test.mannotation;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 @Test(groups = "child-class-test3", dependsOnGroups = "dog1", dependsOnMethods = "dom1")
@@ -30,7 +30,7 @@ public class MTest3 extends MBase {
   @Test
   public void enabled2() {}
 
-  @Configuration(beforeSuite = true, groups = "method-test3")
+  @BeforeSuite(groups = "method-test3")
   public void beforeSuite() {
   }
 

@@ -1,10 +1,12 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.AfterGroups;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class ConcreteTest extends Fixturable {
-  @Configuration(beforeTest=true, afterGroups="fixture")
+  @BeforeTest
+  @AfterGroups("fixture")
   public void beforeFixture() {
     ppp("BEFORE");
   }

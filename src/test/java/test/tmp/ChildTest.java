@@ -1,16 +1,17 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ChildTest extends ParentTest {
 
-  @Configuration(beforeTestMethod = true)
+  @BeforeMethod
   public void btm2() {
     ppp("CHILD BEFORE TEST");
   }
 
-  @Configuration(afterTestMethod = true)
+  @AfterMethod
   public void atm2() {
     ppp("CHILD AFTER TEST");
   }

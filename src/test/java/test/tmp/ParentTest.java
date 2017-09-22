@@ -1,16 +1,17 @@
 package test.tmp;
 
-import org.testng.annotations.Configuration;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ParentTest {
 
-  @Configuration(beforeTestMethod = true)
+  @BeforeMethod
   public void btm1() {
     ppp("PARENT BEFORE TEST");
   }
 
-  @Configuration(afterTestMethod = true)
+  @AfterMethod
   public void atm1() {
     ppp("PARENT AFTER TEST");
   }

@@ -20,7 +20,6 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Configuration;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
@@ -60,7 +59,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
     m_transformer = transformer;
     m_annotationMap.put(IListenersAnnotation.class, Listeners.class);
-    m_annotationMap.put(IConfigurationAnnotation.class, Configuration.class);
     m_annotationMap.put(IDataProviderAnnotation.class, DataProvider.class);
     m_annotationMap.put(IExpectedExceptionsAnnotation.class, ExpectedExceptions.class);
     m_annotationMap.put(IFactoryAnnotation.class, Factory.class);

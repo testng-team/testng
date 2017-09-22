@@ -10,7 +10,6 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Configuration;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
@@ -35,22 +34,23 @@ public class MTest1 {
       expectedExceptions = NullPointerException.class)
   public void f() {}
 
-  @Configuration(beforeSuite = true, beforeTestMethod = true,
-      beforeTest = true, beforeTestClass = true,
-      beforeGroups = { "b1", "b2"})
+  @BeforeSuite
+  @BeforeTest
+  @BeforeGroups({ "b1", "b2"})
+  @BeforeClass
+  @BeforeMethod
   public void before() {}
 
-  @Configuration(afterSuite = true, afterTestMethod = true,
-      afterTest = true, afterTestClass = true,
-      afterGroups = {"a1", "a2"})
+  @AfterSuite
+  @AfterTest
+  @AfterGroups({"a1", "a2"})
+  @AfterClass
+  @AfterMethod
   public void after() {}
 
-  @Configuration(parameters = {"oparam1", "oparam2"},
-      enabled = false, groups = {"ogroup1", "ogroup2"},
-      dependsOnGroups = {"odg1","odg2"},
-      dependsOnMethods = {"odm1", "odm2"}, alwaysRun = true,
-      inheritGroups = false,
-      description = "beforeSuite description")
+  @Test(groups = {"ogroup1", "ogroup2"}, dependsOnGroups = {"odg1","odg2"},dependsOnMethods = {"odm1", "odm2"},
+          description = "beforeSuite description", enabled = false, alwaysRun = true)
+  @Parameters({"oparam1", "oparam2"})
    @DataProvider(name = "dp4")
    @ExpectedExceptions({MTest1.class, MTest2.class })
   public Object[][] otherConfigurations() { return null;}
