@@ -309,18 +309,18 @@ public class Parameters {
     checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
     List<Object> vResult = Lists.newArrayList();
 
+    List<Object> consParams = createParams(method.getName(), "method", methodAnnotation, parameterTypes,
+            optionalValues, parameterNames, params, xmlSuite);
     if (canInject(methodAnnotation)) {
       Parameter[] paramsArray = ReflectionRecipes.getMethodParameters(method);
       Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
-              new Object[0], params.currentTestMethod, params.context, params.testResult);
+              consParams.toArray(new Object[consParams.size()]), params.currentTestMethod, params.context, params.testResult);
       if (inject != null) {
         vResult.addAll(Arrays.asList(inject));
       }
+    } else {
+      vResult.addAll(consParams);
     }
-
-    List<Object> consParams = createParams(method.getName(), "method", methodAnnotation, parameterTypes,
-            optionalValues, parameterNames, params, xmlSuite);
-    vResult.addAll(consParams);
     return vResult.toArray(new Object[vResult.size()]);
   }
 

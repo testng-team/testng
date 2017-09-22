@@ -12,7 +12,9 @@ import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -113,5 +115,19 @@ public class ParameterTest extends SimpleBaseTest {
       actualMsgs.add(result.getThrowable().getMessage());
     }
     assertThat(actualMsgs).containsExactlyInAnyOrder(expectedMsgs);
+  }
+
+  @Test(description = "GITHUB-1554")
+  public void testNativeInjectionAndParamsInjection() {
+    XmlSuite suite = createXmlSuite("suite");
+    XmlTest test = createXmlTest(suite, "test", Issue1554TestClassSample.class);
+    Map<String, String> params = new HashMap<>();
+    params.put("browser", "chrome");
+    test.setParameters(params);
+    TestNG testng = create(suite);
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener((ITestNGListener) listener);
+    testng.run();
+    assertThat(listener.getPassedTests().isEmpty()).isFalse();
   }
 }

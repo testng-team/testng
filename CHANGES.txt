@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1554: @Parameters and parameter injection not wroking when used on the same method (Krishnan Mahadevan)
 Fixed: GITHUB-990: NullPointerExceptions after a superclass configuration method fails with configfailurepolicy="continue" (Krishnan Mahadevan)
 Fixed: GITHUB-461 : Annotate annotations with @Documented (Krishnan Mahadevan)
 Fixed: GITHUB-778 : XmlSuite toXml() does NOT add the suite time-out property (Krishnan Mahadevan)
