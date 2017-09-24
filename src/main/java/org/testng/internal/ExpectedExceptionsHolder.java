@@ -3,7 +3,6 @@ package org.testng.internal;
 import org.testng.IExpectedExceptionsHolder;
 import org.testng.ITestNGMethod;
 import org.testng.TestException;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -24,14 +23,6 @@ public class ExpectedExceptionsHolder {
   }
 
   private static Class<?>[] findExpectedClasses(IAnnotationFinder finder, ITestNGMethod method) {
-    IExpectedExceptionsAnnotation expectedExceptions =
-        finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
-    // Old syntax
-    if (expectedExceptions != null) {
-      return expectedExceptions.getValue();
-    }
-
-    // New syntax
     ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
     if (testAnnotation != null) {
       return testAnnotation.getExpectedExceptions();

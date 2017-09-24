@@ -10,7 +10,6 @@ import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -34,7 +33,7 @@ public class AnnotationHelper {
       ITestAnnotation.class,
       IBeforeClass.class, IAfterClass.class,
       IBeforeMethod.class, IAfterMethod.class,
-      IDataProviderAnnotation.class, IExpectedExceptionsAnnotation.class,
+      IDataProviderAnnotation.class,
       IFactoryAnnotation.class, IParametersAnnotation.class,
       IBeforeSuite.class, IAfterSuite.class,
       IBeforeTest.class, IAfterTest.class,

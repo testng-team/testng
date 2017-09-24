@@ -7,7 +7,6 @@ import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
@@ -58,8 +57,7 @@ public class DependentTest extends BaseTest {
     verifyTests("Skipped", skipped, getSkippedTests());
   }
 
-  @Test
-  @ExpectedExceptions({org.testng.TestNGException.class})
+  @Test(expectedExceptions = {org.testng.TestNGException.class})
   public void dependentMethodsWithNonExistentMethod() {
     addClass(SampleDependentMethods5.class.getName());
     run();

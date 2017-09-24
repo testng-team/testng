@@ -5,7 +5,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
 
 /**
@@ -47,14 +46,12 @@ public class Sample1 extends BaseSample1 {
 	public void broken() {
 	}
 
-	@Test(groups = {"fail"})
-	@ExpectedExceptions( {NumberFormatException.class,	ArithmeticException.class})
+	@Test(groups = {"fail"}, expectedExceptions = {NumberFormatException.class,	ArithmeticException.class})
 	public void throwExpectedException1ShouldPass() {
 		throw new NumberFormatException();
 	}
 
-	@Test(groups = {"fail"})
-	@ExpectedExceptions( {NumberFormatException.class,	ArithmeticException.class})
+	@Test(groups = {"fail"}, expectedExceptions = {NumberFormatException.class,	ArithmeticException.class})
 	public void throwExpectedException2ShouldPass() {
 		throw new ArithmeticException();
 	}
