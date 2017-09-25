@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -86,15 +85,6 @@ public class MAnnotationSampleTest {
     IDataProviderAnnotation dataProvider = m_finder.findAnnotation(method, IDataProviderAnnotation.class);
     Assert.assertNotNull(dataProvider);
     Assert.assertEquals(dataProvider.getName(), "dp4");
-  }
-
-  public void verifyExpectedExceptions() throws SecurityException, NoSuchMethodException
-  {
-    Method method = MTest1.class.getMethod("otherConfigurations");
-    IExpectedExceptionsAnnotation exceptions= m_finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
-
-    Assert.assertNotNull(exceptions);
-    Assert.assertEquals(exceptions.getValue(), new Class[] { MTest1.class, MTest2.class });
   }
 
   public void verifyFactory() throws SecurityException, NoSuchMethodException

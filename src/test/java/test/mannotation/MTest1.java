@@ -11,7 +11,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -48,12 +47,14 @@ public class MTest1 {
   @AfterMethod
   public void after() {}
 
-  @Test(groups = {"ogroup1", "ogroup2"}, dependsOnGroups = {"odg1","odg2"},dependsOnMethods = {"odm1", "odm2"},
-          description = "beforeSuite description", enabled = false, alwaysRun = true)
+  @Test(groups = {"ogroup1", "ogroup2"}, dependsOnGroups = {"odg1", "odg2"}, dependsOnMethods = {"odm1", "odm2"},
+          description = "beforeSuite description", enabled = false, alwaysRun = true,
+          expectedExceptions = {MTest1.class, MTest2.class})
   @Parameters({"oparam1", "oparam2"})
-   @DataProvider(name = "dp4")
-   @ExpectedExceptions({MTest1.class, MTest2.class })
-  public Object[][] otherConfigurations() { return null;}
+  @DataProvider(name = "dp4")
+  public Object[][] otherConfigurations() {
+    return null;
+  }
 
   @Factory(parameters = {"pf1", "pf2"})
   public void factory() {}

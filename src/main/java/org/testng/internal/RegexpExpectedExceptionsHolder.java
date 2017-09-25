@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import org.testng.IExpectedExceptionsHolder;
 import org.testng.ITestNGMethod;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -47,14 +46,6 @@ public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder
   }
 
   private String getRegExp() {
-    IExpectedExceptionsAnnotation expectedExceptions =
-        finder.findAnnotation(method, IExpectedExceptionsAnnotation.class);
-    if (expectedExceptions != null) {
-      // Old syntax => default value
-      return DEFAULT_REGEXP;
-    }
-
-    // New syntax
     ITestAnnotation testAnnotation = finder.findAnnotation(method, ITestAnnotation.class);
     if (testAnnotation != null) {
       return testAnnotation.getExpectedExceptionsMessageRegExp();

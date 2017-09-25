@@ -19,11 +19,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Factory;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IExpectedExceptionsAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
@@ -52,9 +50,6 @@ public class JDK15TagFactory {
     if (a != null) {
       if (annotationClass == IDataProviderAnnotation.class) {
         result = createDataProviderTag(method, a);
-      }
-      else if (annotationClass == IExpectedExceptionsAnnotation.class) {
-        result = createExpectedExceptionsTag(a);
       }
       else if (annotationClass == IFactoryAnnotation.class) {
         result = createFactoryTag(cls, a);
@@ -301,15 +296,6 @@ public class JDK15TagFactory {
     }
     result.setParallel(c.parallel());
     result.setIndices(Ints.asList(c.indices()));
-
-    return result;
-  }
-
-  @SuppressWarnings({"deprecation"})
-  private IAnnotation createExpectedExceptionsTag(Annotation a) {
-    ExpectedExceptionsAnnotation result = new ExpectedExceptionsAnnotation ();
-    ExpectedExceptions c = (ExpectedExceptions ) a;
-    result.setValue(c.value());
 
     return result;
   }

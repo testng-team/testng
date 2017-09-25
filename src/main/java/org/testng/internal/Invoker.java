@@ -434,14 +434,21 @@ public class Invoker implements IInvoker {
           result = !classConfigurationFailed(cls);
         } else {
           synchronized (m_classInvocationResults) {
-            Set<Object> set = m_classInvocationResults.get(cls);
-            //If the set was null, it means that the test method is residing in a child class
+            Set<Object> set = null;
+            //We need to continuously search till either our Set is not null (or) till we reached
+            //Object class because it is very much possible that the test method is residing in a child class
             //and maybe the parent method has configuration methods which may have had a failure
             //So lets walk up the inheritance tree until either we find failures or till we
             //reached the Object class.
-            while (set == null || !cls.equals(Object.class)) {
-              cls = cls.getSuperclass();
+            while (true) {
+              if (cls.equals(Object.class)) {
+                break;
+              }
               set = m_classInvocationResults.get(cls);
+              if (set != null) {
+                break;
+              }
+              cls = cls.getSuperclass();
             }
             if (set == null) {
               //This should never happen because we have walked up all the way till Object class
