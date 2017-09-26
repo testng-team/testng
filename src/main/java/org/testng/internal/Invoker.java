@@ -406,14 +406,12 @@ public class Invoker implements IInvoker {
    * @return true if this class or a parent class failed to initialize.
    */
   private boolean classConfigurationFailed(Class<?> cls) {
-    synchronized(m_classInvocationResults){
-       for (Class<?> c : m_classInvocationResults.keySet()) {
-         if (c == cls || c.isAssignableFrom(cls)) {
-           return true;
-         }
-       }
-       return false;
+    for (Class<?> c : m_classInvocationResults.keySet()) {
+      if (c == cls || c.isAssignableFrom(cls)) {
+        return true;
+      }
     }
+    return false;
   }
 
   /**
@@ -433,32 +431,29 @@ public class Invoker implements IInvoker {
         if (! m_continueOnFailedConfiguration) {
           result = !classConfigurationFailed(cls);
         } else {
-          synchronized (m_classInvocationResults) {
-            Set<Object> set = null;
-            //We need to continuously search till either our Set is not null (or) till we reached
-            //Object class because it is very much possible that the test method is residing in a child class
-            //and maybe the parent method has configuration methods which may have had a failure
-            //So lets walk up the inheritance tree until either we find failures or till we
-            //reached the Object class.
-            while (true) {
-              if (cls.equals(Object.class)) {
-                break;
-              }
-              set = m_classInvocationResults.get(cls);
-              if (set != null) {
-                break;
-              }
-              cls = cls.getSuperclass();
+          Set<Object> set = null;
+          //We need to continuously search till either our Set is not null (or) till we reached
+          //Object class because it is very much possible that the test method is residing in a child class
+          //and maybe the parent method has configuration methods which may have had a failure
+          //So lets walk up the inheritance tree until either we find failures or till we
+          //reached the Object class.
+          while (true) {
+            if (cls.equals(Object.class)) {
+              break;
             }
-            if (set == null) {
-              //This should never happen because we have walked up all the way till Object class
-              //and yet found no failures, but our logic indicates that there was a failure somewhere up the
-              //inheritance order. We don't know what to do at this point.
-              throw new IllegalStateException("No failure logs for " + testClass.getRealClass());
+            set = m_classInvocationResults.get(cls);
+            if (set != null) {
+              break;
             }
-            result = !set.contains(instance);
-
+            cls = cls.getSuperclass();
           }
+          if (set == null) {
+            //This should never happen because we have walked up all the way till Object class
+            //and yet found no failures, but our logic indicates that there was a failure somewhere up the
+            //inheritance order. We don't know what to do at this point.
+            throw new IllegalStateException("No failure logs for " + testClass.getRealClass());
+          }
+          result = !set.contains(instance);
         }
       }
       // if method is BeforeClass, currentTestMethod will be null
@@ -468,13 +463,11 @@ public class Invoker implements IInvoker {
         result = !m_methodInvocationResults.get(currentTestMethod).contains(getMethodInvocationToken(currentTestMethod, instance));
       }
       else if (! m_continueOnFailedConfiguration) {
-        synchronized(m_classInvocationResults){
-           for(Class<?> clazz : m_classInvocationResults.keySet()) {
-             if (clazz.isAssignableFrom(cls)) {
-               result = false;
-               break;
-             }
-           }
+        for (Class<?> clazz : m_classInvocationResults.keySet()) {
+          if (clazz.isAssignableFrom(cls)) {
+            result = false;
+            break;
+          }
         }
       }
     }
