@@ -66,12 +66,6 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  */
 public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest {
 
-    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase2Scenario1.class.getCanonicalName());
-
-    {
-        logger.setLevel(Level.INFO);
-    }
-
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
 
@@ -144,24 +138,22 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
         tng.setSuiteThreadPoolSize(2);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
-        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase2Scenario1. This test scenario consists of two " +
+        System.out.println("Beginning ParallelByMethodsTestCase2Scenario1. This test scenario consists of two " +
                 "suites with 1 and 2 tests respectively. The suites run in parallel and the thread pool size is 2. " +
                 "One test for a suite shall consist of a single test class while the rest shall consist of more than " +
                 "one test class. There are no dependencies, data providers or factories.");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_A,SUITE_A_TEST_A,TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() +
-                        ", " + TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName(), 3});
+        System.out.println("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 3");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-                new Object[]{SUITE_B,SUITE_B_TEST_A,TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName(), 14});
+        System.out.println("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_A + ", Test class: " +
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 14");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_B,SUITE_B_TEST_B,
-                        TestClassDThreeMethodsWithNoDepsSample.class + ", " +
-                                TestClassBFourMethodsWithNoDepsSample.class + ", " +
-                                TestClassFSixMethodsWithNoDepsSample.class,
-                        14});
+        System.out.println("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_B + ", Test classes: " +
+                TestClassDThreeMethodsWithNoDepsSample.class + ", " +
+                TestClassBFourMethodsWithNoDepsSample.class + ", " +
+                TestClassFSixMethodsWithNoDepsSample.class + ". Thread count: 14");
 
         tng.run();
 

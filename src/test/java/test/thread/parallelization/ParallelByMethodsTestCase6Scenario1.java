@@ -6,6 +6,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
 import test.thread.parallelization.sample.FactoryForTestClassAFiveMethodsWithNoDepsTwoInstancesSample;
 import test.thread.parallelization.sample.FactoryForTestClassBFourMethodsWithNoDepsFiveInstancesSample;
 import test.thread.parallelization.sample.FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample;
@@ -82,12 +83,6 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 12) There are no method exclusions
  */
 public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest {
-
-    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase6Scenario1.class.getCanonicalName());
-
-    {
-        logger.setLevel(Level.INFO);
-    }
 
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
@@ -223,7 +218,7 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
         tng.setSuiteThreadPoolSize(2);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
-        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase6Scenario1. This test scenario consists of three " +
+        System.out.println("Beginning ParallelByMethodsTestCase6Scenario1. This test scenario consists of three " +
                 "suites with 1, 2 and 3 tests respectively. The suites run in parallel and the thread pool size is " +
                 "2. One suite with two tests has a test consisting of a single test class without a factory while " +
                 "the other shall consist of factories which provide multiple instances of multiple test classes. One " +
@@ -231,40 +226,33 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
                 "shall have multiple tests with multiple classes, none of which use a factory. There are no " +
                 "dependencies.");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_A,SUITE_A_TEST_A,TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() +
-                        ", " + TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName(), 10});
+        System.out.println("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
+                TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassCSixMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 10");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-                new Object[]{SUITE_B,SUITE_B_TEST_A,TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName(), 3});
+        System.out.println("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_A + ", Test class: " +
+                TestClassEFiveMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 3");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_B,SUITE_B_TEST_B,
-                        TestClassDThreeMethodsWithNoDepsSample.class + ", " +
-                                TestClassBFourMethodsWithNoDepsSample.class + ", " +
-                                TestClassFSixMethodsWithNoDepsSample.class,
-                        20});
+        System.out.println("Suite " + SUITE_B + ", Test: " + SUITE_B_TEST_B + ", Test classes: " +
+                TestClassDThreeMethodsWithNoDepsSample.class + ", " +
+                TestClassBFourMethodsWithNoDepsSample.class + ", " +
+                TestClassFSixMethodsWithNoDepsSample.class + ". Thread count: 20");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_C,SUITE_C_TEST_A,
-                        TestClassGThreeMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
-                                TestClassHFourMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
-                                TestClassIFiveMethodsWithNoDepsSample.class,
-                        10});
+        System.out.println("Suite: " + SUITE_C + ", Test: " + SUITE_C_TEST_A + ", Test classes: " +
+                TestClassGThreeMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassHFourMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassIFiveMethodsWithNoDepsSample.class + ". Thread count: 10");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_C,SUITE_C_TEST_B,
-                        TestClassJFourMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
-                                TestClassKFiveMethodsWithNoDepsSample.class,
-                        5});
+        System.out.println("Suite: " + SUITE_C + ", Test: " + SUITE_C_TEST_B + ", Test classes: " +
+                TestClassJFourMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassKFiveMethodsWithNoDepsSample.class + ". Thread count: 5");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test classes: {2}. Thread count: {3}",
-                new Object[]{SUITE_C,SUITE_C_TEST_C,
-                        TestClassLThreeMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
-                                TestClassMFourMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
-                                TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
-                                TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName(),
-                        12});
+        System.out.println("Suite: " + SUITE_C + ", Test: " + SUITE_C_TEST_C + ", Test classes: " +
+                TestClassLThreeMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassMFourMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassNFiveMethodsWithNoDepsSample.class.getCanonicalName() + ", " +
+                TestClassOSixMethodsWithNoDepsSample.class.getCanonicalName() + ". Thread count: 12.");
+
         tng.run();
 
         suiteLevelEventLogs = getAllSuiteLevelEventLogs();

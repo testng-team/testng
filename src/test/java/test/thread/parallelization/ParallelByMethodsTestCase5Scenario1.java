@@ -51,12 +51,6 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  */
 public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest {
 
-    private static final Logger logger = Logger.getLogger(ParallelByMethodsTestCase5Scenario1.class.getCanonicalName());
-
-    {
-        logger.setLevel(Level.INFO);
-    }
-
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
 
@@ -89,12 +83,12 @@ public class ParallelByMethodsTestCase5Scenario1 extends BaseParallelizationTest
 
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
-        logger.log(Level.INFO, "Beginning ParallelByMethodsTestCase5Scenario1. This test scenario consists of a " +
-                "single suite with a single test consisting of a factory that provides two instances of a single\n" +
+        System.out.println("Beginning ParallelByMethodsTestCase5Scenario1. This test scenario consists of a " +
+                "single suite with a single test consisting of a factory that provides two instances of a single" +
                 "test class with five methods. There are no dependencies or data providers.");
 
-        logger.log(Level.INFO, "Suite: {0}, Test: {1}, Test class: {2}. Thread count: {3}",
-                new Object[]{SUITE,TEST, TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName(), 15});
+        System.out.println("Suite: " + SUITE + ", Test: " + TEST + ", Test class: "
+                + TestClassAFiveMethodsWithNoDepsSample.class.getCanonicalName() +". Thread count: 15");
 
         tng.run();
 

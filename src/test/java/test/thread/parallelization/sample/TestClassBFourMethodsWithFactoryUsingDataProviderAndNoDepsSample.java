@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.DATA_PROVIDER_PARAM;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_BELONGING_TO;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_DEPENDED_ON;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHODS_DEPENDED_ON;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
@@ -50,6 +53,9 @@ public class TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );
 
@@ -72,6 +78,9 @@ public class TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );
 
@@ -94,6 +103,9 @@ public class TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );
 
@@ -116,6 +128,9 @@ public class TestClassBFourMethodsWithFactoryUsingDataProviderAndNoDepsSample {
                         .addData(TEST_NAME, testName)
                         .addData(SUITE_NAME, suiteName)
                         .addData(DATA_PROVIDER_PARAM, dpVal)
+                        .addData(GROUPS_DEPENDED_ON, new String[0])
+                        .addData(METHODS_DEPENDED_ON, new String[0])
+                        .addData(GROUPS_BELONGING_TO, new String[0])
                         .build()
         );
 
