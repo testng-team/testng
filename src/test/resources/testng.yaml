@@ -28,7 +28,7 @@ tests:
       - test.MethodTest
       - test.sample.AfterClassCalledAtEnd
       - test.GraphTest
-      - test.DynamicGraphTest
+      - org.testng.internal.DynamicGraphTest
       - test.configuration.BaseGroupsTest
       - test.configuration.BeforeClassThreadTest
       - test.configuration.BeforeTestOrderingTest

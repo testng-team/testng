@@ -41,6 +41,7 @@ import org.testng.internal.TestMethodWorker;
 import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
+import org.testng.internal.WrappedTestNGMethod;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -1064,7 +1065,10 @@ public class TestRunner
     // end up creating cycles when combined with preserve-order.
     boolean hasDependencies = false;
     for (ITestNGMethod m : methods) {
-      result.addNode(m);
+      boolean added = result.addNode(m);
+      if (!added) {
+        result.addNode(new WrappedTestNGMethod(m));
+      }
 
       // Dependent methods
       {
