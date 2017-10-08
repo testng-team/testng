@@ -15,11 +15,13 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Collection;
+import java.util.Queue;
 import java.util.TimeZone;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Pattern;
 
 import java.text.SimpleDateFormat;
@@ -47,10 +49,8 @@ public class JUnitXMLReporter implements IResultListener2 {
 
 
   private int m_numFailed= 0;
-  private List<ITestResult> m_allTests =
-      Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_configIssues =
-      Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private Queue<ITestResult> m_allTests = new ConcurrentLinkedDeque<>();
+  private Queue<ITestResult> m_configIssues = new ConcurrentLinkedDeque<>();
   private Map<String, String> m_fileNameMap = Maps.newHashMap();
   private int m_fileNameIncrementer = 0;
 
@@ -182,7 +182,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     return sdf.format(Calendar.getInstance().getTime());
   }
 
-  private synchronized void createElementFromTestResults(XMLStringBuffer document, List<ITestResult> results) {
+  private synchronized void createElementFromTestResults(XMLStringBuffer document, Collection<ITestResult> results) {
     for(ITestResult tr : results) {
       createElement(document, tr);
     }
@@ -304,8 +304,8 @@ public class JUnitXMLReporter implements IResultListener2 {
 	 * Reset all member variables for next test.
 	 * */
 	private void resetAll() {
-		m_allTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-		m_configIssues = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+		m_allTests = new ConcurrentLinkedDeque<>();
+		m_configIssues = new ConcurrentLinkedDeque<>();
 		m_numFailed = 0;
     }
 

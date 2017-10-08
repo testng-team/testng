@@ -1,14 +1,14 @@
 package org.testng.internal.thread.graph;
 
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.thread.TestNGThreadFactory;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   private final DynamicGraph<T> m_graph;
-  private final List<Runnable> m_activeRunnables = Collections.synchronizedList(Lists.<Runnable>newArrayList());
+  private final Queue<Runnable> m_activeRunnables = new ConcurrentLinkedDeque<>();
   private final IThreadWorkerFactory<T> m_factory;
 
   public GraphThreadPoolExecutor(String name, DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
