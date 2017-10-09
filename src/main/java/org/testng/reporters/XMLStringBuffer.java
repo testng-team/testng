@@ -305,6 +305,9 @@ public class XMLStringBuffer {
    * Add a CDATA tag.
    */
   public void addCDATA(String content) {
+    if (content != null) {
+        content = content.replaceAll("\\p{Cc}", "");
+    }
     m_buffer.append(m_currentIndent);
     if (content == null) {
       m_buffer.append("<![CDATA[null]]>");
