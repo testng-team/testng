@@ -28,6 +28,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.google.inject.Injector;
 
 /**
@@ -38,7 +40,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private Map<String, ISuiteResult> suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
+  private Map<String, ISuiteResult> suiteResults = new ConcurrentHashMap<>();
   private List<TestRunner> testRunners = Lists.newArrayList();
   private Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
   private TestListenerAdapter textReporter = new TestListenerAdapter();
