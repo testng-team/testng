@@ -41,19 +41,9 @@ public class DynamicGraph<T> {
   }
 
   public DynamicGraph() {
-    this(false);
-  }
-
-  DynamicGraph(boolean useLists) {
-    if (useLists) {
-      m_nodesFinished = Lists.newArrayList();
-      m_nodesReady = Lists.newArrayList();
-      m_nodesRunning = Lists.newArrayList();
-    } else {
       m_nodesFinished = Sets.newLinkedHashSet();
       m_nodesReady = Sets.newLinkedHashSet();
       m_nodesRunning = Sets.newLinkedHashSet();
-    }
   }
 
   /**

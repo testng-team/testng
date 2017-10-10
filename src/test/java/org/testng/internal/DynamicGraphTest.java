@@ -5,15 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
-import org.testng.Reporter;
-import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.ListMultiMap;
@@ -260,15 +255,6 @@ public class DynamicGraphTest extends SimpleBaseTest {
   }
 
   @Test
-  public void performanceTest() {
-      long runtimeUsingLists = executionTime(true);
-      long runtimeUsingSets = executionTime(false);
-      assertThat(runtimeUsingSets).isLessThan(runtimeUsingLists);
-      Reporter.log("Time taken for list backed implementation : " + runtimeUsingLists, true);
-      Reporter.log("Time taken for set backed implementation : " + runtimeUsingSets, true);
-  }
-
-  @Test
   public void testDuplicationFunctionality() {
       XmlSuite suite = createXmlSuite("suite", "test", TestClassSample.class);
       TestNG testng = create(suite);
@@ -279,58 +265,4 @@ public class DynamicGraphTest extends SimpleBaseTest {
       assertThat(tla.getPassedTests().size()).isEqualTo(expected);
   }
 
-  private long executionTime(boolean useLists) {
-      DynamicGraph<TestNGObject> graph = new DynamicGraph<>(useLists);
-      addDummyNodesWithOnlyLastNodeFree(graph);
-      TestNGObject node1 = new TestNGObject(UUID.randomUUID().toString());
-      TestNGObject node2 = new TestNGObject(UUID.randomUUID().toString());
-      graph.addEdge(2, node2, node1);
-      long start = System.currentTimeMillis();
-      graph.setStatus(node1, Status.FINISHED);
-      graph.getFreeNodes();
-      long end = System.currentTimeMillis();
-      return (end-start);
-  }
-
-    private void addDummyNodesWithOnlyLastNodeFree(DynamicGraph<TestNGObject> graph) {
-        for (int i = 0; i < 1000; i++) {
-            String text = UUID.randomUUID().toString();
-            TestNGObject node = new TestNGObject(text);
-            graph.addNode(node);
-        }
-    }
-
-  public static class TestNGObject {
-      private String text;
-      private int sleepTime;
-
-      TestNGObject(String text) {
-          this.text = text;
-          this.sleepTime = new Random().nextInt(5);
-      }
-
-      private void sleep() {
-          try {
-              TimeUnit.MILLISECONDS.sleep(sleepTime *10);
-          } catch (InterruptedException e) {
-              throw new RuntimeException(e);
-          }
-      }
-
-      @Override
-      public boolean equals(Object o) {
-          sleep();
-          if (this == o) return true;
-          if (o == null || getClass() != o.getClass()) return false;
-
-          TestNGObject that = (TestNGObject) o;
-
-          return text != null ? text.equals(that.text) : that.text == null;
-      }
-
-      @Override
-      public int hashCode() {
-          return text != null ? text.hashCode() : 0;
-      }
-  }
 }
