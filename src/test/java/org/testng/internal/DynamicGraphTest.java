@@ -10,13 +10,17 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.DynamicGraph.Status;
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.TestClassContainerForGitHubIssue1360;
 
@@ -264,6 +268,17 @@ public class DynamicGraphTest extends SimpleBaseTest {
       Reporter.log("Time taken for set backed implementation : " + runtimeUsingSets, true);
   }
 
+  @Test
+  public void testDuplicationFunctionality() {
+      XmlSuite suite = createXmlSuite("suite", "test", TestClassSample.class);
+      TestNG testng = create(suite);
+      MethodMultiplyingInterceptor tla = new MethodMultiplyingInterceptor();
+      testng.addListener((ITestNGListener) tla);
+      testng.run();
+      int expected = tla.getMultiplyCount() + tla.getOriginalMethodCount();
+      assertThat(tla.getPassedTests().size()).isEqualTo(expected);
+  }
+
   private long executionTime(boolean useLists) {
       DynamicGraph<TestNGObject> graph = new DynamicGraph<>(useLists);
       addDummyNodesWithOnlyLastNodeFree(graph);
@@ -275,7 +290,6 @@ public class DynamicGraphTest extends SimpleBaseTest {
       graph.getFreeNodes();
       long end = System.currentTimeMillis();
       return (end-start);
-
   }
 
     private void addDummyNodesWithOnlyLastNodeFree(DynamicGraph<TestNGObject> graph) {

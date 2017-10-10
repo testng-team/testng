@@ -9,6 +9,7 @@ import org.testng.xml.XmlTest;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 /**
@@ -18,6 +19,7 @@ import java.util.concurrent.Callable;
  */
 public class WrappedTestNGMethod implements ITestNGMethod {
     private final ITestNGMethod testNGMethod;
+    private final int multiplicationFactor = new Random().nextInt();
 
     public WrappedTestNGMethod(ITestNGMethod testNGMethod) {
         this.testNGMethod = testNGMethod;
@@ -370,6 +372,6 @@ public class WrappedTestNGMethod implements ITestNGMethod {
 
     @Override
     public int hashCode() {
-        return 31 * testNGMethod.hashCode();
+        return multiplicationFactor * testNGMethod.hashCode();
     }
 }
