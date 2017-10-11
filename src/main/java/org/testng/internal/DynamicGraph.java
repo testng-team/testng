@@ -17,9 +17,9 @@ import org.testng.internal.collections.Pair;
  */
 public class DynamicGraph<T> {
 
-  private final List<T> m_nodesReady = Lists.newArrayList();
-  private final List<T> m_nodesRunning = Lists.newArrayList();
-  private final List<T> m_nodesFinished = Lists.newArrayList();
+  private final Collection<T> m_nodesReady;
+  private final Collection<T> m_nodesRunning;
+  private final Collection<T> m_nodesFinished;
 
   private final ListMultiMap<T, Edge<T>> m_edges = Maps.newListMultiMap();
   private final ListMultiMap<T, Edge<T>> m_allEdges = Maps.newListMultiMap();
@@ -40,11 +40,17 @@ public class DynamicGraph<T> {
     }
   }
 
+  public DynamicGraph() {
+      m_nodesFinished = Sets.newLinkedHashSet();
+      m_nodesReady = Sets.newLinkedHashSet();
+      m_nodesRunning = Sets.newLinkedHashSet();
+  }
+
   /**
    * Add a node to the graph.
    */
-  public void addNode(T node) {
-    m_nodesReady.add(node);
+  public boolean addNode(T node) {
+    return m_nodesReady.add(node);
   }
 
   /**
@@ -147,7 +153,7 @@ public class DynamicGraph<T> {
     return finalResult;
   }
 
-  private int getLowestEdgePriority(List<T> nodes) {
+  private int getLowestEdgePriority(Collection<T> nodes) {
     if (nodes.isEmpty()) {
       return 0;
     }

@@ -41,6 +41,7 @@ import org.testng.internal.TestMethodWorker;
 import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
+import org.testng.internal.WrappedTestNGMethod;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -1064,7 +1065,15 @@ public class TestRunner
     // end up creating cycles when combined with preserve-order.
     boolean hasDependencies = false;
     for (ITestNGMethod m : methods) {
-      result.addNode(m);
+      //Attempt at adding the method instance to our dynamic graph
+      //Addition to the graph will fail only when the method is already present.
+      //Presence of a method in the graph is determined by its hashCode.
+      //Since addition of the method was a failure lets now try to add it once again by wrapping it
+      //in a wrapper object which is capable of fudging the original hashCode.
+      boolean added = result.addNode(m);
+      if (!added) {
+        result.addNode(new WrappedTestNGMethod(m));
+      }
 
       // Dependent methods
       {

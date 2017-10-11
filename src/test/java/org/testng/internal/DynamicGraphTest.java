@@ -1,18 +1,23 @@
-package test;
+package org.testng.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
+import org.testng.xml.XmlSuite;
+import test.SimpleBaseTest;
+import test.TestClassContainerForGitHubIssue1360;
 
 public class DynamicGraphTest extends SimpleBaseTest {
 
@@ -247,6 +252,17 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
   private static String constructName(ITestNGMethod method) {
     return method.getConstructorOrMethod().getDeclaringClass().getSimpleName() + "." + method.getMethodName();
+  }
+
+  @Test
+  public void testDuplicationFunctionality() {
+      XmlSuite suite = createXmlSuite("suite", "test", TestClassSample.class);
+      TestNG testng = create(suite);
+      MethodMultiplyingInterceptor tla = new MethodMultiplyingInterceptor();
+      testng.addListener((ITestNGListener) tla);
+      testng.run();
+      int expected = tla.getMultiplyCount() + tla.getOriginalMethodCount();
+      assertThat(tla.getPassedTests().size()).isEqualTo(expected);
   }
 
 }
