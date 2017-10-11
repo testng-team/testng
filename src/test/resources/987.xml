@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="A" verbose="2">
+    <test name="Test1">
+        <classes>
+            <class name="test.commandline.Issue987TestSample"/>
+        </classes>
+    </test>
+
+</suite>
+

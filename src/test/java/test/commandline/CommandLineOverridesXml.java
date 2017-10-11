@@ -9,7 +9,10 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CommandLineOverridesXml extends SimpleBaseTest {
 
@@ -40,5 +43,16 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     tng.run();
 
     assertTestResultsEqual(tla.getPassedTests(), methods);
+  }
+
+  @Test
+  public void ensureThatParallelismAndThreadCountAreRallied() {
+    TestNG testng = create();
+    testng.setTestSuites(Collections.singletonList("src/test/resources/987.xml"));
+    testng.setThreadCount(2);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.run();
+    assertThat(Issue987TestSample.maps).hasSize(2);
+    assertThat(Issue987TestSample.maps.values()).contains("method2", "method1");
   }
 }
