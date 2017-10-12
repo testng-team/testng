@@ -298,6 +298,8 @@ public class TestNG {
       Collection<XmlSuite> allSuites = getParser(suitePath).parse();
 
       for (XmlSuite s : allSuites) {
+        s.setParallel(this.m_parallelMode);
+        s.setThreadCount(this.m_threadCount);
         // If test names were specified, only run these test names
         if (m_testNames != null) {
           m_suites.add(extractTestNames(s, m_testNames));
