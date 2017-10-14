@@ -275,6 +275,9 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private static boolean isExcluded(Collection<String> excludedGroups, String... groups) {
+    if (!excludedGroups.isEmpty() && groups.length == 0) {
+      return true;
+    }
     return isMemberOf(excludedGroups, groups);
   }
 

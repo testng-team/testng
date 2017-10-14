@@ -14,6 +14,7 @@ import test.SimpleBaseTest;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,7 +124,7 @@ public class GroupSuiteTest extends SimpleBaseTest {
       test.setExcludedGroups(excludedTestGroups);
     }
 
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(Collections.singletonList(suite));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
@@ -131,6 +132,18 @@ public class GroupSuiteTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getInvokedMethodNames()).containsExactly(methods);
+  }
+
+  @Test(description = "GITHUB-1574")
+  public void testToCheckNoConfigurationsAreExecuted() {
+    XmlSuite suite = createXmlSuite("suite");
+    XmlTest test = createXmlTest(suite, "test", Issue1574TestclassSample.class);
+    test.addExcludedGroup("sometest");
+    TestNG testng = create(suite);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener((ITestNGListener) listener);
+    testng.run();
+    assertThat(listener.getInvokedMethodNames()).containsExactly("anothertest", "tearDownSuite");
   }
 
   private static List<String> g(String... groups) {
