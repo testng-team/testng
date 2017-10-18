@@ -28,4 +28,19 @@ public class ExitCodeTest extends SimpleBaseTest {
     tng.run();
     assertEquals(tng.getStatus(), 0);
   }
+
+  @Test(description = "GITHUB-217")
+  public void exitWithNonzeroOnSkips() {
+    TestNG tng = create(Issue217TestClassSample.class);
+    tng.run();
+    assertEquals(tng.getStatus(), 2);
+  }
+
+  @Test(description = "GITHUB-217")
+  public void exitWithNonzeroOnSkips1() {
+    TestNG tng = create(Issue217TestClassSampleWithOneDataProvider.class);
+    tng.run();
+    assertEquals(tng.getStatus(), 2);
+  }
+
 }

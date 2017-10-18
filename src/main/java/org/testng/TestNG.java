@@ -142,6 +142,8 @@ public class TestNG {
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners = Maps.newHashMap();
 
+  protected static final int HAS_STARTED = -1;
+  protected static final int SUCCESS = 0;
   protected static final int HAS_FAILURE = 1;
   protected static final int HAS_SKIPPED = 2;
   protected static final int HAS_FSP = 4;
@@ -149,7 +151,7 @@ public class TestNG {
 
   public static final Integer DEFAULT_VERBOSE = 1;
 
-  private int m_status;
+  private int m_status = HAS_STARTED;
   private boolean m_hasTests= false;
 
   // Command line suite parameters
@@ -211,11 +213,22 @@ public class TestNG {
   }
 
   public int getStatus() {
+    if (m_status == HAS_STARTED) {
+      //we perhaps are running in the JUnit mode. So the ExitCodeListener is not involved.
+      //Lets just override the status and return it as 0
+      return SUCCESS;
+    }
     return m_status;
   }
 
   private void setStatus(int status) {
-    m_status |= status;
+    if (m_status == HAS_STARTED || status == SUCCESS) {
+      //Resort to bitwise OR operation only if the status was never set
+      //or if its not being updated to SUCCESS.
+      m_status = status;
+    } else {
+      m_status |= status;
+    }
   }
 
   /**
@@ -1999,8 +2012,13 @@ public class TestNG {
     @Override
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
-      if ((m_mainRunner.getStatus() & HAS_FAILURE) != 0) {
+      boolean isZero = m_mainRunner.getStatus() == SUCCESS;
+      if (isZero) {
         m_mainRunner.setStatus(HAS_SKIPPED);
+      } else {
+        if ((m_mainRunner.getStatus() & HAS_FAILURE) != 0) {
+          m_mainRunner.setStatus(HAS_SKIPPED);
+        }
       }
     }
 
@@ -2013,6 +2031,7 @@ public class TestNG {
     @Override
     public void onTestSuccess(ITestResult result) {
       setHasRunTests();
+      m_mainRunner.setStatus(SUCCESS);
     }
 
     @Override
