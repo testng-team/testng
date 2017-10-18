@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-217: exception in DataProvider doesn't fail test run (Krishnan Mahadevan)
 Fixed: GITHUB-987: Parameters threadCount and parallel doesn't work with maven (Krishnan Mahadevan)
 Fixed: GITHUB-1472: Optimize DynamicGraph.getUnfinishedNodes (Krishnan Mahadevan & Nathan Reynolds)
 Fixed: GITHUB-1566: Invalid XML characters in Params in testng-results.xml (Krishnan Mahadevan)
