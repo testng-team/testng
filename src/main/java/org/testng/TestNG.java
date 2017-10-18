@@ -29,6 +29,7 @@ import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
+import org.testng.internal.ExitCodeListener;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
@@ -185,6 +186,7 @@ public class TestNG {
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
+  private org.testng.internal.ExitCodeListener m_exitCode;
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -215,7 +217,7 @@ public class TestNG {
   }
 
   private void setStatus(int status) {
-    m_status |= status;
+    m_status = status;
   }
 
   /**
@@ -963,7 +965,8 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    addListener((ITestNGListener) new ExitCodeListener(this));
+    this.m_exitCode = new org.testng.internal.ExitCodeListener();
+    addListener((ITestNGListener) this.m_exitCode);
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
@@ -1155,6 +1158,8 @@ public class TestNG {
     }
 
     runExecutionListeners(false /* finish */);
+    m_hasTests = this.m_exitCode.isHasTests();
+    setStatus(this.m_exitCode.getStatus());
 
     if(!m_hasTests) {
       setStatus(HAS_NO_TEST);
@@ -1975,6 +1980,10 @@ public class TestNG {
     m_status |= HAS_SKIPPED;
   }
 
+  @Deprecated
+  /**
+   * @deprecated - This class stands deprecated as of TestNG v6.13
+   */
   public static class ExitCodeListener implements IResultListener2 {
     private TestNG m_mainRunner;
 
