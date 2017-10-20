@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ExitCodeListener implements ITestListener, IReporter {
     private boolean hasTests = false;
-    private ExitCode status = new ExitCode();
+    private final ExitCode status = new ExitCode();
 
     public ExitCode getStatus() {
         return status;

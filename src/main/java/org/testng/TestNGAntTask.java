@@ -722,10 +722,10 @@ public class TestNGAntTask extends Task {
   protected void actOnResult(int exitValue, boolean wasKilled) {
     if(exitValue == -1) {
       executeHaltTarget(exitValue);
-      throw new BuildException("an error occured when running TestNG tests");
+      throw new BuildException("an error occurred when running TestNG tests");
     }
 
-    if((exitValue & TestNG.HAS_NO_TEST) == TestNG.HAS_NO_TEST) {
+    if((exitValue & ExitCode.HAS_NO_TEST) == ExitCode.HAS_NO_TEST) {
       if(m_haltOnFailure) {
         executeHaltTarget(exitValue);
         throw new BuildException("No tests were run");

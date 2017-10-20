@@ -21,26 +21,32 @@ import java.util.BitSet;
  */
 public class ExitCode {
 
+    public static final int HAS_NO_TEST = 8;
+    private static final int FAILED_WITHIN_SUCCESS = 4;
+    private static final int SKIPPED = 2;
+    private static final int FAILED = 1;
+    private static final int SIZE = 3;
+
     private final BitSet exitCodeBits;
 
     ExitCode() {
-        this(new BitSet(3));
+        this(new BitSet(SIZE));
     }
 
     public static boolean hasFailureWithinSuccessPercentage(int returnCode) {
-        return (returnCode >= 4 && returnCode <= 7);
+        return (returnCode & FAILED_WITHIN_SUCCESS) == FAILED_WITHIN_SUCCESS;
     }
 
     public static boolean hasSkipped(int returnCode) {
-        return (returnCode == 2 || returnCode == 3 || returnCode == 6 || returnCode == 7);
+        return (returnCode & SKIPPED) == SKIPPED;
     }
 
     public static boolean hasFailure(int returnCode) {
-        return (returnCode == 1 || returnCode == 3);
+        return (returnCode & FAILED) == FAILED;
     }
 
     public static ExitCode newExitCodeRepresentingFailure() {
-        BitSet bitSet = new BitSet(3);
+        BitSet bitSet = new BitSet(SIZE);
         bitSet.set(0, true);
         bitSet.set(1, false);
         bitSet.set(2, false);

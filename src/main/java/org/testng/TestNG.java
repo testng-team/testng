@@ -143,11 +143,8 @@ public class TestNG {
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners = Maps.newHashMap();
 
-  protected static final int HAS_NO_TEST = 8;
 
   public static final Integer DEFAULT_VERBOSE = 1;
-
-  private boolean m_hasTests= false;
 
   // Command line suite parameters
   private int m_threadCount = -1;
@@ -210,10 +207,10 @@ public class TestNG {
   }
 
   public int getStatus() {
-    if (m_hasTests) {
-      return exitCode.getExitCode();
+    if (!exitCodeListener.hasTests()) {
+      return ExitCode.HAS_NO_TEST;
     }
-    return HAS_NO_TEST;
+    return exitCode.getExitCode();
   }
 
   /**
@@ -1154,10 +1151,9 @@ public class TestNG {
     }
 
     runExecutionListeners(false /* finish */);
-    m_hasTests = this.exitCodeListener.hasTests();
     exitCode = this.exitCodeListener.getStatus();
 
-    if(!m_hasTests) {
+    if(!exitCodeListener.hasTests()) {
       if (TestRunner.getVerbose() > 1) {
         System.err.println("[TestNG] No tests found. Nothing was run");
         usage();
@@ -1243,7 +1239,6 @@ public class TestNG {
    */
   public List<ISuite> runSuitesLocally() {
     if (m_suites.isEmpty()) {
-      this.m_hasTests = false;
       error("No test suite found. Nothing to run");
       usage();
       return Collections.emptyList();
@@ -2005,7 +2000,6 @@ public class TestNG {
     }
 
     private void setHasRunTests() {
-      m_mainRunner.m_hasTests= true;
     }
 
     /**
