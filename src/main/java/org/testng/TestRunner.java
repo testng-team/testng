@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -1407,9 +1408,7 @@ public class TestRunner
 
   @Override
   public void addInvokedMethod(InvokedMethod im) {
-    synchronized(m_invokedMethods) {
-      m_invokedMethods.add(im);
-    }
+    m_invokedMethods.add(im);
   }
 
   @Override
@@ -1540,7 +1539,7 @@ public class TestRunner
   // Listeners
   /////
 
-  private final List<InvokedMethod> m_invokedMethods = Lists.newArrayList();
+  private final Collection<InvokedMethod> m_invokedMethods = new ConcurrentLinkedQueue<>();
 
   private void dumpInvokedMethods() {
     System.out.println("===== Invoked methods");
@@ -1561,12 +1560,10 @@ public class TestRunner
 
   public List<ITestNGMethod> getInvokedMethods() {
     List<ITestNGMethod> result= Lists.newArrayList();
-    synchronized(m_invokedMethods) {
-      for (IInvokedMethod im : m_invokedMethods) {
-        ITestNGMethod tm= im.getTestMethod();
-        tm.setDate(im.getDate());
-        result.add(tm);
-      }
+    for (IInvokedMethod im : m_invokedMethods) {
+      ITestNGMethod tm = im.getTestMethod();
+      tm.setDate(im.getDate());
+      result.add(tm);
     }
 
     return result;

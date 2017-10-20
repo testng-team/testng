@@ -1,12 +1,13 @@
 package org.testng;
 
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.XmlMethodSelector;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This class maintains a map of {@code <Class, List<ITestNGMethod>>}.
@@ -17,7 +18,7 @@ import java.util.Set;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
-  private Map<Object, List<ITestNGMethod>> classMap = Maps.newHashMap();
+  private Map<Object, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked
   private Map<ITestClass, Set<Object>> beforeClassMethods = Maps.newHashMap();
@@ -33,9 +34,9 @@ public class ClassMethodMap {
       }
 
       Object instance = m.getInstance();
-      List<ITestNGMethod> l = classMap.get(instance);
+      Collection<ITestNGMethod> l = classMap.get(instance);
       if (l == null) {
-        l = Lists.newArrayList();
+        l = new ConcurrentLinkedQueue<>();
         classMap.put(instance, l);
       }
       l.add(m);
@@ -46,8 +47,8 @@ public class ClassMethodMap {
    * Remove the method from this map and returns true if it is the last
    * of its class.
    */
-  public synchronized boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
-    List<ITestNGMethod> l = classMap.get(instance);
+  public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
+    Collection<ITestNGMethod> l = classMap.get(instance);
     if (l == null) {
       throw new AssertionError("l should not be null");
     }

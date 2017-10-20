@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -64,7 +66,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private long m_invocationTimeOut = 0L;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private final List<Integer> m_failedInvocationNumbers = Collections.synchronizedList(Lists.<Integer>newArrayList());
+  private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
   private long m_timeOut = 0;
 
   private boolean m_ignoreMissingDependencies;
@@ -742,7 +744,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   @Override
   public List<Integer> getFailedInvocationNumbers() {
-    return m_failedInvocationNumbers;
+    return new ArrayList<>(m_failedInvocationNumbers);
   }
 
   @Override
