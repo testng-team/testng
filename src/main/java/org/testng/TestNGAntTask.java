@@ -36,6 +36,7 @@ import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
+import org.testng.internal.ExitCode;
 import org.testng.internal.Utils;
 import org.testng.reporters.VerboseReporter;
 
@@ -721,10 +722,10 @@ public class TestNGAntTask extends Task {
   protected void actOnResult(int exitValue, boolean wasKilled) {
     if(exitValue == -1) {
       executeHaltTarget(exitValue);
-      throw new BuildException("an error occured when running TestNG tests");
+      throw new BuildException("an error occurred when running TestNG tests");
     }
 
-    if((exitValue & TestNG.HAS_NO_TEST) == TestNG.HAS_NO_TEST) {
+    if((exitValue & ExitCode.HAS_NO_TEST) == ExitCode.HAS_NO_TEST) {
       if(m_haltOnFailure) {
         executeHaltTarget(exitValue);
         throw new BuildException("No tests were run");
@@ -738,7 +739,7 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    boolean failed= ((exitValue & TestNG.HAS_FAILURE) == TestNG.HAS_FAILURE) || wasKilled;
+    boolean failed= (ExitCode.hasFailure(exitValue)) || wasKilled;
     if(failed) {
       final String msg= wasKilled ? "The tests timed out and were killed." : "The tests failed.";
       if(m_haltOnFailure) {
@@ -754,7 +755,7 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if((exitValue & TestNG.HAS_SKIPPED) == TestNG.HAS_SKIPPED) {
+    if(ExitCode.hasSkipped(exitValue)) {
       if(m_haltOnSkipped) {
         executeHaltTarget(exitValue);
         throw new BuildException("There are TestNG SKIPPED tests");
@@ -768,7 +769,7 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if((exitValue & TestNG.HAS_FSP) == TestNG.HAS_FSP) {
+    if(ExitCode.hasFailureWithinSuccessPercentage(exitValue)) {
       if(m_haltOnFSP) {
         executeHaltTarget(exitValue);
         throw new BuildException("There are TestNG FAILED WITHIN SUCCESS PERCENTAGE tests");

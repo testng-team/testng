@@ -123,6 +123,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         public void testAssumptionFailure(Failure failure) {
             notified.add(failure.getDescription());
             ITestResult tr = m_findedMethods.get(failure.getDescription());
+            validate(tr, failure.getDescription());
             runAfterInvocationListeners(tr);
             tr.setStatus(TestResult.SKIP);
             tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
@@ -172,6 +173,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         @Override
         public void testFinished(Description description) throws Exception {
             ITestResult tr = m_findedMethods.get(description);
+            validate(tr, description);
             runAfterInvocationListeners(tr);
             if (!notified.contains(description)) {
                 tr.setStatus(TestResult.SUCCESS);
@@ -189,6 +191,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             if (!notified.contains(description)) {
                 notified.add(description);
                 ITestResult tr = m_findedMethods.get(description);
+                validate(tr, description);
                 runAfterInvocationListeners(tr);
                 tr.setStatus(TestResult.SKIP);
                 tr.setEndMillis(tr.getStartMillis());
@@ -206,11 +209,13 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
         @Override
         public void testRunStarted(Description description) throws Exception {
+
         }
 
         @Override
         public void testStarted(Description description) throws Exception {
             ITestResult tr = m_findedMethods.get(description);
+            validate(tr, description);
             for (ITestListener l : m_listeners) {
                 l.onTestStart(tr);
             }
@@ -221,6 +226,16 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
             for (IInvokedMethodListener l: m_invokeListeners) {
                 l.afterInvocation(im, tr);
             }
+        }
+
+        private void validate(ITestResult tr, Description description) {
+            if (tr == null) {
+                throw new TestNGException(stringify(description));
+            }
+        }
+
+        private String stringify(Description description) {
+            return description.getClassName() + "." + description.getMethodName() + "()";
         }
     }
 

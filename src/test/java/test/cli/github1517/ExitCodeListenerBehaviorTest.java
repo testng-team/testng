@@ -20,7 +20,7 @@ public class ExitCodeListenerBehaviorTest extends SimpleBaseTest {
         return new Object[][]{
                 {TestClassWithConfigFailureSample.class, 3},
                 {TestClassWithConfigSkipSample.class, 2},
-                {TestClassWithConfigSkipAndFailureSample.class, 3},
+                {TestClassWithConfigSkipAndFailureSample.class, 3}
         };
     }
 

@@ -29,6 +29,7 @@ import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
+import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
@@ -142,15 +143,8 @@ public class TestNG {
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners = Maps.newHashMap();
 
-  protected static final int HAS_FAILURE = 1;
-  protected static final int HAS_SKIPPED = 2;
-  protected static final int HAS_FSP = 4;
-  protected static final int HAS_NO_TEST = 8;
 
   public static final Integer DEFAULT_VERBOSE = 1;
-
-  private int m_status;
-  private boolean m_hasTests= false;
 
   // Command line suite parameters
   private int m_threadCount = -1;
@@ -185,6 +179,8 @@ public class TestNG {
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
+  private org.testng.internal.ExitCodeListener exitCodeListener;
+  private ExitCode exitCode;
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -211,11 +207,10 @@ public class TestNG {
   }
 
   public int getStatus() {
-    return m_status;
-  }
-
-  private void setStatus(int status) {
-    m_status |= status;
+    if (!exitCodeListener.hasTests()) {
+      return ExitCode.HAS_NO_TEST;
+    }
+    return exitCode.getExitCode();
   }
 
   /**
@@ -963,7 +958,8 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    addListener((ITestNGListener) new ExitCodeListener(this));
+    this.exitCodeListener = new org.testng.internal.ExitCodeListener();
+    addListener((ITestNGListener) this.exitCodeListener);
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
@@ -1155,9 +1151,9 @@ public class TestNG {
     }
 
     runExecutionListeners(false /* finish */);
+    exitCode = this.exitCodeListener.getStatus();
 
-    if(!m_hasTests) {
-      setStatus(HAS_NO_TEST);
+    if(!exitCodeListener.hasTests()) {
       if (TestRunner.getVerbose() > 1) {
         System.err.println("[TestNG] No tests found. Nothing was run");
         usage();
@@ -1243,7 +1239,6 @@ public class TestNG {
    */
   public List<ISuite> runSuitesLocally() {
     if (m_suites.isEmpty()) {
-      setStatus(HAS_NO_TEST);
       error("No test suite found. Nothing to run");
       usage();
       return Collections.emptyList();
@@ -1490,7 +1485,7 @@ public class TestNG {
       else {
         error(ex.getMessage());
       }
-      result.setStatus(HAS_FAILURE);
+      result.exitCode = ExitCode.newExitCodeRepresentingFailure();
     }
 
     return result;
@@ -1844,21 +1839,21 @@ public class TestNG {
    * @return true if at least one test failed.
    */
   public boolean hasFailure() {
-    return (getStatus() & HAS_FAILURE) == HAS_FAILURE;
+    return this.exitCode.hasFailure();
   }
 
   /**
    * @return true if at least one test failed within success percentage.
    */
   public boolean hasFailureWithinSuccessPercentage() {
-    return (getStatus() & HAS_FSP) == HAS_FSP;
+    return this.exitCode.hasFailureWithinSuccessPercentage();
   }
 
   /**
    * @return true if at least one test was skipped.
    */
   public boolean hasSkip() {
-    return (getStatus() & HAS_SKIPPED) == HAS_SKIPPED;
+    return this.exitCode.hasSkip();
   }
 
   static void exitWithError(String msg) {
@@ -1951,30 +1946,10 @@ public class TestNG {
     return m_instance;
   }
 
-  /**
-   * @deprecated since 5.1
-   */
   @Deprecated
-  public void setHasFailure(boolean hasFailure) {
-    m_status |= HAS_FAILURE;
-  }
-
   /**
-   * @deprecated since 5.1
+   * @deprecated - This class stands deprecated as of TestNG v6.13
    */
-  @Deprecated
-  public void setHasFailureWithinSuccessPercentage(boolean hasFailureWithinSuccessPercentage) {
-    m_status |= HAS_FSP;
-  }
-
-  /**
-   * @deprecated since 5.1
-   */
-  @Deprecated
-  public void setHasSkip(boolean hasSkip) {
-    m_status |= HAS_SKIPPED;
-  }
-
   public static class ExitCodeListener implements IResultListener2 {
     private TestNG m_mainRunner;
 
@@ -1993,21 +1968,16 @@ public class TestNG {
     @Override
     public void onTestFailure(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.setStatus(HAS_FAILURE);
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
       setHasRunTests();
-      if ((m_mainRunner.getStatus() & HAS_FAILURE) != 0) {
-        m_mainRunner.setStatus(HAS_SKIPPED);
-      }
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
       setHasRunTests();
-      m_mainRunner.setStatus(HAS_FSP);
     }
 
     @Override
@@ -2030,7 +2000,6 @@ public class TestNG {
     }
 
     private void setHasRunTests() {
-      m_mainRunner.m_hasTests= true;
     }
 
     /**
@@ -2038,7 +2007,6 @@ public class TestNG {
      */
     @Override
     public void onConfigurationFailure(ITestResult itr) {
-      m_mainRunner.setStatus(HAS_FAILURE);
     }
 
     /**
@@ -2046,7 +2014,6 @@ public class TestNG {
      */
     @Override
     public void onConfigurationSkip(ITestResult itr) {
-      m_mainRunner.setStatus(HAS_SKIPPED);
     }
 
     /**
