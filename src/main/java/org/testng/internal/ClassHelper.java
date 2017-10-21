@@ -13,6 +13,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
@@ -177,7 +178,7 @@ public final class ClassHelper {
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
     Map<String, Set<Method>> methods = Maps.newHashMap();
-    for (final Method declaredMethod : clazz.getDeclaredMethods()) {
+    for (final Method declaredMethod : ReflectionHelper.getLocalMethods(clazz)) {
       appendMethod(methods, declaredMethod);
     }
 
