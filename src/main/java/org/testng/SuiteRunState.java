@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SuiteRunState {
 
-  private AtomicBoolean m_hasFailures = new AtomicBoolean();
+  private final AtomicBoolean m_hasFailures = new AtomicBoolean();
 
   public void failed() {
     m_hasFailures.set(true);

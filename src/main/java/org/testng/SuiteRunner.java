@@ -70,7 +70,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> invokedMethodListeners;
 
   /** The list of all the methods invoked during this run */
-  private Collection<IInvokedMethod> invokedMethods = new ConcurrentLinkedQueue<>();
+  private final Collection<IInvokedMethod> invokedMethods = new ConcurrentLinkedQueue<>();
 
   private List<ITestNGMethod> allTestMethods = Lists.newArrayList();
   private SuiteRunState suiteState = new SuiteRunState();

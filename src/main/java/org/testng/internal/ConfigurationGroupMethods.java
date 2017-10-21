@@ -29,15 +29,15 @@ public class ConfigurationGroupMethods {
   private final ITestNGMethod[] m_allMethods;
 
   /**A map that returns the last method belonging to the given group */
-  private Map<String, List<ITestNGMethod>> m_afterGroupsMap= null;
+  private Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
 
   public ConfigurationGroupMethods(ITestNGMethod[] allMethods,
                                    Map<String, List<ITestNGMethod>> beforeGroupsMethods,
                                    Map<String, List<ITestNGMethod>> afterGroupsMethods)
   {
-    m_allMethods= allMethods;
-    m_beforeGroupsMethods= new ConcurrentHashMap<>(beforeGroupsMethods);
-    m_afterGroupsMethods= new ConcurrentHashMap<>(afterGroupsMethods);
+    m_allMethods = allMethods;
+    m_beforeGroupsMethods = new ConcurrentHashMap<>(beforeGroupsMethods);
+    m_afterGroupsMethods = new ConcurrentHashMap<>(afterGroupsMethods);
   }
 
   public ITestNGMethod[] getAllTestMethods() {
