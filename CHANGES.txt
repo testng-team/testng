@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1574: Before/After methods are not running when groups "include" in suite (Krishnan Mahadevan)
 Fixed: GITHUB-217: exception in DataProvider doesn't fail test run (Krishnan Mahadevan)
 Fixed: GITHUB-987: Parameters threadCount and parallel doesn't work with maven (Krishnan Mahadevan)
 Fixed: GITHUB-1472: Optimize DynamicGraph.getUnfinishedNodes (Krishnan Mahadevan & Nathan Reynolds)
