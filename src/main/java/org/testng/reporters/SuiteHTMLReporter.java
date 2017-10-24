@@ -325,71 +325,69 @@ public class SuiteHTMLReporter implements IReporter {
 
       SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
       boolean addedHeader = false;
-      synchronized(invokedMethods) {
-        for (IInvokedMethod iim : invokedMethods) {
-          ITestNGMethod tm = iim.getTestMethod();
-          if (!addedHeader) {
-            bw.append("<table border=\"1\">\n")
-              .append("<tr>")
-              .append("<th>Time</th>")
-              .append("<th>Delta (ms)</th>")
-              .append("<th>Suite<br>configuration</th>")
-              .append("<th>Test<br>configuration</th>")
-              .append("<th>Class<br>configuration</th>")
-              .append("<th>Groups<br>configuration</th>")
-              .append("<th>Method<br>configuration</th>")
-              .append("<th>Test<br>method</th>")
-              .append("<th>Thread</th>")
-              .append("<th>Instances</th>")
-              .append("</tr>\n");
-            addedHeader = true;
-          }
-          String methodName = tm.toString();
-          boolean bc = tm.isBeforeClassConfiguration();
-          boolean ac = tm.isAfterClassConfiguration();
-          boolean bt = tm.isBeforeTestConfiguration();
-          boolean at = tm.isAfterTestConfiguration();
-          boolean bs = tm.isBeforeSuiteConfiguration();
-          boolean as = tm.isAfterSuiteConfiguration();
-          boolean bg = tm.isBeforeGroupsConfiguration();
-          boolean ag = tm.isAfterGroupsConfiguration();
-          boolean setUp = tm.isBeforeMethodConfiguration();
-          boolean tearDown = tm.isAfterMethodConfiguration();
-          boolean isClassConfiguration = bc || ac;
-          boolean isGroupsConfiguration = bg || ag;
-          boolean isTestConfiguration = bt || at;
-          boolean isSuiteConfiguration = bs || as;
-          boolean isSetupOrTearDown = setUp || tearDown;
-          String configurationClassMethod = isClassConfiguration ? (bc ? BEFORE : AFTER) + methodName : SP;
-          String configurationTestMethod = isTestConfiguration ? (bt ? BEFORE : AFTER) + methodName : SP;
-          String configurationGroupsMethod = isGroupsConfiguration ? (bg ? BEFORE : AFTER) + methodName : SP;
-          String configurationSuiteMethod = isSuiteConfiguration ? (bs ? BEFORE : AFTER) + methodName : SP;
-          String setUpOrTearDownMethod = isSetupOrTearDown ? (setUp ? BEFORE : AFTER) + methodName : SP;
-          String testMethod = tm.isTest() ? methodName : SP;
-
-          StringBuilder instances = new StringBuilder();
-          for (long o : tm.getInstanceHashCodes()) {
-            instances.append(o).append(" ");
-          }
-
-          if (startDate == -1) {
-            startDate = iim.getDate();
-          }
-          String date = format.format(iim.getDate());
-          bw.append("<tr bgcolor=\"").append(createColor(tm)).append("\">")
-            .append("  <td>").append(date).append("</td> ")
-            .append("  <td>").append(Long.toString(iim.getDate() - startDate)).append("</td> ")
-            .append(td(configurationSuiteMethod))
-            .append(td(configurationTestMethod))
-            .append(td(configurationClassMethod))
-            .append(td(configurationGroupsMethod))
-            .append(td(setUpOrTearDownMethod))
-            .append(td(testMethod))
-            .append("  <td>").append(tm.getId()).append("</td> ")
-            .append("  <td>").append(instances).append("</td> ")
-            .append("</tr>\n")
-            ;
+      for (IInvokedMethod iim : invokedMethods) {
+        ITestNGMethod tm = iim.getTestMethod();
+        if (!addedHeader) {
+          bw.append("<table border=\"1\">\n")
+                  .append("<tr>")
+                  .append("<th>Time</th>")
+                  .append("<th>Delta (ms)</th>")
+                  .append("<th>Suite<br>configuration</th>")
+                  .append("<th>Test<br>configuration</th>")
+                  .append("<th>Class<br>configuration</th>")
+                  .append("<th>Groups<br>configuration</th>")
+                  .append("<th>Method<br>configuration</th>")
+                  .append("<th>Test<br>method</th>")
+                  .append("<th>Thread</th>")
+                  .append("<th>Instances</th>")
+                  .append("</tr>\n");
+          addedHeader = true;
         }
+        String methodName = tm.toString();
+        boolean bc = tm.isBeforeClassConfiguration();
+        boolean ac = tm.isAfterClassConfiguration();
+        boolean bt = tm.isBeforeTestConfiguration();
+        boolean at = tm.isAfterTestConfiguration();
+        boolean bs = tm.isBeforeSuiteConfiguration();
+        boolean as = tm.isAfterSuiteConfiguration();
+        boolean bg = tm.isBeforeGroupsConfiguration();
+        boolean ag = tm.isAfterGroupsConfiguration();
+        boolean setUp = tm.isBeforeMethodConfiguration();
+        boolean tearDown = tm.isAfterMethodConfiguration();
+        boolean isClassConfiguration = bc || ac;
+        boolean isGroupsConfiguration = bg || ag;
+        boolean isTestConfiguration = bt || at;
+        boolean isSuiteConfiguration = bs || as;
+        boolean isSetupOrTearDown = setUp || tearDown;
+        String configurationClassMethod = isClassConfiguration ? (bc ? BEFORE : AFTER) + methodName : SP;
+        String configurationTestMethod = isTestConfiguration ? (bt ? BEFORE : AFTER) + methodName : SP;
+        String configurationGroupsMethod = isGroupsConfiguration ? (bg ? BEFORE : AFTER) + methodName : SP;
+        String configurationSuiteMethod = isSuiteConfiguration ? (bs ? BEFORE : AFTER) + methodName : SP;
+        String setUpOrTearDownMethod = isSetupOrTearDown ? (setUp ? BEFORE : AFTER) + methodName : SP;
+        String testMethod = tm.isTest() ? methodName : SP;
+
+        StringBuilder instances = new StringBuilder();
+        for (long o : tm.getInstanceHashCodes()) {
+          instances.append(o).append(" ");
+        }
+
+        if (startDate == -1) {
+          startDate = iim.getDate();
+        }
+        String date = format.format(iim.getDate());
+        bw.append("<tr bgcolor=\"").append(createColor(tm)).append("\">")
+                .append("  <td>").append(date).append("</td> ")
+                .append("  <td>").append(Long.toString(iim.getDate() - startDate)).append("</td> ")
+                .append(td(configurationSuiteMethod))
+                .append(td(configurationTestMethod))
+                .append(td(configurationClassMethod))
+                .append(td(configurationGroupsMethod))
+                .append(td(setUpOrTearDownMethod))
+                .append(td(testMethod))
+                .append("  <td>").append(tm.getId()).append("</td> ")
+                .append("  <td>").append(instances).append("</td> ")
+                .append("</tr>\n")
+        ;
       }
       bw.append("</table>\n");
     } catch (IOException e) {
@@ -520,16 +518,14 @@ public class SuiteHTMLReporter implements IReporter {
     Map<String, ISuiteResult> suiteResults = suite.getResults();
     int groupCount = suite.getMethodsByGroups().size();
     int methodCount = 0;
-    synchronized(suiteResults) {
-      for (ISuiteResult sr : suiteResults.values()) {
-        ITestNGMethod[] methods = sr.getTestContext().getAllTestMethods();
-        methodCount += Utils.calculateInvokedMethodCount(methods);
+    for (ISuiteResult sr : suiteResults.values()) {
+      ITestNGMethod[] methods = sr.getTestContext().getAllTestMethods();
+      methodCount += Utils.calculateInvokedMethodCount(methods);
 
-        // Collect testClasses
-        for (ITestNGMethod tm : methods) {
-          ITestClass tc = tm.getTestClass();
-          m_classes.put(tc.getRealClass().getName(), tc);
-        }
+      // Collect testClasses
+      for (ITestNGMethod tm : methods) {
+        ITestClass tc = tm.getTestClass();
+        m_classes.put(tc.getRealClass().getName(), tc);
       }
     }
 
@@ -578,29 +574,24 @@ public class SuiteHTMLReporter implements IReporter {
       Map<String, ISuiteResult> yellowResults = Maps.newHashMap();
       Map<String, ISuiteResult> greenResults = Maps.newHashMap();
 
-      synchronized(suiteResults) {
-        for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
-          String suiteName = entry.getKey();
-          ISuiteResult sr = entry.getValue();
-          ITestContext tc = sr.getTestContext();
-          int failed = tc.getFailedTests().size();
-          int skipped = tc.getSkippedTests().size();
-          int passed = tc.getPassedTests().size();
+    for (Map.Entry<String, ISuiteResult> entry : suiteResults.entrySet()) {
+      String suiteName = entry.getKey();
+      ISuiteResult sr = entry.getValue();
+      ITestContext tc = sr.getTestContext();
+      int failed = tc.getFailedTests().size();
+      int skipped = tc.getSkippedTests().size();
+      int passed = tc.getPassedTests().size();
 
-          if (failed > 0) {
-            redResults.put(suiteName, sr);
-          }
-          else if (skipped > 0) {
-            yellowResults.put(suiteName, sr);
-          }
-          else if (passed > 0) {
-            greenResults.put(suiteName, sr);
-          }
-          else {
-            redResults.put(suiteName, sr);
-          }
-        }
+      if (failed > 0) {
+        redResults.put(suiteName, sr);
+      } else if (skipped > 0) {
+        yellowResults.put(suiteName, sr);
+      } else if (passed > 0) {
+        greenResults.put(suiteName, sr);
+      } else {
+        redResults.put(suiteName, sr);
       }
+    }
 
 
       ISuiteResult[][] results = new ISuiteResult[][] {

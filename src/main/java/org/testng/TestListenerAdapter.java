@@ -1,12 +1,12 @@
 package org.testng;
 
-import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.IResultListener2;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /**
@@ -25,16 +25,15 @@ import java.util.List;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class TestListenerAdapter implements IResultListener2 {
-  private List<ITestNGMethod> m_allTestMethods =
-      Collections.synchronizedList(Lists.<ITestNGMethod>newArrayList());
-  private List<ITestResult> m_passedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_failedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_skippedTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_failedButWSPerTests = Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestContext> m_testContexts= Collections.synchronizedList(new ArrayList<ITestContext>());
-  private List<ITestResult> m_failedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_skippedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
-  private List<ITestResult> m_passedConfs= Collections.synchronizedList(Lists.<ITestResult>newArrayList());
+  private Collection<ITestNGMethod> m_allTestMethods = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_passedTests = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_failedTests = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_skippedTests = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_failedButWSPerTests = new ConcurrentLinkedQueue<>();
+  private Collection<ITestContext> m_testContexts = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_failedConfs = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_skippedConfs = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_passedConfs = new ConcurrentLinkedQueue<>();
 
   @Override
   public void onTestSuccess(ITestResult tr) {
@@ -138,11 +137,11 @@ public class TestListenerAdapter implements IResultListener2 {
   }
 
   public List<ITestContext> getTestContexts() {
-    return m_testContexts;
+    return new ArrayList<>(m_testContexts);
   }
 
   public List<ITestResult> getConfigurationFailures() {
-    return m_failedConfs;
+    return new ArrayList<>(m_failedConfs);
   }
 
   /**
@@ -154,7 +153,7 @@ public class TestListenerAdapter implements IResultListener2 {
   }
 
   public List<ITestResult> getConfigurationSkips() {
-    return m_skippedConfs;
+    return new ArrayList<>(m_skippedConfs);
   }
 
   @Override

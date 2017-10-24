@@ -186,32 +186,31 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     List<Object> invokeInstances= Lists.newArrayList();
     ITestNGMethod tm= mi.getMethod();
-    if (m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance())) {
-      Map<ITestClass, Set<Object>> invokedAfterClassMethods
-          = m_classMethodMap.getInvokedAfterClassMethods();
-      synchronized(invokedAfterClassMethods) {
-        Set<Object> instances = invokedAfterClassMethods.get(testClass);
-        if(null == instances) {
-          instances= new HashSet<>();
-          invokedAfterClassMethods.put(testClass, instances);
-        }
-        Object inst = mi.getInstance();
-        if(!instances.contains(inst)) {
-          invokeInstances.add(inst);
-        }
-      }
+    boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance());
+    if (!removalSuccessful) {
+      return;
+    }
+    Map<ITestClass, Set<Object>> invokedAfterClassMethods = m_classMethodMap.getInvokedAfterClassMethods();
+    Set<Object> instances = invokedAfterClassMethods.get(testClass);
+    if (null == instances) {
+      instances = new HashSet<>();
+      invokedAfterClassMethods.put(testClass, instances);
+    }
+    Object inst = mi.getInstance();
+    if (!instances.contains(inst)) {
+      invokeInstances.add(inst);
+    }
 
-      for (IClassListener listener : m_listeners) {
-        listener.onAfterClass(testClass);
-      }
-      for(Object inst: invokeInstances) {
-        m_invoker.invokeConfigurations(testClass,
-                                       testClass.getAfterClassMethods(),
-                                       m_suite,
-                                       m_parameters,
-                                       null, /* no parameter values */
-                                       inst);
-      }
+    for (IClassListener listener : m_listeners) {
+      listener.onAfterClass(testClass);
+    }
+    for (Object invokeInstance : invokeInstances) {
+      m_invoker.invokeConfigurations(testClass,
+              testClass.getAfterClassMethods(),
+              m_suite,
+              m_parameters,
+              null, /* no parameter values */
+              invokeInstance);
     }
   }
 

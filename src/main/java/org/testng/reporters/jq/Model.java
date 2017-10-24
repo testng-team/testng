@@ -46,22 +46,20 @@ public class Model {
       List<ITestResult> failed = Lists.newArrayList();
       List<ITestResult> skipped = Lists.newArrayList();
       Map<String, ISuiteResult> suiteResults = suite.getResults();
-      synchronized(suiteResults) {
-        for (ISuiteResult sr : suiteResults.values()) {
-          ITestContext context = sr.getTestContext();
-          m_testTags.put(context.getName(), "test-" + testCounter++);
-          failed.addAll(context.getFailedTests().getAllResults());
-          skipped.addAll(context.getSkippedTests().getAllResults());
-          passed.addAll(context.getPassedTests().getAllResults());
-          IResultMap[] map = new IResultMap[] {
-              context.getFailedTests(),
-              context.getSkippedTests(),
-              context.getPassedTests()
-          };
-          for (IResultMap m : map) {
-            for (ITestResult tr : m.getAllResults()) {
-              m_testResultMap.put(tr, getTestResultName(tr));
-            }
+      for (ISuiteResult sr : suiteResults.values()) {
+        ITestContext context = sr.getTestContext();
+        m_testTags.put(context.getName(), "test-" + testCounter++);
+        failed.addAll(context.getFailedTests().getAllResults());
+        skipped.addAll(context.getSkippedTests().getAllResults());
+        passed.addAll(context.getPassedTests().getAllResults());
+        IResultMap[] map = new IResultMap[]{
+                context.getFailedTests(),
+                context.getSkippedTests(),
+                context.getPassedTests()
+        };
+        for (IResultMap m : map) {
+          for (ITestResult tr : m.getAllResults()) {
+            m_testResultMap.put(tr, getTestResultName(tr));
           }
         }
       }

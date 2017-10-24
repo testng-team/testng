@@ -6,10 +6,12 @@ import com.google.common.collect.Multimap;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * {@code TestNgRunStateTracker} tracks state information for a TestNG run: suite listener start, suite listener end,
@@ -19,16 +21,14 @@ import java.util.Map;
  */
 public class TestNgRunStateTracker {
 
-    private static final List<EventLog> eventLogs = new ArrayList<>();
+    private static final Collection<EventLog> eventLogs = new ConcurrentLinkedQueue<>();
 
     public static void logEvent(EventLog eventLog) {
-        synchronized(eventLogs) {
-            eventLogs.add(eventLog);
-        }
+        eventLogs.add(eventLog);
     }
 
     //Get all event logs for all suites
-    public static List<EventLog> getAllEventLogs() {
+    public static Collection<EventLog> getAllEventLogs() {
         return eventLogs;
     }
 
