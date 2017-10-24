@@ -25,6 +25,7 @@ import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.testng.*;
+import org.testng.internal.TestListenerHelper;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
@@ -106,7 +107,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
     org.testng.internal.TestResult tr= recordResults(test, tri);
 
-    runTestListeners(tr, m_parentRunner.getTestListeners());
+    TestListenerHelper.runTestListeners(tr, m_parentRunner.getTestListeners());
   }
 
     public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {
@@ -142,38 +143,6 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     }
 
     return tr;
-  }
-
-  private static void runTestListeners(ITestResult tr, List<ITestListener> listeners) {
-    for (ITestListener itl : listeners) {
-      switch(tr.getStatus()) {
-        case ITestResult.SKIP: {
-          itl.onTestSkipped(tr);
-          break;
-        }
-        case ITestResult.SUCCESS_PERCENTAGE_FAILURE: {
-          itl.onTestFailedButWithinSuccessPercentage(tr);
-          break;
-        }
-        case ITestResult.FAILURE: {
-          itl.onTestFailure(tr);
-          break;
-        }
-        case ITestResult.SUCCESS: {
-          itl.onTestSuccess(tr);
-          break;
-        }
-
-        case ITestResult.STARTED: {
-          itl.onTestStart(tr);
-          break;
-        }
-
-        default: {
-          assert false : "UNKNOWN STATUS:" + tr;
-        }
-      }
-    }
   }
 
   /**

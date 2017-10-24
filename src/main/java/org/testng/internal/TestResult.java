@@ -39,6 +39,11 @@ public class TestResult implements ITestResult, IAlterTestName {
 
   }
 
+  public TestResult(Object instance, ITestNGMethod method, Throwable throwable, ITestContext context) {
+    long time = System.currentTimeMillis();
+    init(method.getTestClass(), instance, method, throwable, time, time, context);
+  }
+
   public TestResult(IClass testClass,
       Object instance,
       ITestNGMethod method,
@@ -303,13 +308,7 @@ public class TestResult implements ITestResult, IAlterTestName {
 
   @Override
   public int compareTo(ITestResult comparison) {
-	  if( getStartMillis() > comparison.getStartMillis() ) {
-		  return 1;
-	  } else if( getStartMillis() < comparison.getStartMillis()) {
-		  return -1;
-	  } else {
-		  return 0;
-	  }
+    return Long.compare(getStartMillis(), comparison.getStartMillis());
   }
 
   @Override
@@ -322,7 +321,7 @@ public class TestResult implements ITestResult, IAlterTestName {
     m_name = name;
   }
 
-  public void setParameterIndex(int parameterIndex) {
+  void setParameterIndex(int parameterIndex) {
     this.parameterIndex = parameterIndex;
   }
 

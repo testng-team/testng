@@ -79,6 +79,7 @@
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
       <class name="org.testng.internal.DynamicGraphTest"/>
+      <class name="org.testng.internal.ParameterHandlerTest"/>
       <class name="test.ReflectionHelperTest"/>
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.multiple.TestMultiple"/>

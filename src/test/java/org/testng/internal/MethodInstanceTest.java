@@ -157,7 +157,7 @@ public class MethodInstanceTest {
 
     @Override
     public Class<?> getRealClass() {
-      return null;
+      return xmlClass.getSupportClass();
     }
 
     @Override
