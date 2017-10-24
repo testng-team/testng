@@ -34,6 +34,9 @@ Maybe you can write a runnable test case (check the `src/test/` folder for examp
 Don't worry if the CI fails because it is the expected behavior.
 This pull request will be a perfect start to find the fix :)
 
+### How to create a pull request?
+Refer our [Contributing](./CONTRIBUTING.md) section for detailed set of steps.
+
 ### We encourage pull requests that:
 
   * Add new features to TestNG (or)
