@@ -50,31 +50,23 @@ public final class TestListenerHelper {
     public static void runTestListeners(ITestResult tr, List<ITestListener> listeners) {
         for (ITestListener itl : listeners) {
             switch (tr.getStatus()) {
-                case ITestResult.SKIP: {
+                case ITestResult.SKIP:
                     itl.onTestSkipped(tr);
                     break;
-                }
-                case ITestResult.SUCCESS_PERCENTAGE_FAILURE: {
+                case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
                     itl.onTestFailedButWithinSuccessPercentage(tr);
                     break;
-                }
-                case ITestResult.FAILURE: {
+                case ITestResult.FAILURE:
                     itl.onTestFailure(tr);
                     break;
-                }
-                case ITestResult.SUCCESS: {
+                case ITestResult.SUCCESS:
                     itl.onTestSuccess(tr);
                     break;
-                }
-
-                case ITestResult.STARTED: {
+                case ITestResult.STARTED:
                     itl.onTestStart(tr);
                     break;
-                }
-
-                default: {
-                    assert false : "UNKNOWN STATUS:" + tr;
-                }
+                default:
+                    throw new AssertionError("Unknown status: " + tr.getStatus());
             }
         }
     }

@@ -158,7 +158,7 @@ public class Invoker implements IInvoker {
       return;
     }
 
-    ITestNGMethod[] methods= TestNgMethodUtils.filterMethods(testClass, allMethods, SAME_CLASS);
+    ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(testClass, allMethods, SAME_CLASS);
 
     for(ITestNGMethod tm : methods) {
       if(null == testClass) {
@@ -167,7 +167,7 @@ public class Invoker implements IInvoker {
 
       long time = System.currentTimeMillis();
       Object instanceTouse = instance != null ? instance : tm.getInstance();
-      ITestResult testResult= new TestResult(testClass, instanceTouse, tm, null, time, time, m_testContext);
+      ITestResult testResult = new TestResult(testClass, instanceTouse, tm, null, time, time, m_testContext);
 
       IConfigurationAnnotation configurationAnnotation= null;
       try {
@@ -234,7 +234,6 @@ public class Invoker implements IInvoker {
       return inst;
     }
     return instance;
-
   }
 
   /**
@@ -324,12 +323,12 @@ public class Invoker implements IInvoker {
     // <test> stanza as failed for configuration
     else if (annotation.getBeforeTest() || annotation.getAfterTest()) {
       setClassInvocationFailure(tm.getRealClass(), instance);
-      XmlClass[] classes= ClassHelper.findClassesInSameTest(tm.getRealClass(), suite);
+      XmlClass[] classes = ClassHelper.findClassesInSameTest(tm.getRealClass(), suite);
       for(XmlClass xmlClass : classes) {
         setClassInvocationFailure(xmlClass.getSupportClass(), instance);
       }
     }
-    String[] beforeGroups= annotation.getBeforeGroups();
+    String[] beforeGroups = annotation.getBeforeGroups();
     for (String group : beforeGroups) {
       m_beforegroupsFailures.put(group, Boolean.FALSE);
     }
@@ -363,7 +362,7 @@ public class Invoker implements IInvoker {
       boolean hasConfigurationFailures = classConfigurationFailed(cls);
       if (hasConfigurationFailures) {
         if (! m_continueOnFailedConfiguration) {
-          result = !hasConfigurationFailures;
+          result = false;
         } else {
           Set<Object> set = getInvocationResults(testClass);
           result = !set.contains(instance);
@@ -371,7 +370,7 @@ public class Invoker implements IInvoker {
         return result;
       }
       // if method is BeforeClass, currentTestMethod will be null
-      if (m_continueOnFailedConfiguration && isBeforeClassMethod(currentTestMethod)) {
+      if (m_continueOnFailedConfiguration && hasConfigFailure(currentTestMethod)) {
         Object key = TestNgMethodUtils.getMethodInvocationToken(currentTestMethod, instance);
         result = !m_methodInvocationResults.get(currentTestMethod).contains(key);
       }
@@ -396,7 +395,7 @@ public class Invoker implements IInvoker {
     return result;
   }
 
-  private boolean isBeforeClassMethod(ITestNGMethod currentTestMethod) {
+  private boolean hasConfigFailure(ITestNGMethod currentTestMethod) {
     return currentTestMethod != null && m_methodInvocationResults.containsKey(currentTestMethod);
   }
 
@@ -408,10 +407,7 @@ public class Invoker implements IInvoker {
     //and maybe the parent method has configuration methods which may have had a failure
     //So lets walk up the inheritance tree until either we find failures or till we
     //reached the Object class.
-    while (true) {
-      if (cls.equals(Object.class)) {
-        break;
-      }
+    while (!cls.equals(Object.class)) {
       set = m_classInvocationResults.get(cls);
       if (set != null) {
         break;
@@ -497,7 +493,7 @@ public class Invoker implements IInvoker {
 
   // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.
   private ITestResult invokeMethod(Object instance,
-                                   final ITestNGMethod tm,
+                                   ITestNGMethod tm,
                                    Object[] parameterValues,
                                    int parametersIndex,
                                    XmlSuite suite,
@@ -660,7 +656,7 @@ public class Invoker implements IInvoker {
 
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
       // Collect the results
-      final int status = result.getStatus();
+      int status = result.getStatus();
       if(ITestResult.SUCCESS == status) {
         m_notifier.addPassedTest(testMethod, result);
       }
@@ -694,7 +690,7 @@ public class Invoker implements IInvoker {
    * if it is the case for the passed in @Test method.
    */
   ITestResult invokeTestMethod(Object instance,
-                               final ITestNGMethod tm,
+                               ITestNGMethod tm,
                                Object[] parameterValues,
                                int parametersIndex,
                                XmlSuite suite,
@@ -807,7 +803,7 @@ public class Invoker implements IInvoker {
     }
 
   int retryFailed(Object instance,
-                           final ITestNGMethod tm,
+                           ITestNGMethod tm,
                            XmlSuite suite,
                            ITestClass testClass,
                            ITestNGMethod[] beforeMethods,
@@ -818,7 +814,7 @@ public class Invoker implements IInvoker {
                            ITestContext testContext,
                            Map<String, String> parameters,
                            int parametersIndex) {
-    final FailureContext failure = new FailureContext();
+    FailureContext failure = new FailureContext();
     failure.count = failureCount;
     do {
       failure.instances = Lists.newArrayList ();
@@ -873,7 +869,7 @@ public class Invoker implements IInvoker {
     // By the time this testMethod to be invoked,
     // all dependencies should be already run or we need to skip this method,
     // so invocation count should not affect dependencies check
-    final String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
+    String okToProceed = checkDependencies(testMethod, testContext.getAllTestMethods());
 
     if (okToProceed != null) {
       //
@@ -886,7 +882,7 @@ public class Invoker implements IInvoker {
     }
 
 
-    final Map<String, String> parameters =
+    Map<String, String> parameters =
         testMethod.findMethodParameters(testContext.getCurrentXmlTest());
 
     // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.
@@ -904,11 +900,11 @@ public class Invoker implements IInvoker {
     ExpectedExceptionsHolder expectedExceptionHolder =
         new ExpectedExceptionsHolder(m_annotationFinder, testMethod,
                                      new RegexpExpectedExceptionsHolder(m_annotationFinder, testMethod));
-    final ITestClass testClass= testMethod.getTestClass();
-    final List<ITestResult> result = Lists.newArrayList();
-    final FailureContext failure = new FailureContext();
-    final ITestNGMethod[] beforeMethods = TestNgMethodUtils.filterBeforeTestMethods(testClass, CAN_RUN_FROM_CLASS);
-    final ITestNGMethod[] afterMethods = TestNgMethodUtils.filterAfterTestMethods(testClass, CAN_RUN_FROM_CLASS);
+    ITestClass testClass= testMethod.getTestClass();
+    List<ITestResult> result = Lists.newArrayList();
+    FailureContext failure = new FailureContext();
+    ITestNGMethod[] beforeMethods = TestNgMethodUtils.filterBeforeTestMethods(testClass, CAN_RUN_FROM_CLASS);
+    ITestNGMethod[] afterMethods = TestNgMethodUtils.filterAfterTestMethods(testClass, CAN_RUN_FROM_CLASS);
     while (invocationCount-- > 0) {
       long start = System.currentTimeMillis();
 
@@ -918,7 +914,7 @@ public class Invoker implements IInvoker {
       ParameterBag bag = handler.createParameters(testMethod, parameters, allParameterNames, testContext, instance);
 
       if (bag.hasErrors()) {
-        final ITestResult tr = bag.errorResult;
+        ITestResult tr = bag.errorResult;
         Throwable throwable = tr.getThrowable();
         if (throwable instanceof TestNGException) {
           tr.setStatus(ITestResult.FAILURE);
@@ -1009,10 +1005,8 @@ public class Invoker implements IInvoker {
                 result.addAll(retryResults);
               }
 
-              //
               // If we have a failure, skip all the
               // other invocationCounts
-              //
               if (failure.count > 0
                       && (m_skipFailedInvocationCounts
                       || testMethod.skipFailedInvocations())) {
@@ -1248,7 +1242,7 @@ public class Invoker implements IInvoker {
 
     // If this method depends on groups, collect all the methods that
     // belong to these groups and make sure they have been run successfully
-    final String[] groups = testMethod.getGroupsDependedUpon();
+    String[] groups = testMethod.getGroupsDependedUpon();
     if (null != groups && groups.length > 0) {
       // Get all the methods that belong to the group depended upon
       for (String element : groups) {
@@ -1286,7 +1280,7 @@ public class Invoker implements IInvoker {
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
     Set<ITestResult> result = Sets.newHashSet();
     for (ITestResult r : results) {
-      final Object o = method.getInstance();
+      Object o = method.getInstance();
         // Keep this instance if 1) It's on a different class or 2) It's on the same class
         // and on the same instance
         Object instance = r.getInstance() != null

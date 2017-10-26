@@ -17,28 +17,31 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class FakeTestNGMethod implements ITestNGMethod {
-    private ConstructorOrMethod consMethod;
+    private final ConstructorOrMethod consMethod;
     private Class<?> clazz;
     private XmlTest xmlTest;
 
     public FakeTestNGMethod(Class<?> clazz, String methodName) {
-        this.clazz = clazz;
-        Method[] methods = ReflectionHelper.getLocalMethods(clazz);
-        for (Method method : methods) {
-            if (method.getName().equalsIgnoreCase(methodName)) {
-                consMethod = new ConstructorOrMethod(method);
-                break;
-            }
-        }
+        this(clazz, methodName, null);
     }
 
     public FakeTestNGMethod(Class<?> clazz, String methodName, XmlTest xmlTest) {
-        this(clazz, methodName);
+        ConstructorOrMethod temp = null;
+        Method[] methods = ReflectionHelper.getLocalMethods(clazz);
+        for (Method method : methods) {
+            if (method.getName().equalsIgnoreCase(methodName)) {
+                temp = new ConstructorOrMethod(method);
+                break;
+            }
+        }
         this.xmlTest = xmlTest;
+        this.clazz = clazz;
+        this.consMethod = temp;
+
     }
 
     @Override
-    public Class getRealClass() {
+    public Class<?> getRealClass() {
         return clazz;
     }
 
@@ -344,7 +347,7 @@ public class FakeTestNGMethod implements ITestNGMethod {
 
     @Override
     public List<Integer> getFailedInvocationNumbers() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

@@ -619,18 +619,13 @@ public final class ClassHelper {
   }
 
   /**
-   * @return All the classes that belong to the same <test> tag as @param cls
-   */
-
-  /**
-   *
-   * @param cls - The class to look for.
+   * @param cls   - The class to look for.
    * @param suite - The {@link XmlSuite} whose &lt;test&gt; tags needs to be searched in.
    * @return - All the {@link XmlClass} objects that share the same &lt;test&gt; tag as the class.
    */
   public static XmlClass[] findClassesInSameTest(Class<?> cls, XmlSuite suite) {
-    Collection<XmlClass> vResult= Sets.newHashSet();
-    for(XmlTest test : suite.getTests()) {
+    Collection<XmlClass> vResult = Sets.newHashSet();
+    for (XmlTest test : suite.getTests()) {
       vResult.addAll(findClassesInSameTest(cls, test));
     }
 
@@ -638,8 +633,8 @@ public final class ClassHelper {
   }
 
   private static Collection<XmlClass> findClassesInSameTest(Class<?> cls, XmlTest xmlTest) {
-    Collection<XmlClass> vResult= Sets.newHashSet();
-    String className= cls.getName();
+    Collection<XmlClass> vResult = Sets.newHashSet();
+    String className = cls.getName();
     for (XmlClass testClass : xmlTest.getXmlClasses()) {
       if (testClass.getName().equals(className)) {
         // Found it, add all the classes in this test in the result
