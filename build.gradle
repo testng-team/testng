@@ -127,9 +127,6 @@ versionInjection {
 }
 
 test {
-    doLast {
-
-    }
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
