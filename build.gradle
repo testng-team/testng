@@ -21,7 +21,7 @@ buildscript {
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
         classpath 'org.hibernate.build.gradle:version-injection-plugin:1.0.0'
-	classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1'
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.2.1'
     }
 }
 
@@ -107,41 +107,64 @@ jar {
         instruction 'Bundle-License', 'http://apache.org/licenses/LICENSE-2.0'
         instruction 'Bundle-Description', 'TestNG is a testing framework.'
         instruction 'Import-Package',
-            'bsh.*;version="[2.0.0,3.0.0)";resolution:=optional',
-            'com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional',
-            'com.google.inject.*;version="[1.2,1.3)";resolution:=optional',
-            'junit.framework;version="[3.8.1, 5.0.0)";resolution:=optional',
-            'org.junit.*;resolution:=optional',
-            'org.apache.tools.ant.*;version="[1.7.0, 2.0.0)";resolution:=optional',
-            'org.yaml.*;version="[1.6,2.0)";resolution:=optional',
-            '!com.beust.testng',
-            '!org.testng.*',
-            '!com.sun.*',
-            '*'
+                'bsh.*;version="[2.0.0,3.0.0)";resolution:=optional',
+                'com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional',
+                'com.google.inject.*;version="[1.2,1.3)";resolution:=optional',
+                'junit.framework;version="[3.8.1, 5.0.0)";resolution:=optional',
+                'org.junit.*;resolution:=optional',
+                'org.apache.tools.ant.*;version="[1.7.0, 2.0.0)";resolution:=optional',
+                'org.yaml.*;version="[1.6,2.0)";resolution:=optional',
+                '!com.beust.testng',
+                '!org.testng.*',
+                '!com.sun.*',
+                '*'
     }
 }
 
 versionInjection {
-    into( 'org.testng.internal.Version', 'VERSION' )
-    into( 'org.testng.internal.Version', 'getVersionString' )
+    into('org.testng.internal.Version', 'VERSION')
+    into('org.testng.internal.Version', 'getVersionString')
 }
 
 test {
+    doLast {
+
+    }
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
     testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
-	maxHeapSize = '1500m'
+    maxHeapSize = '1500m'
+}
+
+sourceSets {
+    main
+    test8 {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+
+    }
+}
+
+task testJava8(type: Test) {
+    testClassesDir = sourceSets.test8.output.classesDir
+    classpath += sourceSets.test8.runtimeClasspath
+
+    useTestNG() {
+        suites 'src/test8/resources/testng-java8.xml'
+    }
 }
 
 allprojects {
     tasks.withType(Javadoc) {
         if (JavaVersion.current().isJava8Compatible()) {
             options.addStringOption('Xdoclint:none', '-quiet')
-	}
-	options.links("https://docs.oracle.com/javase/7/docs/api")
+        }
+        options.links("https://docs.oracle.com/javase/7/docs/api")
     }
 }
 
@@ -154,6 +177,7 @@ if (JavaVersion.current().isJava8Compatible()) {
             property "sonar.github.login", "testng-bot"
         }
     }
+    test.finalizedBy testJava8
 }
 
 apply from: 'gradle/publishing.gradle'
