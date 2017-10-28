@@ -11,68 +11,61 @@ import test.listeners.TestAndClassListener;
 
 public class DefaultMethodTest extends SimpleBaseTest {
 
-    @Test(description = "Test default methods defined in a interface should be run")
+    @Test(description = "Test default methods defined in an interface should be run")
     public void testDefaultShouldRun() {
-        TestNG tng = create(TestA.class);
-        final TestCounter listener = new TestCounter();
-        tng.addListener((ITestNGListener) listener);
-        tng.run();
+        ITestClass testClass = runTestWithDefaultMethods();
 
-        final ITestNGMethod[] testMethods = listener.testClass.getTestMethods();
+        ITestNGMethod[] testMethods = testClass.getTestMethods();
         Assert.assertEquals(testMethods.length, 1);
         Assert.assertEquals(testMethods[0].getMethodName(), "defaultMethodTest");
     }
 
-    @Test(description = "Before class default methods defined in a interface should be run")
+    @Test(description = "Before class default methods defined in an interface should be run")
     public void beforeClassDefaultShouldRun() {
-        TestNG tng = create(TestA.class);
-        final TestCounter listener = new TestCounter();
-        tng.addListener((ITestNGListener) listener);
-        tng.run();
+        ITestClass testClass = runTestWithDefaultMethods();
 
-        final ITestNGMethod[] beforeClassMethods = listener.testClass.getBeforeClassMethods();
+        ITestNGMethod[] beforeClassMethods = testClass.getBeforeClassMethods();
         Assert.assertEquals(beforeClassMethods.length, 1);
         Assert.assertEquals(beforeClassMethods[0].getMethodName(), "beforeClassRun");
 
     }
 
-    @Test(description = "After class default methods defined in a interface should be run")
+    @Test(description = "After class default methods defined in an interface should be run")
     public void afterClassDefaultShouldRun() {
-        TestNG tng = create(TestA.class);
-        final TestCounter listener = new TestCounter();
-        tng.addListener((ITestNGListener) listener);
-        tng.run();
+        ITestClass testClass = runTestWithDefaultMethods();
 
-        final ITestNGMethod[] beforeClassMethods = listener.testClass.getAfterClassMethods();
-        Assert.assertEquals(beforeClassMethods.length, 1);
-        Assert.assertEquals(beforeClassMethods[0].getMethodName(), "afterClassRun");
+        ITestNGMethod[] afterClassMethods = testClass.getAfterClassMethods();
+        Assert.assertEquals(afterClassMethods.length, 1);
+        Assert.assertEquals(afterClassMethods[0].getMethodName(), "afterClassRun");
     }
 
-    @Test(description = "Before method default methods defined in a interface should be run")
+    @Test(description = "Before method default methods defined in an interface should be run")
     public void beforeMethodDefaultShouldRun() {
-        TestNG tng = create(TestA.class);
-        final TestCounter listener = new TestCounter();
-        tng.addListener((ITestNGListener) listener);
-        tng.run();
+        final ITestClass testClass = runTestWithDefaultMethods();
 
-        final ITestNGMethod[] beforeClassMethods = listener.testClass.getBeforeTestMethods();
-        Assert.assertEquals(beforeClassMethods.length, 1);
-        Assert.assertEquals(beforeClassMethods[0].getMethodName(), "beforeMethodRun");
+        ITestNGMethod[] beforeMethods = testClass.getBeforeTestMethods();
+        Assert.assertEquals(beforeMethods.length, 1);
+        Assert.assertEquals(beforeMethods[0].getMethodName(), "beforeMethodRun");
     }
 
-    @Test(description = "After method default methods defined in a interface should be run")
+    @Test(description = "After method default methods defined in an interface should be run")
     public void afterMethodDefaultShouldRun() {
-        TestNG tng = create(TestA.class);
-        final TestCounter listener = new TestCounter();
-        tng.addListener((ITestNGListener) listener);
-        tng.run();
+        final ITestClass testClass = runTestWithDefaultMethods();
 
-        final ITestNGMethod[] beforeClassMethods = listener.testClass.getAfterTestMethods();
-        Assert.assertEquals(beforeClassMethods.length, 1);
-        Assert.assertEquals(beforeClassMethods[0].getMethodName(), "afterMethodRun");
+        ITestNGMethod[] afterMethods = testClass.getAfterTestMethods();
+        Assert.assertEquals(afterMethods.length, 1);
+        Assert.assertEquals(afterMethods[0].getMethodName(), "afterMethodRun");
     }
 
-    public static class TestCounter extends TestAndClassListener {
+    private ITestClass runTestWithDefaultMethods() {
+        TestNG tng = create(TestA.class);
+        TestClassListener listener = new TestClassListener();
+        tng.addListener((ITestNGListener) listener);
+        tng.run();
+        return listener.testClass;
+    }
+
+    public static class TestClassListener extends TestAndClassListener {
 
         private ITestClass testClass;
 
