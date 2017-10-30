@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Child Suite">
+    <listeners>
+        <listener class-name="test.listeners.ExecutionListenerAndSuiteListener" />
+    </listeners>    
+   <test name="Child Test">
+        <classes>
+            <class name="test.listeners.ExecutionListener3SampleTest"/>
+        </classes>
+    </test>
+</suite>
