@@ -23,7 +23,7 @@ public class ExecutionListenerAndSuiteListenerTest {
         runTests(suiteFile);
     }
 
-    private void runTests(String suiteFile) {
+    private static void runTests(String suiteFile) {
         List<XmlSuite> suites;
         try {
             suites = new Parser(suiteFile).parseToList();
@@ -32,8 +32,7 @@ public class ExecutionListenerAndSuiteListenerTest {
         }
         TestNG testng = new TestNG();
         testng.setXmlSuites(suites);
-        ExecutionListenerAndSuiteListener listener = new ExecutionListenerAndSuiteListener();
         testng.run();
-        assertEquals(listener.getTmpString(), "INITIALIZED");
+        assertEquals(ExecutionListenerAndSuiteListener.getTmpString(), "INITIALIZED");
     }
 }
