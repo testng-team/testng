@@ -4,9 +4,6 @@ import org.testng.IExecutionListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
 
-/**
- * @author Yehui Wang
- */
 public class ExecutionListenerAndSuiteListener implements ISuiteListener, IExecutionListener {
 
     private String testString;
