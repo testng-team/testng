@@ -193,6 +193,7 @@
       <class name="test.listeners.SuiteAndConfigurationListenerTest" />
       <class name="test.listeners.ListenerInXmlTest" />
       <class name="test.listeners.ExecutionListenerTest" />
+      <class name="test.listeners.ExecutionListenerAndSuiteListenerTest" />
       <class name="test.listeners.ConfigurationListenerTest" />
       <class name="test.multiplelisteners.TestMaker" />
       <class name="test.listeners.github1130.GitHub1130Test"/>

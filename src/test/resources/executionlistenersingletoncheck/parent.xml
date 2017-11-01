@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Parent Suite" >
+   <listeners>
+      <listener class-name="test.listeners.ExecutionListenerAndSuiteListener" />
+   </listeners>
+   <suite-files>
+      <suite-file path="child.xml"/>
+   </suite-files> 
+   <test name="Parent Test">
+        <classes>
+            <class name="test.listeners.ExecutionListener1SampleTest"/>
+        </classes>
+    </test>
+</suite>

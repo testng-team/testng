@@ -5,12 +5,14 @@ import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlInclude;
@@ -18,6 +20,7 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found
@@ -371,6 +376,18 @@ public class SimpleBaseTest {
       e.printStackTrace();
     }
     return resultLineNumbers;
+  }
+  
+  protected static List<XmlSuite> getSuites(String... suiteFiles){
+    List<XmlSuite> suites = new ArrayList<>();
+    for (String suiteFile : suiteFiles) {
+        try {
+          suites.addAll(new Parser(suiteFile).parseToList());
+      } catch (ParserConfigurationException | SAXException | IOException e) {
+          throw new TestNGException(e);
+      }
+    }
+    return suites;
   }
 
 }

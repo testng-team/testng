@@ -78,7 +78,9 @@ public class Configuration implements IConfiguration {
 
   @Override
   public void addExecutionListener(IExecutionListener l) {
-    m_executionListeners.put(l.getClass(), l);
+    if (!m_executionListeners.keySet().contains(l.getClass())) {
+        m_executionListeners.put(l.getClass(), l);
+    }
   }
 
   @Override
