@@ -148,8 +148,8 @@ public class Parser {
     List<String> toBeRemoved = Lists.newArrayList();
 
     if (m_fileName != null) {
-      URI uri = URI.create(m_fileName);
-      if (uri.getScheme() == null) {
+      URI uri = constructURI(m_fileName);
+      if (uri == null || uri.getScheme() == null) {
         uri = new File(m_fileName).toURI();
       }
       if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -248,7 +248,11 @@ public class Parser {
    * @return - <code>true</code> if the uri has "file:" as its scheme.
    */
   public static boolean hasFileScheme(String uri) {
-    String scheme = URI.create(uri).getScheme();
+    URI constructedURI = constructURI(uri);
+    if (constructedURI == null) {
+      constructedURI = new File(uri).toURI();
+    }
+    String scheme = constructedURI.getScheme();
     //A URI is regarded as having a file scheme if it either has its scheme as "file"
     //(or) if the scheme is null (which is true when uri's represent local file system path.)
     return scheme == null || "file".equalsIgnoreCase(scheme);
@@ -266,7 +270,13 @@ public class Parser {
     return result;
   }
 
-
+  private static URI constructURI(String text) {
+    try {
+      return URI.create(text);
+    } catch (Exception e) {
+      return null;
+    }
+  }
 
 }
 
