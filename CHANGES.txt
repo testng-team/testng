@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-1584: Can't run tests from IDEA (Krishnan Mahadevan)
+Fixed: GITHUB-1589: TestNGAntTask should be consistently using the Ant Log API for writing log messages (Krishnan Mahadevan)
 Fixed: GITHUB-1587: TestNG can not guarantee the ExecutionListener Instance as singleton(Yehui Wang)
 Fixed: GITHUB-217: exception in DataProvider doesn't fail test run (Krishnan Mahadevan)
 Fixed: GITHUB-987: Parameters threadCount and parallel doesn't work with maven (Krishnan Mahadevan)

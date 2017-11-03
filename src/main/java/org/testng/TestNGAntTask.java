@@ -691,23 +691,23 @@ public class TestNGAntTask extends Task {
 
   private void printDebugInfo(String fileName) {
     if(m_dumpSys) {
-      System.out.println("* SYSTEM PROPERTIES *");
+      debug("* SYSTEM PROPERTIES *");
       Properties props= System.getProperties();
       Enumeration en= props.propertyNames();
       while(en.hasMoreElements()) {
         String key= (String) en.nextElement();
-        System.out.println(key + ": " + props.getProperty(key));
+        debug(key + ": " + props.getProperty(key));
       }
-      System.out.println("");
+      debug("");
     }
     if(m_dumpEnv) {
       String[] vars= m_environment.getVariables();
       if(null != vars && vars.length > 0) {
-        System.out.println("* ENVIRONMENT *");
+        debug("* ENVIRONMENT *");
         for(String v: vars) {
-          System.out.println(v);
+          debug(v);
         }
-        System.out.println("");
+        debug("");
       }
     }
     if(m_dump) {
@@ -715,8 +715,8 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  private void ppp(String string) {
-    System.out.println("[TestNGAntTask] " + string);
+  private void debug(String message) {
+    log("[TestNGAntTask] "  + message, Project.MSG_DEBUG);
   }
 
   protected void actOnResult(int exitValue, boolean wasKilled) {
@@ -1011,7 +1011,7 @@ public class TestNGAntTask extends Task {
   }
 
   private void dumpCommand(String fileName) {
-    ppp("TESTNG PASSED @" + fileName + " WHICH CONTAINS:");
+    log("TESTNG PASSED @" + fileName + " WHICH CONTAINS:", Project.MSG_INFO);
     readAndPrintFile(fileName);
   }
 
@@ -1022,7 +1022,7 @@ public class TestNGAntTask extends Task {
       br = new BufferedReader(new FileReader(file));
       String line = br.readLine();
       while (line != null) {
-        System.out.println("  " + line);
+        log("  " + line, Project.MSG_INFO);
         line = br.readLine();
       }
     }

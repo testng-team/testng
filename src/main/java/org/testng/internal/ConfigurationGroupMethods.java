@@ -29,7 +29,7 @@ public class ConfigurationGroupMethods {
   private final ITestNGMethod[] m_allMethods;
 
   /**A map that returns the last method belonging to the given group */
-  private Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
+  private volatile Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
 
   public ConfigurationGroupMethods(ITestNGMethod[] allMethods,
                                    Map<String, List<ITestNGMethod>> beforeGroupsMethods,

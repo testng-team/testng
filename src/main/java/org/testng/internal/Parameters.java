@@ -40,7 +40,10 @@ import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IBeforeTest;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.reflect.DataProviderMethodMatcher;
 import org.testng.internal.reflect.InjectableParameter;
+import org.testng.internal.reflect.MethodMatcher;
+import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.Parameter;
 import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.util.Strings;
@@ -735,6 +738,35 @@ public class Parameters {
     }
   }
 
+  /**
+   * Gets an array of parameter values returned by data provider or the ones that
+   * are injected based on parameter type. The method also checks for {@code NoInjection}
+   * annotation
+   *
+   * @param parameterValues parameter values from a data provider
+   * @param method method to be invoked
+   * @param context test context
+   */
+  public static Object[] injectParameters(Object[] parameterValues, Method method, ITestContext context)
+          throws TestNGException {
+    MethodMatcherContext matcherContext = new MethodMatcherContext(method, parameterValues, context, null);
+    final MethodMatcher matcher = new DataProviderMethodMatcher(matcherContext);
+    return matcher.getConformingArguments();
+  }
+
+  public static Object[] getParametersFromIndex(Iterator<Object[]> parametersValues, int index) {
+    while (parametersValues.hasNext()) {
+      Object[] parameters = parametersValues.next();
+
+      if (index == 0) {
+        return parameters;
+      }
+      index--;
+    }
+    return null;
+  }
+
+
   /** A parameter passing helper class. */
   public static class MethodParameters {
     private final Map<String, String> xmlParameters;
@@ -746,6 +778,16 @@ public class Parameters {
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
       this(params, methodParams, null, null, null, null);
     }
+
+    public static MethodParameters newInstance(Map<String, String> params, ITestNGMethod testNGMethod,
+                                               ITestContext context) {
+      Map<String, String> methodParams = testNGMethod.findMethodParameters(context.getCurrentXmlTest());
+      Object[] pv = null;
+      ITestResult tr = null;
+      Method method = testNGMethod.getConstructorOrMethod().getMethod();
+      return new MethodParameters(params, methodParams, pv, method, context, tr);
+    }
+
 
     /**
      * @param params parameters found in the suite and test tags
