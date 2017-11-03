@@ -250,7 +250,8 @@ public class Parser {
   public static boolean hasFileScheme(String uri) {
     URI constructedURI = constructURI(uri);
     if (constructedURI == null) {
-      constructedURI = new File(uri).toURI();
+      //There were difficulties in constructing the URI. Falling back to considering the URI as a file.
+      return true;
     }
     String scheme = constructedURI.getScheme();
     //A URI is regarded as having a file scheme if it either has its scheme as "file"
