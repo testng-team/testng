@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
+import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
@@ -167,6 +168,31 @@ public class MethodHelper {
 
   protected static boolean isEnabled(ITestOrConfiguration test) {
     return null == test || test.getEnabled();
+  }
+
+  static boolean isDisabled(ITestOrConfiguration test) {
+    return !isEnabled(test);
+  }
+
+  static boolean isAlwaysRun(IConfigurationAnnotation configurationAnnotation) {
+    if(null == configurationAnnotation) {
+      return false;
+    }
+
+    boolean alwaysRun= false;
+    if ((configurationAnnotation.getAfterSuite()
+            || configurationAnnotation.getAfterTest()
+            || configurationAnnotation.getAfterTestClass()
+            || configurationAnnotation.getAfterTestMethod()
+            || configurationAnnotation.getBeforeTestMethod()
+            || configurationAnnotation.getBeforeTestClass()
+            || configurationAnnotation.getBeforeTest()
+            || configurationAnnotation.getBeforeSuite())
+            && configurationAnnotation.getAlwaysRun()) {
+      alwaysRun = true;
+    }
+
+    return alwaysRun;
   }
 
   /**

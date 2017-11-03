@@ -170,6 +170,11 @@ public class SimpleBaseTest {
     return result;
   }
 
+  protected static XmlTest createXmlTest(String suiteName, String testName) {
+    XmlSuite suite = createXmlSuite(suiteName);
+    return createXmlTest(suite, testName);
+  }
+
   protected static XmlTest createXmlTest(XmlSuite suite, String name) {
     XmlTest result = new XmlTest(suite);
     result.setName(name);

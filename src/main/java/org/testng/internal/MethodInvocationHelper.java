@@ -50,6 +50,25 @@ public class MethodInvocationHelper {
     }
   }
 
+  protected static void invokeMethodConsideringTimeout(ITestNGMethod tm,
+                                         ConstructorOrMethod method,
+                                         Object targetInstance,
+                                         Object[] params,
+                                         ITestResult testResult) throws Throwable {
+    if (MethodHelper.calculateTimeOut(tm) <= 0) {
+      MethodInvocationHelper.invokeMethod(method.getMethod(), targetInstance, params);
+    } else {
+      MethodInvocationHelper.invokeWithTimeout(tm, targetInstance, params, testResult);
+      if (!testResult.isSuccess()) {
+        // A time out happened
+        Throwable ex = testResult.getThrowable();
+        testResult.setStatus(ITestResult.FAILURE);
+        testResult.setThrowable(ex.getCause() == null ? ex : ex.getCause());
+        throw testResult.getThrowable();
+      }
+    }
+  }
+
   protected static Object invokeMethod(Method thisMethod, Object instance, List<Object> parameters)
     throws InvocationTargetException, IllegalAccessException {
     return invokeMethod(thisMethod, instance, parameters.toArray(new Object[parameters.size()]));

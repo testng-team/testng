@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.assertj.core.api.Assertions;
 import org.testng.Assert;
 import org.testng.IClass;
 import org.testng.IObjectFactory;
@@ -12,6 +13,7 @@ import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.internal.issue1339.BabyPanda;
 import org.testng.internal.issue1339.LittlePanda;
 import org.testng.internal.issue1456.TestClassSample;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -21,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassHelperTest {
     private static final String GITHUB_1456 = "GITHUB-1456";
@@ -47,6 +51,40 @@ public class ClassHelperTest {
     public void testGetAvailableMethodsWhenOverrdingIsInvolved() {
         List<String> expected = getExpected("equals","hashCode","toString");
         runTest(expected, BabyPanda.class);
+    }
+
+    @Test
+    public void testFindClassInSameTest() {
+        runTest(TestClassSample.class, 1, TestClassSample.class);
+    }
+
+    @Test
+    public void testFindClassesInSameTest() {
+        runTest(TestClassSample.class, 2, TestClassSample.class, BabyPanda.class);
+    }
+
+    private static void runTest(Class<?> classToBeFound, int expectedCount, Class<?>... classes) {
+        XmlSuite xmlSuite = new XmlSuite();
+        xmlSuite.setName("xml_suite");
+        newXmlTest("test1", xmlSuite, classes);
+        newXmlTest("test2", xmlSuite, classes);
+        newXmlTest("test3", xmlSuite, classes);
+        XmlClass[] xmlClasses = ClassHelper.findClassesInSameTest(classToBeFound, xmlSuite);
+        assertThat(xmlClasses.length).isEqualTo(expectedCount);
+    }
+
+    private static void newXmlTest(String testname, XmlSuite xmlSuite,Class<?>... clazz) {
+        XmlTest xmlTest = new XmlTest(xmlSuite);
+        xmlTest.setName(testname);
+        xmlTest.setXmlClasses(newXmlClass(clazz));
+    }
+
+    private static List<XmlClass> newXmlClass(Class<?>... classes) {
+        List<XmlClass> xmlClasses = new ArrayList<>();
+        for (Class<?> clazz : classes) {
+            xmlClasses.add(new XmlClass(clazz));
+        }
+        return xmlClasses;
     }
 
     private static void runTest(List<String> expected, Class<?> whichClass) {
