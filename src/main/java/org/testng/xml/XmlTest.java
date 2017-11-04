@@ -752,4 +752,12 @@ public class XmlTest implements Cloneable {
   public XmlGroups getXmlGroups() {
     return m_xmlGroups;
   }
+
+  /**
+   * @param names The list of names to check.
+   * @return <code>true</code> if the current test's name matches with any of the given names.
+   */
+  public boolean nameMatchesAny(List<String> names) {
+    return names.contains(getName());
+  }
 }
