@@ -3,24 +3,17 @@ package org.testng;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
@@ -53,6 +46,7 @@ import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
+import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -258,21 +252,18 @@ public class TestNG {
   }
 
   private void parseSuiteFiles() {
+    IPostProcessor processor = getProcessor();
     for (XmlSuite s : m_suites) {
       if (s.isParsed()) {
         continue;
       }
       for (String suiteFile : s.getSuiteFiles()) {
         try {
-          Collection<XmlSuite> childSuites;
-          if (s.getFileName() != null) {
-            Path rootPath = Paths.get(s.getFileName()).getParent();
-            try (InputStream is = Files.newInputStream(rootPath.resolve(suiteFile))) {
-              childSuites = getParser(is).parse();
-            }
-          } else {
-            childSuites = getParser(suiteFile).parse();
+          String fileNameToUse = s.getFileName();
+          if (fileNameToUse == null || fileNameToUse.trim().isEmpty()) {
+            fileNameToUse = suiteFile;
           }
+          Collection<XmlSuite> childSuites = Parser.parse(fileNameToUse, processor);
           for (XmlSuite cSuite : childSuites) {
             cSuite.setParentSuite(s);
             s.getChildSuites().add(cSuite);
@@ -286,12 +277,16 @@ public class TestNG {
 
   }
 
+  private OverrideProcessor getProcessor() {
+    return new OverrideProcessor(m_includedGroups, m_excludedGroups);
+  }
+
   private void parseSuite(String suitePath) {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
     }
     try {
-      Collection<XmlSuite> allSuites = getParser(suitePath).parse();
+      Collection<XmlSuite> allSuites = Parser.parse(suitePath, getProcessor());
 
       for (XmlSuite s : allSuites) {
         s.setParallel(this.m_parallelMode);
@@ -353,72 +348,9 @@ public class TestNG {
     // We have a jar file and no XML file was specified: try to find an XML file inside the jar
     File jarFile = new File(m_jarPath);
 
-    try {
+    JarFileUtils utils = new JarFileUtils(getProcessor(),m_xmlPathInJar, m_testNames);
 
-      Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
-
-      boolean foundTestngXml = false;
-      List<String> classes = Lists.newArrayList();
-      try (JarFile jf = new JarFile(jarFile)) {
-//      System.out.println("   result: " + jf);
-        Enumeration<JarEntry> entries = jf.entries();
-        while (entries.hasMoreElements()) {
-          JarEntry je = entries.nextElement();
-          if (je.getName().equals(m_xmlPathInJar)) {
-            Parser parser = getParser(jf.getInputStream(je));
-            Collection<XmlSuite> suites = parser.parse();
-            for (XmlSuite suite : suites) {
-              // If test names were specified, only run these test names
-              if (m_testNames != null) {
-                m_suites.add(XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, m_testNames));
-              } else {
-                m_suites.add(suite);
-              }
-            }
-
-            foundTestngXml = true;
-            break;
-          } else if (je.getName().endsWith(".class")) {
-            int n = je.getName().length() - ".class".length();
-            classes.add(je.getName().replace("/", ".").substring(0, n));
-          }
-        }
-      }
-      if (! foundTestngXml) {
-        Utils.log("TestNG", 1,
-            "Couldn't find the " + m_xmlPathInJar + " in the jar file, running all the classes");
-        XmlSuite xmlSuite = new XmlSuite();
-        xmlSuite.setVerbose(0);
-        xmlSuite.setName("Jar suite");
-        XmlTest xmlTest = new XmlTest(xmlSuite);
-        List<XmlClass> xmlClasses = Lists.newArrayList();
-        for (String cls : classes) {
-          XmlClass xmlClass = new XmlClass(cls);
-          xmlClasses.add(xmlClass);
-        }
-        xmlTest.setXmlClasses(xmlClasses);
-        m_suites.add(xmlSuite);
-      }
-    }
-    catch(IOException ex) {
-      ex.printStackTrace();
-    }
-  }
-
-  private Parser getParser(String path) {
-    Parser result = new Parser(path);
-    initProcessor(result);
-    return result;
-  }
-
-  private Parser getParser(InputStream is) {
-    Parser result = new Parser(is);
-    initProcessor(result);
-    return result;
-  }
-
-  private void initProcessor(Parser result) {
-    result.setPostProcessor(new OverrideProcessor(m_includedGroups, m_excludedGroups));
+    m_suites.addAll(utils.extractSuitesFrom(jarFile));
   }
 
   /**

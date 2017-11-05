@@ -7,10 +7,10 @@ import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 
 public class B {
-  public static Map<Long, Long> m_threadIds = Maps.newHashMap();
+  public static Map<Long, Long> m_threadIds = Maps.newConcurrentMap();
 
   public static void setUp() {
-    m_threadIds = new HashMap<>();
+    m_threadIds = Maps.newConcurrentMap();
   }
 
   @Test
