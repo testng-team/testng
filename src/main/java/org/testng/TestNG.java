@@ -62,6 +62,7 @@ import org.testng.xml.XmlTest;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import org.testng.xml.internal.XmlSuiteUtils;
 
 import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
@@ -297,7 +298,7 @@ public class TestNG {
         s.setThreadCount(this.m_threadCount);
         // If test names were specified, only run these test names
         if (m_testNames != null) {
-          m_suites.add(extractTestNames(s, m_testNames));
+          m_suites.add(XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames));
         } else {
           m_suites.add(s);
         }
@@ -369,7 +370,7 @@ public class TestNG {
             for (XmlSuite suite : suites) {
               // If test names were specified, only run these test names
               if (m_testNames != null) {
-                m_suites.add(extractTestNames(suite, m_testNames));
+                m_suites.add(XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, m_testNames));
               } else {
                 m_suites.add(suite);
               }
@@ -418,46 +419,6 @@ public class TestNG {
 
   private void initProcessor(Parser result) {
     result.setPostProcessor(new OverrideProcessor(m_includedGroups, m_excludedGroups));
-  }
-
-  /**
-   * If the XmlSuite contains at least one test named as testNames, return
-   * an XmlSuite that's made only of these tests, otherwise, return the
-   * original suite.
-   */
-  private static XmlSuite extractTestNames(XmlSuite s, List<String> testNames) {
-    extractTestNamesFromChildSuites(s, testNames);
-
-    List<XmlTest> tests = Lists.newArrayList();
-    for (XmlTest xt : s.getTests()) {
-      for (String tn : testNames) {
-        if (xt.getName().equals(tn)) {
-          tests.add(xt);
-        }
-      }
-    }
-
-    if (tests.size() == 0) {
-      throw new TestNGException("The test(s) <" + testNames.toString() + "> cannot be found.");
-    }
-    else {
-      XmlSuite result = (XmlSuite) s.clone();
-      result.getTests().clear();
-      result.getTests().addAll(tests);
-      return result;
-    }
-  }
-
-  private static void extractTestNamesFromChildSuites(XmlSuite s, List<String> testNames) {
-    List<XmlSuite> childSuites = s.getChildSuites();
-    for (int i = 0; i < childSuites.size(); i++) {
-      XmlSuite child = childSuites.get(i);
-      XmlSuite extracted = extractTestNames(child, testNames);
-      // if a new xml suite is created, which means some tests was extracted, then we replace the child
-      if (extracted != child) {
-        childSuites.set(i, extracted);
-      }
-    }
   }
 
   /**
@@ -1057,57 +1018,8 @@ public class TestNG {
    * @throws TestNGException if the sanity check fails
    */
   private void sanityCheck() {
-    checkTestNames(m_suites);
-    checkSuiteNames(m_suites);
-  }
-
-  /**
-   * Ensure that two XmlTest within the same XmlSuite don't have the same name
-   */
-  private void checkTestNames(List<XmlSuite> suites) {
-    for (XmlSuite suite : suites) {
-      Set<String> testNames = Sets.newHashSet();
-      for (XmlTest test : suite.getTests()) {
-        if (testNames.contains(test.getName())) {
-          throw new TestNGException("Two tests in the same suite "
-              + "cannot have the same name: " + test.getName());
-        } else {
-          testNames.add(test.getName());
-        }
-      }
-      checkTestNames(suite.getChildSuites());
-    }
-  }
-
-  /**
-   * Ensure that two XmlSuite don't have the same name
-   * Otherwise will be clash in SuiteRunnerMap
-   * See issue #302
-   */
-  private void checkSuiteNames(List<XmlSuite> suites) {
-    checkSuiteNamesInternal(suites, Sets.<String>newHashSet());
-  }
-
-  private void checkSuiteNamesInternal(List<XmlSuite> suites, Set<String> names) {
-    for (XmlSuite suite : suites) {
-      final String name = suite.getName();
-
-      int count = 0;
-      String tmpName = name;
-      while (names.contains(tmpName)) {
-        tmpName = name + " (" + count++ + ")";
-      }
-
-      if (count > 0) {
-        suite.setName(tmpName);
-        names.add(tmpName);
-      } else {
-        names.add(name);
-      }
-
-      names.add(name);
-      checkSuiteNamesInternal(suite.getChildSuites(), names);
-    }
+    XmlSuiteUtils.validateIfSuitesContainDuplicateTests(m_suites);
+    XmlSuiteUtils.adjustSuiteNamesToEnsureUniqueness(m_suites);
   }
 
   /**

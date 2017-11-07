@@ -748,6 +748,8 @@
     <classes>
       <class name="org.testng.xml.SuiteXmlParserTest" />
       <class name="org.testng.xml.XmlSuiteTest"/>
+      <class name="org.testng.xml.internal.XmlSuiteUtilsTest"/>
+      <class name="org.testng.xml.XmlTestTest"/>
       <class name="org.testng.xml.ParserTest"/>
     </classes>
   </test>

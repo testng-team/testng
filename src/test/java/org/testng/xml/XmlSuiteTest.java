@@ -1,6 +1,5 @@
 package org.testng.xml;
 
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -8,8 +7,9 @@ import test.SimpleBaseTest;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collections;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class XmlSuiteTest extends SimpleBaseTest {
 
@@ -18,8 +18,8 @@ public class XmlSuiteTest extends SimpleBaseTest {
         XmlSuite suite = new XmlSuite();
         suite.addIncludedGroup("foo");
         suite.addExcludedGroup("bar");
-        assertEquals(Collections.singletonList("foo"), suite.getIncludedGroups());
-        assertEquals(Collections.singletonList("bar"), suite.getExcludedGroups());
+        assertThat(suite.getIncludedGroups()).containsExactly("foo");
+        assertThat(suite.getExcludedGroups()).containsExactly("bar");
     }
 
     @Test
@@ -31,8 +31,8 @@ public class XmlSuiteTest extends SimpleBaseTest {
         groups.setRun(xmlRun);
         XmlSuite suite = new XmlSuite();
         suite.setGroups(groups);
-        assertEquals(Collections.singletonList("foo"), suite.getIncludedGroups());
-        assertEquals(Collections.singletonList("bar"), suite.getExcludedGroups());
+        assertThat(suite.getIncludedGroups()).containsExactly("foo");
+        assertThat(suite.getExcludedGroups()).containsExactly("bar");
     }
 
     @Test(dataProvider = "dp", description = "GITHUB-778")
@@ -42,10 +42,10 @@ public class XmlSuiteTest extends SimpleBaseTest {
         StringReader stringReader = new StringReader(suite.toXml());
         List<String> resultLines = Lists.newArrayList();
         List<Integer> lineNumbers = grep(stringReader, "time-out=\"1000\"", resultLines);
-        assertEquals(lineNumbers.size(), size);
-        assertEquals(resultLines.size(), size);
+        assertThat(lineNumbers).size().isEqualTo(size);
+        assertThat(resultLines).size().isEqualTo(size);
         if (size > 0) {
-            assertEquals(lineNumbers.get(size - 1).intValue(), lineNumber);
+            assertThat(lineNumbers.get(size-1)).isEqualTo(lineNumber);
         }
     }
 

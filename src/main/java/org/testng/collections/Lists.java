@@ -3,6 +3,7 @@ package org.testng.collections;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class Lists {
@@ -11,6 +12,10 @@ public final class Lists {
 
   public static <K> List<K> newArrayList() {
     return new ArrayList<>();
+  }
+
+  public static <K> List<K> newLinkedList() {
+    return new LinkedList<>();
   }
 
   public static <K> List<K> newArrayList(Collection<K> c) {

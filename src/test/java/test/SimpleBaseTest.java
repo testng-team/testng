@@ -120,8 +120,16 @@ public class SimpleBaseTest {
       return create(suite);
     }
     return create(outDir, suite);
+  }
 
-
+  protected static XmlSuite createDummySuiteWithTestNamesAs(String... tests) {
+    XmlSuite suite = new XmlSuite();
+    suite.setName("random_suite");
+    for (String test : tests) {
+      XmlTest xmlTest = new XmlTest(suite);
+      xmlTest.setName(test);
+    }
+    return suite;
   }
 
   protected static XmlSuite createXmlSuite(String name) {
