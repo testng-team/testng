@@ -4,6 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PACKAGE;
 import static java.lang.annotation.ElementType.TYPE;
 
 /**
@@ -15,9 +16,17 @@ import static java.lang.annotation.ElementType.TYPE;
  *
  * Ignoring a package will ignore all tests in the package and its sub-packages
  *
+ * A package annotation is done in {@code package-info.java}. For example:
+ * <pre>{@code
+ * @Ignore
+ * package test.ignorePackage;
+ *
+ * import org.testng.annotations.Ignore;
+ * }</pre>
+ *
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Target({METHOD, TYPE})
+@Target({METHOD, TYPE, PACKAGE})
 public @interface Ignore {
     String value() default "";
 }
