@@ -41,4 +41,14 @@ public final class Strings {
     return result;
   }
 
+  public static String join(String delimiter, String[] parts) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < parts.length - 1; i++) {
+      sb.append(parts[i]).append(delimiter);
+    }
+    if (parts.length > 1) {
+      sb.append(parts[parts.length - 1]);
+    }
+    return sb.toString();
+  }
 }
