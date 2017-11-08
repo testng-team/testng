@@ -385,12 +385,15 @@ public class Parameters {
       Class<?>[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
+    int tmp = totalLength;
     for (Class parameterType : parameterTypes) {
       if (INJECTED_TYPES.contains(parameterType)) {
         totalLength--;
       }
     }
-
+    if (tmp != totalLength) {
+      isInjected = true;
+    }
 
     if (parameterNames.length == 0) {
       //parameterNames is usually populated via the @Parameters annotation, so we would need to
