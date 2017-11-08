@@ -43,7 +43,7 @@ class JarFileUtils {
                 suites.add(XmlSuiteUtils.newXmlSuiteUsing(classes));
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new TestNGException(ex);
         }
         return suites;
     }
@@ -64,8 +64,7 @@ class JarFileUtils {
                         }
                         suites.add(suiteToAdd);
                     }
-                    foundTestngXml = true;
-                    break;
+                    return true;
                 } else if (isJavaClass(je)) {
                     classes.add(constructClassName(je));
                 }
