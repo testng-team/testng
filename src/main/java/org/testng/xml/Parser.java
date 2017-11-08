@@ -2,9 +2,6 @@ package org.testng.xml;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,9 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -61,7 +56,7 @@ public class Parser {
    * unknown.
    */
   public Parser(String fileName) {
-    init(fileName, null, null);
+    init(fileName, null);
   }
 
   /**
@@ -70,14 +65,14 @@ public class Parser {
    * found in the classpath.
    */
   public Parser() throws FileNotFoundException {
-    init(null, null, null);
+    init(null, null);
   }
 
   public Parser(InputStream is) {
-    init(null, is, null);
+    init(null, is);
   }
 
-  private void init(String fileName, InputStream is, IFileParser fp) {
+  private void init(String fileName, InputStream is) {
     m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
     m_inputStream = is;
   }
@@ -92,31 +87,6 @@ public class Parser {
   public void setLoadClasses(boolean loadClasses) {
     m_loadClasses = loadClasses;
   }
-
-  /**
-   * Returns an input stream on the resource named DEFAULT_FILENAME.
-   *
-   * @return an input stream on the resource named DEFAULT_FILENAME.
-   * @throws FileNotFoundException if the DEFAULT_FILENAME resource is not
-   * found in the classpath.
-   */
-//  private static InputStream getInputStream(String fileName) throws FileNotFoundException {
-//    // Try to look for the DEFAULT_FILENAME from the jar
-//    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//    InputStream in;
-//    // TODO CQ is this OK? should we fall back to the default classloader if the
-//    // context classloader fails.
-//    if (classLoader != null) {
-//      in = classLoader.getResourceAsStream(fileName);
-//    }
-//    else {
-//      in = Parser.class.getResourceAsStream(fileName);
-//    }
-//    if (in == null) {
-//      throw new FileNotFoundException(fileName);
-//    }
-//    return in;
-//  }
 
   private static IFileParser getParser(String fileName) {
     for (ISuiteParser parser : PARSERS) {
@@ -218,14 +188,10 @@ public class Parser {
       //
       // Add and remove files from toBeParsed before we loop
       //
-      for (String s : toBeRemoved) {
-        toBeParsed.remove(s);
-      }
+      toBeParsed.removeAll(toBeRemoved);
       toBeRemoved = Lists.newArrayList();
 
-      for (String s : toBeAdded) {
-        toBeParsed.add(s);
-      }
+      toBeParsed.addAll(toBeAdded);
       toBeAdded = Lists.newArrayList();
 
     }
@@ -234,9 +200,7 @@ public class Parser {
     List<XmlSuite> resultList = Lists.newArrayList();
     resultList.add(resultSuite);
 
-    boolean postProcess = true;
-
-    if (postProcess && m_postProcessor != null) {
+    if (m_postProcessor != null) {
       return m_postProcessor.process(resultList);
     } else {
       return resultList;
@@ -261,7 +225,7 @@ public class Parser {
     return scheme == null || "file".equalsIgnoreCase(scheme);
   }
 
-  public List<XmlSuite> parseToList() throws ParserConfigurationException, SAXException, IOException {
+  public List<XmlSuite> parseToList() throws IOException {
     return Lists.newArrayList(parse());
   }
 

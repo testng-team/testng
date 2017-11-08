@@ -10,10 +10,8 @@ import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-import org.xml.sax.SAXException;
 import test.SimpleBaseTest;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,7 +32,7 @@ public class Github1533Test extends SimpleBaseTest {
         List<XmlSuite> suites;
         try {
             suites = new Parser(suiteFile).parseToList();
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (IOException e) {
             throw new TestNGException(e);
         }
         assertEquals(suites.size(), 1);
