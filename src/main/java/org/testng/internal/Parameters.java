@@ -62,7 +62,6 @@ public class Parameters {
 
   private static final Map<Class<? extends Annotation>, Class<? extends IAnnotation>> ANNOTATION_MAP =
           new ConcurrentHashMap<>();
-  private static boolean isInjected = false;
   static {
     ANNOTATION_MAP.put(BeforeSuite.class, IBeforeSuite.class);
     ANNOTATION_MAP.put(AfterSuite.class, IAfterSuite.class);
@@ -265,8 +264,8 @@ public class Parameters {
                                        MethodParameters params,
                                        XmlSuite xmlSuite) {
     List<Object> vResult = Lists.newArrayList();
-    if (isInjected) {
-      FilterOutInJectedTypesResult filterOutResult = FilterOutInJectedTypesFromOptionalValues(parameterTypes, optionalValues);
+    if (optionalValues.length != parameterNames.length) {
+      FilterOutInJectedTypesResult filterOutResult = filterOutInJectedTypesFromOptionalValues(parameterTypes, optionalValues);
       optionalValues = filterOutResult.getOptionalValues();
       parameterTypes = filterOutResult.getParameterTypes();
     }
@@ -302,7 +301,7 @@ public class Parameters {
    * @param optionalValues
    * @return FilterOutInJectedTypesResult
    */
-  private static FilterOutInJectedTypesResult FilterOutInJectedTypesFromOptionalValues(Class<?>[] parameterTypes, String[] optionalValues) {
+  static FilterOutInJectedTypesResult filterOutInJectedTypesFromOptionalValues(Class<?>[] parameterTypes, String[] optionalValues) {
     List<Class<?>> typeList = Lists.newArrayList();
     List<String> optionalValueList = Lists.newArrayList();
     Collections.addAll(typeList, parameterTypes);
@@ -324,7 +323,7 @@ public class Parameters {
   /**
    * Store the result of parameterTypes and optionalValues after filter out injected types
    */
-  private final static class FilterOutInJectedTypesResult {
+  final static class FilterOutInJectedTypesResult {
     private Class<?>[] parameterTypes;
     private String[] optionalValues;
 
@@ -333,11 +332,11 @@ public class Parameters {
         this.optionalValues = optionalValues;
     }
 
-    private Class<?>[] getParameterTypes() {
+    Class<?>[] getParameterTypes() {
         return parameterTypes;
     }
 
-    private String[] getOptionalValues() {
+    String[] getOptionalValues() {
         return optionalValues;
     }
   }
@@ -385,16 +384,11 @@ public class Parameters {
       Class<?>[] parameterTypes, String methodAnnotation, String[] parameterNames)
   {
     int totalLength = parameterTypes.length;
-    int tmp = totalLength;
     for (Class parameterType : parameterTypes) {
       if (INJECTED_TYPES.contains(parameterType)) {
         totalLength--;
       }
     }
-    if (tmp != totalLength) {
-      isInjected = true;
-    }
-
     if (parameterNames.length == 0) {
       //parameterNames is usually populated via the @Parameters annotation, so we would need to
       //apply our logic only when @Parameters annotation is not involved.
