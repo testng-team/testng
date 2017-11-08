@@ -3,6 +3,7 @@ package org.testng.xml.internal;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -72,6 +73,15 @@ public final class XmlSuiteUtils {
         adjustSuiteNamesToEnsureUniqueness(suites, Sets.<String>newHashSet());
     }
 
+    public static XmlSuite newXmlSuiteUsing(List<String> classes) {
+        XmlSuite xmlSuite = new XmlSuite();
+        xmlSuite.setVerbose(0);
+        xmlSuite.setName("Jar suite");
+        XmlTest xmlTest = new XmlTest(xmlSuite);
+        xmlTest.setXmlClasses(constructXmlClassesUsing(classes));
+        return xmlSuite;
+    }
+
     /**
      * Ensures that the current suite doesn't contain any duplicate {@link XmlTest} instances.
      * If duplicates are found, then a {@link TestNGException} is raised.
@@ -86,6 +96,15 @@ public final class XmlSuiteUtils {
                         + "cannot have the same name: " + test.getName());
             }
         }
+    }
+
+    private static List<XmlClass> constructXmlClassesUsing(List<String> classes) {
+        List<XmlClass> xmlClasses = Lists.newLinkedList();
+        for (String cls : classes) {
+            XmlClass xmlClass = new XmlClass(cls);
+            xmlClasses.add(xmlClass);
+        }
+        return xmlClasses;
     }
 
     private static XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite, List<String> testNames) {

@@ -841,6 +841,12 @@
     </classes>
   </test>
 
+  <test name="Jar_Related_tests">
+    <classes>
+      <class name="org.testng.JarFileUtilsTest"/>
+    </classes>
+  </test>
+
   <!--This test depends on System properties. So its intentionally being run at the end
   because the toggling of the system property will affect other tests -->
   <test name = "RunAtLast">

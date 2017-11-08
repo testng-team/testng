@@ -12,7 +12,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -259,15 +261,27 @@ public class Parser {
     return scheme == null || "file".equalsIgnoreCase(scheme);
   }
 
-  public List<XmlSuite> parseToList()
-    throws ParserConfigurationException, SAXException, IOException
-  {
-    List<XmlSuite> result = Lists.newArrayList();
-    Collection<XmlSuite> suites = parse();
-    for (XmlSuite suite : suites) {
-      result.add(suite);
-    }
+  public List<XmlSuite> parseToList() throws ParserConfigurationException, SAXException, IOException {
+    return Lists.newArrayList(parse());
+  }
 
+  public static Collection<XmlSuite> parse(String suite, IPostProcessor processor) throws IOException {
+    return newParser(suite, processor).parse();
+  }
+
+  public static Collection<XmlSuite> parse(InputStream is, IPostProcessor processor) throws IOException {
+    return newParser(is, processor).parse();
+  }
+
+  private static Parser newParser(String path, IPostProcessor processor) {
+    Parser result = new Parser(path);
+    result.setPostProcessor(processor);
+    return result;
+  }
+
+  private static Parser newParser(InputStream is, IPostProcessor processor) {
+    Parser result = new Parser(is);
+    result.setPostProcessor(processor);
     return result;
   }
 
