@@ -20,7 +20,6 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found
@@ -396,7 +393,7 @@ public class SimpleBaseTest {
     for (String suiteFile : suiteFiles) {
         try {
           suites.addAll(new Parser(suiteFile).parseToList());
-      } catch (ParserConfigurationException | SAXException | IOException e) {
+      } catch (IOException e) {
           throw new TestNGException(e);
       }
     }
