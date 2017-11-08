@@ -144,6 +144,7 @@
       <class name="test.groupbug.GroupBugTest" />
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
+      <class name="test.parameters.ParameterInjectAndOptionTest" />
       <class name="test.reports.FailedReporterTest" />
       <class name="test.reports.EmailableReporterTest"/>
       <class name="test.failedreporter.FailedReporterScenariosTest"/>
