@@ -264,35 +264,81 @@ public class Parameters {
                                        MethodParameters params,
                                        XmlSuite xmlSuite) {
     List<Object> vResult = Lists.newArrayList();
-    for (int i = 0, j = 0; i < parameterTypes.length; i++) {
-      if (j < parameterNames.length) {
-        String p = parameterNames[j];
-        String value = params.xmlParameters.get(p);
-        if (null == value) {
-          // try SysEnv entries
-          value = System.getProperty(p);
+    if (optionalValues.length != parameterNames.length) {
+      FilterOutInJectedTypesResult filterOutResult = filterOutInJectedTypesFromOptionalValues(parameterTypes, optionalValues);
+      optionalValues = filterOutResult.getOptionalValues();
+      parameterTypes = filterOutResult.getParameterTypes();
+    }
+    for (int i = 0; i < parameterNames.length; i++) {
+      String p = parameterNames[i];
+      String value = params.xmlParameters.get(p);
+      if (null == value) {
+        // try SysEnv entries
+        value = System.getProperty(p);
+      }
+      if (null == value) {
+        if (optionalValues != null) {
+            value = optionalValues[i];
         }
         if (null == value) {
-          if (optionalValues != null) {
-            value = optionalValues[i];
-          }
-          if (null == value) {
             throw new TestNGException("Parameter '" + p + "' is required by "
                     + methodAnnotation
                     + " on " + prefix + " "
                     + name
                     + " but has not been marked @Optional or defined\n"
                     + (xmlSuite.getFileName() != null ? "in "
-                    + xmlSuite.getFileName() : ""));
-          }
+                            + xmlSuite.getFileName() : ""));
         }
+    }
+      vResult.add(convertType(parameterTypes[i], value, p));
+    }
+    return vResult;
+  }
+  
+  /**
+   * Remove injected types from parameterTypes and optionalValues
+   * @param parameterTypes
+   * @param optionalValues
+   * @return FilterOutInJectedTypesResult
+   */
+  static FilterOutInJectedTypesResult filterOutInJectedTypesFromOptionalValues(Class<?>[] parameterTypes, String[] optionalValues) {
+    List<Class<?>> typeList = Lists.newArrayList();
+    List<String> optionalValueList = Lists.newArrayList();
+    Collections.addAll(typeList, parameterTypes);
+    Collections.addAll(optionalValueList, optionalValues);
+    Iterator<Class<?>> typeIterator = typeList.iterator();
+    Iterator<String> optionalIterator = optionalValueList.iterator();
+    while (typeIterator.hasNext()) {
+        Class<?> parameterType = typeIterator.next();
+        optionalIterator.next();
+        if (INJECTED_TYPES.contains(parameterType)) {
+            optionalIterator.remove();
+            typeIterator.remove();
+        }
+    }
+    return new FilterOutInJectedTypesResult(typeList.toArray(new Class<?>[0]),
+            optionalValueList.toArray(new String[0]));
+  }
 
-        vResult.add(convertType(parameterTypes[i], value, p));
-        j++;
-      }
+  /**
+   * Store the result of parameterTypes and optionalValues after filter out injected types
+   */
+  final static class FilterOutInJectedTypesResult {
+    private Class<?>[] parameterTypes;
+    private String[] optionalValues;
+
+    private FilterOutInJectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
+        this.parameterTypes = parameterTypes;
+        this.optionalValues = optionalValues;
     }
 
-    return vResult;
+    Class<?>[] getParameterTypes() {
+        return parameterTypes;
+    }
+
+    String[] getOptionalValues() {
+        return optionalValues;
+    }
   }
 
   /**
@@ -343,8 +389,6 @@ public class Parameters {
         totalLength--;
       }
     }
-
-
     if (parameterNames.length == 0) {
       //parameterNames is usually populated via the @Parameters annotation, so we would need to
       //apply our logic only when @Parameters annotation is not involved.
