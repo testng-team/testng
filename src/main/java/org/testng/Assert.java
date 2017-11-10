@@ -19,6 +19,7 @@ import org.testng.collections.Lists;
  * Assertion tool class. Presents assertion methods with a more natural parameter order.
  * The order is always <B>actualValue</B>, <B>expectedValue</B> [, message].
  *
+ *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class Assert {
