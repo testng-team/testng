@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +10,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import org.testng.IInvokedMethod;
+import org.testng.IMethodInstance;
+import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -334,6 +338,64 @@ public class MethodHelper {
     List<ITestNGMethod> result = g.findPredecessors(method);
     return result;
   }
+
+  public static void fixMethodsWithClass(ITestNGMethod[] methods,
+                                   ITestClass testCls,
+                                   List<ITestNGMethod> methodList) {
+    for (ITestNGMethod itm : methods) {
+      itm.setTestClass(testCls);
+
+      if (methodList != null) {
+        methodList.add(itm);
+      }
+    }
+  }
+
+  public static List<ITestNGMethod> invokedMethodsToMethods(Collection<IInvokedMethod> invokedMethods) {
+    List<ITestNGMethod> result= Lists.newArrayList();
+    for (IInvokedMethod im : invokedMethods) {
+      ITestNGMethod tm = im.getTestMethod();
+      tm.setDate(im.getDate());
+      result.add(tm);
+    }
+
+    return result;
+  }
+
+
+  public static List<IMethodInstance> methodsToMethodInstances(List<ITestNGMethod> sl) {
+    List<IMethodInstance> result = new ArrayList<>();
+    for (ITestNGMethod iTestNGMethod : sl) {
+      result.add(new MethodInstance(iTestNGMethod));
+    }
+    return result;
+  }
+
+  public static List<ITestNGMethod> methodInstancesToMethods(List<IMethodInstance> methodInstances) {
+    List<ITestNGMethod> result = Lists.newArrayList();
+    for (IMethodInstance imi : methodInstances) {
+      result.add(imi.getMethod());
+    }
+    return result;
+  }
+
+  public static void dumpInvokedMethodsInfoToConsole(Collection<IInvokedMethod> iInvokedMethods) {
+    System.out.println("===== Invoked methods");
+    for (IInvokedMethod im : iInvokedMethods) {
+      if (im.isTestMethod()) {
+        System.out.print("    ");
+      }
+      else if (im.isConfigurationMethod()) {
+        System.out.print("  ");
+      }
+      else {
+        continue;
+      }
+      System.out.println("" + im);
+    }
+    System.out.println("=====");
+  }
+
 
   protected static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {
     Set<Method> methods = ClassHelper.getAvailableMethods(methodClass); // TESTNG-139
