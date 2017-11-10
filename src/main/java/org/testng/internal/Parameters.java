@@ -302,10 +302,8 @@ public class Parameters {
    * @return FilterOutInJectedTypesResult
    */
   static FilterOutInJectedTypesResult filterOutInJectedTypesFromOptionalValues(Class<?>[] parameterTypes, String[] optionalValues) {
-    List<Class<?>> typeList = Lists.newArrayList();
-    List<String> optionalValueList = Lists.newArrayList();
-    Collections.addAll(typeList, parameterTypes);
-    Collections.addAll(optionalValueList, optionalValues);
+    List<Class<?>> typeList = Lists.newArrayList(parameterTypes);
+    List<String> optionalValueList = Lists.newArrayList(optionalValues);
     Iterator<Class<?>> typeIterator = typeList.iterator();
     Iterator<String> optionalIterator = optionalValueList.iterator();
     while (typeIterator.hasNext()) {
@@ -316,8 +314,8 @@ public class Parameters {
             typeIterator.remove();
         }
     }
-    return new FilterOutInJectedTypesResult(typeList.toArray(new Class<?>[0]),
-            optionalValueList.toArray(new String[0]));
+    return new FilterOutInJectedTypesResult(typeList.toArray(new Class<?>[typeList.size()]),
+            optionalValueList.toArray(new String[optionalValueList.size()]));
   }
 
   /**
