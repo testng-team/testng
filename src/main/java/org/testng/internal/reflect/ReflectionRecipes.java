@@ -365,11 +365,12 @@ public final class ReflectionRecipes {
       Object injectObject = null;
       for (final InjectableParameter injectableParameter : filters) {
         inject = canInject(parameter, injectableParameter);
-        switch (injectableParameter) {
+        if (inject) {
+          switch (injectableParameter) {
           case CURRENT_TEST_METHOD:
-            injectObject = injectionMethod;
-            if (inject && !firstMethodInjected) {
+            if (!firstMethodInjected) {
               firstMethodInjected = true;
+              injectObject = injectionMethod;
             } else {
               inject = false;
             }
@@ -385,13 +386,14 @@ public final class ReflectionRecipes {
             break;
           default:
             break;
-        }
-        if (inject) {
-          arguments.add(injectObject);
-          break;
+          }
+          if (inject) {
+            arguments.add(injectObject);
+            break;
+          }
         }
       }
-
+      
       if (!inject && !queue.backingList.isEmpty()) {
         arguments.add(queue.poll());
       }
