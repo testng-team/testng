@@ -127,15 +127,6 @@ public final class TestListenerHelper {
         }
     }
 
-    public static ITestNGListener createListener(ITestNGListenerFactory factory,
-                                                 Class<? extends ITestNGListener> c) {
-        ITestNGListener listener = factory != null ? factory.createListener(c) : null;
-        if (listener == null) {
-            listener = ClassHelper.newInstance(c);
-        }
-        return listener;
-    }
-
     public static class ListenerHolder {
         private List<Class<? extends ITestNGListener>> listenerClasses;
         private Class<? extends ITestNGListenerFactory> listenerFactoryClass;

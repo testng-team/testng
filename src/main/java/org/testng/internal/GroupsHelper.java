@@ -16,7 +16,6 @@ public final class GroupsHelper {
      * Helps create a map of groups (key/value = groupName/groupName) which takes into consideration the
      * included/excluded group in conjunction with a possible group definition that a user may have created
      * via their suite xml file.
-     * @param groups     A {@link List} of groups that are included/excluded in a given &lt;test&gt;
      * @param metaGroups Represents a Key/Value pair of dynamically defined groups by the user.
      *                   For e.g.,
      *                   <pre>
@@ -26,9 +25,10 @@ public final class GroupsHelper {
      *                                     &lt;/define&gt; <br>
      *                                     &lt;/groups&gt; <br>
      *                                     </pre>
+     * @param groups     A {@link List} of groups that are included/excluded in a given &lt;test&gt;
      * @return a map that represents the computed group names.
      */
-    public static Map<String, String> createGroups(List<String> groups, Map<String, List<String>> metaGroups) {
+    public static Map<String, String> createGroups(Map<String, List<String>> metaGroups, List<String> groups) {
         Map<String, String> result = Maps.newHashMap();
 
         // Groups that were passed on the command line

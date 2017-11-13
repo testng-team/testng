@@ -11,12 +11,12 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 class GuiceHelper {
-    private ITestContext context;
+    private final ITestContext context;
     GuiceHelper(ITestContext context) {
         this.context = context;
     }
 
-    public Injector getInjector(IClass iClass) {
+    Injector getInjector(IClass iClass) {
         Annotation annotation = AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
         if (annotation == null) {
             return null;
@@ -42,7 +42,7 @@ class GuiceHelper {
     }
 
 
-    private Module[] getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
+    private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
         List<Module> result = Lists.newArrayList();
         for (Class<? extends Module> moduleClass : guice.modules()) {
             List<Module> modules = context.getGuiceModules(moduleClass);
@@ -63,7 +63,7 @@ class GuiceHelper {
             }
         }
 
-        return result.toArray(new Module[result.size()]);
+        return result;
     }
 
 }

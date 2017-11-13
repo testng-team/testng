@@ -255,12 +255,12 @@ public class AnnotationHelper {
     return vResult.values().toArray(new ITestNGMethod[vResult.size()]);
     }
 
-  public static Annotation findAnnotationSuperClasses(Class<?> annotationClass, Class parameterClass) {
+  public static <A extends Annotation> A  findAnnotationSuperClasses(Class<A> annotationClass, Class parameterClass) {
     Class c = parameterClass;
     while (c != null) {
       Annotation result = c.getAnnotation(annotationClass);
       if (result != null) {
-        return result;
+        return (A) result;
       }
       else {
         c = c.getSuperclass();

@@ -23,7 +23,7 @@ class ClassBasedParallelParallelWorker extends AbstractParallelWorker {
         List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
         // Methods that belong to classes with a sequential=true or parallel=classes
         // attribute must all be run in the same worker
-        Set<Class> sequentialClasses = Sets.newHashSet();
+        Set<Class<?>> sequentialClasses = Sets.newHashSet();
         for (ITestNGMethod m : arguments.getMethods()) {
             Class<? extends ITestClass> cls = m.getRealClass();
             org.testng.annotations.ITestAnnotation test =
@@ -77,14 +77,14 @@ class ClassBasedParallelParallelWorker extends AbstractParallelWorker {
         return result;
     }
 
-    private static IMethodInstance[] findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
+    private static List<IMethodInstance> findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
         List<IMethodInstance> result = Lists.newArrayList();
         for (IMethodInstance mi : methodInstances) {
             if (mi.getMethod().getTestClass().getRealClass() == c) {
                 result.add(mi);
             }
         }
-        return result.toArray(new IMethodInstance[result.size()]);
+        return result;
     }
 
     private static TestMethodWorker createTestMethodWorker(Arguments attributes,
@@ -100,16 +100,16 @@ class ClassBasedParallelParallelWorker extends AbstractParallelWorker {
                 attributes.getListeners());
     }
 
-    private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... sl) {
+    private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... methods) {
         List<MethodInstance> vResult = Lists.newArrayList();
-        for (ITestNGMethod m : sl) {
+        for (ITestNGMethod m : methods) {
             vResult.add(new MethodInstance(m));
         }
 
         return vResult;
     }
 
-    private Collection<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
+    private static Collection<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
         Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
         for (IMethodInstance imi : methodInstances) {
             Object o = imi.getInstance();

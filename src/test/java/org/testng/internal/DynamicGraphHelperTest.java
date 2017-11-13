@@ -38,8 +38,8 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     public void testCreateDynamicGraphAllIndependent() {
         DynamicGraph<ITestNGMethod> graph = newGraph(IndependentTestClassSample.class);
         assertThat(graph.getFreeNodes()).hasSize(2);
-        for (Map.Entry<ITestNGMethod, List<DynamicGraph.Edge<ITestNGMethod>>> edge : graph.getEdges().entrySet()) {
-            assertThat(edge.getValue()).isEmpty();
+        for (List<DynamicGraph.Edge<ITestNGMethod>> edge : graph.getEdges().values()) {
+            assertThat(edge).isEmpty();
         }
     }
 

@@ -17,8 +17,8 @@ public class GroupsHelperTest {
     public void testCreateGroupsWithoutMetaGroups() {
         Map<String, String> expected = Maps.newHashMap();
         expected.put("foo", "foo");
-        Map<String, String> actual = GroupsHelper.createGroups(Collections.singletonList("foo"),
-                Collections.<String, List<String>>emptyMap());
+        Map<String, String> actual = GroupsHelper.createGroups(Collections.<String, List<String>>emptyMap(), Collections.singletonList("foo")
+        );
         assertThat(actual).containsAllEntriesOf(expected);
     }
 
@@ -26,7 +26,7 @@ public class GroupsHelperTest {
     public void testCreateGroupsWithMetaGroups(String metaGrpName, List<String> grpName, Map<String, String> expected) {
         Map<String, List<String>> metaGroups = Maps.newHashMap();
         metaGroups.put(metaGrpName, Collections.singletonList(metaGrpName));
-        Map<String, String> actual = GroupsHelper.createGroups(grpName, metaGroups);
+        Map<String, String> actual = GroupsHelper.createGroups(metaGroups, grpName);
         assertThat(actual).containsAllEntriesOf(expected);
     }
 

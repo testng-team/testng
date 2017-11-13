@@ -279,6 +279,10 @@ public class TestRunner
       listenerClasses.addAll(listenerHolder.getListenerClasses());
     }
 
+    if (listenerFactoryClass == null) {
+      listenerFactoryClass = DefaultListenerFactory.class;
+    }
+
     //
     // Now we have all the listeners collected from @Listeners and at most one
     // listener factory collected from a class implementing ITestNGListenerFactory.
@@ -292,7 +296,7 @@ public class TestRunner
       if (IClassListener.class.isAssignableFrom(c) && m_classListeners.containsKey(c)) {
           continue;
       }
-      ITestNGListener listener = TestListenerHelper.createListener(factory, c);
+      ITestNGListener listener = factory.createListener(c);
 
       addListener(listener);
     }
@@ -459,7 +463,7 @@ public class TestRunner
   }
 
   private Map<String, String> createGroups(List<String> groups) {
-    return GroupsHelper.createGroups(groups, m_metaGroups);
+    return GroupsHelper.createGroups(m_metaGroups, groups);
   }
 
   /**
@@ -675,14 +679,14 @@ public class TestRunner
    */
   @Override
   public List<IWorker<ITestNGMethod>> createWorkers(List<ITestNGMethod> methods) {
-    AbstractParallelWorker.Arguments args = new AbstractParallelWorker.Arguments();
-    args.setClassMethodMap(this.m_classMethodMap);
-    args.setConfigMethods(this.m_groupMethods);
-    args.setFinder(this.m_annotationFinder);
-    args.setInvoker(this.m_invoker);
-    args.setMethods(methods);
-    args.setTestContext(this);
-    args.setListeners(this.m_classListeners.values());
+    AbstractParallelWorker.Arguments args = new AbstractParallelWorker.Arguments.Builder()
+            .usingClassMethodMap(this.m_classMethodMap)
+            .usingConfigMethods(this.m_groupMethods)
+            .usingFinder(this.m_annotationFinder)
+            .usingInvoker(this.m_invoker)
+            .usingMethods(methods)
+            .usingTestContext(this)
+            .usingListeners(this.m_classListeners.values()).build();
     return AbstractParallelWorker.newWorker(m_xmlTest.getParallel()).createWorkers(args);
   }
 
@@ -715,9 +719,7 @@ public class TestRunner
     //
     m_endDate = new Date(System.currentTimeMillis());
 
-    if (getVerbose() >= 3) {
-      dumpInvokedMethods();
-    }
+    dumpInvokedMethods();
 
     // Invoke listeners
     fireEvent(false /*stop*/);
@@ -729,8 +731,8 @@ public class TestRunner
   private void logStart() {
     log(3,
         "Running test " + m_testName + " on " + m_classMap.size() + " " + " classes, "
-        + " included groups:[" + Strings.mapToString(m_xmlMethodSelector.getIncludedGroups())
-        + "] excluded groups:[" + Strings.mapToString(m_xmlMethodSelector.getExcludedGroups()) + "]");
+        + " included groups:[" + Strings.valueOf(m_xmlMethodSelector.getIncludedGroups())
+        + "] excluded groups:[" + Strings.valueOf(m_xmlMethodSelector.getExcludedGroups()) + "]");
 
     if (getVerbose() >= 3) {
       for (ITestClass tc : m_classMap.values()) {
@@ -961,6 +963,8 @@ public class TestRunner
     m_verbose = n;
   }
 
+  //TODO: This method needs to be removed and we need to be leveraging addListener().
+  //Investigate and fix this.
   void addTestListener(ITestListener listener) {
     m_testListeners.add(listener);
   }
@@ -1008,7 +1012,7 @@ public class TestRunner
   private final Collection<IInvokedMethod> m_invokedMethods = new ConcurrentLinkedQueue<>();
 
   private void dumpInvokedMethods() {
-    MethodHelper.dumpInvokedMethodsInfoToConsole(m_invokedMethods);
+    MethodHelper.dumpInvokedMethodsInfoToConsole(m_invokedMethods, getVerbose());
   }
 
   public List<ITestNGMethod> getInvokedMethods() {

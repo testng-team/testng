@@ -33,60 +33,84 @@ public abstract class AbstractParallelWorker {
         private ITestContext testContext;
         private IAnnotationFinder finder;
 
-        public List<ITestNGMethod> getMethods() {
-            return Collections.unmodifiableList(methods);
+        private Arguments() {
+            //We have a builder. Defeat instantiation via constructors.
         }
 
-        public void setMethods(List<ITestNGMethod> methods) {
-            this.methods = methods;
+        public List<ITestNGMethod> getMethods() {
+            return Collections.unmodifiableList(methods);
         }
 
         public IInvoker getInvoker() {
             return invoker;
         }
 
-        public void setInvoker(IInvoker invoker) {
-            this.invoker = invoker;
-        }
-
         public ConfigurationGroupMethods getConfigMethods() {
             return configMethods;
-        }
-
-        public void setConfigMethods(ConfigurationGroupMethods configMethods) {
-            this.configMethods = configMethods;
         }
 
         public ClassMethodMap getClassMethodMap() {
             return classMethodMap;
         }
 
-        public void setClassMethodMap(ClassMethodMap classMethodMap) {
-            this.classMethodMap = classMethodMap;
-        }
-
         List<IClassListener> getListeners() {
             return Collections.unmodifiableList(listeners);
-        }
-
-        public void setListeners(Collection<IClassListener> listeners) {
-            this.listeners = Lists.newLinkedList(listeners);
         }
 
         public ITestContext getTestContext() {
             return testContext;
         }
 
-        public void setTestContext(ITestContext testContext) {
-            this.testContext = testContext;
-        }
-
         public IAnnotationFinder getFinder() {
             return finder;
         }
 
-        public void setFinder(IAnnotationFinder finder) {
-            this.finder = finder;
+        public static class Builder {
+            private Arguments instance;
+
+            public Builder() {
+                instance = new Arguments();
+            }
+
+            public Builder usingMethods(List<ITestNGMethod> methods) {
+                instance.methods = methods;
+                return this;
+            }
+
+            public Builder usingInvoker(IInvoker invoker) {
+                instance.invoker = invoker;
+                return this;
+            }
+
+            public Builder usingConfigMethods(ConfigurationGroupMethods configMethods) {
+                instance.configMethods = configMethods;
+                return this;
+            }
+
+            public Builder usingClassMethodMap(ClassMethodMap classMethodMap) {
+                instance.classMethodMap = classMethodMap;
+                return this;
+            }
+
+            public Builder usingListeners(Collection<IClassListener> listeners) {
+                instance.listeners = Lists.newLinkedList(listeners);
+                return this;
+            }
+
+            public Builder usingTestContext(ITestContext testContext) {
+                instance.testContext = testContext;
+                return this;
+            }
+
+            public Builder usingFinder(IAnnotationFinder finder) {
+                instance.finder = finder;
+                return this;
+            }
+
+            public Arguments build() {
+                return instance;
+            }
         }
+
     }
 }

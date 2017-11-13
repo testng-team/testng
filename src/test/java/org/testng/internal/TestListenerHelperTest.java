@@ -1,9 +1,7 @@
 package org.testng.internal;
 
 import org.testng.IDataProviderListener;
-import org.testng.IExecutionListener;
 import org.testng.ITestContext;
-import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
@@ -73,20 +71,4 @@ public class TestListenerHelperTest {
                 {TestClassDoublingupAsListenerFactory.class, TestClassDoublingupAsListenerFactory.class}
         };
     }
-
-    @Test(dataProvider = "getListenerCreationData")
-    @SuppressWarnings("unchecked")
-    public void testCreateListener(ITestNGListenerFactory factory, Class<?> clazz) {
-        ITestNGListener obj = TestListenerHelper.createListener(factory, (Class<? extends ITestNGListener>) clazz);
-        assertThat(obj).isInstanceOf(IExecutionListener.class);
-    }
-
-    @DataProvider(name = "getListenerCreationData")
-    public Object[][] getListenerCreationData() {
-        return new Object[][]{
-                {new DummyListenerFactory(), DummyListenerFactory.class},
-                {null, DummyListenerFactory.class}
-        };
-    }
-
 }

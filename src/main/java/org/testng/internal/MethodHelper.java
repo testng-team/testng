@@ -339,6 +339,8 @@ public class MethodHelper {
     return result;
   }
 
+  //TODO: This needs to be revisited so that, we dont update the parameter list "methodList"
+  //but we are returning the values.
   public static void fixMethodsWithClass(ITestNGMethod[] methods,
                                    ITestClass testCls,
                                    List<ITestNGMethod> methodList) {
@@ -352,7 +354,7 @@ public class MethodHelper {
   }
 
   public static List<ITestNGMethod> invokedMethodsToMethods(Collection<IInvokedMethod> invokedMethods) {
-    List<ITestNGMethod> result= Lists.newArrayList();
+    List<ITestNGMethod> result = Lists.newArrayList();
     for (IInvokedMethod im : invokedMethods) {
       ITestNGMethod tm = im.getTestMethod();
       tm.setDate(im.getDate());
@@ -379,7 +381,10 @@ public class MethodHelper {
     return result;
   }
 
-  public static void dumpInvokedMethodsInfoToConsole(Collection<IInvokedMethod> iInvokedMethods) {
+  public static void dumpInvokedMethodsInfoToConsole(Collection<IInvokedMethod> iInvokedMethods, int currentVerbosity) {
+    if (currentVerbosity < 3) {
+      return;
+    }
     System.out.println("===== Invoked methods");
     for (IInvokedMethod im : iInvokedMethods) {
       if (im.isTestMethod()) {
