@@ -1,4 +1,4 @@
-package test.enable;
+package test;
 
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;

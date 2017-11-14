@@ -809,6 +809,7 @@
   <test name="@Test(enable)">
     <classes>
       <class name="test.enable.EnableTest"/>
+      <class name="test.ignore.IgnoreTest"/>
     </classes>
   </test>
 
