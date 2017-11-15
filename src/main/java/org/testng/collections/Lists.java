@@ -18,6 +18,10 @@ public final class Lists {
     return new LinkedList<>();
   }
 
+  public static <K> List<K> newLinkedList(Collection<K> c) {
+    return new LinkedList<>(c);
+  }
+
   public static <K> List<K> newArrayList(Collection<K> c) {
     return new ArrayList<>(c);
   }

@@ -30,7 +30,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
-  private IMethodInstance[] m_methodInstances;
+  private List<IMethodInstance> m_methodInstances;
   private final IInvoker m_invoker;
   private final Map<String, String> m_parameters;
   private final XmlSuite m_suite;
@@ -41,7 +41,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final List<IClassListener> m_listeners;
 
   public TestMethodWorker(IInvoker invoker,
-                          IMethodInstance[] testMethods,
+                          List<IMethodInstance> testMethods,
                           XmlSuite suite,
                           Map<String, String> parameters,
                           ConfigurationGroupMethods groupMethods,
@@ -247,8 +247,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    */
   @Override
   public int getPriority() {
-    return m_methodInstances.length > 0
-        ? m_methodInstances[0].getMethod().getPriority()
+    return m_methodInstances.size() > 0
+        ? m_methodInstances.get(0).getMethod().getPriority()
         : 0;
   }
 }
@@ -263,14 +263,14 @@ class SingleTestMethodWorker extends TestMethodWorker {
         new HashMap<String, List<ITestNGMethod>>(), new HashMap<String, List<ITestNGMethod>>());
 
   public SingleTestMethodWorker(IInvoker invoker,
-                                MethodInstance testMethod,
+                                IMethodInstance testMethod,
                                 XmlSuite suite,
                                 Map<String, String> parameters,
                                 ITestContext testContext,
                                 List<IClassListener> listeners)
   {
     super(invoker,
-          new MethodInstance[] {testMethod},
+            asList(testMethod),
           suite,
           parameters,
           EMPTY_GROUP_METHODS,
@@ -278,4 +278,12 @@ class SingleTestMethodWorker extends TestMethodWorker {
           testContext,
           listeners);
   }
+
+  //TODO Resorted to introducing this method to keep JDK7 happy. Can be removed once we move to JDK8
+  private static List<IMethodInstance> asList(IMethodInstance testMethod) {
+    List<IMethodInstance> methods = Lists.newLinkedList();
+    methods.add(testMethod);
+    return methods;
+  }
+
 }

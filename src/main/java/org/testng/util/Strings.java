@@ -41,4 +41,13 @@ public final class Strings {
     return result;
   }
 
+  public static String valueOf(Map<?, ?> m) {
+    StringBuilder result = new StringBuilder();
+    for (Object o : m.values()) {
+      result.append(o).append(" ");
+    }
+
+    return result.toString();
+  }
+
 }

@@ -180,6 +180,15 @@ public class SimpleBaseTest {
     return createXmlTest(suite, testName);
   }
 
+  protected static XmlTest createXmlTest(String suiteName, String testName, Class<?>... classes) {
+    XmlSuite suite = createXmlSuite(suiteName);
+    XmlTest xmlTest = createXmlTest(suite, testName);
+    for(Class<?> clazz: classes) {
+      xmlTest.getXmlClasses().add(new XmlClass(clazz));
+    }
+    return xmlTest;
+  }
+
   protected static XmlTest createXmlTest(XmlSuite suite, String name) {
     XmlTest result = new XmlTest(suite);
     result.setName(name);

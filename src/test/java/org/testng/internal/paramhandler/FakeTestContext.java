@@ -21,15 +21,23 @@ import java.util.Set;
 
 public class FakeTestContext implements ITestContext {
     private XmlTest xmlTest;
+    private ISuite suite;
 
     public FakeTestContext(Class<?> clazz) {
+        this(new Class<?>[] {clazz});
+    }
+
+    public FakeTestContext(Class<?>... classes) {
         XmlSuite xmlSuite = new XmlSuite();
         xmlSuite.setName("xml_suite");
         xmlTest = new XmlTest(xmlSuite);
-        xmlTest.setXmlClasses(Collections.singletonList(new XmlClass(clazz)));
+        for (Class<?> clazz : classes) {
+            xmlTest.getXmlClasses().add(new XmlClass(clazz));
+        }
         Map<String, String> map = Maps.newHashMap();
         map.put("foo", "bar");
         xmlTest.setParameters(map);
+        suite = new FakeSuite(xmlTest);
     }
 
     @Override
@@ -84,7 +92,7 @@ public class FakeTestContext implements ITestContext {
 
     @Override
     public ISuite getSuite() {
-        return null;
+        return suite;
     }
 
     @Override

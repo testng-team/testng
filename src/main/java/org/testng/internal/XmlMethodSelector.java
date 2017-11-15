@@ -27,6 +27,8 @@ import org.testng.xml.XmlInclude;
  *
  * Created on Sep 30, 2005
  */
+//TODO: Need to investigate as to why is m_includedGroups/m_excludedGroups being created as a map even though
+  //We are only working with the values and the keys are completely ignored.
 public class XmlMethodSelector implements IMethodSelector {
 
   private static final String QUOTED_DOLLAR = Matcher.quoteReplacement("\\$");
