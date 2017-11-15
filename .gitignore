@@ -1,6 +1,5 @@
 .ant-targets*
 .classpath
-.gitignore
 .gradle
 .idea
 *.iml
@@ -20,7 +19,6 @@ maven-testng-plugin-1.2.jar
 nb-configuration.xml
 out
 src/generated
-src/test/java/test/ignore
 target
 test-output
 test-output-tests

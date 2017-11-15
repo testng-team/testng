@@ -3,6 +3,7 @@ package test.enable;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import test.InvokedMethodListener;
 import test.SimpleBaseTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
