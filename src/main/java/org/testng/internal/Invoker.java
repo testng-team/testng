@@ -601,10 +601,10 @@ public class Invoker implements IInvoker {
       ExpectedExceptionsHolder expectedExceptionClasses
           = new ExpectedExceptionsHolder(m_annotationFinder, tm, new RegexpExpectedExceptionsHolder(m_annotationFinder, tm));
       StatusHolder holder = considerExceptions(tm, testResult, expectedExceptionClasses, failureContext);
-
-      // Run invokedMethodListeners after updating TestResult
+      int statusBeforeListenerInvocation = testResult.getStatus();
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-      handleInvocationResults(tm, testResult, failureContext, holder);
+      boolean wasResultUnaltered = statusBeforeListenerInvocation == testResult.getStatus();
+      handleInvocationResults(tm, testResult, failureContext, holder, wasResultUnaltered);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -1139,14 +1139,15 @@ public class Invoker implements IInvoker {
   private void handleInvocationResults(ITestNGMethod testMethod,
                                ITestResult testResult,
                                FailureContext failure,
-                               StatusHolder holder) {
+                               StatusHolder holder,
+                               boolean wasResultUnaltered) {
     //
     // Go through all the results and create a TestResult for each of them
     //
     List<ITestResult> resultsToRetry = Lists.newArrayList();
 
     Throwable ite = testResult.getThrowable();
-    int status = holder.status;
+    int status = computeTestStatusComparingTestResultAndStatusHolder(testResult, holder, wasResultUnaltered);
     boolean handled = holder.handled;
 
     IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
@@ -1167,10 +1168,17 @@ public class Invoker implements IInvoker {
     }
   }
 
+  private static int computeTestStatusComparingTestResultAndStatusHolder(ITestResult testResult, StatusHolder holder,
+                                                                         boolean wasResultUnaltered) {
+    if (wasResultUnaltered) {
+      return holder.status;
+    }
+    return testResult.getStatus();
+  }
+
   private boolean isSkipExceptionAndSkip(Throwable ite) {
     return SkipException.class.isAssignableFrom(ite.getClass()) && ((SkipException) ite).isSkip();
   }
-
 
   /**
    * To reduce thread contention and also to correctly handle thread-confinement
