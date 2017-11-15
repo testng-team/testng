@@ -174,6 +174,7 @@ public class TestNG {
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener> m_alterSuiteListeners= Maps.newHashMap();
 
   private boolean m_isInitialized = false;
+  private boolean isSuiteInitialized = false;
   private org.testng.internal.ExitCodeListener exitCodeListener;
   private ExitCode exitCode;
 
@@ -315,6 +316,12 @@ public class TestNG {
   }
 
   public void initializeSuitesAndJarFile() {
+    // The IntelliJ plug-in might have invoked this method already so don't initialize suites twice.
+    if (isSuiteInitialized) {
+      return;
+    }
+    isSuiteInitialized = true;
+
     if (!m_suites.isEmpty()) {
       parseSuiteFiles(); //to parse the suite files (<suite-file>), if any
       return;
