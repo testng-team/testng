@@ -22,6 +22,7 @@ import org.testng.internal.Attributes;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.DynamicGraphHelper;
@@ -680,13 +681,13 @@ public class TestRunner
   @Override
   public List<IWorker<ITestNGMethod>> createWorkers(List<ITestNGMethod> methods) {
     AbstractParallelWorker.Arguments args = new AbstractParallelWorker.Arguments.Builder()
-            .usingClassMethodMap(this.m_classMethodMap)
-            .usingConfigMethods(this.m_groupMethods)
-            .usingFinder(this.m_annotationFinder)
-            .usingInvoker(this.m_invoker)
-            .usingMethods(methods)
-            .usingTestContext(this)
-            .usingListeners(this.m_classListeners.values()).build();
+            .classMethodMap(this.m_classMethodMap)
+            .configMethods(this.m_groupMethods)
+            .finder(this.m_annotationFinder)
+            .invoker(this.m_invoker)
+            .methods(methods)
+            .testContext(this)
+            .listeners(this.m_classListeners.values()).build();
     return AbstractParallelWorker.newWorker(m_xmlTest.getParallel()).createWorkers(args);
   }
 

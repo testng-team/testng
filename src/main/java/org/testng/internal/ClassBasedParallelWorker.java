@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class ClassBasedParallelParallelWorker extends AbstractParallelWorker {
+class ClassBasedParallelWorker extends AbstractParallelWorker {
 
     @Override
     public List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments) {

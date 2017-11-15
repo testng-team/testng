@@ -19,7 +19,7 @@ public abstract class AbstractParallelWorker {
         if (XmlSuite.ParallelMode.INSTANCES.equals(mode)) {
             return new InstanceBasedParallelParallelWorker();
         }
-        return new ClassBasedParallelParallelWorker();
+        return new ClassBasedParallelWorker();
     }
 
     public abstract List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments);
@@ -72,37 +72,37 @@ public abstract class AbstractParallelWorker {
                 instance = new Arguments();
             }
 
-            public Builder usingMethods(List<ITestNGMethod> methods) {
+            public Builder methods(List<ITestNGMethod> methods) {
                 instance.methods = methods;
                 return this;
             }
 
-            public Builder usingInvoker(IInvoker invoker) {
+            public Builder invoker(IInvoker invoker) {
                 instance.invoker = invoker;
                 return this;
             }
 
-            public Builder usingConfigMethods(ConfigurationGroupMethods configMethods) {
+            public Builder configMethods(ConfigurationGroupMethods configMethods) {
                 instance.configMethods = configMethods;
                 return this;
             }
 
-            public Builder usingClassMethodMap(ClassMethodMap classMethodMap) {
+            public Builder classMethodMap(ClassMethodMap classMethodMap) {
                 instance.classMethodMap = classMethodMap;
                 return this;
             }
 
-            public Builder usingListeners(Collection<IClassListener> listeners) {
+            public Builder listeners(Collection<IClassListener> listeners) {
                 instance.listeners = Lists.newLinkedList(listeners);
                 return this;
             }
 
-            public Builder usingTestContext(ITestContext testContext) {
+            public Builder testContext(ITestContext testContext) {
                 instance.testContext = testContext;
                 return this;
             }
 
-            public Builder usingFinder(IAnnotationFinder finder) {
+            public Builder finder(IAnnotationFinder finder) {
                 instance.finder = finder;
                 return this;
             }
