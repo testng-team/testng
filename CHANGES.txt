@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1613: The constructor removed from TestRunner would stop Eclipse working.(Yehui Wang)
 Fixed: GITHUB-1598: Injected types parameter and optional parameters cannot be used together. (Yehui Wang)
 Fixed: GITHUB-1594: Cannot filter by "testnames" when suite xml is a suite of suites (Krishnan Mahadevan)
 Fixed: GITHUB-1584: Can't run tests from IDEA (Krishnan Mahadevan)
