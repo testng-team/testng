@@ -13,6 +13,8 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 import test.retryAnalyzer.github1519.MyListener;
 import test.retryAnalyzer.github1519.TestClassSample;
+import test.retryAnalyzer.github1600.Github1600Listener;
+import test.retryAnalyzer.github1600.Github1600TestSample;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
     @Test
@@ -40,5 +42,17 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
         tng.addListener((ITestNGListener)new MyListener());
         tng.run();
         assertThat(TestClassSample.messages).containsExactly("afterInvocation", "retry", "afterInvocation");
+    }
+
+    @Test(description = "GITHUB-1600")
+    public void testIfRetryIsInvokedBeforeListenerButHasToConsiderFailures() {
+        TestNG tng = create(Github1600TestSample.class);
+        Github1600Listener listener = new Github1600Listener();
+        TestListenerAdapter tla = new TestListenerAdapter();
+        tng.addListener((ITestNGListener) tla);
+        tng.addListener((ITestNGListener) listener);
+        tng.run();
+        assertThat(tla.getFailedTests()).hasSize(1);
+        assertThat(tla.getSkippedTests()).hasSize(1);
     }
 }
