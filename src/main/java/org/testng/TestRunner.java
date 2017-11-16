@@ -180,6 +180,9 @@ public class TestRunner
         skipFailedInvocationCounts, invokedMethodListeners, classListeners);
   }
   
+  /**
+   * This constructor is used by testng-remote, any changes related to it please contact with testng-team.
+   */
   public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
