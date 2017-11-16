@@ -571,14 +571,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   /**
-   * @see org.testng.ISuite#getInvokedMethods()
-   */
-  @Override
-  public Collection<ITestNGMethod> getInvokedMethods() {
-    return getIncludedOrExcludedMethods(true /* included */);
-  }
-
-  /**
    * @see org.testng.ISuite#getExcludedMethods()
    */
   @Override

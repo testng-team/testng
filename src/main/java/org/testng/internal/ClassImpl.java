@@ -90,12 +90,6 @@ public class ClassImpl implements IClass {
     return m_class;
   }
 
-  @Deprecated
-  @Override
-  public int getInstanceCount() {
-    return m_instanceCount;
-  }
-
   @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashCodes;

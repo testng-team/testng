@@ -98,11 +98,6 @@ public class FakeTestClass implements ITestClass {
     }
 
     @Override
-    public int getInstanceCount() {
-        return 0;
-    }
-
-    @Override
     public long[] getInstanceHashCodes() {
         return new long[0];
     }

@@ -602,12 +602,7 @@ public class TestNG {
     }
   }
 
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later /!\ Caution: IntelliJ is using it. Check with @akozlova before removing it
-  @Deprecated
-  public void addListener(Object listener) {
+  protected void addListener(Object listener) {
     if (! (listener instanceof ITestNGListener))
     {
       exitWithError("Listener " + listener
@@ -681,60 +676,6 @@ public class TestNG {
       IDataProviderListener dataProvider = (IDataProviderListener) listener;
       maybeAddListener(m_dataProviderListeners, dataProvider);
     }
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(IInvokedMethodListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(ISuiteListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(ITestListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(IClassListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(IReporter listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addInvokedMethodListener(IInvokedMethodListener listener) {
-    addListener((ITestNGListener) listener);
   }
 
   public Set<IReporter> getReporters() {

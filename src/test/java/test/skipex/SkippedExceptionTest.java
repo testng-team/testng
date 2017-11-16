@@ -36,7 +36,7 @@ public class SkippedExceptionTest {
   public void skippedExceptionInTestMethods() {
     TestListenerAdapter listener= new TestListenerAdapter();
     TestNG test= new TestNG(false);
-    test.addListener(listener);
+    test.addListener((ITestNGListener) listener);
     test.setTestClasses(new Class[] {TestSkippedExceptionTest.class});
     test.run();
     List<ITestResult> skips= listener.getSkippedTests();

@@ -1,8 +1,8 @@
 package test.sample;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.junit.Assert;
 
 /**
  *

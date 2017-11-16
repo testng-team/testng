@@ -145,24 +145,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    * {@inheritDoc}
    */
   @Override
-  public Method getMethod() {
-    return m_method.getMethod();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public String getMethodName() {
     return m_methodName;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Object[] getInstances() {
-    return new Object[] { getInstance() };
   }
 
   @Override
@@ -319,14 +303,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public void setInvocationCount(int counter) {
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int getTotalInvocationCount() {
-    return 0;
   }
 
   /**

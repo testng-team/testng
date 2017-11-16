@@ -14,11 +14,6 @@ public class JUnit4TestMethod extends JUnitTestMethod {
         super(owner, desc.getMethodName(), getMethod(desc), desc);
     }
 
-    @Override
-    public Object[] getInstances() {
-        return new Object[0];
-    }
-
     private static ConstructorOrMethod getMethod(Description desc) {
         Class<?> c = desc.getTestClass();
         String method = desc.getMethodName();

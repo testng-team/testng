@@ -3,6 +3,7 @@ package test.testng1396;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
+import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -45,7 +46,7 @@ public class ParallelByInstancesInterceptorTest {
         tng.setThreadCount(1);
 
         TestListenerAdapter adapter = new TestListenerAdapter();
-        tng.addListener(adapter);
+        tng.addListener((ITestNGListener) adapter);
 
         // Runs tests annotated with @TestNG1396HighPriority before tests without it
         ReverseOrderTestInterceptor listener = new ReverseOrderTestInterceptor();

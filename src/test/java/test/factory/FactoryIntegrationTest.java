@@ -29,7 +29,7 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
     public void testNonPublicFactoryMethodShouldWork() {
         TestNG tng = create(NonPublicFactory.class);
         TestListenerAdapter tla = new TestListenerAdapter();
-        tng.addListener(tla);
+        tng.addListener((ITestNGListener) tla);
 
         tng.run();
 

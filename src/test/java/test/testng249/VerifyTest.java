@@ -1,6 +1,7 @@
 package test.testng249;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -12,6 +13,7 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 public class VerifyTest extends SimpleBaseTest {
 
@@ -23,16 +25,16 @@ public class VerifyTest extends SimpleBaseTest {
     XmlTest test = new XmlTest(suite);
     test.setName("Test");
     XmlClass c1 = new XmlClass(B.class);
-    c1.setIncludedMethods(Arrays.asList(new XmlInclude[] { new XmlInclude("b")}));
+    c1.setIncludedMethods(Collections.singletonList(new XmlInclude("b")));
     XmlClass c2 = new XmlClass(Base.class);
-    c2.setIncludedMethods(Arrays.asList(new XmlInclude[] { new XmlInclude("b")}));
-    test.setXmlClasses(Arrays.asList(new XmlClass[] { c1, c2 }));
+    c2.setIncludedMethods(Collections.singletonList(new XmlInclude("b")));
+    test.setXmlClasses(Arrays.asList(c1, c2));
 
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setXmlSuites(Arrays.asList(new XmlSuite[] { suite }));
+    tng.setXmlSuites(Collections.singletonList(suite));
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 2);

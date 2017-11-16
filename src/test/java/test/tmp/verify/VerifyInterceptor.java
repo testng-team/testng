@@ -55,12 +55,6 @@ public class VerifyInterceptor implements IMethodInterceptor {
         final ITestNGMethod vm = TestNGUtils.createITestNGMethod(tm, m);
         result.add(new IMethodInstance() {
 
-          @Deprecated
-          @Override
-          public Object[] getInstances() {
-            return tm.getInstances();
-          }
-
           @Override
           public ITestNGMethod getMethod() {
             return vm;
