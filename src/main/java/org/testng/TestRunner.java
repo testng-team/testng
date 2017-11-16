@@ -36,6 +36,7 @@ import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
+import org.testng.internal.Systematiser;
 import org.testng.internal.TestListenerHelper;
 import org.testng.internal.TestMethodWorker;
 import org.testng.internal.TestNGClassFinder;
@@ -173,6 +174,17 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners, Comparator<ITestNGMethod> comparator) {
     this.comparator = comparator;
+    this.m_dataProviderListeners = Collections.emptyMap();
+    init(configuration, suite, test, suite.getOutputDirectory(),
+        suite.getAnnotationFinder(),
+        skipFailedInvocationCounts, invokedMethodListeners, classListeners);
+  }
+  
+  public TestRunner(IConfiguration configuration, ISuite suite, XmlTest test,
+      boolean skipFailedInvocationCounts,
+      Collection<IInvokedMethodListener> invokedMethodListeners,
+      List<IClassListener> classListeners) {
+    this.comparator = Systematiser.getComparator();
     this.m_dataProviderListeners = Collections.emptyMap();
     init(configuration, suite, test, suite.getOutputDirectory(),
         suite.getAnnotationFinder(),
