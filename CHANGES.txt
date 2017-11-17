@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-1616: Test cases with priority and dependsOnGroups dependencies, execution order is chaos. (Yehui Wang)
+Fixed: GITHUB-1613: The constructor removed from TestRunner would stop Eclipse working.(Yehui Wang)
 Fixed: GITHUB-1600: Updated in afterInvocation() testResult.status is not used in willRetry condition (Krishnan Mahadevan)
 Fixed: GITHUB-1598: Injected types parameter and optional parameters cannot be used together. (Yehui Wang)
 Fixed: GITHUB-1594: Cannot filter by "testnames" when suite xml is a suite of suites (Krishnan Mahadevan)
