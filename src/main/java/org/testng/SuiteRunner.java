@@ -41,7 +41,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private Map<String, ISuiteResult> suiteResults = new ConcurrentHashMap<>();
+  private Map<String, ISuiteResult> suiteResults = Collections.synchronizedMap(Maps.<String, ISuiteResult>newLinkedHashMap());
   private List<TestRunner> testRunners = Lists.newArrayList();
   private Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
   private TestListenerAdapter textReporter = new TestListenerAdapter();
