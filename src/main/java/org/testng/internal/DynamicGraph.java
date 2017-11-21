@@ -239,7 +239,7 @@ public class DynamicGraph<T> {
             // If the edge doesn't exist yet
             Edge<T> pedge = pair.second();
             Edge<T> existingEdge = getNode(m_edges, new Edge<>(0, pedge.from, edge.to));
-            if ((existingEdge == null || existingEdge.weight != pedge.weight) &&
+            if ((existingEdge == null || existingEdge.weight > pedge.weight) &&
                 // Then we filter useless edge creation: the "to" must have to run later and,
                 // "from"/"to" must not be the same node
                 m_nodesReady.contains(edge.to) && !pedge.from.equals(edge.to)) {

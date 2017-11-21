@@ -15,7 +15,11 @@ import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.DynamicGraph.Status;
+import org.testng.internal.dynamicgraph.EdgeWeightTestSample1;
+import org.testng.internal.dynamicgraph.EdgeWeightTestSample2;
 import org.testng.xml.XmlSuite;
+
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.TestClassContainerForGitHubIssue1360;
 
@@ -239,6 +243,26 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
     expected = Arrays.asList("TestNG1.test3TestNG1", "TestNG2.test3TestNG2", "TestNG3.test3TestNG3");
     runAssertion(graph, expected);
+  }
+  
+  @Test
+  public void edgeWeightTest1() {
+      List<String> expectedOrder1 = Arrays.asList("t1", "t2", "t3");
+      TestNG tng = create(EdgeWeightTestSample1.class);
+      InvokedMethodNameListener listener = new InvokedMethodNameListener();
+      tng.addListener((ITestNGListener) listener);
+      tng.run();
+      Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder1);
+  }
+
+  @Test
+  public void edgeWeightTest2() {
+      List<String> expectedOrder2 = Arrays.asList("t1", "t2", "t3", "t4", "t5");
+      TestNG tng = create(EdgeWeightTestSample2.class);
+      InvokedMethodNameListener listener = new InvokedMethodNameListener();
+      tng.addListener((ITestNGListener) listener);
+      tng.run();
+      Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
   }
 
   private static void runAssertion(DynamicGraph<ITestNGMethod> graph, List<String> expected) {
