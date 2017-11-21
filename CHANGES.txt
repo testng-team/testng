@@ -1,4 +1,4 @@
-Current
+Fixed: GITHUB-1619: ConcurrentHashMap doesn't secure insertion order.(Yehui Wang)
 Fixed: GITHUB-1616: Test cases with priority and dependsOnGroups dependencies, execution order is chaos. (Yehui Wang)
 Fixed: GITHUB-1613: The constructor removed from TestRunner would stop Eclipse working.(Yehui Wang)
 Fixed: GITHUB-1600: Updated in afterInvocation() testResult.status is not used in willRetry condition (Krishnan Mahadevan)
