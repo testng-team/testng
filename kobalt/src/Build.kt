@@ -15,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.12"
+val VERSION = "6.13"
 
 val p = project {
     name = "testng"
