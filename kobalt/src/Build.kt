@@ -15,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.14-SNAPSHOT"
+val VERSION = "6.13.1"
 
 val p = project {
     name = "testng"
@@ -53,7 +53,7 @@ val p = project {
 
     dependencies {
         provided("com.google.inject:guice:4.1.0")
-        compile("com.beust:jcommander:1.66")
+        compile("com.beust:jcommander:1.72")
         provided("org.yaml:snakeyaml:1.17",
                 "com.google.code.findbugs:jsr305:3.0.1",
                 "org.apache-extras.beanshell:bsh:2.0b6",
