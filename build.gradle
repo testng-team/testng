@@ -78,7 +78,7 @@ dependencies {
     compileOnly 'com.google.code.findbugs:jsr305:3.0.1'
 
     compile 'org.apache-extras.beanshell:bsh:2.0b6'
-    compile 'com.beust:jcommander:1.66'
+    compile 'com.beust:jcommander:1.72'
 
     compile 'org.apache.ant:ant:1.9.7'
     compile 'junit:junit:4.12', optional
