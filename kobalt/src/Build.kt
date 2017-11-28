@@ -64,6 +64,7 @@ val p = project {
     dependenciesTest {
         compile("org.assertj:assertj-core:3.5.2",
                 "org.testng:testng:6.9.13.7",
+                "org.mockito:mockito-core:2.12.0",
                 "org.spockframework:spock-core:1.0-groovy-2.4")
     }
 
