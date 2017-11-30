@@ -6,6 +6,7 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
@@ -18,6 +19,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] {AlwaysRunAfter1.class});
     testng.addListener(tla);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.run();
     assertTrue(AlwaysRunAfter1.success(), "afterTestMethod should have run");
   }
@@ -29,6 +31,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] {AlwaysRunAfter3.class});
     testng.addListener(tla);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.run();
     assertTrue(AlwaysRunAfter3.success(), "afterMethod should have run");
   }
