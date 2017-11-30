@@ -148,24 +148,30 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     // the whole invocation must be synchronized as other threads must
     // get a full initialized test object (not the same for @After)
-    Map<ITestClass, Set<Object>> invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
-    Set<Object> instances = invokedBeforeClassMethods.get(testClass);
-    if (null == instances) {
-      instances = new HashSet<>();
-      invokedBeforeClassMethods.put(testClass, instances);
-    }
-    Object instance = mi.getInstance();
-    if (!instances.contains(instance)) {
-      instances.add(instance);
-      for (IClassListener listener : m_listeners) {
-        listener.onBeforeClass(testClass);
+    // Synchronization on local variables is generally considered a bad practice, but this is an exception.
+    // We need to ensure that two threads that are querying for the same "Class" then they
+    // should be mutually exclusive. In all other cases, parallelism can be allowed.
+    //DO NOT REMOVE THIS SYNC LOCK.
+    synchronized (testClass) {
+      Map<ITestClass, Set<Object>> invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
+      Set<Object> instances = invokedBeforeClassMethods.get(testClass);
+      if (null == instances) {
+        instances = new HashSet<>();
+        invokedBeforeClassMethods.put(testClass, instances);
       }
-      m_invoker.invokeConfigurations(testClass,
-              testClass.getBeforeClassMethods(),
-              m_suite,
-              m_parameters,
-              null, /* no parameter values */
-              instance);
+      Object instance = mi.getInstance();
+      if (!instances.contains(instance)) {
+        instances.add(instance);
+        for (IClassListener listener : m_listeners) {
+          listener.onBeforeClass(testClass);
+        }
+        m_invoker.invokeConfigurations(testClass,
+                testClass.getBeforeClassMethods(),
+                m_suite,
+                m_parameters,
+                null, /* no parameter values */
+                instance);
+      }
     }
   }
 

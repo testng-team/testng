@@ -5,16 +5,16 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
-import junit.framework.Assert;
 
-public class BeforeClassThreadTest extends SimpleBaseTest{
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class BeforeClassThreadTest extends SimpleBaseTest {
 
     @Test
     public void beforeClassMethodsShouldRunInParallel() {
-        TestNG tng = create(new Class[] { BeforeClassThreadA.class, BeforeClassThreadB.class });
+        TestNG tng = create(BeforeClassThreadA.class, BeforeClassThreadB.class);
         tng.setParallel(XmlSuite.ParallelMode.METHODS);
         tng.run();
-
-        Assert.assertTrue(Math.abs(BeforeClassThreadA.WHEN - BeforeClassThreadB.WHEN) < 1000);
+        assertThat(Math.abs(BeforeClassThreadA.WHEN - BeforeClassThreadB.WHEN)).isLessThan(1000);
     }
 }
