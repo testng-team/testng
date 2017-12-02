@@ -63,7 +63,7 @@ class JarFileUtils {
             String suitePath = null;
             while (entries.hasMoreElements()) {
                 JarEntry je = entries.nextElement();
-                if (je.getName().toLowerCase().endsWith(".xml")){
+                if (Parser.canParse(je.getName().toLowerCase())){
                     String jeName = je.getName();
                     InputStream  inputStream = jf.getInputStream(je);
                     File copyFile = new File(file, jeName);
