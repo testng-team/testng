@@ -10,6 +10,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -57,6 +58,34 @@ public class JarFileUtilsTest {
                 null,
                 new String[]{"org.testng.SampleTest1", "org.testng.SampleTest2", "org.testng.SampleTest3"},
                 "Jar suite");
+    }
+    
+    @Test
+    public void testWithValidTestNamesFromMultiChildSuites() throws MalformedURLException {
+        JarFileUtils utils = newJarFileUtils(Arrays.asList("testng-tests-child2", "testng-tests-child4", "testng-tests-child5"));
+        String[] expectedTestNames = new String[]{"testng-tests-child2", "testng-tests-child4", "testng-tests-child5"};
+        String[] expectedClassNames = new String[]{"org.testng.SampleTest2","org.testng.SampleTest4","org.testng.SampleTest5"};
+        List<XmlSuite> suites = utils.extractSuitesFrom(jar);
+        assertThat(suites).hasSize(3);
+        XmlSuite suite = suites.get(0);
+        assertThat(suite.getName()).isEqualTo("testng-tests-suite");
+        List<String> testNames = new LinkedList<>();
+        List<String> classNames = new LinkedList<>();
+        for(XmlSuite xmlSuite : suites){
+            for (XmlTest xmlTest : xmlSuite.getTests()) {
+                if (expectedTestNames != null) {
+                    testNames.add(xmlTest.getName());
+                }
+                for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
+                    classNames.add(xmlClass.getName());
+                }
+            }  
+        }
+        
+        if (expectedTestNames != null) {
+            assertThat(testNames).containsExactly(expectedTestNames);
+        }
+        assertThat(classNames).contains(expectedClassNames);
     }
 
     private static void runTest(JarFileUtils utils,
