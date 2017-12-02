@@ -63,14 +63,13 @@ class JarFileUtils {
                     for (XmlSuite suite : parsedSuites) {
                       // If test names were specified, only run these test names
                       if (testNames != null) {
-                        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
-                        List<String> missMatchedTestname = XmlSuiteUtils.getMissMatchedTestNames(testNames);
+                        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+                        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
+                        List<String> missMatchedTestname = xmlSuiteUitls.getMissMatchedTestNames(testNames);
                         if (CollectionUtils.hasElements(missMatchedTestname)) {
-                          XmlSuiteUtils.resetField();
                           throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())+ "> cannot be found.");
                         }
-                        suites.addAll(XmlSuiteUtils.getCloneSuite());
-                        XmlSuiteUtils.resetField();
+                        suites.addAll(xmlSuiteUitls.getCloneSuite());
                       } else {
                         suites.add(suite);
                       }

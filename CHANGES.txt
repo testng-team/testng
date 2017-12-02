@@ -1,6 +1,6 @@
 Current
 =======
-Fixed: GITHUB-1634: "testnames" can't find all the tests if suite had Multi-level parent-child relationship(Yehui Wang)
+New  : GITHUB-1634: Make "testnames" support to find all the tests even if suite had Multi-level parent-child relationship(Yehui Wang)
 Fixed: GITHUB-1625: Null fields in parallel method tests (Krishnan Mahadevan)
 
 6.13.1

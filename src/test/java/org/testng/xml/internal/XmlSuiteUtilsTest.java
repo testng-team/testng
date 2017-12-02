@@ -34,9 +34,9 @@ public class XmlSuiteUtilsTest extends SimpleBaseTest {
     @Test
     public void testCloneIfContainsTestsWithNamesMatchingAny() {
         XmlSuite suite = createDummySuiteWithTestNamesAs("test1", "test2");
-        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, Collections.singletonList("test2"));
-        List<XmlTest> xmlTests = XmlSuiteUtils.getMatchedTests();
-        XmlSuiteUtils.resetField();
+        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(suite, Collections.singletonList("test2"));
+        List<XmlTest> xmlTests = xmlSuiteUitls.getMatchedTests();
         assertThat(suite.getTests()).hasSameElementsAs(xmlTests);
     }
 
@@ -49,9 +49,9 @@ public class XmlSuiteUtilsTest extends SimpleBaseTest {
         parentSuite.getChildSuites().add(childSuite);
         XmlSuite childOfChildSuite = createDummySuiteWithTestNamesAs("test5", "test6");
         childSuite.getChildSuites().add(childOfChildSuite);
-        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(parentSuite, Collections.singletonList(testname));
-        List<XmlTest> xmlTests = XmlSuiteUtils.getMatchedTests();
-        XmlSuiteUtils.resetField();
+        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(parentSuite, Collections.singletonList(testname));
+        List<XmlTest> xmlTests = xmlSuiteUitls.getMatchedTests();
         if (foundInParent) {
             assertThat(xmlTests).hasSameElementsAs(parentSuite.getTests());
         } else if (!foundInChildOfChild) {
@@ -65,7 +65,8 @@ public class XmlSuiteUtilsTest extends SimpleBaseTest {
             expectedExceptionsMessageRegExp = "\nPlease provide a valid list of names to check.",
             dataProvider = "getData")
     public void testCloneIfContainsTestsWithNamesMatchingAnyNegativeCondition(XmlSuite xmlSuite, List<String> names) {
-        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, names);
+        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, names);
     }
     
     @Test
@@ -77,19 +78,20 @@ public class XmlSuiteUtilsTest extends SimpleBaseTest {
         parentSuite.getChildSuites().add(childSuite);
         XmlSuite childOfChildSuite = createDummySuiteWithTestNamesAs("test5", "test6");
         childSuite.getChildSuites().add(childOfChildSuite);
-        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(parentSuite,
+        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(parentSuite,
                 new ArrayList<>(Arrays.asList("test1", "test3", "test5")));
-        List<String> matchedTestnames = XmlSuiteUtils.getMatchedTestNames();
-        XmlSuiteUtils.resetField();
+        List<String> matchedTestnames = xmlSuiteUitls.getMatchedTestNames();
         assertThat(matchedTestnames).hasSameElementsAs(Arrays.asList("test1", "test3", "test5"));
     }
-
+    
     @Test(expectedExceptions = TestNGException.class,
             expectedExceptionsMessageRegExp = "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found.")
     public void testCloneIfContainsTestsWithNamesMatchingAnyWithoutMatch() {
         XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
-        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, Collections.singletonList("test3"));
-        List<XmlSuite> clonedSuites = XmlSuiteUtils.getCloneSuite();
+        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, Collections.singletonList("test3"));
+        List<XmlSuite> clonedSuites = xmlSuiteUitls.getCloneSuite();
         if (!CollectionUtils.hasElements(clonedSuites)) {
             throw new TestNGException(
                     "The test(s) <" + Collections.singletonList("test3").toString() + "> cannot be found.");

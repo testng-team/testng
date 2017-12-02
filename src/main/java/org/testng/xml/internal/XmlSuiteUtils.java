@@ -15,13 +15,9 @@ import java.util.Set;
  * A utility class that exposes helper methods to work with {@link XmlSuite}
  */
 public final class XmlSuiteUtils {
-    private static List<XmlSuite> cloneSuites = Lists.newArrayList();
-    private static List<String> matchedTestNames = Lists.newArrayList();
-    private static List<XmlTest> matchedTests = Lists.newArrayList();
-    
-    private XmlSuiteUtils() {
-        //Utility class. Defeat instantiation.
-    }
+    private List<XmlSuite> cloneSuites = Lists.newArrayList();
+    private List<String> matchedTestNames = Lists.newArrayList();
+    private List<XmlTest> matchedTests = Lists.newArrayList();
 
     /**
      * Recursive search the given testNames from the current {@link XmlSuite} and its child suites.
@@ -29,13 +25,13 @@ public final class XmlSuiteUtils {
      * @param xmlSuite  The {@link XmlSuite} to work with.
      * @param testNames The list of testnames to iterate through
      */
-    public static void cloneIfContainsTestsWithNamesMatchingAny(XmlSuite xmlSuite, List<String> testNames) {
+    public void cloneIfContainsTestsWithNamesMatchingAny(XmlSuite xmlSuite, List<String> testNames) {
         if (testNames == null || testNames.isEmpty()) {
             throw new TestNGException("Please provide a valid list of names to check.");
         }
         
         //Start searching in the current suite.
-        addNotNullSuite(cloneIfSuiteContainTestsWithNamesMatchingAny(xmlSuite, testNames));
+        addIfNotNull(cloneIfSuiteContainTestsWithNamesMatchingAny(xmlSuite, testNames));
         
         //Search through all the child suites.
         for (XmlSuite suite : xmlSuite.getChildSuites()) {
@@ -75,7 +71,7 @@ public final class XmlSuiteUtils {
         return xmlSuite;
     }
     
-    public static List<XmlSuite> getCloneSuite() {
+    public List<XmlSuite> getCloneSuite() {
         return cloneSuites;
     }
 
@@ -83,7 +79,7 @@ public final class XmlSuiteUtils {
      * @param testNames input from m_testNames
      * 
      */
-    public static List<String> getMissMatchedTestNames(List<String> testNames){
+    public List<String> getMissMatchedTestNames(List<String> testNames){
         Iterator<String> testNameIterator = testNames.iterator();
         while (testNameIterator.hasNext()) {
             String testName = testNameIterator.next();
@@ -95,21 +91,12 @@ public final class XmlSuiteUtils {
         
     }
 
-    public static List<XmlTest> getMatchedTests() {
+    public List<XmlTest> getMatchedTests() {
         return matchedTests;
     }
 
-    public static List<String> getMatchedTestNames() {
+    public List<String> getMatchedTestNames() {
         return matchedTestNames;
-    }
-
-    /**
-     * Ensure that all the static field are reset, in case multiple suites exist.
-     */
-    public static void resetField() {
-        cloneSuites = Lists.newArrayList();
-        matchedTestNames = Lists.newArrayList();
-        matchedTests = Lists.newArrayList();
     }
 
     /**
@@ -128,7 +115,7 @@ public final class XmlSuiteUtils {
         }
     }
     
-    private static void addNotNullSuite(XmlSuite xmlSuite) {
+    private void addIfNotNull(XmlSuite xmlSuite) {
         if (xmlSuite != null) {
             cloneSuites.add(xmlSuite);
         }
@@ -143,7 +130,7 @@ public final class XmlSuiteUtils {
         return xmlClasses;
     }
 
-    private static XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite, List<String> testNames) {
+    private XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite, List<String> testNames) {
         List<XmlTest> tests = Lists.newLinkedList();
         for (XmlTest xt : suite.getTests()) {
             if (xt.nameMatchesAny(testNames)) {

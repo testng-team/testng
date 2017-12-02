@@ -293,21 +293,19 @@ public class TestNG {
       for (XmlSuite s : allSuites) {
         s.setParallel(this.m_parallelMode);
         s.setThreadCount(this.m_threadCount);
-        // If test names were specified, only run these test names
-        if (m_testNames != null) {
-          XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames);
-          List<String> missMatchedTestname = XmlSuiteUtils.getMissMatchedTestNames(m_testNames);
-          if (CollectionUtils.hasElements(missMatchedTestname)) {
-            XmlSuiteUtils.resetField();
-            throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())
-                    + "> cannot be found.");
-          } else {
-            m_suites.addAll(XmlSuiteUtils.getCloneSuite());
-            XmlSuiteUtils.resetField();
-          }
-        } else {
+        if (m_testNames == null) {
           m_suites.add(s);
+          continue;
         }
+        // If test names were specified, only run these test names
+        XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
+        xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames);
+        List<String> missMatchedTestname = xmlSuiteUitls.getMissMatchedTestNames(m_testNames);
+        if (CollectionUtils.hasElements(missMatchedTestname)) {
+          throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())
+                  + "> cannot be found.");
+        } 
+        m_suites.addAll(xmlSuiteUitls.getCloneSuite());
       }
     } catch (IOException e) {
       e.printStackTrace(System.out);
