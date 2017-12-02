@@ -7,6 +7,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -14,40 +15,32 @@ import java.util.Set;
  * A utility class that exposes helper methods to work with {@link XmlSuite}
  */
 public final class XmlSuiteUtils {
-
+    private static List<XmlSuite> cloneSuites = Lists.newArrayList();
+    private static List<String> matchedTestNames = Lists.newArrayList();
+    private static List<XmlTest> matchedTests = Lists.newArrayList();
+    
     private XmlSuiteUtils() {
         //Utility class. Defeat instantiation.
     }
 
     /**
-     * Creates a cloned copy of the current {@link XmlSuite} if the current suite
-     * contains at-least on &lt;test&gt; whose name matches with the provided names.
+     * Recursive search the given testNames from the current {@link XmlSuite} and its child suites.
      *
      * @param xmlSuite  The {@link XmlSuite} to work with.
      * @param testNames The list of testnames to iterate through
-     * @return - A {@link XmlSuite} that contains all the tests whose name matched with the provided names.
-     * that was passed. If there were no &lt;test&gt; match that was found throws a {@link TestNGException}
      */
-    public static XmlSuite cloneIfContainsTestsWithNamesMatchingAny(XmlSuite xmlSuite, List<String> testNames) {
+    public static void cloneIfContainsTestsWithNamesMatchingAny(XmlSuite xmlSuite, List<String> testNames) {
         if (testNames == null || testNames.isEmpty()) {
             throw new TestNGException("Please provide a valid list of names to check.");
         }
-
+        
+        //Start searching in the current suite.
+        addNotNullSuite(cloneIfSuiteContainTestsWithNamesMatchingAny(xmlSuite, testNames));
+        
         //Search through all the child suites.
         for (XmlSuite suite : xmlSuite.getChildSuites()) {
-            XmlSuite clonedSuite = cloneIfSuiteContainTestsWithNamesMatchingAny(suite, testNames);
-            if (clonedSuite != null) {
-                return clonedSuite;
-            }
+            cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
         }
-
-        //Tests weren't found in child suites. Lets search in the current suite.
-        XmlSuite clonedSuite = cloneIfSuiteContainTestsWithNamesMatchingAny(xmlSuite, testNames);
-
-        if (clonedSuite == null) {
-            throw new TestNGException("The test(s) <" + testNames.toString() + "> cannot be found.");
-        }
-        return clonedSuite;
     }
 
     /**
@@ -81,6 +74,43 @@ public final class XmlSuiteUtils {
         xmlTest.setXmlClasses(constructXmlClassesUsing(classes));
         return xmlSuite;
     }
+    
+    public static List<XmlSuite> getCloneSuite() {
+        return cloneSuites;
+    }
+
+    /**
+     * @param testNames input from m_testNames
+     * 
+     */
+    public static List<String> getMissMatchedTestNames(List<String> testNames){
+        Iterator<String> testNameIterator = testNames.iterator();
+        while (testNameIterator.hasNext()) {
+            String testName = testNameIterator.next();
+            if (matchedTestNames.contains(testName)) {
+                testNameIterator.remove();
+            }
+        }
+        return testNames;
+        
+    }
+
+    public static List<XmlTest> getMatchedTests() {
+        return matchedTests;
+    }
+
+    public static List<String> getMatchedTestNames() {
+        return matchedTestNames;
+    }
+
+    /**
+     * Ensure that all the static field are reset, in case multiple suites exist.
+     */
+    public static void resetField() {
+        cloneSuites = Lists.newArrayList();
+        matchedTestNames = Lists.newArrayList();
+        matchedTests = Lists.newArrayList();
+    }
 
     /**
      * Ensures that the current suite doesn't contain any duplicate {@link XmlTest} instances.
@@ -95,6 +125,12 @@ public final class XmlSuiteUtils {
                 throw new TestNGException("Two tests in the same suite [" + xmlSuite.getName() + "] "
                         + "cannot have the same name: " + test.getName());
             }
+        }
+    }
+    
+    private static void addNotNullSuite(XmlSuite xmlSuite) {
+        if (xmlSuite != null) {
+            cloneSuites.add(xmlSuite);
         }
     }
 
@@ -112,6 +148,8 @@ public final class XmlSuiteUtils {
         for (XmlTest xt : suite.getTests()) {
             if (xt.nameMatchesAny(testNames)) {
                 tests.add(xt);
+                matchedTestNames.add(xt.getName());
+                matchedTests.add(xt);
             }
         }
         if (tests.isEmpty()) {

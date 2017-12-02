@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.xml.IPostProcessor;
@@ -9,6 +10,8 @@ import org.testng.xml.internal.XmlSuiteUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,7 +30,8 @@ class JarFileUtils {
     JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames) {
         this.processor = processor;
         this.xmlPathInJar = xmlPathInJar;
-        this.testNames = testNames;
+        //Ensure that dynamic list operations supported
+        this.testNames = (testNames == null ? null : new ArrayList<>(testNames));
     }
 
     List<XmlSuite> extractSuitesFrom(File jarFile) {
@@ -57,12 +61,19 @@ class JarFileUtils {
                 if (matchesXmlPathInJar(je)) {
                     Collection<XmlSuite> parsedSuites = Parser.parse(jf.getInputStream(je), processor);
                     for (XmlSuite suite : parsedSuites) {
-                        // If test names were specified, only run these test names
-                        XmlSuite suiteToAdd = suite;
-                        if (testNames != null) {
-                            suiteToAdd = XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
+                      // If test names were specified, only run these test names
+                      if (testNames != null) {
+                        XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
+                        List<String> missMatchedTestname = XmlSuiteUtils.getMissMatchedTestNames(testNames);
+                        if (CollectionUtils.hasElements(missMatchedTestname)) {
+                          XmlSuiteUtils.resetField();
+                          throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())+ "> cannot be found.");
                         }
-                        suites.add(suiteToAdd);
+                        suites.addAll(XmlSuiteUtils.getCloneSuite());
+                        XmlSuiteUtils.resetField();
+                      } else {
+                        suites.add(suite);
+                      }
                     }
                     return true;
                 } else if (isJavaClass(je)) {

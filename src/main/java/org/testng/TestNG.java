@@ -16,6 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -294,7 +295,16 @@ public class TestNG {
         s.setThreadCount(this.m_threadCount);
         // If test names were specified, only run these test names
         if (m_testNames != null) {
-          m_suites.add(XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames));
+          XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames);
+          List<String> missMatchedTestname = XmlSuiteUtils.getMissMatchedTestNames(m_testNames);
+          if (CollectionUtils.hasElements(missMatchedTestname)) {
+            XmlSuiteUtils.resetField();
+            throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())
+                    + "> cannot be found.");
+          } else {
+            m_suites.addAll(XmlSuiteUtils.getCloneSuite());
+            XmlSuiteUtils.resetField();
+          }
         } else {
           m_suites.add(s);
         }
@@ -1365,7 +1375,8 @@ public class TestNG {
     setOutputDirectory(cla.outputDirectory);
 
     if (cla.testNames != null) {
-      setTestNames(Arrays.asList(cla.testNames.split(",")));
+      //Ensure that dynamic list operations supported
+      setTestNames(new ArrayList<>(Arrays.asList(cla.testNames.split(","))));
     }
 
 //    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
