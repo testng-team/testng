@@ -1373,8 +1373,7 @@ public class TestNG {
     setOutputDirectory(cla.outputDirectory);
 
     if (cla.testNames != null) {
-      //Ensure that dynamic list operations supported
-      setTestNames(new ArrayList<>(Arrays.asList(cla.testNames.split(","))));
+      setTestNames(Arrays.asList(cla.testNames.split(",")));
     }
 
 //    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);

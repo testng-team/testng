@@ -71,14 +71,14 @@ class JarFileUtils {
                     if (matchesXmlPathInJar(je)) {
                         suitePath = copyFile.toString();
                     }
-                }else if (isJavaClass(je)) {
+                } else if (isJavaClass(je)) {
                     classes.add(constructClassName(je));
                 }
             }
-            if(Strings.isNullOrEmpty(suitePath)){
+            if (Strings.isNullOrEmpty(suitePath)) {
                 return foundTestngXml;
             }
-            Collection<XmlSuite> parsedSuites = Parser.parse(suitePath,processor ); 
+            Collection<XmlSuite> parsedSuites = Parser.parse(suitePath,processor); 
             for (XmlSuite suite : parsedSuites) {
                 // If test names were specified, only run these test names
                 if (testNames != null) {
@@ -109,7 +109,7 @@ class JarFileUtils {
           }
         }
         throw new IllegalStateException("Failed to create directory within "
-            + 5 + " attempts (tried "
+            + 10 + " attempts (tried "
             + baseName + "0 to " + baseName + (10 - 1) + ')');
       }
 

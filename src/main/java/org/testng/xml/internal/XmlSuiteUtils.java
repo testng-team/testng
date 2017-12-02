@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A utility class that exposes helper methods to work with {@link XmlSuite}
+ * A utility class to work with {@link XmlSuite}
  */
 public final class XmlSuiteUtils {
-    private List<XmlSuite> cloneSuites = Lists.newArrayList();
-    private List<String> matchedTestNames = Lists.newArrayList();
-    private List<XmlTest> matchedTests = Lists.newArrayList();
+    private final List<XmlSuite> cloneSuites = Lists.newArrayList();
+    private final List<String> matchedTestNames = Lists.newArrayList();
+    private final List<XmlTest> matchedTests = Lists.newArrayList();
 
     /**
      * Recursive search the given testNames from the current {@link XmlSuite} and its child suites.
