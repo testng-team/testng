@@ -80,15 +80,16 @@ public final class XmlSuiteUtils {
      * 
      */
     public List<String> getMissMatchedTestNames(List<String> testNames){
-        Iterator<String> testNameIterator = testNames.iterator();
+        List<String> tmpTestNames = Lists.newArrayList();
+        tmpTestNames.addAll(testNames);
+        Iterator<String> testNameIterator = tmpTestNames.iterator();
         while (testNameIterator.hasNext()) {
             String testName = testNameIterator.next();
             if (matchedTestNames.contains(testName)) {
                 testNameIterator.remove();
             }
         }
-        return testNames;
-        
+        return tmpTestNames;        
     }
 
     public List<XmlTest> getMatchedTests() {
