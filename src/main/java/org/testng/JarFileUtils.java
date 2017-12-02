@@ -59,12 +59,12 @@ class JarFileUtils {
         boolean foundTestngXml = false;
         try (JarFile jf = new JarFile(jarFile)) {
             Enumeration<JarEntry> entries = jf.entries();
-            File file = createTempDir();
+            File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
             String suitePath = null;
             while (entries.hasMoreElements()) {
                 JarEntry je = entries.nextElement();
-                if (Parser.canParse(je.getName().toLowerCase())){
-                    String jeName = je.getName();
+                String jeName = je.getName();
+                if (Parser.canParse(jeName.toLowerCase())){ 
                     InputStream  inputStream = jf.getInputStream(je);
                     File copyFile = new File(file, jeName);
                     Files.copyFile(inputStream, copyFile);
@@ -82,13 +82,13 @@ class JarFileUtils {
             for (XmlSuite suite : parsedSuites) {
                 // If test names were specified, only run these test names
                 if (testNames != null) {
-                  XmlSuiteUtils xmlSuiteUitls = new XmlSuiteUtils();
-                  xmlSuiteUitls.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
-                  List<String> missMatchedTestname = xmlSuiteUitls.getMissMatchedTestNames(testNames);
+                  XmlSuiteUtils xmlSuiteUtils = new XmlSuiteUtils();
+                  xmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
+                  List<String> missMatchedTestname = xmlSuiteUtils.getMissMatchedTestNames(testNames);
                   if (CollectionUtils.hasElements(missMatchedTestname)) {
                     throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())+ "> cannot be found.");
                   }
-                  suites.addAll(xmlSuiteUitls.getCloneSuite());
+                  suites.addAll(xmlSuiteUtils.getCloneSuite());
                 } else {
                   suites.add(suite);
                 }
@@ -97,21 +97,6 @@ class JarFileUtils {
         }
         return foundTestngXml;
     }
-    
-    private static File createTempDir() {
-        File baseDir = new File(System.getProperty("java.io.tmpdir"));
-        String baseName = "testngXmlPathInJar"+System.currentTimeMillis() + "-";
-        for (int counter = 0; counter < 10; counter++) {
-          File tempDir = new File(baseDir, baseName + counter);
-          if (tempDir.mkdir()) {
-            tempDir.deleteOnExit();
-            return tempDir;
-          }
-        }
-        throw new IllegalStateException("Failed to create directory within "
-            + 10 + " attempts (tried "
-            + baseName + "0 to " + baseName + (10 - 1) + ')');
-      }
 
     private boolean matchesXmlPathInJar(JarEntry je) {
         return je.getName().equals(xmlPathInJar);
