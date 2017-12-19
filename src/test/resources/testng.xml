@@ -379,6 +379,7 @@
       <class name="test.factory.classconf.XClassOrderWithFactoryTest" />
       <class name="test.factory.FactoryInterleavingTest"/>
       <class name="test.factory.FactoryDataProviderTest"/>
+      <class name="test.factory.github1631.GitHub1631Tests"/>
 
       <class name="test.factory.DisabledFactoryTest"/>
       <class name="test.factory.FactoryAndTestMethodTest" />

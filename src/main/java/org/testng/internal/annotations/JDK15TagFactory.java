@@ -304,11 +304,10 @@ public class JDK15TagFactory {
   private IAnnotation createFactoryTag(Class<?> cls, Annotation a) {
     FactoryAnnotation result = new FactoryAnnotation();
     Factory c = (Factory) a;
+    Class<?> dpc = findInherited(c.dataProviderClass(), cls, Factory.class, "dataProviderClass", DEFAULT_CLASS);
     result.setParameters(c.parameters());
     result.setDataProvider(c.dataProvider());
-    result.setDataProviderClass(
-        findInherited(c.dataProviderClass(), cls, Factory.class, "dataProviderClass",
-            DEFAULT_CLASS));
+    result.setDataProviderClass(dpc == null || dpc == Object.class ? cls : dpc);
     result.setEnabled(c.enabled());
     result.setIndices(Ints.asList(c.indices()));
 
