@@ -770,7 +770,7 @@
   
   <test name="TestNames">
     <classes>
-      <class name="org.testng.xml.internal.TestNamesHelperTest"/>
+      <class name="org.testng.xml.internal.TestNamesMatcherTest"/>
     </classes>
   </test>
 

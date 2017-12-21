@@ -58,7 +58,7 @@ import org.testng.xml.XmlTest;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import org.testng.xml.internal.TestNamesHelper;
+import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
 import static org.testng.internal.Utils.defaultIfStringEmpty;
@@ -300,14 +300,13 @@ public class TestNG {
           continue;
         }
         // If test names were specified, only run these test names
-        TestNamesHelper testNamesHelper = new TestNamesHelper();
-        testNamesHelper.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames);
-        List<String> missMatchedTestname = testNamesHelper.getMissMatchedTestNames(m_testNames);
+        TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
+        List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
         if (!missMatchedTestname.isEmpty()) {
           throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())
                   + "> cannot be found.");
-        } 
-        m_suites.addAll(testNamesHelper.getCloneSuite());
+        }
+        m_suites.addAll(testNamesMatcher.getCloneSuite());
       }
     } catch (IOException e) {
       e.printStackTrace(System.out);

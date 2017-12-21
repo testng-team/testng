@@ -7,7 +7,7 @@ import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.internal.TestNamesHelper;
+import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
 import java.io.File;
@@ -80,13 +80,12 @@ class JarFileUtils {
             for (XmlSuite suite : parsedSuites) {
                 // If test names were specified, only run these test names
                 if (testNames != null) {
-                  TestNamesHelper testNamesHelper = new TestNamesHelper();
-                  testNamesHelper.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
-                  List<String> missMatchedTestname = testNamesHelper.getMissMatchedTestNames(testNames);
+                  TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
+                  List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
                   if (!missMatchedTestname.isEmpty()) {
                     throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())+ "> cannot be found.");
                   }
-                  suites.addAll(testNamesHelper.getCloneSuite());
+                  suites.addAll(testNamesMatcher.getCloneSuite());
                 } else {
                   suites.add(suite);
                 }
