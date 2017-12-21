@@ -2,7 +2,9 @@ Current
 =======
 New  : GITHUB-1634: Make "-xmlpathinjar" support <suite-files>(Yehui Wang)
 New  : GITHUB-1634: Make "-testnames" find tests from Multi-level parent-child suites(Yehui Wang)
+Fixed: GITHUB-1649: @Test annotated methods cannot inject java.lang.reflect.Method (Krishnan Mahadevan)
 Fixed: GITHUB-1625: Null fields in parallel method tests (Krishnan Mahadevan)
+New  : GITHUB-1631: data provider class name injection into Factory meta-data (Sergey Korol)
 
 6.13.1
 No functional changes. Released with newer version JCommander (1.72.0)
