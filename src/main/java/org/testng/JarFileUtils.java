@@ -13,7 +13,6 @@ import org.testng.xml.internal.XmlSuiteUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -76,16 +75,16 @@ class JarFileUtils {
             if (Strings.isNullOrEmpty(suitePath)) {
                 return foundTestngXml;
             }
-            Collection<XmlSuite> parsedSuites = Parser.parse(suitePath,processor); 
+            Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor); 
             for (XmlSuite suite : parsedSuites) {
                 // If test names were specified, only run these test names
                 if (testNames != null) {
                   TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
                   List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
                   if (!missMatchedTestname.isEmpty()) {
-                    throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())+ "> cannot be found.");
+                    throw new TestNGException("The test(s) <" + missMatchedTestname+ "> cannot be found.");
                   }
-                  suites.addAll(testNamesMatcher.getCloneSuite());
+                  suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
                 } else {
                   suites.add(suite);
                 }

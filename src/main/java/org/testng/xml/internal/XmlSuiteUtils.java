@@ -14,6 +14,10 @@ import java.util.Set;
  * A utility class to work with {@link XmlSuite}
  */
 public final class XmlSuiteUtils {
+    
+    private XmlSuiteUtils() {
+        //Utility class. Defeat instantiation.
+    }
 
     /**
      * A validator that runs through the list of suites and checks if each of the suites contains

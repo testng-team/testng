@@ -18,9 +18,6 @@ public final class TestNamesMatcher {
     private final List<XmlTest> matchedTests = Lists.newArrayList();
     private List<String> testNames = Lists.newArrayList();
     
-    /**
-     * Constructor of this class. 
-     */
     public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames){
         this.testNames = testNames;
         cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, this.testNames);        
@@ -46,13 +43,12 @@ public final class TestNamesMatcher {
         }
     }
     
-    public List<XmlSuite> getCloneSuite() {
+    public List<XmlSuite> getSuitesMatchingTestNames() {
         return cloneSuites;
     }
 
     /**
-     * @param testNames input from m_testNames
-     * 
+     * Getting miss-matched testNames
      */
     public List<String> getMissMatchedTestNames(){
         List<String> tmpTestNames = Lists.newArrayList();
@@ -69,10 +65,6 @@ public final class TestNamesMatcher {
 
     public List<XmlTest> getMatchedTests() {
         return matchedTests;
-    }
-
-    public List<String> getMatchedTestNames() {
-        return matchedTestNames;
     }
     
     private void addIfNotNull(XmlSuite xmlSuite) {

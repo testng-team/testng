@@ -303,10 +303,9 @@ public class TestNG {
         TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
         List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
         if (!missMatchedTestname.isEmpty()) {
-          throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())
-                  + "> cannot be found.");
+          throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
         }
-        m_suites.addAll(testNamesMatcher.getCloneSuite());
+        m_suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
       }
     } catch (IOException e) {
       e.printStackTrace(System.out);

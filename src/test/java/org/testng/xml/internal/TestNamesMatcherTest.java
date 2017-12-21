@@ -4,6 +4,7 @@ import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.CollectionUtils;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -64,7 +65,10 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
         childSuite.getChildSuites().add(childOfChildSuite);
         TestNamesMatcher testNamesMatcher = new TestNamesMatcher(parentSuite,
                 new ArrayList<>(Arrays.asList("test1", "test3", "test5")));
-        List<String> matchedTestnames = testNamesMatcher.getMatchedTestNames();
+        List<String> matchedTestnames = Lists.newArrayList();
+        for (XmlTest xmlTest : testNamesMatcher.getMatchedTests()) {
+            matchedTestnames.add(xmlTest.getName());
+        }
         assertThat(matchedTestnames).hasSameElementsAs(Arrays.asList("test1", "test3", "test5"));
     }
     
@@ -73,7 +77,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     public void testCloneIfContainsTestsWithNamesMatchingAnyWithoutMatch() {
         XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
         TestNamesMatcher testNamesMatcher = new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
-        List<XmlSuite> clonedSuites = testNamesMatcher.getCloneSuite();
+        List<XmlSuite> clonedSuites = testNamesMatcher.getSuitesMatchingTestNames();
         if (!CollectionUtils.hasElements(clonedSuites)) {
             throw new TestNGException(
                     "The test(s) <" + Collections.singletonList("test3").toString() + "> cannot be found.");

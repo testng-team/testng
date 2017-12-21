@@ -1,18 +1,9 @@
 package org.testng.xml.internal;
 
 import org.testng.TestNGException;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.CollectionUtils;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
