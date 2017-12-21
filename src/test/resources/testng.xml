@@ -224,6 +224,7 @@
       <class name="test.inject.NoInjectionTest" />
       <class name="test.inject.NativeInjectionTest" />
       <class name="test.inject.Github1298Test"/>
+      <class name="test.inject.Github1649Test"/>
     </classes>
   </test>
 
