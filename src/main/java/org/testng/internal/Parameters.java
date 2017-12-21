@@ -113,7 +113,7 @@ public class Parameters {
           +--------------+--------------+---------+--------+----------+-------------+
           | AfterMethod  | Yes          | Yes     | Yes    | Yes      | Yes         |
           +--------------+--------------+---------+--------+----------+-------------+
-          | Test         | Yes          | No      | No     | No       | No          |
+          | Test         | Yes          | Yes     | Yes    | No       | No          |
           +--------------+--------------+---------+--------+----------+-------------+
 
  */
@@ -135,7 +135,7 @@ public class Parameters {
 
     mapping.put(BeforeMethod.class.getSimpleName(), beforeAfterMethod);
     mapping.put(AfterMethod.class.getSimpleName(), beforeAfterMethod);
-    mapping.put(Test.class.getSimpleName(), Collections.<Class<?>>singletonList(ITestContext.class));
+    mapping.put(Test.class.getSimpleName(), Arrays.<Class<?>>asList(ITestContext.class, XmlTest.class, Method.class));
 
   }
 
