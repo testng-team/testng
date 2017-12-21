@@ -1,6 +1,5 @@
 package org.testng;
 
-import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
@@ -8,12 +7,12 @@ import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.internal.TestNamesHelper;
 import org.testng.xml.internal.XmlSuiteUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -33,8 +32,7 @@ class JarFileUtils {
     JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames) {
         this.processor = processor;
         this.xmlPathInJar = xmlPathInJar;
-        //Ensure that dynamic list operations supported
-        this.testNames = (testNames == null ? null : new ArrayList<>(testNames));
+        this.testNames = testNames;
     }
 
     List<XmlSuite> extractSuitesFrom(File jarFile) {
@@ -82,13 +80,13 @@ class JarFileUtils {
             for (XmlSuite suite : parsedSuites) {
                 // If test names were specified, only run these test names
                 if (testNames != null) {
-                  XmlSuiteUtils xmlSuiteUtils = new XmlSuiteUtils();
-                  xmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
-                  List<String> missMatchedTestname = xmlSuiteUtils.getMissMatchedTestNames(testNames);
-                  if (CollectionUtils.hasElements(missMatchedTestname)) {
+                  TestNamesHelper testNamesHelper = new TestNamesHelper();
+                  testNamesHelper.cloneIfContainsTestsWithNamesMatchingAny(suite, testNames);
+                  List<String> missMatchedTestname = testNamesHelper.getMissMatchedTestNames(testNames);
+                  if (!missMatchedTestname.isEmpty()) {
                     throw new TestNGException("The test(s) <" + Arrays.toString(missMatchedTestname.toArray())+ "> cannot be found.");
                   }
-                  suites.addAll(xmlSuiteUtils.getCloneSuite());
+                  suites.addAll(testNamesHelper.getCloneSuite());
                 } else {
                   suites.add(suite);
                 }

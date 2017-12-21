@@ -244,7 +244,7 @@ public class Parser {
       }
     }
       
-      return DEFAULT_FILE_PARSER.accept(fileName);
+    return DEFAULT_FILE_PARSER.accept(fileName);
   }
 
   private static Parser newParser(String path, IPostProcessor processor) {

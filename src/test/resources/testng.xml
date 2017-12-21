@@ -767,6 +767,12 @@
       <class name="test.sanitycheck.CheckSuiteNamesTest" />
     </classes>
   </test>
+  
+  <test name="TestNames">
+    <classes>
+      <class name="org.testng.xml.internal.TestNamesHelperTest"/>
+    </classes>
+  </test>
 
   <test name="Configuration">
     <classes>
