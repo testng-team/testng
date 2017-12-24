@@ -8,16 +8,19 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // TODO replace other test IInvokedMethodListener by this one
 public class InvokedMethodNameListener implements IInvokedMethodListener, ITestListener {
 
+  private final Set<Object> testInstances = Sets.newHashSet();
   private final List<String> foundMethodNames = new ArrayList<>();
   private final List<String> invokedMethodNames = new ArrayList<>();
   private final List<String> failedMethodNames = new ArrayList<>();
@@ -48,6 +51,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
     if (!(skipConfiguration && method.isConfigurationMethod())) {
       invokedMethodNames.add(getName(testResult));
     }
+    testInstances.add(testResult.getInstance());
   }
 
   @Override
@@ -131,6 +135,10 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   @Override
   public void onFinish(ITestContext context) {
+  }
+
+  public Set<Object> getTestInstances() {
+    return testInstances;
   }
 
   private static String getName(ITestResult result) {
