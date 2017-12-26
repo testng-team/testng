@@ -16,7 +16,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -293,8 +292,12 @@ public class TestNG {
       Collection<XmlSuite> allSuites = Parser.parse(suitePath, getProcessor());
 
       for (XmlSuite s : allSuites) {
-        s.setParallel(this.m_parallelMode);
-        s.setThreadCount(this.m_threadCount);
+        if (this.m_parallelMode != null) {
+          s.setParallel(this.m_parallelMode);
+        }
+        if (this.m_threadCount > 0) {
+          s.setThreadCount(this.m_threadCount);
+        }
         if (m_testNames == null) {
           m_suites.add(s);
           continue;

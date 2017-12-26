@@ -1,12 +1,13 @@
 Current
 =======
+Fixed: GITHUB-1636: Parallel test run is not working in 6.13.1 (Krishnan Mahadevan)
 New  : GITHUB-1634: Make "-xmlpathinjar" support <suite-files> (Yehui Wang)
 New  : GITHUB-1634: Make "-testnames" find tests from Multi-level parent-child suites (Yehui Wang)
 Fixed: GITHUB-1641: The time for test-method is 8 hours ahead of the the time for suite/class in testng-result xml file (Krishnan Mahadevan)
 Fixed: GITHUB-1649: @Test annotated methods cannot inject java.lang.reflect.Method (Krishnan Mahadevan)
 Fixed: GITHUB-1625: Null fields in parallel method tests (Krishnan Mahadevan)
-New  : GITHUB-1631: data provider class name injection into Factory meta-data (Sergey Korol)
 Fixed: GITHUB-1605: Research the usefulness of the JVM argument "experimental" (Krishnan Mahadevan)
+New  : GITHUB-1631: data provider class name injection into Factory meta-data (Sergey Korol)
 
 6.13.1
 No functional changes. Released with newer version JCommander (1.72.0)
