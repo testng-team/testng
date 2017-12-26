@@ -4,13 +4,11 @@ import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -53,18 +51,9 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
             if (sequentialClasses.contains(c)) {
                 if (!processedClasses.contains(c)) {
                     processedClasses.add(c);
-                    if (System.getProperty("experimental") != null) {
-                        Collection<List<IMethodInstance>> instances = createInstances(methodInstances);
-                        for (List<IMethodInstance> inst : instances) {
-                            TestMethodWorker worker = createTestMethodWorker(arguments, inst, params, c);
-                            result.add(worker);
-                        }
-                    }
-                    else {
-                        // Sequential class: all methods in one worker
-                        TestMethodWorker worker = createTestMethodWorker(arguments, methodInstances, params, c);
-                        result.add(worker);
-                    }
+                    // Sequential class: all methods in one worker
+                    TestMethodWorker worker = createTestMethodWorker(arguments, methodInstances, params, c);
+                    result.add(worker);
                 }
             }
             else {
@@ -107,20 +96,6 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
         }
 
         return vResult;
-    }
-
-    private static Collection<List<IMethodInstance>> createInstances(List<IMethodInstance> methodInstances) {
-        Map<Object, List<IMethodInstance>> map = Maps.newHashMap();
-        for (IMethodInstance imi : methodInstances) {
-            Object o = imi.getInstance();
-            List<IMethodInstance> l = map.get(o);
-            if (l == null) {
-                l = Lists.newArrayList();
-                map.put(o, l);
-            }
-            l.add(imi);
-        }
-        return map.values();
     }
 
     private static boolean isSequential(org.testng.annotations.ITestAnnotation test, XmlTest xmlTest) {
