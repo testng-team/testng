@@ -7,6 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
 import org.testng.internal.Utils;
+import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
@@ -189,11 +190,9 @@ public class XMLReporter implements IReporter {
    */
   public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
       Date minStartDate, Date maxEndDate) {
-    SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
-    TimeZone utc = TimeZone.getTimeZone("UTC");
-    format.setTimeZone(utc);
-    String startTime = format.format(minStartDate);
-    String endTime = format.format(maxEndDate);
+
+    String startTime = TimeUtils.timeInUTC(minStartDate.getTime(), config.getTimestampFormat());
+    String endTime = TimeUtils.timeInUTC(maxEndDate.getTime(), config.getTimestampFormat());
     long duration = maxEndDate.getTime() - minStartDate.getTime();
 
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);

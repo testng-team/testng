@@ -16,7 +16,7 @@ public final class TestNamesMatcher {
     private final List<XmlSuite> cloneSuites = Lists.newArrayList();
     private final List<String> matchedTestNames = Lists.newArrayList();
     private final List<XmlTest> matchedTests = Lists.newArrayList();
-    private List<String> testNames = Lists.newArrayList();
+    private final List<String> testNames;
     
     public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames){
         this.testNames = testNames;
