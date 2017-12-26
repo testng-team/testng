@@ -12,6 +12,7 @@ import org.testng.collections.Sets;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
+import org.testng.util.TimeUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
@@ -192,9 +194,8 @@ public class XMLSuiteResultWriter {
 
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
-    SimpleDateFormat format = new SimpleDateFormat(config.getTimestampFormat());
-    String startTime = format.format(testResult.getStartMillis());
-    String endTime = format.format(testResult.getEndMillis());
+    String startTime = TimeUtils.timeInUTC(testResult.getStartMillis(), config.getTimestampFormat());
+    String endTime = TimeUtils.timeInUTC(testResult.getEndMillis(), config.getTimestampFormat());
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
     attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);
     long duration = testResult.getEndMillis() - testResult.getStartMillis();

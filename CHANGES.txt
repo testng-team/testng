@@ -1,5 +1,6 @@
 Current
 =======
+Fixed: GITHUB-1641: The time for test-method is 8 hours ahead of the the time for suite/class in testng-result xml file (Krishnan Mahadevan)
 Fixed: GITHUB-1649: @Test annotated methods cannot inject java.lang.reflect.Method (Krishnan Mahadevan)
 Fixed: GITHUB-1625: Null fields in parallel method tests (Krishnan Mahadevan)
 New  : GITHUB-1631: data provider class name injection into Factory meta-data (Sergey Korol)
