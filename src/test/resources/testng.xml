@@ -871,6 +871,12 @@
     </classes>
   </test>
 
+  <test name = "dryRun">
+    <classes>
+      <class name="org.testng.DryRunTest"/>
+    </classes>
+  </test>
+
   <test name="RunOrderingTest">
     <classes>
       <class name="test.github799.EnsureInstancesAreOrderedViaFactories"/>
