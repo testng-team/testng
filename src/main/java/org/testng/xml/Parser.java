@@ -236,6 +236,16 @@ public class Parser {
   public static Collection<XmlSuite> parse(InputStream is, IPostProcessor processor) throws IOException {
     return newParser(is, processor).parse();
   }
+  
+  public static boolean canParse(String fileName) {
+    for (ISuiteParser parser : PARSERS) {
+      if (parser.accept(fileName)) {
+        return true;
+      }
+    }
+      
+    return DEFAULT_FILE_PARSER.accept(fileName);
+  }
 
   private static Parser newParser(String path, IPostProcessor processor) {
     Parser result = new Parser(path);

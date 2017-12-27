@@ -16,6 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -56,6 +57,8 @@ import org.testng.xml.XmlTest;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
+import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
 import static org.testng.internal.Utils.defaultIfStringEmpty;
@@ -292,12 +295,17 @@ public class TestNG {
       for (XmlSuite s : allSuites) {
         s.setParallel(this.m_parallelMode);
         s.setThreadCount(this.m_threadCount);
-        // If test names were specified, only run these test names
-        if (m_testNames != null) {
-          m_suites.add(XmlSuiteUtils.cloneIfContainsTestsWithNamesMatchingAny(s, m_testNames));
-        } else {
+        if (m_testNames == null) {
           m_suites.add(s);
+          continue;
         }
+        // If test names were specified, only run these test names
+        TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
+        List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
+        if (!missMatchedTestname.isEmpty()) {
+          throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
+        }
+        m_suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
       }
     } catch (IOException e) {
       e.printStackTrace(System.out);

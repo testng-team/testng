@@ -11,43 +11,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A utility class that exposes helper methods to work with {@link XmlSuite}
+ * A utility class to work with {@link XmlSuite}
  */
 public final class XmlSuiteUtils {
-
+    
     private XmlSuiteUtils() {
         //Utility class. Defeat instantiation.
-    }
-
-    /**
-     * Creates a cloned copy of the current {@link XmlSuite} if the current suite
-     * contains at-least on &lt;test&gt; whose name matches with the provided names.
-     *
-     * @param xmlSuite  The {@link XmlSuite} to work with.
-     * @param testNames The list of testnames to iterate through
-     * @return - A {@link XmlSuite} that contains all the tests whose name matched with the provided names.
-     * that was passed. If there were no &lt;test&gt; match that was found throws a {@link TestNGException}
-     */
-    public static XmlSuite cloneIfContainsTestsWithNamesMatchingAny(XmlSuite xmlSuite, List<String> testNames) {
-        if (testNames == null || testNames.isEmpty()) {
-            throw new TestNGException("Please provide a valid list of names to check.");
-        }
-
-        //Search through all the child suites.
-        for (XmlSuite suite : xmlSuite.getChildSuites()) {
-            XmlSuite clonedSuite = cloneIfSuiteContainTestsWithNamesMatchingAny(suite, testNames);
-            if (clonedSuite != null) {
-                return clonedSuite;
-            }
-        }
-
-        //Tests weren't found in child suites. Lets search in the current suite.
-        XmlSuite clonedSuite = cloneIfSuiteContainTestsWithNamesMatchingAny(xmlSuite, testNames);
-
-        if (clonedSuite == null) {
-            throw new TestNGException("The test(s) <" + testNames.toString() + "> cannot be found.");
-        }
-        return clonedSuite;
     }
 
     /**
@@ -97,7 +66,7 @@ public final class XmlSuiteUtils {
             }
         }
     }
-
+    
     private static List<XmlClass> constructXmlClassesUsing(List<String> classes) {
         List<XmlClass> xmlClasses = Lists.newLinkedList();
         for (String cls : classes) {
@@ -105,26 +74,6 @@ public final class XmlSuiteUtils {
             xmlClasses.add(xmlClass);
         }
         return xmlClasses;
-    }
-
-    private static XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite, List<String> testNames) {
-        List<XmlTest> tests = Lists.newLinkedList();
-        for (XmlTest xt : suite.getTests()) {
-            if (xt.nameMatchesAny(testNames)) {
-                tests.add(xt);
-            }
-        }
-        if (tests.isEmpty()) {
-            return null;
-        }
-        return cleanClone(suite, tests);
-    }
-
-    private static XmlSuite cleanClone(XmlSuite xmlSuite, List<XmlTest> tests) {
-        XmlSuite result = (XmlSuite) xmlSuite.clone();
-        result.getTests().clear();
-        result.getTests().addAll(tests);
-        return result;
     }
 
     private static void adjustSuiteNamesToEnsureUniqueness(List<XmlSuite> suites, Set<String> names) {
