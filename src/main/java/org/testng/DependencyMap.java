@@ -3,9 +3,7 @@ package org.testng;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -63,14 +61,30 @@ public class DependencyMap {
       // If they are in the same class hierarchy, they must belong to the same instance,
       // otherwise, it's a method depending on a method in a different class so we
       // don't bother checking the instance
-      if (fromMethod.getRealClass().isAssignableFrom(m.getRealClass())) {
-        if (m.getInstance() == fromMethod.getInstance()) return m;
-      } else {
+      if (isSameInstance(fromMethod, m) || belongToDifferentClassHierarchy(fromMethod, m) || hasInstance(fromMethod, m)) {
         return m;
       }
     }
     throw new TestNGException("Method \"" + fromMethod
         + "\" depends on nonexistent method \"" + methodName + "\"");
+  }
+
+  private static boolean belongToDifferentClassHierarchy(ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    return ! baseClassMethod.getRealClass().isAssignableFrom(derivedClassMethod.getRealClass());
+  }
+
+  private static boolean hasInstance(ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    Object baseInstance = baseClassMethod.getInstance();
+    Object derivedInstance = derivedClassMethod.getInstance();
+    return derivedInstance != null || baseInstance != null;
+  }
+
+  private static boolean isSameInstance(ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    Object baseInstance = baseClassMethod.getInstance();
+    Object derivedInstance = derivedClassMethod.getInstance();
+    return derivedInstance != null &&
+            baseInstance != null &&
+            baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
   }
 
   private static String constructMethodNameUsingTestClass(String currentMethodName, ITestNGMethod m) {

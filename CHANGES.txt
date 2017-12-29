@@ -1,5 +1,6 @@
 Current
 =======
+Fixed: GITHUB-1648: Depends on method is not respected on the sequential run on second test that extends same base testClass (Krishnan Mahadevan)
 Fixed: GITHUB-1636: Parallel test run is not working in 6.13.1 (Krishnan Mahadevan)
 New  : GITHUB-1634: Make "-xmlpathinjar" support <suite-files> (Yehui Wang)
 New  : GITHUB-1634: Make "-testnames" find tests from Multi-level parent-child suites (Yehui Wang)

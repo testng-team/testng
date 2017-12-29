@@ -34,6 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DynamicGraphHelperTest extends SimpleBaseTest {
 
+    private static final IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
+
     @Test
     public void testCreateDynamicGraphAllIndependent() {
         DynamicGraph<ITestNGMethod> graph = newGraph(IndependentTestClassSample.class);
@@ -150,16 +152,43 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     private static ITestNGMethod[] methods(Class<? extends IAnnotation> annotationClass, XmlTest xmlTest, Class<?>... classes) {
         List<ITestNGMethod> allMethods = Lists.newArrayList();
         for (Class<?> clazz : classes) {
-            ITestClass testClass = new FakeTestClass(clazz);
-            List<ITestNGMethod> tstMethods = Lists.newArrayList();
-            MethodHelper.fixMethodsWithClass(methods(clazz, xmlTest, annotationClass), testClass, tstMethods);
+            List<ITestNGMethod> tstMethods = associateInstanceToMethods(clazz, xmlTest, annotationClass);
             allMethods.addAll(tstMethods);
         }
         return allMethods.toArray(new ITestNGMethod[allMethods.size()]);
     }
 
+    private static List<ITestNGMethod> associateInstanceToMethods(Class<?> clazz, XmlTest xmlTest,
+                                                                  Class<? extends IAnnotation> annotationClass) {
+        ITestClass testClass = new FakeTestClass(clazz);
+        ITestNGMethod[] rawMethods = methods(clazz, xmlTest, annotationClass);
+        Object object = newInstance(clazz);
+        List<ITestNGMethod> fixedMethods = Lists.newArrayList();
+        if (object == null ) {
+            //Looks like there was a non default constructor on the class (maybe because its driven by a factory)
+            //So lets not try to associate the instance. We will use the method as is.
+            fixedMethods.addAll(Arrays.asList(rawMethods));
+        } else {
+            for (ITestNGMethod each : rawMethods) {
+                ITestNGMethod m = new TestNGMethod(each.getConstructorOrMethod().getMethod(), finder, xmlTest, object);
+                fixedMethods.add(m);
+            }
+        }
+        List<ITestNGMethod> tstMethods = Lists.newArrayList();
+        MethodHelper.fixMethodsWithClass(fixedMethods.toArray(new ITestNGMethod[fixedMethods.size()]), testClass, tstMethods);
+        return tstMethods;
+
+    }
+
+    private static Object newInstance(Class<?> clazz) {
+        try {
+            return ClassHelper.newInstance(clazz);
+        } catch  (Exception e) {
+            return null;
+        }
+    }
+
     private static ITestNGMethod[] methods(Class<?> clazz, XmlTest xmlTest, Class<? extends IAnnotation> annotationClass) {
-        IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
         return AnnotationHelper.findMethodsWithAnnotation(clazz, annotationClass, finder, xmlTest);
     }
 

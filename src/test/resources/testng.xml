@@ -280,6 +280,7 @@
       <class name="test.dependent.GroupByInstancesTest" />
       <class name="test.dependent.xml.GroupDependencyTest" />
       <class name="test.dependent.DependencyFixTest"/>
+      <class name="test.dependent.issue1648.TestRunner"/>
     </classes>
   </test>
 
