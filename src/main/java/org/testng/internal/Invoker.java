@@ -444,6 +444,10 @@ public class Invoker implements IInvoker {
       ConstructorOrMethod method = tm.getConstructorOrMethod();
 
       IConfigurable configurableInstance = computeConfigurableInstance(method, targetInstance);
+      if (RuntimeBehavior.isDryRun()) {
+        testResult.setStatus(ITestResult.SUCCESS);
+        return;
+      }
       if (configurableInstance != null) {
         MethodInvocationHelper.invokeConfigurable(targetInstance, params,
                 configurableInstance, method.getMethod(), testResult);
@@ -558,6 +562,11 @@ public class Invoker implements IInvoker {
       m_notifier.addInvokedMethod(invokedMethod);
 
       Method thisMethod = tm.getConstructorOrMethod().getMethod();
+
+      if (RuntimeBehavior.isDryRun()) {
+        setTestStatus(testResult, ITestResult.SUCCESS);
+        return testResult;
+      }
 
       // If this method is a IHookable, invoke its run() method
       IHookable hookableInstance = IHookable.class.isAssignableFrom(tm.getRealClass()) ? (IHookable) instance : m_configuration.getHookable();
