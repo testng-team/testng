@@ -306,7 +306,8 @@ public class XMLStringBuffer {
    */
   public void addCDATA(String content) {
     if (content != null) {
-        content = content.replaceAll("\\p{Cc}", "");
+        //Solution from https://coderanch.com/t/455930/java/Remove-control-characters
+        content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
     }
     m_buffer.append(m_currentIndent);
     if (content == null) {
