@@ -334,4 +334,16 @@ public class DataProviderTest extends SimpleBaseTest {
     String msg = "Data Provider public java.lang.Object[][] " + className + " returned a null value";
     assertThat(result.getThrowable().getMessage()).contains(msg);
   }
+  
+  @Test
+  public void retryWithDataProvider() {
+      TestNG testng = create(DataProviderRetryTest.class);
+      TestListenerAdapter tla = new TestListenerAdapter();
+      testng.addListener((ITestNGListener) tla);
+      testng.run();
+      assertThat(tla.getFailedTests()).size().isEqualTo(1);
+      assertThat(tla.getSkippedTests()).size().isEqualTo(2);
+  }
+  
+  
 }

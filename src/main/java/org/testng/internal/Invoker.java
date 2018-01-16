@@ -850,7 +850,7 @@ public class Invoker implements IInvoker {
     groupMethods.removeAfterGroups(filteredGroups.keySet());
     }
 
-  int retryFailed(Object instance,
+  FailureContext retryFailed(Object instance,
                            ITestNGMethod tm,
                            Object[] paramValues,
                            XmlSuite suite,
@@ -882,7 +882,7 @@ public class Invoker implements IInvoker {
           allParameters, testClass, beforeMethods, afterMethods, groupMethods, failure));
     }
     while (!failure.instances.isEmpty());
-    return failure.count;
+    return failure;
   }
 
   /**
@@ -1049,7 +1049,7 @@ public class Invoker implements IInvoker {
               } else {
                 List<ITestResult> retryResults = Lists.newArrayList();
 
-                failure.count = retryFailed(
+                failure = retryFailed(
                         instance, testMethod, parameterValues, suite, testClass, beforeMethods,
                         afterMethods, groupMethods, retryResults,
                         failure.count,
