@@ -46,6 +46,7 @@ import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
+import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
@@ -533,7 +534,9 @@ public class TestNG {
   }
 
   public void addMethodSelector(String className, int priority) {
-    m_methodDescriptors.put(className, priority);
+    if (Strings.isNotNullAndNotEmpty(className)) {
+      m_methodDescriptors.put(className, priority);
+    }
   }
 
   /**

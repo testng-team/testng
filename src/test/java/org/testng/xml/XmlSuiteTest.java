@@ -1,5 +1,6 @@
 package org.testng.xml;
 
+import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -36,7 +37,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
     }
 
     @Test(dataProvider = "dp", description = "GITHUB-778")
-    public void testTimeOut(String timeout, int size, int lineNumber) throws IOException {
+    public void testTimeOut(String timeout, int size, int lineNumber) {
         XmlSuite suite = new XmlSuite();
         suite.setTimeOut(timeout);
         StringReader stringReader = new StringReader(suite.toXml());
@@ -55,6 +56,19 @@ public class XmlSuiteTest extends SimpleBaseTest {
                 {"1000", 1, 2},
                 {"", 0, 0}
         };
+    }
+
+    @Test(description = "GITHUB-1668")
+    public void ensureNoExceptionsAreRaisedWhenMethodSelectorsDefinedAtSuiteLevel() throws IOException {
+        Parser parser = new Parser("src/test/resources/xml/issue1668.xml");
+        List<XmlSuite> suites = parser.parseToList();
+        XmlSuite xmlsuite = suites.get(0);
+        TestNG testNG = create();
+        testNG.setXmlSuites(suites);
+        testNG.setUseDefaultListeners(false);
+        testNG.run();
+        //Trigger a call to "toXml()" to ensure that there is no exception raised.
+        assertThat(xmlsuite.toXml()).isNotEmpty();
     }
 
 }
