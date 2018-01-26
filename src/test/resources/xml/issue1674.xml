@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="1265_Suite" parallel="false" verbose="2">
+    <method-selectors>
+        <method-selector>
+            <script language="beanshell"><![CDATA[
+                    System.out.println("Executing the test [" + testngMethod.getXmlTest().getName() + "]");
+                    return true;
+                ]]></script>
+        </method-selector>
+    </method-selectors>
+    <test name="rajni">
+        <classes>
+            <class name="org.testng.xml.issue1674.Testclass"/>
+        </classes>
+    </test>
+    <test name="kamal">
+        <classes>
+            <class name="org.testng.xml.issue1674.Testclass"/>
+        </classes>
+    </test>
+    <test name="mgr">
+        <classes>
+            <class name="org.testng.xml.issue1674.Testclass"/>
+        </classes>
+    </test>
+
+</suite>

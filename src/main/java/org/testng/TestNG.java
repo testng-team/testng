@@ -155,6 +155,8 @@ public class TestNG {
 
   private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
+  private Set<XmlMethodSelector> m_selectors = Sets.newLinkedHashSet();
+
   private ITestObjectFactory m_objectFactory;
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> m_invokedMethodListeners = Maps
@@ -539,6 +541,10 @@ public class TestNG {
     }
   }
 
+  public void addMethodSelector(XmlMethodSelector selector) {
+    m_selectors.add(selector);
+  }
+
   /**
    * Set the suites file names to be run by this TestNG object. This method tries to load and
    * parse the specified TestNG suite xml files. If a file is missing, it is ignored.
@@ -910,6 +916,7 @@ public class TestNG {
       //
       for (XmlMethodSelector methodSelector : s.getMethodSelectors() ) {
         addMethodSelector(methodSelector.getClassName(), methodSelector.getPriority());
+        addMethodSelector(methodSelector);
       }
 
       //
@@ -1257,6 +1264,9 @@ public class TestNG {
         xms.setName(ms.getKey());
         xms.setPriority(ms.getValue());
         t.getMethodSelectors().add(xms);
+      }
+      for (XmlMethodSelector selector : m_selectors) {
+        t.getMethodSelectors().add(selector);
       }
     }
 
