@@ -7,7 +7,10 @@ import org.testng.collections.Lists;
 import test.SimpleBaseTest;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,6 +72,40 @@ public class XmlSuiteTest extends SimpleBaseTest {
         testNG.run();
         //Trigger a call to "toXml()" to ensure that there is no exception raised.
         assertThat(xmlsuite.toXml()).isNotEmpty();
+    }
+
+    @Test(description = "GITHUB-1674")
+    public void ensureSuiteLevelBeanshellIsAppliedToAllTests() throws IOException {
+        PrintStream current = System.out;
+        StringOutputStream stream = new StringOutputStream();
+        try {
+            System.setOut(new PrintStream(stream));
+            Parser parser = new Parser("src/test/resources/xml/issue1674.xml");
+            List<XmlSuite> suites = parser.parseToList();
+            XmlSuite xmlsuite = suites.get(0);
+            assertThat(xmlsuite.getTests().get(0).getMethodSelectors().size()).isEqualTo(0);
+            TestNG testNG = create();
+            testNG.setXmlSuites(suites);
+            testNG.setUseDefaultListeners(false);
+            testNG.run();
+            assertThat(xmlsuite.getTests().get(0).getMethodSelectors().size()).isEqualTo(1);
+            assertThat(stream.toString()).contains(Arrays.asList("rajni", "kamal", "mgr"));
+        } finally {
+            System.setOut(current);
+        }
+    }
+
+    static class StringOutputStream extends OutputStream {
+        private StringBuilder string = new StringBuilder();
+        @Override
+        public void write(int b) throws IOException {
+            this.string.append((char) b );
+        }
+
+        //Netbeans IDE automatically overrides this toString()
+        public String toString(){
+            return this.string.toString();
+        }
     }
 
 }
