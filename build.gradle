@@ -48,7 +48,7 @@ task wrapper(type: Wrapper) {
 }
 
 group = 'org.testng'
-version = '6.14-SNAPSHOT'
+version = '6.14.0'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -146,6 +146,7 @@ allprojects {
     }
 }
 
+/*
 if (JavaVersion.current().isJava8Compatible()) {
     apply plugin: 'org.sonarqube'
     sonarqube {
@@ -184,5 +185,7 @@ if (JavaVersion.current().isJava8Compatible()) {
 
     test.finalizedBy testJava8
 }
+*/
 
 apply from: 'gradle/publishing.gradle'
+apply from: 'gradle/publishing-jcenter.gradle'

@@ -1,5 +1,6 @@
 Current
-=======
+
+6.14.0
 Fixed: GITHUB-1674: beanshell methodselector applied at suite level is ignored (Krishnan Mahadevan)
 Fixed: GITHUB-1668: "Invalid Method Selector" exception triggered when using suite level beanshell methodselectors (Krishnan Mahadevan)
 Fixed: GITHUB-1659: New line characters are removed from stack traces in testng-results.xml (Krishnan Mahadevan)
