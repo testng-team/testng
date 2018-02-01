@@ -17,12 +17,12 @@ import static java.lang.annotation.ElementType.TYPE;
  * Ignoring a package will ignore all tests in the package and its sub-packages
  *
  * A package annotation is done in {@code package-info.java}. For example:
- * <pre>{@code
+ * <pre>
  * @Ignore
  * package test.ignorePackage;
  *
  * import org.testng.annotations.Ignore;
- * }</pre>
+ * </pre>
  *
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
