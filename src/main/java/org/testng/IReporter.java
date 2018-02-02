@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface IReporter extends ITestNGListener {
   /**
-   * Generate a report for the given suites into the specified output directory.
+   * Generate a report for the given suites with specified attributes
    */
   void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes);
 }
