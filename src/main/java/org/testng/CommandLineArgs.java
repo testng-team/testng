@@ -28,7 +28,7 @@ public class CommandLineArgs {
       + " exclude")
   public String excludedGroups;
 
-  public static final String GENERATE_SUITE_ATTRIBUTES = "generateSuiteAttributes";
+  public static final String GENERATE_SUITE_ATTRIBUTES = "-generateSuiteAttributes";
   @Parameter(names = GENERATE_SUITE_ATTRIBUTES, description ="Generate attributes of suite in xml report")
   public Boolean generateSuiteAttributes = Boolean.FALSE;
 
