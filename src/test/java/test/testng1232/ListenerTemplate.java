@@ -17,7 +17,7 @@ public class ListenerTemplate implements
     ISuiteListener,
     IAlterSuiteListener,
     IExecutionListener,
-    IReporter2 {
+    IReporter {
 
     @Override
     public void onBeforeClass(ITestClass testClass) {
@@ -100,7 +100,7 @@ public class ListenerTemplate implements
     }
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
 
     }
 }

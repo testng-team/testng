@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ConsoleReporter implements  IReporter2 {
+public class ConsoleReporter implements  IReporter {
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
         for (ISuite suite : suites) {
             for (Map.Entry<String, ISuiteResult> testResult : suite.getResults().entrySet()) {
                 Set<ITestResult> results =

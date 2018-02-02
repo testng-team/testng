@@ -46,7 +46,7 @@ public class TestListenerFor1232 extends ListenerTemplate {
     }
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
         incrementCounter(CounterTypes.REPORTER);
     }
 
