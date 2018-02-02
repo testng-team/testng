@@ -19,17 +19,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.ClassHelper;
-import org.testng.internal.Configuration;
-import org.testng.internal.DynamicGraph;
-import org.testng.internal.ExitCode;
-import org.testng.internal.IConfiguration;
-import org.testng.internal.IResultListener2;
-import org.testng.internal.OverrideProcessor;
-import org.testng.internal.SuiteRunnerMap;
-import org.testng.internal.Systematiser;
-import org.testng.internal.Utils;
-import org.testng.internal.Version;
+import org.testng.internal.*;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -149,6 +139,8 @@ public class TestNG {
 
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
+  private Boolean m_generateSuiteAttributes = false;
+  private Boolean m_generateTestResultAttributes = false;
 
   private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
@@ -217,6 +209,22 @@ public class TestNG {
     if (isStringNotEmpty(outputdir)) {
       m_outputDir = outputdir;
     }
+  }
+
+  /**
+   * Sets the possibility to generate TestResult attributes
+   * @param generateTestResultAttributes true / false.
+   */
+  public void setGenerateTestResultAttributes(final Boolean generateTestResultAttributes) {
+    m_generateTestResultAttributes = generateTestResultAttributes;
+  }
+
+  /**
+   * Sets the possibility to generate Suite attributes
+   * @param generateSuiteAttributes true / false.
+   */
+  public void setGenerateSuiteAttributes(final Boolean generateSuiteAttributes) {
+    m_generateSuiteAttributes = generateSuiteAttributes;
   }
 
   /**
@@ -1073,7 +1081,11 @@ public class TestNG {
     for (IReporter reporter : m_reporters.values()) {
       try {
         long start = System.currentTimeMillis();
-        reporter.generateReport(m_suites, suiteRunners, m_outputDir);
+        IAttributes attributes = new Attributes();
+        attributes.setAttribute("defaultOutputDirectory", m_outputDir);
+        attributes.setAttribute("generateSuiteAttributes", m_generateSuiteAttributes);
+        attributes.setAttribute("generateTestResultAttributes", m_generateTestResultAttributes);
+        reporter.generateReport(m_suites, suiteRunners, attributes);
         Utils.log("TestNG", 2, "Time taken by " + reporter + ": "
             + (System.currentTimeMillis() - start) + " ms");
       }
@@ -1363,6 +1375,8 @@ public class TestNG {
     }
 
     setOutputDirectory(cla.outputDirectory);
+    setGenerateSuiteAttributes(cla.generateSuiteAttributes);
+    setGenerateTestResultAttributes(cla.generateTestResultAttributes);
 
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));

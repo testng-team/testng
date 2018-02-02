@@ -121,6 +121,8 @@ public class TestNGAntTask extends Task {
   private String m_objectFactory;
   protected String m_testRunnerFactory;
   private boolean m_delegateCommandSystemProperties = false;
+  private boolean m_generateSuiteAttributes = false;
+  private boolean m_generateTestResultAttributes = false;
 
   protected Environment m_environment= new Environment();
 
@@ -563,6 +565,8 @@ public class TestNGAntTask extends Task {
     addStringIfNotBlank(argv, CommandLineArgs.TEST_NAME, m_testName);
     addStringIfNotBlank(argv, CommandLineArgs.TEST_NAMES, m_testNames);
     addStringIfNotBlank(argv, CommandLineArgs.METHODS, m_methods);
+    addBooleanIfTrue(argv, CommandLineArgs.GENERATE_SUITE_ATTRIBUTES, m_generateSuiteAttributes);
+    addBooleanIfTrue(argv, CommandLineArgs.GENERATE_TESTRESULT_ATTRIBUTES, m_generateTestResultAttributes);
     addReporterConfigs(argv);
     addIntegerIfNotNull(argv, CommandLineArgs.SUITE_THREAD_POOL_SIZE, m_suiteThreadPoolSize);
     addStringIfNotNull(argv, CommandLineArgs.XML_PATH_IN_JAR, m_xmlPathInJar);

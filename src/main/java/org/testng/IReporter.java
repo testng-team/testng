@@ -16,5 +16,5 @@ public interface IReporter extends ITestNGListener {
   /**
    * Generate a report for the given suites into the specified output directory.
    */
-  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory);
+  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes);
 }

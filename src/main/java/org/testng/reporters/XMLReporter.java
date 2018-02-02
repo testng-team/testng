@@ -1,11 +1,6 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.Reporter;
+import org.testng.*;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -34,10 +29,12 @@ public class XMLReporter implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+      IAttributes attributes) {
     if (Utils.isStringEmpty(config.getOutputDirectory())) {
-      config.setOutputDirectory(outputDirectory);
+      getConfig().setOutputDirectory((String)attributes.getAttribute("defaultOutputDirectory"));
     }
+    getConfig().setGenerateTestResultAttributes((Boolean)attributes.getAttribute("generateTestResultAttributes"));
+    getConfig().setGenerateSuiteAttributes((Boolean)attributes.getAttribute("generateSuiteAttributes"));
 
     // Calculate passed/failed/skipped
     int passed = 0;
@@ -126,6 +123,8 @@ public class XMLReporter implements IReporter {
   private void writeSuiteToBuffer(XMLStringBuffer xmlBuffer, ISuite suite) {
     xmlBuffer.push(XMLReporterConfig.TAG_SUITE, getSuiteAttributes(suite));
     writeSuiteGroups(xmlBuffer, suite);
+    if (getConfig().isGenerateSuiteAttributes())
+      writeSuiteCustomAttributes(xmlBuffer, suite);
 
     Map<String, ISuiteResult> results = suite.getResults();
     XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
@@ -207,6 +206,16 @@ public class XMLReporter implements IReporter {
       result.add(method);
     }
     return result;
+  }
+
+  private void writeSuiteCustomAttributes(XMLStringBuffer xmlBuffer, ISuite suite) {
+    for (String attribute : suite.getAttributeNames()) {
+      if (suite.getAttribute(attribute) != null) {
+        xmlBuffer.push(attribute);
+        xmlBuffer.addCDATA((String) suite.getAttribute(attribute));
+        xmlBuffer.pop();
+      }
+    }
   }
 
   /**
