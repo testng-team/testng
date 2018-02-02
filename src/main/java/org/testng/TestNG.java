@@ -137,6 +137,7 @@ public class TestNG {
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners = Maps.newHashMap();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners = Maps.newHashMap();
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
+  private final Map<Class<? extends IReporter2>, IReporter2> m_reporters2 = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners = Maps.newHashMap();
 
 
@@ -670,6 +671,10 @@ public class TestNG {
       IReporter reporter = (IReporter) listener;
       maybeAddListener(m_reporters, reporter);
     }
+    if (listener instanceof IReporter2) {
+      IReporter2 reporter = (IReporter2) listener;
+      maybeAddListener(m_reporters2, reporter);
+    }
     if (listener instanceof IAnnotationTransformer) {
       setAnnotationTransformer((IAnnotationTransformer) listener);
     }
@@ -870,12 +875,12 @@ public class TestNG {
       initializeCommandLineSuitesGroups(child, hasIncludedGroups, m_includedGroups, hasExcludedGroups, m_excludedGroups);
     }
   }
-  private void addReporter(Class<? extends IReporter> r) {
-    if (!m_reporters.containsKey(r)) {
-      m_reporters.put(r, ClassHelper.newInstance(r));
+
+  private void addReporter(Class<? extends IReporter2> r) {
+    if (!m_reporters2.containsKey(r)) {
+      m_reporters2.put(r, ClassHelper.newInstance(r));
     }
   }
-
   private void initializeDefaultListeners() {
     this.exitCodeListener = new org.testng.internal.ExitCodeListener();
     addListener((ITestNGListener) this.exitCodeListener);
@@ -1089,7 +1094,21 @@ public class TestNG {
   }
 
   private void generateReports(List<ISuite> suiteRunners) {
+
     for (IReporter reporter : m_reporters.values()) {
+      try {
+        long start = System.currentTimeMillis();
+        reporter.generateReport(m_suites, suiteRunners, m_outputDir);
+        Utils.log("TestNG", 2, "Time taken by " + reporter + ": "
+                + (System.currentTimeMillis() - start) + " ms");
+      }
+      catch(Exception ex) {
+        System.err.println("[TestNG] Reporter " + reporter + " failed");
+        ex.printStackTrace(System.err);
+      }
+    }
+
+    for (IReporter2 reporter : m_reporters2.values()) {
       try {
         long start = System.currentTimeMillis();
         IAttributes attributes = new Attributes();
@@ -1098,7 +1117,7 @@ public class TestNG {
         attributes.setAttribute("generateTestResultAttributes", m_generateTestResultAttributes);
         reporter.generateReport(m_suites, suiteRunners, attributes);
         Utils.log("TestNG", 2, "Time taken by " + reporter + ": "
-            + (System.currentTimeMillis() - start) + " ms");
+                + (System.currentTimeMillis() - start) + " ms");
       }
       catch(Exception ex) {
         System.err.println("[TestNG] Reporter " + reporter + " failed");

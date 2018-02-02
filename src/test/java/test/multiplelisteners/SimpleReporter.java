@@ -1,6 +1,7 @@
 package test.multiplelisteners;
 
-import org.testng.IReporter;
+import org.testng.IAttributes;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
@@ -11,11 +12,11 @@ import test.listeners.ListenerAssert;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class SimpleReporter implements IReporter
+public class SimpleReporter implements IReporter2
 {
   @Override
   public void generateReport(final List<XmlSuite> xmlSuites, final List<ISuite> suites,
-      final String outputDirectory)
+      final IAttributes attributes)
   {
     for (final ISuite iSuite : suites)
     {

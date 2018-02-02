@@ -1,6 +1,6 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
@@ -32,7 +32,7 @@ import java.util.Properties;
 import java.util.Set;
 
 
-public class JUnitReportReporter implements IReporter {
+public class JUnitReportReporter implements IReporter2 {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,

@@ -1,6 +1,6 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.Reporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -24,7 +24,7 @@ import java.util.TimeZone;
 /**
  * The main entry for the XML generation operation
  */
-public class XMLReporter implements IReporter {
+public class XMLReporter implements IReporter2 {
 
   public static final String FILE_NAME = "testng-results.xml";
   private static final String JVM_ARG = "testng.report.xml.name";

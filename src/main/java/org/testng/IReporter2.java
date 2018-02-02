@@ -9,12 +9,12 @@ import java.util.List;
  * generateReport() will be invoked after all the suite have run and the parameters
  * give all the test results that happened during that run.
  *
- * @author cbeust
- * Feb 17, 2006
+ * @author kanaduchi
+ * Feb 02, 2018
  */
-public interface IReporter extends ITestNGListener {
+public interface IReporter2 extends ITestNGListener {
   /**
-   * Generate a report for the given suites into the specified output directory.
+   * Generate a report for the given suites with specified attributes
    */
-  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory);
+  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes);
 }

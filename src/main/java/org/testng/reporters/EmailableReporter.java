@@ -2,7 +2,7 @@ package org.testng.reporters;
 
 import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -37,7 +37,7 @@ import static java.nio.file.Files.newBufferedWriter;
  *
  * @since 5.2
  */
-public class EmailableReporter implements IReporter {
+public class EmailableReporter implements IReporter2 {
   private static final Logger L = Logger.getLogger(EmailableReporter.class);
 
   // ~ Instance fields ------------------------------------------------------

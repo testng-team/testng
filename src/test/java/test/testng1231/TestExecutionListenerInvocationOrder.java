@@ -25,7 +25,7 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
         Assert.assertEquals(TestListenerFor1231.order, expected);
     }
 
-    public static class TestListenerFor1231 implements IExecutionListener, IAlterSuiteListener, IReporter, ISuiteListener {
+    public static class TestListenerFor1231 implements IExecutionListener, IAlterSuiteListener, IReporter2, ISuiteListener {
         public static LinkedList<Integer> order = Lists.newLinkedList();
 
         @Override
@@ -40,7 +40,7 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
         }
 
         @Override
-        public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
             order.add(new Integer(5));
         }
 

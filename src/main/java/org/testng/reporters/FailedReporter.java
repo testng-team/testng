@@ -1,6 +1,7 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
+import org.testng.IAttributes;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestClass;
@@ -32,7 +33,7 @@ import java.util.Set;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class FailedReporter extends TestListenerAdapter implements IReporter {
+public class FailedReporter extends TestListenerAdapter implements IReporter2 {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
   private XmlSuite m_xmlSuite;
@@ -45,9 +46,9 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   }
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
     for (ISuite suite : suites) {
-      generateFailureSuite(suite.getXmlSuite(), suite, outputDirectory);
+      generateFailureSuite(suite.getXmlSuite(), suite, (String)attributes.getAttribute("defaultOutputDirectory"));
     }
   }
 
@@ -224,5 +225,4 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       
       return Collections.emptyMap();
   }
-
 }

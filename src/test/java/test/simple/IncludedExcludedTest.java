@@ -1,7 +1,8 @@
 package test.simple;
 
 import org.testng.Assert;
-import org.testng.IReporter;
+import org.testng.IAttributes;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
@@ -50,7 +51,7 @@ public class IncludedExcludedTest {
 
 }
 
-class MyReporter implements IReporter {
+class MyReporter implements IReporter2 {
 
   private String[] m_included;
   private String[] m_excluded;
@@ -61,7 +62,7 @@ class MyReporter implements IReporter {
   }
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
     Assert.assertEquals(suites.size(), 1);
     ISuite suite = suites.get(0);
 

@@ -1,8 +1,6 @@
 package org.testng.reporters;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
@@ -13,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.testng.IAttributes;
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
@@ -30,7 +28,7 @@ import static java.nio.file.Files.newBufferedWriter;
 /**
  * Reporter that generates a single-page HTML report of the test results.
  */
-public class EmailableReporter2 implements IReporter {
+public class EmailableReporter2 implements IReporter2 {
     private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
 
     protected PrintWriter writer;
