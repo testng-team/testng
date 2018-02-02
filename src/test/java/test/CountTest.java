@@ -1,6 +1,7 @@
 package test;
 
 import org.testng.Assert;
+import org.testng.IAttributes;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -20,7 +21,7 @@ public class CountTest extends SimpleBaseTest {
     IReporter r = new IReporter() {
       @Override
       public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-          String outputDirectory) {
+          IAttributes attributes) {
         for (ISuite s : suites) {
           for (ISuiteResult sr : s.getResults().values()) {
             ITestContext ctx = sr.getTestContext();

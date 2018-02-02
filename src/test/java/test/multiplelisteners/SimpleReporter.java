@@ -1,5 +1,6 @@
 package test.multiplelisteners;
 
+import org.testng.IAttributes;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.SuiteRunner;
@@ -15,7 +16,7 @@ public class SimpleReporter implements IReporter
 {
   @Override
   public void generateReport(final List<XmlSuite> xmlSuites, final List<ISuite> suites,
-      final String outputDirectory)
+      final IAttributes attributes)
   {
     for (final ISuite iSuite : suites)
     {

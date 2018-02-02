@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import org.testng.IAttributes;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -45,9 +46,9 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   }
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
     for (ISuite suite : suites) {
-      generateFailureSuite(suite.getXmlSuite(), suite, outputDirectory);
+      generateFailureSuite(suite.getXmlSuite(), suite, (String)attributes.getAttribute("defaultOutputDirectory"));
     }
   }
 

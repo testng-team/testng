@@ -10,7 +10,7 @@ import java.util.Set;
 public class ReportingListenerFor674 implements IReporter {
     private List<Throwable> errors = new ArrayList<>();
 
-    public void generateReport(List<XmlSuite> list, List<ISuite> suites, String s) {
+    public void generateReport(List<XmlSuite> list, List<ISuite> suites, IAttributes attributes) {
         for (ISuite suite : suites) {
             for (ISuiteResult suiteResult : suite.getResults().values()) {
                 ITestContext ctx = suiteResult.getTestContext();

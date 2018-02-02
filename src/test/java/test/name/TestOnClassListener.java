@@ -1,5 +1,6 @@
 package test.name;
 
+import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -14,7 +15,7 @@ public class TestOnClassListener implements IReporter {
     private final List<String> testNames = new ArrayList<>();
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
         for (ISuite suite : suites) {
             for (IInvokedMethod method : suite.getAllInvokedMethods()) {
                 names.add(method.getTestResult().getName());

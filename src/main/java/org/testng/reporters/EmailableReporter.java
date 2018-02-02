@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.IResultMap;
@@ -65,9 +66,9 @@ public class EmailableReporter implements IReporter {
 
   /** Creates summary of the run */
   @Override
-  public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
+  public void generateReport(List<XmlSuite> xml, List<ISuite> suites, IAttributes attributes) {
     try {
-      m_out = createWriter(outdir);
+      m_out = createWriter((String)attributes.getAttribute("defaultOutputDirectory"));
     }
     catch (IOException e) {
       L.error("output file", e);

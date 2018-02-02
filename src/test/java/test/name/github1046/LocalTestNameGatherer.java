@@ -1,5 +1,6 @@
 package test.name.github1046;
 
+import org.testng.IAttributes;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -14,7 +15,7 @@ import java.util.Set;
 public class LocalTestNameGatherer implements IReporter {
     private Set<String> testnames = Sets.newHashSet();
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
         for (ISuite suite: suites) {
             for(ISuiteResult suiteResult : suite.getResults().values()) {
                 List<ITestResult> testResults = Lists.newArrayList();

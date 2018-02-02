@@ -28,7 +28,7 @@ public class UniqueReporterInjectionTest extends SimpleBaseTest {
     public static class ReporterListenerForIssue1227 implements IReporter {
         static int counter = 0;
         @Override
-        public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
             counter++;
         }
     }
