@@ -3,6 +3,7 @@ package org.testng.reporters.jq;
 import static org.testng.reporters.jq.BasePanel.C;
 import static org.testng.reporters.jq.BasePanel.D;
 
+import org.testng.IAttributes;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
@@ -30,9 +31,9 @@ public class Main implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+                             IAttributes attributes) {
     m_model = new Model(suites);
-    m_outputDirectory = outputDirectory;
+    m_outputDirectory = (String)attributes.getAttribute("defaultOutputDirectory");
 
     XMLStringBuffer xsb = new XMLStringBuffer("    ");
 
