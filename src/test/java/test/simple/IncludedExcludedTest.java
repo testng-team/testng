@@ -1,6 +1,7 @@
 package test.simple;
 
 import org.testng.Assert;
+import org.testng.IAttributes;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
@@ -61,7 +62,7 @@ class MyReporter implements IReporter {
   }
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
     Assert.assertEquals(suites.size(), 1);
     ISuite suite = suites.get(0);
 
