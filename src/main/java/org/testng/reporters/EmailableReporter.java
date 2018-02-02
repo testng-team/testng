@@ -1,7 +1,8 @@
 package org.testng.reporters;
 
+import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -36,7 +37,7 @@ import static java.nio.file.Files.newBufferedWriter;
  *
  * @since 5.2
  */
-public class EmailableReporter implements IReporter {
+public class EmailableReporter implements IReporter2 {
   private static final Logger L = Logger.getLogger(EmailableReporter.class);
 
   // ~ Instance fields ------------------------------------------------------
@@ -65,9 +66,9 @@ public class EmailableReporter implements IReporter {
 
   /** Creates summary of the run */
   @Override
-  public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
+  public void generateReport(List<XmlSuite> xml, List<ISuite> suites, IAttributes attributes) {
     try {
-      m_out = createWriter(outdir);
+      m_out = createWriter((String)attributes.getAttribute("defaultOutputDirectory"));
     }
     catch (IOException e) {
       L.error("output file", e);

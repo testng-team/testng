@@ -28,6 +28,14 @@ public class CommandLineArgs {
       + " exclude")
   public String excludedGroups;
 
+  public static final String GENERATE_SUITE_ATTRIBUTES = "-generateSuiteAttributes";
+  @Parameter(names = GENERATE_SUITE_ATTRIBUTES, description ="Generate attributes of suite in xml report")
+  public Boolean generateSuiteAttributes = Boolean.FALSE;
+
+  public static final String GENERATE_TESTRESULT_ATTRIBUTES = "-generateTestResultAttributes";
+  @Parameter(names = GENERATE_TESTRESULT_ATTRIBUTES, description ="Generate attributes of test-method in xml report")
+  public Boolean generateTestResultAttributes = Boolean.FALSE;
+
   public static final String OUTPUT_DIRECTORY = "-d";
   @Parameter(names = OUTPUT_DIRECTORY, description ="Output directory")
   public String outputDirectory;

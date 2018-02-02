@@ -1,11 +1,12 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
+import org.testng.IReporter2;
+import org.testng.Reporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.Reporter;
+import org.testng.IAttributes;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
@@ -24,7 +25,7 @@ import java.util.TimeZone;
 /**
  * The main entry for the XML generation operation
  */
-public class XMLReporter implements IReporter {
+public class XMLReporter implements IReporter2 {
 
   public static final String FILE_NAME = "testng-results.xml";
   private static final String JVM_ARG = "testng.report.xml.name";
@@ -35,10 +36,12 @@ public class XMLReporter implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+      IAttributes attributes) {
     if (Utils.isStringEmpty(config.getOutputDirectory())) {
-      config.setOutputDirectory(outputDirectory);
+      getConfig().setOutputDirectory((String)attributes.getAttribute("defaultOutputDirectory"));
     }
+    getConfig().setGenerateTestResultAttributes((Boolean)attributes.getAttribute("generateTestResultAttributes"));
+    getConfig().setGenerateSuiteAttributes((Boolean)attributes.getAttribute("generateSuiteAttributes"));
 
     // Calculate passed/failed/skipped
     int passed = 0;
@@ -127,6 +130,8 @@ public class XMLReporter implements IReporter {
   private void writeSuiteToBuffer(XMLStringBuffer xmlBuffer, ISuite suite) {
     xmlBuffer.push(XMLReporterConfig.TAG_SUITE, getSuiteAttributes(suite));
     writeSuiteGroups(xmlBuffer, suite);
+    if (getConfig().isGenerateSuiteAttributes())
+      writeSuiteCustomAttributes(xmlBuffer, suite);
 
     Map<String, ISuiteResult> results = suite.getResults();
     XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
@@ -206,6 +211,16 @@ public class XMLReporter implements IReporter {
       result.add(method);
     }
     return result;
+  }
+
+  private void writeSuiteCustomAttributes(XMLStringBuffer xmlBuffer, ISuite suite) {
+    for (String attribute : suite.getAttributeNames()) {
+      if (suite.getAttribute(attribute) != null) {
+        xmlBuffer.push(attribute);
+        xmlBuffer.addCDATA((String) suite.getAttribute(attribute));
+        xmlBuffer.pop();
+      }
+    }
   }
 
   /**

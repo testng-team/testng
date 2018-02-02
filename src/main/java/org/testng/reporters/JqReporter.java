@@ -1,6 +1,7 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
+import org.testng.IAttributes;
+import org.testng.IReporter2;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -20,7 +21,7 @@ import java.util.Map;
  * @deprecated Use {@link org.testng.reporters.jq.Main} instead
  */
 @Deprecated
-public class JqReporter implements IReporter {
+public class JqReporter implements IReporter2 {
   private static final String C = "class";
   private static final String D = "div";
   private static final String S = "span";
@@ -35,8 +36,8 @@ public class JqReporter implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
-    m_outputDirectory = outputDirectory;
+                             IAttributes attributes) {
+    m_outputDirectory = (String)attributes.getAttribute("defaultOutputDirectory");
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push(D, "id", "suites");

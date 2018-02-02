@@ -3,7 +3,8 @@ package org.testng.reporters.jq;
 import static org.testng.reporters.jq.BasePanel.C;
 import static org.testng.reporters.jq.BasePanel.D;
 
-import org.testng.IReporter;
+import org.testng.IAttributes;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
@@ -16,7 +17,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-public class Main implements IReporter {
+public class Main implements IReporter2 {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES = new String[] {
     "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
@@ -30,9 +31,9 @@ public class Main implements IReporter {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+      IAttributes attributes) {
     m_model = new Model(suites);
-    m_outputDirectory = outputDirectory;
+    m_outputDirectory = (String)attributes.getAttribute("defaultOutputDirectory");
 
     XMLStringBuffer xsb = new XMLStringBuffer("    ");
 

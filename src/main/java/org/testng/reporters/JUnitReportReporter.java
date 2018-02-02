@@ -1,11 +1,12 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.IAttributes;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.SetMultiMap;
 import org.testng.collections.Lists;
@@ -31,11 +32,11 @@ import java.util.Properties;
 import java.util.Set;
 
 
-public class JUnitReportReporter implements IReporter {
+public class JUnitReportReporter implements IReporter2 {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String defaultOutputDirectory) {
+      IAttributes attributes) {
 
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
@@ -170,7 +171,7 @@ public class JUnitReportReporter implements IReporter {
       }
       xsb.pop(XMLConstants.TESTSUITE);
 
-      String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
+      String outputDirectory = attributes.getAttribute("defaultOutputDirectory") + File.separator + "junitreports";
       Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
     }
 
