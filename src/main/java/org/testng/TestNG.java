@@ -222,7 +222,7 @@ public class TestNG {
    * @param generateTestResultAttributes true / false.
    */
   public void setGenerateTestResultAttributes(final Boolean generateTestResultAttributes) {
-    m_generateTestResultAttributes = generateTestResultAttributes;
+    m_generateTestResultAttributes = generateTestResultAttributes != null ? generateTestResultAttributes : false;
   }
 
   /**
@@ -230,7 +230,7 @@ public class TestNG {
    * @param generateSuiteAttributes true / false.
    */
   public void setGenerateSuiteAttributes(final Boolean generateSuiteAttributes) {
-    m_generateSuiteAttributes = generateSuiteAttributes;
+    m_generateSuiteAttributes = generateSuiteAttributes != null ? generateSuiteAttributes : false;
   }
 
   /**
