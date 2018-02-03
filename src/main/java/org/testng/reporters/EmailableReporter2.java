@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.IAttributes;
 import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -51,9 +50,9 @@ public class EmailableReporter2 implements IReporter2 {
     }
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
         try {
-            writer = createWriter((String)attributes.getAttribute("defaultOutputDirectory"));
+            writer = createWriter(config.getOutputDirectory());
         } catch (IOException e) {
             LOG.error("Unable to create output file", e);
             return;

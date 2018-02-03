@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import org.testng.*;
+import org.testng.reporters.XMLReporterConfig;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class ExitCodeListener implements ITestListener, IReporter, IReporter2 {
     }
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
         for (ISuite suite : suites) {
             for (ISuiteResult suiteResult : suite.getResults().values()) {
                 ITestContext context = suiteResult.getTestContext();

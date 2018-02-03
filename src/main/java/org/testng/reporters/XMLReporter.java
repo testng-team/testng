@@ -6,7 +6,6 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.IAttributes;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -29,19 +28,14 @@ public class XMLReporter implements IReporter2 {
   public static final String FILE_NAME = "testng-results.xml";
   private static final String JVM_ARG = "testng.report.xml.name";
 
-
-  private final XMLReporterConfig config = new XMLReporterConfig();
+  private XMLReporterConfig configReport;
   private XMLStringBuffer rootBuffer;
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      IAttributes attributes) {
-    if (Utils.isStringEmpty(config.getOutputDirectory())) {
-      getConfig().setOutputDirectory((String)attributes.getAttribute("defaultOutputDirectory"));
-    }
-    getConfig().setGenerateTestResultAttributes((Boolean)attributes.getAttribute("generateTestResultAttributes"));
-    getConfig().setGenerateSuiteAttributes((Boolean)attributes.getAttribute("generateSuiteAttributes"));
+                             XMLReporterConfig config) {
 
+    setConfig(config);
     // Calculate passed/failed/skipped
     int passed = 0;
     int failed = 0;
@@ -93,7 +87,7 @@ public class XMLReporter implements IReporter2 {
   }
 
   private void writeSuite(ISuite suite) {
-    switch (config.getFileFragmentationLevel()) {
+    switch (getConfig().getFileFragmentationLevel()) {
     case XMLReporterConfig.FF_LEVEL_NONE:
       writeSuiteToBuffer(rootBuffer, suite);
       break;
@@ -103,7 +97,7 @@ public class XMLReporter implements IReporter2 {
       writeSuiteToFile(suiteFile, suite);
       break;
     default:
-      throw new AssertionError("Unexpected value: " + config.getFileFragmentationLevel());
+      throw new AssertionError("Unexpected value: " + getConfig().getFileFragmentationLevel());
     }
   }
 
@@ -119,7 +113,7 @@ public class XMLReporter implements IReporter2 {
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
     String relativePath = suite.getName() + File.separatorChar + FILE_NAME;
-    File suiteFile = new File(config.getOutputDirectory(), relativePath);
+    File suiteFile = new File(getConfig().getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
     xmlBuffer.addEmptyElement(XMLReporterConfig.TAG_SUITE, attrs);
@@ -133,7 +127,7 @@ public class XMLReporter implements IReporter2 {
       writeSuiteCustomAttributes(xmlBuffer, suite);
 
     Map<String, ISuiteResult> results = suite.getResults();
-    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
+    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(getConfig());
     for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
       suiteResultWriter.writeSuiteResult(xmlBuffer, result.getValue());
     }
@@ -185,7 +179,7 @@ public class XMLReporter implements IReporter2 {
     if (maxEndDate == null) {
       maxEndDate = minStartDate;
     }
-    addDurationAttributes(config, props, minStartDate, maxEndDate);
+    addDurationAttributes(getConfig(), props, minStartDate, maxEndDate);
     return props;
   }
 
@@ -224,151 +218,11 @@ public class XMLReporter implements IReporter2 {
     }
   }
 
-  /**
-   * @deprecated Unused
-   */
-  @Deprecated
-  public int getFileFragmentationLevel() {
-    return config.getFileFragmentationLevel();
-  }
-
-  /**
-   * @deprecated Unused
-   */
-  @Deprecated
-  public void setFileFragmentationLevel(int fileFragmentationLevel) {
-    config.setFileFragmentationLevel(fileFragmentationLevel);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public int getStackTraceOutputMethod() {
-    return config.getStackTraceOutputMethod();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
-    config.setStackTraceOutputMethod(stackTraceOutputMethod);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public String getOutputDirectory() {
-    return config.getOutputDirectory();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setOutputDirectory(String outputDirectory) {
-    config.setOutputDirectory(outputDirectory);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public boolean isGenerateGroupsAttribute() {
-    return config.isGenerateGroupsAttribute();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setGenerateGroupsAttribute(boolean generateGroupsAttribute) {
-    config.setGenerateGroupsAttribute(generateGroupsAttribute);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public boolean isSplitClassAndPackageNames() {
-    return config.isSplitClassAndPackageNames();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setSplitClassAndPackageNames(boolean splitClassAndPackageNames) {
-    config.setSplitClassAndPackageNames(splitClassAndPackageNames);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public String getTimestampFormat() {
-    return config.getTimestampFormat();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setTimestampFormat(String timestampFormat) {
-    config.setTimestampFormat(timestampFormat);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public boolean isGenerateDependsOnMethods() {
-    return config.isGenerateDependsOnMethods();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setGenerateDependsOnMethods(boolean generateDependsOnMethods) {
-    config.setGenerateDependsOnMethods(generateDependsOnMethods);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setGenerateDependsOnGroups(boolean generateDependsOnGroups) {
-    config.setGenerateDependsOnGroups(generateDependsOnGroups);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public boolean isGenerateDependsOnGroups() {
-    return config.isGenerateDependsOnGroups();
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public void setGenerateTestResultAttributes(boolean generateTestResultAttributes) {
-    config.setGenerateTestResultAttributes(generateTestResultAttributes);
-  }
-
-  /**
-   * @deprecated Use #getConfig() instead
-   */
-  @Deprecated
-  public boolean isGenerateTestResultAttributes() {
-    return config.isGenerateTestResultAttributes();
-  }
-
   public XMLReporterConfig getConfig() {
-    return config;
+    return configReport;
+  }
+
+  public void setConfig(XMLReporterConfig newConfig) {
+    configReport = newConfig;
   }
 }

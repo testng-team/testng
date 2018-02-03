@@ -1,6 +1,5 @@
 package org.testng.reporters;
 
-import org.testng.IAttributes;
 import org.testng.IReporter2;
 import org.testng.IResultMap;
 import org.testng.ISuite;
@@ -36,8 +35,8 @@ public class JqReporter implements IReporter2 {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-                             IAttributes attributes) {
-    m_outputDirectory = (String)attributes.getAttribute("defaultOutputDirectory");
+                             XMLReporterConfig config) {
+    m_outputDirectory = config.getOutputDirectory();
 
     XMLStringBuffer xsb = new XMLStringBuffer("  ");
     xsb.push(D, "id", "suites");

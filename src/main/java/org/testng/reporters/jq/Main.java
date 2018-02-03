@@ -3,11 +3,11 @@ package org.testng.reporters.jq;
 import static org.testng.reporters.jq.BasePanel.C;
 import static org.testng.reporters.jq.BasePanel.D;
 
-import org.testng.IAttributes;
 import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
+import org.testng.reporters.XMLReporterConfig;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
 
@@ -31,9 +31,9 @@ public class Main implements IReporter2 {
 
   @Override
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      IAttributes attributes) {
+      XMLReporterConfig config) {
     m_model = new Model(suites);
-    m_outputDirectory = (String)attributes.getAttribute("defaultOutputDirectory");
+    m_outputDirectory = config.getOutputDirectory();
 
     XMLStringBuffer xsb = new XMLStringBuffer("    ");
 

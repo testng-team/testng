@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.reporters.XMLReporterConfig;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
@@ -13,5 +14,5 @@ public interface IReporter2 extends ITestNGListener {
   /**
    * Generate a report for the given suites with specified attributes
    */
-  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes);
+  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config);
 }

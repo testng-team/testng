@@ -39,13 +39,7 @@ import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
-import org.testng.reporters.EmailableReporter;
-import org.testng.reporters.EmailableReporter2;
-import org.testng.reporters.FailedReporter;
-import org.testng.reporters.JUnitReportReporter;
-import org.testng.reporters.SuiteHTMLReporter;
-import org.testng.reporters.VerboseReporter;
-import org.testng.reporters.XMLReporter;
+import org.testng.reporters.*;
 import org.testng.reporters.jq.Main;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
@@ -1095,6 +1089,11 @@ public class TestNG {
 
   private void generateReports(List<ISuite> suiteRunners) {
 
+    XMLReporterConfig config = new XMLReporterConfig();
+    config.setOutputDirectory(m_outputDir);
+    config.setGenerateSuiteAttributes(m_generateSuiteAttributes);
+    config.setGenerateTestResultAttributes(m_generateTestResultAttributes);
+
     for (IReporter reporter : m_reporters.values()) {
       try {
         long start = System.currentTimeMillis();
@@ -1111,11 +1110,7 @@ public class TestNG {
     for (IReporter2 reporter : m_reporters2.values()) {
       try {
         long start = System.currentTimeMillis();
-        IAttributes attributes = new Attributes();
-        attributes.setAttribute("defaultOutputDirectory", m_outputDir);
-        attributes.setAttribute("generateSuiteAttributes", m_generateSuiteAttributes);
-        attributes.setAttribute("generateTestResultAttributes", m_generateTestResultAttributes);
-        reporter.generateReport(m_suites, suiteRunners, attributes);
+        reporter.generateReport(m_suites, suiteRunners, config);
         Utils.log("TestNG", 2, "Time taken by " + reporter + ": "
                 + (System.currentTimeMillis() - start) + " ms");
       }

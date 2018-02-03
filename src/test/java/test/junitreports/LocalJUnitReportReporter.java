@@ -1,8 +1,8 @@
 package test.junitreports;
 
-import org.testng.IAttributes;
 import org.testng.ISuite;
 import org.testng.reporters.JUnitReportReporter;
+import org.testng.reporters.XMLReporterConfig;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
@@ -14,9 +14,9 @@ public class LocalJUnitReportReporter extends JUnitReportReporter implements Tes
     private List<Testsuite> testsuites = new ArrayList<>();
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
-        super.generateReport(xmlSuites, suites, attributes);
-        String dir = attributes.getAttribute("defaultOutputDirectory") + File.separator + "junitreports";
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
+        super.generateReport(xmlSuites, suites, config);
+        String dir = config.getOutputDirectory() + File.separator + "junitreports";
         File directory = new File(dir);
         File[] files = directory.listFiles(new FilenameFilter() {
             @Override

@@ -2,7 +2,6 @@ package org.testng.reporters;
 
 import static org.testng.internal.Utils.isStringNotEmpty;
 
-import org.testng.IAttributes;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter2;
 import org.testng.ISuite;
@@ -48,11 +47,11 @@ public class SuiteHTMLReporter implements IReporter2 {
   private String m_outputDirectory;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, IAttributes attributes) {
-    m_outputDirectory = generateOutputDirectoryName((String)attributes.getAttribute("defaultOutputDirectory") + File.separator + "old");
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
+    m_outputDirectory = generateOutputDirectoryName(config.getOutputDirectory() + File.separator + "old");
 
     try {
-      HtmlHelper.generateStylesheet((String)attributes.getAttribute("defaultOutputDirectory"));
+      HtmlHelper.generateStylesheet(config.getOutputDirectory());
     } catch (IOException e) {
       //  TODO Propagate the exception properly.
       e.printStackTrace();
