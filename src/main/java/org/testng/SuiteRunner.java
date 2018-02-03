@@ -66,6 +66,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private ITestObjectFactory objectFactory;
   private Boolean skipFailedInvocationCounts = Boolean.FALSE;
   private List<IReporter> reporters = Lists.newArrayList();
+  private List<IReporter2> reporters2 = Lists.newArrayList();
 
   private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener> invokedMethodListeners;
 
@@ -431,10 +432,13 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-
-
-  private void addReporter(IReporter listener) {
-    reporters.add(listener);
+  private void addReporter(ITestNGListener listener) {
+    if (listener instanceof IReporter) {
+      reporters.add((IReporter)listener);
+    }
+    if (listener instanceof IReporter2) {
+      reporters2.add((IReporter2)listener);
+    }
   }
 
   void addConfigurationListener(IConfigurationListener listener) {
@@ -443,6 +447,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   public List<IReporter> getReporters() {
     return reporters;
+  }
+
+  public List<IReporter2> getReporters2() {
+    return reporters2;
   }
 
   private void runSequentially() {
@@ -511,8 +519,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (listener instanceof ISuiteListener) {
       addListener((ISuiteListener) listener);
     }
-    if (listener instanceof IReporter) {
-      addReporter((IReporter) listener);
+    if (listener instanceof IReporter || listener instanceof IReporter2) {
+      addReporter(listener);
     }
     if (listener instanceof IConfigurationListener) {
       addConfigurationListener((IConfigurationListener) listener);

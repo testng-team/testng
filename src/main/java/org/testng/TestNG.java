@@ -761,6 +761,12 @@ public class TestNG {
     return Sets.newHashSet(m_reporters.values());
   }
 
+  public Set<IReporter2> getReporters2() {
+    //This will now cause a different behavior for consumers of this method because unlike before they are no longer
+    //going to be getting the original set but only a copy of it (since we internally moved from Sets to Maps)
+    return Sets.newHashSet(m_reporters2.values());
+  }
+
   public List<ITestListener> getTestListeners() {
     return Lists.newArrayList(m_testListeners.values());
   }
@@ -1313,6 +1319,10 @@ public class TestNG {
 
     for (IReporter r : result.getReporters()) {
       maybeAddListener(m_reporters, r.getClass(), r, true);
+    }
+
+    for (IReporter2 r : result.getReporters2()) {
+      maybeAddListener(m_reporters2, r.getClass(), r, true);
     }
 
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
