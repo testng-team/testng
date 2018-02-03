@@ -29,7 +29,6 @@ import org.testng.internal.OverrideProcessor;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
-import org.testng.internal.Attributes;
 import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -39,7 +38,14 @@ import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
-import org.testng.reporters.*;
+import org.testng.reporters.EmailableReporter;
+import org.testng.reporters.EmailableReporter2;
+import org.testng.reporters.JUnitReportReporter;
+import org.testng.reporters.XMLReporterConfig;
+import org.testng.reporters.SuiteHTMLReporter;
+import org.testng.reporters.VerboseReporter;
+import org.testng.reporters.XMLReporter;
+import org.testng.reporters.FailedReporter;
 import org.testng.reporters.jq.Main;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
@@ -145,8 +151,8 @@ public class TestNG {
 
   private String m_defaultSuiteName=DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName=DEFAULT_COMMAND_LINE_TEST_NAME;
-  private Boolean m_generateSuiteAttributes = false;
-  private Boolean m_generateTestResultAttributes = false;
+  private boolean m_generateSuiteAttributes = false;
+  private boolean m_generateTestResultAttributes = false;
 
   private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
