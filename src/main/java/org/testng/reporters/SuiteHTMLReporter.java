@@ -3,7 +3,7 @@ package org.testng.reporters;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import org.testng.IInvokedMethod;
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestClass;
@@ -32,7 +32,7 @@ import java.util.Map;
  * @author cbeust
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public class SuiteHTMLReporter implements IReporter {
+public class SuiteHTMLReporter implements IReporter2 {
   public static final String METHODS_CHRONOLOGICAL = "methods.html";
   public static final String METHODS_ALPHABETICAL = "methods-alphabetical.html";
   public static final String GROUPS = "groups.html";
@@ -47,11 +47,11 @@ public class SuiteHTMLReporter implements IReporter {
   private String m_outputDirectory;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    m_outputDirectory = generateOutputDirectoryName(outputDirectory + File.separator + "old");
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
+    m_outputDirectory = generateOutputDirectoryName(config.getOutputDirectory() + File.separator + "old");
 
     try {
-      HtmlHelper.generateStylesheet(outputDirectory);
+      HtmlHelper.generateStylesheet(config.getOutputDirectory());
     } catch (IOException e) {
       //  TODO Propagate the exception properly.
       e.printStackTrace();

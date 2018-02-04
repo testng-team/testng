@@ -1,8 +1,6 @@
 package org.testng.reporters;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
@@ -12,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.IReporter;
+import org.testng.IReporter2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
@@ -29,7 +27,7 @@ import static java.nio.file.Files.newBufferedWriter;
 /**
  * Reporter that generates a single-page HTML report of the test results.
  */
-public class EmailableReporter2 implements IReporter {
+public class EmailableReporter2 implements IReporter2 {
     private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
 
     protected PrintWriter writer;
@@ -52,9 +50,9 @@ public class EmailableReporter2 implements IReporter {
     }
 
     @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
         try {
-            writer = createWriter(outputDirectory);
+            writer = createWriter(config.getOutputDirectory());
         } catch (IOException e) {
             LOG.error("Unable to create output file", e);
             return;

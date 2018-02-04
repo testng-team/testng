@@ -1,16 +1,12 @@
 package org.testng.internal;
 
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestListener;
-import org.testng.ITestResult;
+import org.testng.*;
+import org.testng.reporters.XMLReporterConfig;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
 
-public class ExitCodeListener implements ITestListener, IReporter {
+public class ExitCodeListener implements ITestListener, IReporter, IReporter2 {
     private boolean hasTests = false;
     private final ExitCode status = new ExitCode();
 
@@ -24,6 +20,16 @@ public class ExitCodeListener implements ITestListener, IReporter {
 
     @Override
     public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        for (ISuite suite : suites) {
+            for (ISuiteResult suiteResult : suite.getResults().values()) {
+                ITestContext context = suiteResult.getTestContext();
+                status.computeAndUpdate(context);
+            }
+        }
+    }
+
+    @Override
+    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, XMLReporterConfig config) {
         for (ISuite suite : suites) {
             for (ISuiteResult suiteResult : suite.getResults().values()) {
                 ITestContext context = suiteResult.getTestContext();

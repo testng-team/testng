@@ -1,5 +1,6 @@
 package org.testng.reporters;
 
+import org.testng.ISuite;
 import org.testng.ITestResult;
 
 import java.util.HashMap;
@@ -140,6 +141,12 @@ public class XMLReporterConfig {
   private boolean generateTestResultAttributes = false;
 
   /**
+   * Indicates whether {@link ISuite} attributes should be generated for
+   * each <code>suite</code> elements
+   */
+  private boolean generateSuiteAttributes = false;
+
+  /**
    * The output format for timestamps
    */
   private String timestampFormat = FMT_DEFAULT;
@@ -235,6 +242,14 @@ public class XMLReporterConfig {
 
   public boolean isGenerateTestResultAttributes() {
     return generateTestResultAttributes;
+  }
+
+  public void setGenerateSuiteAttributes(boolean generateSuiteAttributes) {
+    this.generateSuiteAttributes = generateSuiteAttributes;
+  }
+
+  public boolean isGenerateSuiteAttributes() {
+    return generateSuiteAttributes;
   }
 
   public enum StackTraceLevels {

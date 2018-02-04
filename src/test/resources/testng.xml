@@ -127,6 +127,7 @@
       <class name="test.preserveorder.PreserveOrderTest" />
       <class name="test.SerializationTest" />
       <class name="test.CountTest" />
+      <class name="test.CountTest2" />
       <class name="test.EclipseTest" />
       <class name="test.ReporterApiTest" />
       <class name="test.reports.UniqueReporterInjectionTest"/>
