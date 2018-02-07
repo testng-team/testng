@@ -25,6 +25,10 @@ public class Bsh implements IBsh {
       }
       setContext(interpreter, tm.getConstructorOrMethod().getMethod(), groups, tm);
       Object evalResult = interpreter.eval(expression);
+      if (evalResult == null) {
+        String msg = String.format("The beanshell expression [%s] evaluated to null.", expression);
+        throw new TestNGException(msg);
+      }
       result = (Boolean) evalResult;
     }
     catch (EvalError evalError) {
