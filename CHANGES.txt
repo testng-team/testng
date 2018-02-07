@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1688: @Ignore annotation on base class doesn't ignore tests in child classes (Krishnan Mahadevan)
 Fixed: GITHUB-1687: NullPointerException is thrown when beanshell evaluates to null (Krishnan Mahadevan)
 
 6.14.2

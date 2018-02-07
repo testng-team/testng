@@ -2,6 +2,7 @@ package org.testng.internal.annotations;
 
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Ignore;
+import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.util.Strings;
 
 import java.lang.reflect.Constructor;
@@ -21,7 +22,7 @@ public class IgnoreListener implements IAnnotationTransformer {
             typedTestClass = testMethod.getDeclaringClass();
         }
         if (typedTestClass != null) {
-            ignoreTest(annotation, typedTestClass.getAnnotation(Ignore.class));
+            ignoreTest(annotation, ReflectionHelper.findAnnotation(typedTestClass, Ignore.class));
             Package testPackage = typedTestClass.getPackage();
             if (testPackage != null) {
                 ignoreTest(annotation, findAnnotation(testPackage));
