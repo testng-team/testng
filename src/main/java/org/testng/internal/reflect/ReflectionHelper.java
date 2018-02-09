@@ -2,6 +2,7 @@ package org.testng.internal.reflect;
 
 import org.testng.collections.Lists;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -53,6 +54,31 @@ public class ReflectionHelper {
       pruned.add(declaredMethod);
     }
     return pruned.toArray(new Method[pruned.size()]);
+  }
+
+  /**
+   * A helper method that looks for a given annotation in the current class (or) in any of the super classes
+   *
+   * @param typedTestClass - The class to search for
+   * @param annotation     - The annotation to look for
+   * @param <T>            - The annotation type
+   * @return - Either the annotation if found (or) <code>null.</code>
+   */
+  public static <T extends Annotation> T findAnnotation(Class<?> typedTestClass, Class<T> annotation) {
+    if (typedTestClass == null || annotation == null) {
+      return null;
+    }
+    T ignore = null;
+    Class<?> testClass = typedTestClass;
+
+    while (testClass != Object.class) {
+      ignore = testClass.getAnnotation(annotation);
+      if (ignore != null) {
+        break;
+      }
+      testClass = testClass.getSuperclass();
+    }
+    return ignore;
   }
 
   private static boolean isStaticVoid(Method method) {

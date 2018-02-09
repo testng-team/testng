@@ -28,7 +28,7 @@ public class IgnoreTest extends SimpleBaseTest {
 
     @Test
     public void ignore_class_with_inheritance_should_not_run_tests() {
-        TestNG tng = create(IgnoreClassParentSample.class);
+        TestNG tng = create(ChildSample.class);
         InvokedMethodListener listener = new InvokedMethodListener();
         tng.addListener((ITestNGListener) listener);
         tng.run();
