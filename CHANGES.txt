@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1700: Test ignored if @BeforeMethod in base class fails for another test class (Krishnan Mahadevan)
 Fixed: GITHUB-1694: @BeforeGroups executed multiple times when tests run in parallel, once if not parallel (Krishnan Mahadevan)
 Fixed: GITHUB-1688: @Ignore annotation on base class doesn't ignore tests in child classes (Krishnan Mahadevan)
 Fixed: GITHUB-1687: NullPointerException is thrown when beanshell evaluates to null (Krishnan Mahadevan)
