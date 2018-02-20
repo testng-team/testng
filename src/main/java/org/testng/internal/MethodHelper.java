@@ -261,7 +261,7 @@ public class MethodHelper {
       if (groupsDependedUpon.length > 0) {
         for (String group : groupsDependedUpon) {
           ITestNGMethod[] methodsThatBelongToGroup =
-             MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+            MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
           for (ITestNGMethod pred : methodsThatBelongToGroup) {
             predecessors.add(pred);
           }
