@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -229,6 +230,9 @@ public class MethodHelper {
     //
     // Create the graph
     //
+
+    LinkedHashMap<Object, ArrayList<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
+
     for (ITestNGMethod m : methods) {
       result.addNode(m);
 
@@ -237,8 +241,19 @@ public class MethodHelper {
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       String[] groupsDependedUpon = m.getGroupsDependedUpon();
       if (methodsDependedUpon.length > 0) {
-        ITestNGMethod[] methodsNamed =
-          MethodHelper.findDependedUponMethods(m, methods);
+        ITestNGMethod[] methodsNamed = null;
+        // Method has instance
+        if (m.getInstance() != null) {
+          // Get other methods with the same instance
+          ArrayList<ITestNGMethod> instanceMethods = testInstances.get(m.getInstance());
+          ITestNGMethod[] allInstanceMethods = 
+              instanceMethods.toArray(new ITestNGMethod[instanceMethods.size()]);
+          // Search for other methods that depends upon with the same instance
+          methodsNamed = MethodHelper.findDependedUponMethods(m, allInstanceMethods);
+        } else {
+          // Search all methods
+          methodsNamed = MethodHelper.findDependedUponMethods(m, methods);
+        }
         for (ITestNGMethod pred : methodsNamed) {
           predecessors.add(pred);
         }
@@ -246,7 +261,7 @@ public class MethodHelper {
       if (groupsDependedUpon.length > 0) {
         for (String group : groupsDependedUpon) {
           ITestNGMethod[] methodsThatBelongToGroup =
-            MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+             MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
           for (ITestNGMethod pred : methodsThatBelongToGroup) {
             predecessors.add(pred);
           }
@@ -265,6 +280,33 @@ public class MethodHelper {
     return result;
   }
 
+	/**
+	 * This method is used to create a map of test instances and their associated method(s) .
+	 * Used to decrease the scope to only a methods instance when trying to find method dependencies.
+	 * @param Test Methods to be sorted 
+	 * @return Map of Instances as the keys and the methods associated with the instance as the values
+	 */
+	private static LinkedHashMap<Object, ArrayList<ITestNGMethod>> sortMethodsByInstance(ITestNGMethod[] methods) {
+		LinkedHashMap<Object, ArrayList<ITestNGMethod>> result = new LinkedHashMap<>();
+		for (ITestNGMethod method : methods) {
+			// Get method instance
+			Object methodClass = method.getInstance();
+
+			// Check if instance already in map
+			if (result.containsKey(methodClass)) {
+				ArrayList<ITestNGMethod> methodList = result.get(methodClass);
+				methodList.add(method);
+				result.put(methodClass, methodList);
+			} else {
+				ArrayList<ITestNGMethod> methodList = new ArrayList<>();
+				methodList.add(method);
+				result.put(methodClass, methodList);
+			}
+		}
+		return result;
+
+	}
+  
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {
     return calculateMethodCanonicalName(m.getConstructorOrMethod().getMethod());
   }
