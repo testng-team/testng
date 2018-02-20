@@ -1,4 +1,6 @@
 Current
+Fixed: GITHUB-1077: TestNG cannot handle load (Aheiss)
+Fixed: GITHUB-1081: group-by-instances with test dependencies causes instantiation of tests to exponentially slow (Aheiss)
 Fixed: GITHUB-1700: Test ignored if @BeforeMethod in base class fails for another test class (Krishnan Mahadevan)
 Fixed: GITHUB-1694: @BeforeGroups executed multiple times when tests run in parallel, once if not parallel (Krishnan Mahadevan)
 Fixed: GITHUB-1688: @Ignore annotation on base class doesn't ignore tests in child classes (Krishnan Mahadevan)
