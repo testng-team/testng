@@ -1,5 +1,5 @@
 Current
-Fixed: Updated MethodHelper topologicalSort to method dependencies more efficiently (Aheiss)
+Fixed: GITHUB-1077 GITHUB-1081: Updated MethodHelper topologicalSort to method dependencies more efficiently (Aheiss)
 Fixed: GITHUB-1688: @Ignore annotation on base class doesn't ignore tests in child classes (Krishnan Mahadevan)
 Fixed: GITHUB-1687: NullPointerException is thrown when beanshell evaluates to null (Krishnan Mahadevan)
 
