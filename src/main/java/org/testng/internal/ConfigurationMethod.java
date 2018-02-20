@@ -355,10 +355,10 @@ public class ConfigurationMethod extends BaseTestMethod {
       initGroups(IAfterTest.class);
     }
      if (annotation.getBeforeGroups().length != 0) {
-      initGroups(IBeforeGroups.class);
+      initBeforeAfterGroups(IBeforeGroups.class, annotation.getBeforeGroups());
     }
      if (annotation.getAfterGroups().length != 0) {
-      initGroups(IAfterGroups.class);
+       initBeforeAfterGroups(IAfterGroups.class, annotation.getAfterGroups());
     }
      if (annotation.getBeforeTestClass()) {
       initGroups(IBeforeClass.class);
