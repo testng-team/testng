@@ -430,38 +430,59 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     //
     // Init groups depended upon
     //
-    {
-      ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-      ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
-
-      Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
-      List<String> xmlGroupDependencies = Lists.newArrayList();
-      for (String g : getGroups()) {
-        Set<String> gdu = xgd.get(g);
-        if (gdu != null) {
-          xmlGroupDependencies.addAll(gdu);
-        }
-      }
-      setGroupsDependedUpon(
-          getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
-          null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
-          xmlGroupDependencies);
-
-      String[] methodsDependedUpon =
-        getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
-        null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
-      // Qualify these methods if they don't have a package
-      for (int i = 0; i < methodsDependedUpon.length; i++) {
-        String m = methodsDependedUpon[i];
-        if (!m.contains(".")) {
-          m = MethodHelper.calculateMethodCanonicalName(m_methodClass, methodsDependedUpon[i]);
-          methodsDependedUpon[i] = m != null ? m : methodsDependedUpon[i];
-        }
-      }
-      setMethodsDependedUpon(methodsDependedUpon);
-    }
+    initRestOfGroupDependencies(annotationClass);
   }
 
+  protected void initBeforeAfterGroups(Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+    String[] groupsAtMethodLevel = calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
+    //@BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
+    String[] groupsAtClassLevel = null;
+    setGroups(getStringArray(groupsAtMethodLevel, groupsAtClassLevel));
+    initRestOfGroupDependencies(annotationClass);
+  }
+
+  private String[] calculateGroupsTouseConsideringValuesAndGroupValues(Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+    if (groups == null || groups.length == 0) {
+      ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+      groups = null != annotation ? annotation.getGroups() : null;
+    }
+    return groups;
+  }
+
+  private void initRestOfGroupDependencies(Class<? extends ITestOrConfiguration> annotationClass) {
+    //
+    // Init groups depended upon
+    //
+    ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+    ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
+
+    Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
+    List<String> xmlGroupDependencies = Lists.newArrayList();
+    for (String g : getGroups()) {
+      Set<String> gdu = xgd.get(g);
+      if (gdu != null) {
+        xmlGroupDependencies.addAll(gdu);
+      }
+    }
+    setGroupsDependedUpon(
+            getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
+                    null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
+            xmlGroupDependencies);
+
+    String[] methodsDependedUpon =
+            getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
+                    null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
+    // Qualify these methods if they don't have a package
+    for (int i = 0; i < methodsDependedUpon.length; i++) {
+      String m = methodsDependedUpon[i];
+      if (!m.contains(".")) {
+        m = MethodHelper.calculateMethodCanonicalName(m_methodClass, methodsDependedUpon[i]);
+        methodsDependedUpon[i] = m != null ? m : methodsDependedUpon[i];
+      }
+    }
+    setMethodsDependedUpon(methodsDependedUpon);
+
+  }
 
   private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
     Map<String, Set<String>> result = Maps.newHashMap();

@@ -18,7 +18,7 @@ import static java.lang.annotation.ElementType.TYPE;
  *
  * A package annotation is done in {@code package-info.java}. For example:
  * <pre>
- * @Ignore
+ * {@literal @}Ignore
  * package test.ignorePackage;
  *
  * import org.testng.annotations.Ignore;

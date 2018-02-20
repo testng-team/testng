@@ -730,10 +730,9 @@ public class Invoker implements IInvoker {
   {
     List<ITestNGMethod> filteredMethods = Lists.newArrayList();
     String[] groups = currentTestMethod.getGroups();
-    Map<String, List<ITestNGMethod>> beforeGroupMap = groupMethods.getBeforeGroupsMap();
 
     for (String group : groups) {
-      List<ITestNGMethod> methods = beforeGroupMap.get(group);
+      List<ITestNGMethod> methods = groupMethods.getBeforeGroupMethodsForGroup(group);
       if (methods != null) {
         filteredMethods.addAll(methods);
       }
@@ -788,9 +787,8 @@ public class Invoker implements IInvoker {
 
     // Now filteredGroups contains all the groups for which we need to run the afterGroups
     // method.  Find all the methods that correspond to these groups and invoke them.
-    Map<String, List<ITestNGMethod>> map = groupMethods.getAfterGroupsMap();
     for (String g : filteredGroups.values()) {
-      List<ITestNGMethod> methods = map.get(g);
+      List<ITestNGMethod> methods = groupMethods.getAfterGroupMethodsForGroup(g);
       // Note:  should put them in a map if we want to make sure the same afterGroups
       // doesn't get run twice
       if (methods != null) {

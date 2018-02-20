@@ -6,8 +6,10 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,6 +23,9 @@ public class ConfigurationGroupMethods {
 
   /** The list of beforeGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_beforeGroupsMethods;
+
+  private final Set<String> beforeGroupsThatHaveAlreadyRun = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+  private final Set<String> afterGroupsThatHaveAlreadyRun = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
   /** The list of afterGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_afterGroupsMethods;
@@ -64,25 +69,24 @@ public class ConfigurationGroupMethods {
       return false;
     }
 
-    // Lazy initialization since we might never be called
-    if(m_afterGroupsMap == null) {
-      synchronized (this) {
-        if (m_afterGroupsMap == null) {
-          m_afterGroupsMap = initializeAfterGroupsMap();
-        }
+    //This Mutex ensures that this edit check runs sequentially for one ITestNGMethod
+    //method at a time because this object is being shared between all the ITestNGMethod objects.
+    synchronized (this) {
+      if (m_afterGroupsMap == null) {
+        m_afterGroupsMap = initializeAfterGroupsMap();
       }
+
+      List<ITestNGMethod> methodsInGroup = m_afterGroupsMap.get(group);
+
+      if (null == methodsInGroup || methodsInGroup.isEmpty()) {
+        return false;
+      }
+
+      methodsInGroup.remove(method);
+
+      // Note:  == is not good enough here as we may work with ITestNGMethod clones
+      return methodsInGroup.isEmpty();
     }
-
-    List<ITestNGMethod> methodsInGroup= m_afterGroupsMap.get(group);
-
-    if(null == methodsInGroup || methodsInGroup.isEmpty()) {
-      return false;
-    }
-
-    methodsInGroup.remove(method);
-
-    // Note:  == is not good enough here as we may work with ITestNGMethod clones
-    return methodsInGroup.isEmpty();
 
   }
 
@@ -100,14 +104,16 @@ public class ConfigurationGroupMethods {
       }
     }
 
+    afterGroupsThatHaveAlreadyRun.clear();
+
     return result;
   }
 
   public void removeBeforeMethod(String group, ITestNGMethod method) {
     List<ITestNGMethod> methods= m_beforeGroupsMethods.get(group);
     if(methods != null) {
-      Object success= methods.remove(method);
-      if(success == null) {
+      boolean success= methods.remove(method);
+      if(!success) {
         log("Couldn't remove beforeGroups method " + method + " for group " + group);
       }
     }
@@ -120,27 +126,36 @@ public class ConfigurationGroupMethods {
     Utils.log("ConfigurationGroupMethods", 2, string);
   }
 
-  public Map<String, List<ITestNGMethod>> getBeforeGroupsMap() {
-    return m_beforeGroupsMethods;
+  public List<ITestNGMethod> getBeforeGroupMethodsForGroup(String group) {
+    synchronized (beforeGroupsThatHaveAlreadyRun) {
+      return retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, group);
+    }
   }
 
-  public Map<String, List<ITestNGMethod>> getAfterGroupsMap() {
-    return m_afterGroupsMethods;
+  public List<ITestNGMethod> getAfterGroupMethodsForGroup(String group) {
+    synchronized (afterGroupsThatHaveAlreadyRun) {
+      return retrieve(afterGroupsThatHaveAlreadyRun, m_afterGroupsMethods, group);
+    }
   }
 
   public void removeBeforeGroups(String[] groups) {
     for(String group : groups) {
-//      log("Removing before group " + group);
       m_beforeGroupsMethods.remove(group);
     }
   }
 
   public void removeAfterGroups(Collection<String> groups) {
     for(String group : groups) {
-//      log("Removing before group " + group);
       m_afterGroupsMethods.remove(group);
     }
+  }
 
+  private static List<ITestNGMethod> retrieve(Set<String> tracker, Map<String, List<ITestNGMethod>> map, String group) {
+    if (tracker.contains(group)) {
+      return Collections.EMPTY_LIST;
+    }
+    tracker.add(group);
+    return map.get(group);
   }
 
 }
