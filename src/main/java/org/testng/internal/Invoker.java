@@ -337,14 +337,17 @@ public class Invoker implements IInvoker {
   /**
    * @return true if this class or a parent class failed to initialize.
    */
-  private boolean classConfigurationFailed(Class<?> cls) {
+  private boolean classConfigurationFailed(Class<?> cls, Object instance) {
     for (Class<?> c : m_classInvocationResults.keySet()) {
-      if (c == cls || c.isAssignableFrom(cls)) {
+      Set<Object> obj = m_classInvocationResults.get(c);
+      boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(null);
+      if (c == cls || c.isAssignableFrom(cls) && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure)) {
         return true;
       }
     }
     return false;
   }
+
 
   /**
    * @return true if this class has successfully run all its @Configuration
@@ -359,7 +362,7 @@ public class Invoker implements IInvoker {
     if(m_suiteState.isFailed()) {
       result = false;
     } else {
-      boolean hasConfigurationFailures = classConfigurationFailed(cls);
+      boolean hasConfigurationFailures = classConfigurationFailed(cls, instance);
       if (hasConfigurationFailures) {
         if (! m_continueOnFailedConfiguration) {
           result = false;
@@ -376,7 +379,7 @@ public class Invoker implements IInvoker {
       }
       else if (! m_continueOnFailedConfiguration) {
         for (Class<?> clazz : m_classInvocationResults.keySet()) {
-          if (clazz.isAssignableFrom(cls)) {
+          if (clazz.isAssignableFrom(cls) && m_classInvocationResults.get(clazz).contains(instance)) {
             result = false;
             break;
           }

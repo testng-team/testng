@@ -119,6 +119,7 @@
       <class name="test.testng249.VerifyTest"/>
       <class name="test.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
+      <class name="test.configuration.github1700.RunTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
