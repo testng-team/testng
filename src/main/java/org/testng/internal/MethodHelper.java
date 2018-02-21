@@ -257,8 +257,14 @@ public class MethodHelper {
         if (m.getInstance() != null) {
           // Get other methods with the same instance
           List<ITestNGMethod> instanceMethods = testInstances.get(m.getInstance());
-          // Search for other methods that depends upon with the same instance
-          methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
+          try {
+            // Search for other methods that depends upon with the same instance
+            methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
+          } catch (TestNGException e) {
+            //Maybe this method has a dependency on a method that resides in a different instance.
+            //Lets try searching for all methods now
+            methodsNamed = MethodHelper.findDependedUponMethods(m, methods);
+          }
         } else {
           // Search all methods
           methodsNamed = MethodHelper.findDependedUponMethods(m, methods);
@@ -294,7 +300,7 @@ public class MethodHelper {
    * method(s) . Used to decrease the scope to only a methods instance when trying
    * to find method dependencies.
    * 
-   * @param Test
+   * @param methods
    *          Methods to be sorted
    * @return Map of Instances as the keys and the methods associated with the
    *         instance as the values
@@ -304,6 +310,9 @@ public class MethodHelper {
     for (ITestNGMethod method : methods) {
       // Get method instance
       Object methodInstance = method.getInstance();
+      if (methodInstance == null) {
+        continue;
+      }
       //Look for method instance in list and update associated methods
       List<ITestNGMethod> methodList = result.get(methodInstance);
       if (methodList == null) {
