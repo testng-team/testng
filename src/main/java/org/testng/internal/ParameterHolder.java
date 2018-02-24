@@ -16,7 +16,8 @@ public class ParameterHolder {
    */
   public enum ParameterOrigin {
     ORIGIN_DATA_PROVIDER, // A data provider
-    ORIGIN_XML // TestNG XML suite
+    ORIGIN_XML, // TestNG XML suite
+    NATIVE //Native injection is involved.
   }
 
   public IDataProviderMethod dataProviderHolder;
