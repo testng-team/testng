@@ -814,6 +814,7 @@ public class Invoker implements IInvoker {
 
   int retryFailed(Object instance,
                            ITestNGMethod tm,
+                           Object[] paramValues,
                            XmlSuite suite,
                            ITestClass testClass,
                            ITestNGMethod[] beforeMethods,
@@ -835,6 +836,9 @@ public class Invoker implements IInvoker {
 
       ParameterBag bag = handler.createParameters(tm, parameters, allParameters, testContext);
       Object[] parameterValues = Parameters.getParametersFromIndex(bag.parameterHolder.parameters, parametersIndex);
+      if (bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.NATIVE) {
+        parameterValues = paramValues;
+      }
 
       result.add(invokeMethod(instance, tm, parameterValues, parametersIndex, suite,
           allParameters, testClass, beforeMethods, afterMethods, groupMethods, failure));
@@ -1008,7 +1012,7 @@ public class Invoker implements IInvoker {
                 List<ITestResult> retryResults = Lists.newArrayList();
 
                 failure.count = retryFailed(
-                        instance, testMethod, suite, testClass, beforeMethods,
+                        instance, testMethod, parameterValues, suite, testClass, beforeMethods,
                         afterMethods, groupMethods, retryResults,
                         failure.count,
                         testContext, parameters, parametersIndex);

@@ -690,6 +690,7 @@ public class Parameters {
     final IDataProviderMethod dataProviderMethod =
             findDataProvider(instance, testMethod.getTestClass(),
                     testMethod.getConstructorOrMethod(), annotationFinder, methodParams.context);
+    ParameterOrigin origin;
 
     if (null != dataProviderMethod) {
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
@@ -758,8 +759,12 @@ public class Parameters {
       });
 
       return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER, dataProviderMethod);
+    } else if (methodParams.xmlParameters.isEmpty() ) {
+      origin = ParameterOrigin.NATIVE;
     }
     else {
+      origin = ParameterOrigin.ORIGIN_XML;
+    }
       //
       // Normal case: we have only one set of parameters coming from testng.xml
       //
@@ -776,8 +781,7 @@ public class Parameters {
       // Turn it into an Iterable
       Iterator<Object[]> parameters = new ArrayIterator(allParameterValuesArray);
 
-      return new ParameterHolder(parameters, ParameterOrigin.ORIGIN_XML, null);
-    }
+      return new ParameterHolder(parameters, origin, null);
   }
 
   /**
