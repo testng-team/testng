@@ -307,7 +307,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         for (cls = c; cls != null; cls = cls.getSuperclass()) {
           // Try on the methods
           for (Method m : getAvailableMethods(cls)) {
-            IAnnotation ma= annotationFinder.findAnnotation(m, annotation);
+            IAnnotation ma= annotationFinder.findAnnotation(cls, m, annotation);
             if(null != ma) {
               return true;
             }

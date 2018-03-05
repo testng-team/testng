@@ -104,7 +104,9 @@ public class ConfigurationGroupMethods {
       }
     }
 
-    afterGroupsThatHaveAlreadyRun.clear();
+    synchronized (afterGroupsThatHaveAlreadyRun) {
+      afterGroupsThatHaveAlreadyRun.clear();
+    }
 
     return result;
   }

@@ -18,4 +18,8 @@ public class DefaultAnnotationTransformer
     super.transform(annotation, testClass, testConstructor, testMethod);
   }
 
+  @Override
+  public void transform(ITestAnnotation annotation, Class testClass, Constructor cons, Method tm, Class<?> clazz) {
+    super.transform(annotation, testClass, cons, tm, clazz);
+  }
 }

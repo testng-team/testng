@@ -13,6 +13,11 @@ public class IgnoreListener implements IAnnotationTransformer {
 
     @Override
     public void transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+        transform(annotation, testClass, testConstructor, testMethod, null);
+    }
+
+    @Override
+    public void transform(ITestAnnotation annotation, Class testClass, Constructor tc, Method testMethod, Class<?> clazz) {
         if (!annotation.getEnabled()) {
             return;
         }
@@ -21,13 +26,19 @@ public class IgnoreListener implements IAnnotationTransformer {
             ignoreTest(annotation, testMethod.getAnnotation(Ignore.class));
             typedTestClass = testMethod.getDeclaringClass();
         }
-        if (typedTestClass != null) {
-            ignoreTest(annotation, ReflectionHelper.findAnnotation(typedTestClass, Ignore.class));
-            Package testPackage = typedTestClass.getPackage();
+        ignoreTestAtClass(typedTestClass, annotation);
+        ignoreTestAtClass(clazz, annotation);
+    }
+
+    private static void ignoreTestAtClass(Class<?> clazz, ITestAnnotation annotation) {
+        if (clazz != null) {
+            ignoreTest(annotation, ReflectionHelper.findAnnotation(clazz, Ignore.class));
+            Package testPackage = clazz.getPackage();
             if (testPackage != null) {
                 ignoreTest(annotation, findAnnotation(testPackage));
             }
         }
+
     }
 
     private static void ignoreTest(ITestAnnotation annotation, Ignore ignore) {

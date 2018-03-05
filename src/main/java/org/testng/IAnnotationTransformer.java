@@ -25,7 +25,7 @@ public interface IAnnotationTransformer extends ITestNGListener {
    * @param testMethod If the annotation was found on a method,
    * this parameter represents this method (null otherwise).
    */
-  public void transform(ITestAnnotation annotation, Class testClass,
+  void transform(ITestAnnotation annotation, Class testClass,
       Constructor testConstructor, Method testMethod);
 
 }

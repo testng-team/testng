@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1709: @Ignore doesn't work when used on child class, and parent has @Test methods (Krishnan Mahadevan)
 Fixed: GITHUB-1706: Retrying of methods fail when test method involves native injection (Krishnan Mahadevan)
 
 6.14.3

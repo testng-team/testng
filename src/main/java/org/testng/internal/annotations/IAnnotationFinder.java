@@ -34,6 +34,7 @@ public interface IAnnotationFinder {
   <A extends IAnnotation> A findAnnotation(Method m, Class<A> annotationClass);
   <A extends IAnnotation> A findAnnotation(ITestNGMethod m, Class<A> annotationClass);
   <A extends IAnnotation> A findAnnotation(ConstructorOrMethod com, Class<A> annotationClass);
+  <A extends IAnnotation> A findAnnotation(Class<?> clazz, Method m, java.lang.Class<A> annotationClass);
 
   /**
    * @param cons
