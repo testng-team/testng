@@ -4,6 +4,7 @@ import static org.testng.internal.EclipseInterface.ASSERT_LEFT;
 import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
+import static org.testng.internal.EclipseInterface.ASSERT_LEFT_INEQUALITY;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -777,13 +778,20 @@ public class Assert {
   }
 
   static String format(Object actual, Object expected, String message) {
+    return format(actual, expected, message, false);
+  }
+
+  static String format(Object actual, Object expected, String message, boolean equality) {
     String formatted = "";
     if (null != message) {
       formatted = message + " ";
     }
-
-    return formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
+    if (equality) {
+      return formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
+    }
+    return formatted + ASSERT_LEFT_INEQUALITY + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
   }
+
 
   /**
    * Asserts that two collections contain the same elements in the same order. If they do not,
@@ -1154,7 +1162,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual1, actual2, message, false));
     }
   }
 
