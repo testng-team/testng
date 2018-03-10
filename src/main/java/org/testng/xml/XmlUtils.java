@@ -1,9 +1,9 @@
 package org.testng.xml;
 
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 public class XmlUtils {
@@ -19,13 +19,23 @@ public class XmlUtils {
 
   public static void dumpParameters(XMLStringBuffer xsb, Map<String, String> parameters) {
     // parameters
-    if (!parameters.isEmpty()) {
-      for(Map.Entry<String, String> para: parameters.entrySet()) {
-        Properties paramProps= new Properties();
-        paramProps.setProperty("name", para.getKey());
-        paramProps.setProperty("value", para.getValue());
-        xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
+    if (parameters.isEmpty()) {
+      return;
+    }
+    for (Map.Entry<String, String> para : parameters.entrySet()) {
+      Properties paramProps = new Properties();
+      if (para.getKey() == null) {
+        Utils.log("Skipping a null parameter.");
+        continue;
       }
+      if (para.getValue() == null) {
+        String msg = String.format("Skipping parameter [%s] since it has a null value", para.getKey());
+        Utils.log(msg);
+        continue;
+      }
+      paramProps.setProperty("name", para.getKey());
+      paramProps.setProperty("value", para.getValue());
+      xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
     }
   }
 
