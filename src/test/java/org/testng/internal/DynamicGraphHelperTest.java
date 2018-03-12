@@ -7,6 +7,7 @@ import org.testng.annotations.IAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -40,16 +41,14 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     public void testCreateDynamicGraphAllIndependent() {
         DynamicGraph<ITestNGMethod> graph = newGraph(IndependentTestClassSample.class);
         assertThat(graph.getFreeNodes()).hasSize(2);
-        for (List<DynamicGraph.Edge<ITestNGMethod>> edge : graph.getEdges().values()) {
-            assertThat(edge).isEmpty();
-        }
+        assertThat(graph.getEdges().isEmpty());
     }
 
     @Test(dataProvider = "getDependencyData")
     public void testCreateDynamicGraphWithDependency(Class<?> clazz) {
         DynamicGraph<ITestNGMethod> graph = newGraph(clazz);
         assertThat(graph.getFreeNodes()).hasSize(1);
-        List<DynamicGraph.Edge<ITestNGMethod>> edges = searchForMethod("b", graph);
+        Map<ITestNGMethod, Integer> edges = searchForMethod("b", graph);
         assertThat(edges).hasSize(1);
         edges = searchForMethod("a", graph);
         assertThat(edges).isEmpty();
@@ -73,7 +72,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
         DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
         List<String> methodNames = Arrays.asList("testMethodOneSequentialClassB", "testMethodTwoSequentialClassB");
         for (String methodName : methodNames) {
-            List<DynamicGraph.Edge<ITestNGMethod>> edges = searchForMethod(methodName, graph);
+            Map<ITestNGMethod, Integer> edges = searchForMethod(methodName, graph);
             assertThat(extractDestinationInfoFromEdge(edges))
                     .contains("testMethodOneSequentialClassA", "testMethodTwoSequentialClassA");
         }
@@ -102,41 +101,37 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
         }
 
         DynamicGraph<ITestNGMethod> graph = DynamicGraphHelper.createDynamicGraph(allMethods, xmlTest);
-        List<DynamicGraph.Edge<ITestNGMethod>> edges = searchForMethod("testMethod", graph, "two");
+        Map<ITestNGMethod, Integer> edges = searchForMethod("testMethod", graph, "two");
         Set<String> actualObjectIds = Sets.newHashSet();
         List<String> actualMethodNames = Lists.newLinkedList();
-        for (DynamicGraph.Edge<ITestNGMethod> edge : edges) {
-            actualObjectIds.add(edge.getTo().getInstance().toString());
-            actualMethodNames.add(edge.getTo().getMethodName());
+        for (ITestNGMethod to : edges.keySet()) {
+            actualObjectIds.add(to.getInstance().toString());
+            actualMethodNames.add(to.getMethodName());
         }
         assertThat(actualObjectIds).containsExactly("one");
         assertThat(actualMethodNames).contains("testMethod", "anotherTestMethod");
     }
 
-    private static List<String> extractDestinationInfoFromEdge(List<DynamicGraph.Edge<ITestNGMethod>> edges) {
+    private static List<String> extractDestinationInfoFromEdge(Map<ITestNGMethod, Integer> edges) {
         List<String> destinations = Lists.newLinkedList();
-        for (DynamicGraph.Edge<ITestNGMethod> edge : edges) {
-            destinations.add(edge.getTo().getMethodName());
+        for (ITestNGMethod to : edges.keySet()) {
+            destinations.add(to.getMethodName());
         }
         return destinations;
     }
 
-    private static List<DynamicGraph.Edge<ITestNGMethod>> searchForMethod(String methodName, DynamicGraph<ITestNGMethod> graph) {
-        for (Map.Entry<ITestNGMethod, List<DynamicGraph.Edge<ITestNGMethod>>> edge : graph.getEdges().entrySet()) {
-            if (edge.getKey().getMethodName().equals(methodName)) {
-                return edge.getValue();
-            }
-        }
-        return Lists.newLinkedList();
+    private static Map<ITestNGMethod, Integer> searchForMethod(String methodName, DynamicGraph<ITestNGMethod> graph) {
+        return searchForMethod(methodName, graph, null);
     }
 
-    private static List<DynamicGraph.Edge<ITestNGMethod>> searchForMethod(String methodName, DynamicGraph<ITestNGMethod> graph, Object instance) {
-        for (Map.Entry<ITestNGMethod, List<DynamicGraph.Edge<ITestNGMethod>>> edge : graph.getEdges().entrySet()) {
-            if (edge.getKey().getMethodName().equals(methodName) && edge.getKey().getInstance().toString().equals(instance.toString())) {
+    private static Map<ITestNGMethod, Integer> searchForMethod(String methodName, DynamicGraph<ITestNGMethod> graph, Object instance) {
+        for (Map.Entry<ITestNGMethod, Map<ITestNGMethod, Integer>> edge : graph.getEdges().entrySet()) {
+            if (edge.getKey().getMethodName().equals(methodName) &&
+                    (instance == null || edge.getKey().getInstance().toString().equals(instance.toString()))) {
                 return edge.getValue();
             }
         }
-        return Lists.newLinkedList();
+        return Maps.newHashMap();
     }
 
     private static DynamicGraph<ITestNGMethod> newGraph(Class<?>... classes) {

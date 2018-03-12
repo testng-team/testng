@@ -17,6 +17,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.dynamicgraph.EdgeWeightTestSample1;
 import org.testng.internal.dynamicgraph.EdgeWeightTestSample2;
+import org.testng.internal.dynamicgraph.LotsOfEdgesTest;
 import org.testng.xml.XmlSuite;
 
 import test.InvokedMethodNameListener;
@@ -66,18 +67,18 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addNode(b1);
     dg.addNode(b2);
     dg.addNode(c1);
-    dg.addEdge(1, b1, a1, a2);
-    dg.addEdge(1, b2, a1, a2);
-    dg.addEdge(1, c1, b1, b2);
-    dg.addEdge(0, a2, a1, b1, c1);
-    dg.addEdge(0, b2, a1, b1, c1);
+    dg.addEdges(1, b1, a1, a2);
+    dg.addEdges(1, b2, a1, a2);
+    dg.addEdges(1, c1, b1, b2);
+    dg.addEdges(0, a2, a1, b1, c1);
+    dg.addEdges(0, b2, a1, b1, c1);
     Node x = new Node("x");
     Node y = new Node("y");
     dg.addNode(x);
     dg.addNode(y);
-    dg.addEdge(0, a1, x, y);
-    dg.addEdge(0, b1, x, y);
-    dg.addEdge(0, c1, x, y);
+    dg.addEdges(0, a1, x, y);
+    dg.addEdges(0, b1, x, y);
+    dg.addEdges(0, c1, x, y);
 
     assertFreeNodesEquals(dg, y, x);
 
@@ -125,8 +126,8 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addNode(a1);
     dg.addNode(a2);
     dg.addNode(b1);
-    dg.addEdge(1, b1, a1, a2);
-    dg.addEdge(0, a2, a1, b1);
+    dg.addEdges(1, b1, a1, a2);
+    dg.addEdges(0, a2, a1, b1);
     Node x = new Node("x");
     dg.addNode(x);
     dg.addEdge(0, a1, x);
@@ -289,4 +290,59 @@ public class DynamicGraphTest extends SimpleBaseTest {
       assertThat(tla.getPassedTests().size()).isEqualTo(expected);
   }
 
+  @Test(expectedExceptions = IllegalStateException.class)
+  public void testPreventCycles() {
+    // Cycles having the same weight should throw an IllegalStateException immediately.
+    DynamicGraph<String> dg = new DynamicGraph<>();
+    dg.addEdge(0, "a", "b");
+    dg.addEdge(0, "b", "a");
+  }
+
+  @Test
+  public void testAllowedCycles() {
+    // Cycles with differing weights are explicitly allowed as the graph will discard the lowest weighted edge in
+    // order to free up the cycle.
+    DynamicGraph<String> dg = new DynamicGraph<>();
+    dg.addEdge(0, "a", "b");
+
+    // Different weight is allowed
+    dg.addEdge(1, "b", "a");
+  }
+
+  @Test
+  public void testGainWeight() {
+    DynamicGraph<String> dg = new DynamicGraph<>();
+    dg.addEdge(1, "a", "b");
+    assertThat(dg.getEdges().values().size()).isEqualTo(1);
+    assertThat(dg.getEdges().get("a").get("b")).isEqualTo(1);
+
+    // Duplicated edge, but with lower weight
+    dg.addEdge(0, "a", "b");
+
+    // Should only be one edge with same weight
+    assertThat(dg.getEdges().values().size()).isEqualTo(1);
+    assertThat(dg.getEdges().get("a").get("b")).isEqualTo(1);
+
+    // Duplicated edge, but with higher weight
+    dg.addEdge(2, "a", "b");
+
+    // Should only be one edge with weight of 2 now.
+    assertThat(dg.getEdges().values().size()).isEqualTo(1);
+    assertThat(dg.getEdges().get("a").get("b")).isEqualTo(2);
+  }
+
+  /**
+   * Inefficient algorithms within DynamicGraph can quickly make the execution time explode. This test puts some
+   * minimal limits on the time it takes to process the graph. At the time of the addition of this test, it took
+   * less than 100ms to execute. 2000ms gives enough headroom to prevent flaky failures because of external conditions
+   * such as slower or lower CPU resources.
+   */
+  @Test(timeOut = 2000)
+  public void testLotsOfEdges() {
+    // https://github.com/cbeust/testng/issues/1710
+    TestNG tng = create(LotsOfEdgesTest.class);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener((ITestNGListener) listener);
+    tng.run();
+  }
 }
