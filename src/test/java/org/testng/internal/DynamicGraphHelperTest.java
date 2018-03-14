@@ -41,7 +41,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     public void testCreateDynamicGraphAllIndependent() {
         DynamicGraph<ITestNGMethod> graph = newGraph(IndependentTestClassSample.class);
         assertThat(graph.getFreeNodes()).hasSize(2);
-        assertThat(graph.getEdges().isEmpty());
+        assertThat(graph.getEdges()).isEmpty();
     }
 
     @Test(dataProvider = "getDependencyData")

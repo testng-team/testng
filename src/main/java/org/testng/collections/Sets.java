@@ -20,4 +20,8 @@ public final class Sets {
   public static <V> Set<V> newLinkedHashSet() {
     return new LinkedHashSet<>();
   }
+
+  public static <V> Set<V> newLinkedHashSet(Collection<V> c) {
+    return new LinkedHashSet<>(c);
+  }
 }
