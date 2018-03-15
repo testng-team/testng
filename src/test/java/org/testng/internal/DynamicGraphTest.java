@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.testng.Assert;
 import org.testng.ITestNGListener;
@@ -15,7 +14,6 @@ import org.testng.annotations.Test;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.dynamicgraph.EdgeWeightTestSample1;
 import org.testng.internal.dynamicgraph.EdgeWeightTestSample2;
@@ -40,8 +38,13 @@ public class DynamicGraphTest extends SimpleBaseTest {
     }
   }
 
-  private static void assertFreeNodesEquals(DynamicGraph<Node> graph, Node... expected) {
-    assertThat(graph.getFreeNodes()).containsOnly(expected);
+  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, T... expected) {
+    assertFreeNodesEquals(graph, Arrays.asList(expected));
+  }
+
+  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, List<T> expected) {
+    // Compare free nodes using isEqualTo instead of containsOnly as we care about ordering too.
+    assertThat(graph.getFreeNodes()).isEqualTo(expected);
   }
 
   @Test
@@ -81,7 +84,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.addEdges(0, b1, Arrays.asList(x, y));
     dg.addEdges(0, c1, Arrays.asList(x, y));
 
-    assertFreeNodesEquals(dg, y, x);
+    assertFreeNodesEquals(dg, x, y);
 
     dg.setStatus(dg.getFreeNodes(), Status.RUNNING);
     assertFreeNodesEquals(dg);
@@ -352,15 +355,14 @@ public class DynamicGraphTest extends SimpleBaseTest {
    * processed in parallel.
    */
   @Test
-  public void testParallel() throws InterruptedException {
+  public void testParallel() {
     DynamicGraph<Integer> dg = new DynamicGraph<>();
-    Set<Integer> fizz = Sets.newHashSet();
-    Set<Integer> buzz = Sets.newHashSet();
-    Set<Integer> fizzBuzz = Sets.newHashSet();
-    Set<Integer> other = Sets.newHashSet();
+    List<Integer> fizz = Lists.newArrayList();
+    List<Integer> buzz = Lists.newArrayList();
+    List<Integer> fizzBuzz = Lists.newArrayList();
+    List<Integer> other = Lists.newArrayList();
 
-    Thread.sleep(10000);
-    for (int i = 0; i < 1000; i ++) {
+    for (int i = 0; i < 100; i ++) {
       dg.addNode(i);
 
       if (i % 15 == 0) {
@@ -394,23 +396,24 @@ public class DynamicGraphTest extends SimpleBaseTest {
     }
 
     // other is ready
-    assertThat(dg.getFreeNodes()).containsOnly(other.toArray(new Integer[]{}));
+    assertFreeNodesEquals(dg, other);
     dg.setStatus(other, Status.FINISHED);
 
     // fizz is ready
-    assertThat(dg.getFreeNodes()).contains(fizz.toArray(new Integer[]{}));
+    assertFreeNodesEquals(dg, fizz);
     dg.setStatus(fizz, Status.FINISHED);
 
     // buzz is ready
-    assertThat(dg.getFreeNodes()).contains(buzz.toArray(new Integer[]{}));
+    assertFreeNodesEquals(dg, buzz);
     dg.setStatus(buzz, Status.FINISHED);
 
     // fizzbuzz is ready
-    assertThat(dg.getFreeNodes()).contains(fizzBuzz.toArray(new Integer[]{}));
+    assertFreeNodesEquals(dg, fizzBuzz);
     dg.setStatus(fizzBuzz, Status.FINISHED);
 
     // all done
     assertThat(dg.getFreeNodes()).isEmpty();
     assertThat(dg.getNodeCountWithStatus(Status.READY)).isEqualTo(0);
+    assertThat(dg.getNodeCountWithStatus(Status.FINISHED)).isEqualTo(100);
   }
 }
