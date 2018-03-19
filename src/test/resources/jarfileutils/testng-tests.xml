@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="testng-tests-suite">
+    <suite-files>
+        <suite-file path="./child/child.xml"/>
+    </suite-files>
+    <test name="testng-tests-child1">
+        <classes>
+            <class name="org.testng.jarfileutils.org.testng.SampleTest1"/>
+        </classes>
+    </test>
+    <test name="testng-tests-child2">
+        <classes>
+            <class name="org.testng.jarfileutils.org.testng.SampleTest2"/>
+        </classes>
+
+    </test>
+    <test name="testng-tests-child3">
+        <classes>
+            <class name="org.testng.jarfileutils.org.testng.SampleTest3"/>
+        </classes>
+    </test>
+</suite>

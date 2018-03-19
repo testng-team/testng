@@ -15,7 +15,7 @@ import org.apache.maven.model.Model
 import org.apache.maven.model.Scm
 import java.io.File
 
-val VERSION = "6.15.0-SNAPSHOT"
+val VERSION = "7.0.0-SNAPSHOT"
 
 val p = project {
     name = "testng"
@@ -77,7 +77,7 @@ val p = project {
     }
 
     javaCompiler {
-        args("-target", "1.7", "-source", "1.7", "-encoding", "UTF-8")
+        args("-target", "1.8", "-source", "1.8", "-encoding", "UTF-8")
     }
 
     assemble {
