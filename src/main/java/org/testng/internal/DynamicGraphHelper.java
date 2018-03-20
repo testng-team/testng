@@ -109,7 +109,7 @@ public final class DynamicGraphHelper {
         if (xmlTest.getGroupByInstances()) {
             ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies = createInstanceDependencies(methods);
             for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
-                result.addEdge(TestRunner.PriorityWeight.groupByInstance.ordinal(), es.getKey(), es.getValue());
+                result.addEdges(TestRunner.PriorityWeight.groupByInstance.ordinal(), es.getKey(), es.getValue());
             }
         }
 

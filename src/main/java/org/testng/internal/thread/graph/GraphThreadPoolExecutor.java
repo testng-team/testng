@@ -30,7 +30,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     m_factory = factory;
 
     if (m_graph.getFreeNodes().isEmpty()) {
-      throw new TestNGException("The graph of methods contains a cycle:" + graph.getEdges());
+      throw new TestNGException("The graph of methods contains a cycle:" + graph);
     }
   }
 
