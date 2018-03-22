@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="testng-tests-suite3">
+    <test name="testng-tests-child5">
+        <classes>
+            <class name="org.testng.jarfileutils.org.testng.SampleTest5"/>
+        </classes>
+    </test>
+</suite>
