@@ -7,7 +7,6 @@
 .settings
 /_eclipse/
 /local.properties
-TESTNG-*
 build
 eclipse-build
 gradle.properties

@@ -26,14 +26,6 @@ matrix:
     - jdk: oraclejdk8
     - jdk: oraclejdk9
       env: JDK=9
-    - jdk: oraclejdk7
-      dist: precise
-    - jdk: openjdk7
-      env: FLAVOR=openjdk
-
-before_install:
-  - sh ./bin/openjdk7.sh
-
 
 script:
   - ./gradlew check --stacktrace --scan
