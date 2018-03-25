@@ -269,6 +269,13 @@ public class Parameters {
       optionalValues = filterOutResult.getOptionalValues();
       parameterTypes = filterOutResult.getParameterTypes();
     }
+    if (parameterNames.length == 0 && optionalValues.length > 0) {
+      for (int i = 0; i < parameterTypes.length; i++) {
+        vResult.add(convertType(parameterTypes[i], optionalValues[i], ""));
+      }
+      return vResult;
+    }
+
     for (int i = 0; i < parameterNames.length; i++) {
       String p = parameterNames[i];
       String value = params.xmlParameters.get(p);
@@ -339,6 +346,20 @@ public class Parameters {
     }
   }
 
+  private static boolean areAllOptionalValuesNull(String[] optionalValues) {
+    if (optionalValues == null || optionalValues.length == 0) {
+      return true;
+    }
+    boolean isNull = true;
+    for (String optionalValue : optionalValues) {
+      if (optionalValue != null) {
+        isNull = false;
+        break;
+      }
+    }
+    return isNull;
+  }
+
   /**
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
@@ -353,7 +374,9 @@ public class Parameters {
       return new Object[0];
     }
 
-    checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
+    if (areAllOptionalValuesNull(optionalValues)) {
+      checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
+    }
     List<Object> vResult = Lists.newArrayList();
 
     List<Object> consParams = createParams(method.getName(), "method", methodAnnotation, parameterTypes,
