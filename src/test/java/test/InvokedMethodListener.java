@@ -3,7 +3,6 @@ package test;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
 import java.util.ArrayList;
 import java.util.List;

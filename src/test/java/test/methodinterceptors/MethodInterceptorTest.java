@@ -1,6 +1,7 @@
 package test.methodinterceptors;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -48,7 +49,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
   private void testNullInterceptor(TestNG tng) {
     tng.setMethodInterceptor(new NullMethodInterceptor());
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 0);
@@ -64,7 +65,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     }
     TestListenerAdapter tla = new TestListenerAdapter();
 //    tng.setParallel("methods");
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 3);

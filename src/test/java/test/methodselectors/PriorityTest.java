@@ -1,6 +1,7 @@
 package test.methodselectors;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -16,7 +17,7 @@ public class PriorityTest {
     tng.setTestClasses(new Class[] { PrioritySampleTest.class });
     tng.addMethodSelector("test.methodselectors.NoTestSelector", priority);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     List<ITestResult> passed = tla.getPassedTests();
@@ -28,11 +29,8 @@ public class PriorityTest {
     if (passedTests.length == 2) {
       String passed0 = passed.get(0).getName();
       String passed1 = passed.get(1).getName();
-      Assert.assertTrue(passed0.equals(passedTests[0])
-        || passed0.equals(passedTests[1]));
-      Assert.assertTrue(passed1.equals(passedTests[0])
-          || passed1.equals(passedTests[1]));
-
+      Assert.assertTrue(passed0.equals(passedTests[0]) || passed0.equals(passedTests[1]));
+      Assert.assertTrue(passed1.equals(passedTests[0]) || passed1.equals(passedTests[1]));
     }
   }
 

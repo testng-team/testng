@@ -137,12 +137,6 @@ public class NoOpTestClass implements ITestClass {
     return m_afterGroupsMethods;
   }
 
-  @Deprecated
-  @Override
-  public int getInstanceCount() {
-    return m_instances.length;
-  }
-
   /**
    * @see org.testng.ITestClass#getInstanceHashCodes()
    */

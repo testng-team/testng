@@ -1,6 +1,7 @@
 package test.dependent.xml;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -12,6 +13,7 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GroupDependencyTest extends SimpleBaseTest {
@@ -49,9 +51,9 @@ public class GroupDependencyTest extends SimpleBaseTest {
     }
 
     TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(Collections.singletonList(suite));
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     List<ITestResult> t = tla.getPassedTests();

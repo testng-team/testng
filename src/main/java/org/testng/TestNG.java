@@ -24,7 +24,6 @@ import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.IResultListener2;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Systematiser;
@@ -390,6 +389,7 @@ public class TestNG {
    * @deprecated Use #setParallel(XmlSuite.ParallelMode) instead
    */
   @Deprecated
+  //TODO: krmahadevan: This method is being used by Gradle. Removal causes build failures.
   public void setParallel(String parallel) {
     if (parallel == null) {
       setParallel(XmlSuite.ParallelMode.NONE);
@@ -703,60 +703,6 @@ public class TestNG {
     }
   }
 
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(IInvokedMethodListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(ISuiteListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(ITestListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(IClassListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addListener(IReporter listener) {
-    addListener((ITestNGListener) listener);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addInvokedMethodListener(IInvokedMethodListener listener) {
-    addListener((ITestNGListener) listener);
-  }
-
   public Set<IReporter> getReporters() {
     //This will now cause a different behavior for consumers of this method because unlike before they are no longer
     //going to be getting the original set but only a copy of it (since we internally moved from Sets to Maps)
@@ -1065,24 +1011,6 @@ public class TestNG {
     }
   }
 
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addAlterSuiteListener(IAlterSuiteListener l) {
-    addListener((ITestNGListener) l);
-  }
-
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO remove later
-  @Deprecated
-  public void addExecutionListener(IExecutionListener l) {
-    addListener((ITestNGListener) l);
-  }
-
   private static void usage() {
     if (m_jCommander == null) {
       m_jCommander = new JCommander(new CommandLineArgs());
@@ -1331,7 +1259,7 @@ public class TestNG {
     TestNG result = new TestNG();
 
     if (null != listener) {
-      result.addListener((Object)listener);
+      result.addListener(listener);
     }
 
     //
@@ -1414,7 +1342,7 @@ public class TestNG {
       setParallel(cla.parallelMode);
     }
     if (cla.configFailurePolicy != null) {
-      setConfigFailurePolicy(cla.configFailurePolicy);
+      setConfigFailurePolicy(XmlSuite.FailurePolicy.getValidPolicy(cla.configFailurePolicy));
     }
     if (cla.threadCount != null) {
       setThreadCount(cla.threadCount);
@@ -1659,25 +1587,6 @@ public class TestNG {
   }
 
   /**
-   * @deprecated The TestNG version is now established at load time. This
-   * method is not required anymore and is now a no-op.
-   */
-  @Deprecated
-  public static void setTestNGVersion() {
-    LOGGER.info("setTestNGVersion has been deprecated.");
-  }
-
-  /**
-   * Returns true if this is the JDK 1.4 JAR version of TestNG, false otherwise.
-   *
-   * @return true if this is the JDK 1.4 JAR version of TestNG, false otherwise.
-   */
-  @Deprecated
-  public static boolean isJdk14() {
-    return false;
-  }
-
-  /**
    * Double check that the command line parameters are valid.
    */
   protected static void validateCommandLineParameters(CommandLineArgs args) {
@@ -1745,12 +1654,7 @@ public class TestNG {
     return m_annotationTransformer;
   }
 
-  /**
-   * @deprecated Use addListener(ITestNGListener) instead
-   */
-  // TODO make private
-  @Deprecated
-  public void setAnnotationTransformer(IAnnotationTransformer t) {
+  private void setAnnotationTransformer(IAnnotationTransformer t) {
 	// compare by reference!
     if (m_annotationTransformer != m_defaultAnnoProcessor && m_annotationTransformer != t) {
     	LOGGER.warn("AnnotationTransformer already set");
@@ -1797,14 +1701,6 @@ public class TestNG {
   }
 
   /**
-   * @deprecated Use {@link #setConfigFailurePolicy(org.testng.xml.XmlSuite.FailurePolicy)} instead
-   */
-  @Deprecated
-  public void setConfigFailurePolicy(String failurePolicy) {
-    setConfigFailurePolicy(XmlSuite.FailurePolicy.getValidPolicy(failurePolicy));
-  }
-
-  /**
    * Returns the configuration failure policy.
    * @return config failure policy
    */
@@ -1819,84 +1715,6 @@ public class TestNG {
   @Deprecated
   public static TestNG getDefault() {
     return m_instance;
-  }
-
-  @Deprecated
-  /**
-   * @deprecated - This class stands deprecated as of TestNG v6.13
-   */
-  public static class ExitCodeListener implements IResultListener2 {
-    private TestNG m_mainRunner;
-
-    public ExitCodeListener() {
-      m_mainRunner = TestNG.m_instance;
-    }
-
-    public ExitCodeListener(TestNG runner) {
-      m_mainRunner = runner;
-    }
-
-    @Override
-    public void beforeConfiguration(ITestResult tr) {
-    }
-
-    @Override
-    public void onTestFailure(ITestResult result) {
-      setHasRunTests();
-    }
-
-    @Override
-    public void onTestSkipped(ITestResult result) {
-      setHasRunTests();
-    }
-
-    @Override
-    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-      setHasRunTests();
-    }
-
-    @Override
-    public void onTestSuccess(ITestResult result) {
-      setHasRunTests();
-    }
-
-    @Override
-    public void onStart(ITestContext context) {
-      setHasRunTests();
-    }
-
-    @Override
-    public void onFinish(ITestContext context) {
-    }
-
-    @Override
-    public void onTestStart(ITestResult result) {
-      setHasRunTests();
-    }
-
-    private void setHasRunTests() {
-    }
-
-    /**
-     * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
-     */
-    @Override
-    public void onConfigurationFailure(ITestResult itr) {
-    }
-
-    /**
-     * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
-     */
-    @Override
-    public void onConfigurationSkip(ITestResult itr) {
-    }
-
-    /**
-     * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
-     */
-    @Override
-    public void onConfigurationSuccess(ITestResult itr) {
-    }
   }
 
   private void setConfigurable(IConfigurable c) {

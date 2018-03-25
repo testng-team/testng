@@ -230,9 +230,9 @@ public class ListenerTest extends SimpleBaseTest {
     MultiListener listener = new MultiListener();
     TestNG tng = create(SimpleSample.class);
     // Keep using deprecated addListener methods. It is what the test is testing
-    tng.addListener((ISuiteListener) listener);
-    tng.addListener((ITestListener) listener);
-    tng.addInvokedMethodListener(listener);
+    tng.addListener((ITestNGListener) listener);
+    tng.addListener((ITestNGListener) listener);
+    tng.addListener((ITestNGListener) listener);
     tng.run();
     Assert.assertEquals(listener.getOnSuiteStartCount(), 1);
     Assert.assertEquals(listener.getOnSuiteFinishCount(), 1);
@@ -262,7 +262,7 @@ public class ListenerTest extends SimpleBaseTest {
     TestNG tng = create(SimpleSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
     tng.addListener((ITestNGListener) adapter);
-    tng.addListener(new Listener1393());
+    tng.addListener((ITestNGListener) new Listener1393());
     tng.run();
     Assert.assertEquals(adapter.getPassedTests().size(), 0);
     Assert.assertEquals(adapter.getFailedTests().size(), 1);

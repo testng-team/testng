@@ -2,6 +2,7 @@ package test.inject;
 
 import org.testng.Assert;
 import org.testng.ITestContext;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Parameters;
@@ -17,7 +18,7 @@ public class InjectTestContextTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setTestClasses(new Class[] { Sample.class });
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Assert.assertEquals(xmlTest.getName(), "Injection");
@@ -26,7 +27,7 @@ public class InjectTestContextTest extends SimpleBaseTest {
   }
 
   @Parameters("string")
-  @Test(enabled = true)
+  @Test
   public void injectionAndParameters(String s, ITestContext ctx) {
   }
 }

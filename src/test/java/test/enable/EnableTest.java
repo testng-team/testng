@@ -1,5 +1,6 @@
 package test.enable;
 
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -14,7 +15,7 @@ public class EnableTest extends SimpleBaseTest {
   public void disabled_methods_should_not_be_run() {
     TestNG tng = create(A.class, B.class, C.class);
     InvokedMethodListener listener = new InvokedMethodListener();
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
     tng.setPreserveOrder(true);
     tng.run();
 
@@ -33,7 +34,7 @@ public class EnableTest extends SimpleBaseTest {
   public void issue420() {
     TestNG tng = create(Issue420FirstSample.class, Issue420SecondSample.class);
     InvokedMethodListener listener = new InvokedMethodListener();
-    tng.addListener(listener);
+    tng.addListener((ITestNGListener) listener);
     tng.run();
 
     assertThat(listener.getInvokedMethods()).containsExactly(

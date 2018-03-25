@@ -1,5 +1,6 @@
 package test.listeners;
 
+import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -8,7 +9,6 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import test.listeners.EndMillisShouldNotBeZeroTest.MyInvokedMethodListener;
-import junit.framework.Assert;
 
 @Listeners(MyInvokedMethodListener.class)
 public class EndMillisShouldNotBeZeroTest {

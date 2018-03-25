@@ -56,18 +56,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
     }
 
     @Override
-    public Method getMethod() {
-        return null;
-    }
-
-    @Override
     public String getMethodName() {
         return null;
-    }
-
-    @Override
-    public Object[] getInstances() {
-        return new Object[0];
     }
 
     @Override
@@ -193,11 +183,6 @@ public class FakeTestNGMethod implements ITestNGMethod {
     @Override
     public void setInvocationCount(int count) {
 
-    }
-
-    @Override
-    public int getTotalInvocationCount() {
-        return 0;
     }
 
     @Override

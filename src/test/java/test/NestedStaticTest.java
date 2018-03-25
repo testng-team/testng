@@ -1,6 +1,7 @@
 package test;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -17,7 +18,7 @@ public class NestedStaticTest extends SimpleBaseTest {
   public void nestedClassShouldBeIncluded() {
     TestNG tng = create(NestedStaticSampleTest.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     Set<String> expected = new HashSet<String>() {{

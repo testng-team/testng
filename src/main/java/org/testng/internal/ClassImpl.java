@@ -33,7 +33,6 @@ public class ClassImpl implements IClass {
   private final IAnnotationFinder m_annotationFinder;
   private List<Object> m_instances = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
-  private int m_instanceCount;
   private long[] m_instanceHashCodes;
   private final Object m_instance;
   private final ITestObjectFactory m_objectFactory;
@@ -41,17 +40,6 @@ public class ClassImpl implements IClass {
   private final XmlClass m_xmlClass;
   private final ITestContext m_testContext;
   private final boolean m_hasParentModule;
-
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
-      Map<Class<?>, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
-      ITestObjectFactory objectFactory) {
-    this(context, cls, xmlClass, instance, classes, annotationFinder, objectFactory);
-  }
 
   public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
                    Map<Class<?>, IClass> classes, IAnnotationFinder annotationFinder,
@@ -88,12 +76,6 @@ public class ClassImpl implements IClass {
   @Override
   public Class getRealClass() {
     return m_class;
-  }
-
-  @Deprecated
-  @Override
-  public int getInstanceCount() {
-    return m_instanceCount;
   }
 
   @Override
@@ -196,7 +178,7 @@ public class ClassImpl implements IClass {
       result = m_instances.toArray(new Object[m_instances.size()]);
     }
 
-    m_instanceCount = m_instances.size();
+    int m_instanceCount = m_instances.size();
     m_instanceHashCodes = new long[m_instanceCount];
     for (int i = 0; i < m_instanceCount; i++) {
       m_instanceHashCodes[i] = m_instances.get(i).hashCode();

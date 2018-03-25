@@ -18,12 +18,6 @@ public class MyRawAssertion extends Assertion {
   }
 
   @Override
-  public void onAssertFailure(IAssert assertCommand) {
-    methods.add("deprecated_onAssertFailure");
-    super.onAssertFailure(assertCommand);
-  }
-
-  @Override
   public void onAssertFailure(IAssert assertCommand, AssertionError ex) {
     methods.add("onAssertFailure");
     super.onAssertFailure(assertCommand, ex);
