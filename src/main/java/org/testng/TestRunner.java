@@ -1012,8 +1012,9 @@ public class TestRunner
     }
     if (listener instanceof IExecutionListener) {
       IExecutionListener iel = (IExecutionListener) listener;
-      iel.onExecutionStart();
-      m_configuration.addExecutionListener(iel);
+      if (m_configuration.addExecutionListenerIfAbsent(iel)) {
+        iel.onExecutionStart();
+      }
     }
     if (listener instanceof IDataProviderListener) {
       IDataProviderListener dataProviderListener = (IDataProviderListener) listener;

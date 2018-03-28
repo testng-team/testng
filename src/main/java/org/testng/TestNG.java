@@ -688,7 +688,7 @@ public class TestNG {
       setConfigurable((IConfigurable) listener);
     }
     if (listener instanceof IExecutionListener) {
-      m_configuration.addExecutionListener((IExecutionListener) listener);
+      m_configuration.addExecutionListenerIfAbsent((IExecutionListener) listener);
     }
     if (listener instanceof IConfigurationListener) {
       m_configuration.addConfigurationListener((IConfigurationListener) listener);
