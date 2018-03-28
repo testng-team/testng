@@ -1,5 +1,7 @@
 Current
+Fixed: GITHUB-1726: Allow user-defined method interceptors to have the last say in method re-ordering (Krishnan Mahadevan)
 Fixed: GITHUB-564: Support using @Optional on @Test method parameters to use null values (Krishnan Mahadevan)
+New: Upgrade TestNG to start needing at-least JDK8 (Krishnan Mahadevan)
 Fixed: GITHUB-1637: Remove dependency on a pre-created jar for running unit tests for JarFileUtils (Krishnan Mahadevan)
 Fixed: GITHUB-1710: Inefficient DynamicGraph causes hang with only 100 tests. (Steve Prentice)
 Fixed: GITHUB-1716: Potential NPE in jq.Main reporter (Krishnan Mahadevan)

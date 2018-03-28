@@ -212,8 +212,11 @@ public class TestRunner
     setVerbose(test.getVerbose());
 
     boolean preserveOrder = test.getPreserveOrder();
-    m_methodInterceptors = new ArrayList<>();
     builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
+    m_methodInterceptors = new ArrayList<>();
+    //Add the built in interceptor as the first interceptor. That way we let our users determine the final order
+    //by plugging in their own custom interceptors as well.
+    m_methodInterceptors.add(builtinInterceptor);
 
     List<XmlPackage> m_packageNamesFromXml = test.getXmlPackages();
     if(null != m_packageNamesFromXml) {
@@ -661,8 +664,6 @@ public class TestRunner
 
     List<IMethodInstance> methodInstances = MethodHelper.methodsToMethodInstances(Arrays.asList(methods));
 
-    // add built-in interceptor (PreserveOrderMethodInterceptor or InstanceOrderingMethodInterceptor at the end of the list
-    m_methodInterceptors.add(builtinInterceptor);
     for (IMethodInterceptor m_methodInterceptor : m_methodInterceptors) {
       methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     }
