@@ -45,16 +45,6 @@ public interface IClass {
    */
   Object[] getInstances(boolean create);
 
-  /**
-   * @deprecated Not used
-   *
-   * @return The number of instances used in this class.  This method
-   * is needed for serialization since we don't know ahead of time if the
-   * instances of the test classes will be serializable.
-   */
-  @Deprecated
-  int getInstanceCount();
-
   long[] getInstanceHashCodes();
 
   void addInstance(Object instance);

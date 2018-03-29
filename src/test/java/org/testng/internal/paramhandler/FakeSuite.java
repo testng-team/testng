@@ -93,11 +93,6 @@ public class FakeSuite implements ISuite {
     }
 
     @Override
-    public Collection<ITestNGMethod> getInvokedMethods() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<IInvokedMethod> getAllInvokedMethods() {
         return Collections.emptyList();
     }

@@ -4,7 +4,6 @@ package org.testng;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -33,29 +32,11 @@ public interface ITestNGMethod extends Cloneable {
   void setTestClass(ITestClass cls);
 
   /**
-   * @return the corresponding Java test method.
-   * @deprecated This method is deprecated and can now return null. Use
-   * getConstructorOrMethod() instead.
-   */
-  @Deprecated
-  Method getMethod();
-
-  /**
    * Returns the method name. This is needed for serialization because
    * methods are not Serializable.
    * @return the method name.
    */
   String getMethodName();
-
-  /**
-   * @return All the instances the methods will be invoked upon.
-   * This will typically be an array of one object in the absence
-   * of an @Factory annotation.
-   *
-   * @deprecated Use getInstance().
-   */
-  @Deprecated
-  Object[] getInstances();
 
   Object getInstance();
 
@@ -163,13 +144,6 @@ public interface ITestNGMethod extends Cloneable {
   void setInvocationCount(int count);
 
   /**
-   * @deprecated Will always return 0
-   * @return 0
-   */
-  @Deprecated
-  int getTotalInvocationCount();
-
-  /**
    * @return the success percentage for this method (between 0 and 100).
    */
   int getSuccessPercentage();
@@ -261,7 +235,7 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return the parameters found in the include tag, if any
-   * @param test
+   * @param test - The {@link XmlTest} object.
    */
   Map<String, String> findMethodParameters(XmlTest test);
   

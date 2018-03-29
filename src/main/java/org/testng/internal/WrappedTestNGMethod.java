@@ -6,7 +6,6 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -41,18 +40,8 @@ public class WrappedTestNGMethod implements ITestNGMethod {
     }
 
     @Override
-    public Method getMethod() {
-        return testNGMethod.getMethod();
-    }
-
-    @Override
     public String getMethodName() {
         return testNGMethod.getMethodName();
-    }
-
-    @Override
-    public Object[] getInstances() {
-        return testNGMethod.getInstances();
     }
 
     @Override
@@ -178,11 +167,6 @@ public class WrappedTestNGMethod implements ITestNGMethod {
     @Override
     public void setInvocationCount(int count) {
         testNGMethod.setInvocationCount(count);
-    }
-
-    @Override
-    public int getTotalInvocationCount() {
-        return testNGMethod.getTotalInvocationCount();
     }
 
     @Override

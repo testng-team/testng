@@ -40,7 +40,7 @@ public class AssertionTest {
 
       assertThat(rawAssertion.getMethods())
           .containsExactly("onBeforeAssert", "onAssertSuccess", "onAfterAssert",
-                           "onBeforeAssert", "onAssertFailure", "deprecated_onAssertFailure", "onAfterAssert");
+                           "onBeforeAssert", "onAssertFailure", "onAfterAssert");
 
       throw error;
     }

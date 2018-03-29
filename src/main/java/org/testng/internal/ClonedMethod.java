@@ -95,11 +95,6 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public Object[] getInstances() {
-    return m_method.getInstances();
-  }
-
-  @Override
   public Object getInstance() {
     return m_method.getInstance();
   }
@@ -110,18 +105,8 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public int getTotalInvocationCount() {
-    return 0;
-  }
-
-  @Override
   public long getInvocationTimeOut() {
     return m_method.getInvocationTimeOut();
-  }
-
-  @Override
-  public Method getMethod() {
-    return m_javaMethod;
   }
 
   @Override

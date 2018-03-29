@@ -1,6 +1,7 @@
 package test.override;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -13,7 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Verify that command line switches override parameters in testng.xml.
@@ -34,10 +35,10 @@ public class OverrideTest extends SimpleBaseTest {
         );
     TestNG tng = create();
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     if (include != null) tng.setGroups(include);
     if (exclude != null) tng.setExcludedGroups(exclude);
-    tng.setTestSuites(Arrays.asList(f.getAbsolutePath()));
+    tng.setTestSuites(Collections.singletonList(f.getAbsolutePath()));
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);

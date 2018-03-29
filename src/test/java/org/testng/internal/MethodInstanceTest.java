@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +67,7 @@ public class MethodInstanceTest {
     methods.add(buildMethodInstance("unittests", "StatisticsTest", 0, "cStatistics"));
 
     try {
-      Collections.sort(methods, MethodInstance.SORT_BY_INDEX);
+      methods.sort(MethodInstance.SORT_BY_INDEX);
     }
     catch (IllegalArgumentException ex) {
       Assert.fail("Comparison method violates its general contract!");
@@ -174,12 +173,6 @@ public class MethodInstanceTest {
       return null;
     }
 
-    @Deprecated
-    @Override
-    public int getInstanceCount() {
-      return 0;
-    }
-
     @Override
     public ITestNGMethod[] getTestMethods() {
       return new ITestNGMethod[0];
@@ -268,18 +261,8 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public Method getMethod() {
-      return null;
-    }
-
-    @Override
     public String getMethodName() {
       return methodName;
-    }
-
-    @Override
-    public Object[] getInstances() {
-      return null;
     }
 
     @Override
@@ -396,11 +379,6 @@ public class MethodInstanceTest {
 
     @Override
     public int getInvocationCount() {
-      return 0;
-    }
-
-    @Override
-    public int getTotalInvocationCount() {
       return 0;
     }
 

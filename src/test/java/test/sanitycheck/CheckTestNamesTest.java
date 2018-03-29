@@ -1,8 +1,9 @@
 package test.sanitycheck;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
@@ -38,8 +39,8 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     try {
       TestNG tng = create();
       String testngXmlPath = getPathToResource(suitePath);
-      tng.setTestSuites(Arrays.asList(testngXmlPath));
-      tng.addListener(tla);
+      tng.setTestSuites(Collections.singletonList(testngXmlPath));
+      tng.addListener((ITestNGListener) tla);
       tng.run();
     } catch (TestNGException ex) {
       exceptionRaised = true;
@@ -57,8 +58,8 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test2.xml");
-    tng.setTestSuites(Arrays.asList(testngXmlPath));
-    tng.addListener(tla);
+    tng.setTestSuites(Collections.singletonList(testngXmlPath));
+    tng.addListener((ITestNGListener) tla);
     tng.run();
     Assert.assertEquals(tla.getPassedTests().size(), 2);
   }
@@ -71,8 +72,8 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-b.xml");
-    tng.setTestSuites(Arrays.asList(testngXmlPath));
-    tng.addListener(tla);
+    tng.setTestSuites(Collections.singletonList(testngXmlPath));
+    tng.addListener((ITestNGListener) tla);
     tng.run();
     Assert.assertEquals(tla.getPassedTests().size(), 4);
   }
@@ -91,7 +92,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
 
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setXmlSuites(Arrays.asList(new XmlSuite[] { xmlSuite }));
+    tng.setXmlSuites(Collections.singletonList(xmlSuite));
     tng.run();
   }
 }

@@ -1,12 +1,11 @@
 package test.attributes;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Set;
-
-import junit.framework.Assert;
 
 public class AttributeTest {
 
@@ -18,20 +17,20 @@ public class AttributeTest {
   @Test
   public void f1(ITestContext ctx) {
     Set<String> names = ctx.getAttributeNames();
-    Assert.assertEquals(1, names.size());
-    Assert.assertTrue(names.contains("test"));
-    Assert.assertEquals(ctx.getAttribute("test"), "1");
+    assertThat(names).hasSize(1);
+    assertThat(names).contains("test");
+    assertThat(ctx.getAttribute("test")).isEqualTo("1");
     Object v = ctx.removeAttribute("test");
-    Assert.assertNotNull(v);
+    assertThat(v).isNotNull();
     ctx.setAttribute("test2", "2");
   }
 
   @Test(dependsOnMethods = "f1")
   public void f2(ITestContext ctx) {
     Set<String> names = ctx.getAttributeNames();
-    Assert.assertEquals(1, names.size());
-    Assert.assertTrue(names.contains("test2"));
-    Assert.assertTrue(ctx.getAttribute("test2").equals("2"));
+    assertThat(names).hasSize(1);
+    assertThat(names).contains("test2");
+    assertThat(ctx.getAttribute("test2")).isEqualTo("2");
   }
 
 }

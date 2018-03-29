@@ -1,20 +1,22 @@
 package test.listeners;
 
+import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
 import test.SimpleBaseTest;
 import test.sample.Sample1;
-import junit.framework.Assert;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ResultEndMillisTest extends SimpleBaseTest {
 
   @Test
   public void endMillisShouldBeNonNull() {
     TestNG tng = create(Sample1.class);
-    tng.addListener(new ResultListener());
+    tng.addListener((ITestNGListener) new ResultListener());
     tng.run();
 
-    Assert.assertTrue(ResultListener.m_end > 0);
+    assertThat(ResultListener.m_end > 0).isTrue();
   }
 }

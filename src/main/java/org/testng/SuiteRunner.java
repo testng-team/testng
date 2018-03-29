@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.inject.Injector;
@@ -568,14 +567,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
 
     return result;
-  }
-
-  /**
-   * @see org.testng.ISuite#getInvokedMethods()
-   */
-  @Override
-  public Collection<ITestNGMethod> getInvokedMethods() {
-    return getIncludedOrExcludedMethods(true /* included */);
   }
 
   /**

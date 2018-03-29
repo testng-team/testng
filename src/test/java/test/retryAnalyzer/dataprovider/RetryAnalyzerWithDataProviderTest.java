@@ -2,6 +2,7 @@ package test.retryAnalyzer.dataprovider;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -14,7 +15,7 @@ public class RetryAnalyzerWithDataProviderTest extends SimpleBaseTest {
   public void testRetryCounts() {
     TestNG tng = create(RetryCountTest.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
 
     tng.run();
 

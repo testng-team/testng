@@ -37,19 +37,8 @@ public class Assertion implements IAssertLifecycle {
   public void onAssertSuccess(IAssert<?> assertCommand) {
   }
 
-  /**
-   * Invoked when an assert fails. Meant to be overridden by subclasses.
-   * 
-   * @deprecated use onAssertFailure(IAssert assertCommand, AssertionError ex) instead of.
-   */
-  @Deprecated
-  @Override
-  public void onAssertFailure(IAssert<?> assertCommand) {
-  }
-  
   @Override
   public void onAssertFailure(IAssert<?> assertCommand, AssertionError ex) {
-      onAssertFailure(assertCommand);
   }
 
   /**

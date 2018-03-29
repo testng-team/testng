@@ -68,12 +68,6 @@ public abstract class JUnitTestClass implements ITestClass {
         return null;
     }
 
-    @Deprecated
-    @Override
-    public int getInstanceCount() {
-        return 1;
-    }
-
     /**
      * @see org.testng.ITestClass#getInstanceHashCodes()
      */

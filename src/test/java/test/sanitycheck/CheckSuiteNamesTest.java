@@ -1,6 +1,7 @@
 package test.sanitycheck;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -8,11 +9,10 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.xml.sax.SAXException;
 import test.SimpleBaseTest;
 import java.io.IOException;
 import java.util.Arrays;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.Collections;
 
 public class CheckSuiteNamesTest extends SimpleBaseTest {
 
@@ -24,8 +24,8 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
-    tng.setTestSuites(Arrays.asList(testngXmlPath));
-    tng.addListener(tla);
+    tng.setTestSuites(Collections.singletonList(testngXmlPath));
+    tng.addListener((ITestNGListener) tla);
     tng.run();
     Assert.assertEquals(tla.getPassedTests().size(), 4);
   }
@@ -38,8 +38,8 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-a.xml");
-    tng.setTestSuites(Arrays.asList(testngXmlPath));
-    tng.addListener(tla);
+    tng.setTestSuites(Collections.singletonList(testngXmlPath));
+    tng.addListener((ITestNGListener) tla);
     tng.run();
     Assert.assertEquals(tla.getTestContexts().get(0).getSuite().getName(), "SanityCheck suites");
     Assert.assertEquals(tla.getTestContexts().get(1).getSuite().getName(), "SanityCheck suites");
@@ -74,7 +74,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
   }
   
   @Test
-  public void checkXmlSuiteAddition() throws ParserConfigurationException, SAXException, IOException {
+  public void checkXmlSuiteAddition() throws IOException {
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
     Parser parser = new Parser(testngXmlPath);	

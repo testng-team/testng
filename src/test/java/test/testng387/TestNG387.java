@@ -12,13 +12,13 @@ import static org.testng.Assert.assertEqualsNoOrder;
 
 public class TestNG387 extends SimpleBaseTest {
   @Test(invocationCount = 500)
-  public void testInvocationCounterIsCorrectForMethodWithDataProvider() throws Exception {
+  public void testInvocationCounterIsCorrectForMethodWithDataProvider() {
     final TestNG tng = create(FailedDPTest.class);
     tng.setThreadCount(1);
     tng.setParallel(XmlSuite.ParallelMode.NONE);
     tng.setPreserveOrder(true);
     final TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener(tla);
+    tng.addListener((ITestNGListener) tla);
     tng.run();
 
     ITestNGMethod method = tla.getTestContexts().get(0).getAllTestMethods()[0];

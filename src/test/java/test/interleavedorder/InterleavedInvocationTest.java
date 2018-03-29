@@ -1,6 +1,7 @@
 package test.interleavedorder;
 
 import org.testng.Assert;
+import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeTest;
@@ -35,7 +36,7 @@ public class InterleavedInvocationTest extends BaseTest {
     TestNG testng = new TestNG();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] { TestChild1.class, TestChild2.class });
-    testng.addListener(tla);
+    testng.addListener((ITestNGListener) tla);
     testng.setVerbose(0);
     testng.run();
 
