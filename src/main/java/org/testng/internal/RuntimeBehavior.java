@@ -25,9 +25,10 @@ public final class RuntimeBehavior {
      * timezone pertaining to the user property <code>user.timezone</code>
      */
     public static TimeZone getTimeZone() {
-        if (System.getProperty("testng.timezone", "").trim().isEmpty()) {
+        String timeZone = System.getProperty("testng.timezone", "");
+        if (timeZone.trim().isEmpty()) {
             return TimeZone.getDefault();
         }
-        return TimeZone.getTimeZone(System.getProperty("testng.timezone"));
+        return TimeZone.getTimeZone(timeZone);
     }
 }

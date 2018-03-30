@@ -90,7 +90,7 @@ public class JUnitReportReporter implements IReporter {
       Class<?> cls = entry.getKey();
       Properties p1 = new Properties();
       p1.setProperty(XMLConstants.ATTR_NAME, cls.getName());
-      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, JUnitXMLReporter.timeAsGmt());
+      p1.setProperty(XMLConstants.ATTR_TIMESTAMP, JUnitXMLReporter.formattedTime());
 
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
