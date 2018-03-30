@@ -191,8 +191,8 @@ public class XMLReporter implements IReporter {
   public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
       Date minStartDate, Date maxEndDate) {
 
-    String startTime = TimeUtils.timeInUTC(minStartDate.getTime(), config.getTimestampFormat());
-    String endTime = TimeUtils.timeInUTC(maxEndDate.getTime(), config.getTimestampFormat());
+    String startTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(minStartDate.getTime(), config.getTimestampFormat());
+    String endTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(maxEndDate.getTime(), config.getTimestampFormat());
     long duration = maxEndDate.getTime() - minStartDate.getTime();
 
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
