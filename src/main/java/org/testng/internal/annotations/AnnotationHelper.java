@@ -164,6 +164,7 @@ public class AnnotationHelper {
     result.setDescription(bs.getDescription());
     result.setEnabled(bs.getEnabled());
     result.setGroups(bs.getGroups());
+    result.setGroupFilters(bs.getGroupFilters());
     result.setInheritGroups(bs.getInheritGroups());
     result.setParameters(bs.getParameters());
     result.setTimeOut(bs.getTimeOut());

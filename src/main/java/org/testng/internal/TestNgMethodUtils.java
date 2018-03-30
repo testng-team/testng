@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -93,7 +95,8 @@ class TestNgMethodUtils {
         List<ITestNGMethod> result = Lists.newArrayList();
         for (ITestNGMethod m : methods) {
             ConfigurationMethod cm = (ConfigurationMethod) m;
-            if (isConfigMethodRunningFirstTime(cm, tm)) {
+            if (isConfigMethodRunningFirstTime(cm, tm)
+                    && doesConfigMethodPassGroupFilters(cm, tm)) {
                 result.add(m);
             }
         }
@@ -128,6 +131,20 @@ class TestNgMethodUtils {
 
     private static boolean isConfigMethodRunningFirstTime(ConfigurationMethod cm, ITestNGMethod tm) {
         return !cm.isFirstTimeOnly() || (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0);
+    }
+
+    private static boolean doesConfigMethodPassGroupFilters(ConfigurationMethod cm, ITestNGMethod tm) {
+        String[] groupFilters = cm.getGroupFilters();
+        if (groupFilters == null || groupFilters.length == 0) {
+            return true; // no group filters means all groups accepted
+        }
+        String[] groups = tm.getGroups();
+        if (groups == null || groups.length == 0) {
+            return false; // a method with no groups won't pass any filter
+        }
+        HashSet<String> groupSet = new HashSet<>(Arrays.asList(groups));
+        groupSet.retainAll(new HashSet<>(Arrays.asList(groupFilters)));
+        return !groupSet.isEmpty();
     }
 
     private static boolean isConfigMethodRunningLastTime(ConfigurationMethod cm, ITestNGMethod tm) {

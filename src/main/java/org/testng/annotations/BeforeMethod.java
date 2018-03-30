@@ -40,6 +40,8 @@ public @interface BeforeMethod {
    */
   public String[] dependsOnMethods() default {};
 
+  public String[] onlyForGroups() default {};
+
   /**
    *  For before methods (beforeSuite, beforeTest, beforeTestClass and
    *  beforeTestMethod, but not beforeGroups):
