@@ -80,6 +80,4 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
    * annotation.
    */
   public boolean isFakeConfiguration();
-
-    public String[] getGroupFilters();
 }
