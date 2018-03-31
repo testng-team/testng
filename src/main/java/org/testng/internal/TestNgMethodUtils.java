@@ -133,6 +133,10 @@ class TestNgMethodUtils {
         return !cm.isFirstTimeOnly() || (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0);
     }
 
+    private static boolean isConfigMethodRunningLastTime(ConfigurationMethod cm, ITestNGMethod tm) {
+        return !cm.isLastTimeOnly() || (cm.isLastTimeOnly() && !tm.hasMoreInvocation());
+    }
+
     private static boolean doesConfigMethodPassGroupFilters(ConfigurationMethod cm, ITestNGMethod tm) {
         String[] groupFilters = cm.getGroupFilters();
         if (groupFilters.length == 0) {
@@ -143,9 +147,5 @@ class TestNgMethodUtils {
             return false; // a method with no groups won't pass any filter
         }
         return !Collections.disjoint(Sets.newHashSet(groups), Sets.newHashSet(groupFilters));
-    }
-
-    private static boolean isConfigMethodRunningLastTime(ConfigurationMethod cm, ITestNGMethod tm) {
-        return !cm.isLastTimeOnly() || (cm.isLastTimeOnly() && !tm.hasMoreInvocation());
     }
 }
