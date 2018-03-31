@@ -456,12 +456,11 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public String[] getGroupFilters() {
-    String[] result = new String[0];
     IBeforeMethod before = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IBeforeMethod.class);
-    if (before != null) {
-      result = before.getGroupFilters();
+    if (before == null) {
+      return new String[0];
     }
-    return result;
+    return before.getGroupFilters();
   }
 
 }

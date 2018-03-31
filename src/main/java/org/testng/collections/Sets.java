@@ -18,7 +18,7 @@ public final class Sets {
     return new HashSet<>(c);
   }
 
-  public static <V> Set<V> newHashSet(V[] a) {
+  public static <V> Set<V> newHashSet(V... a) {
     return newHashSet(Arrays.asList(a));
   }
 

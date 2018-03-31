@@ -10,9 +10,9 @@ public class BeforeMethodWithGroupFiltersTest extends SimpleBaseTest {
 
     @Test
     public void beforeMethodWithBeforeGroupsShouldOnlyRunBeforeGroupMethods() {
-        InvokedMethodNameListener nameListener = run(new Class[] { BeforeMethodWithGroupFiltersSampleTest.class });
+        InvokedMethodNameListener nameListener = run(BeforeMethodWithGroupFiltersSampleTest.class);
         assertThat(nameListener.getInvokedMethodNames())
-                .isEqualTo(BeforeMethodWithGroupFiltersSampleTest.EXPECTED_INVOCATIONS);
+                .containsExactly(BeforeMethodWithGroupFiltersSampleTest.EXPECTED_INVOCATIONS);
     }
 
 }

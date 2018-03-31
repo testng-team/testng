@@ -8,10 +8,10 @@ import java.util.List;
 
 public class BeforeMethodWithGroupFiltersSampleTest {
 
-    static final List<String> EXPECTED_INVOCATIONS = Arrays.asList(
+    static final String[] EXPECTED_INVOCATIONS = {
             "beforeGroup1", "g1m1", "beforeGroup1", "g1m2",
             "beforeGroup2", "g2m1", "beforeGroup2", "g2m2", "beforeGroup2", "g2m3"
-        );
+    };
 
     @BeforeMethod(onlyForGroups = {"group1"})
     public void beforeGroup1() {
