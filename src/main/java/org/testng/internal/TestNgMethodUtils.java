@@ -86,17 +86,14 @@ class TestNgMethodUtils {
     }
 
     /**
-     * The array of methods contains @BeforeMethods if isBefore if true, @AfterMethods
-     * otherwise.  This function removes all the methods that should not be run at this
-     * point because they are either firstTimeOnly or lastTimeOnly and we haven't reached
-     * the current invocationCount yet
+     * Filters configuration method array, leaving only those methods that should actually run.
      */
-    static ITestNGMethod[] filterFirstTimeRunnableSetupConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
+    static ITestNGMethod[] filterSetupConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
         List<ITestNGMethod> result = Lists.newArrayList();
         for (ITestNGMethod m : methods) {
             ConfigurationMethod cm = (ConfigurationMethod) m;
-            if (isConfigMethodRunningFirstTime(cm, tm)
-                    && doesConfigMethodPassGroupFilters(cm, tm)) {
+            if (doesConfigMethodPassFirstTimeFilter(cm, tm)
+             && doesConfigMethodPassGroupFilters(cm, tm)) {
                 result.add(m);
             }
         }
@@ -129,7 +126,7 @@ class TestNgMethodUtils {
         return String.format("%s+%d+%d", instance.toString(), method.getCurrentInvocationCount(), method.getParameterInvocationCount());
     }
 
-    private static boolean isConfigMethodRunningFirstTime(ConfigurationMethod cm, ITestNGMethod tm) {
+    private static boolean doesConfigMethodPassFirstTimeFilter(ConfigurationMethod cm, ITestNGMethod tm) {
         return !cm.isFirstTimeOnly() || (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0);
     }
 
