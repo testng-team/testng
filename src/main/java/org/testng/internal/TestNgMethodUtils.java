@@ -1,12 +1,12 @@
 package org.testng.internal;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.collections.Sets;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -135,16 +135,14 @@ class TestNgMethodUtils {
 
     private static boolean doesConfigMethodPassGroupFilters(ConfigurationMethod cm, ITestNGMethod tm) {
         String[] groupFilters = cm.getGroupFilters();
-        if (groupFilters == null || groupFilters.length == 0) {
+        if (groupFilters.length == 0) {
             return true; // no group filters means all groups accepted
         }
         String[] groups = tm.getGroups();
-        if (groups == null || groups.length == 0) {
+        if (groups.length == 0) {
             return false; // a method with no groups won't pass any filter
         }
-        HashSet<String> groupSet = new HashSet<>(Arrays.asList(groups));
-        groupSet.retainAll(new HashSet<>(Arrays.asList(groupFilters)));
-        return !groupSet.isEmpty();
+        return !Collections.disjoint(Sets.newHashSet(groups), Sets.newHashSet(groupFilters));
     }
 
     private static boolean isConfigMethodRunningLastTime(ConfigurationMethod cm, ITestNGMethod tm) {
