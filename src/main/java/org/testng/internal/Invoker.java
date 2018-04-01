@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IClass;
 import org.testng.IClassListener;
@@ -65,6 +66,8 @@ public class Invoker implements IInvoker {
   private final boolean m_continueOnFailedConfiguration;
   private final List<IClassListener> m_classListeners;
   private final Collection<IDataProviderListener> m_dataproviderListeners;
+
+  private final Set<ITestNGMethod> m_executedConfigMethods = ConcurrentHashMap.newKeySet();
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private final Map<String, Boolean> m_beforegroupsFailures = Maps.newConcurrentMap();
@@ -219,7 +222,13 @@ public class Invoker implements IInvoker {
         runConfigurationListeners(testResult, true /* before */);
 
         Object newInstance = computeInstance(instance, inst, tm);
-        invokeConfigurationMethod(newInstance, tm, parameters, testResult);
+        if (isConfigMethodEligibleForScrutiny(tm)) {
+          if (m_executedConfigMethods.add(currentTestMethod)) {
+            invokeConfigurationMethod(newInstance, tm, parameters, testResult);
+          }
+        } else {
+          invokeConfigurationMethod(newInstance, tm, parameters, testResult);
+        }
 
         runConfigurationListeners(testResult, false /* after */);
       }
@@ -424,6 +433,20 @@ public class Invoker implements IInvoker {
       throw new IllegalStateException("No failure logs for " + testClass.getRealClass());
     }
     return set;
+  }
+
+  private static boolean isConfigMethodEligibleForScrutiny(ITestNGMethod tm) {
+    if (!tm.isBeforeMethodConfiguration()) {
+      return false;
+    }
+    if (! (tm instanceof ConfigurationMethod)) {
+      return false;
+    }
+    ConfigurationMethod cfg = (ConfigurationMethod) tm;
+    if (!cfg.isFirstTimeOnly()) {
+      return false;
+    }
+    return true;
   }
 
   /**

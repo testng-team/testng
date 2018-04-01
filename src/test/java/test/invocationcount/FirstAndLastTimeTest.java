@@ -2,12 +2,18 @@ package test.invocationcount;
 
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.testng.collections.Lists;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+import test.invocationcount.issue426.SampleTestClassWithNoThreadPoolSizeDefined;
+import test.invocationcount.issue426.SampleTestClassWithThreadPoolSizeDefined;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -116,6 +122,21 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
         "f",
         "f", "afterMethod"
     );
+  }
+
+  @Test(dataProvider = "classNames", description = "GITHUB-426")
+  public void verifyFirstTimeOnly(Class<?> clazz) {
+    List<String> invokedMethodNames = run(clazz);
+    String[] expected = new String[]{"beforeMethod", "testMethod", "testMethod"};
+    assertThat(invokedMethodNames).containsExactly(expected);
+  }
+
+  @DataProvider(name = "classNames")
+  public Object[][] getClassNames() {
+    return new Object[][]{
+            {SampleTestClassWithNoThreadPoolSizeDefined.class},
+            {SampleTestClassWithThreadPoolSizeDefined.class}
+    };
   }
 
   private static List<String> run(Class<?> cls) {
