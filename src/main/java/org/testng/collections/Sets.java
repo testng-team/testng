@@ -1,5 +1,6 @@
 package org.testng.collections;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -15,6 +16,10 @@ public final class Sets {
 
   public static <V> Set<V> newHashSet(Collection<V> c) {
     return new HashSet<>(c);
+  }
+
+  public static <V> Set<V> newHashSet(V... a) {
+    return newHashSet(Arrays.asList(a));
   }
 
   public static <V> Set<V> newLinkedHashSet() {

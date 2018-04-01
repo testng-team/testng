@@ -4,7 +4,9 @@ import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.collections.Sets;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -84,16 +86,14 @@ class TestNgMethodUtils {
     }
 
     /**
-     * The array of methods contains @BeforeMethods if isBefore if true, @AfterMethods
-     * otherwise.  This function removes all the methods that should not be run at this
-     * point because they are either firstTimeOnly or lastTimeOnly and we haven't reached
-     * the current invocationCount yet
+     * Filters configuration method array, leaving only those methods that should actually run.
      */
-    static ITestNGMethod[] filterFirstTimeRunnableSetupConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
+    static ITestNGMethod[] filterSetupConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
         List<ITestNGMethod> result = Lists.newArrayList();
         for (ITestNGMethod m : methods) {
             ConfigurationMethod cm = (ConfigurationMethod) m;
-            if (isConfigMethodRunningFirstTime(cm, tm)) {
+            if (doesConfigMethodPassFirstTimeFilter(cm, tm)
+             && doesConfigMethodPassGroupFilters(cm, tm)) {
                 result.add(m);
             }
         }
@@ -126,11 +126,23 @@ class TestNgMethodUtils {
         return String.format("%s+%d+%d", instance.toString(), method.getCurrentInvocationCount(), method.getParameterInvocationCount());
     }
 
-    private static boolean isConfigMethodRunningFirstTime(ConfigurationMethod cm, ITestNGMethod tm) {
+    private static boolean doesConfigMethodPassFirstTimeFilter(ConfigurationMethod cm, ITestNGMethod tm) {
         return !cm.isFirstTimeOnly() || (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0);
     }
 
     private static boolean isConfigMethodRunningLastTime(ConfigurationMethod cm, ITestNGMethod tm) {
         return !cm.isLastTimeOnly() || (cm.isLastTimeOnly() && !tm.hasMoreInvocation());
+    }
+
+    private static boolean doesConfigMethodPassGroupFilters(ConfigurationMethod cm, ITestNGMethod tm) {
+        String[] groupFilters = cm.getGroupFilters();
+        if (groupFilters.length == 0) {
+            return true; // no group filters means all groups accepted
+        }
+        String[] groups = tm.getGroups();
+        if (groups.length == 0) {
+            return false; // a method with no groups won't pass any filter
+        }
+        return !Collections.disjoint(Sets.newHashSet(groups), Sets.newHashSet(groupFilters));
     }
 }

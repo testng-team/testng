@@ -514,12 +514,7 @@ public class Invoker implements IInvoker {
 
     invokeBeforeGroupsConfigurations(tm, groupMethods, suite, params, instance);
 
-    //
-    // Invoke beforeMethods only if
-    // - firstTimeOnly is not set
-    // - firstTimeOnly is set, and we are reaching at the first invocationCount
-    //
-    ITestNGMethod[] setupConfigMethods = TestNgMethodUtils.filterFirstTimeRunnableSetupConfigurationMethods(tm, beforeMethods);
+    ITestNGMethod[] setupConfigMethods = TestNgMethodUtils.filterSetupConfigurationMethods(tm, beforeMethods);
     invokeConfigurations(testClass, tm, setupConfigMethods, suite, params, parameterValues, instance, testResult);
 
     InvokedMethod invokedMethod = new InvokedMethod(instance, tm, System.currentTimeMillis(), testResult);

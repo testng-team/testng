@@ -28,6 +28,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
   private boolean m_inheritGroups = true;
   private String[] m_beforeGroups = {};
   private String[] m_afterGroups = {};
+  private String[] m_groupFilters = {};
   private boolean m_isFakeConfiguration;
   private boolean m_firstTimeOnly = false;
   private boolean m_lastTimeOnly = false;
@@ -152,6 +153,15 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
 
   public void setBeforeGroups(String[] beforeGroups) {
     m_beforeGroups = beforeGroups;
+  }
+
+  @Override
+  public String[] getGroupFilters() {
+    return m_groupFilters;
+  }
+
+  void setGroupFilters(String[] groupFilters) {
+    m_groupFilters = groupFilters;
   }
 
   public void setFakeConfiguration(boolean b) {

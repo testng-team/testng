@@ -455,5 +455,13 @@ public class ConfigurationMethod extends BaseTestMethod {
     return result;
   }
 
+  public String[] getGroupFilters() {
+    IBeforeMethod before = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IBeforeMethod.class);
+    if (before == null) {
+      return new String[0];
+    }
+    return before.getGroupFilters();
+  }
+
 }
 

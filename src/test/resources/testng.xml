@@ -789,6 +789,7 @@
       <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.MethodCallOrderTest"/>
       <class name="test.configuration.MultipleBeforeGroupTest" />
+      <class name="test.configuration.BeforeMethodWithGroupFiltersTest" />
       <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
       <class name="test.configuration.SuiteFactoryOnceTest" />
       <class name="test.configuration.SuiteTest" />
