@@ -1,5 +1,5 @@
 package org.testng.internal.annotations;
 
-public interface IAfterMethod extends IBaseBeforeAfter {
+public interface IAfterMethod extends IBaseBeforeAfterMethod {
 
 }

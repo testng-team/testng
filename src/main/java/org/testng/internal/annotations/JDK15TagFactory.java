@@ -239,7 +239,7 @@ public class JDK15TagFactory {
           bs.description(), bs.enabled(), bs.groups(),
           bs.inheritGroups(), null,
           false, bs.lastTimeOnly(),
-          bs.timeOut(), new String[0]);
+          bs.timeOut(), bs.onlyForGroups());
     }
 
     return result;

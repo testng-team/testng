@@ -19,6 +19,7 @@ import org.testng.internal.annotations.IAfterMethod;
 import org.testng.internal.annotations.IAfterSuite;
 import org.testng.internal.annotations.IAfterTest;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.annotations.IBaseBeforeAfterMethod;
 import org.testng.internal.annotations.IBeforeClass;
 import org.testng.internal.annotations.IBeforeGroups;
 import org.testng.internal.annotations.IBeforeMethod;
@@ -456,11 +457,15 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public String[] getGroupFilters() {
-    IBeforeMethod before = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IBeforeMethod.class);
-    if (before == null) {
+    IBaseBeforeAfterMethod beforeAfter;
+    beforeAfter = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IBeforeMethod.class);
+    if (beforeAfter == null) {
+      beforeAfter = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IAfterMethod.class);
+    }
+    if (beforeAfter == null) {
       return new String[0];
     }
-    return before.getGroupFilters();
+    return beforeAfter.getGroupFilters();
   }
 
 }

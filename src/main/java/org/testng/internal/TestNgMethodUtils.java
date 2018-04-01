@@ -85,14 +85,11 @@ class TestNgMethodUtils {
         return vResult.toArray(new ITestNGMethod[vResult.size()]);
     }
 
-    /**
-     * Filters configuration method array, leaving only those methods that should actually run.
-     */
     static ITestNGMethod[] filterSetupConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
         List<ITestNGMethod> result = Lists.newArrayList();
         for (ITestNGMethod m : methods) {
             ConfigurationMethod cm = (ConfigurationMethod) m;
-            if (doesConfigMethodPassFirstTimeFilter(cm, tm)
+            if (doesSetupMethodPassFirstTimeFilter(cm, tm)
              && doesConfigMethodPassGroupFilters(cm, tm)) {
                 result.add(m);
             }
@@ -100,11 +97,12 @@ class TestNgMethodUtils {
         return result.toArray(new ITestNGMethod[result.size()]);
     }
 
-    static ITestNGMethod[] filterLastTimeRunnableTeardownConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
+    static ITestNGMethod[] filterTeardownConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
         List<ITestNGMethod> result = Lists.newArrayList();
         for (ITestNGMethod m : methods) {
             ConfigurationMethod cm = (ConfigurationMethod) m;
-            if (isConfigMethodRunningLastTime(cm, tm)) {
+            if (doesTeardownMethodPassLastTimeFilter(cm, tm)
+             && doesConfigMethodPassGroupFilters(cm, tm)) {
                 result.add(m);
             }
         }
@@ -126,11 +124,11 @@ class TestNgMethodUtils {
         return String.format("%s+%d+%d", instance.toString(), method.getCurrentInvocationCount(), method.getParameterInvocationCount());
     }
 
-    private static boolean doesConfigMethodPassFirstTimeFilter(ConfigurationMethod cm, ITestNGMethod tm) {
+    private static boolean doesSetupMethodPassFirstTimeFilter(ConfigurationMethod cm, ITestNGMethod tm) {
         return !cm.isFirstTimeOnly() || (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0);
     }
 
-    private static boolean isConfigMethodRunningLastTime(ConfigurationMethod cm, ITestNGMethod tm) {
+    private static boolean doesTeardownMethodPassLastTimeFilter(ConfigurationMethod cm, ITestNGMethod tm) {
         return !cm.isLastTimeOnly() || (cm.isLastTimeOnly() && !tm.hasMoreInvocation());
     }
 
