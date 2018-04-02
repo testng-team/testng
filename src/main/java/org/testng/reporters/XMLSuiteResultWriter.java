@@ -194,8 +194,8 @@ public class XMLSuiteResultWriter {
 
     attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
-    String startTime = TimeUtils.timeInUTC(testResult.getStartMillis(), config.getTimestampFormat());
-    String endTime = TimeUtils.timeInUTC(testResult.getEndMillis(), config.getTimestampFormat());
+    String startTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(testResult.getStartMillis(), config.getTimestampFormat());
+    String endTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(testResult.getEndMillis(), config.getTimestampFormat());
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
     attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);
     long duration = testResult.getEndMillis() - testResult.getStartMillis();

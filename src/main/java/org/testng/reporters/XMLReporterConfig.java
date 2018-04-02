@@ -81,9 +81,7 @@ public class XMLReporterConfig {
    */
   public static final int FF_LEVEL_SUITE_RESULT = 3;
 
-  // note: We're hardcoding the 'Z' because Java doesn't support all the
-  // intricacies of ISO-8601.
-  static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+  static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss z";
 
   /**
    * Indicates the way that the file fragmentation should be performed. Set this

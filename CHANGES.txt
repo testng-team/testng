@@ -1,4 +1,7 @@
 Current
+Fixed: GITHUB-466: JUnitReportReporter always converts the system time into GMT (Krishnan Mahadevan)
+Fixed: GITHUB-1723: Standardize timezone reference in XML reports (Krishnan Mahadevan)
+Fixed: GITHUB-489: Incorrect timezone info in <test-method> element of testng-results.xml (Krishnan Mahadevan)
 Fixed: GITHUB-1735: IExecutionListener.onStart() running twice when used as annotation (Krishnan Mahadevan)
 New  : Removed deprecated methods across TestNG (Krishnan Mahadevan)
 Fixed: GITHUB-1726: Allow user-defined method interceptors to have the last say in method re-ordering (Krishnan Mahadevan)

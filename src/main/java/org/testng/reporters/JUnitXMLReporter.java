@@ -4,27 +4,21 @@ package org.testng.reporters;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
+import org.testng.util.TimeUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Collection;
 import java.util.Queue;
-import java.util.TimeZone;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Pattern;
-
-import java.text.SimpleDateFormat;
 
 /**
  * A JUnit XML report generator (replacing the original JUnitXMLReporter that was
@@ -163,7 +157,7 @@ public class JUnitXMLReporter implements IResultListener2 {
       attrs.setProperty(XMLConstants.ATTR_TIME,
           Double.toString((context.getEndDate().getTime() - context.getStartDate().getTime()) / 1000.0));
 
-      attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, timeAsGmt());
+      attrs.setProperty(XMLConstants.ATTR_TIMESTAMP, formattedTime());
 
       document.push(XMLConstants.TESTSUITE, attrs);
 
@@ -175,11 +169,8 @@ public class JUnitXMLReporter implements IResultListener2 {
       Utils.writeUtf8File(context.getOutputDirectory(),generateFileName(context) + ".xml", document.toXML());
   }
 
-  static String timeAsGmt() {
-    SimpleDateFormat sdf = new SimpleDateFormat();
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-    sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
-    return sdf.format(Calendar.getInstance().getTime());
+  static String formattedTime() {
+    return TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(System.currentTimeMillis(), XMLReporterConfig.FMT_DEFAULT);
   }
 
   private synchronized void createElementFromTestResults(XMLStringBuffer document, Collection<ITestResult> results) {
