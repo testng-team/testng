@@ -16,20 +16,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 // TODO replace other test IInvokedMethodListener by this one
 public class InvokedMethodNameListener implements IInvokedMethodListener, ITestListener {
 
-  private final Set<Object> testInstances = Sets.newHashSet();
-  private final List<String> foundMethodNames = new ArrayList<>();
-  private final List<String> invokedMethodNames = new ArrayList<>();
-  private final List<String> failedMethodNames = new ArrayList<>();
-  private final List<String> failedBeforeInvocationMethodNames = new ArrayList<>();
-  private final List<String> skippedMethodNames = new ArrayList<>();
-  private final List<String> skippedAfterInvocationMethodNames = new ArrayList<>();
-  private final List<String> succeedMethodNames = new ArrayList<>();
-  private final Map<String, ITestResult> results = new HashMap<>();
-  private final Map<Class<?>, List<String>> mapping = Maps.newHashMap();
+  private final Set<Object> testInstances = ConcurrentHashMap.newKeySet();
+  private final List<String> foundMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> invokedMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> failedMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> failedBeforeInvocationMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> skippedMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> skippedAfterInvocationMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> succeedMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final Map<String, ITestResult> results = new ConcurrentHashMap<>();
+  private final Map<Class<?>, List<String>> mapping = new ConcurrentHashMap<>();
   private final boolean skipConfiguration;
   private final boolean wantSkippedMethodAfterInvocation;
 
