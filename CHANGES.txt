@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-1746: Make InvokedMethodNameListener thread-safe, fixing occasional build failures (Sergei Tachenov)
+Fixed: GITHUB-1538: Dependent methods don't get invoked when a failed test method is retried via a RetryAnalyser (Krishnan Mahadevan)
 Fixed: GITHUB-426: firstTimeOnly ignored for threadPoolSize > 1 (Krishnan Mahadevan)
 Fixed: GITHUB-466: JUnitReportReporter always converts the system time into GMT (Krishnan Mahadevan)
 Fixed: GITHUB-1723: Standardize timezone reference in XML reports (Krishnan Mahadevan)

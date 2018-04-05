@@ -86,21 +86,13 @@ public class Invoker implements IInvoker {
 
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     synchronized(m_classInvocationResults){
-       Set<Object> instances = m_classInvocationResults.get( clazz );
-       if (instances == null) {
-         instances = Sets.newHashSet();
-         m_classInvocationResults.put(clazz, instances);
-       }
-       instances.add(instance);
+      Set<Object> instances = m_classInvocationResults.computeIfAbsent(clazz, k -> Sets.newHashSet());
+      instances.add(instance);
     }
   }
 
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
-    Set<Object> instances = m_methodInvocationResults.get(method);
-    if (instances == null) {
-      instances = Sets.newHashSet();
-      m_methodInvocationResults.put(method, instances);
-    }
+    Set<Object> instances = m_methodInvocationResults.computeIfAbsent(method, k -> Sets.newHashSet());
     instances.add(TestNgMethodUtils.getMethodInvocationToken(method, instance));
   }
 
@@ -347,14 +339,18 @@ public class Invoker implements IInvoker {
    * @return true if this class or a parent class failed to initialize.
    */
   private boolean classConfigurationFailed(Class<?> cls, Object instance) {
-    for (Class<?> c : m_classInvocationResults.keySet()) {
-      Set<Object> obj = m_classInvocationResults.get(c);
-      boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(null);
-      if (c == cls || c.isAssignableFrom(cls) && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure)) {
-        return true;
-      }
-    }
-    return false;
+    return m_classInvocationResults.entrySet()
+            .stream()
+            .anyMatch(classSetEntry -> {
+              Set<Object> obj = classSetEntry.getValue();
+              Class<?> c = classSetEntry.getKey();
+              boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(null);
+              if (c == cls || c.isAssignableFrom(cls) && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure)) {
+                return true;
+              }
+              return false;
+            });
+
   }
 
 
@@ -759,7 +755,7 @@ public class Invoker implements IInvoker {
       }
     }
 
-    ITestNGMethod[] beforeMethodsArray = filteredMethods.toArray(new ITestNGMethod[filteredMethods.size()]);
+    ITestNGMethod[] beforeMethodsArray = filteredMethods.toArray(new ITestNGMethod[0]);
     //
     // Invoke the right groups methods
     //
@@ -1338,12 +1334,14 @@ public class Invoker implements IInvoker {
     for (ITestNGMethod method : methods) {
       Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
       Set<ITestResult> failedAndSkippedMethods = Sets.newHashSet();
+      Set<ITestResult> skippedAttempts = m_notifier.getSkippedTests(method);
       failedAndSkippedMethods.addAll(m_notifier.getFailedTests(method));
-      failedAndSkippedMethods.addAll(m_notifier.getSkippedTests(method));
+      failedAndSkippedMethods.addAll(skippedAttempts);
       Set<ITestResult> failedresults = keepSameInstances(testMethod, failedAndSkippedMethods);
+      boolean wasMethodRetried = !results.isEmpty() && !skippedAttempts.isEmpty();
 
-      // If failed results were returned on the same instance, then these tests didn't pass
-      if (failedresults != null && failedresults.size() > 0) {
+      if (!wasMethodRetried && !failedresults.isEmpty()) {
+        // If failed results were returned on the same instance, then these tests didn't pass
         return false;
       }
 
