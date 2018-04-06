@@ -155,7 +155,7 @@ public class FactoryMethod extends BaseTestMethod {
             m_testContext.getCurrentXmlTest().getSuite(),
             m_annotationFinder,
             null /* fedInstance */,
-            m_dataProviderListeners.values()).parameters;
+            m_dataProviderListeners.values(), "@Factory").parameters;
 
     try {
       List<Integer> indices = factoryAnnotation.getIndices();
