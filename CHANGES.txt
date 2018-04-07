@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-549 and GITHUB-780: Introduce onlyForGroups attribute for @BeforeMethod and @AfterMethod (Sergei Tachenov)
 Fixed: GITHUB-1745: Support native injection for @Factory methods (Krishnan Mahadevan)
 Fixed: GITHUB-1746: Make InvokedMethodNameListener thread-safe, fixing occasional build failures (Sergei Tachenov)
 Fixed: GITHUB-1538: Dependent methods don't get invoked when a failed test method is retried via a RetryAnalyser (Krishnan Mahadevan)

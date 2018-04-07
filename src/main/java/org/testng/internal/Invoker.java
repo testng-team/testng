@@ -546,7 +546,7 @@ public class Invoker implements IInvoker {
       testResult.setMethod(tm);
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-      ITestNGMethod[] teardownConfigMethods = TestNgMethodUtils.filterLastTimeRunnableTeardownConfigurationMethods(tm, afterMethods);
+      ITestNGMethod[] teardownConfigMethods = TestNgMethodUtils.filterTeardownConfigurationMethods(tm, afterMethods);
       invokeConfigurations(testClass, tm, teardownConfigMethods, suite, params, parameterValues, instance, testResult);
       invokeAfterGroupsConfigurations(tm, groupMethods, suite, params, instance);
 
@@ -651,12 +651,7 @@ public class Invoker implements IInvoker {
 
       collectResults(tm, testResult);
 
-      //
-      // Invoke afterMethods only if
-      // - lastTimeOnly is not set
-      // - lastTimeOnly is set, and we are reaching the last invocationCount
-      //
-      ITestNGMethod[] tearDownConfigMethods = TestNgMethodUtils.filterLastTimeRunnableTeardownConfigurationMethods(tm, afterMethods);
+      ITestNGMethod[] tearDownConfigMethods = TestNgMethodUtils.filterTeardownConfigurationMethods(tm, afterMethods);
       invokeConfigurations(testClass, tm, tearDownConfigMethods, suite, params, parameterValues, instance, testResult);
 
       //

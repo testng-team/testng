@@ -15,6 +15,12 @@ public @interface AfterMethod {
 
   /**
    * The list of groups this class/method belongs to.
+   * Note that even if the test method that was invoked belongs
+   * to a different group, all @AfterMethod methods will be
+   * invoked after it as long as they belong to groups
+   * that were selected to run at all.  See {@link #onlyForGroups()}
+   * to select test method groups which this method will
+   * be invoked after.
    */
   public String[] groups() default {};
 
@@ -39,6 +45,16 @@ public @interface AfterMethod {
    *  versions will be run.
    */
   public String[] dependsOnMethods() default {};
+
+  /**
+   * Causes this method to be invoked only if the test method belongs to a listed group.
+   * It can be used if different cleanups are needed for different groups.  Omitting
+   * this or setting it to an empty list will cause this method to run after every
+   * test method, regardless of which group it belongs to.  Otherwise, this method
+   * is only invoked if the test method that was invoked belongs to one of the groups
+   * listed here.
+   */
+  public String[] onlyForGroups() default {};
 
   /**
    *  For before methods (beforeSuite, beforeTest, beforeTestClass and
