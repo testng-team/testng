@@ -85,7 +85,8 @@ public class Parameters {
       BeforeGroups.class,
       AfterGroups.class,
       BeforeMethod.class,
-      AfterMethod.class
+      AfterMethod.class,
+      Factory.class
   };
 
   private static Map<String, List<Class<?>>> mapping = Maps.newHashMap();
@@ -115,6 +116,8 @@ public class Parameters {
           +--------------+--------------+---------+--------+----------+-------------+
           | Test         | Yes          | Yes     | Yes    | No       | No          |
           +--------------+--------------+---------+--------+----------+-------------+
+          | Factory      | Yes          | Yes     | No     | No       | No          |
+          +--------------+--------------+---------+--------+----------+-------------+
 
  */
   static {
@@ -135,7 +138,8 @@ public class Parameters {
 
     mapping.put(BeforeMethod.class.getSimpleName(), beforeAfterMethod);
     mapping.put(AfterMethod.class.getSimpleName(), beforeAfterMethod);
-    mapping.put(Test.class.getSimpleName(), Arrays.<Class<?>>asList(ITestContext.class, XmlTest.class, Method.class));
+    mapping.put(Test.class.getSimpleName(), Arrays.asList(ITestContext.class, XmlTest.class, Method.class));
+    mapping.put(Factory.class.getSimpleName(), ctxTest);
 
   }
 
@@ -698,14 +702,24 @@ public class Parameters {
    * @return An Iterator over the values for each parameter of this
    * method.
    */
-  public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
-                                                 final Map<String, String> allParameterNames,
-                                                 final Object instance,
-                                                 final MethodParameters methodParams,
-                                                 final XmlSuite xmlSuite,
-                                                 final IAnnotationFinder annotationFinder,
-                                                 final Object fedInstance,
-                                                 final Collection<IDataProviderListener> dataProviderListeners) {
+  public static ParameterHolder handleParameters(ITestNGMethod testMethod, Map<String, String> allParameterNames,
+                                                 Object instance, MethodParameters methodParams, XmlSuite xmlSuite,
+                                                 IAnnotationFinder annotationFinder, Object fedInstance,
+                                                 Collection<IDataProviderListener> dataProviderListeners) {
+    return handleParameters(testMethod, allParameterNames, instance, methodParams, xmlSuite, annotationFinder,
+            fedInstance, dataProviderListeners, "@Test");
+  }
+
+  /**
+   * If the method has parameters, fill them in. Either by using a @DataProvider
+   * if any was provided, or by looking up <parameters> in testng.xml
+   * @return An Iterator over the values for each parameter of this
+   * method.
+   */
+  public static ParameterHolder handleParameters(ITestNGMethod testMethod, Map<String, String> allParameterNames,
+                                                 Object instance, MethodParameters methodParams, XmlSuite xmlSuite,
+                                                 IAnnotationFinder annotationFinder, Object fedInstance,
+                                                 Collection<IDataProviderListener> dataProviderListeners, String annotationName) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
@@ -788,23 +802,23 @@ public class Parameters {
     else {
       origin = ParameterOrigin.ORIGIN_XML;
     }
-      //
-      // Normal case: we have only one set of parameters coming from testng.xml
-      //
-      allParameterNames.putAll(methodParams.xmlParameters);
-      // Create an Object[][] containing just one row of parameters
-      Object[][] allParameterValuesArray = new Object[1][];
-      allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
-              methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, "@Test");
+    //
+    // Normal case: we have only one set of parameters coming from testng.xml
+    //
+    allParameterNames.putAll(methodParams.xmlParameters);
+    // Create an Object[][] containing just one row of parameters
+    Object[][] allParameterValuesArray = new Object[1][];
+    allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
+            methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, annotationName);
 
-      // Mark that this method needs to have at least a certain
-      // number of invocations (needed later to call AfterGroups
-      // at the right time).
-      testMethod.setParameterInvocationCount(allParameterValuesArray.length);
-      // Turn it into an Iterable
-      Iterator<Object[]> parameters = new ArrayIterator(allParameterValuesArray);
+    // Mark that this method needs to have at least a certain
+    // number of invocations (needed later to call AfterGroups
+    // at the right time).
+    testMethod.setParameterInvocationCount(allParameterValuesArray.length);
+    // Turn it into an Iterable
+    Iterator<Object[]> parameters = new ArrayIterator(allParameterValuesArray);
 
-      return new ParameterHolder(parameters, origin, null);
+    return new ParameterHolder(parameters, origin, null);
   }
 
   /**
