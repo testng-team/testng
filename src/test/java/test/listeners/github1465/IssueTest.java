@@ -16,7 +16,7 @@ public class IssueTest extends SimpleBaseTest {
         TestNG testNG = create(ExampleClassSample.class);
         testNG.setConfigFailurePolicy(policy);
         ExampleClassListener listener = new ExampleClassListener();
-        testNG.addListener((ITestNGListener) listener);
+        testNG.addListener(listener);
         testNG.run();
         String[] expected = new String[]{
                 "beforeInvocation:_test_method: test1", "afterInvocation:_test_method: test1",
@@ -40,7 +40,13 @@ public class IssueTest extends SimpleBaseTest {
         };
         String[] skipFailurePolicyExpected = new String[]{
                 "beforeInvocation:_before_method: beforeMethod[test1]",
-                "afterInvocation:_before_method: beforeMethod[test1]"
+                "afterInvocation:_before_method: beforeMethod[test1]",
+                "beforeInvocation:_after_method: afterMethod",
+                "afterInvocation:_after_method: afterMethod",
+                "beforeInvocation:_before_method: beforeMethod",
+                "afterInvocation:_before_method: beforeMethod",
+                "beforeInvocation:_after_method: afterMethod",
+                "afterInvocation:_after_method: afterMethod"
         };
         return new Object[][]{
                 {XmlSuite.FailurePolicy.CONTINUE, continueFailurePolicyExpected},
