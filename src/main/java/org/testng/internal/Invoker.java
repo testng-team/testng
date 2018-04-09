@@ -163,6 +163,7 @@ public class Invoker implements IInvoker {
       long time = System.currentTimeMillis();
       Object instanceTouse = instance != null ? instance : tm.getInstance();
       ITestResult testResult = new TestResult(testClass, instanceTouse, tm, null, time, time, m_testContext);
+      testResult.setStatus(ITestResult.STARTED);
 
       IConfigurationAnnotation configurationAnnotation= null;
       try {
@@ -192,6 +193,10 @@ public class Invoker implements IInvoker {
         }
         if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
+          InvokedMethod invokedMethod = new InvokedMethod(instance, tm, System.currentTimeMillis(), testResult);
+          runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
+          testResult.setStatus(ITestResult.SKIP);
+          runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
           handleConfigurationSkip(tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
           continue;
         }
@@ -221,7 +226,6 @@ public class Invoker implements IInvoker {
         } else {
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
-
         runConfigurationListeners(testResult, false /* after */);
       }
       catch(Throwable ex) {
@@ -269,6 +273,7 @@ public class Invoker implements IInvoker {
     Utils.log("", 3, "Failed to invoke configuration method "
         + tm.getQualifiedName() + ":" + cause.getMessage());
     handleException(cause, tm, testResult, 1);
+    testResult.setStatus(ITestResult.FAILURE);
     runConfigurationListeners(testResult, false /* after */);
 
     //
@@ -476,11 +481,14 @@ public class Invoker implements IInvoker {
       } else {
         MethodInvocationHelper.invokeMethodConsideringTimeout(tm, method, targetInstance, params, testResult);
       }
+      testResult.setStatus(ITestResult.SUCCESS);
     } catch (InvocationTargetException | IllegalAccessException ex) {
       throwConfigurationFailure(testResult, ex);
+      testResult.setStatus(ITestResult.FAILURE);
       throw ex;
     } catch (Throwable ex) {
       throwConfigurationFailure(testResult, ex);
+      testResult.setStatus(ITestResult.FAILURE);
       throw new TestNGException(ex);
     } finally {
       testResult.setEndMillis(System.currentTimeMillis());
@@ -544,8 +552,8 @@ public class Invoker implements IInvoker {
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
       testResult.setMethod(tm);
-      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
-      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, result);
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, result);
       ITestNGMethod[] teardownConfigMethods = TestNgMethodUtils.filterTeardownConfigurationMethods(tm, afterMethods);
       invokeConfigurations(testClass, tm, teardownConfigMethods, suite, params, parameterValues, instance, testResult);
       invokeAfterGroupsConfigurations(tm, groupMethods, suite, params, instance);
