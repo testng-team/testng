@@ -906,7 +906,7 @@ public class Invoker implements IInvoker {
       //
       // Not okToProceed. Test is being skipped
       //
-      ITestResult result = registerSkippedTestResult(testMethod, null, System.currentTimeMillis(),
+      ITestResult result = registerSkippedTestResult(testMethod, instance, System.currentTimeMillis(),
           new Throwable(okToProceed));
       m_notifier.addSkippedTest(testMethod, result);
       return Collections.singletonList(result);
