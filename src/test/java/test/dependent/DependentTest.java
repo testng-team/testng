@@ -102,7 +102,7 @@ public class DependentTest extends BaseTest {
     verifyInstanceNames("Failed", getFailedTests(),
         new String[]{"f#2"});
     verifyInstanceNames("Skipped", getSkippedTests(),
-        new String[]{"g#"});
+        new String[]{"g#2"});
   }
 
   @Test

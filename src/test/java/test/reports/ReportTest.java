@@ -7,13 +7,13 @@ import org.testng.reporters.FailedReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-import org.xml.sax.SAXException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.TestHelper;
+import test.reports.issue1756.CustomTestNGReporter;
+import test.reports.issue1756.SampleTestClass;
 import test.simple.SimpleSample;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +33,7 @@ public class ReportTest extends SimpleBaseTest {
     XmlSuite suite = createXmlSuite(suiteName, testName, SimpleSample.class);
 
     TestNG tng = create(outputDir, suite);
-    tng.addListener((ITestNGListener) new TestHTMLReporter());
+    tng.addListener(new TestHTMLReporter());
 
     Path f = getHtmlReportFile(outputDir, suiteName, testName);
 
@@ -54,7 +54,7 @@ public class ReportTest extends SimpleBaseTest {
     createXmlTest(xmlSuite, testName2);
 
     TestNG tng = create(outputDirectory, xmlSuite);
-    tng.addListener((ITestNGListener) new TestHTMLReporter());
+    tng.addListener(new TestHTMLReporter());
 
     Path f = getHtmlReportFile(outputDirectory, suiteName, testName);
     Path f2 = getHtmlReportFile(outputDirectory, suiteName, testName2);
@@ -76,7 +76,7 @@ public class ReportTest extends SimpleBaseTest {
     XmlSuite xmlSuiteB = createXmlSuite(suiteNameB, testName, SampleB.class);
 
     TestNG tng = create(outputDirectory, xmlSuiteA, xmlSuiteB);
-    tng.addListener((ITestNGListener) new TestHTMLReporter());
+    tng.addListener(new TestHTMLReporter());
 
     Path f1 = getHtmlReportFile(outputDirectory, suiteNameA, testName);
     Path f2 = getHtmlReportFile(outputDirectory, suiteNameB, testName);
@@ -98,7 +98,7 @@ public class ReportTest extends SimpleBaseTest {
     Path outputDirectory = TestHelper.createRandomDirectory();
 
     TestNG tng = create(outputDirectory, SampleA.class, SampleB.class);
-    tng.addListener((ITestNGListener) new TestHTMLReporter());
+    tng.addListener(new TestHTMLReporter());
 
     Path fileA = outputDirectory.resolve("SuiteA-JDK5");
     Path fileB = outputDirectory.resolve("SuiteB-JDK5");
@@ -126,7 +126,7 @@ public class ReportTest extends SimpleBaseTest {
         ReportTest.m_success = (output != null && output.size() > 0);
       }
     };
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     tng.run();
 
     Assert.assertTrue(m_success);
@@ -136,7 +136,7 @@ public class ReportTest extends SimpleBaseTest {
   public void reportLogShouldBeAvailableWithListener() {
     TestNG tng = create(ListenerReporterSample.class);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     Reporter.clear();
 
@@ -152,13 +152,13 @@ public class ReportTest extends SimpleBaseTest {
   public void github1090() {
     TestNG tng = create(GitHub447Sample.class);
     GitHub447Listener reporter = new GitHub447Listener();
-    tng.addListener((ITestNGListener) reporter);
+    tng.addListener(reporter);
     tng.run();
 
     List<Object[]> parameters = reporter.getParameters();
     Assert.assertEquals(parameters.size(), 5);
     Assert.assertEquals(parameters.get(0)[0].toString(), "[]");
-    Assert.assertEquals(parameters.get(0)[1], null);
+    Assert.assertNull(parameters.get(0)[1]);
     Assert.assertEquals(parameters.get(0)[2].toString(), "[null]");
     Assert.assertEquals(parameters.get(1)[0].toString(), "[null]");
     Assert.assertEquals(parameters.get(1)[1], "dup");
@@ -170,7 +170,7 @@ public class ReportTest extends SimpleBaseTest {
     Assert.assertEquals(parameters.get(3)[1], "str");
     Assert.assertEquals(parameters.get(3)[2].toString(), "[null, dup, dup, str]");
     Assert.assertEquals(parameters.get(4)[0].toString(), "[null, dup, dup, str]");
-    Assert.assertEquals(parameters.get(4)[1], null);
+    Assert.assertNull(parameters.get(4)[1]);
     Assert.assertEquals(parameters.get(4)[2].toString(), "[null, dup, dup, str, null]");
   }
 
@@ -183,14 +183,14 @@ public class ReportTest extends SimpleBaseTest {
   }
 
   @Test(dataProvider = "dp")
-  public void runFailedTestTwiceShouldBeConsistent(Class<?> testClass, String[] succeedMethods, String[] failedMethods) throws IOException, ParserConfigurationException, SAXException {
+  public void runFailedTestTwiceShouldBeConsistent(Class<?> testClass, String[] succeedMethods, String[] failedMethods) throws IOException {
     Path outputDirectory = TestHelper.createRandomDirectory();
 
     TestNG tng = create(outputDirectory, testClass);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
-    tng.addListener((ITestNGListener) new FailedReporter());
+    tng.addListener(listener);
+    tng.addListener(new FailedReporter());
 
     tng.run();
 
@@ -206,14 +206,23 @@ public class ReportTest extends SimpleBaseTest {
     }
   }
 
-  private static Path checkFailed(Path testngFailedXml, String... failedMethods) throws IOException, ParserConfigurationException, SAXException {
+  @Test(description = "GITHUB-1756")
+  public void testToEnsureSkippedTestsHaveProviderITestNameRetrieved() {
+    TestNG testng = create(SampleTestClass.class);
+    CustomTestNGReporter reporter = new CustomTestNGReporter();
+    testng.addListener(reporter);
+    testng.run();
+    assertThat(reporter.getLogs()).containsExactly(SampleTestClass.getUuid(), SampleTestClass.getUuid());
+  }
+
+  private static Path checkFailed(Path testngFailedXml, String... failedMethods) throws IOException {
     Path outputDirectory = TestHelper.createRandomDirectory();
 
     List<XmlSuite> suites = new Parser(Files.newInputStream(testngFailedXml)).parseToList();
     TestNG tng = create(outputDirectory, suites);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
-    tng.addListener((ITestNGListener) new FailedReporter());
+    tng.addListener(listener);
+    tng.addListener(new FailedReporter());
 
     tng.run();
 
