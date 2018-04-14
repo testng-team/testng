@@ -800,6 +800,7 @@
       <class name="test.configuration.SingleConfigurationTest" />
       <class name="test.configuration.BeforeClassWithDisabledTest" />
       <class name="test.configuration.github1625.TestRunnerIssue1625"/>
+      <class name="test.configuration.issue1753.IssueTest"/>
     </classes>
   </test>
 
