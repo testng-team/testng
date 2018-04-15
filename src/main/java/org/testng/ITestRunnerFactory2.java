@@ -10,6 +10,7 @@ import java.util.Map;
  * A factory for TestRunners to be used by SuiteRunners.
  */
 public interface ITestRunnerFactory2 extends ITestRunnerFactory {
+
     /**
      * Produces a new {@link TestRunner}
      *

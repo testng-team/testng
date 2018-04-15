@@ -6,7 +6,27 @@ package org.testng;
  */
 public interface IInvokedMethodListener extends ITestNGListener {
 
-  void beforeInvocation(IInvokedMethod method, ITestResult testResult);
+    default void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+        // not implemented
+    }
 
-  void afterInvocation(IInvokedMethod method, ITestResult testResult);
+    default void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+        // not implemented
+    }
+
+    /**
+     * To be implemented if the method needs a handle to contextual information.
+     */
+    default void beforeInvocation(IInvokedMethod method, ITestResult testResult,
+                                  ITestContext context) {
+        // not implemented
+    }
+
+    /**
+     * To be implemented if the method needs a handle to contextual information.
+     */
+    default void afterInvocation(IInvokedMethod method, ITestResult testResult,
+                                 ITestContext context) {
+        // not implemented
+    }
 }

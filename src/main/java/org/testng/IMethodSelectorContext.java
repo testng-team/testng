@@ -12,22 +12,23 @@ import java.util.Map;
  */
 public interface IMethodSelectorContext {
 
-  /**
-   * @return true if no more Method Selectors should be invoked after
-   * the current one.
-   */
-  public boolean isStopped();
+    /**
+     * @return true if no more Method Selectors should be invoked after
+     * the current one.
+     */
+    boolean isStopped();
 
-  /**
-   * Indicate that no other Method Selectors should be invoked after the
-   * current one if stopped is false.
-   * @param stopped
-   */
-  public void setStopped(boolean stopped);
+    /**
+     * Indicate that no other Method Selectors should be invoked after the
+     * current one if stopped is false.
+     *
+     * @param stopped
+     */
+    void setStopped(boolean stopped);
 
-  /**
-   * @return a Map that can be freely manipulated by the Method Selector.
-   * This can be used to share information among several Method Selectors.
-   */
-  public Map<Object, Object> getUserData();
+    /**
+     * @return a Map that can be freely manipulated by the Method Selector.
+     * This can be used to share information among several Method Selectors.
+     */
+    Map<Object, Object> getUserData();
 }

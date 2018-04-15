@@ -2,6 +2,11 @@ package org.testng;
 
 public interface IClassListener extends ITestNGListener {
 
-  void onBeforeClass(ITestClass testClass);
-  void onAfterClass(ITestClass testClass);
+    default void onBeforeClass(ITestClass testClass) {
+        // not implemented
+    }
+
+    default void onAfterClass(ITestClass testClass) {
+        // not implemented
+    }
 }

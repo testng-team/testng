@@ -1,6 +1,5 @@
 package org.testng;
 
-
 /**
  * Factory used to create all test instances. This object factory only receives the class
  * in parameter.
@@ -12,5 +11,6 @@ package org.testng;
  * @since 5.14.6
  */
 public interface IObjectFactory2 extends ITestObjectFactory {
-  Object newInstance(Class<?> cls);
+
+    Object newInstance(Class<?> cls);
 }

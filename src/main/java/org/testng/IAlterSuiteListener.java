@@ -20,6 +20,7 @@ public interface IAlterSuiteListener extends ITestNGListener {
     /**
      * @param suites - The list of {@link XmlSuite}s that are part of the current execution.
      */
-    void alter(List<XmlSuite> suites);
-
+    default void alter(List<XmlSuite> suites) {
+        // not implemented
+    }
 }

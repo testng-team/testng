@@ -11,12 +11,11 @@ import com.google.inject.Module;
  */
 public interface IModuleFactory {
 
-  /**
-   * @param context The current test context
-   * @param testClass The test class
-   *
-   * @return The Guice module that should be used to get an instance of this
-   * test class.
-   */
-  Module createModule(ITestContext context, Class<?> testClass);
+    /**
+     * @param context   The current test context
+     * @param testClass The test class
+     * @return The Guice module that should be used to get an instance of this
+     * test class.
+     */
+    Module createModule(ITestContext context, Class<?> testClass);
 }

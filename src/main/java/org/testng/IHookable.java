@@ -26,5 +26,6 @@ package org.testng;
  * Jan 28, 2006
  */
 public interface IHookable extends ITestNGListener {
-  public void run(IHookCallBack callBack, ITestResult testResult);
+
+    void run(IHookCallBack callBack, ITestResult testResult);
 }

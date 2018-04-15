@@ -33,5 +33,4 @@ public interface IDataProviderMethod {
      * Which indices to run from this data provider, default: all.
      */
     List<Integer> getIndices();
-
 }

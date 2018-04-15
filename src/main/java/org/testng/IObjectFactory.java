@@ -13,5 +13,6 @@ import java.lang.reflect.Constructor;
  * @since 5.6
  */
 public interface IObjectFactory extends ITestObjectFactory {
-  Object newInstance(Constructor constructor, Object... params);
+
+    Object newInstance(Constructor constructor, Object... params);
 }

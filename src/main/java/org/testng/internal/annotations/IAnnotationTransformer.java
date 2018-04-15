@@ -9,8 +9,9 @@ import java.lang.reflect.Method;
  * For backward compatibility.
  */
 public interface IAnnotationTransformer extends org.testng.IAnnotationTransformer {
-    void transform(ITestAnnotation annotation, Class testClass,
-                          Constructor testConstructor, Method testMethod, Class<?> occurringClazz);
 
-
+    default void transform(ITestAnnotation annotation, Class testClass,
+                           Constructor testConstructor, Method testMethod, Class<?> occurringClazz) {
+        // not implemented
+    }
 }

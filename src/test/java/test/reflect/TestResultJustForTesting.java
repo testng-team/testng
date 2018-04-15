@@ -94,6 +94,11 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
+  public void setTestName(String name) {
+
+  }
+
+  @Override
   public String getInstanceName() {
     return null;
   }
