@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1753: TestResult for an SKIP test lose attributes contributed by @BeforeMethod's or @AfterMethod's (Krishnan Mahadevan)
 Fixed: GITHUB-1756: ITest .getTestName() doesn't return the actual test name for skipped methods (Krishnan Mahadevan)
 Fixed: GITHUB-1602: beforeInvocation method don't get called for skipped tests (Krishnan Mahadevan)
 Fixed: GITHUB-549 and GITHUB-780: Introduce onlyForGroups attribute for @BeforeMethod and @AfterMethod (Sergei Tachenov)

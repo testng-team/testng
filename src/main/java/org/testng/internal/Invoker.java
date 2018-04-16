@@ -2,12 +2,15 @@ package org.testng.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IClass;
@@ -154,6 +157,7 @@ public class Invoker implements IInvoker {
     }
 
     ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(testClass, allMethods, SAME_CLASS);
+    Object[] parameters = new Object[]{};
 
     for(ITestNGMethod tm : methods) {
       if(null == testClass) {
@@ -206,7 +210,7 @@ public class Invoker implements IInvoker {
           ((TestResult) testMethodResult).setMethod(currentTestMethod);
         }
 
-        Object[] parameters = Parameters.createConfigurationParameters(tm.getConstructorOrMethod().getMethod(),
+        parameters = Parameters.createConfigurationParameters(tm.getConstructorOrMethod().getMethod(),
                 params,
                 parameterValues,
                 currentTestMethod,
@@ -226,12 +230,28 @@ public class Invoker implements IInvoker {
         } else {
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
+        copyAttributesFromNativelyInjectedTestResult(parameters, testMethodResult);
         runConfigurationListeners(testResult, false /* after */);
       }
       catch(Throwable ex) {
         handleConfigurationFailure(ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
+        copyAttributesFromNativelyInjectedTestResult(parameters, testMethodResult);
       }
     } // for methods
+  }
+
+  private static void copyAttributesFromNativelyInjectedTestResult(Object[] source, ITestResult target) {
+    if (source == null || target == null) {
+      return;
+    }
+    Arrays.stream(source)
+            .filter(each -> each instanceof ITestResult)
+            .findFirst()
+            .ifPresent(eachSource -> copyAttributes((ITestResult)eachSource, target));
+  }
+
+  private static void copyAttributes(ITestResult source, ITestResult target) {
+    source.getAttributeNames().forEach(name -> target.setAttribute(name, source.getAttribute(name)));
   }
 
   private static Object computeInstance(Object instance, Object inst, ITestNGMethod tm) {
@@ -549,6 +569,7 @@ public class Invoker implements IInvoker {
     if (!confInvocationPassed(tm, tm, testClass, instance)) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext, instance);
       ITestResult result = registerSkippedTestResult(tm, instance, System.currentTimeMillis(), exception);
+      copyAttributes(testResult, result);
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
       testResult.setMethod(tm);
@@ -819,7 +840,7 @@ public class Invoker implements IInvoker {
     }
 
     // Got our afterMethods, invoke them
-    ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[afterMethods.size()]);
+    ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[0]);
     // don't pass the IClass or the instance as the method may be external
     // the invocation must be similar to @BeforeTest/@BeforeSuite
     invokeConfigurations(null, afterMethodsArray, suite, params,
