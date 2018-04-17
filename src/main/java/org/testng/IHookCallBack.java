@@ -5,7 +5,7 @@ package org.testng;
  * Invoking runTestMethod() on that parameter will cause the test method currently
  * being diverted to be invoked.
  *
- *  <p>
+ *
  *
  * <b>This interface is not meant to be implemented by clients, only by TestNG.</b>
  *
@@ -17,13 +17,13 @@ package org.testng;
  */
 public interface IHookCallBack {
 
-  /**
-   * Invoke the test method currently being hijacked.
-   */
-  public void runTestMethod(ITestResult testResult);
+    /**
+     * Invoke the test method currently being hijacked.
+     */
+    void runTestMethod(ITestResult testResult);
 
-  /**
-   * @return the parameters that will be used to invoke the test method.
-   */
-  public Object[] getParameters();
+    /**
+     * @return the parameters that will be used to invoke the test method.
+     */
+    Object[] getParameters();
 }

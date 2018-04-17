@@ -5,18 +5,17 @@ import java.util.Set;
 
 public interface IResultMap {
 
-  void addResult(ITestResult result, ITestNGMethod method);
+    void addResult(ITestResult result, ITestNGMethod method);
 
-  Set<ITestResult> getResults(ITestNGMethod method);
+    Set<ITestResult> getResults(ITestNGMethod method);
 
-  Set<ITestResult> getAllResults();
+    Set<ITestResult> getAllResults();
 
-  void removeResult(ITestNGMethod m);
+    void removeResult(ITestNGMethod m);
 
-  void removeResult(ITestResult r);
+    void removeResult(ITestResult r);
 
-  Collection<ITestNGMethod> getAllMethods();
+    Collection<ITestNGMethod> getAllMethods();
 
-  int size();
-
+    int size();
 }

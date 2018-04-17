@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import org.testng.IAttributes;
-import org.testng.IAlterTestName;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestContext;
@@ -19,7 +18,7 @@ import java.util.Set;
 /**
  * This class represents the result of a test.
  */
-public class TestResult implements ITestResult, IAlterTestName {
+public class TestResult implements ITestResult {
 
   private IClass m_testClass = null;
   private ITestNGMethod m_method = null;
@@ -329,4 +328,3 @@ public class TestResult implements ITestResult, IAlterTestName {
     return parameterIndex;
   }
 }
-

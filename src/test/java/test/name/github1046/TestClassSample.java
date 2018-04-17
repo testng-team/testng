@@ -1,6 +1,5 @@
 package test.name.github1046;
 
-import org.testng.IAlterTestName;
 import org.testng.IHookCallBack;
 import org.testng.IHookable;
 import org.testng.ITestResult;
@@ -43,9 +42,7 @@ public class TestClassSample implements IHookable {
                 param = parameters[0];
             }
             String testName = name(testResult.getMethod().getMethodName(), param);
-            if (testResult instanceof IAlterTestName) {
-                ((IAlterTestName) testResult).setTestName(testName);
-            }
+            testResult.setTestName(testName);
         }
         callBack.runTestMethod(testResult);
     }

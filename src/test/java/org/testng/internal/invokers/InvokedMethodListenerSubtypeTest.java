@@ -23,7 +23,7 @@ public class InvokedMethodListenerSubtypeTest {
 
   @Test
   public void testFromListenerUsingExtendedListenerInstance() {
-    IInvokedMethodListener2 extendedListenerInstance = new ExtendedInvokedMethodListenerDummy();
+    IInvokedMethodListener extendedListenerInstance = new ExtendedInvokedMethodListenerDummy();
 
     InvokedMethodListenerSubtype listenerSubtype =
         InvokedMethodListenerSubtype.fromListener(extendedListenerInstance);

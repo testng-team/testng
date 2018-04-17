@@ -1,19 +1,8 @@
 package org.testng;
 
 /**
- * This interface lets you alter the test name of an {@link ITestResult} object.
- * Sample : <br>
- *
- * <pre>
- *     if (testResult instanceOf IAlterTestName) {
- *         ((ITestResult) testResult).setTestName(newName);
- *     }
- *
- * </pre>
+ * @deprecated As of release 7.0.0, replaced by {@link org.testng.ITestResult}
  */
-public interface IAlterTestName {
-    /**
-     * @param name - The new name to be used as a test name
-     */
-    void setTestName(String name);
+@Deprecated
+public interface IAlterTestName extends ITestResult {
 }

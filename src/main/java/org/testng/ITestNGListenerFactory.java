@@ -6,9 +6,9 @@ package org.testng;
  */
 public interface ITestNGListenerFactory {
 
-  /**
-   * Create and return an instance of the listener class passed in parameter.  Return null
-   * if you want to use the default factory.
-   */
-  ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass);
+    /**
+     * Create and return an instance of the listener class passed in parameter.  Return null
+     * if you want to use the default factory.
+     */
+    ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass);
 }

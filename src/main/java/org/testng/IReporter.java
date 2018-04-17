@@ -13,8 +13,10 @@ import java.util.List;
  * Feb 17, 2006
  */
 public interface IReporter extends ITestNGListener {
-  /**
-   * Generate a report for the given suites into the specified output directory.
-   */
-  void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory);
+    /**
+     * Generate a report for the given suites into the specified output directory.
+     */
+    default void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+        // not implemented
+    }
 }

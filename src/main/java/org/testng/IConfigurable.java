@@ -10,5 +10,6 @@ package org.testng;
  * Sep 07, 2010
  */
 public interface IConfigurable extends ITestNGListener {
-  public void run(IConfigureCallBack callBack, ITestResult testResult);
+
+    void run(IConfigureCallBack callBack, ITestResult testResult);
 }

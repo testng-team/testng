@@ -15,14 +15,17 @@ package org.testng;
  */
 public interface IExecutionListener extends ITestNGListener {
 
-  /**
-   * Invoked before the TestNG run starts.
-   */
-  void onExecutionStart();
+    /**
+     * Invoked before the TestNG run starts.
+     */
+    default void onExecutionStart() {
+        // not implemented
+    }
 
-  /**
-   * Invoked once all the suites have been run.
-   */
-  void onExecutionFinish();
-
+    /**
+     * Invoked once all the suites have been run.
+     */
+    default void onExecutionFinish() {
+        // not implemented
+    }
 }

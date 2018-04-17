@@ -86,8 +86,8 @@ public class InvokedMethodListenerInvoker {
   }
 
   private static class InvokeBeforeInvocationWithContextStrategy implements
-      InvocationStrategy<IInvokedMethodListener2> {
-    public void callMethod(IInvokedMethodListener2 listener, IInvokedMethod invokedMethod,
+      InvocationStrategy<IInvokedMethodListener> {
+    public void callMethod(IInvokedMethodListener listener, IInvokedMethod invokedMethod,
         ITestResult testResult, ITestContext testContext) {
       listener.beforeInvocation(invokedMethod, testResult, testContext);
     }
@@ -102,8 +102,8 @@ public class InvokedMethodListenerInvoker {
   }
 
   private static class InvokeAfterInvocationWithContextStrategy implements
-      InvocationStrategy<IInvokedMethodListener2> {
-    public void callMethod(IInvokedMethodListener2 listener, IInvokedMethod invokedMethod,
+      InvocationStrategy<IInvokedMethodListener> {
+    public void callMethod(IInvokedMethodListener listener, IInvokedMethod invokedMethod,
         ITestResult testResult, ITestContext testContext) {
       listener.afterInvocation(invokedMethod, testResult, testContext);
     }

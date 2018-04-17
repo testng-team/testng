@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1759: core interfaces refactoring to support default methods (Sergey Korol)
 Fixed: GITHUB-1753: TestResult for an SKIP test lose attributes contributed by @BeforeMethod's or @AfterMethod's (Krishnan Mahadevan)
 Fixed: GITHUB-1756: ITest .getTestName() doesn't return the actual test name for skipped methods (Krishnan Mahadevan)
 Fixed: GITHUB-1602: beforeInvocation method don't get called for skipped tests (Krishnan Mahadevan)
