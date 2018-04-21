@@ -152,6 +152,13 @@ public class XMLSuiteResultWriter {
   private void addTestResult(XMLStringBuffer xmlBuffer, ITestResult testResult) {
     Properties attribs = getTestResultAttributes(testResult);
     attribs.setProperty(XMLReporterConfig.ATTR_STATUS, getStatusString(testResult.getStatus()));
+    String test_instance_name;
+    if (testResult.getName()==null) {
+    	test_instance_name = "";
+    } else {
+    	test_instance_name = testResult.getName();
+    }
+    attribs.setProperty(XMLReporterConfig.ATTR_TEST_INSTANCE_NAME, test_instance_name);
     xmlBuffer.push(XMLReporterConfig.TAG_TEST_METHOD, attribs);
     addTestMethodParams(xmlBuffer, testResult);
     addTestResultException(xmlBuffer, testResult);
