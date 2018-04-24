@@ -213,8 +213,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
     tmpRunnerFactory = runnerFactory;
-    List<IMethodInterceptor> localMethodInterceptors = methodInterceptors != null ? methodInterceptors : new
-        ArrayList<IMethodInterceptor>();
+    List<IMethodInterceptor> localMethodInterceptors = methodInterceptors != null ? methodInterceptors : Lists.newArrayList();
     setOutputDir(outputDir);
     objectFactory = this.configuration.getObjectFactory();
     if(objectFactory == null) {

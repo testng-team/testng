@@ -725,7 +725,7 @@ public class TestNG {
 
   private Boolean m_skipFailedInvocationCounts = false;
 
-  private List<IMethodInterceptor> m_methodInterceptors = new ArrayList<IMethodInterceptor>();
+  private List<IMethodInterceptor> m_methodInterceptors = Lists.newArrayList();
 
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
