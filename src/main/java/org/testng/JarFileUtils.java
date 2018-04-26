@@ -57,6 +57,7 @@ class JarFileUtils {
         try (JarFile jf = new JarFile(jarFile)) {
             Enumeration<JarEntry> entries = jf.entries();
             File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
+            file.deleteOnExit();
             String suitePath = null;
             while (entries.hasMoreElements()) {
                 JarEntry je = entries.nextElement();
