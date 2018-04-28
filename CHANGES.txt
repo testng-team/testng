@@ -1,6 +1,7 @@
 Current
+Fixed: GITHUB-1770: Factory annotation does not work with Parameters annotation on method constructor (Krishnan Mahadevan)
 Fixed: GITHUB-1767: Prevent NPE when XmlTest accessed without a proper XmlSuite (Krishnan Mahadevan)
-Fixed: GITHUB-1766: Testng generates a lot of temp folders like testngXmlPathInJar-***
+Fixed: GITHUB-1766: Testng generates a lot of temp folders like testngXmlPathInJar- (Andrey)
 Fixed: GITHUB-1759: core interfaces refactoring to support default methods (Sergey Korol)
 Fixed: GITHUB-1753: TestResult for an SKIP test lose attributes contributed by @BeforeMethod's or @AfterMethod's (Krishnan Mahadevan)
 Fixed: GITHUB-1756: ITest .getTestName() doesn't return the actual test name for skipped methods (Krishnan Mahadevan)

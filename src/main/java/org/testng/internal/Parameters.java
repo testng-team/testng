@@ -7,7 +7,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
@@ -75,7 +74,7 @@ public class Parameters {
     ANNOTATION_MAP.put(AfterMethod.class, IAfterMethod.class);
   }
 
-  private static Class<?>[] annotationList = new Class<?>[] {
+  private static List<Class<? extends Annotation>> annotationList = Arrays.asList(
       BeforeSuite.class,
       AfterSuite.class,
       BeforeTest.class,
@@ -87,7 +86,7 @@ public class Parameters {
       BeforeMethod.class,
       AfterMethod.class,
       Factory.class
-  };
+  );
 
   private static Map<String, List<Class<?>>> mapping = Maps.newHashMap();
 /*
@@ -145,7 +144,6 @@ public class Parameters {
 
   /**
    * Creates the parameters needed for constructing a test class instance.
-   * @param finder TODO
    */
   public static Object[] createInstantiationParameters(Constructor ctor,
       String methodAnnotation,
@@ -156,7 +154,7 @@ public class Parameters {
 
     return createParametersForConstructor(ctor, ctor.getParameterTypes(),
         finder.findOptionalValues(ctor), methodAnnotation, parameterNames,
-            new MethodParameters(params, Collections.<String, String>emptyMap()),
+            new MethodParameters(params, Collections.emptyMap()),
             xmlSuite);
   }
 
@@ -182,7 +180,7 @@ public class Parameters {
 
     Map<String, String> methodParams = currentTestMethod != null
         ? currentTestMethod.findMethodParameters(ctx.getCurrentXmlTest())
-        : Collections.<String, String>emptyMap();
+        : Collections.emptyMap();
 
     Class<? extends Annotation> annotation = retrieveConfigAnnotation(m);
     String name = annotation == null ? "" : annotation.getSimpleName();
@@ -191,7 +189,7 @@ public class Parameters {
       annotationClass = ANNOTATION_MAP.get(annotation);
     }
 
-    return createParameters(m,
+    return createParameters(new ConstructorOrMethod(m),
         new MethodParameters(params,
             methodParams,
             parameterValues,
@@ -200,12 +198,11 @@ public class Parameters {
   }
 
   private static Class<? extends Annotation> retrieveConfigAnnotation(Method m) {
-    for (Class annotation : annotationList) {
-      if (m.getAnnotation(annotation) != null) {
-        return annotation;
-      }
-    }
-    return null;
+    return annotationList
+        .stream()
+        .filter(annotation -> m.getAnnotation(annotation) != null)
+        .findAny()
+        .orElse(null);
   }
 
   ////////////////////////////////////////////////////////
@@ -256,7 +253,7 @@ public class Parameters {
             parameterTypes, optionalValues, parameterNames, params, xmlSuite);
     vResult.addAll(consParams);
 
-    return vResult.toArray(new Object[vResult.size()]);
+    return vResult.toArray(new Object[0]);
   }
 
   private static List<Object> createParams(String name,
@@ -308,8 +305,8 @@ public class Parameters {
   
   /**
    * Remove injected types from parameterTypes and optionalValues
-   * @param parameterTypes
-   * @param optionalValues
+   * @param parameterTypes - The parameter types to be used
+   * @param optionalValues - The optional values to be considered.
    * @return FilterOutInJectedTypesResult
    */
   static FilterOutInJectedTypesResult filterOutInJectedTypesFromOptionalValues(Class<?>[] parameterTypes, String[] optionalValues) {
@@ -325,8 +322,8 @@ public class Parameters {
             typeIterator.remove();
         }
     }
-    return new FilterOutInJectedTypesResult(typeList.toArray(new Class<?>[typeList.size()]),
-            optionalValueList.toArray(new String[optionalValueList.size()]));
+    return new FilterOutInJectedTypesResult(typeList.toArray(new Class<?>[0]),
+            optionalValueList.toArray(new String[0]));
   }
 
   /**
@@ -368,7 +365,7 @@ public class Parameters {
    * @return An array of parameters suitable to invoke this method, possibly
    * picked from the property file
    */
-  private static Object[] createParametersForMethod(Method method,
+  private static Object[] createParametersForMethod(ConstructorOrMethod method,
       Class<?>[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
@@ -386,16 +383,23 @@ public class Parameters {
     List<Object> consParams = createParams(method.getName(), "method", methodAnnotation, parameterTypes,
             optionalValues, parameterNames, params, xmlSuite);
     if (canInject(methodAnnotation)) {
-      Parameter[] paramsArray = ReflectionRecipes.getMethodParameters(method);
+      Parameter[] paramsArray = extractParameters(method);
       Object[] inject = ReflectionRecipes.inject(paramsArray, InjectableParameter.Assistant.ALL_INJECTS,
-              consParams.toArray(new Object[consParams.size()]), params.currentTestMethod, params.context, params.testResult);
+              consParams.toArray(new Object[0]), params.currentTestMethod, params.context, params.testResult);
       if (inject != null) {
         vResult.addAll(Arrays.asList(inject));
       }
     } else {
       vResult.addAll(consParams);
     }
-    return vResult.toArray(new Object[vResult.size()]);
+    return vResult.toArray(new Object[0]);
+  }
+
+  private static Parameter[] extractParameters(ConstructorOrMethod method) {
+    if (method.getMethod() != null) {
+      return ReflectionRecipes.getMethodParameters(method.getMethod());
+    }
+    return ReflectionRecipes.getConstructorParameters(method.getConstructor());
   }
 
   private static boolean canInject(String annotation) {
@@ -476,6 +480,7 @@ public class Parameters {
     return builder.toString();
   }
 
+  @SuppressWarnings("unchecked")
   public static <T> T convertType(Class<T> type, String value, String paramName) {
     try {
       if (value == null || NULL_VALUE.equals(value.toLowerCase())) {
@@ -548,7 +553,7 @@ public class Parameters {
 
   /**
    * Find the data provider info (data provider name and class) on either @Test(dataProvider),
-   * @Factory(dataProvider) on a method or @Factory(dataProvider) on a constructor.
+   * <code>@Factory(dataProvider)</code> on a method or @Factory(dataProvider) on a constructor.
    */
   private static IDataProvidable findDataProviderInfo(ITestClass clazz, ConstructorOrMethod m,
       IAnnotationFinder finder) {
@@ -630,11 +635,19 @@ public class Parameters {
 	  return Strings.isNullOrEmpty(dp.getName()) ? m.getName() : dp.getName();
   }
 
+  private static String[] extractOptionalValues(IAnnotationFinder finder, ConstructorOrMethod consMethod) {
+    if (consMethod.getMethod() != null) {
+      return finder.findOptionalValues(consMethod.getMethod());
+    }
+    return finder.findOptionalValues(consMethod.getConstructor());
+  }
+
   @SuppressWarnings({"deprecation"})
-  private static Object[] createParameters(Method m, MethodParameters params,
-      IAnnotationFinder finder, XmlSuite xmlSuite, Class annotationClass, String atName)
+  private static Object[] createParameters(ConstructorOrMethod m, MethodParameters params,
+      IAnnotationFinder finder, XmlSuite xmlSuite, Class<? extends IAnnotation> annotationClass, String atName)
   {
     List<Object> result = Lists.newArrayList();
+    String[] extraOptionalValues = extractOptionalValues(finder, m);
 
     Object[] extraParameters;
     //
@@ -644,8 +657,7 @@ public class Parameters {
     Class<?>[] types = m.getParameterTypes();
     if(null != annotation) {
       String[] parameterNames = annotation.getValue();
-      extraParameters = createParametersForMethod(m, types,
-          finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
+      extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName, parameterNames, params, xmlSuite);
     }
 
     //
@@ -655,11 +667,10 @@ public class Parameters {
       IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
       if(null != a && a.getParameters() != null && a.getParameters().length > 0) {
         String[] parameterNames = a.getParameters();
-        extraParameters = createParametersForMethod(m, types,
-            finder.findOptionalValues(m), atName, parameterNames, params, xmlSuite);
+        extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName, parameterNames, params, xmlSuite);
       }
       else {
-        extraParameters = createParametersForMethod(m, types, finder.findOptionalValues(m), atName, new String[0], params, xmlSuite);
+        extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
       }
     }
 
@@ -676,7 +687,7 @@ public class Parameters {
     }
 
 
-    return result.toArray(new Object[result.size()]);
+    return result.toArray(new Object[0]);
   }
 
   /**
@@ -693,7 +704,7 @@ public class Parameters {
       IAnnotationFinder annotationFinder,
       Object fedInstance) {
     return handleParameters(testMethod, allParameterNames, instance, methodParams, xmlSuite, annotationFinder, fedInstance,
-            Collections.<IDataProviderListener>emptyList());
+            Collections.emptyList());
   }
 
   /**
@@ -788,12 +799,7 @@ public class Parameters {
         }
       };
 
-      testMethod.setMoreInvocationChecker(new Callable<Boolean>() {
-        @Override
-        public Boolean call() throws Exception {
-          return filteredParameters.hasNext();
-        }
-      });
+      testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
 
       return new ParameterHolder(filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER, dataProviderMethod);
     } else if (methodParams.xmlParameters.isEmpty() ) {
@@ -808,7 +814,7 @@ public class Parameters {
     allParameterNames.putAll(methodParams.xmlParameters);
     // Create an Object[][] containing just one row of parameters
     Object[][] allParameterValuesArray = new Object[1][];
-    allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod().getMethod(),
+    allParameterValuesArray[0] = createParameters(testMethod.getConstructorOrMethod(),
             methodParams, annotationFinder, xmlSuite, ITestAnnotation.class, annotationName);
 
     // Mark that this method needs to have at least a certain
@@ -875,10 +881,10 @@ public class Parameters {
     /**
      * @param params parameters found in the suite and test tags
      * @param methodParams parameters found in the include tag
-     * @param pv
-     * @param m
-     * @param ctx
-     * @param tr
+     * @param pv parameter values to be used.
+     * @param m the {@link Method} object.
+     * @param ctx The {@link ITestContext} object representing the current test
+     * @param tr - The {@link ITestResult} object.
      */
     public MethodParameters(Map<String, String> params,
         Map<String, String> methodParams,
