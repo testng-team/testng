@@ -3,16 +3,14 @@ package test;
 import com.google.common.base.Joiner;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
-import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.ITestContext;
+import org.testng.Reporter;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,11 +55,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    List<String> methodNames = mapping.get(testResult.getMethod().getRealClass());
-    if (methodNames == null) {
-      methodNames = Lists.newArrayList();
-      mapping.put(testResult.getMethod().getRealClass(), methodNames);
-    }
+    List<String> methodNames = mapping.computeIfAbsent(testResult.getMethod().getRealClass(), k -> Lists.newArrayList());
     methodNames.add(method.getTestMethod().getMethodName());
     String name = getName(testResult);
     switch (testResult.getStatus()) {
@@ -203,5 +197,9 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   public List<String> getMethodsForTestClass(Class<?> testClass) {
     return mapping.get(testClass);
+  }
+
+  public List<String> getLogs(String name) {
+    return Reporter.getOutput(getResult(name));
   }
 }
