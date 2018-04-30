@@ -109,7 +109,10 @@ public class XmlTest implements Cloneable {
    * Returns the suite this test is part of.
    * @return the suite this test is part of.
    */
-  public XmlSuite getSuite() {
+  public final XmlSuite getSuite() {
+    if (m_suite == null) {
+      throw new IllegalStateException("Current [XmlTest] object is not associated with any [XmlSuite] yet.");
+    }
     return m_suite;
   }
 
@@ -121,7 +124,7 @@ public class XmlTest implements Cloneable {
     if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
       result.addAll(m_xmlGroups.getRun().getIncludes());
     }
-    result.addAll(m_suite.getIncludedGroups());
+    result.addAll(getSuite().getIncludedGroups());
     return Collections.unmodifiableList(result);
   }
 
@@ -218,7 +221,7 @@ public class XmlTest implements Cloneable {
     if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
       result.addAll(m_xmlGroups.getRun().getExcludes());
     }
-    result.addAll(m_suite.getExcludedGroups());
+    result.addAll(getSuite().getExcludedGroups());
     return Collections.unmodifiableList(result);
   }
 
@@ -246,7 +249,7 @@ public class XmlTest implements Cloneable {
   public int getVerbose() {
     Integer result = m_verbose;
     if (null == result || XmlSuite.DEFAULT_VERBOSE.equals(m_verbose)) {
-      result = m_suite.getVerbose();
+      result = getSuite().getVerbose();
     }
 
     if (null != result) {
@@ -259,7 +262,7 @@ public class XmlTest implements Cloneable {
   public boolean getGroupByInstances() {
     Boolean result = m_groupByInstances;
     if (result == null || XmlSuite.DEFAULT_GROUP_BY_INSTANCES.equals(m_groupByInstances)) {
-      result = m_suite.getGroupByInstances();
+      result = getSuite().getGroupByInstances();
     }
     if (result != null) {
       return result;
@@ -278,7 +281,7 @@ public class XmlTest implements Cloneable {
   public boolean isJUnit() {
     Boolean result = m_isJUnit;
     if (null == result || XmlSuite.DEFAULT_JUNIT.equals(result)) {
-      result = m_suite.isJUnit();
+      result = getSuite().isJUnit();
     }
 
     return result;
@@ -306,7 +309,7 @@ public class XmlTest implements Cloneable {
   public boolean skipFailedInvocationCounts() {
     Boolean result = m_skipFailedInvocationCounts;
     if (null == result) {
-      result = m_suite.skipFailedInvocationCounts();
+      result = getSuite().skipFailedInvocationCounts();
     }
 
     return result;
@@ -362,7 +365,7 @@ public class XmlTest implements Cloneable {
   public String getParameter(String name) {
     String result = m_parameters.get(name);
     if (null == result) {
-      result = m_suite.getParameter(name);
+      result = getSuite().getParameter(name);
     }
 
     return result;
@@ -409,19 +412,16 @@ public class XmlTest implements Cloneable {
   }
 
   public XmlSuite.ParallelMode getParallel() {
-    XmlSuite.ParallelMode result;
-    if (null != m_parallel || XmlSuite.DEFAULT_PARALLEL.equals(m_parallel)) {
+    XmlSuite.ParallelMode result = getSuite().getParallel();
+    if (null != m_parallel) {
       result = m_parallel;
-    }
-    else {
-      result = m_suite.getParallel();
     }
 
     return result;
   }
 
   public String getTimeOut() {
-    String result = m_suite.getTimeOut();
+    String result = getSuite().getTimeOut();
     if (null != m_timeOut) {
       result = m_timeOut;
     }
@@ -549,7 +549,7 @@ public class XmlTest implements Cloneable {
 
   public Boolean getPreserveOrder() {
     if (m_preserveOrder == null) {
-      return m_suite.getPreserveOrder();
+      return getSuite().getPreserveOrder();
     }
 
     return m_preserveOrder;

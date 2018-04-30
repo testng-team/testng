@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1767: Prevent NPE when XmlTest accessed without a proper XmlSuite (Krishnan Mahadevan)
 Fixed: GITHUB-1766: Testng generates a lot of temp folders like testngXmlPathInJar-***
 Fixed: GITHUB-1759: core interfaces refactoring to support default methods (Sergey Korol)
 Fixed: GITHUB-1753: TestResult for an SKIP test lose attributes contributed by @BeforeMethod's or @AfterMethod's (Krishnan Mahadevan)
