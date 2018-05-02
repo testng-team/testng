@@ -93,7 +93,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
                  instance, m_testMethod, m_parameterValues, m_xmlSuite, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
                  m_failureCount,
-                 m_testContext, m_parameters, m_parameterIndex);
+                 m_testContext, m_parameters, m_parameterIndex).count;
           m_testResults.addAll(retryResults);
         }
       }
