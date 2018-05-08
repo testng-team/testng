@@ -1100,6 +1100,10 @@ public class Invoker implements IInvoker {
         start,
         System.currentTimeMillis(),
         m_testContext);
+    if (RuntimeBehavior.invokeListenersForSkippedTests()) {
+      result.setStatus(ITestResult.STARTED);
+      runTestListeners(result);
+    }
     result.setStatus(TestResult.SKIP);
     Reporter.setCurrentTestResult(result);
     runTestListeners(result);

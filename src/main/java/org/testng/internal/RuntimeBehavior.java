@@ -7,6 +7,8 @@ import java.util.TimeZone;
  */
 public final class RuntimeBehavior {
 
+    public static final String TESTNG_LISTENERS_ALWAYSRUN = "testng.listeners.alwaysrun";
+
     private RuntimeBehavior() {
     }
 
@@ -31,4 +33,13 @@ public final class RuntimeBehavior {
         }
         return TimeZone.getTimeZone(timeZone);
     }
+
+  /**
+   * @return - <code>true</code> if we would like to invoke applicable listeners for tests that
+   *     would be skipped by TestNG due to a configuration failure (or) due to a upstream dependency
+   *     failure.
+   */
+  public static boolean invokeListenersForSkippedTests() {
+    return Boolean.parseBoolean(System.getProperty(TESTNG_LISTENERS_ALWAYSRUN, "false"));
+  }
 }

@@ -167,6 +167,7 @@
       <class name="test.listeners.github1284.TestListeners"/>
       <class name="test.listeners.github1735.ExecutionListenerTest"/>
       <class name="test.listeners.github1602.IssueTest"/>
+      <class name="test.listeners.issue1777.IssueTest"/>
       <class name="test_result.GitHub1197Test"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
