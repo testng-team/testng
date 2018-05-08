@@ -31,14 +31,19 @@ public class SoftAssert extends Assertion {
     if (!m_errors.isEmpty()) {
       StringBuilder sb = new StringBuilder("The following asserts failed:");
       boolean first = true;
-      for (Map.Entry<AssertionError, IAssert<?>> ae : m_errors.entrySet()) {
+      for (AssertionError error : m_errors.keySet()) {
         if (first) {
           first = false;
         } else {
           sb.append(",");
         }
         sb.append("\n\t");
-        sb.append(ae.getKey().getMessage());
+        sb.append(error.getMessage());
+        Throwable cause = error.getCause();
+        while (cause != null) {
+          sb.append(" ").append(cause.getMessage());
+          cause = cause.getCause();
+        }
       }
       throw new AssertionError(sb.toString());
     }
