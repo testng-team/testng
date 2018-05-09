@@ -67,7 +67,8 @@ public final class ClassHelper {
   public static <T> T newInstance(Class<T> clazz) {
     try {
       return clazz.newInstance();
-    } catch(IllegalAccessException | InstantiationException | ExceptionInInitializerError | SecurityException e) {
+    } catch(IllegalAccessException | InstantiationException | ExceptionInInitializerError |
+            SecurityException | NullPointerException e) {
       throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
     }
   }
@@ -238,11 +239,7 @@ public final class ClassHelper {
   }
 
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
-    Set<Method> declaredMethods = methods.get(declaredMethod.getName());
-    if (declaredMethods == null) {
-      declaredMethods = Sets.newHashSet();
-      methods.put(declaredMethod.getName(), declaredMethods);
-    }
+    Set<Method> declaredMethods = methods.computeIfAbsent(declaredMethod.getName(), k -> Sets.newHashSet());
     declaredMethods.add(declaredMethod);
   }
 
@@ -629,7 +626,7 @@ public final class ClassHelper {
       vResult.addAll(findClassesInSameTest(cls, test));
     }
 
-    return vResult.toArray(new XmlClass[vResult.size()]);
+    return vResult.toArray(new XmlClass[0]);
   }
 
   private static Collection<XmlClass> findClassesInSameTest(Class<?> cls, XmlTest xmlTest) {

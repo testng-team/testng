@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -21,7 +22,6 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
-import org.testng.internal.Graph.Node;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
@@ -43,10 +43,10 @@ public class MethodHelper {
    * Collects and orders test or configuration methods
    * @param methods methods to be worked on
    * @param forTests true for test methods, false for configuration methods
-   * @param runInfo
+   * @param runInfo - {@link RunInfo} object.
    * @param finder annotation finder
    * @param unique true for unique methods, false otherwise
-   * @param outExcludedMethods
+   * @param outExcludedMethods - A List of excluded {@link ITestNGMethod} methods.
    * @return list of ordered methods
    */
   public static ITestNGMethod[] collectAndOrderMethods(List<ITestNGMethod> methods,
@@ -54,7 +54,7 @@ public class MethodHelper {
       boolean unique, List<ITestNGMethod> outExcludedMethods,
       Comparator<ITestNGMethod> comparator) {
     List<ITestNGMethod> includedMethods = Lists.newArrayList();
-    MethodGroupsHelper.collectMethodsByGroup(methods.toArray(new ITestNGMethod[methods.size()]),
+    MethodGroupsHelper.collectMethodsByGroup(methods.toArray(new ITestNGMethod[0]),
         forTests,
         includedMethods,
         outExcludedMethods,
@@ -72,7 +72,7 @@ public class MethodHelper {
    * @return list of methods that match the criteria
    */
   protected static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, List<ITestNGMethod> methods) {
-    ITestNGMethod[] methodsArray = methods.toArray(new ITestNGMethod[methods.size()]);
+    ITestNGMethod[] methodsArray = methods.toArray(new ITestNGMethod[0]);
     return findDependedUponMethods(m, methodsArray);
   }
   
@@ -128,7 +128,7 @@ public class MethodHelper {
       }
     }//end for
 
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+    return vResult.toArray(new ITestNGMethod[0]);
   }
 
   /**
@@ -227,12 +227,7 @@ public class MethodHelper {
   private static Graph<ITestNGMethod> topologicalSort(ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList, List<ITestNGMethod> parallelList,
       final Comparator<ITestNGMethod> comparator) {
-    Graph<ITestNGMethod> result = new Graph<>(new Comparator<Node<ITestNGMethod>>() {
-      @Override
-      public int compare(Node<ITestNGMethod> o1, Node<ITestNGMethod> o2) {
-        return comparator.compare(o1.getObject(), o2.getObject());
-      }
-    });
+    Graph<ITestNGMethod> result = new Graph<>((o1, o2) -> comparator.compare(o1.getObject(), o2.getObject()));
 
     if (methods.length == 0) {
       return result;
@@ -252,7 +247,7 @@ public class MethodHelper {
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       String[] groupsDependedUpon = m.getGroupsDependedUpon();
       if (methodsDependedUpon.length > 0) {
-        ITestNGMethod[] methodsNamed = null;
+        ITestNGMethod[] methodsNamed;
         // Method has instance
         if (m.getInstance() != null) {
           // Get other methods with the same instance
@@ -269,17 +264,12 @@ public class MethodHelper {
           // Search all methods
           methodsNamed = MethodHelper.findDependedUponMethods(m, methods);
         }
-        for (ITestNGMethod pred : methodsNamed) {
-          predecessors.add(pred);
-        }
+        predecessors.addAll(Arrays.asList(methodsNamed));
       }
       if (groupsDependedUpon.length > 0) {
         for (String group : groupsDependedUpon) {
-          ITestNGMethod[] methodsThatBelongToGroup =
-            MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
-          for (ITestNGMethod pred : methodsThatBelongToGroup) {
-            predecessors.add(pred);
-          }
+          ITestNGMethod[] methodsThatBelongToGroup = MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+          predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
         }
       }
 
@@ -360,7 +350,7 @@ public class MethodHelper {
       List<ITestNGMethod> allMethods, Comparator<ITestNGMethod> comparator) {
     List<ITestNGMethod> sl = Lists.newArrayList();
     List<ITestNGMethod> pl = Lists.newArrayList();
-    ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[allMethods.size()]);
+    ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[0]);
 
     // Fix the method inheritance if these are @Configuration methods to make
     // sure base classes are invoked before child classes if 'before' and the
@@ -394,8 +384,7 @@ public class MethodHelper {
       GRAPH_CACHE.put(methods, g);
     }
 
-    List<ITestNGMethod> result = g.findPredecessors(method);
-    return result;
+    return g.findPredecessors(method);
   }
 
   //TODO: This needs to be revisited so that, we dont update the parameter list "methodList"
@@ -475,8 +464,7 @@ public class MethodHelper {
   }
 
   protected static long calculateTimeOut(ITestNGMethod tm) {
-    long result = tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
-    return result;
+    return tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
   }
 
   private static MatchResults matchMethod(ITestNGMethod[] methods, String regexp) {

@@ -17,6 +17,7 @@ import test.retryAnalyzer.github1600.Github1600TestSample;
 import test.retryAnalyzer.github1706.DataDrivenSample;
 import test.retryAnalyzer.github1706.NativeInjectionSample;
 import test.retryAnalyzer.github1706.ParameterInjectionSample;
+import test.retryAnalyzer.issue1241.GitHub1241Sample;
 import test.retryAnalyzer.issue1538.TestClassSampleWithTestMethodDependencies;
 
 import java.util.Collections;
@@ -108,6 +109,22 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
                 .collect(Collectors.toList())
         ).containsExactly("a");
     }
+
+    @Test(description = "GITHUB-1241")
+    public void testToEnsureNewRetryAnalyzerInstanceUsedPerTest() {
+        XmlSuite suite = createXmlSuite("Test Suite", "Test One", GitHub1241Sample.class);
+        createXmlTest(suite, "Test Two", GitHub1241Sample.class);
+
+        TestNG tng = create(suite);
+
+        InvokedMethodNameListener listener = new InvokedMethodNameListener();
+        tng.addListener(listener);
+
+        tng.run();
+
+        assertThat(listener.getInvokedMethodNames()).containsExactly("test1", "test2", "test2", "test1", "test2", "test2");
+    }
+
 
     private static String methodName(ITestResult result) {
         return result.getMethod().getMethodName();
