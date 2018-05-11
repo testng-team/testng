@@ -23,6 +23,7 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
+  private boolean isDataDriven = false;
 
   /**
    * Constructs a <code>TestNGMethod</code>
@@ -84,6 +85,7 @@ public class TestNGMethod extends BaseTestMethod {
       if (null != testAnnotation) {
         setTimeOut(testAnnotation.getTimeOut());
         m_successPercentage = testAnnotation.getSuccessPercentage();
+        isDataDriven = doesTestAnnotationHaveADataProvider(testAnnotation);
 
         setInvocationCount(testAnnotation.getInvocationCount());
         setThreadPoolSize(testAnnotation.getThreadPoolSize());
@@ -102,6 +104,10 @@ public class TestNGMethod extends BaseTestMethod {
         initGroups(ITestAnnotation.class);
       }
     }
+  }
+
+  private static boolean doesTestAnnotationHaveADataProvider(ITestAnnotation testAnnotation) {
+    return !testAnnotation.getDataProvider().trim().isEmpty() || testAnnotation.getDataProviderClass() != null;
   }
 
   private String findDescription(ITestAnnotation testAnnotation, XmlTest xmlTest) {
@@ -208,4 +214,9 @@ public class TestNGMethod extends BaseTestMethod {
             String c2 = o2.getTestClass().getName();
             return c1.compareTo(c2);
           };
+
+  @Override
+  public boolean isDataDriven() {
+    return isDataDriven;
+  }
 }

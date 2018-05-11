@@ -180,6 +180,7 @@
       <class name="test.github1490.VerifyDataProviderListener"/>      
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
+      <class name="test.invocationcount.issue1719.IssueTest"/>
     </classes>
   </test>
 
