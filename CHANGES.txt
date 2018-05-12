@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1777: ITestListener.onTestStart() not called after fail or skip from @BeforeMethod (Krishnan Mahadevan)
 Fixed: GITHUB-1778: SoftAssert#fail swallows actual root cause (Krishnan Mahadevan)
 Fixed: GITHUB-1665: Failed test after rerun would impact next test case result (Yehui Wang)
 Fixed: GITHUB-1770: Factory annotation does not work with Parameters annotation on method constructor (Krishnan Mahadevan)
