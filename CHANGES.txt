@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1241: Streamline Retry Analyzer usage when same test is run multiple times (Krishnan Mahadevan)
 Fixed: GITHUB-1777: ITestListener.onTestStart() not called after fail or skip from @BeforeMethod (Krishnan Mahadevan)
 Fixed: GITHUB-1778: SoftAssert#fail swallows actual root cause (Krishnan Mahadevan)
 Fixed: GITHUB-1665: Failed test after rerun would impact next test case result (Yehui Wang)

@@ -14,11 +14,11 @@ public interface IParameterizable extends IAnnotation {
    * @deprecated Use @Parameters
    */
   @Deprecated
-  public String[] getParameters();
+  String[] getParameters();
 
   /**
    * Whether this annotation is enabled.
    */
-  public boolean getEnabled();
-  public void setEnabled(boolean enabled);
+  boolean getEnabled();
+  void setEnabled(boolean enabled);
 }

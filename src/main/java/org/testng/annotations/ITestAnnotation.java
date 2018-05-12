@@ -14,70 +14,70 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
    * Returns the number of times this method should be invoked.
    * @return the number of times this method should be invoked.
    */
-  public int getInvocationCount();
-  public void setInvocationCount(int l);
+  int getInvocationCount();
+  void setInvocationCount(int l);
 
   /**
    * The size of the thread pool for this method.  The method will be invoked
    * from multiple threads as specified by invocationCount.
    * Note:  this attribute is ignored if invocationCount is not specified
    */
-  public int getThreadPoolSize();
-  public void setThreadPoolSize(int n);
+  int getThreadPoolSize();
+  void setThreadPoolSize(int n);
 
   /**
    * The percentage of success expected from this method.
    */
-  public int getSuccessPercentage();
-  public void setSuccessPercentage(int s);
+  int getSuccessPercentage();
+  void setSuccessPercentage(int s);
 
   /**
    * If set to true, this test method will always be run even if it depends
    * on a method that failed.  This attribute will be ignored if this test
    * doesn't depend on any method or group.
    */
-  public boolean getAlwaysRun();
-  public void setAlwaysRun(boolean f);
+  boolean getAlwaysRun();
+  void setAlwaysRun(boolean f);
 
-  public Class<?>[] getExpectedExceptions();
-  public void setExpectedExceptions(Class<?>[] e);
+  Class<?>[] getExpectedExceptions();
+  void setExpectedExceptions(Class<?>[] e);
 
-  public String getExpectedExceptionsMessageRegExp();
-  public void setExpectedExceptionsMessageRegExp(String e);
+  String getExpectedExceptionsMessageRegExp();
+  void setExpectedExceptionsMessageRegExp(String e);
 
-  public String getSuiteName();
-  public void setSuiteName(String s);
+  String getSuiteName();
+  void setSuiteName(String s);
 
-  public String getTestName();
-  public void setTestName(String s);
+  String getTestName();
+  void setTestName(String s);
 
-  public boolean getSequential();
-  public void setSequential(boolean f);
+  boolean getSequential();
+  void setSequential(boolean f);
 
-  public boolean getSingleThreaded();
-  public void setSingleThreaded(boolean f);
+  boolean getSingleThreaded();
+  void setSingleThreaded(boolean f);
 
-  public String getDataProvider();
-  public void setDataProvider(String v);
+  String getDataProvider();
+  void setDataProvider(String v);
 
-  public Class<?> getDataProviderClass();
-  public void setDataProviderClass(Class<?> v);
+  Class<?> getDataProviderClass();
+  void setDataProviderClass(Class<?> v);
 
-  public IRetryAnalyzer getRetryAnalyzer();
-  public void setRetryAnalyzer(Class<?> c);
+  IRetryAnalyzer getRetryAnalyzer();
+  void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c);
 
-  public boolean skipFailedInvocations();
-  public void setSkipFailedInvocations(boolean skip);
+  boolean skipFailedInvocations();
+  void setSkipFailedInvocations(boolean skip);
 
-  public long invocationTimeOut();
-  public void setInvocationTimeOut(long timeOut);
+  long invocationTimeOut();
+  void setInvocationTimeOut(long timeOut);
 
-  public boolean ignoreMissingDependencies();
-  public void setIgnoreMissingDependencies(boolean ignore);
+  boolean ignoreMissingDependencies();
+  void setIgnoreMissingDependencies(boolean ignore);
 
   /**
    * The scheduling priority. Lower priorities get scheduled first.
    */
-  public int getPriority();
-  public void setPriority(int priority);
+  int getPriority();
+  void setPriority(int priority);
 }

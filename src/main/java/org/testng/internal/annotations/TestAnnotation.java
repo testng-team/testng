@@ -2,6 +2,7 @@ package org.testng.internal.annotations;
 
 import org.testng.IRetryAnalyzer;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.internal.ClassHelper;
 
 
 /**
@@ -172,16 +173,9 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public void setRetryAnalyzer(Class<?> c) {
-    m_retryAnalyzer = null;
-
-    if (c != null && IRetryAnalyzer.class.isAssignableFrom(c)) {
-      try {
-        m_retryAnalyzer = (IRetryAnalyzer) c.newInstance();
-      }
-      catch (InstantiationException | IllegalAccessException e) {
-        // The class will never be called.
-      }
+  public void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c) {
+    if (isRetryAnalyzerNotTestNGInjected(c)) {
+      m_retryAnalyzer = ClassHelper.newInstance(c);
     }
   }
 
@@ -203,5 +197,9 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   @Override
   public boolean ignoreMissingDependencies() {
     return m_ignoreMissingDependencies;
+  }
+
+  private static boolean isRetryAnalyzerNotTestNGInjected(Class<? extends IRetryAnalyzer> c) {
+    return !DisabledRetryAnalyzer.class.equals(c);
   }
 }

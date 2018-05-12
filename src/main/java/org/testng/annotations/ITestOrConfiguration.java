@@ -12,14 +12,14 @@ public interface ITestOrConfiguration extends IParameterizable {
    * If it hasn't returned after this time, it will be marked as a FAIL.
    * @return the maximum number of milliseconds this test should take.
    */
-  public long getTimeOut();
-  public void setTimeOut(long l);
+  long getTimeOut();
+  void setTimeOut(long l);
 
   /**
    * The list of groups this class/method belongs to.
    */
-  public String[] getGroups();
-  public void setGroups(String[] groups);
+  String[] getGroups();
+  void setGroups(String[] groups);
 
   /**
    * The list of groups this method depends on.  Every method
@@ -28,8 +28,8 @@ public interface ITestOrConfiguration extends IParameterizable {
    * methods was not a SUCCESS, this test method will not be
    * run and will be flagged as a SKIP.
    */
-  public String[] getDependsOnGroups();
-  public void setDependsOnGroups(String[] groups);
+  String[] getDependsOnGroups();
+  void setDependsOnGroups(String[] groups);
 
   /**
    * The list of methods this method depends on.  There is no guarantee
@@ -42,13 +42,13 @@ public interface ITestOrConfiguration extends IParameterizable {
    *  If some of these methods have been overloaded, all the overloaded
    *  versions will be run.
    */
-  public String[] getDependsOnMethods();
-  public void setDependsOnMethods(String[] dependsOnMethods);
+  String[] getDependsOnMethods();
+  void setDependsOnMethods(String[] dependsOnMethods);
 
   /**
    * The description for this method, which will be shown in the reports.
    */
-  public String getDescription();
-  public void setDescription(String description);
+  String getDescription();
+  void setDescription(String description);
 
 }

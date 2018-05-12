@@ -252,7 +252,7 @@ public class AnnotationHelper {
     catch (SecurityException e) {
       e.printStackTrace();
     }
-    return vResult.values().toArray(new ITestNGMethod[vResult.size()]);
+    return vResult.values().toArray(new ITestNGMethod[0]);
     }
 
   public static <A extends Annotation> A  findAnnotationSuperClasses(Class<A> annotationClass, Class parameterClass) {

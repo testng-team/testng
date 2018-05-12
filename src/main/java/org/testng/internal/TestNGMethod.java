@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
@@ -89,7 +90,7 @@ public class TestNGMethod extends BaseTestMethod {
         setAlwaysRun(testAnnotation.getAlwaysRun());
         setDescription(findDescription(testAnnotation, xmlTest));
         setEnabled(testAnnotation.getEnabled());
-        setRetryAnalyzer(testAnnotation.getRetryAnalyzer());
+        setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
         setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
         setInvocationTimeOut(testAnnotation.invocationTimeOut());
         setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
@@ -193,15 +194,18 @@ public class TestNGMethod extends BaseTestMethod {
     return clones;
   }
 
+  private static IRetryAnalyzer cloneInstance(IRetryAnalyzer instance) {
+    if (instance == null) {
+      return null;
+    }
+    return ClassHelper.newInstance(instance.getClass());
+  }
+
   /** Sorts ITestNGMethod by Class name. */
   public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
-    new Comparator<ITestNGMethod>() {
-
-    @Override
-    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      String c1 = o1.getTestClass().getName();
-      String c2 = o2.getTestClass().getName();
-      return c1.compareTo(c2);
-    }
-  };
+          (o1, o2) -> {
+            String c1 = o1.getTestClass().getName();
+            String c2 = o2.getTestClass().getName();
+            return c1.compareTo(c2);
+          };
 }
