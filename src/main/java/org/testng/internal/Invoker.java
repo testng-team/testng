@@ -1219,7 +1219,11 @@ public class Invoker implements IInvoker {
     } else {
       testResult.setStatus(status);
       if (status == ITestResult.FAILURE && !handled) {
-        handleException(ite, testMethod, testResult, failure.count++);
+        int count = failure.count++;
+        if (testMethod.isDataDriven()) {
+          count = 0;
+        }
+        handleException(ite, testMethod, testResult, count);
       }
     }
   }

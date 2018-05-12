@@ -262,4 +262,8 @@ public interface ITestNGMethod extends Cloneable {
      * @return qualified name for this method
      */
     String getQualifiedName();
+
+    default boolean isDataDriven() {
+        return false;
+    }
 }
