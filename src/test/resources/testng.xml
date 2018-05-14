@@ -894,5 +894,11 @@
     </classes>
   </test>
 
+  <test name="threadAffinity">
+    <classes>
+      <class name="test.thread.parallelization.issue1773.IssueTest"/>
+    </classes>
+  </test>
+
 </suite>
 

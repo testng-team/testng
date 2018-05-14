@@ -22,4 +22,20 @@ public interface IWorker<T> extends Runnable, Comparable<IWorker<T>> {
    * @return the priority of this task.
    */
   int getPriority();
+
+  default long getCurrentThreadId() {
+    return -1;
+  }
+
+  default void setThreadIdToRunOn(long threadIdToRunOn) {
+  }
+
+  default long getThreadIdToRunOn() {
+    return -1;
+  }
+
+  default boolean completed() {
+    return true;
+  }
+
 }

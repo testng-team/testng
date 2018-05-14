@@ -57,6 +57,8 @@ import org.testng.xml.XmlTest;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 
+import javax.annotation.Nonnull;
+
 import static org.testng.internal.MethodHelper.fixMethodsWithClass;
 
 /**
@@ -147,7 +149,6 @@ public class TestRunner
   private ClassMethodMap m_classMethodMap;
   private TestNGClassFinder m_testClassFinder;
   private IConfiguration m_configuration;
-  private IMethodInterceptor builtinInterceptor;
 
   public enum PriorityWeight {
     groupByInstance, preserveOrder, priority, dependsOnGroups, dependsOnMethods
@@ -212,7 +213,7 @@ public class TestRunner
     setVerbose(test.getVerbose());
 
     boolean preserveOrder = test.getPreserveOrder();
-    builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
+    IMethodInterceptor builtinInterceptor = preserveOrder ? new PreserveOrderMethodInterceptor() : new InstanceOrderingMethodInterceptor();
     m_methodInterceptors = new ArrayList<>();
     //Add the built in interceptor as the first interceptor. That way we let our users determine the final order
     //by plugging in their own custom interceptors as well.
@@ -370,7 +371,7 @@ public class TestRunner
     List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
-    m_testClassFinder= new TestNGClassFinder(classMap,Maps.<Class<?>, List<Object>>newHashMap(),
+    m_testClassFinder= new TestNGClassFinder(classMap,Maps.newHashMap(),
                                              m_configuration, this, m_dataProviderListeners);
     ITestMethodFinder testMethodFinder = new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
 
@@ -570,7 +571,7 @@ public class TestRunner
           IJUnitTestRunner tr= ClassHelper.createTestRunner(TestRunner.this);
           tr.setInvokedMethodListeners(m_invokedMethodListeners);
           try {
-            tr.run(tc, methods.toArray(new String[methods.size()]));
+            tr.run(tc, methods.toArray(new String[0]));
           }
           catch(Exception ex) {
             ex.printStackTrace();
@@ -596,13 +597,13 @@ public class TestRunner
       }
 
       @Override
-      public int compareTo(IWorker<ITestNGMethod> other) {
+      public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
         return getPriority() - other.getPriority();
       }
     });
 
     runJUnitWorkers(workers);
-    m_allTestMethods= runMethods.toArray(new ITestNGMethod[runMethods.size()]);
+    m_allTestMethods= runMethods.toArray(new ITestNGMethod[0]);
   }
 
   /**
@@ -625,7 +626,7 @@ public class TestRunner
           GraphThreadPoolExecutor<ITestNGMethod> executor =
                   new GraphThreadPoolExecutor<>("test=" + xmlTest.getName(), graph, this,
                           threadCount, threadCount, 0, TimeUnit.MILLISECONDS,
-                          new LinkedBlockingQueue<Runnable>());
+                          new LinkedBlockingQueue<>());
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -675,7 +676,7 @@ public class TestRunner
     //so let's update the current classMethodMap object with the list of methods obtained from the interceptor.
     this.m_classMethodMap = new ClassMethodMap(result, null);
 
-    ITestNGMethod[] resultArray = result.toArray(new ITestNGMethod[result.size()]);
+    ITestNGMethod[] resultArray = result.toArray(new ITestNGMethod[0]);
 
     //Check if an interceptor had altered the effective test method count. If yes, then we need to
     //update our configurationGroupMethod object with that information.
@@ -822,13 +823,13 @@ public class TestRunner
   @Override
   public String[] getIncludedGroups() {
     Map<String, String> ig= m_xmlMethodSelector.getIncludedGroups();
-    return ig.values().toArray(new String[ig.size()]);
+    return ig.values().toArray(new String[0]);
   }
 
   @Override
   public String[] getExcludedGroups() {
     Map<String, String> eg= m_xmlMethodSelector.getExcludedGroups();
-    return eg.values().toArray(new String[eg.size()]);
+    return eg.values().toArray(new String[0]);
   }
 
   @Override

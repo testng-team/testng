@@ -11,11 +11,14 @@ import org.testng.collections.Lists;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 
+import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -39,6 +42,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
   private final List<IClassListener> m_listeners;
+  private long currentThreadId;
+  private long threadIdToRunOn = -1;
+  private boolean completed = true;
 
   public TestMethodWorker(IInvoker invoker,
                           List<IMethodInstance> testMethods,
@@ -98,6 +104,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
    */
   @Override
   public void run() {
+    this.currentThreadId = Thread.currentThread().getId();
+    if (RuntimeBehavior.enforceThreadAffinity() && doesTaskHavePreRequistes() && currentThreadId != threadIdToRunOn) {
+      completed = false;
+      return;
+    }
+
     for (IMethodInstance testMthdInst : m_methodInstances) {
       ITestNGMethod testMethod = testMthdInst.getMethod();
       ITestClass testClass = testMethod.getTestClass();
@@ -111,6 +123,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         invokeAfterClassMethods(testClass, testMthdInst);
       }
     }
+  }
+
+  private boolean doesTaskHavePreRequistes() {
+    return threadIdToRunOn != -1;
   }
 
   protected void invokeTestMethods(ITestNGMethod tm, Object instance,
@@ -136,8 +152,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   /**
    * Invoke the @BeforeClass methods if not done already
-   * @param testClass
-   * @param mi
    */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
@@ -177,8 +191,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   /**
    * Invoke the @AfterClass methods if not done already
-   * @param testClass
-   * @param mi
    */
   protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
@@ -244,7 +256,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   @Override
-  public int compareTo(IWorker<ITestNGMethod> other) {
+  public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
     return getPriority() - other.getPriority();
   }
 
@@ -257,6 +269,22 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         ? m_methodInstances.get(0).getMethod().getPriority()
         : 0;
   }
+
+  @Override
+  public long getCurrentThreadId() {
+    return currentThreadId;
+  }
+
+  @Override
+  public void setThreadIdToRunOn(long threadIdToRunOn) {
+    this.threadIdToRunOn = threadIdToRunOn;
+  }
+
+  @Override
+  public boolean completed() {
+    return this.completed;
+  }
+
 }
 
 /**
@@ -265,8 +293,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
  */
 class SingleTestMethodWorker extends TestMethodWorker {
   private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS =
-    new ConfigurationGroupMethods(new ITestNGMethod[0],
-        new HashMap<String, List<ITestNGMethod>>(), new HashMap<String, List<ITestNGMethod>>());
+    new ConfigurationGroupMethods(new ITestNGMethod[0], new HashMap<>(), new HashMap<>());
 
   public SingleTestMethodWorker(IInvoker invoker,
                                 IMethodInstance testMethod,
@@ -276,7 +303,7 @@ class SingleTestMethodWorker extends TestMethodWorker {
                                 List<IClassListener> listeners)
   {
     super(invoker,
-            asList(testMethod),
+            Collections.singletonList(testMethod),
           suite,
           parameters,
           EMPTY_GROUP_METHODS,
@@ -285,11 +312,5 @@ class SingleTestMethodWorker extends TestMethodWorker {
           listeners);
   }
 
-  //TODO Resorted to introducing this method to keep JDK7 happy. Can be removed once we move to JDK8
-  private static List<IMethodInstance> asList(IMethodInstance testMethod) {
-    List<IMethodInstance> methods = Lists.newLinkedList();
-    methods.add(testMethod);
-    return methods;
-  }
 
 }
