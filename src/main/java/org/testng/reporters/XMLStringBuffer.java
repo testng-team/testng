@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  */
 public class XMLStringBuffer {
   /** End of line, value of 'line.separator' system property or '\n' */
-  public static final String EOL = System.getProperty("line.separator", "\n");
+  public static final String EOL = RuntimeBehavior.getLineSeparatorOrNewLine();
 
   /** Tab space indent for XML document */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";

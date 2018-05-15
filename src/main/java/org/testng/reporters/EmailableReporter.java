@@ -51,8 +51,6 @@ public class EmailableReporter implements IReporter {
 
   private String fileName = "emailable-report.html";
 
-  private static final String JVM_ARG = "emailable.report.name";
-
   public String getFileName() {
     return fileName;
   }
@@ -84,7 +82,7 @@ public class EmailableReporter implements IReporter {
 
   protected PrintWriter createWriter(String outdir) throws IOException {
     new File(outdir).mkdirs();
-    String jvmArg = System.getProperty(JVM_ARG);
+    String jvmArg = RuntimeBehavior.getDefaultEmailableReportName();
     if (jvmArg != null && !jvmArg.trim().isEmpty()) {
       fileName = jvmArg;
     }
@@ -140,9 +138,6 @@ public class EmailableReporter implements IReporter {
     }
   }
 
-  /**
-   * @param tests
-   */
   private void resultSummary(ISuite suite, IResultMap tests, String testname, String style,
       String details) {
     if (!tests.getAllResults().isEmpty()) {

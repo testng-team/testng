@@ -11,7 +11,6 @@ import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -19,15 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * The main entry for the XML generation operation
  */
 public class XMLReporter implements IReporter {
-
-  public static final String FILE_NAME = "testng-results.xml";
-  private static final String JVM_ARG = "testng.report.xml.name";
 
 
   private final XMLReporterConfig config = new XMLReporterConfig();
@@ -72,8 +67,8 @@ public class XMLReporter implements IReporter {
     Utils.writeUtf8File(config.getOutputDirectory(), fileName(), rootBuffer, null /* no prefix */);
   }
 
-  private static final String fileName() {
-    return System.getProperty(JVM_ARG, FILE_NAME);
+  private static String fileName() {
+    return RuntimeBehavior.getDefaultFileNameForXmlReports();
   }
 
   private void writeReporterOutput(XMLStringBuffer xmlBuffer) {
@@ -111,12 +106,12 @@ public class XMLReporter implements IReporter {
     File parentDir = suiteFile.getParentFile();
     suiteFile.getParentFile().mkdirs();
     if (parentDir.exists() || suiteFile.getParentFile().exists()) {
-      Utils.writeUtf8File(parentDir.getAbsolutePath(), FILE_NAME, xmlBuffer.toXML());
+      Utils.writeUtf8File(parentDir.getAbsolutePath(), fileName(), xmlBuffer.toXML());
     }
   }
 
   private File referenceSuite(XMLStringBuffer xmlBuffer, ISuite suite) {
-    String relativePath = suite.getName() + File.separatorChar + FILE_NAME;
+    String relativePath = suite.getName() + File.separatorChar + fileName();
     File suiteFile = new File(config.getOutputDirectory(), relativePath);
     Properties attrs = new Properties();
     attrs.setProperty(XMLReporterConfig.ATTR_URL, relativePath);
@@ -201,11 +196,7 @@ public class XMLReporter implements IReporter {
   }
 
   private Set<ITestNGMethod> getUniqueMethodSet(Collection<ITestNGMethod> methods) {
-    Set<ITestNGMethod> result = new LinkedHashSet<>();
-    for (ITestNGMethod method : methods) {
-      result.add(method);
-    }
-    return result;
+    return new LinkedHashSet<>(methods);
   }
 
   /**

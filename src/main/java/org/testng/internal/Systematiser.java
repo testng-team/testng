@@ -23,7 +23,7 @@ public final class Systematiser {
      */
     public static Comparator<ITestNGMethod> getComparator() {
         Comparator<ITestNGMethod> comparator;
-        String text = System.getProperty("testng.order", Order.INSTANCES.getValue());
+        String text = RuntimeBehavior.orderMethodsBasedOn();
 
         Order order = Order.parse(text);
         switch (order) {

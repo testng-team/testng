@@ -2,7 +2,7 @@ package test.reports;
 
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.reporters.XMLReporter;
+import org.testng.reporters.RuntimeBehavior;
 import org.w3c.dom.Document;
 import test.SimpleBaseTest;
 
@@ -58,6 +58,6 @@ public class XmlReporterTest extends SimpleBaseTest {
         TestNG testng = create(fileLocation.toPath(), clazz);
         testng.setUseDefaultListeners(true);
         testng.run();
-        return new File(fileLocation, XMLReporter.FILE_NAME);
+        return new File(fileLocation, RuntimeBehavior.FILE_NAME);
     }
 }

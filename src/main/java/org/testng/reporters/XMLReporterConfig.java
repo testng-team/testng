@@ -95,8 +95,7 @@ public class XMLReporterConfig {
    */
   private StackTraceLevels stackTraceOutputMethod = StackTraceLevels.FULL;
 
-  private StackTraceLevels stackTraceOutputLevel = StackTraceLevels.parse(System.getProperty("stacktrace.success"
-          + ".output.level", StackTraceLevels.FULL.toString()));
+  private StackTraceLevels stackTraceOutputLevel = StackTraceLevels.parse(RuntimeBehavior.getDefaultStacktraceLevels());
 
   /**
    * The root output directory where the XMLs will be written. This will default

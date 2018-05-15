@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
-import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -24,7 +23,7 @@ import java.util.*;
  */
 public final class Utils {
 
-  private static final String LINE_SEP = System.getProperty("line.separator");
+  private static final String LINE_SEP = RuntimeBehavior.getDefaultLineSeparator();
 
   private static final char[] SPECIAL_CHARACTERS = {'*','/','\\','?','%',':',';','<','>','&','~','|'};
   public static final char CHAR_REPLACEMENT = '_';
@@ -545,7 +544,7 @@ public final class Utils {
   }
 
   private static boolean isTooVerbose() {
-    return Boolean.getBoolean(TestNG.SHOW_TESTNG_STACK_FRAMES) || TestRunner.getVerbose() >= 2;
+    return RuntimeBehavior.showTestNGStackFrames() || TestRunner.getVerbose() >= 2;
   }
 
   private enum StackTraceType {

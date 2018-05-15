@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 public final class XMLUtils {
 
   /** Platform specific end of line */
-  private static final String EOL = System.getProperty("line.separator");
+  private static final String EOL = RuntimeBehavior.getDefaultLineSeparator();
 
   private XMLUtils() {
     // Hide constructor

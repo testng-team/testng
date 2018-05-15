@@ -4,6 +4,7 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.NoInjection;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Annotation;
@@ -408,7 +409,7 @@ public final class ReflectionRecipes {
         msg = MethodMatcherException.generateMessage(prefix + "constructor.", (Constructor) injectionMethod, queue.backingList.toArray());
       }
 
-      boolean block = Boolean.parseBoolean(System.getProperty("strictParameterMatch"));
+      boolean block = RuntimeBehavior.useStrictParameterMatching();
       if (block) {
         throw new MethodMatcherException(msg);
       } else {

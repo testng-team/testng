@@ -1,12 +1,9 @@
 package org.testng.reporters;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +38,6 @@ public class EmailableReporter2 implements IReporter {
 
     private String fileName = "emailable-report.html";
 
-    private static final String JVM_ARG = "emailable.report2.name";
-
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
@@ -73,7 +68,7 @@ public class EmailableReporter2 implements IReporter {
 
     protected PrintWriter createWriter(String outdir) throws IOException {
         new File(outdir).mkdirs();
-        String jvmArg = System.getProperty(JVM_ARG);
+        String jvmArg = RuntimeBehavior.getDefaultEmailableReport2Name();
         if (jvmArg != null && !jvmArg.trim().isEmpty()) {
             fileName = jvmArg;
         }
@@ -683,7 +678,7 @@ public class EmailableReporter2 implements IReporter {
                 List<ITestResult> resultsPerMethod = Lists.newArrayList();
 
                 List<ITestResult> resultsList = Lists.newArrayList(results);
-                Collections.sort(resultsList, RESULT_COMPARATOR);
+                resultsList.sort(RESULT_COMPARATOR);
                 Iterator<ITestResult> resultsIterator = resultsList.iterator();
                 assert resultsIterator.hasNext();
 
