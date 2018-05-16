@@ -10,13 +10,17 @@ import java.util.Properties;
 
 public class XmlInclude {
 
-  private final String m_name;
+  private String m_name;
   private final List<Integer> m_invocationNumbers;
   private final int m_index;
   private String m_description;
   private final Map<String, String> m_parameters = Maps.newHashMap();
 
   private XmlClass m_xmlClass;
+
+  public XmlInclude() {
+    this("",0);
+  }
 
   public XmlInclude(String n) {
     this(n, 0);
@@ -40,13 +44,17 @@ public class XmlInclude {
     m_parameters.clear();
     m_parameters.putAll(parameters);
   }
-  
+
   public String getDescription() {
     return m_description;
   }
 
   public String getName() {
     return m_name;
+  }
+
+  public void setName(String name) {
+    m_name = name;
   }
 
   public List<Integer> getInvocationNumbers() {
