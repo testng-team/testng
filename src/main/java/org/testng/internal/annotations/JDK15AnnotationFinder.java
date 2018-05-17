@@ -230,10 +230,15 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       return null;
     }
 
+    boolean cachedAnnotation = true;
     IAnnotation result = m_annotations.get(p);
     if (result == null) {
       result = m_tagFactory.createTag(cls, testMethod, a, annotationClass, m_transformer);
       m_annotations.put(p, result);
+      transform(result, testClass, testConstructor, testMethod, whichClass);
+      cachedAnnotation = false;
+    }
+    if (whichClass == null && cachedAnnotation) {
       transform(result, testClass, testConstructor, testMethod, whichClass);
     }
     //noinspection unchecked
