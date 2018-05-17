@@ -8,6 +8,8 @@ import java.util.TimeZone;
 public final class RuntimeBehavior {
 
     public static final String TESTNG_LISTENERS_ALWAYSRUN = "testng.listeners.alwaysrun";
+    public static final String TESTNG_THREAD_AFFINITY = "testng.thread.affinity";
+    public static final String TESTNG_MODE_DRYRUN = "testng.mode.dryrun";
 
     private RuntimeBehavior() {
     }
@@ -17,7 +19,7 @@ public final class RuntimeBehavior {
      * <code>false</code> otherwise.
      */
     public static boolean isDryRun() {
-        String value = System.getProperty("testng.mode.dryrun", "false");
+        String value = System.getProperty(TESTNG_MODE_DRYRUN, "false");
         return Boolean.parseBoolean(value);
     }
 
@@ -41,5 +43,17 @@ public final class RuntimeBehavior {
    */
   public static boolean invokeListenersForSkippedTests() {
     return Boolean.parseBoolean(System.getProperty(TESTNG_LISTENERS_ALWAYSRUN, "false"));
+  }
+
+  /**
+   * @return - <code>true</code> if we would like to enforce Thread affinity when dealing with the
+   *     below two variants of execution models:
+   *     <ul>
+   *       <li>Ordering priority
+   *       <li>Ordering by dependsOnMethods (will not work with dependency on multiple methods)
+   *     </ul>
+   */
+  public static boolean enforceThreadAffinity() {
+    return Boolean.parseBoolean(System.getProperty(TESTNG_THREAD_AFFINITY, "false"));
   }
 }

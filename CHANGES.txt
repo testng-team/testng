@@ -1,4 +1,10 @@
 Current
+New  : TestNG now guarantees thread-affinity for methods that use either preserve-order (or) dependsOnMethods (Krishnan Mahadevan) 
+Fixed: GITHUB-1185: DependsOnMethods made parallel class use several threads (Krishnan Mahadevan)
+Fixed: GITHUB-1173: Parallel="classes" executes methods of test class in different threads (Krishnan Mahadevan)
+Fixed: GITHUB-1066: Regression is in priority. It broke parallel mode (Krishnan Mahadevan)
+Fixed: GITHUB-1050: Parallel classes runs methods from one class in different threads, interleaves two classes in one thread (Krishnan Mahadevan)
+Fixed: GITHUB-89: parallel="classes" is not forcing test methods from the same testClass to be run in the same thread as it is suposed to (Krishnan Mahadevan)
 Fixed: GITHUB-1719: successPercentage does not work correctly for tests with dataProvider (Krishnan Mahadevan)
 Fixed: GITHUB-1241: Streamline Retry Analyzer usage when same test is run multiple times (Krishnan Mahadevan)
 Fixed: GITHUB-1777: ITestListener.onTestStart() not called after fail or skip from @BeforeMethod (Krishnan Mahadevan)

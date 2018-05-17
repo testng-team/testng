@@ -1,7 +1,6 @@
 package org.testng.internal.thread.graph;
 
 import java.util.List;
-import java.util.Set;
 
 
 /**

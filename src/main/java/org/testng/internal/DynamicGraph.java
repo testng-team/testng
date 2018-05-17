@@ -83,6 +83,14 @@ public class DynamicGraph<T> {
     return finalResult;
   }
 
+  public List<T> getDependenciesFor(T node) {
+    Map<T, Integer> data = m_edges.to(node);
+    if (data == null) {
+      return Lists.newArrayList();
+    }
+    return Lists.newArrayList(data.keySet());
+  }
+
   /**
    * Set the status for a set of nodes.
    */
@@ -130,6 +138,10 @@ public class DynamicGraph<T> {
 
         m_edges.removeNode(node);
         break;
+      case READY:
+        m_nodesReady.add(node);
+        m_nodesRunning.remove(node);
+        break;
       default:
         throw new IllegalArgumentException("Unsupported status: " + status);
     }
@@ -139,28 +151,30 @@ public class DynamicGraph<T> {
    * @return the number of nodes in this graph.
    */
   public int getNodeCount() {
-    int result = m_nodesReady.size() + m_nodesRunning.size() + m_nodesFinished.size();
-    return result;
+    return m_nodesReady.size() + m_nodesRunning.size() + m_nodesFinished.size();
   }
 
   public int getNodeCountWithStatus(Status status) {
+    return getNodesWithStatus(status).size();
+  }
+
+  public Set<T> getNodesWithStatus(Status status) {
     switch(status) {
-      case READY: return m_nodesReady.size();
-      case RUNNING: return m_nodesRunning.size();
-      case FINISHED: return m_nodesFinished.size();
+      case READY: return m_nodesReady;
+      case RUNNING: return m_nodesRunning;
+      case FINISHED: return m_nodesFinished;
       default: throw new IllegalArgumentException();
     }
+
   }
 
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder("[DynamicGraph ");
-    result.append("\n  Ready:").append(m_nodesReady);
-    result.append("\n  Running:").append(m_nodesRunning);
-    result.append("\n  Finished:").append(m_nodesFinished);
-    result.append("\n  Edges:\n").append(m_edges);
-    result.append("]");
-    return result.toString();
+    return "[DynamicGraph " + "\n  Ready:" + m_nodesReady +
+            "\n  Running:" + m_nodesRunning +
+            "\n  Finished:" + m_nodesFinished +
+            "\n  Edges:\n" + m_edges +
+            "]";
   }
 
   private static <T> String dotShortName(T t) {
@@ -255,8 +269,8 @@ public class DynamicGraph<T> {
      * Return the weight of the edge in the graph that is the reversed direction of edge. For example, if
      * edge a -> b exists, and edge b -> a is passed in, then return a -> b.
      *
-     * @param from
-     * @param to
+     * @param from - the from edge
+     * @param to - the to edge
      * @return the weight of the reversed edge or null if edge does not exist
      */
     private Integer findReversedEdge(T from, T to) {
