@@ -143,7 +143,7 @@ public class PackageUtils {
       return testClassPaths;
     }
 
-    String testClasspath = System.getProperty(TestNG.TEST_CLASSPATH);
+    String testClasspath = RuntimeBehavior.getTestClasspath();
     if (null == testClasspath) {
       return null;
     }

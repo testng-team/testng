@@ -25,6 +25,7 @@ import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.OverrideProcessor;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
@@ -110,10 +111,6 @@ public class TestNG {
 
   /** The default name of the result's output directory (keep public, used by Eclipse). */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
-
-  /** System properties */
-  public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
-  public static final String TEST_CLASSPATH = "testng.test.classpath";
 
   private static TestNG m_instance;
 
@@ -831,9 +828,9 @@ public class TestNG {
       addReporter(Main.class);
       addReporter(FailedReporter.class);
       addReporter(XMLReporter.class);
-      if (System.getProperty("oldTestngEmailableReporter") != null) {
+      if (RuntimeBehavior.useOldTestNGEmailableReporter()) {
         addReporter(EmailableReporter.class);
-      } else if (System.getProperty("noEmailableReporter") == null) {
+      } else if (RuntimeBehavior.useEmailableReporter()) {
         addReporter(EmailableReporter2.class);
       }
       addReporter(JUnitReportReporter.class);

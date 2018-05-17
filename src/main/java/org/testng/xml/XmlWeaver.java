@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.reflect.ReflectionRecipes;
 
 /**
@@ -9,7 +10,7 @@ import org.testng.internal.reflect.ReflectionRecipes;
  */
 final class XmlWeaver {
     private static IWeaveXml instance = null;
-    private static final boolean testMode = Boolean.parseBoolean(System.getProperty("testng.testmode"));
+    private static final boolean testMode = RuntimeBehavior.isTestMode();
 
     private XmlWeaver() {
     }
@@ -44,7 +45,7 @@ final class XmlWeaver {
     }
 
     private static String getClassName() {
-        return System.getProperty("testng.xml.weaver", DefaultXmlWeaver.class.getName());
+        return RuntimeBehavior.getDefaultXmlGenerationImpl();
     }
 
     /**

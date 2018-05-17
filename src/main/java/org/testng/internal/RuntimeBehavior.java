@@ -10,8 +10,60 @@ public final class RuntimeBehavior {
     public static final String TESTNG_LISTENERS_ALWAYSRUN = "testng.listeners.alwaysrun";
     public static final String TESTNG_THREAD_AFFINITY = "testng.thread.affinity";
     public static final String TESTNG_MODE_DRYRUN = "testng.mode.dryrun";
+    private static final String TEST_CLASSPATH = "testng.test.classpath";
+    private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
+    public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
 
     private RuntimeBehavior() {
+    }
+
+    public static boolean showTestNGStackFrames() {
+        return Boolean.getBoolean(SHOW_TESTNG_STACK_FRAMES);
+    }
+
+    public static String getDefaultLineSeparator() {
+        return System.getProperty("line.separator");
+    }
+
+    public static String getCurrentUserHome() {
+        return System.getProperty("user.home");
+    }
+
+    public static String getDefaultDataProviderThreadCount() {
+        return System.getProperty("dataproviderthreadcount", "");
+    }
+
+    public static String getDefaultXmlGenerationImpl() {
+        return System.getProperty("testng.xml.weaver", "org.testng.xml.DefaultXmlWeaver");
+    }
+
+    public static boolean isTestMode() {
+        return Boolean.parseBoolean(System.getProperty("testng.testmode"));
+    }
+
+    public static boolean shouldSkipUsingCallerClassLoader() {
+        return Boolean.parseBoolean(System.getProperty(SKIP_CALLER_CLS_LOADER));
+    }
+
+
+    public static boolean useStrictParameterMatching() {
+        return Boolean.parseBoolean(System.getProperty("strictParameterMatch"));
+    }
+
+    public static String orderMethodsBasedOn() {
+        return System.getProperty("testng.order", Systematiser.Order.INSTANCES.getValue());
+    }
+
+    public static String getTestClasspath() {
+        return System.getProperty(TEST_CLASSPATH);
+    }
+
+    public static boolean useOldTestNGEmailableReporter() {
+        return System.getProperty("oldTestngEmailableReporter") != null;
+    }
+
+    public static boolean useEmailableReporter() {
+        return System.getProperty("noEmailableReporter") == null;
     }
 
     /**

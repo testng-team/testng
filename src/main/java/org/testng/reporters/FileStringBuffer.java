@@ -27,7 +27,7 @@ import java.util.Random;
  */
 public class FileStringBuffer implements IBuffer {
   private static int MAX = 100000;
-  private static final boolean VERBOSE = System.getProperty("fileStringBuffer") != null;
+  private static final boolean VERBOSE = RuntimeBehavior.verboseMode();
 
   private File m_file;
   private StringBuilder m_sb = new StringBuilder();

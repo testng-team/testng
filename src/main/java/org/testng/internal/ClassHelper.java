@@ -42,7 +42,7 @@ public final class ClassHelper {
   private static final List<ClassLoader> classLoaders = new Vector<>();
   private static final String CANNOT_INSTANTIATE_CLASS = "Cannot instantiate class ";
   private static final String CLASS_HELPER = ClassHelper.class.getSimpleName();
-  private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
+
 
   /**
    * When given a file name to form a class name, the file name is parsed and divided
@@ -124,7 +124,7 @@ public final class ClassHelper {
         }
       }
     }
-    if (Boolean.parseBoolean(System.getProperty(SKIP_CALLER_CLS_LOADER))) {
+    if (RuntimeBehavior.shouldSkipUsingCallerClassLoader()) {
       return null;
     }
 

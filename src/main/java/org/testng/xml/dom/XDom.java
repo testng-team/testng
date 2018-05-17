@@ -9,6 +9,7 @@ import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
@@ -30,17 +31,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+//TODO: This class is perhaps not being used anywhere in TestNG. Need to check and remove this if its obsolete.
 public class XDom {
 //  private static Map<String, Class<?>> m_map = Maps.newHashMap();
   private Document m_document;
   private ITagFactory m_tagFactory;
 
-  public XDom(ITagFactory tagFactory, Document document)
-      throws XPathExpressionException,
-      InstantiationException, IllegalAccessException {
+  public XDom(ITagFactory tagFactory, Document document) {
     m_tagFactory = tagFactory;
     m_document = document;
   }
@@ -125,8 +126,8 @@ public class XDom {
    * If this fails, use the default constructor.
    */
   private Object instantiateElement(Class<?> c, Object parent)
-      throws SecurityException, NoSuchMethodException,
-      IllegalArgumentException, InstantiationException, IllegalAccessException,
+      throws SecurityException,
+          IllegalArgumentException, InstantiationException, IllegalAccessException,
       InvocationTargetException {
     Object result = null;
     Method m = findMethodAnnotatedWith(c, ParentSetter.class);
@@ -217,7 +218,7 @@ private void populateContent(Node item, Object object) {
     return false;
   }
 
-  private void populateAttributes(Node node, Object object) throws XPathExpressionException {
+  private void populateAttributes(Node node, Object object) {
     for (int j = 0; j < node.getAttributes().getLength(); j++) {
       Node item = node.getAttributes().item(j);
       setProperty(object, item.getLocalName(), item.getNodeValue());
@@ -276,7 +277,7 @@ private void populateContent(Node item, Object object) {
     factory.setNamespaceAware(true); // never forget this!
     DocumentBuilder builder = factory.newDocumentBuilder();
     FileInputStream inputStream =
-        new FileInputStream(new File(System.getProperty("user.home")
+        new FileInputStream(new File(RuntimeBehavior.getCurrentUserHome()
             + "/java/testng/src/test/resources/testng-all.xml"));
     Document doc = builder.parse(inputStream);
     XmlSuite result = (XmlSuite) new XDom(new TestNGTagFactory(), doc).parse();
@@ -318,8 +319,8 @@ private void populateContent(Node item, Object object) {
 
     {
       // run
-      Assert.assertEquals(s.getIncludedGroups(), Arrays.asList("includeThisGroup"));
-      Assert.assertEquals(s.getExcludedGroups(), Arrays.asList("excludeThisGroup"));
+      Assert.assertEquals(s.getIncludedGroups(), Collections.singletonList("includeThisGroup"));
+      Assert.assertEquals(s.getExcludedGroups(), Collections.singletonList("excludeThisGroup"));
       XmlGroups groups = s.getGroups();
 
       // define
@@ -360,7 +361,7 @@ private void populateContent(Node item, Object object) {
 
     // run
     Assert.assertEquals(t.getIncludedGroups(), Arrays.asList("nopackage", "includeThisGroup"));
-    Assert.assertEquals(t.getExcludedGroups(), Arrays.asList("excludeThisGroup"));
+    Assert.assertEquals(t.getExcludedGroups(), Collections.singletonList("excludeThisGroup"));
 
     // dependencies
     Map<String, String> dg = t.getXmlDependencyGroups();

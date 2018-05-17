@@ -9,6 +9,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
@@ -677,13 +678,11 @@ public class XmlSuite implements Cloneable {
   }
 
   public int getDataProviderThreadCount() {
-    String s = System.getProperty("dataproviderthreadcount");
-    if (s != null) {
-      try {
-        return Integer.parseInt(s);
-      } catch(NumberFormatException nfe) {
-        System.err.println("Parsing System property 'dataproviderthreadcount': " + nfe);
-      }
+    String s = RuntimeBehavior.getDefaultDataProviderThreadCount();
+    try {
+      return Integer.parseInt(s);
+    } catch (NumberFormatException nfe) {
+      System.err.println("Parsing System property 'dataproviderthreadcount': " + nfe);
     }
     return m_dataProviderThreadCount;
   }
