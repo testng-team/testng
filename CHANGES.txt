@@ -1,5 +1,6 @@
 Current
-New  : TestNG now guarantees thread-affinity for methods that use either preserve-order (or) dependsOnMethods (Krishnan Mahadevan) 
+Fixed: GITHUB-1787: Method level parameters are missing when using Yaml generation utilities (Krishnan Mahadevan)
+New  : TestNG now guarantees thread-affinity for methods that use either preserve-order (or) dependsOnMethods (Krishnan Mahadevan)
 Fixed: GITHUB-1185: DependsOnMethods made parallel class use several threads (Krishnan Mahadevan)
 Fixed: GITHUB-1173: Parallel="classes" executes methods of test class in different threads (Krishnan Mahadevan)
 Fixed: GITHUB-1066: Regression is in priority. It broke parallel mode (Krishnan Mahadevan)
