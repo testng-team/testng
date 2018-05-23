@@ -3,7 +3,6 @@ package test.annotationtransformer;
 import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
-import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -11,6 +10,9 @@ import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 
+import test.annotationtransformer.issue1790.TestClassSample1;
+import test.annotationtransformer.issue1790.TestClassSample2;
+import test.annotationtransformer.issue1790.TransformerImpl;
 import test.SimpleBaseTest;
 
 import java.io.ByteArrayInputStream;
@@ -22,12 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
-  private static final Extractor NAME_EXTRACTOR = new Extractor<ITestResult, String>() {
-    @Override
-    public String extract(ITestResult input) {
-      return input.getName();
-    }
-  };
+  private static final Extractor<ITestResult, String> NAME_EXTRACTOR = (Extractor<ITestResult, String>) ITestResult::getName;
 
   /**
    * Make sure that without a transformer in place, a class-level
@@ -39,7 +36,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setPreserveOrder(true);
 
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -66,7 +63,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.addListener(transformer);
 
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -133,7 +130,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     }
     tng.setTestClasses(new Class[] { AnnotationTransformerClassSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -168,7 +165,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setVerbose(0);
     tng.setTestClasses(new Class[] { ConfigurationSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -181,7 +178,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.addListener(new DataProviderTransformer());
     tng.setTestClasses(new Class[] { AnnotationTransformerDataProviderSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -194,7 +191,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.addListener(new FactoryTransformer());
     tng.setTestClasses(new Class[] { AnnotationTransformerFactorySampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -206,7 +203,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setTestClasses(new Class[] { AnnotationTransformerInvocationCountTest.class });
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -216,7 +213,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.addListener(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
     tng.setTestClasses(new Class[]{AnnotationTransformerInvocationCountTest.class});
     tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
@@ -243,11 +240,23 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setXmlSuites(Arrays.asList(suites.toArray(new XmlSuite[0])));
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
 
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
 
+  }
+
+  @Test(description = "GITHUB-1790")
+  public void ensureAnnotationTransformerInvokedForClassLevelTestAnnotations() {
+    TestNG testng = create(TestClassSample1.class, TestClassSample2.class);
+    TransformerImpl transformer = new TransformerImpl();
+    testng.addListener(transformer);
+    testng.setVerbose(2);
+    testng.run();
+    assertThat(transformer.getClasses()).hasSize(2);
+    assertThat(transformer.getConstructors()).isEmpty();
+    assertThat(transformer.getMethods()).hasSize(2);
   }
 }

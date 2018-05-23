@@ -49,8 +49,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                            XmlTest xmlTest,
                            IConfiguration configuration,
                            ITestContext testContext) {
-    this(cim,  Maps.<Class<?>, List<Object>>newHashMap(), configuration, testContext,
-            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    this(cim,  Maps.newHashMap(), configuration, testContext, Collections.emptyMap());
   }
 
   /**
@@ -63,7 +62,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                            IConfiguration configuration,
                            ITestContext testContext,
                            Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
-    this(cim,  Maps.<Class<?>, List<Object>>newHashMap(), configuration, testContext, dataProviderListeners);
+    this(cim,  Maps.newHashMap(), configuration, testContext, dataProviderListeners);
   }
 
   /**
@@ -76,8 +75,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                             XmlTest xmlTest,
                             IConfiguration configuration,
                             ITestContext testContext) {
-    this(cim, instanceMap, configuration, testContext,
-            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    this(cim, instanceMap, configuration, testContext, Collections.emptyMap());
   }
 
   /**
@@ -187,7 +185,7 @@ public class TestNGClassFinder extends BaseClassFinder {
                     m_instanceMap,
                     configuration,
                     m_testContext,
-                    Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+                    Collections.emptyMap());
 
     for (IClass ic2 : finder.findTestClasses()) {
       putIClass(ic2.getRealClass(), ic2);
