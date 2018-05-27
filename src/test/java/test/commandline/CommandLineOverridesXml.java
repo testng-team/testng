@@ -1,16 +1,22 @@
 package test.commandline;
 
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.jarfileutils.JarCreator;
 import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
+import test.commandline.issue341.LocalLogAggregator;
+import test.commandline.issue341.TestSampleA;
+import test.commandline.issue341.TestSampleB;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +45,7 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     if (excludedGroups != null) tng.setExcludedGroups(excludedGroups);
     tng.setXmlSuites(Collections.singletonList(s));
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     assertTestResultsEqual(tla.getPassedTests(), methods);
@@ -54,5 +60,23 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     testng.run();
     assertThat(Issue987TestSample.maps).hasSize(2);
     assertThat(Issue987TestSample.maps.values()).contains("method2", "method1");
+  }
+
+  @Test(description = "GITHUB-341")
+  public void ensureParallelismIsHonoredWhenOnlyClassesSpecifiedInJar() throws IOException {
+    Class<?>[] classes = new Class<?>[] {TestSampleA.class, TestSampleB.class};
+    File jarfile = JarCreator.generateJar(classes);
+    String[] args =
+            new String[] {
+                    "-parallel",
+                    "classes",
+                    "-testjar",
+                    jarfile.getAbsolutePath(),
+                    "-listener",
+                    LocalLogAggregator.class.getCanonicalName()
+            };
+    TestNG.privateMain(args, null);
+    Set<String> logs = LocalLogAggregator.getLogs();
+    assertThat(logs).hasSize(2);
   }
 }

@@ -680,7 +680,9 @@ public class XmlSuite implements Cloneable {
   public int getDataProviderThreadCount() {
     String s = RuntimeBehavior.getDefaultDataProviderThreadCount();
     try {
-      return Integer.parseInt(s);
+      if (!s.trim().isEmpty()) {
+        return Integer.parseInt(s);
+      }
     } catch (NumberFormatException nfe) {
       System.err.println("Parsing System property 'dataproviderthreadcount': " + nfe);
     }
