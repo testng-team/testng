@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1048: Fix validation errors in TestNG CSS to adhere to CSS level 3 + SVG (Krishnan Mahadevan)
 Fixed: GITHUB-341: TestNG does not respect "-parallel classes" when running with a jar file (Krishnan Mahadevan)
 Fixed: GITHUB-1790: IAnnotationTransformer transform method is not called for all test classes annotated with @Test (Krishnan Mahadevan)
 Fixed: GITHUB-1787: Method level parameters are missing when using Yaml generation utilities (Krishnan Mahadevan)
