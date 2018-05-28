@@ -365,7 +365,7 @@ public class TestNG {
     // We have a jar file and no XML file was specified: try to find an XML file inside the jar
     File jarFile = new File(m_jarPath);
 
-    JarFileUtils utils = new JarFileUtils(getProcessor(),m_xmlPathInJar, m_testNames);
+    JarFileUtils utils = new JarFileUtils(getProcessor(),m_xmlPathInJar, m_testNames, m_parallelMode);
 
     m_suites.addAll(utils.extractSuitesFrom(jarFile));
   }

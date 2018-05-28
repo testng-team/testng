@@ -27,12 +27,19 @@ class JarFileUtils {
     private final String xmlPathInJar;
     private final List<String> testNames;
     private final List<XmlSuite> suites = Lists.newLinkedList();
+    private final XmlSuite.ParallelMode mode;
 
     JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames) {
+        this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE);
+    }
+
+    JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames, XmlSuite.ParallelMode mode) {
         this.processor = processor;
         this.xmlPathInJar = xmlPathInJar;
         this.testNames = testNames;
+        this.mode = mode == null ? XmlSuite.ParallelMode.NONE: mode;
     }
+
 
     List<XmlSuite> extractSuitesFrom(File jarFile) {
         try {
@@ -44,7 +51,9 @@ class JarFileUtils {
             if (!foundTestngXml) {
                 Utils.log("TestNG", 1,
                         "Couldn't find the " + xmlPathInJar + " in the jar file, running all the classes");
-                suites.add(XmlSuiteUtils.newXmlSuiteUsing(classes));
+                XmlSuite suite = XmlSuiteUtils.newXmlSuiteUsing(classes);
+                suite.setParallel(this.mode);
+                suites.add(suite);
             }
         } catch (IOException ex) {
             throw new TestNGException(ex);

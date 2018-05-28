@@ -13,16 +13,25 @@ import java.io.File;
 import java.io.IOException;
 
 public class JarCreator {
-    public static File generateJar() throws IOException {
-        File jarFile = File.createTempFile("testng", ".jar");
-        JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "testng-tests.jar")
-                .addClasses(getTestClasses())
-                .addAsResource("jarfileutils/testng-tests.xml")
-                .addAsResource("jarfileutils/child.xml")
-                .addAsResource("jarfileutils/child/child.xml")
-                .addAsResource("jarfileutils/child/childofchild/childofchild.xml")
-                .addAsResource("jarfileutils/childofchild/childofchild.xml");
 
+    private static final String PREFIX = "testng";
+    private static final String ARCHIVE_NAME = "testng-tests.jar";
+
+    public static File generateJar() throws IOException {
+        return generateJar(getTestClasses(), getResources(), PREFIX, ARCHIVE_NAME);
+    }
+
+    public static File generateJar(Class<?>[] classes) throws IOException {
+        return generateJar(classes, new String[] {}, PREFIX, ARCHIVE_NAME);
+    }
+
+    public static File generateJar(Class<?>[] classes, String[] resources, String prefix, String archiveName) throws IOException {
+        File jarFile = File.createTempFile(prefix, ".jar");
+        JavaArchive archive = ShrinkWrap.create(JavaArchive.class, archiveName)
+                .addClasses(classes);
+        for (String resource : resources) {
+            archive = archive.addAsResource(resource);
+        }
         archive.as(ZipExporter.class).exportTo(jarFile, true);
         return jarFile;
     }
@@ -34,6 +43,16 @@ public class JarCreator {
                 SampleTest3.class,
                 SampleTest4.class,
                 SampleTest5.class
+        };
+    }
+
+    private static String[] getResources() {
+        return new String[] {
+                "jarfileutils/testng-tests.xml",
+                "jarfileutils/child.xml",
+                "jarfileutils/child/child.xml",
+                "jarfileutils/child/childofchild/childofchild.xml",
+                "jarfileutils/childofchild/childofchild.xml"
         };
     }
 }
