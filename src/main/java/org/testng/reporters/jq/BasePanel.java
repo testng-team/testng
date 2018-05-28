@@ -30,7 +30,7 @@ abstract public class BasePanel implements IPanel {
   }
 
   protected static String suiteToTag(ISuite suite) {
-    return suite.getName().replace(" ", "_");
+    return suite.getName().replaceAll("[^A-Za-z0-9]", "_");
   }
 
 }
