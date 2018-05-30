@@ -166,7 +166,7 @@ public class Invoker implements IInvoker {
 
       long time = System.currentTimeMillis();
       Object instanceTouse = instance != null ? instance : tm.getInstance();
-      ITestResult testResult = new TestResult(testClass, instanceTouse, tm, null, time, time, m_testContext);
+      ITestResult testResult = new TestResult(testClass, instanceTouse, tm, null, time, 0L, m_testContext);
       testResult.setStatus(ITestResult.STARTED);
 
       IConfigurationAnnotation configurationAnnotation= null;
