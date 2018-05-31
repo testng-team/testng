@@ -176,7 +176,7 @@ public class TestNG {
 
   private boolean m_isInitialized = false;
   private boolean isSuiteInitialized = false;
-  private org.testng.internal.ExitCodeListener exitCodeListener;
+  private final org.testng.internal.ExitCodeListener exitCodeListener = new org.testng.internal.ExitCodeListener();
   private ExitCode exitCode;
 
   /**
@@ -821,8 +821,7 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
-    this.exitCodeListener = new org.testng.internal.ExitCodeListener();
-    addListener((ITestNGListener) this.exitCodeListener);
+    addListener(this.exitCodeListener);
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
