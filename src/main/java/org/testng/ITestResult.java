@@ -101,4 +101,15 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
      * @param name - The new name to be used as a test name
      */
     void setTestName(String name);
+
+  /**
+   * @return - <code>true</code> if the test was retried again by an implementation of {@link
+   *     IRetryAnalyzer}
+   */
+  boolean wasRetried();
+
+  /**
+   * @param wasRetried - <code>true</code> if the test was retried and <code>false</code> otherwise.
+   */
+  void setWasRetried(boolean wasRetried);
 }

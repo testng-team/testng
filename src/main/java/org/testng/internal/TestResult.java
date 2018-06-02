@@ -33,6 +33,7 @@ public class TestResult implements ITestResult {
   private String m_instanceName;
   private ITestContext m_context;
   private int parameterIndex;
+  private boolean m_wasRetried;
 
   public TestResult() {
 
@@ -326,5 +327,13 @@ public class TestResult implements ITestResult {
 
   public int getParameterIndex() {
     return parameterIndex;
+  }
+
+  public boolean wasRetried() {
+    return m_wasRetried;
+  }
+
+  public void setWasRetried(boolean wasRetried) {
+    this.m_wasRetried = wasRetried;
   }
 }

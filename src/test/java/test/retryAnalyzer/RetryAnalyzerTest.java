@@ -19,10 +19,14 @@ import test.retryAnalyzer.github1706.NativeInjectionSample;
 import test.retryAnalyzer.github1706.ParameterInjectionSample;
 import test.retryAnalyzer.issue1241.GitHub1241Sample;
 import test.retryAnalyzer.issue1538.TestClassSampleWithTestMethodDependencies;
+import test.retryAnalyzer.issue1697.DatadrivenSample;
+import test.retryAnalyzer.issue1697.LocalReporter;
+import test.retryAnalyzer.issue1697.SampleTestclass;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -125,6 +129,36 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
         assertThat(listener.getInvokedMethodNames()).containsExactly("test1", "test2", "test2", "test1", "test2", "test2");
     }
 
+  @Test(description = "GITHUB-1697")
+  public void ensureRetriedMethodsAreDistinguishable() {
+    XmlSuite xmlsuite = createXmlSuite("1697_suite");
+    createXmlTest(xmlsuite, "1697_test", SampleTestclass.class);
+    TestNG testng = create(xmlsuite);
+    LocalReporter reporter = new LocalReporter();
+    testng.addListener(reporter);
+    testng.run();
+    runAssertions(reporter.getRetried(), "dataDrivenTest");
+    runAssertions(reporter.getSkipped(), "child");
+  }
+
+  @Test
+  public void ensureRetriedMethodsAreDistinguishableInDataDrivenTests() {
+    XmlSuite xmlsuite = createXmlSuite("1697_suite");
+    createXmlTest(xmlsuite, "1697_test", DatadrivenSample.class);
+    TestNG testng = create(xmlsuite);
+    LocalReporter reporter = new LocalReporter();
+    testng.addListener(reporter);
+    testng.run();
+    ITestResult firstResult = runAssertions(reporter.getRetried(), "testMethod");
+    assertThat(firstResult.getParameters()).containsAll(Collections.singletonList(1));
+  }
+
+  private ITestResult runAssertions(Set<ITestResult> results, String methodName) {
+    assertThat(results).hasSize(1);
+    ITestResult firstResult = results.iterator().next();
+    assertThat(firstResult.getMethod().getMethodName()).isEqualToIgnoringCase(methodName);
+    return firstResult;
+  }
 
     private static String methodName(ITestResult result) {
         return result.getMethod().getMethodName();
