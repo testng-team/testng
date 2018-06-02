@@ -13,6 +13,8 @@ import test.commandline.issue341.TestSampleB;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -78,5 +80,30 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     TestNG.privateMain(args, null);
     Set<String> logs = LocalLogAggregator.getLogs();
     assertThat(logs).hasSize(2);
+  }
+
+  @Test(description = "GITHUB-1810")
+  public void ensureNoNullPointerExceptionIsThrown() throws IOException {
+    TestNG testng = TestNG.privateMain(new String[] {createTemporarySuiteAndGetItsPath()}, null);
+    assertThat(testng.getStatus()).isEqualTo(8);
+  }
+
+  private static String createTemporarySuiteAndGetItsPath() throws IOException {
+    Path file = Files.createTempFile("testng", ".xml");
+    org.testng.reporters.Files.writeFile(buildSuiteContentThatRefersToInvalidTestClass(), file.toFile());
+    return file.toFile().getAbsolutePath();
+  }
+
+  private static String buildSuiteContentThatRefersToInvalidTestClass() {
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\">\n"
+            + "<suite name=\"1810_Suite\">\n"
+            + "    <test name=\"1810_test\">\n"
+            + "        <classes>\n"
+            + "            <class name=\"com.foo.bar.issue1810.ClassDoesnotExist\">\n"
+            + "            </class>\n"
+            + "        </classes>\n"
+            + "    </test>\n"
+            + "</suite>\n";
   }
 }

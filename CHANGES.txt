@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1810: Nullpointer exception when running TestNG tests from CMD (Krishnan Mahadevan)
 Fixed: GITHUB-1590: Started configuration method has wrong status and end time during execution (Krishnan Mahadevan)
 Fixed: GITHUB-298: Avoid Javascript errors in function name when suite name has special characters (Krishnan Mahadevan)
 Fixed: GITHUB-1048: Fix validation errors in TestNG CSS to adhere to CSS level 3 + SVG (Krishnan Mahadevan)
