@@ -1216,6 +1216,7 @@ public class Invoker implements IInvoker {
         failure.instances.add(instance);
       }
       testResult.setStatus(ITestResult.SKIP);
+      testResult.setWasRetried(true);
     } else {
       testResult.setStatus(status);
       if (status == ITestResult.FAILURE && !handled) {
