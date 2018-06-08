@@ -30,7 +30,7 @@ if [ $1 == "sonarqube" ] ; then
   fi
 else
   if [ $1 == "deploy" ] ; then
-    if [ "${TRAVIS_JDK_VERSION}" == "oraclejdk7" ] ; then
+    if [ "${TRAVIS_JDK_VERSION}" == "oraclejdk8" ] ; then
       if [ "${TRAVIS_PULL_REQUEST}" == "false" ] ; then
         if [ "${TRAVIS_BRANCH}" == "master" ] ; then
           ./gradlew uploadArchives --stacktrace --info
