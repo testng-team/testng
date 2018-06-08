@@ -21,7 +21,6 @@ buildscript {
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
         classpath 'org.hibernate.build.gradle:version-injection-plugin:1.0.0'
-        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1'
     }
 }
 
@@ -31,6 +30,7 @@ plugins {
     id "com.jfrog.artifactory" version "4.4.10"
     id "nebula.optional-base" version "3.1.0"
     id "nebula.provided-base" version "3.1.0"
+    id "org.sonarqube" version "2.6.1"
 }
 
 buildScan {
