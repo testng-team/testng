@@ -6,6 +6,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
+import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.List;
  * A simple reporter that collects the results and prints them on standard out.
  */
 public class TextReporter extends TestListenerAdapter {
+
+  private static final String LINE = "\n===============================================\n";
 
   private final int m_verbose;
   private final String m_testName;
@@ -82,30 +85,50 @@ public class TextReporter extends TestListenerAdapter {
       logResult("FAILED", tr, stackTrace);
     }
 
-    for (ITestResult tr : getSkippedTests()) {
-      Throwable throwable = tr.getThrowable();
-      logResult("SKIPPED", tr, throwable != null ? Utils.shortStackTrace(throwable, false) : null);
+    List<ITestResult> rawskipped = getSkippedTests();
+    List<ITestResult> skippedTests = Lists.newArrayList();
+    List<ITestResult> retriedTests = Lists.newArrayList();
+    for (ITestResult result : rawskipped) {
+      if (result.wasRetried()) {
+        retriedTests.add(result);
+      } else {
+        skippedTests.add(result);
+      }
     }
 
+    logExceptions("SKIPPED", skippedTests);
+    logExceptions("RETRIED", retriedTests);
+
     List<ITestNGMethod> ft = resultsToMethods(getFailedTests());
-    StringBuilder logBuf = new StringBuilder("\n===============================================\n");
+    StringBuilder logBuf = new StringBuilder(LINE);
     logBuf.append("    ").append(m_testName).append("\n");
     logBuf.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods()))
         .append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft))
-        .append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests())));
+        .append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(skippedTests)));
+    if (!retriedTests.isEmpty()) {
+      logBuf.append(", Retries: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(retriedTests)));
+    }
     int confFailures = getConfigurationFailures().size();
     int confSkips = getConfigurationSkips().size();
     if(confFailures > 0 || confSkips > 0) {
       logBuf.append("\n").append("    Configuration Failures: ").append(confFailures)
           .append(", Skips: ").append(confSkips);
     }
-    logBuf.append("\n===============================================\n");
+    logBuf.append(LINE);
     logResult("", logBuf.toString());
   }
 
   private void logResult(String status, ITestResult tr, String stackTrace) {
     logResult(status, tr.getName(), tr.getMethod().getDescription(), stackTrace,
         tr.getParameters(), tr.getMethod().getConstructorOrMethod().getParameterTypes());
+  }
+
+  private void logExceptions(String status, List<ITestResult> results) {
+    results.forEach(
+        tr -> {
+          Throwable throwable = tr.getThrowable();
+          logResult(status, tr, throwable != null ? Utils.shortStackTrace(throwable, false) : null);
+        });
   }
 
   private void logResult(String status, String message) {

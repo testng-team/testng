@@ -5,6 +5,7 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
@@ -40,13 +41,24 @@ public class XMLReporter implements IReporter {
     int failed = 0;
     int skipped = 0;
     int ignored = 0;
+    int retried = 0;
     for (ISuite s : suites) {
       Map<String, ISuiteResult> suiteResults = s.getResults();
         for (ISuiteResult sr : suiteResults.values()) {
           ITestContext testContext = sr.getTestContext();
           passed += testContext.getPassedTests().size();
           failed += testContext.getFailedTests().size();
-          skipped += testContext.getSkippedTests().size();
+          int retriedPerTest = 0;
+          int skippedPerTest = 0;
+          for (ITestResult result : testContext.getSkippedTests().getAllResults()) {
+            if (result.wasRetried()) {
+              retriedPerTest++;
+            } else {
+              skippedPerTest++;
+            }
+          }
+          skipped += skippedPerTest;
+          retried += retriedPerTest;
           ignored += testContext.getExcludedMethods().size();
         }
     }
@@ -56,8 +68,11 @@ public class XMLReporter implements IReporter {
     p.put("passed", passed);
     p.put("failed", failed);
     p.put("skipped", skipped);
+    if (retried > 0) {
+      p.put("retried", retried);
+    }
     p.put("ignored", ignored);
-    p.put("total", passed + failed + skipped + ignored);
+    p.put("total", passed + failed + skipped + ignored + retried);
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS, p);
     writeReporterOutput(rootBuffer);
     for (ISuite suite : suites) {
