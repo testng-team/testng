@@ -901,5 +901,11 @@
     </classes>
   </test>
 
+  <test name="Default method tests">
+    <classes>
+      <class name="test.defaultmethods.DefaultMethodTest"/>
+    </classes>
+  </test>
+
 </suite>
 

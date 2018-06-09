@@ -71,7 +71,7 @@ public class ReflectionHelper {
     T ignore = null;
     Class<?> testClass = typedTestClass;
 
-    while (testClass != Object.class) {
+    while (testClass != null && testClass != Object.class) {
       ignore = testClass.getAnnotation(annotation);
       if (ignore != null) {
         break;

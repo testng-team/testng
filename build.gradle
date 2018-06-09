@@ -145,46 +145,15 @@ allprojects {
     }
 }
 
-/*
-if (JavaVersion.current().isJava8Compatible()) {
-    apply plugin: 'org.sonarqube'
-    sonarqube {
-        properties {
-            property "sonar.host.url", "https://sonarqube.com/"
-            property "sonar.github.repository", "cbeust/testng"
-            property "sonar.github.login", "testng-bot"
-        }
+apply plugin: 'org.sonarqube'
+sonarqube {
+    properties {
+        property "sonar.host.url", "https://sonarcloud.io/"
+        property "sonar.github.repository", "cbeust/testng"
+        property "sonar.github.login", "testng-bot"
     }
-
-    sourceSets {
-        test8 {
-            java {
-                srcDirs = ['src/test/java8']
-
-            }
-            resources {
-                srcDirs = ['src/test/resources']
-            }
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            sourceCompatibility = 1.8
-            targetCompatibility = 1.8
-
-        }
-    }
-
-    task testJava8(type: Test) {
-        testClassesDir = sourceSets.test8.output.classesDir
-        classpath += sourceSets.test8.runtimeClasspath
-
-        useTestNG() {
-            suites 'src/test/resources/testng-java8.xml'
-        }
-    }
-
-    test.finalizedBy testJava8
 }
-*/
+
 
 apply from: 'gradle/publishing.gradle'
 apply from: 'gradle/publishing-jcenter.gradle'
