@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -128,6 +129,7 @@ public class EmailableReporter2 implements IReporter {
         int totalPassedTests = 0;
         int totalSkippedTests = 0;
         int totalFailedTests = 0;
+        int totalRetriedTests = 0;
         long totalDuration = 0;
 
         writer.println("<table>");
@@ -135,6 +137,7 @@ public class EmailableReporter2 implements IReporter {
         writer.print("<th>Test</th>");
         writer.print("<th># Passed</th>");
         writer.print("<th># Skipped</th>");
+        writer.print("<th># Retried</th>");
         writer.print("<th># Failed</th>");
         writer.print("<th>Time (ms)</th>");
         writer.print("<th>Included Groups</th>");
@@ -151,6 +154,7 @@ public class EmailableReporter2 implements IReporter {
                 int passedTests = testResult.getPassedTestCount();
                 int skippedTests = testResult.getSkippedTestCount();
                 int failedTests = testResult.getFailedTestCount();
+                int retriedTests = testResult.getRetriedTestCount();
                 long duration = testResult.getDuration();
 
                 writer.print("<tr");
@@ -167,6 +171,8 @@ public class EmailableReporter2 implements IReporter {
                 writeTableData(integerFormat.format(passedTests), "num");
                 writeTableData(integerFormat.format(skippedTests),
                         (skippedTests > 0 ? "num attn" : "num"));
+                writeTableData(integerFormat.format(retriedTests),
+                        (retriedTests > 0 ? "num attn" : "num"));
                 writeTableData(integerFormat.format(failedTests),
                         (failedTests > 0 ? "num attn" : "num"));
                 writeTableData(decimalFormat.format(duration), "num");
@@ -178,6 +184,7 @@ public class EmailableReporter2 implements IReporter {
                 totalPassedTests += passedTests;
                 totalSkippedTests += skippedTests;
                 totalFailedTests += failedTests;
+                totalRetriedTests += retriedTests;
                 totalDuration += duration;
 
                 testIndex++;
@@ -191,6 +198,8 @@ public class EmailableReporter2 implements IReporter {
             writeTableHeader(integerFormat.format(totalPassedTests), "num");
             writeTableHeader(integerFormat.format(totalSkippedTests),
                     (totalSkippedTests > 0 ? "num attn" : "num"));
+            writeTableHeader(integerFormat.format(totalRetriedTests),
+                    (totalRetriedTests > 0 ? "num attn" : "num"));
             writeTableHeader(integerFormat.format(totalFailedTests),
                     (totalFailedTests > 0 ? "num attn" : "num"));
             writeTableHeader(decimalFormat.format(totalDuration), "num");
@@ -242,6 +251,10 @@ public class EmailableReporter2 implements IReporter {
                 scenarioIndex += writeScenarioSummary(testName
                         + " &#8212; skipped",
                         testResult.getSkippedTestResults(), "skipped",
+                        scenarioIndex);
+                scenarioIndex += writeScenarioSummary(testName
+                        + " &#8212; retried",
+                        testResult.getRetriedTestResults(), "retried",
                         scenarioIndex);
                 scenarioIndex += writeScenarioSummary(testName
                         + " &#8212; passed", testResult.getPassedTestResults(),
@@ -611,17 +624,14 @@ public class EmailableReporter2 implements IReporter {
          * Orders test results by class name and then by method name (in
          * lexicographic order).
          */
-        protected static final Comparator<ITestResult> RESULT_COMPARATOR = new Comparator<ITestResult>() {
-            @Override
-            public int compare(ITestResult o1, ITestResult o2) {
-                int result = o1.getTestClass().getName()
-                        .compareTo(o2.getTestClass().getName());
-                if (result == 0) {
-                    result = o1.getMethod().getMethodName()
-                            .compareTo(o2.getMethod().getMethodName());
-                }
-                return result;
+        protected static final Comparator<ITestResult> RESULT_COMPARATOR = (o1, o2) -> {
+            int result = o1.getTestClass().getName()
+                    .compareTo(o2.getTestClass().getName());
+            if (result == 0) {
+                result = o1.getMethod().getMethodName()
+                        .compareTo(o2.getMethod().getMethodName());
             }
+            return result;
         };
 
         private final String testName;
@@ -629,8 +639,10 @@ public class EmailableReporter2 implements IReporter {
         private final List<ClassResult> failedTestResults;
         private final List<ClassResult> skippedConfigurationResults;
         private final List<ClassResult> skippedTestResults;
+        private final List<ClassResult> retriedTestResults;
         private final List<ClassResult> passedTestResults;
         private final int failedTestCount;
+        private final int retriedTestCount;
         private final int skippedTestCount;
         private final int passedTestCount;
         private final long duration;
@@ -646,8 +658,10 @@ public class EmailableReporter2 implements IReporter {
                     .getAllResults();
             Set<ITestResult> skippedConfigurations = context
                     .getSkippedConfigurations().getAllResults();
-            Set<ITestResult> skippedTests = context.getSkippedTests()
-                    .getAllResults();
+            Set<ITestResult> rawSkipped = context.getSkippedTests().getAllResults();
+            Set<ITestResult> skippedTests = pruneSkipped(rawSkipped);
+            Set<ITestResult> retriedTests = pruneRetried(rawSkipped);
+
             Set<ITestResult> passedTests = context.getPassedTests()
                     .getAllResults();
 
@@ -655,9 +669,11 @@ public class EmailableReporter2 implements IReporter {
             failedTestResults = groupResults(failedTests);
             skippedConfigurationResults = groupResults(skippedConfigurations);
             skippedTestResults = groupResults(skippedTests);
+            retriedTestResults = groupResults(retriedTests);
             passedTestResults = groupResults(passedTests);
 
             failedTestCount = failedTests.size();
+            retriedTestCount = retriedTests.size();
             skippedTestCount = skippedTests.size();
             passedTestCount = passedTests.size();
 
@@ -666,6 +682,14 @@ public class EmailableReporter2 implements IReporter {
 
             includedGroups = formatGroups(context.getIncludedGroups());
             excludedGroups = formatGroups(context.getExcludedGroups());
+        }
+
+        private static Set<ITestResult> pruneSkipped(Set<ITestResult> results) {
+            return results.stream().filter(result -> !result.wasRetried()).collect(Collectors.toSet());
+        }
+
+        private static Set<ITestResult> pruneRetried(Set<ITestResult> results) {
+            return results.stream().filter(ITestResult::wasRetried).collect(Collectors.toSet());
         }
 
         /**
@@ -757,6 +781,10 @@ public class EmailableReporter2 implements IReporter {
             return skippedTestResults;
         }
 
+        public List<ClassResult> getRetriedTestResults() {
+            return retriedTestResults;
+        }
+
         /**
          * @return the results for passed tests (possibly empty)
          */
@@ -770,6 +798,10 @@ public class EmailableReporter2 implements IReporter {
 
         public int getSkippedTestCount() {
             return skippedTestCount;
+        }
+
+        public int getRetriedTestCount() {
+            return retriedTestCount;
         }
 
         public int getPassedTestCount() {

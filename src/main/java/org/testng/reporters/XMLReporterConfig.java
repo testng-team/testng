@@ -30,6 +30,7 @@ public class XMLReporterConfig {
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
   public static final String ATTR_STATUS = "status";
+  public static final String ATTR_RETRIED = "retried";
   public static final String ATTR_DESC = "description";
   public static final String ATTR_METHOD_SIG = "signature";
   public static final String ATTR_GROUPS = "groups";
