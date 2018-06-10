@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-574: String cannot be cast to Integer if log property is set in maven pom.xml (Krishnan Mahadevan)
 Fixed: GITHUB-1402: TestNG reporting - Quickly identify Retry-d Tests (Krishnan Mahadevan)
 Fixed: GITHUB-1697: Need ability to mark "failed but up for retry" tests differently from "skipped" tests (Krishnan Mahadevan)
 Fixed: GITHUB-1810: Nullpointer exception when running TestNG tests from CMD (Krishnan Mahadevan)

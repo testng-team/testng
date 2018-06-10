@@ -1432,6 +1432,19 @@ public class TestNG {
     // nop
   }
 
+  private static int parseInt(Object value) {
+    if (value == null) {
+      return -1;
+    }
+    if (value instanceof String) {
+      return Integer.parseInt(String.valueOf(value));
+    }
+    if (value instanceof Integer) {
+      return (Integer) value;
+    }
+    throw new IllegalArgumentException("Unable to parse " + value + " as an Integer.");
+  }
+
   /**
    * This method is invoked by Maven's Surefire to configure the runner,
    * do not remove unless you know for sure that Surefire has been updated
@@ -1444,9 +1457,9 @@ public class TestNG {
   public void configure(Map cmdLineArgs) {
     CommandLineArgs result = new CommandLineArgs();
 
-    Integer verbose = (Integer) cmdLineArgs.get(CommandLineArgs.LOG);
-    if (null != verbose) {
-      result.verbose = verbose;
+    int value = parseInt(cmdLineArgs.get(CommandLineArgs.LOG));
+    if (value != -1) {
+      result.verbose = value;
     }
     result.outputDirectory = (String) cmdLineArgs.get(CommandLineArgs.OUTPUT_DIRECTORY);
 
@@ -1478,15 +1491,15 @@ public class TestNG {
       result.parallelMode = XmlSuite.ParallelMode.getValidParallel(parallelMode);
     }
 
-    String threadCount = (String) cmdLineArgs.get(CommandLineArgs.THREAD_COUNT);
-    if (threadCount != null) {
-      result.threadCount = Integer.parseInt(threadCount);
+    value = parseInt(cmdLineArgs.get(CommandLineArgs.THREAD_COUNT));
+    if (value != -1) {
+      result.threadCount = value;
     }
 
     // Not supported by Surefire yet
-    Integer dptc = (Integer) cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT);
-    if (dptc != null) {
-      result.dataProviderThreadCount = dptc;
+    value = parseInt(cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT));
+    if (value != -1) {
+      result.dataProviderThreadCount = value;
     }
     String defaultSuiteName = (String) cmdLineArgs.get(CommandLineArgs.SUITE_NAME);
     if (defaultSuiteName != null) {
@@ -1530,14 +1543,9 @@ public class TestNG {
       result.configFailurePolicy = failurePolicy;
     }
 
-    Object  suiteThreadPoolSize = cmdLineArgs.get(CommandLineArgs.SUITE_THREAD_POOL_SIZE);
-    if (null != suiteThreadPoolSize) {
-        if (suiteThreadPoolSize instanceof String){
-            result.suiteThreadPoolSize=Integer.parseInt((String) suiteThreadPoolSize);
-        }
-        if (suiteThreadPoolSize instanceof Integer){
-            result.suiteThreadPoolSize=(Integer) suiteThreadPoolSize;
-        }
+    value = parseInt(cmdLineArgs.get(CommandLineArgs.SUITE_THREAD_POOL_SIZE));
+    if (value != -1) {
+      result.suiteThreadPoolSize = value;
     }
 
     configure(result);
