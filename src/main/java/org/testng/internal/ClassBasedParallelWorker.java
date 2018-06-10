@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import org.testng.IMethodInstance;
-import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
@@ -9,10 +8,12 @@ import org.testng.internal.thread.graph.IWorker;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class ClassBasedParallelWorker extends AbstractParallelWorker {
 
@@ -23,7 +24,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
         // attribute must all be run in the same worker
         Set<Class<?>> sequentialClasses = Sets.newHashSet();
         for (ITestNGMethod m : arguments.getMethods()) {
-            Class<? extends ITestClass> cls = m.getRealClass();
+            Class<?> cls = m.getRealClass();
             org.testng.annotations.ITestAnnotation test =
                     arguments.getFinder().findAnnotation(cls, org.testng.annotations.ITestAnnotation.class);
 
@@ -67,13 +68,10 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
     }
 
     private static List<IMethodInstance> findClasses(List<IMethodInstance> methodInstances, Class<?> c) {
-        List<IMethodInstance> result = Lists.newArrayList();
-        for (IMethodInstance mi : methodInstances) {
-            if (mi.getMethod().getTestClass().getRealClass() == c) {
-                result.add(mi);
-            }
-        }
-        return result;
+        return methodInstances
+                .stream()
+                .filter(mi-> mi.getMethod().getTestClass().getRealClass() == c)
+                .collect(Collectors.toList());
     }
 
     private static TestMethodWorker createTestMethodWorker(Arguments attributes,
@@ -90,12 +88,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
     }
 
     private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... methods) {
-        List<MethodInstance> vResult = Lists.newArrayList();
-        for (ITestNGMethod m : methods) {
-            vResult.add(new MethodInstance(m));
-        }
-
-        return vResult;
+        return Arrays.stream(methods).map(MethodInstance::new).collect(Collectors.toList());
     }
 
     private static boolean isSequential(org.testng.annotations.ITestAnnotation test, XmlTest xmlTest) {
@@ -107,5 +100,4 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
         XmlTest xmlTest = im.getMethod().getXmlTest();
         return im.getMethod().findMethodParameters(xmlTest);
     }
-
 }

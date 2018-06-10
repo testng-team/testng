@@ -18,8 +18,8 @@ public class ExitCodeListener implements ITestListener, IReporter {
         return status;
     }
 
-    public boolean hasTests() {
-        return hasTests;
+    public boolean noTestsFound() {
+        return !hasTests;
     }
 
     @Override

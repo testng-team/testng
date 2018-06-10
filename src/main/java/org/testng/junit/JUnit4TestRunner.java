@@ -244,7 +244,6 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
 
         TestResult tr = new TestResult(tc,
-                test,
                 tm,
                 null,
                 Calendar.getInstance().getTimeInMillis(),

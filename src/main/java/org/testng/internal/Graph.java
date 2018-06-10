@@ -5,7 +5,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -71,21 +70,8 @@ public class Graph<T> {
     findNode(tm).addNeighbor(findNode(predecessor));
   }
 
-  public Set<T> getNeighbors(T t) {
-    Set<T> result = new HashSet<>();
-    for (Node<T> n : findNode(t).getNeighbors()) {
-      result.add(n.getObject());
-    }
-
-    return result;
-  }
-
   private Collection<Node<T>> getNodes() {
     return m_nodes.values();
-  }
-
-  public Collection<T> getNodeValues() {
-    return m_nodes.keySet();
   }
 
   /**
@@ -127,7 +113,7 @@ public class Graph<T> {
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    Collections.sort(nodes2, comparator);
+    nodes2.sort(comparator);
 
     //
     // Sort
@@ -165,7 +151,7 @@ public class Graph<T> {
       List<Node<T>> list = Lists.newArrayList(m_nodes.values());
       // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
       // dependent nodes.
-      Collections.sort(list, comparator);
+      list.sort(comparator);
 
       m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {
@@ -210,7 +196,7 @@ public class Graph<T> {
   }
 
   /**
-   * @param o
+   * @param o - The predecessor
    * @return A list of all the predecessors for o
    */
   public List<T> findPredecessors(T o) {
@@ -262,7 +248,7 @@ public class Graph<T> {
   // class Node
   //
   public static class Node<T>  {
-    private T m_object = null;
+    private T m_object;
     private Map<T, T> m_predecessors = Maps.newHashMap();
 
     public Node(T tm) {
@@ -272,10 +258,6 @@ public class Graph<T> {
     private Set<Node<T>> m_neighbors = new HashSet<>();
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);
-    }
-
-    public Set<Node<T>> getNeighbors() {
-      return m_neighbors;
     }
 
     @Override
@@ -324,8 +306,7 @@ public class Graph<T> {
         sb.append(" ").append(o);
       }
       sb.append("]");
-      String result = sb.toString();
-      return result;
+      return sb.toString();
     }
 
     public void addPredecessor(T tm) {
@@ -335,10 +316,6 @@ public class Graph<T> {
 
     public boolean hasPredecessors() {
       return m_predecessors.size() > 0;
-    }
-
-    public boolean hasPredecessor(T m) {
-      return m_predecessors.containsKey(m);
     }
 
   }

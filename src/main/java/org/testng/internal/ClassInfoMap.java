@@ -14,7 +14,7 @@ public class ClassInfoMap {
   private final boolean includeNestedClasses;
 
   public ClassInfoMap() {
-    this(Collections.<XmlClass>emptyList(), false);
+    this(Collections.emptyList(), false);
   }
 
   public ClassInfoMap(List<XmlClass> classes) {

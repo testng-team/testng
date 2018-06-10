@@ -37,7 +37,7 @@ public class TestNGMethod extends BaseTestMethod {
 
   private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize,
       XmlTest xmlTest, Object instance) {
-    super(method.getName(), method, finder, instance);
+    super(method.getName(), new ConstructorOrMethod(method), finder, instance);
     setXmlTest(xmlTest);
 
     if(initialize) {

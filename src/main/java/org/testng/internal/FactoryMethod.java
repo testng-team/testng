@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,17 +35,6 @@ public class FactoryMethod extends BaseTestMethod {
   private final ITestContext m_testContext;
   private final ITestObjectFactory objectFactory;
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
-
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
-                       ITestContext testContext, ITestObjectFactory objectFactory) {
-    this(com, instance, annotationFinder, testContext, objectFactory,
-            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
-  }
 
 
   @SuppressWarnings("unchecked")
@@ -116,17 +104,6 @@ public class FactoryMethod extends BaseTestMethod {
     m_groups = getAllGroups(declaringClass, testContext.getCurrentXmlTest(), annotationFinder);
   }
 
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
-                       ITestContext testContext, ITestObjectFactory objectFactory,
-                       Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
-    this(com, instance, annotationFinder, testContext, objectFactory, dataProviderListeners);
-  }
-
   private static String[] getAllGroups(Class<?> declaringClass, XmlTest xmlTest,
       IAnnotationFinder annotationFinder) {
     // Find the groups of the factory => all groups of all test methods
@@ -136,7 +113,7 @@ public class FactoryMethod extends BaseTestMethod {
     for (ITestNGMethod method : testMethods) {
       groups.addAll(Arrays.asList(method.getGroups()));
     }
-    return groups.toArray(new String[groups.size()]);
+    return groups.toArray(new String[0]);
   }
 
   public Object[] invoke() {
@@ -198,7 +175,7 @@ public class FactoryMethod extends BaseTestMethod {
           + "() threw an exception", t);
     }
 
-    return result.toArray(new Object[result.size()]);
+    return result.toArray(new Object[0]);
   }
 
   @Override

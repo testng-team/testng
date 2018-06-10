@@ -7,7 +7,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlTest;
 
 import java.util.Map;
 
@@ -28,21 +27,6 @@ public abstract class BaseClassFinder implements ITestClassFinder {
     if (! m_classes.containsKey(cls)) {
       m_classes.put(cls, iClass);
     }
-  }
-
-  /**
-   * @param cls
-   * @return An IClass for the given class, or null if we have
-   * already treated this class.
-   * @deprecated - This method stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  protected IClass findOrCreateIClass(ITestContext context, Class<?> cls, XmlClass xmlClass,
-      Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
-      ITestObjectFactory objectFactory)
-  {
-    return findOrCreateIClass(context, cls, xmlClass, instance, annotationFinder, objectFactory);
   }
 
   protected IClass findOrCreateIClass(ITestContext context, Class<?> cls, XmlClass xmlClass,
@@ -70,6 +54,6 @@ public abstract class BaseClassFinder implements ITestClassFinder {
 
   @Override
   public IClass[] findTestClasses() {
-    return m_classes.values().toArray(new IClass[m_classes.size()]);
+    return m_classes.values().toArray(new IClass[0]);
    }
 }

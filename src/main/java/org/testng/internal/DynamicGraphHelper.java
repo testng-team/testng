@@ -117,12 +117,7 @@ public final class DynamicGraphHelper {
     }
 
     private static Comparator<XmlClass> classComparator() {
-        return new Comparator<XmlClass>() {
-            @Override
-            public int compare(XmlClass arg0, XmlClass arg1) {
-                return arg0.getIndex() - arg1.getIndex();
-            }
-        };
+        return Comparator.comparingInt(XmlClass::getIndex);
     }
 
     private static ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
@@ -133,14 +128,14 @@ public final class DynamicGraphHelper {
         List<XmlClass> sortedClasses = Lists.newArrayList();
 
         for (XmlClass c : test.getXmlClasses()) {
-            classes.put(c.getName(), new ArrayList<ITestNGMethod>());
+            classes.put(c.getName(), new ArrayList<>());
             if (!sortedClasses.contains(c)) {
                 sortedClasses.add(c);
             }
         }
 
         // Sort the classes based on their order of appearance in the XML
-        Collections.sort(sortedClasses, classComparator());
+        sortedClasses.sort(classComparator());
 
         Map<String, Integer> indexedClasses1 = Maps.newHashMap();
         Map<Integer, String> indexedClasses2 = Maps.newHashMap();

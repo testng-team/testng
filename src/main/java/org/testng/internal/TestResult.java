@@ -10,6 +10,7 @@ import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.collections.Objects;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -29,7 +30,6 @@ public class TestResult implements ITestResult {
   private String m_name = null;
   private String m_host;
   private Object[] m_parameters = {};
-  private Object m_instance;
   private String m_instanceName;
   private ITestContext m_context;
   private int parameterIndex;
@@ -39,29 +39,27 @@ public class TestResult implements ITestResult {
 
   }
 
-  public TestResult(Object instance, ITestNGMethod method, Throwable throwable, ITestContext context) {
+  public TestResult(ITestNGMethod method, Throwable throwable, ITestContext context) {
     long time = System.currentTimeMillis();
-    init(method.getTestClass(), instance, method, throwable, time, time, context);
+    init(method.getTestClass(), method, throwable, time, time, context);
   }
 
   public TestResult(IClass testClass,
-      Object instance,
-      ITestNGMethod method,
-      Throwable throwable,
-      long start,
-      long end,
-      ITestContext context)
+                    ITestNGMethod method,
+                    Throwable throwable,
+                    long start,
+                    long end,
+                    ITestContext context)
   {
-    init(testClass, instance, method, throwable, start, end, context);
+    init(testClass, method, throwable, start, end, context);
   }
 
-  public void init (IClass testClass,
-      Object instance,
-      ITestNGMethod method,
-      Throwable throwable,
-      long start,
-      long end,
-      ITestContext context)
+  public void init(IClass testClass,
+                   ITestNGMethod method,
+                   Throwable throwable,
+                   long start,
+                   long end,
+                   ITestContext context)
   {
     m_testClass = testClass;
     m_throwable = throwable;
@@ -74,24 +72,24 @@ public class TestResult implements ITestResult {
     m_method = method;
     m_context = context;
 
-    m_instance = instance;
+    Object instance = method.getInstance();
 
     // Calculate the name: either the method name, ITest#getTestName or
     // toString() if it's been overridden.
-    if (m_instance == null) {
+    if (instance == null) {
       m_name = m_method.getMethodName();
     } else {
-      if (m_instance instanceof ITest) {
-        m_name = ((ITest) m_instance).getTestName();
+      if (instance instanceof ITest) {
+        m_name = ((ITest) instance).getTestName();
       } else if (testClass.getTestName() != null) {
         m_name = testClass.getTestName();
       } else {
-        String string = m_instance.toString();
+        String string = instance.toString();
         // Only display toString() if it's been overridden by the user
         m_name = getMethod().getMethodName();
         try {
           if (!Object.class.getMethod("toString")
-              .equals(m_instance.getClass().getMethod("toString"))) {
+              .equals(instance.getClass().getMethod("toString"))) {
             m_instanceName = string.startsWith("class ")
                 ? string.substring("class ".length())
                 : string;
@@ -115,8 +113,9 @@ public class TestResult implements ITestResult {
    */
   @Override
   public String getTestName() {
-    if (m_instance instanceof ITest) {
-      return ((ITest) m_instance).getTestName();
+    Object instance = this.m_method.getInstance();
+    if (instance instanceof ITest) {
+      return ((ITest) instance).getTestName();
     }
     if (m_testClass.getTestName() != null) {
       return m_testClass.getTestName();
@@ -272,7 +271,7 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object getInstance() {
-    return m_instance;
+    return this.m_method.getInstance();
   }
 
   private final IAttributes m_attributes = new Attributes();
@@ -307,7 +306,7 @@ public class TestResult implements ITestResult {
   }
 
   @Override
-  public int compareTo(ITestResult comparison) {
+  public int compareTo(@Nonnull ITestResult comparison) {
     return Long.compare(getStartMillis(), comparison.getStartMillis());
   }
 

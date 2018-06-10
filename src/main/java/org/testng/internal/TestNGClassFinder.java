@@ -22,7 +22,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlTest;
 
 import static org.testng.internal.ClassHelper.getAvailableMethods;
 
@@ -39,58 +38,6 @@ public class TestNGClassFinder extends BaseClassFinder {
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder annotationFinder;
-
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public TestNGClassFinder(ClassInfoMap cim,
-                           XmlTest xmlTest,
-                           IConfiguration configuration,
-                           ITestContext testContext) {
-    this(cim,  Maps.newHashMap(), configuration, testContext, Collections.emptyMap());
-  }
-
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public TestNGClassFinder(ClassInfoMap cim,
-                           XmlTest xmlTest,
-                           IConfiguration configuration,
-                           ITestContext testContext,
-                           Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
-    this(cim,  Maps.newHashMap(), configuration, testContext, dataProviderListeners);
-  }
-
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public TestNGClassFinder(ClassInfoMap cim,
-                            Map<Class<?>, List<Object>> instanceMap,
-                            XmlTest xmlTest,
-                            IConfiguration configuration,
-                            ITestContext testContext) {
-    this(cim, instanceMap, configuration, testContext, Collections.emptyMap());
-  }
-
-  /**
-   * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public TestNGClassFinder(ClassInfoMap cim,
-                           Map<Class<?>, List<Object>> instanceMap,
-                           XmlTest xmlTest,
-                           IConfiguration configuration,
-                           ITestContext testContext,
-                           Map<Class<? extends IDataProviderListener>, IDataProviderListener>  dataProviderListeners) {
-    this(cim, instanceMap, configuration, testContext, dataProviderListeners);
-  }
 
   public TestNGClassFinder(ClassInfoMap cim,
                            Map<Class<?>, List<Object>> instanceMap,
@@ -350,12 +297,14 @@ public class TestNGClassFinder extends BaseClassFinder {
   // Class<S> should be replaced by Class<? extends T> but java doesn't fail as expected
   // See: https://github.com/cbeust/testng/issues/1070
   private <T, S extends T> void addInstance(Class<S> clazz, T instance) {
-    List<Object> instances = m_instanceMap.get(clazz);
-
-    if (instances == null) {
-      instances = Lists.newArrayList();
-      m_instanceMap.put(clazz, instances);
-    }
+    List<Object> instances =
+        m_instanceMap.computeIfAbsent(
+            clazz,
+            key -> {
+              List<Object> list = Lists.newArrayList();
+              m_instanceMap.put(key, list);
+              return list;
+            });
 
     instances.add(instance);
   }

@@ -24,8 +24,8 @@ public class ConfigurationGroupMethods {
   /** The list of beforeGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_beforeGroupsMethods;
 
-  private final Set<String> beforeGroupsThatHaveAlreadyRun = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-  private final Set<String> afterGroupsThatHaveAlreadyRun = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+  private final Set<String> beforeGroupsThatHaveAlreadyRun = Collections.newSetFromMap(new ConcurrentHashMap<>());
+  private final Set<String> afterGroupsThatHaveAlreadyRun = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   /** The list of afterGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_afterGroupsMethods;
