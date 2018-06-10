@@ -2,7 +2,7 @@ package org.testng.junit;
 
 
 import java.lang.reflect.Constructor;
-import org.testng.ITestListener;
+
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
@@ -120,8 +120,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     JUnitTestMethod tm= new JUnit3TestMethod(tc, test);
 
     org.testng.internal.TestResult tr= new org.testng.internal.TestResult(tc,
-                                                                          test,
-                                                                          tm,
+            tm,
                                                                           tri.m_failure,
                                                                           tri.m_start,
                                                                           Calendar.getInstance().getTimeInMillis(),

@@ -71,7 +71,7 @@ public class MethodInvocationHelper {
 
   protected static Object invokeMethod(Method thisMethod, Object instance, List<Object> parameters)
     throws InvocationTargetException, IllegalAccessException {
-    return invokeMethod(thisMethod, instance, parameters.toArray(new Object[parameters.size()]));
+    return invokeMethod(thisMethod, instance, parameters.toArray(new Object[0]));
   }
 
   protected static Object invokeMethod(Method thisMethod, Object instance, Object[] parameters)
@@ -124,6 +124,7 @@ public class MethodInvocationHelper {
     return thisMethod.invoke(instance, parameters);
   }
 
+  @SuppressWarnings("unchecked")
   protected static Iterator<Object[]> invokeDataProvider(Object instance, Method dataProvider,
       ITestNGMethod method, ITestContext testContext, Object fedInstance,
       IAnnotationFinder annotationFinder) {
@@ -183,7 +184,7 @@ public class MethodInvocationHelper {
         if (isTestInstance) {
           parameters.add(fedInstance);
         } else {
-          unresolved.add(new Pair<Integer, Class<?>>(i, cls));
+          unresolved.add(new Pair<>(i, cls));
         }
       }
       i++;
@@ -199,25 +200,6 @@ public class MethodInvocationHelper {
     return parameters;
   }
 
-  /**
-   * Invokes the <code>run</code> method of the <code>IHookable</code>.
-   *
-   * @param testInstance
-   *          the instance to invoke the method in
-   * @param parameters
-   *          the parameters to be passed to <code>IHookCallBack</code>
-   * @param thisMethod
-   *          the method to be invoked through the <code>IHookCallBack</code>
-   * @param testResult
-   *          the current <code>ITestResult</code> passed to
-   *          <code>IHookable.run</code>
-   * @throws NoSuchMethodException
-   * @throws IllegalAccessException
-   * @throws InvocationTargetException
-   * @throws Throwable
-   *           thrown if the reflective call to
-   *           <tt>thisMethod</code> results in an exception
-   */
   protected static void invokeHookable(final Object testInstance, final Object[] parameters,
                                        final IHookable hookable, final Method thisMethod,
                                        final ITestResult testResult) throws Throwable {

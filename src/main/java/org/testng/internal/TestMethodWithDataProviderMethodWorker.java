@@ -113,8 +113,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
         while (m_invocationCount-- > 0) {
           ITestResult r =
             new TestResult(m_testMethod.getTestClass(),
-              m_instance,
-              m_testMethod,
+                    m_testMethod,
               null,
               start,
               System.currentTimeMillis(),

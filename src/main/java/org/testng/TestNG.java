@@ -204,7 +204,7 @@ public class TestNG {
   }
 
   public int getStatus() {
-    if (!exitCodeListener.hasTests()) {
+    if (exitCodeListener.noTestsFound()) {
       return ExitCode.HAS_NO_TEST;
     }
     return exitCode.getExitCode();
@@ -967,7 +967,7 @@ public class TestNG {
     runExecutionListeners(false /* finish */);
     exitCode = this.exitCodeListener.getStatus();
 
-    if(!exitCodeListener.hasTests()) {
+    if(exitCodeListener.noTestsFound()) {
       if (TestRunner.getVerbose() > 1) {
         System.err.println("[TestNG] No tests found. Nothing was run");
         usage();

@@ -1,11 +1,9 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,17 +73,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private XmlTest m_xmlTest;
   private Object m_instance;
 
-  /**
-   * Constructs a <code>BaseTestMethod</code> TODO cquezel JavaDoc.
-   *
-   * @param method
-   * @param annotationFinder
-   * @param instance 
-   */
-  public BaseTestMethod(String methodName, Method method, IAnnotationFinder annotationFinder, Object instance) {
-    this(methodName, new ConstructorOrMethod(method), annotationFinder, instance);
-  }
-
   public BaseTestMethod(String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
       Object instance) {
     m_methodClass = com.getDeclaringClass();
@@ -103,11 +90,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_isAlwaysRun;
   }
 
-  /**
-   * TODO cquezel JavaDoc.
-   *
-   * @param alwaysRun
-   */
   protected void setAlwaysRun(boolean alwaysRun) {
     m_isAlwaysRun = alwaysRun;
   }
@@ -133,11 +115,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public void setTestClass(ITestClass tc) {
-    assert null != tc;
-    if (! tc.getRealClass().equals(m_method.getDeclaringClass())) {
-      assert m_method.getDeclaringClass().isAssignableFrom(tc.getRealClass()) :
-        "\nMISMATCH : " + tc.getRealClass() + " " + m_method.getDeclaringClass();
+    if (tc == null) {
+      throw new IllegalArgumentException("test class cannot be null");
     }
+    boolean assignable = m_method.getDeclaringClass().isAssignableFrom(tc.getRealClass());
+    if (!assignable) {
+      throw new IllegalArgumentException(
+          "mismatch in classes between "
+              + tc.getName()
+              + " and "
+              + m_method.getDeclaringClass().getName());
+    }
+
     m_testClass = tc;
   }
 
@@ -280,8 +269,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public long getTimeOut() {
-    long result = m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
-    return result;
+    return m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
   }
 
   @Override
@@ -412,8 +400,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   protected void initBeforeAfterGroups(Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     String[] groupsAtMethodLevel = calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
     //@BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
-    String[] groupsAtClassLevel = null;
-    setGroups(getStringArray(groupsAtMethodLevel, groupsAtClassLevel));
+    setGroups(getStringArray(groupsAtMethodLevel, null));
     initRestOfGroupDependencies(annotationClass);
   }
 
@@ -469,11 +456,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
       String name = e.getKey();
       String dependsOn = e.getValue();
-      Set<String> set = result.get(name);
-      if (set == null) {
-        set = Sets.newHashSet();
-        result.put(name, set);
-      }
+      Set<String> set = result.computeIfAbsent(name, s -> {
+        Set<String> tempSet = Sets.newHashSet();
+        result.put(s, tempSet);
+        return tempSet;
+      });
       set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
     }
 
@@ -532,7 +519,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     if (null != classArray) {
       Collections.addAll(vResult, classArray);
     }
-    return vResult.toArray(new String[vResult.size()]);
+    return vResult.toArray(new String[0]);
   }
 
   protected void setGroups(String[] groups) {
@@ -543,7 +530,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     List<String> l = Lists.newArrayList();
     l.addAll(Arrays.asList(groups));
     l.addAll(xmlGroupDependencies);
-    m_groupsDependedUpon = l.toArray(new String[l.size()]);
+    m_groupsDependedUpon = l.toArray(new String[0]);
   }
 
   protected void setMethodsDependedUpon(String[] methods) {
@@ -560,25 +547,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     System.arraycopy(m_methodsDependedUpon, 0, newMethods, 1, m_methodsDependedUpon.length);
     m_methodsDependedUpon = newMethods;
   }
-
-  private static void ppp(String s) {
-    System.out.println("[BaseTestMethod] " + s);
-  }
-
-  /** Compares two ITestNGMethod by date. */
-  public static final Comparator<?> DATE_COMPARATOR = new Comparator<Object>() {
-    @Override
-    public int compare(Object o1, Object o2) {
-      try {
-        ITestNGMethod m1 = (ITestNGMethod) o1;
-        ITestNGMethod m2 = (ITestNGMethod) o2;
-        return (int) (m1.getDate() - m2.getDate());
-      }
-      catch(Exception ex) {
-        return 0; // TODO CQ document this logic
-      }
-    }
-  };
 
   /**
    * {@inheritDoc}

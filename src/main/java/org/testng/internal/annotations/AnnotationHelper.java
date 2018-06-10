@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.testng.ITestNGMethod;
@@ -29,7 +31,7 @@ import org.testng.xml.XmlTest;
  */
 public class AnnotationHelper {
 
-  private static final Class[] ALL_ANNOTATIONS = new Class[] {
+  private static final List<Class<? extends IAnnotation>> ALL_ANNOTATIONS = Arrays.asList(
       ITestAnnotation.class,
       IBeforeClass.class, IAfterClass.class,
       IBeforeMethod.class, IAfterMethod.class,
@@ -38,15 +40,15 @@ public class AnnotationHelper {
       IBeforeSuite.class, IAfterSuite.class,
       IBeforeTest.class, IAfterTest.class,
       IBeforeGroups.class, IAfterGroups.class
-  };
+  );
 
-  private static final Class<? extends IAnnotation>[] CONFIGURATION_CLASSES = new Class[] {
+  private static final List<Class<? extends IAnnotation>> CONFIGURATION_CLASSES = Arrays.asList(
       IBeforeSuite.class, IAfterSuite.class,
       IBeforeTest.class, IAfterTest.class,
       IBeforeGroups.class, IAfterGroups.class,
       IBeforeClass.class, IAfterClass.class,
       IBeforeMethod.class, IAfterMethod.class
-  };
+  );
 
   private AnnotationHelper() {
     //Utility class.defeat instantiation.
@@ -171,7 +173,7 @@ public class AnnotationHelper {
 
 
 
-  public static Class[] getAllAnnotations() {
+  public static List<Class<? extends IAnnotation>> getAllAnnotations() {
     return ALL_ANNOTATIONS;
   }
 
@@ -270,7 +272,7 @@ public class AnnotationHelper {
   }
 
   private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder,
-      Method m, Class[] annotationClasses)
+      Method m, List<Class<? extends IAnnotation>> annotationClasses)
   {
     for (Class a : annotationClasses) {
       if (annotationFinder.findAnnotation(m, a) != null) {

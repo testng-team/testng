@@ -165,8 +165,7 @@ public class Invoker implements IInvoker {
       }
 
       long time = System.currentTimeMillis();
-      Object instanceTouse = instance != null ? instance : tm.getInstance();
-      ITestResult testResult = new TestResult(testClass, instanceTouse, tm, null, time, 0L, m_testContext);
+      ITestResult testResult = new TestResult(testClass, tm, null, time, 0L, m_testContext);
       testResult.setStatus(ITestResult.STARTED);
 
       IConfigurationAnnotation configurationAnnotation= null;
@@ -568,7 +567,7 @@ public class Invoker implements IInvoker {
 
     if (!confInvocationPassed(tm, tm, testClass, instance)) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext, instance);
-      ITestResult result = registerSkippedTestResult(tm, instance, System.currentTimeMillis(), exception);
+      ITestResult result = registerSkippedTestResult(tm, System.currentTimeMillis(), exception);
       copyAttributes(testResult, result);
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
@@ -586,7 +585,7 @@ public class Invoker implements IInvoker {
     // Create the ExtraOutput for this method
     //
     try {
-      testResult.init(testClass, instance, tm, null, System.currentTimeMillis(), 0, m_testContext);
+      testResult.init(testClass, tm, null, System.currentTimeMillis(), 0, m_testContext);
       testResult.setParameters(parameterValues);
       testResult.setParameterIndex(parametersIndex);
       testResult.setHost(m_testContext.getHost());
@@ -927,7 +926,7 @@ public class Invoker implements IInvoker {
       //
       // Not okToProceed. Test is being skipped
       //
-      ITestResult result = registerSkippedTestResult(testMethod, instance, System.currentTimeMillis(),
+      ITestResult result = registerSkippedTestResult(testMethod, System.currentTimeMillis(),
           new Throwable(okToProceed));
       m_notifier.addSkippedTest(testMethod, result);
       return Collections.singletonList(result);
@@ -1063,7 +1062,7 @@ public class Invoker implements IInvoker {
                       && (m_skipFailedInvocationCounts
                       || testMethod.skipFailedInvocations())) {
                 while (invocationCount-- > 0) {
-                  result.add(registerSkippedTestResult(testMethod, instance, System.currentTimeMillis(), null));
+                  result.add(registerSkippedTestResult(testMethod, System.currentTimeMillis(), null));
                 }
               }
             }// end finally
@@ -1073,7 +1072,6 @@ public class Invoker implements IInvoker {
       } catch (Throwable cause) {
         ITestResult r =
                 new TestResult(testMethod.getTestClass(),
-                        instance,
                         testMethod,
                         cause,
                         start,
@@ -1090,12 +1088,10 @@ public class Invoker implements IInvoker {
 
   }
 
-  private ITestResult registerSkippedTestResult(ITestNGMethod testMethod, Object instance,
-      long start, Throwable throwable) {
+  private ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable) {
     ITestResult result =
       new TestResult(testMethod.getTestClass(),
-        instance,
-        testMethod,
+              testMethod,
         throwable,
         start,
         System.currentTimeMillis(),

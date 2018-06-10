@@ -12,9 +12,9 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:the_mindstorm@evolva.ro>the_mindstorm</a>
  */
 public class InvokeMethodRunnable implements Runnable {
-  private ITestNGMethod m_method = null;
-  private Object m_instance = null;
-  private Object[] m_parameters = null;
+  private ITestNGMethod m_method;
+  private Object m_instance;
+  private Object[] m_parameters;
   private final IHookable m_hookable;
   private final ITestResult m_testResult;
 
