@@ -902,15 +902,16 @@ public class Invoker implements IInvoker {
    */
   @Override
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
-                                             XmlSuite suite,
                                              Map<String, String> testParameters,
                                              ConfigurationGroupMethods groupMethods,
                                              Object instance,
                                              ITestContext testContext)
   {
     // Potential bug here if the test method was declared on a parent class
-    assert null != testMethod.getTestClass()
-        : "COULDN'T FIND TESTCLASS FOR " + testMethod.getRealClass();
+    if (testMethod.getTestClass() == null) {
+      throw new IllegalArgumentException("COULDN'T FIND TESTCLASS FOR " + testMethod.getRealClass());
+    }
+    XmlSuite suite = testContext.getSuite().getXmlSuite();
 
     if (!MethodHelper.isEnabled(testMethod.getConstructorOrMethod().getMethod(), m_annotationFinder)) {
       // return if the method is not enabled. No need to do any more calculations
@@ -1131,8 +1132,7 @@ public class Invoker implements IInvoker {
       MethodInstance mi = new MethodInstance(clonedMethod);
       workers.add(new SingleTestMethodWorker(this,
           mi,
-          suite,
-          parameters,
+              parameters,
           testContext,
           m_classListeners));
     }

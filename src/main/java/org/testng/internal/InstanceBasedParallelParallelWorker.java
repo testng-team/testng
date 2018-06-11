@@ -22,7 +22,6 @@ class InstanceBasedParallelParallelWorker extends AbstractParallelWorker {
             List<IMethodInstance> methodInstances = MethodHelper.methodsToMethodInstances(es.getValue());
             TestMethodWorker tmw = new TestMethodWorker(arguments.getInvoker(),
                     methodInstances,
-                    arguments.getTestContext().getCurrentXmlTest().getSuite(),
                     arguments.getTestContext().getCurrentXmlTest().getAllParameters(),
                     arguments.getConfigMethods(),
                     arguments.getClassMethodMap(),

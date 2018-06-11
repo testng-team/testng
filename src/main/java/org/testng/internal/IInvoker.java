@@ -26,28 +26,26 @@ public interface IInvoker {
    *
    * @param testClass the class whose configuration methods must be run
    */
-  public  void invokeConfigurations(IClass testClass,
-                                    ITestNGMethod[] allMethods,
-                                    XmlSuite suite,
-                                    Map<String, String> parameters,
-                                    Object[] parameterValues,
-                                    Object instance);
+  void invokeConfigurations(IClass testClass,
+                            ITestNGMethod[] allMethods,
+                            XmlSuite suite,
+                            Map<String, String> parameters,
+                            Object[] parameterValues,
+                            Object instance);
 
   /**
    * Invoke the given method
    *
    * @param testMethod
-   * @param suite
    * @param parameters
    * @param groupMethods
    *
    * @return a list containing the results of the test methods invocations
    */
-  public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
-                                             XmlSuite suite,
-                                             Map<String, String> parameters,
-                                             ConfigurationGroupMethods groupMethods,
-                                             Object instance,
-                                             ITestContext testContext);
+  List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
+                                      Map<String, String> parameters,
+                                      ConfigurationGroupMethods groupMethods,
+                                      Object instance,
+                                      ITestContext testContext);
 
 }

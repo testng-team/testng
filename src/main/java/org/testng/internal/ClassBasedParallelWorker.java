@@ -79,7 +79,6 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
             Class<?> c) {
         return new TestMethodWorker(attributes.getInvoker(),
                 findClasses(methodInstances, c),
-                attributes.getTestContext().getCurrentXmlTest().getSuite(),
                 params,
                 attributes.getConfigMethods(),
                 attributes.getClassMethodMap(),
