@@ -82,7 +82,7 @@ class TestNgMethodUtils {
             }
             Utils.log("Invoker " + Thread.currentThread().hashCode(), 10, msg);
         }
-        return vResult.toArray(new ITestNGMethod[vResult.size()]);
+        return vResult.toArray(new ITestNGMethod[0]);
     }
 
     static ITestNGMethod[] filterSetupConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
@@ -94,7 +94,7 @@ class TestNgMethodUtils {
                 result.add(m);
             }
         }
-        return result.toArray(new ITestNGMethod[result.size()]);
+        return result.toArray(new ITestNGMethod[0]);
     }
 
     static ITestNGMethod[] filterTeardownConfigurationMethods(ITestNGMethod tm, ITestNGMethod[] methods) {
@@ -106,7 +106,7 @@ class TestNgMethodUtils {
                 result.add(m);
             }
         }
-        return result.toArray(new ITestNGMethod[result.size()]);
+        return result.toArray(new ITestNGMethod[0]);
     }
 
     /**

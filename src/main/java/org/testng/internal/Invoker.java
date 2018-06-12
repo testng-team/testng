@@ -369,10 +369,8 @@ public class Invoker implements IInvoker {
               Set<Object> obj = classSetEntry.getValue();
               Class<?> c = classSetEntry.getKey();
               boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(null);
-              if (c == cls || c.isAssignableFrom(cls) && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure)) {
-                return true;
-              }
-              return false;
+              return c == cls || c.isAssignableFrom(cls) && (obj.contains(instance) ||
+                      containsBeforeTestOrBeforeSuiteFailure);
             });
 
   }
@@ -463,10 +461,7 @@ public class Invoker implements IInvoker {
       return false;
     }
     ConfigurationMethod cfg = (ConfigurationMethod) tm;
-    if (!cfg.isFirstTimeOnly()) {
-      return false;
-    }
-    return true;
+    return cfg.isFirstTimeOnly();
   }
 
   /**
@@ -850,18 +845,17 @@ public class Invoker implements IInvoker {
     }
 
   FailureContext retryFailed(Object instance,
-                           ITestNGMethod tm,
-                           Object[] paramValues,
-                           XmlSuite suite,
-                           ITestClass testClass,
-                           ITestNGMethod[] beforeMethods,
-                           ITestNGMethod[] afterMethods,
-                           ConfigurationGroupMethods groupMethods,
-                           List<ITestResult> result,
-                           int failureCount,
-                           ITestContext testContext,
-                           Map<String, String> parameters,
-                           int parametersIndex) {
+                             ITestNGMethod tm,
+                             Object[] paramValues,
+                             ITestClass testClass,
+                             ITestNGMethod[] beforeMethods,
+                             ITestNGMethod[] afterMethods,
+                             ConfigurationGroupMethods groupMethods,
+                             List<ITestResult> result,
+                             int failureCount,
+                             ITestContext testContext,
+                             Map<String, String> parameters,
+                             int parametersIndex) {
     FailureContext failure = new FailureContext();
     failure.count = failureCount;
     do {
@@ -877,7 +871,7 @@ public class Invoker implements IInvoker {
         parameterValues = paramValues;
       }
 
-      result.add(invokeMethod(instance, tm, parameterValues, parametersIndex, suite,
+      result.add(invokeMethod(instance, tm, parameterValues, parametersIndex, testContext.getSuite().getXmlSuite(),
           allParameters, testClass, beforeMethods, afterMethods, groupMethods, failure));
     }
     while (!failure.instances.isEmpty());
@@ -949,9 +943,6 @@ public class Invoker implements IInvoker {
 
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
-    ExpectedExceptionsHolder expectedExceptionHolder =
-        new ExpectedExceptionsHolder(m_annotationFinder, testMethod,
-                                     new RegexpExpectedExceptionsHolder(m_annotationFinder, testMethod));
     ITestClass testClass= testMethod.getTestClass();
     List<ITestResult> result = Lists.newArrayList();
     FailureContext failure = new FailureContext();
@@ -1000,9 +991,9 @@ public class Invoker implements IInvoker {
             TestMethodWithDataProviderMethodWorker w =
                     new TestMethodWithDataProviderMethodWorker(this,
                             testMethod, parametersIndex,
-                            parameterValues, instance, suite, parameters, testClass,
+                            parameterValues, instance, parameters, testClass,
                             beforeMethods, afterMethods, groupMethods,
-                            expectedExceptionHolder, testContext, m_skipFailedInvocationCounts,
+                            testContext, m_skipFailedInvocationCounts,
                             invocationCount, failure.count, m_notifier);
             workers.add(w);
             // testng387: increment the param index in the bag.
@@ -1050,7 +1041,7 @@ public class Invoker implements IInvoker {
                 List<ITestResult> retryResults = Lists.newArrayList();
 
                 failure = retryFailed(
-                        instance, testMethod, parameterValues, suite, testClass, beforeMethods,
+                        instance, testMethod, parameterValues, testClass, beforeMethods,
                         afterMethods, groupMethods, retryResults,
                         failure.count,
                         testContext, parameters, parametersIndex);

@@ -4,8 +4,6 @@ import org.testng.IHookable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
-import java.lang.reflect.Method;
-
 /**
  * A Runnable Method invoker.
  *

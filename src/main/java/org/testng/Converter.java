@@ -8,15 +8,13 @@ import org.testng.collections.Sets;
 import org.testng.internal.Yaml;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -33,8 +31,7 @@ public class Converter {
   @Parameter(names = "-d", description = "The directory where the file(s) will be created")
   private String m_outputDirectory = ".";
 
-  public static void main(String[] args)
-      throws ParserConfigurationException, SAXException, IOException {
+  public static void main(String[] args) throws IOException {
     Converter c = new Converter();
     c.run(args);
   }
@@ -43,13 +40,12 @@ public class Converter {
     for (XmlSuite s : suites) {
       result.add(s);
       for (XmlSuite xs : s.getChildSuites()) {
-        findAllSuites(Arrays.asList(xs), result);
+        findAllSuites(Collections.singletonList(xs), result);
       }
     }
   }
 
-  private void run(String[] args)
-      throws ParserConfigurationException, SAXException, IOException {
+  private void run(String[] args) throws IOException {
     JCommander jc = new JCommander(this);
     try {
       jc.parse(args);

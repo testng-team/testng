@@ -30,11 +30,10 @@ class TestClass extends NoOpTestClass implements ITestClass {
   private static final Logger LOG =Logger.getLogger(TestClass.class);
 
   protected TestClass(IClass cls,
-                   ITestMethodFinder testMethodFinder,
-                   IAnnotationFinder annotationFinder,
-                   RunInfo runInfo,
-                   XmlTest xmlTest,
-                   XmlClass xmlClass) {
+                      ITestMethodFinder testMethodFinder,
+                      IAnnotationFinder annotationFinder,
+                      XmlTest xmlTest,
+                      XmlClass xmlClass) {
     init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClass);
   }
 
@@ -183,7 +182,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
       }
     }
 
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+    return vResult.toArray(new ITestNGMethod[0]);
   }
 
   public ITestMethodFinder getTestMethodFinder() {

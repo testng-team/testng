@@ -41,12 +41,12 @@ public final class ReflectionRecipes {
 
   private static void initAssignableMapping() {
     ASSIGNABLE_MAPPING.put(double.class,
-        Arrays.<Class>asList(Float.class, Long.class, Integer.class, Short.class,Character.class,Byte.class));
+        Arrays.asList(Float.class, Long.class, Integer.class, Short.class,Character.class,Byte.class));
     ASSIGNABLE_MAPPING.put(float.class,
-        Arrays.<Class>asList(Long.class, Integer.class, Short.class, Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(long.class, Arrays.<Class>asList(Integer.class, Short.class, Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(int.class, Arrays.<Class>asList(Short.class, Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(short.class, Arrays.<Class>asList(Character.class, Byte.class));
+        Arrays.asList(Long.class, Integer.class, Short.class, Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(long.class, Arrays.asList(Integer.class, Short.class, Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(int.class, Arrays.asList(Short.class, Character.class,Byte.class));
+    ASSIGNABLE_MAPPING.put(short.class, Arrays.asList(Character.class, Byte.class));
   }
 
   private ReflectionRecipes() {

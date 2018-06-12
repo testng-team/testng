@@ -26,12 +26,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     BEFORE_TEST_METHOD, AFTER_TEST_METHOD, BEFORE_GROUPS, AFTER_GROUPS
   }
 
-  private static final Comparator<ITestNGMethod> NO_COMPARISON = new Comparator<ITestNGMethod>() {
-    @Override
-    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      return 0;
-    }
-  };
+  private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
 
   private RunInfo runInfo = null;
   private IAnnotationFinder annotationFinder = null;

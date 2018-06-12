@@ -1,7 +1,6 @@
 package org.testng;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -1084,7 +1083,7 @@ public class TestNG {
     GraphThreadPoolExecutor<ISuite> pooledExecutor =
             new GraphThreadPoolExecutor<>("suites", suiteGraph, factory, m_suiteThreadPoolSize,
                     m_suiteThreadPoolSize, Integer.MAX_VALUE, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<Runnable>());
+                    new LinkedBlockingQueue<>());
 
     Utils.log("TestNG", 2, "Starting executor for all suites");
     // Run all suites in parallel
@@ -1112,9 +1111,8 @@ public class TestNG {
    * the suite, the verbose level on the TestNG object, or 1.
    */
   private int getVerbose(XmlSuite xmlSuite) {
-    int result = xmlSuite.getVerbose() != null ? xmlSuite.getVerbose()
+    return xmlSuite.getVerbose() != null ? xmlSuite.getVerbose()
         : (m_verbose != null ? m_verbose : DEFAULT_VERBOSE);
-    return result;
   }
 
   /**
@@ -1208,8 +1206,6 @@ public class TestNG {
 
   /**
    * Creates a suite runner and configures its initial state
-   * @param xmlSuite
-   * @return returns the newly created suite runner
    */
   private SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
     SuiteRunner result = new SuiteRunner(getConfiguration(), xmlSuite,
@@ -1248,7 +1244,6 @@ public class TestNG {
    * The TestNG entry point for command line execution.
    *
    * @param argv the TestNG command line parameters.
-   * @throws FileNotFoundException
    */
   public static void main(String[] argv) {
     TestNG testng = privateMain(argv, null);
@@ -1314,7 +1309,7 @@ public class TestNG {
         classes.add(ClassHelper.fileToClass(c));
       }
 
-      setTestClasses(classes.toArray(new Class[classes.size()]));
+      setTestClasses(classes.toArray(new Class[0]));
     }
 
     setOutputDirectory(cla.outputDirectory);
@@ -1322,11 +1317,6 @@ public class TestNG {
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
     }
-
-//    List<String> testNgXml = (List<String>) cmdLineArgs.get(CommandLineArgs.SUITE_DEF);
-//    if (null != testNgXml) {
-//      setTestSuites(testNgXml);
-//    }
 
     // Note: can't use a Boolean field here because we are allowing a boolean
     // parameter with an arity of 1 ("-usedefaultlisteners false")

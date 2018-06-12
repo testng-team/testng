@@ -314,7 +314,7 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private void init(IMethodSelectorContext context) {
-    String[] groups = m_includedGroups.keySet().toArray(new String[m_includedGroups.size()]);
+    String[] groups = m_includedGroups.keySet().toArray(new String[0]);
     Set<String> groupClosure = new HashSet<>();
     Set<ITestNGMethod> methodClosure = new HashSet<>();
 
@@ -324,7 +324,7 @@ public class XmlMethodSelector implements IMethodSelector {
         includedMethods.add(m);
       }
     }
-    MethodGroupsHelper.findGroupTransitiveClosure(this, includedMethods, m_testMethods,
+    MethodGroupsHelper.findGroupTransitiveClosure(includedMethods, m_testMethods,
         groups, groupClosure, methodClosure);
 
     // If we are asked to include or exclude specific groups, calculate

@@ -34,7 +34,7 @@ public class ReflectionHelper {
           prunedMethods.add(declaredMethod);
         }
       }
-      result = prunedMethods.toArray(new Method[prunedMethods.size()]);
+      result = prunedMethods.toArray(new Method[0]);
     }
     return result;
   }
@@ -53,7 +53,7 @@ public class ReflectionHelper {
       }
       pruned.add(declaredMethod);
     }
-    return pruned.toArray(new Method[pruned.size()]);
+    return pruned.toArray(new Method[0]);
   }
 
   /**

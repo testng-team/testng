@@ -123,6 +123,7 @@ public class ClassImpl implements IClass {
     return injector.getInstance(m_class);
   }
 
+  @SuppressWarnings("unchecked")
   public Injector getParentInjector() {
     ISuite suite = m_testContext.getSuite();
     // Reuse the previous parent injector, if any
@@ -175,7 +176,7 @@ public class ClassImpl implements IClass {
       }
     }
     if (m_instances.size() > 0) {
-      result = m_instances.toArray(new Object[m_instances.size()]);
+      result = m_instances.toArray(new Object[0]);
     }
 
     int m_instanceCount = m_instances.size();

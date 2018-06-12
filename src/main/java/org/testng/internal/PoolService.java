@@ -14,6 +14,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import org.testng.internal.thread.ThreadUtil;
 
+import javax.annotation.Nonnull;
+
 /**
  * Simple wrapper for an ExecutorCompletionService.
  */
@@ -29,7 +31,7 @@ public class PoolService<FutureType> {
       private final AtomicInteger threadNumber = new AtomicInteger(0);
 
       @Override
-      public Thread newThread(Runnable r) {
+      public Thread newThread(@Nonnull Runnable r) {
         return new Thread(r,
             ThreadUtil.THREAD_NAME + "-PoolService-" + threadNumber.getAndIncrement());
       }

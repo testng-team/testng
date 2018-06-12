@@ -1,6 +1,5 @@
 package org.testng.xml.internal;
 
-import java.util.Iterator;
 import java.util.List;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -53,13 +52,7 @@ public final class TestNamesMatcher {
     public List<String> getMissMatchedTestNames(){
         List<String> tmpTestNames = Lists.newArrayList();
         tmpTestNames.addAll(testNames);
-        Iterator<String> testNameIterator = tmpTestNames.iterator();
-        while (testNameIterator.hasNext()) {
-            String testName = testNameIterator.next();
-            if (matchedTestNames.contains(testName)) {
-                testNameIterator.remove();
-            }
-        }
+        tmpTestNames.removeIf(matchedTestNames::contains);
         return tmpTestNames;        
     }
 

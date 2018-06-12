@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import org.testng.IDataProviderMethod;
-import org.testng.ITestContext;
 import org.testng.annotations.IDataProviderAnnotation;
 
 import java.lang.reflect.Method;

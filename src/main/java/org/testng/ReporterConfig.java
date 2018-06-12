@@ -120,9 +120,9 @@ public class ReporterConfig {
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
-    buf.append("\nClass = " + m_className);
+    buf.append("\nClass = ").append(m_className);
     for (Property prop : m_properties) {
-      buf.append("\n\t " + prop.name + "=" + prop.value);
+      buf.append("\n\t ").append(prop.name).append("=").append(prop.value);
     }
     return buf.toString();
   }
