@@ -8,17 +8,15 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
+import org.testng.collections.Sets;
 import org.testng.internal.thread.graph.IWorker;
-import org.testng.xml.XmlSuite;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -36,7 +34,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private List<IMethodInstance> m_methodInstances;
   private final IInvoker m_invoker;
   private final Map<String, String> m_parameters;
-  private final XmlSuite m_suite;
   private List<ITestResult> m_testResults = Lists.newArrayList();
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
@@ -48,7 +45,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   public TestMethodWorker(IInvoker invoker,
                           List<IMethodInstance> testMethods,
-                          XmlSuite suite,
                           Map<String, String> parameters,
                           ConfigurationGroupMethods groupMethods,
                           ClassMethodMap classMethodMap,
@@ -57,7 +53,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   {
     m_invoker = invoker;
     m_methodInstances = testMethods;
-    m_suite = suite;
     m_parameters = parameters;
     m_groupMethods = groupMethods;
     m_classMethodMap = classMethodMap;
@@ -118,7 +113,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMthdInst.getInstance(), m_testContext);
+        invokeTestMethods(testMethod, testMthdInst.getInstance());
       } finally {
         invokeAfterClassMethods(testClass, testMthdInst);
       }
@@ -129,8 +124,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return threadIdToRunOn != -1;
   }
 
-  protected void invokeTestMethods(ITestNGMethod tm, Object instance,
-      ITestContext testContext)
+  protected void invokeTestMethods(ITestNGMethod tm, Object instance)
   {
     // Potential bug here:  we look up the method index of tm among all
     // the test methods (not very efficient) but if this method appears
@@ -139,11 +133,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // more efficient)
     List<ITestResult> testResults =
         m_invoker.invokeTestMethods(tm,
-            m_suite,
-            m_parameters,
+                m_parameters,
             m_groupMethods,
             instance,
-            testContext);
+                m_testContext);
 
     if (testResults != null) {
       m_testResults.addAll(testResults);
@@ -166,13 +159,13 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // We need to ensure that two threads that are querying for the same "Class" then they
     // should be mutually exclusive. In all other cases, parallelism can be allowed.
     //DO NOT REMOVE THIS SYNC LOCK.
-    synchronized (testClass) {
+    synchronized (testClass) { //NOSONAR
       Map<ITestClass, Set<Object>> invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
-      Set<Object> instances = invokedBeforeClassMethods.get(testClass);
-      if (null == instances) {
-        instances = new HashSet<>();
-        invokedBeforeClassMethods.put(testClass, instances);
-      }
+      Set<Object> instances = invokedBeforeClassMethods.computeIfAbsent(testClass, key -> {
+        Set<Object> set = Sets.newHashSet();
+        invokedBeforeClassMethods.put(key, set);
+        return set;
+      });
       Object instance = mi.getInstance();
       if (!instances.contains(instance)) {
         instances.add(instance);
@@ -181,7 +174,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         }
         m_invoker.invokeConfigurations(testClass,
                 testClass.getBeforeClassMethods(),
-                m_suite,
+                m_testContext.getSuite().getXmlSuite(),
                 m_parameters,
                 null, /* no parameter values */
                 instance);
@@ -209,11 +202,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       return;
     }
     Map<ITestClass, Set<Object>> invokedAfterClassMethods = m_classMethodMap.getInvokedAfterClassMethods();
-    Set<Object> instances = invokedAfterClassMethods.get(testClass);
-    if (null == instances) {
-      instances = new HashSet<>();
-      invokedAfterClassMethods.put(testClass, instances);
-    }
+    Set<Object> instances = invokedAfterClassMethods.computeIfAbsent(testClass, key -> {
+      Set<Object> set = Sets.newHashSet();
+      invokedAfterClassMethods.put(key, set);
+      return set;
+    });
     Object inst = mi.getInstance();
     if (!instances.contains(inst)) {
       invokeInstances.add(inst);
@@ -225,7 +218,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     for (Object invokeInstance : invokeInstances) {
       m_invoker.invokeConfigurations(testClass,
               testClass.getAfterClassMethods(),
-              m_suite,
+              m_testContext.getSuite().getXmlSuite(),
               m_parameters,
               null, /* no parameter values */
               invokeInstance);
@@ -297,15 +290,13 @@ class SingleTestMethodWorker extends TestMethodWorker {
 
   public SingleTestMethodWorker(IInvoker invoker,
                                 IMethodInstance testMethod,
-                                XmlSuite suite,
                                 Map<String, String> parameters,
                                 ITestContext testContext,
                                 List<IClassListener> listeners)
   {
     super(invoker,
             Collections.singletonList(testMethod),
-          suite,
-          parameters,
+            parameters,
           EMPTY_GROUP_METHODS,
           null,
           testContext,
