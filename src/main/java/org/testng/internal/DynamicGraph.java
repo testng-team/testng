@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.testng.IExecutionVisualiser;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -20,6 +21,7 @@ public class DynamicGraph<T> {
   private final Set<T> m_nodesRunning = Sets.newLinkedHashSet();
   private final Set<T> m_nodesFinished = Sets.newLinkedHashSet();
   private final Edges<T> m_edges = new Edges<>();
+  private Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   public enum Status {
     READY, RUNNING, FINISHED
@@ -41,6 +43,10 @@ public class DynamicGraph<T> {
    */
   public void addEdge(int weight, T from, T to) {
     m_edges.addEdge(weight, from, to, false);
+  }
+
+  public void setVisualisers(Set<IExecutionVisualiser> listener) {
+    visualisers = listener;
   }
 
   /**
@@ -145,6 +151,8 @@ public class DynamicGraph<T> {
       default:
         throw new IllegalArgumentException("Unsupported status: " + status);
     }
+
+    this.visualisers.forEach(visualiser -> visualiser.consumeDotDefinition(toDot()));
   }
 
   /**
@@ -179,9 +187,8 @@ public class DynamicGraph<T> {
 
   private static <T> String dotShortName(T t) {
     String s = t.toString();
-    int n1 = s.lastIndexOf('.') + 1;
     int n2 = s.indexOf('(');
-    return s.substring(n1, n2);
+    return s.substring(0, n2).replaceAll("\\Q.\\E", "_");
   }
 
   /**
@@ -205,7 +212,6 @@ public class DynamicGraph<T> {
     for (T n : m_nodesFinished) {
       result.append("  ").append(dotShortName(n)).append(FINISHED).append("\n");
     }
-    result.append("\n");
 
     m_edges.appendDotEdges(result, m_nodesFinished);
     result.append("}\n");
@@ -365,11 +371,7 @@ public class DynamicGraph<T> {
     }
 
     private static <T> void addEdgeToMap(Map<T, Map<T, Integer>> map, T n1, T n2, int weight) {
-      Map<T, Integer> edges = map.get(n1);
-      if (edges == null) {
-        edges = new HashMap<>();
-        map.put(n1, edges);
-      }
+      Map<T, Integer> edges = map.computeIfAbsent(n1, k -> new HashMap<>());
 
       Integer existingWeight = edges.get(n2);
       edges.put(n2, Math.max(weight, existingWeight != null ? existingWeight : Integer.MIN_VALUE));

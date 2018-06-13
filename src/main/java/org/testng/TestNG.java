@@ -178,6 +178,7 @@ public class TestNG {
   private boolean isSuiteInitialized = false;
   private final org.testng.internal.ExitCodeListener exitCodeListener = new org.testng.internal.ExitCodeListener();
   private ExitCode exitCode;
+  private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser> m_executionVisualisers = Maps.newHashMap();
 
   /**
    * Default constructor. Setting also usage of default listeners/reporters.
@@ -651,6 +652,10 @@ public class TestNG {
   public void addListener(ITestNGListener listener) {
     if (listener == null) {
       return;
+    }
+    if (listener instanceof IExecutionVisualiser) {
+      IExecutionVisualiser visualiser = (IExecutionVisualiser) listener;
+      maybeAddListener(m_executionVisualisers, visualiser);
     }
     if (listener instanceof ISuiteListener) {
       ISuiteListener suite = (ISuiteListener) listener;
@@ -1229,6 +1234,8 @@ public class TestNG {
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
       result.addConfigurationListener(cl);
     }
+
+    m_executionVisualisers.values().forEach(result::addListener);
 
     return result;
   }

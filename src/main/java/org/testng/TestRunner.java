@@ -84,6 +84,7 @@ public class TestRunner
   /** ITestListeners support. */
   private List<ITestListener> m_testListeners = Lists.newArrayList();
   private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   private IConfigurationListener m_confListener= new ConfigurationListener();
 
@@ -621,6 +622,7 @@ public class TestRunner
       // termination from methods that never get invoked).
       DynamicGraph<ITestNGMethod> graph = DynamicGraphHelper.createDynamicGraph(intercept(m_allTestMethods),
               getCurrentXmlTest());
+      graph.setVisualisers(this.visualisers);
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           GraphThreadPoolExecutor<ITestNGMethod> executor =
@@ -1020,6 +1022,11 @@ public class TestRunner
     if (listener instanceof IDataProviderListener) {
       IDataProviderListener dataProviderListener = (IDataProviderListener) listener;
       m_dataProviderListeners.put(dataProviderListener.getClass(), dataProviderListener);
+    }
+
+    if (listener instanceof IExecutionVisualiser) {
+      IExecutionVisualiser l = (IExecutionVisualiser) listener;
+      visualisers.add(l);
     }
     m_suite.addListener(listener);
   }
