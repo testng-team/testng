@@ -12,7 +12,6 @@ import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,9 +26,6 @@ public class TestNGMethod extends BaseTestMethod {
 
   /**
    * Constructs a <code>TestNGMethod</code>
-   *
-   * @param method
-   * @param finder
    */
   public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
     this(method, finder, true, xmlTest, instance);
@@ -169,7 +165,7 @@ public class TestNGMethod extends BaseTestMethod {
     clone.m_testClass= testClass;
     clone.setDate(getDate());
     clone.setGroups(getGroups());
-    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.<String>emptyList());
+    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());
     clone.setMethodsDependedUpon(getMethodsDependedUpon());
     clone.setAlwaysRun(isAlwaysRun());
     clone.m_beforeGroups= getBeforeGroups();
@@ -206,14 +202,6 @@ public class TestNGMethod extends BaseTestMethod {
     }
     return ClassHelper.newInstance(instance.getClass());
   }
-
-  /** Sorts ITestNGMethod by Class name. */
-  public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
-          (o1, o2) -> {
-            String c1 = o1.getTestClass().getName();
-            String c2 = o2.getTestClass().getName();
-            return c1.compareTo(c2);
-          };
 
   @Override
   public boolean isDataDriven() {

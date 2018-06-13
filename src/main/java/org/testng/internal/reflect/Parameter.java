@@ -32,11 +32,10 @@ public class Parameter implements AnnotatedElement {
   }
 
   private static Map<Class<? extends Annotation>, Annotation> declaredAnnotations(final Annotation[] ann) {
-    final Map<Class<? extends Annotation>, Annotation> map =
-      new HashMap<>();
+    final Map<Class<? extends Annotation>, Annotation> map = new HashMap<>();
     if (ann != null) {
-      for (int i = 0; i < ann.length; i++) {
-        map.put(ann[i].annotationType(), ann[i]);
+      for (Annotation anAnn : ann) {
+        map.put(anAnn.annotationType(), anAnn);
       }
     }
     return map;

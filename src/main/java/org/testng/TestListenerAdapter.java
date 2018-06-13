@@ -60,7 +60,7 @@ public class TestListenerAdapter implements IResultListener2 {
   }
 
   protected ITestNGMethod[] getAllTestMethods() {
-    return m_allTestMethods.toArray(new ITestNGMethod[m_allTestMethods.size()]);
+    return m_allTestMethods.toArray(new ITestNGMethod[0]);
   }
 
   @Override

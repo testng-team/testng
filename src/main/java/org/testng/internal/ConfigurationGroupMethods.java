@@ -111,23 +111,6 @@ public class ConfigurationGroupMethods {
     return result;
   }
 
-  public void removeBeforeMethod(String group, ITestNGMethod method) {
-    List<ITestNGMethod> methods= m_beforeGroupsMethods.get(group);
-    if(methods != null) {
-      boolean success= methods.remove(method);
-      if(!success) {
-        log("Couldn't remove beforeGroups method " + method + " for group " + group);
-      }
-    }
-    else {
-      log("Couldn't find any beforeGroups method for group " + group);
-    }
-  }
-
-  private void log(String string) {
-    Utils.log("ConfigurationGroupMethods", 2, string);
-  }
-
   public List<ITestNGMethod> getBeforeGroupMethodsForGroup(String group) {
     synchronized (beforeGroupsThatHaveAlreadyRun) {
       return retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, group);
@@ -154,7 +137,7 @@ public class ConfigurationGroupMethods {
 
   private static List<ITestNGMethod> retrieve(Set<String> tracker, Map<String, List<ITestNGMethod>> map, String group) {
     if (tracker.contains(group)) {
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     }
     tracker.add(group);
     return map.get(group);

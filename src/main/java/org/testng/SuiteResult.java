@@ -3,6 +3,8 @@ package org.testng;
 import org.testng.collections.Objects;
 import org.testng.xml.XmlSuite;
 
+import javax.annotation.Nonnull;
+
 /**
  * This class logs the result of an entire Test Suite (defined by a
  * property file).
@@ -42,7 +44,7 @@ class SuiteResult implements ISuiteResult, Comparable {
   }
 
   @Override
-  public int compareTo(Object o) {
+  public int compareTo(@Nonnull Object o) {
     int result = 0;
     try {
       SuiteResult other = (SuiteResult) o;

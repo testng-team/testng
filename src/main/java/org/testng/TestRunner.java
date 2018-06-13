@@ -389,8 +389,7 @@ public class TestRunner
       ITestClass tc = new TestClass(ic,
                                    testMethodFinder,
                                    m_annotationFinder,
-                                   m_runInfo,
-                                   m_xmlTest,
+              m_xmlTest,
                                    classMap.getXmlClass(ic.getRealClass()));
       m_classMap.put(ic.getRealClass(), tc);
     }

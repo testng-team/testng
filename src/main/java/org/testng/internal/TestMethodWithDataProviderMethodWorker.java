@@ -16,14 +16,12 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private final ITestNGMethod m_testMethod;
   private final Object[] m_parameterValues;
   private final Object m_instance;
-  private final XmlSuite m_xmlSuite;
   private final Map<String, String> m_parameters;
   private final ITestClass m_testClass;
   private final ITestNGMethod[] m_beforeMethods;
   private final ITestNGMethod[] m_afterMethods;
   private final ConfigurationGroupMethods m_groupMethods;
   private final Invoker m_invoker;
-  private final ExpectedExceptionsHolder m_expectedExceptionHolder;
   private final ITestContext m_testContext;
   private int m_parameterIndex;
   private boolean m_skipFailedInvocationCounts;
@@ -34,25 +32,23 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(Invoker invoker, ITestNGMethod testMethod,
-      int parameterIndex,
-      Object[] parameterValues, Object instance, XmlSuite suite,
-      Map<String, String> parameters, ITestClass testClass,
-      ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
-      ConfigurationGroupMethods groupMethods, ExpectedExceptionsHolder expectedExceptionHolder,
-      ITestContext testContext, boolean skipFailedInvocationCounts,
-      int invocationCount, int failureCount, ITestResultNotifier notifier) {
+                                                int parameterIndex,
+                                                Object[] parameterValues, Object instance,
+                                                Map<String, String> parameters, ITestClass testClass,
+                                                ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
+                                                ConfigurationGroupMethods groupMethods,
+                                                ITestContext testContext, boolean skipFailedInvocationCounts,
+                                                int invocationCount, int failureCount, ITestResultNotifier notifier) {
     m_invoker = invoker;
     m_testMethod = testMethod;
     m_parameterIndex = parameterIndex;
     m_parameterValues = parameterValues;
     m_instance = instance;
-    m_xmlSuite = suite;
     m_parameters = parameters;
     m_testClass = testClass;
     m_beforeMethods = beforeMethods;
     m_afterMethods = afterMethods;
     m_groupMethods = groupMethods;
-    m_expectedExceptionHolder = expectedExceptionHolder;
     m_skipFailedInvocationCounts = skipFailedInvocationCounts;
     m_testContext = testContext;
     m_invocationCount = invocationCount;
@@ -64,6 +60,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   public List<ITestResult> call() {
     List<ITestResult> tmpResults = Lists.newArrayList();
     long start = System.currentTimeMillis();
+    XmlSuite suite = m_testContext.getSuite().getXmlSuite();
 
     final Invoker.FailureContext failure = new Invoker.FailureContext();
     failure.count = m_failureCount;
@@ -72,7 +69,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
           m_testMethod,
           m_parameterValues,
           m_parameterIndex,
-          m_xmlSuite,
+          suite,
           m_parameters,
           m_testClass,
           m_beforeMethods,
@@ -90,7 +87,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
 
           m_failureCount =
              m_invoker.retryFailed(
-                 instance, m_testMethod, m_parameterValues, m_xmlSuite, m_testClass, m_beforeMethods,
+                 instance, m_testMethod, m_parameterValues, m_testClass, m_beforeMethods,
                  m_afterMethods, m_groupMethods, retryResults,
                  m_failureCount,
                  m_testContext, m_parameters, m_parameterIndex).count;

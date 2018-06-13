@@ -39,7 +39,7 @@ public final class XmlSuiteUtils {
      *               names found.
      */
     public static void adjustSuiteNamesToEnsureUniqueness(List<XmlSuite> suites) {
-        adjustSuiteNamesToEnsureUniqueness(suites, Sets.<String>newHashSet());
+        adjustSuiteNamesToEnsureUniqueness(suites, Sets.newHashSet());
     }
 
     public static XmlSuite newXmlSuiteUsing(List<String> classes) {

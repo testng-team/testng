@@ -15,7 +15,6 @@ import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
@@ -81,15 +79,9 @@ public class XMLSuiteResultWriter {
   private void addAllTestResults(Set<ITestResult> testResults, IResultMap resultMap) {
     if (resultMap != null) {
       // Sort the results chronologically before adding them
-      List<ITestResult> allResults = new ArrayList<>();
-      allResults.addAll(resultMap.getAllResults());
+      List<ITestResult> allResults = new ArrayList<>(resultMap.getAllResults());
 
-      Collections.sort(new ArrayList(allResults), new Comparator<ITestResult>() {
-        @Override
-        public int compare(ITestResult o1, ITestResult o2) {
-          return (int) (o1.getStartMillis() - o2.getStartMillis());
-        }
-      });
+      new ArrayList(allResults).sort((Comparator<ITestResult>) (o1, o2) -> (int) (o1.getStartMillis() - o2.getStartMillis()));
 
       testResults.addAll(allResults);
     }

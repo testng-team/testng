@@ -1,43 +1,23 @@
 package org.testng.xml.dom;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
-import org.testng.Assert;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.collections.Pair;
-import org.testng.xml.XmlDefine;
-import org.testng.xml.XmlGroups;
-import org.testng.xml.XmlMethodSelector;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 //TODO: This class is perhaps not being used anywhere in TestNG. Need to check and remove this if its obsolete.
 public class XDom {
-//  private static Map<String, Class<?>> m_map = Maps.newHashMap();
   private Document m_document;
   private ITagFactory m_tagFactory;
 
@@ -46,10 +26,7 @@ public class XDom {
     m_document = document;
   }
 
-  public Object parse() throws XPathExpressionException,
-      InstantiationException, IllegalAccessException, SecurityException,
-      IllegalArgumentException, NoSuchMethodException,
-      InvocationTargetException {
+  public Object parse() throws InstantiationException, IllegalAccessException, SecurityException, IllegalArgumentException, InvocationTargetException {
     Object result = null;
     NodeList nodes = m_document.getChildNodes();
     for (int i = 0; i < nodes.getLength(); i++) {
@@ -75,7 +52,7 @@ public class XDom {
   }
 
   public void populateChildren(Node root, Object result) throws InstantiationException,
-      IllegalAccessException, XPathExpressionException, SecurityException, IllegalArgumentException, NoSuchMethodException, InvocationTargetException {
+      IllegalAccessException, SecurityException, IllegalArgumentException, InvocationTargetException {
     p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
     ListMultiMap<String, Object> children = Maps.newListMultiMap();
@@ -102,23 +79,11 @@ public class XDom {
             populateAttributes(item, object);
             populateContent(item, object);
           }
-          boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName, object);
-//          setProperty(result, nodeName, object);
           populateChildren(item, object);
         }
 
-//        boolean foundSetter = invokeOnSetter(result, (Element) item, nodeName);
-//        if (! foundSetter) {
-//          boolean foundListSetter = invokeOnListSetter(result, nodeName, item);
-//          if (! foundListSetter) {
-//          }
-//        }
       }
     }
-//    System.out.println("Found children:" + children);
-//    for (String s : children.getKeys()) {
-//      setCollectionProperty(result, s, children.get(s), object);
-//    }
   }
 
   /**
@@ -129,7 +94,7 @@ public class XDom {
       throws SecurityException,
           IllegalArgumentException, InstantiationException, IllegalAccessException,
       InvocationTargetException {
-    Object result = null;
+    Object result;
     Method m = findMethodAnnotatedWith(c, ParentSetter.class);
     if (m != null) {
         result = c.newInstance();
@@ -144,18 +109,6 @@ public class XDom {
 
     return result;
   }
-
-//  private List<Pair<Method, ? extends Annotation>>
-//      findMethodsWithAnnotation(Class<?> c, Class<? extends Annotation> ac) {
-//    List<Pair<Method, ? extends Annotation>> result = Lists.newArrayList();
-//    for (Method m : c.getMethods()) {
-//      Annotation a = m.getAnnotation(ac);
-//      if (a != null) {
-//        result.add(Pair.of(m, a));
-//      }
-//    }
-//    return result;
-//  }
 
   private Method findMethodAnnotatedWith(Class<?> c, Class<? extends Annotation> annotation) {
 	  for (Method m : c.getMethods()) {
@@ -187,8 +140,7 @@ private void populateContent(Node item, Object object) {
     }
   }
 
-  private boolean invokeOnSetter(Object object, Element element, String nodeName,
-      Object bean) {
+  private boolean invokeOnSetter(Object object, Element element, String nodeName, Object bean) {
     Pair<Method, Wrapper> pair =
        Reflect.findSetterForTag(object.getClass(), nodeName, bean);
 
@@ -248,18 +200,6 @@ private void populateContent(Node item, Object object) {
     }
   }
 
-//  private Method findSetter(Object object, String name) {
-//    String methodName = toCamelCaseSetter(name);
-//    Method foundMethod = null;
-//    for (Method m : object.getClass().getDeclaredMethods()) {
-//      if (m.getName().equals(methodName)) {
-//        foundMethod = m;
-//        break;
-//      }
-//    }
-//    return foundMethod;
-//  }
-
   private void p(String string) {
     System.out.println("[XDom] " + string);
   }
@@ -268,105 +208,4 @@ private void populateContent(Node item, Object object) {
     System.out.println("[XDom] [Error] " + string);
   }
 
-  public static void main(String[] args) throws SAXException, IOException,
-      ParserConfigurationException, XPathExpressionException,
-      InstantiationException, IllegalAccessException, SecurityException,
-      IllegalArgumentException, NoSuchMethodException,
-      InvocationTargetException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true); // never forget this!
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    FileInputStream inputStream =
-        new FileInputStream(new File(RuntimeBehavior.getCurrentUserHome()
-            + "/java/testng/src/test/resources/testng-all.xml"));
-    Document doc = builder.parse(inputStream);
-    XmlSuite result = (XmlSuite) new XDom(new TestNGTagFactory(), doc).parse();
-
-    test(result);
-    System.out.println(result.toXml());
-  }
-
-  private static void test(XmlSuite s) {
-    Assert.assertEquals("TestNG", s.getName());
-    Assert.assertEquals(s.getDataProviderThreadCount(), 3);
-    Assert.assertEquals(s.getThreadCount(), 2);
-
-    {
-      // method-selectors
-      List<XmlMethodSelector> selectors = s.getMethodSelectors();
-      Assert.assertEquals(selectors.size(), 2);
-      XmlMethodSelector s1 = selectors.get(0);
-      Assert.assertEquals(s1.getLanguage(), "javascript");
-      Assert.assertEquals(s1.getExpression(), "foo()");
-      XmlMethodSelector s2 = selectors.get(1);
-      Assert.assertEquals(s2.getClassName(), "SelectorClass");
-      Assert.assertEquals(s2.getPriority(), 3);
-    }
-
-    {
-      // child-suites
-      List<String> suiteFiles = s.getSuiteFiles();
-      Assert.assertEquals(suiteFiles, Arrays.asList("./junit-suite.xml"));
-    }
-
-    {
-      // parameters
-      Map<String, String> p = s.getParameters();
-      Assert.assertEquals(p.size(), 2);
-      Assert.assertEquals(p.get("suiteParameter"), "suiteParameterValue");
-      Assert.assertEquals(p.get("first-name"), "Cedric");
-    }
-
-    {
-      // run
-      Assert.assertEquals(s.getIncludedGroups(), Collections.singletonList("includeThisGroup"));
-      Assert.assertEquals(s.getExcludedGroups(), Collections.singletonList("excludeThisGroup"));
-      XmlGroups groups = s.getGroups();
-
-      // define
-      List<XmlDefine> defines = groups.getDefines();
-      Assert.assertEquals(defines.size(), 1);
-      XmlDefine define = defines.get(0);
-      Assert.assertEquals(define.getName(), "bigSuite");
-      Assert.assertEquals(define.getIncludes(), Arrays.asList("suite1", "suite2"));
-
-      // packages
-      Assert.assertEquals(s.getPackageNames(), Arrays.asList("com.example1", "com.example2"));
-
-      // listeners
-      Assert.assertEquals(s.getListeners(),
-          Arrays.asList("com.beust.Listener1", "com.beust.Listener2"));
-      // dependencies
-      // only defined on test for now
-    }
-
-    {
-      // tests
-      Assert.assertEquals(s.getTests().size(), 3);
-      for (int i = 0; i < s.getTests().size(); i++) {
-        if ("Nopackage".equals(s.getTests().get(i).getName())) {
-          testNoPackage(s.getTests().get(i));
-        }
-      }
-    }
-  }
-
-  private static void testNoPackage(XmlTest t) {
-    Assert.assertEquals(t.getThreadCount(), 42);
-    Assert.assertTrue(t.getAllowReturnValues());
-
-    // define
-    Map<String, List<String>> metaGroups = t.getMetaGroups();
-    Assert.assertEquals(metaGroups.get("evenodd"), Arrays.asList("even", "odd"));
-
-    // run
-    Assert.assertEquals(t.getIncludedGroups(), Arrays.asList("nopackage", "includeThisGroup"));
-    Assert.assertEquals(t.getExcludedGroups(), Collections.singletonList("excludeThisGroup"));
-
-    // dependencies
-    Map<String, String> dg = t.getXmlDependencyGroups();
-    Assert.assertEquals(dg.size(), 2);
-    Assert.assertEquals(dg.get("e"), "f");
-    Assert.assertEquals(dg.get("g"), "h");
-  }
 }

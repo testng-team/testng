@@ -27,7 +27,7 @@ public class XmlInclude {
   }
 
   public XmlInclude(String n, int index) {
-    this(n, Lists.<Integer>newArrayList(), index);
+    this(n, Lists.newArrayList(), index);
   }
 
   public XmlInclude(String n, List<Integer> list, int index) {
@@ -72,7 +72,7 @@ public class XmlInclude {
     List<Integer> invocationNumbers = getInvocationNumbers();
     if (invocationNumbers != null && invocationNumbers.size() > 0) {
       p.setProperty("invocation-numbers",
-          XmlClass.listToString(invocationNumbers).toString());
+              XmlClass.listToString(invocationNumbers));
     }
 
     if (!m_parameters.isEmpty()){
@@ -93,7 +93,7 @@ public class XmlInclude {
     result = prime * result + m_index;
     result = prime * result
         + ((m_invocationNumbers == null) ? 0 : m_invocationNumbers.hashCode());
-    result = prime * result + (m_parameters == null ? 0 : m_parameters.hashCode());
+    result = prime * result + m_parameters.hashCode();
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
     return result;
   }
@@ -119,11 +119,7 @@ public class XmlInclude {
         return XmlSuite.f();
     } else if (!m_name.equals(other.m_name))
       return XmlSuite.f();
-    if (m_parameters == null) {
-      if (other.m_parameters != null) {
-        return XmlSuite.f();
-      }
-    } else if (!m_parameters.equals(other.m_parameters)) {
+    if (!m_parameters.equals(other.m_parameters)) {
       return XmlSuite.f();
     }
     return true;

@@ -83,10 +83,6 @@ public class XmlMethodSelector {
     m_priority = priority;
   }
 
-  private void ppp(String s) {
-    System.out.println("[XmlMethodSelector] " + s);
-  }
-
   public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
 

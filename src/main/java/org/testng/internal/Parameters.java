@@ -696,23 +696,6 @@ public class Parameters {
    * @return An Iterator over the values for each parameter of this
    * method.
    */
-  public static ParameterHolder handleParameters(final ITestNGMethod testMethod,
-      Map<String, String> allParameterNames,
-      Object instance,
-      MethodParameters methodParams,
-      XmlSuite xmlSuite,
-      IAnnotationFinder annotationFinder,
-      Object fedInstance) {
-    return handleParameters(testMethod, allParameterNames, instance, methodParams, xmlSuite, annotationFinder, fedInstance,
-            Collections.emptyList());
-  }
-
-  /**
-   * If the method has parameters, fill them in. Either by using a @DataProvider
-   * if any was provided, or by looking up <parameters> in testng.xml
-   * @return An Iterator over the values for each parameter of this
-   * method.
-   */
   public static ParameterHolder handleParameters(ITestNGMethod testMethod, Map<String, String> allParameterNames,
                                                  Object instance, MethodParameters methodParams, XmlSuite xmlSuite,
                                                  IAnnotationFinder annotationFinder, Object fedInstance,
@@ -871,10 +854,8 @@ public class Parameters {
     public static MethodParameters newInstance(Map<String, String> params, ITestNGMethod testNGMethod,
                                                ITestContext context) {
       Map<String, String> methodParams = testNGMethod.findMethodParameters(context.getCurrentXmlTest());
-      Object[] pv = null;
-      ITestResult tr = null;
       Method method = testNGMethod.getConstructorOrMethod().getMethod();
-      return new MethodParameters(params, methodParams, pv, method, context, tr);
+      return new MethodParameters(params, methodParams, null, method, context, null);
     }
 
 

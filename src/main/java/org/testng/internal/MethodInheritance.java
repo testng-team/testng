@@ -38,21 +38,18 @@ public class MethodInheritance {
    * </ol>
    *
    */
-  private static final Comparator<ITestNGMethod> COMPARATOR = new Comparator<ITestNGMethod>() {
-    @Override
-    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      int result = -2;
-      Class<?> thisClass = o1.getRealClass();
-      Class<?> otherClass = o2.getRealClass();
-      if (thisClass.isAssignableFrom(otherClass)) {
-        result = -1;
-      } else if (otherClass.isAssignableFrom(thisClass)) {
-        result = 1;
-      } else if (o1.equals(o2)) {
-        result = 0;
-      }
-      return result;
+  private static final Comparator<ITestNGMethod> COMPARATOR = (o1, o2) -> {
+    int result = -2;
+    Class<?> thisClass = o1.getRealClass();
+    Class<?> otherClass = o2.getRealClass();
+    if (thisClass.isAssignableFrom(otherClass)) {
+      result = -1;
+    } else if (otherClass.isAssignableFrom(thisClass)) {
+      result = 1;
+    } else if (o1.equals(o2)) {
+      result = 0;
     }
+    return result;
   };
 
   /**
@@ -194,13 +191,10 @@ public class MethodInheritance {
   /**
    * Given a list of methods belonging to the same class hierarchy, orders them
    * from the base class to the child (if true) or from child to base class (if false)
-   * @param methods
    */
-  private static void sortMethodsByInheritance(List<ITestNGMethod> methods,
-      boolean baseClassToChild)
-  {
-    Collections.sort(methods, COMPARATOR);
-    if (! baseClassToChild) {
+  private static void sortMethodsByInheritance(List<ITestNGMethod> methods, boolean baseClassToChild) {
+    methods.sort(COMPARATOR);
+    if (!baseClassToChild) {
       Collections.reverse(methods);
     }
   }

@@ -5,7 +5,6 @@ import org.testng.collections.Maps;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -61,10 +60,8 @@ public class Parser {
 
   /**
    * Creates a parser that will try to find the DEFAULT_FILENAME from the jar.
-   * @throws FileNotFoundException if the DEFAULT_FILENAME resource is not
-   * found in the classpath.
    */
-  public Parser() throws FileNotFoundException {
+  public Parser() {
     init(null, null);
   }
 

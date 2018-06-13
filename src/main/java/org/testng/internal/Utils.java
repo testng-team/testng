@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
-import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -96,7 +95,7 @@ public final class Utils {
       //      result = line.split(" ");
     }
 
-    return vResult.toArray(new String[vResult.size()]);
+    return vResult.toArray(new String[0]);
   }
 
   public static void writeUtf8File(@Nullable String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
@@ -186,31 +185,18 @@ public final class Utils {
   }
 
   private static void writeFile(File outputFile, String sb, @Nullable String encoding) {
-    BufferedWriter fw = null;
-    try {
-      fw = openWriter(outputFile, encoding);
+    try (BufferedWriter fw = openWriter(outputFile, encoding)) {
       fw.write(sb);
 
       Utils.log("", 3, "Creating " + outputFile.getAbsolutePath());
-    }
-    catch(IOException ex) {
+    } catch (IOException ex) {
       if (TestRunner.getVerbose() > 1) {
-        LOG.error("ERROR WHILE WRITING TO " + outputFile,ex);
-      }
-      else {
+        LOG.error("ERROR WHILE WRITING TO " + outputFile, ex);
+      } else {
         log(FORMAT, 1, "Error while writing to " + outputFile + ": " + ex.getMessage());
       }
     }
-    finally {
-      try {
-        if (fw != null) {
-          fw.close();
-        }
-      }
-      catch (IOException e) {
-        // ignore
-      }
-    }
+    // ignore
   }
 
   /**
@@ -286,84 +272,17 @@ public final class Utils {
     // Collect groups on the class
     ITestAnnotation tc = AnnotationHelper.findTest(finder, cls);
     if (null != tc) {
-      for (String group : tc.getDependsOnGroups()) {
-        vResult.add(group);
-      }
+      vResult.addAll(Arrays.asList(tc.getDependsOnGroups()));
     }
 
     // Collect groups on the method
     ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
     if (null != tm) {
       String[] groups = tm.getDependsOnGroups();
-
-      for (String group : groups) {
-        vResult.add(group);
-      }
+      vResult.addAll(Arrays.asList(groups));
     }
 
-    return vResult.toArray(new String[vResult.size()]);
-  }
-
-  /**
-   * @deprecated Unused
-   */
-  @Deprecated
-  public static String[] groupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
-    List<String> vResult = Lists.newArrayList();
-    Class<?> cls = m.getDeclaringClass();
-
-    // Collect groups on the class
-    ITestAnnotation tc = AnnotationHelper.findTest(finder, cls);
-    if (null != tc) {
-      for (String group : tc.getGroups()) {
-        vResult.add(group);
-      }
-    }
-
-    // Collect groups on the method
-    ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
-    if (null != tm) {
-      String[] groups = tm.getGroups();
-
-      for (String group : groups) {
-        vResult.add(group);
-      }
-    }
-
-    return vResult.toArray(new String[vResult.size()]);
-  }
-
-  /**
-   * @deprecated Unused
-   */
-  @Deprecated
-  public static String[] groupsForThisMethodForConfiguration(Method m, IAnnotationFinder finder) {
-    String[] result = {};
-
-    // Collect groups on the method
-    ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
-    if (null != tm) {
-      result = tm.getGroups();
-    }
-
-    return result;
-  }
-
-  /**
-   * @deprecated Unused
-   */
-  @Deprecated
-  public static String[] dependentGroupsForThisMethodForConfiguration(Method m,
-                                                                      IAnnotationFinder finder) {
-    String[] result = {};
-
-    // Collect groups on the method
-    IConfigurationAnnotation tm = AnnotationHelper.findConfiguration(finder, m);
-    if (null != tm) {
-      result = tm.getDependsOnGroups();
-    }
-
-    return result;
+    return vResult.toArray(new String[0]);
   }
 
   public static void log(String msg) {
@@ -429,7 +348,7 @@ public final class Utils {
 
     strings.add(string.substring(start).trim());
 
-    return strings.toArray(new String[strings.size()]);
+    return strings.toArray(new String[0]);
   }
 
   /**
@@ -699,7 +618,7 @@ public final class Utils {
   }
 
   public static String arrayToString(String[] strings) {
-    StringBuilder result = new StringBuilder("");
+    StringBuilder result = new StringBuilder();
     if ((strings != null) && (strings.length > 0)) {
       for (int i = 0; i < strings.length; i++) {
         result.append(strings[i]);

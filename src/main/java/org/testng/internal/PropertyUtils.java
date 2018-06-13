@@ -81,7 +81,7 @@ public class PropertyUtils {
 
     Method method = propDesc.getWriteMethod();
     try {
-      method.invoke(instance, new Object[]{value});
+      method.invoke(instance, value);
     } catch (IllegalAccessException | InvocationTargetException iae) {
       LOGGER.warn("Cannot set property " + name + " with value " + value + ". Cause " + iae);
     }

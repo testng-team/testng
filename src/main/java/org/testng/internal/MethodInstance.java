@@ -92,13 +92,4 @@ public class MethodInstance implements IMethodInstance {
     }
   };
 
-//  public static final Comparator<IMethodInstance> SORT_BY_CLASS
-//    = new Comparator<IMethodInstance>() {
-//    public int compare(IMethodInstance o1, IMethodInstance o2) {
-//      int result= o1.getMethod().getTestClass().getName()
-//        .compareTo(o2.getMethod().getTestClass().getName());
-//      return result;
-//    }
-//  };
-
 }

@@ -98,14 +98,7 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  /**
-   * @param result
-   * @param tm
-   * @return true if a method by a similar name (and same hierarchy) already
-   *         exists
-   */
-  private static boolean isMethodAlreadyPresent(List<ITestNGMethod> result,
-      ITestNGMethod tm) {
+  private static boolean isMethodAlreadyPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
     for (ITestNGMethod m : result) {
       ConstructorOrMethod jm1 = m.getConstructorOrMethod();
       ConstructorOrMethod jm2 = tm.getConstructorOrMethod();
@@ -150,11 +143,10 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  protected static void findGroupTransitiveClosure(XmlMethodSelector xms,
-      List<ITestNGMethod> includedMethods,
-      List<ITestNGMethod> allMethods,
-      String[] includedGroups,
-      Set<String> outGroups, Set<ITestNGMethod> outMethods)
+  protected static void findGroupTransitiveClosure(List<ITestNGMethod> includedMethods,
+                                                   List<ITestNGMethod> allMethods,
+                                                   String[] includedGroups,
+                                                   Set<String> outGroups, Set<ITestNGMethod> outMethods)
   {
     Map<ITestNGMethod, ITestNGMethod> runningMethods = Maps.newHashMap();
     for (ITestNGMethod m : includedMethods) {
@@ -184,7 +176,7 @@ public class MethodGroupsHelper {
             runningGroups.put(g, g);
             ITestNGMethod[] im =
               MethodGroupsHelper.findMethodsThatBelongToGroup(m,
-                    allMethods.toArray(new ITestNGMethod[allMethods.size()]), g);
+                    allMethods.toArray(new ITestNGMethod[0]), g);
             for (ITestNGMethod thisMethod : im) {
               if (! runningMethods.containsKey(thisMethod)) {
                 runningMethods.put(thisMethod, thisMethod);
@@ -281,7 +273,7 @@ public class MethodGroupsHelper {
       }
     }
 
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+    return vResult.toArray(new ITestNGMethod[0]);
   }
 
   private static Boolean isMatch(Pattern pattern, String group) {

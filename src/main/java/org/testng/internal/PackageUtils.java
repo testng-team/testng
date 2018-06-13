@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
@@ -17,7 +16,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 
-import org.testng.TestNG;
 import org.testng.collections.Lists;
 
 /**
@@ -135,7 +133,7 @@ public class PackageUtils {
       }
     }
 
-    return vResult.toArray(new String[vResult.size()]);
+    return vResult.toArray(new String[0]);
   }
 
   private static String[] getTestClasspath() {
@@ -213,14 +211,9 @@ public class PackageUtils {
       return;
     }
 
-    File[] dirfiles = dir.listFiles(new FileFilter() {
-          @Override
-          public boolean accept(File file) {
-            return (recursive && file.isDirectory())
-              || (file.getName().endsWith(".class"))
-              || (file.getName().endsWith(".groovy"));
-          }
-        });
+    File[] dirfiles = dir.listFiles(file -> (recursive && file.isDirectory())
+      || (file.getName().endsWith(".class"))
+      || (file.getName().endsWith(".groovy")));
 
     Utils.log(PACKAGE_UTILS, 4, "Looking for test classes in the directory: " + dir);
     if (dirfiles == null) {
