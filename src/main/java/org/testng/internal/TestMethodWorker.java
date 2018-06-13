@@ -161,11 +161,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //DO NOT REMOVE THIS SYNC LOCK.
     synchronized (testClass) { //NOSONAR
       Map<ITestClass, Set<Object>> invokedBeforeClassMethods = m_classMethodMap.getInvokedBeforeClassMethods();
-      Set<Object> instances = invokedBeforeClassMethods.computeIfAbsent(testClass, key -> {
-        Set<Object> set = Sets.newHashSet();
-        invokedBeforeClassMethods.put(key, set);
-        return set;
-      });
+      Set<Object> instances = invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
       Object instance = mi.getInstance();
       if (!instances.contains(instance)) {
         instances.add(instance);
@@ -202,11 +198,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       return;
     }
     Map<ITestClass, Set<Object>> invokedAfterClassMethods = m_classMethodMap.getInvokedAfterClassMethods();
-    Set<Object> instances = invokedAfterClassMethods.computeIfAbsent(testClass, key -> {
-      Set<Object> set = Sets.newHashSet();
-      invokedAfterClassMethods.put(key, set);
-      return set;
-    });
+    Set<Object> instances = invokedAfterClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
     Object inst = mi.getInstance();
     if (!instances.contains(inst)) {
       invokeInstances.add(inst);

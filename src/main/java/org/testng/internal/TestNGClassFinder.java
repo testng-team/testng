@@ -297,15 +297,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   // Class<S> should be replaced by Class<? extends T> but java doesn't fail as expected
   // See: https://github.com/cbeust/testng/issues/1070
   private <T, S extends T> void addInstance(Class<S> clazz, T instance) {
-    List<Object> instances =
-        m_instanceMap.computeIfAbsent(
-            clazz,
-            key -> {
-              List<Object> list = Lists.newArrayList();
-              m_instanceMap.put(key, list);
-              return list;
-            });
-
+    List<Object> instances = m_instanceMap.computeIfAbsent(clazz, key -> Lists.newArrayList());
     instances.add(instance);
   }
 }
