@@ -4,6 +4,7 @@ import static org.testng.internal.Utils.isStringBlank;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
@@ -74,6 +75,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private List<ITestNGMethod> allTestMethods = Lists.newArrayList();
   private SuiteRunState suiteState = new SuiteRunState();
   private IAttributes attributes = new Attributes();
+  private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   public SuiteRunner(IConfiguration configuration, XmlSuite suite, String outputDir,
       Comparator<ITestNGMethod> comparator) {
@@ -429,6 +431,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
+  private void addVisualiser(IExecutionVisualiser visualiser) {
+    visualisers.add(visualiser);
+  }
 
 
   private void addReporter(IReporter listener) {
@@ -450,6 +455,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   private void runTest(TestRunner tr) {
+    visualisers.forEach(tr::addListener);
     tr.run();
 
     ISuiteResult sr = new SuiteResult(xmlSuite, tr);
@@ -508,6 +514,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
     if (listener instanceof ISuiteListener) {
       addListener((ISuiteListener) listener);
+    }
+    if (listener instanceof IExecutionVisualiser) {
+      addVisualiser((IExecutionVisualiser) listener);
     }
     if (listener instanceof IReporter) {
       addReporter((IReporter) listener);
