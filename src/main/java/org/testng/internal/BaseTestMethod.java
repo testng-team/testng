@@ -456,11 +456,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
       String name = e.getKey();
       String dependsOn = e.getValue();
-      Set<String> set = result.computeIfAbsent(name, s -> {
-        Set<String> tempSet = Sets.newHashSet();
-        result.put(s, tempSet);
-        return tempSet;
-      });
+      Set<String> set = result.computeIfAbsent(name, s -> Sets.newHashSet());
       set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
     }
 
