@@ -94,11 +94,7 @@ public class Reporter {
     // synchronization needed to ensure the line number and m_output are updated atomically
     int n = getOutput().size();
 
-    List<Integer> lines = m_methodOutputMap.get(m.hashCode());
-    if (lines == null) {
-      lines = Lists.newArrayList();
-      m_methodOutputMap.put(m.hashCode(), lines);
-    }
+    List<Integer> lines = m_methodOutputMap.computeIfAbsent(m.hashCode(), k -> Lists.newArrayList());
 
     // Check if there was already some orphaned output for the current thread.
     if (m_orphanedOutput.get() != null) {

@@ -22,6 +22,6 @@ public interface IParametersAnnotation extends IAnnotation {
    * &lt;parameter name="xmlPath" value="account.xml" /&gt;<br>
    * </code>
    */
-  public String[] getValue();
+  String[] getValue();
 
 }

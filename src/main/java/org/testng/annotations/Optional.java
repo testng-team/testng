@@ -24,5 +24,5 @@ public @interface Optional {
    * to your code, and not the string "null", if you do not specify
    * a default value here in this parameter.
    */
-  public String value() default Parameters.NULL_VALUE;
+  String value() default Parameters.NULL_VALUE;
 }

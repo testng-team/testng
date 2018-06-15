@@ -12,12 +12,12 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /**
    * Whether methods on this class/method are enabled.
    */
-  public boolean getEnabled();
+  boolean getEnabled();
 
   /**
    * The list of groups this class/method belongs to.
    */
-  public String[] getGroups();
+  String[] getGroups();
 
   /**
    * The list of groups this method depends on.  Every method
@@ -26,7 +26,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    * methods was not a SUCCESS, this test method will not be
    * run and will be flagged as a SKIP.
    */
-  public String[] getDependsOnGroups();
+  String[] getDependsOnGroups();
 
   /**
    * The list of methods this method depends on.  There is no guarantee
@@ -39,7 +39,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    *  If some of these methods have been overloaded, all the overloaded
    *  versions will be run.
    */
-  public String[] getDependsOnMethods();
+  String[] getDependsOnMethods();
 
   /**
    *  For before methods (beforeSuite, beforeTest, beforeTestClass and
@@ -52,18 +52,18 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    *  even if one or more methods invoked previously failed or
    *  was skipped.
    */
-  public boolean getAlwaysRun();
+  boolean getAlwaysRun();
 
   /**
    * If true, this &#64;Configuration method will belong to groups specified in the
    * &#64;Test annotation on the class (if any).
    */
-  public boolean getInheritGroups();
+  boolean getInheritGroups();
 
   /**
    * The description for this method.  The string used will appear in the
    * HTML report and also on standard output if verbose >= 2.
    */
-  public String getDescription();
+  String getDescription();
 
 }

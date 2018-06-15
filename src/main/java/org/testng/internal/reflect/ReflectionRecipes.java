@@ -298,37 +298,37 @@ public final class ReflectionRecipes {
    * @return Injects free array of class instances.
    */
   public static Parameter[] filter(final Parameter[] parameters, final Set<InjectableParameter> filters) {
-    if (filters != null && !filters.isEmpty()) {
-      boolean firstMethodFiltered = false;
-      final List<Parameter> filterList = new ArrayList<>(parameters.length);
-      for (final Parameter parameter : parameters) {
-        boolean omit = false;
-        for (final InjectableParameter injectableParameter : filters) {
-          omit = canInject(parameter, injectableParameter);
-          switch (injectableParameter) {
-            case CURRENT_TEST_METHOD:
-              if (omit && !firstMethodFiltered) {
-                firstMethodFiltered = true;
-              } else {
-                omit = false;
-              }
-              break;
-            default:
-              break;
-          }
-          if (omit) {
-            break;
-          }
-        }
-        if (!omit) {
-          filterList.add(parameter);
-        }
-      }
-      final Parameter[] filteredArray = new Parameter[filterList.size()];
-      return filterList.toArray(filteredArray);
-    } else {
+    boolean proceed = filters != null && !filters.isEmpty();
+    if (!proceed) {
       return parameters;
     }
+    boolean firstMethodFiltered = false;
+    final List<Parameter> filterList = new ArrayList<>(parameters.length);
+    for (final Parameter parameter : parameters) {
+      boolean omit = false;
+      for (final InjectableParameter injectableParameter : filters) {
+        omit = canInject(parameter, injectableParameter);
+        switch (injectableParameter) {
+          case CURRENT_TEST_METHOD:
+            if (omit && !firstMethodFiltered) {
+              firstMethodFiltered = true;
+            } else {
+              omit = false;
+            }
+            break;
+          default:
+            break;
+        }
+        if (omit) {
+          break;
+        }
+      }
+      if (!omit) {
+        filterList.add(parameter);
+      }
+    }
+    final Parameter[] filteredArray = new Parameter[filterList.size()];
+    return filterList.toArray(filteredArray);
   }
 
   /**

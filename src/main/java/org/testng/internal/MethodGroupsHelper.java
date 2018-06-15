@@ -124,11 +124,7 @@ public class MethodGroupsHelper {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
         for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
-          List<ITestNGMethod> methodList = result.get(group);
-          if (methodList == null) {
-            methodList = Lists.newArrayList();
-            result.put(group, methodList);
-          }
+          List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> Lists.newArrayList());
           // NOTE(cbeust, 2007/01/23)
           // BeforeGroups/AfterGroups methods should only be invoked once.
           // I should probably use a map instead of a list for a contains(), but

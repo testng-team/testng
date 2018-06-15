@@ -2,7 +2,6 @@ package org.testng.internal.invokers;
 
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
-import org.testng.IInvokedMethodListener2;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Maps;
@@ -15,8 +14,7 @@ import static org.testng.internal.invokers.InvokedMethodListenerSubtype.EXTENDED
 import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_LISTENER;
 
 /**
- * Hides complexity of calling methods of {@link IInvokedMethodListener} and
- * {@link IInvokedMethodListener2}.
+ * Hides complexity of calling methods of {@link IInvokedMethodListener}
  *
  * @author Ansgar Konermann
  */
@@ -33,7 +31,7 @@ public class InvokedMethodListenerInvoker {
    * @param listenerMethod method which should be called
    * @param testResult test result which should be passed to the listener method upon invocation
    * @param testContext test context which should be passed to the listener method upon invocation.
-   *        This parameter is only used when calling methods on an {@link IInvokedMethodListener2}.
+   *        This parameter is only used when calling methods on an {@link IInvokedMethodListener}.
    */
   public InvokedMethodListenerInvoker(InvokedMethodListenerMethod listenerMethod,
                                       ITestResult testResult, ITestContext testContext) {
@@ -50,8 +48,8 @@ public class InvokedMethodListenerInvoker {
    * @param invokedMethod the {@link IInvokedMethod} instance which should be passed to the
    *        {@link IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult)},
    *        {@link IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult)},
-   *        {@link IInvokedMethodListener2#beforeInvocation(IInvokedMethod, ITestResult, ITestContext)}
-   *        or {@link IInvokedMethodListener2#afterInvocation(IInvokedMethod, ITestResult, ITestContext)}
+   *        {@link IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult, ITestContext)}
+   *        or {@link IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult, ITestContext)}
    *        method.
    */
 
@@ -68,11 +66,10 @@ public class InvokedMethodListenerInvoker {
         .fromListener(listenerInstance);
     Map<InvokedMethodListenerMethod, InvocationStrategy> strategiesForListenerType = strategies
         .get(invokedMethodListenerSubtype);
-    InvocationStrategy invocationStrategy = strategiesForListenerType.get(listenerMethod);
-    return invocationStrategy;
+    return strategiesForListenerType.get(listenerMethod);
   }
 
-  private static interface InvocationStrategy<LISTENER_TYPE extends IInvokedMethodListener> {
+  private interface InvocationStrategy<LISTENER_TYPE extends IInvokedMethodListener> {
     void callMethod(LISTENER_TYPE listener, IInvokedMethod invokedMethod, ITestResult testResult,
         ITestContext testContext);
   }

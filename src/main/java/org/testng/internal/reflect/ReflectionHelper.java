@@ -15,26 +15,24 @@ public class ReflectionHelper {
    * implements).
    */
   public static Method[] getLocalMethods(Class<?> clazz) {
-    Method[] result;
     Method[] declaredMethods = excludingMain(clazz);
     List<Method> defaultMethods = getDefaultMethods(clazz);
-    if (defaultMethods != null) {
-      result = new Method[declaredMethods.length + defaultMethods.size()];
-      System.arraycopy(declaredMethods, 0, result, 0, declaredMethods.length);
-      int index = declaredMethods.length;
-      for (Method defaultMethod : defaultMethods) {
-        result[index] = defaultMethod;
-        index++;
-      }
-    }
-    else {
+    if (defaultMethods == null) {
       List<Method> prunedMethods = Lists.newArrayList();
       for (Method declaredMethod : declaredMethods) {
         if (!declaredMethod.isBridge()) {
           prunedMethods.add(declaredMethod);
         }
       }
-      result = prunedMethods.toArray(new Method[0]);
+      return prunedMethods.toArray(new Method[0]);
+
+    }
+    Method[] result = new Method[declaredMethods.length + defaultMethods.size()];
+    System.arraycopy(declaredMethods, 0, result, 0, declaredMethods.length);
+    int index = declaredMethods.length;
+    for (Method defaultMethod : defaultMethods) {
+      result[index] = defaultMethod;
+      index++;
     }
     return result;
   }

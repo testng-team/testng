@@ -15,18 +15,18 @@ public @interface AfterGroups {
    * after the last test method that belongs to any of these groups is
    * invoked.
    */
-  public String[] value() default {};
+  String[] value() default {};
 
   /**
    * Whether methods on this class/method are enabled.
    */
-  public boolean enabled() default true;
+  boolean enabled() default true;
 
   /**
    * The list of groups this class/method belongs to. The list also describes the groups
    * that this configuration method will be run after (if no {@link #value()} attribute is defined).
    */
-  public String[] groups() default {};
+  String[] groups() default {};
 
   /**
    * The list of groups this method depends on.  Every method
@@ -35,7 +35,7 @@ public @interface AfterGroups {
    * methods was not a SUCCESS, this test method will not be
    * run and will be flagged as a SKIP.
    */
-  public String[] dependsOnGroups() default {};
+  String[] dependsOnGroups() default {};
 
   /**
    * The list of methods this method depends on.  There is no guarantee
@@ -48,7 +48,7 @@ public @interface AfterGroups {
    *  If some of these methods have been overloaded, all the overloaded
    *  versions will be run.
    */
-  public String[] dependsOnMethods() default {};
+  String[] dependsOnMethods() default {};
 
   /**
    *  For before methods (beforeSuite, beforeTest, beforeTestClass and
@@ -61,24 +61,24 @@ public @interface AfterGroups {
    *  even if one or more methods invoked previously failed or
    *  was skipped.
    */
-  public boolean alwaysRun() default false;
+  boolean alwaysRun() default false;
 
   /**
    * If true, this &#64;Configuration method will belong to groups specified in the
    * &#64;Test annotation on the class (if any).
    */
-  public boolean inheritGroups() default true;
+  boolean inheritGroups() default true;
 
   /**
    * The description for this method.  The string used will appear in the
    * HTML report and also on standard output if verbose >= 2.
    */
-  public String description() default "";
+  String description() default "";
 
   /**
    * The maximum number of milliseconds this method should take.
    * If it hasn't returned after this time, this method will fail and
    * it will cause test methods depending on it to be skipped.
    */
-  public long timeOut() default 0;
+  long timeOut() default 0;
 }
