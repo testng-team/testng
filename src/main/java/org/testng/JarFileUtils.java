@@ -62,7 +62,6 @@ class JarFileUtils {
     }
 
     private boolean testngXmlExistsInJar(File jarFile, List<String> classes) throws IOException {
-        boolean foundTestngXml = false;
         try (JarFile jf = new JarFile(jarFile)) {
             Enumeration<JarEntry> entries = jf.entries();
             File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
@@ -83,9 +82,9 @@ class JarFileUtils {
                 }
             }
             if (Strings.isNullOrEmpty(suitePath)) {
-                return foundTestngXml;
+                return false;
             }
-            Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor); 
+            Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor);
             for (XmlSuite suite : parsedSuites) {
                 // If test names were specified, only run these test names
                 if (testNames != null) {
@@ -101,7 +100,7 @@ class JarFileUtils {
                 return true;
               }
         }
-        return foundTestngXml;
+        return false;
     }
 
     private boolean matchesXmlPathInJar(JarEntry je) {

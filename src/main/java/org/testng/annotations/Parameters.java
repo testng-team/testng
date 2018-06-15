@@ -31,5 +31,5 @@ public @interface Parameters {
    * &lt;parameter name="xmlPath" value="account.xml" /&gt;<br>
    * </code>
    */
-  public String[] value() default {};
+  String[] value() default {};
 }

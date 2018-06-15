@@ -18,15 +18,15 @@ import org.testng.internal.ConstructorOrMethod;
 public interface IAnnotationFinder {
 
   /**
-   * @param cls
-   * @param annotationClass
+   * @param cls - The corresponding class.
+   * @param annotationClass - The class on which annotation is to be looked for.
    * @return The annotation on the class or null if none found.
    */
-  public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass);
+  <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass);
 
   /**
-   * @param m
-   * @param annotationClass
+   * @param m - The corresponding {@link Method}
+   * @param annotationClass - The class on which annotation is to be looked for.
    * @return The annotation on the method.
    * If not found, return the annotation on the declaring class.
    * If not found, return null.
@@ -37,28 +37,28 @@ public interface IAnnotationFinder {
   <A extends IAnnotation> A findAnnotation(Class<?> clazz, Method m, java.lang.Class<A> annotationClass);
 
   /**
-   * @param cons
-   * @param annotationClass
+   * @param cons - The corresponding {@link Constructor}
+   * @param annotationClass - The class on which annotation is to be looked for.
    * @return The annotation on the method.
    * If not found, return the annotation on the declaring class.
    * If not found, return null.
    */
-  public <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass);
+  <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass);
 
   /**
    * @return true if the ith parameter of the given method has the annotation @TestInstance.
    */
-  public boolean hasTestInstance(Method method, int i);
+  boolean hasTestInstance(Method method, int i);
 
   /**
    * @return the @Optional values of this method's parameters (<code>null</code>
    * if the parameter isn't optional)
    */
-  public String[] findOptionalValues(Method method);
+  String[] findOptionalValues(Method method);
 
   /**
    * @return the @Optional values of this method's parameters (<code>null</code>
    * if the parameter isn't optional)
    */
-  public String[] findOptionalValues(Constructor ctor);
+  String[] findOptionalValues(Constructor ctor);
 }

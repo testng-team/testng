@@ -97,9 +97,6 @@ public class TestListenerAdapter implements IResultListener2 {
     return new ArrayList<>(m_skippedTests);
   }
 
-  private static void ppp(String s) {
-    System.out.println("[TestListenerAdapter] " + s);
-  }
   /**
    * @param allTestMethods The allTestMethods to set.
    */

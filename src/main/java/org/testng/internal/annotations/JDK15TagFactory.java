@@ -2,11 +2,11 @@ package org.testng.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -43,8 +43,7 @@ import org.testng.internal.collections.Ints;
  */
 public class JDK15TagFactory {
 
-  public <A extends IAnnotation> A createTag(Class<?> cls, Method method, Annotation a,
-                                             Class<A> annotationClass, IAnnotationTransformer transformer) {
+  public <A extends IAnnotation> A createTag(Class<?> cls, Method method, Annotation a, Class<A> annotationClass) {
     IAnnotation result = null;
 
     if (a != null) {
@@ -58,13 +57,13 @@ public class JDK15TagFactory {
         result = createParametersTag(a);
       }
       else if (annotationClass == IObjectFactoryAnnotation.class) {
-        result = createObjectFactoryTag(a);
+        result = createObjectFactoryTag();
       }
       else if (annotationClass == ITestAnnotation.class) {
-        result = createTestTag(cls, a, transformer);
+        result = createTestTag(cls, a);
       }
       else if (annotationClass == IListenersAnnotation.class) {
-        result = createListenersTag(cls, a, transformer);
+        result = createListenersTag(a);
       }
       else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class ||
           annotationClass == IBeforeTest.class || annotationClass == IAfterTest.class ||
@@ -72,7 +71,7 @@ public class JDK15TagFactory {
           annotationClass == IBeforeClass.class || annotationClass == IAfterClass.class ||
           annotationClass == IBeforeMethod.class || annotationClass == IAfterMethod.class)
       {
-        result = maybeCreateNewConfigurationTag(cls, a, annotationClass);
+        result = maybeCreateNewConfigurationTag(a, annotationClass);
       }
 
       else {
@@ -84,15 +83,15 @@ public class JDK15TagFactory {
     return (A) result;
   }
 
-  private IAnnotation maybeCreateNewConfigurationTag(Class<?> cls, Annotation a,
-      Class<?> annotationClass)
+  private IAnnotation maybeCreateNewConfigurationTag(Annotation a,
+                                                     Class<?> annotationClass)
   {
     IAnnotation result = null;
 
     if (annotationClass == IBeforeSuite.class) {
       BeforeSuite bs = (BeforeSuite) a;
-      result = createConfigurationTag(cls, a,
-          true, false,
+      result = createConfigurationTag(
+              true, false,
           false, false,
           new String[0], new String[0],
           false, false,
@@ -106,8 +105,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IAfterSuite.class) {
       AfterSuite bs = (AfterSuite) a;
-      result = createConfigurationTag(cls, a,
-          false, true,
+      result = createConfigurationTag(
+              false, true,
           false, false,
           new String[0], new String[0],
           false, false,
@@ -121,8 +120,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IBeforeTest.class) {
       BeforeTest bs = (BeforeTest) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           true, false,
           new String[0], new String[0],
           false, false,
@@ -136,8 +135,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IAfterTest.class) {
       AfterTest bs = (AfterTest) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, true,
           new String[0], new String[0],
           false, false,
@@ -152,8 +151,8 @@ public class JDK15TagFactory {
     else if (annotationClass == IBeforeGroups.class) {
       BeforeGroups bs = (BeforeGroups) a;
       final String[] groups= bs.value().length > 0 ? bs.value() : bs.groups();
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, false,
           groups, new String[0],
           false, false,
@@ -168,8 +167,8 @@ public class JDK15TagFactory {
     else if (annotationClass == IAfterGroups.class) {
       AfterGroups bs = (AfterGroups) a;
       final String[] groups= bs.value().length > 0 ? bs.value() : bs.groups();
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, false,
           new String[0], groups,
           false, false,
@@ -183,8 +182,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IBeforeClass.class) {
       BeforeClass bs = (BeforeClass) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, false,
           new String[0], new String[0],
           true, false,
@@ -198,8 +197,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IAfterClass.class) {
       AfterClass bs = (AfterClass) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, false,
           new String[0], new String[0],
           false, true,
@@ -213,8 +212,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IBeforeMethod.class) {
       BeforeMethod bs = (BeforeMethod) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, false,
           new String[0], new String[0],
           false, false,
@@ -228,8 +227,8 @@ public class JDK15TagFactory {
     }
     else if (annotationClass == IAfterMethod.class) {
       AfterMethod bs = (AfterMethod) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
+      result = createConfigurationTag(
+              false, false,
           false, false,
           new String[0], new String[0],
           false, false,
@@ -245,18 +244,17 @@ public class JDK15TagFactory {
     return result;
   }
 
-  private IAnnotation createConfigurationTag(Class<?> cls, Annotation a,
-      boolean beforeSuite, boolean afterSuite,
-      boolean beforeTest, boolean afterTest,
-      String[] beforeGroups, String[] afterGroups,
-      boolean beforeClass, boolean afterClass,
-      boolean beforeMethod, boolean afterMethod,
-      boolean alwaysRun,
-      String[] dependsOnGroups, String[] dependsOnMethods,
-      String description, boolean enabled, String[] groups,
-      boolean inheritGroups, String[] parameters,
-      boolean firstTimeOnly, boolean lastTimeOnly,
-      long timeOut, String[] groupFilters)
+  private IAnnotation createConfigurationTag(boolean beforeSuite, boolean afterSuite,
+                                             boolean beforeTest, boolean afterTest,
+                                             String[] beforeGroups, String[] afterGroups,
+                                             boolean beforeClass, boolean afterClass,
+                                             boolean beforeMethod, boolean afterMethod,
+                                             boolean alwaysRun,
+                                             String[] dependsOnGroups, String[] dependsOnMethods,
+                                             String description, boolean enabled, String[] groups,
+                                             boolean inheritGroups, String[] parameters,
+                                             boolean firstTimeOnly, boolean lastTimeOnly,
+                                             long timeOut, String[] groupFilters)
   {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     result.setFakeConfiguration(true);
@@ -315,7 +313,7 @@ public class JDK15TagFactory {
     return result;
   }
 
-  private IAnnotation createObjectFactoryTag(Annotation a) {
+  private IAnnotation createObjectFactoryTag() {
     return new ObjectFactoryAnnotation();
   }
 
@@ -327,9 +325,7 @@ public class JDK15TagFactory {
     return result;
   }
 
-  @SuppressWarnings({"deprecation"})
-  private IAnnotation createListenersTag(Class<?> cls, Annotation a,
-      IAnnotationTransformer transformer)
+  private IAnnotation createListenersTag(Annotation a)
   {
     ListenersAnnotation result = new ListenersAnnotation();
     Listeners l = (Listeners) a;
@@ -339,8 +335,7 @@ public class JDK15TagFactory {
   }
 
   @SuppressWarnings({"deprecation"})
-  private IAnnotation createTestTag(Class<?> cls, Annotation a,
-      IAnnotationTransformer transformer)
+  private IAnnotation createTestTag(Class<?> cls, Annotation a)
   {
     TestAnnotation result = new TestAnnotation();
     Test test = (Test) a;
@@ -358,8 +353,6 @@ public class JDK15TagFactory {
     result.setThreadPoolSize(test.threadPoolSize());
     result.setSuccessPercentage(test.successPercentage());
     result.setDataProvider(test.dataProvider());
-//    result.setDataProviderClass(test.dataProviderClass() != Object.class ?
-//        test.dataProviderClass() : null);
     result.setDataProviderClass(
         findInherited(test.dataProviderClass(), cls, Test.class, "dataProviderClass",
             DEFAULT_CLASS));
@@ -389,7 +382,7 @@ public class JDK15TagFactory {
       }
     }
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   /**
@@ -398,23 +391,13 @@ public class JDK15TagFactory {
    * hierarchy. We can't use null as a default since annotation don't allow
    * nulls, so each type has a different way of defining its own default.
    */
-  static interface Default<T> {
+  interface Default<T> {
     boolean isDefault(T t);
   }
 
-  private static final Default<Class<?>> DEFAULT_CLASS = new Default<Class<?>>() {
-    @Override
-    public boolean isDefault(Class<?> c) {
-      return c == Object.class;
-    }
-  };
+  private static final Default<Class<?>> DEFAULT_CLASS = c -> c == Object.class;
 
-  private static final Default<String> DEFAULT_STRING = new Default<String>() {
-    @Override
-    public boolean isDefault(String s) {
-      return Utils.isStringEmpty(s);
-    }
-  };
+  private static final Default<String> DEFAULT_STRING = Utils::isStringEmpty;
 
   /**
    * Find the value of an annotation, starting with the annotation found on the
@@ -464,31 +447,25 @@ public class JDK15TagFactory {
       Annotation annotation = cls.getAnnotation(annotationClass);
       if (annotation != null) {
         String[] g = (String[]) invokeMethod(annotation, methodName);
-        for (String s : g) {
-          result.add(s);
-        }
+        result.addAll(Arrays.asList(g));
       }
       cls = cls.getSuperclass();
     }
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   private Object invokeMethod(Annotation test, String methodName) {
     Object result = null;
     try {
       // Note:  we should cache methods already looked up
-      Method m = test.getClass().getMethod(methodName, new Class[0]);
-      result = m.invoke(test, new Object[0]);
+      Method m = test.getClass().getMethod(methodName);
+      result = m.invoke(test);
     }
     catch (Exception e) {
       e.printStackTrace();
     }
     return result;
-  }
-
-  private void ppp(String string) {
-    System.out.println("[JDK15TagFactory] " + string);
   }
 
 }

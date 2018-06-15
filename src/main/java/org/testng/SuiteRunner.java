@@ -469,11 +469,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       for (ITestNGMethod m : methods) {
         String[] groups = m.getGroups();
         for (String groupName : groups) {
-          Collection<ITestNGMethod> testMethods = result.get(groupName);
-          if (null == testMethods) {
-            testMethods = Lists.newArrayList();
-            result.put(groupName, testMethods);
-          }
+          Collection<ITestNGMethod> testMethods = result.computeIfAbsent(groupName, k -> Lists.newArrayList());
           testMethods.add(m);
         }
       }

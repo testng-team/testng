@@ -19,7 +19,7 @@ enum InvokedMethodListenerSubtype {
 
   private Class<? extends IInvokedMethodListener> m_matchingInterface;
 
-  private InvokedMethodListenerSubtype(Class<? extends IInvokedMethodListener> listenerClass) {
+  InvokedMethodListenerSubtype(Class<? extends IInvokedMethodListener> listenerClass) {
     m_matchingInterface = listenerClass;
   }
 

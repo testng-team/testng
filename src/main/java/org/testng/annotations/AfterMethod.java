@@ -11,7 +11,7 @@ public @interface AfterMethod {
   /**
    * Whether methods on this class/method are enabled.
    */
-  public boolean enabled() default true;
+  boolean enabled() default true;
 
   /**
    * The list of groups this class/method belongs to.
@@ -22,7 +22,7 @@ public @interface AfterMethod {
    * to select test method groups which this method will
    * be invoked after.
    */
-  public String[] groups() default {};
+  String[] groups() default {};
 
   /**
    * The list of groups this method depends on.  Every method
@@ -31,7 +31,7 @@ public @interface AfterMethod {
    * methods was not a SUCCESS, this test method will not be
    * run and will be flagged as a SKIP.
    */
-  public String[] dependsOnGroups() default {};
+  String[] dependsOnGroups() default {};
 
   /**
    * The list of methods this method depends on.  There is no guarantee
@@ -44,7 +44,7 @@ public @interface AfterMethod {
    *  If some of these methods have been overloaded, all the overloaded
    *  versions will be run.
    */
-  public String[] dependsOnMethods() default {};
+  String[] dependsOnMethods() default {};
 
   /**
    * Causes this method to be invoked only if the test method belongs to a listed group.
@@ -54,7 +54,7 @@ public @interface AfterMethod {
    * is only invoked if the test method that was invoked belongs to one of the groups
    * listed here.
    */
-  public String[] onlyForGroups() default {};
+  String[] onlyForGroups() default {};
 
   /**
    *  For before methods (beforeSuite, beforeTest, beforeTestClass and
@@ -67,30 +67,30 @@ public @interface AfterMethod {
    *  even if one or more test methods invoked previously failed or
    *  was skipped.
    */
-  public boolean alwaysRun() default false;
+  boolean alwaysRun() default false;
 
   /**
    * If true, this &#64;Configuration method will belong to groups specified in the
    * &#64;Test annotation on the class (if any).
    */
-  public boolean inheritGroups() default true;
+  boolean inheritGroups() default true;
 
   /**
    * The description for this method.  The string used will appear in the
    * HTML report and also on standard output if verbose >= 2.
    */
-  public String description() default "";
+  String description() default "";
 
   /**
    * If true and the @Test method that was just run has an invocationCount > 1, this
    * AfterMethod will only be invoked once (after the last test invocation).
    */
-  public boolean lastTimeOnly() default false;
+  boolean lastTimeOnly() default false;
 
   /**
    * The maximum number of milliseconds this method should take.
    * If it hasn't returned after this time, this method will fail and
    * it will cause test methods depending on it to be skipped.
    */
-  public long timeOut() default 0;
+  long timeOut() default 0;
 }

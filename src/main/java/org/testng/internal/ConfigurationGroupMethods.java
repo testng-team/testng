@@ -95,11 +95,7 @@ public class ConfigurationGroupMethods {
     for(ITestNGMethod m : m_allMethods) {
       String[] groups= m.getGroups();
       for(String g : groups) {
-        List<ITestNGMethod> methodsInGroup= result.get(g);
-        if(null == methodsInGroup) {
-          methodsInGroup= Lists.newArrayList();
-          result.put(g, methodsInGroup);
-        }
+        List<ITestNGMethod> methodsInGroup= result.computeIfAbsent(g, key -> Lists.newArrayList());
         methodsInGroup.add(m);
       }
     }

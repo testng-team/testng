@@ -33,14 +33,10 @@ public abstract class BaseClassFinder implements ITestClassFinder {
                                       Object instance, IAnnotationFinder annotationFinder,
                                       ITestObjectFactory objectFactory)
   {
-    IClass result = m_classes.get(cls);
-    if (null == result) {
-      result = new ClassImpl(context, cls, xmlClass, instance, m_classes, annotationFinder,
-              objectFactory);
-      m_classes.put(cls, result);
-    }
 
-    return result;
+    return m_classes.computeIfAbsent(cls,
+            key -> new ClassImpl(context, key, xmlClass, instance, m_classes, annotationFinder,
+            objectFactory));
   }
 
   @Deprecated

@@ -28,11 +28,7 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
       if (!instanceList.contains(instance)) {
         instanceList.add(instance);
       }
-      List<IMethodInstance> l = map.get(instance);
-      if (l == null) {
-        l = Lists.newArrayList();
-        map.put(instance, l);
-      }
+      List<IMethodInstance> l = map.computeIfAbsent(instance, k -> Lists.newArrayList());
       l.add(mi);
     }
 
