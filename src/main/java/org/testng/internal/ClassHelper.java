@@ -432,10 +432,16 @@ public final class ClassHelper {
           + declaringClass.getName() + ": " + cause.getMessage(), cause);
     }
 
-    if (result == null && ! Modifier.isPublic(declaringClass.getModifiers())) {
+    boolean notPublic = ! Modifier.isPublic(declaringClass.getModifiers());
+    String suffix = "instantiated";
+
+    if (result == null) {
+      if (notPublic) {
+        suffix += "/accessed.";
+      }
       //result should not be null
       throw new TestNGException("An error occurred while instantiating class "
-          + declaringClass.getName() + ". Check to make sure it can be accessed/instantiated.");
+          + declaringClass.getName() + ". Check to make sure it can be " + suffix);
     }
 
     return result;
