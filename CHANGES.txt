@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1827: TestNG does not throw an error when a test class does not have a proper constructor (Krishnan Mahadevan)
 New  : Expose Graph Visualisation representation for users to build real-time debugging tools (Krishnan Mahadevan)
 Fixed: GITHUB-574: String cannot be cast to Integer if log property is set in maven pom.xml (Krishnan Mahadevan)
 Fixed: GITHUB-1402: TestNG reporting - Quickly identify Retry-d Tests (Krishnan Mahadevan)
