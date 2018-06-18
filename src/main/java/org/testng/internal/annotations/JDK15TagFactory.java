@@ -33,6 +33,7 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.internal.collections.Ints;
+import org.testng.log4testng.Logger;
 
 /**
  * This class creates implementations of IAnnotations based on the JDK5
@@ -463,7 +464,7 @@ public class JDK15TagFactory {
       result = m.invoke(test);
     }
     catch (Exception e) {
-      e.printStackTrace();
+      Logger.getLogger(JDK15TagFactory.class).error(e.getMessage(),e);
     }
     return result;
   }

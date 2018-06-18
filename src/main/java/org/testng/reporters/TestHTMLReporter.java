@@ -7,12 +7,11 @@ import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +67,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
       .append("</tr>\n");
 
     if (tests instanceof List) {
-      Collections.sort((List<ITestResult>) tests, comparator);
+      ((List<ITestResult>) tests).sort(comparator);
     }
 
     // User output?
@@ -317,7 +316,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
       writer.append("</body>\n</html>");
     } catch (IOException e) {
       if (TestRunner.getVerbose() > 1) {
-        e.printStackTrace();
+        Logger.getLogger(TestRunner.class).error(e.getMessage(),e);
       }
       else {
         ppp(e.getMessage());

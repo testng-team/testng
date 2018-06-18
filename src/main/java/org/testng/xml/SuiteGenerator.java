@@ -49,25 +49,4 @@ public class SuiteGenerator {
     return result;
   }
 
-  /**
-   * @deprecated use {@link #createSuite(String, java.util.Collection, java.util.Map,
-   * java.util.Collection, java.util.Map, String, int)} instead.
-   */
-  @Deprecated
-  public static LaunchSuite createCustomizedSuite(String projectName,
-      Collection<String> packageNames, Collection<String> classNames,
-      Collection<String> methodNames, Collection<String> groupNames,
-      Map<String, String> parameters, String annotationType, int logLevel) {
-    if ((null != groupNames) && !groupNames.isEmpty()) {
-      return new LaunchSuite.ClassListSuite(projectName, packageNames, classNames, groupNames,
-          parameters, annotationType, logLevel);
-    } else if ((classNames != null && classNames.size() > 1) || packageNames != null
-        && packageNames.size() > 0) {
-      return new LaunchSuite.ClassListSuite(projectName, packageNames, classNames, groupNames,
-          parameters, annotationType, logLevel);
-    } else {
-      return new LaunchSuite.MethodsSuite(projectName, classNames.iterator().next(), methodNames,
-          parameters, annotationType, logLevel);
-    }
-  }
 }

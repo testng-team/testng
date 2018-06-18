@@ -13,6 +13,7 @@ import org.testng.Reporter;
 import org.testng.collections.Maps;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 import java.io.BufferedWriter;
@@ -21,7 +22,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +53,7 @@ public class SuiteHTMLReporter implements IReporter {
     try {
       HtmlHelper.generateStylesheet(outputDirectory);
     } catch (IOException e) {
-      //  TODO Propagate the exception properly.
-      e.printStackTrace();
+      Logger.getLogger(SuiteHTMLReporter.class).error(e.getMessage(),e);
     }
 
     for (ISuite suite : suites) {
@@ -312,15 +311,12 @@ public class SuiteHTMLReporter implements IReporter {
       Collection<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
       if (alphabetical) {
 	@SuppressWarnings({"unchecked"})
-	Comparator<? super ITestNGMethod>  alphabeticalComparator = new Comparator(){
-	  @Override
-	  public int compare(Object o1, Object o2) {
-	    IInvokedMethod m1 = (IInvokedMethod) o1;
-	    IInvokedMethod m2 = (IInvokedMethod) o2;
-	    return m1.getTestMethod().getMethodName().compareTo(m2.getTestMethod().getMethodName());
-	  }
-	};
-	Collections.sort((List) invokedMethods, alphabeticalComparator);
+	Comparator<? super ITestNGMethod>  alphabeticalComparator = (o1, o2) -> {
+    IInvokedMethod m1 = (IInvokedMethod) o1;
+    IInvokedMethod m2 = (IInvokedMethod) o2;
+    return m1.getTestMethod().getMethodName().compareTo(m2.getTestMethod().getMethodName());
+  };
+	((List) invokedMethods).sort(alphabeticalComparator);
       }
 
       SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
@@ -431,9 +427,8 @@ public class SuiteHTMLReporter implements IReporter {
       result.append("<td title=\"").append(s).append("\">");
       int open = s.lastIndexOf("(");
       int start = s.substring(0, open).lastIndexOf(".");
-//      int end = s.lastIndexOf(")");
       if (start >= 0) {
-        result.append(prefix).append(s.substring(start + 1, open));
+        result.append(prefix).append(s, start + 1, open);
       }
       else {
         result.append(prefix).append(s);
@@ -461,7 +456,7 @@ public class SuiteHTMLReporter implements IReporter {
         .append("<tr> <td align=\"center\"><b>Group name</b></td>")
         .append("<td align=\"center\"><b>Methods</b></td></tr>");
 
-      String[] groupNames = groups.keySet().toArray(new String[groups.size()]);
+      String[] groupNames = groups.keySet().toArray(new String[0]);
       Arrays.sort(groupNames);
       for (String group : groupNames) {
         Collection<ITestNGMethod> methods = groups.get(group);
@@ -627,7 +622,7 @@ public class SuiteHTMLReporter implements IReporter {
   }
 
   private ISuiteResult[] sortResults(Collection<ISuiteResult> r) {
-    ISuiteResult[] result = r.toArray(new ISuiteResult[r.size()]);
+    ISuiteResult[] result = r.toArray(new ISuiteResult[0]);
     Arrays.sort(result);
     return result;
   }

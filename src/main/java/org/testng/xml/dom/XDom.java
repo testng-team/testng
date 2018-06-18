@@ -4,6 +4,7 @@ import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.collections.Pair;
+import org.testng.log4testng.Logger;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,6 +21,7 @@ import java.util.List;
 public class XDom {
   private Document m_document;
   private ITagFactory m_tagFactory;
+  private static final Logger LOGGER = Logger.getLogger(XDom.class);
 
   public XDom(ITagFactory tagFactory, Document document) {
     m_tagFactory = tagFactory;
@@ -135,7 +137,7 @@ private void populateContent(Node item, Object object) {
       try {
         pair.first().invoke(bean, child.getTextContent());
       } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException | DOMException e) {
-        e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       }
     }
   }
@@ -144,7 +146,7 @@ private void populateContent(Node item, Object object) {
     Pair<Method, Wrapper> pair =
        Reflect.findSetterForTag(object.getClass(), nodeName, bean);
 
-    List<Object[]> allParameters = null;
+    List<Object[]> allParameters;
     if (pair != null) {
       Method m = pair.first();
       try {
@@ -159,11 +161,8 @@ private void populateContent(Node item, Object object) {
           m.invoke(object, p);
         }
         return true;
-      } catch (IllegalArgumentException e) {
-        System.out.println("Parameters: " + allParameters);
-        e.printStackTrace();
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        e.printStackTrace();
+      } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
@@ -193,7 +192,7 @@ private void populateContent(Node item, Object object) {
           foundMethod.invoke(object, value);
         }
       } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-        e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       }
     } else {
       e("Couldn't find setter method for property" + name + " on " + object.getClass());

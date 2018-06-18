@@ -6,6 +6,7 @@ import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.thread.TestNGThreadFactory;
+import org.testng.log4testng.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -59,7 +60,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         execute(worker);
       }
       catch(Exception ex) {
-        ex.printStackTrace();
+        Logger.getLogger(GraphThreadPoolExecutor.class).error(ex.getMessage(),ex);
       }
     }
   }

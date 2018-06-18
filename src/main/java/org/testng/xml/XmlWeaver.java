@@ -76,6 +76,13 @@ final class XmlWeaver {
         if (clazz.equals(CommentDisabledXmlWeaver.class.getName())) {
             return new CommentDisabledXmlWeaver();
         }
-        return null;
+        if (testMode) {
+            return null;
+        }
+        Class<?> clazzName = ClassHelper.forName(clazz);
+        if (ReflectionRecipes.isOrExtends(IWeaveXml.class, clazzName)) {
+            return ClassHelper.newInstance((Class<IWeaveXml>) clazzName);
+        }
+        throw new IllegalArgumentException(clazz + " does not implement " + IWeaveXml.class.getName());
     }
 }

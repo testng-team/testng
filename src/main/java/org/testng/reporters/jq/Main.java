@@ -6,6 +6,7 @@ import static org.testng.reporters.jq.BasePanel.D;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.reporters.Files;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
@@ -40,7 +41,7 @@ public class Main implements IReporter {
     new BannerPanel(m_model).generate(xsb);
 
     // All the panels selectable from the navigator
-    List<INavigatorPanel> panels = Arrays.<INavigatorPanel>asList(
+    List<INavigatorPanel> panels = Arrays.asList(
         new TestNgXmlPanel(m_model),
         new TestPanel(m_model),
         new GroupPanel(m_model),
@@ -89,8 +90,7 @@ public class Main implements IReporter {
         Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all); 
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(Main.class).error(e.getMessage(),e);
     }
   }
 }

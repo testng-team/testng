@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.log4testng.Logger;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +39,7 @@ public class ConversionUtils {
 
         result.add(ctor.newInstance(parameters));
       } catch (Exception ex) {
-        ex.printStackTrace();
+        Logger.getLogger(ConversionUtils.class).error(ex.getMessage(), ex);
       }
     }
     return result.toArray();

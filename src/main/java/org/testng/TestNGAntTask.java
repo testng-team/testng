@@ -38,6 +38,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
 
 import static java.lang.Boolean.TRUE;
@@ -159,7 +160,9 @@ public class TestNGAntTask extends Task {
       //lower-case to better look in build scripts
       testng, junit, mixed
   }
-  
+
+  private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
+
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
@@ -506,7 +509,7 @@ public class TestNGAntTask extends Task {
       bw.flush();
     }
     catch(IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage(), e);
     }
     finally {
       try {
@@ -518,7 +521,7 @@ public class TestNGAntTask extends Task {
         }
       }
       catch(IOException e) {
-        e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
@@ -1027,13 +1030,13 @@ public class TestNGAntTask extends Task {
       }
     }
     catch(IOException ex) {
-      ex.printStackTrace();
+      LOGGER.error(ex.getMessage(), ex);
     } finally {
       if (br != null) {
         try {
           br.close();
         } catch (IOException e) {
-          e.printStackTrace();
+          LOGGER.error(e.getMessage(), e);
         }
       }
     }

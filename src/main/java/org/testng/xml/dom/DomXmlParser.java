@@ -1,5 +1,6 @@
 package org.testng.xml.dom;
 
+import org.testng.log4testng.Logger;
 import org.testng.xml.ISuiteParser;
 import org.testng.xml.Parser;
 import org.testng.xml.XMLParser;
@@ -21,7 +22,7 @@ public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
     try {
       result = parse2(currentFile, inputStream, loadClasses);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getLogger(DomXmlParser.class).error(e.getMessage(), e);
     }
 
     return result;
