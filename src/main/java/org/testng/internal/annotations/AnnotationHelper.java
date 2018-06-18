@@ -31,7 +31,7 @@ import org.testng.xml.XmlTest;
  * @author cbeust
  */
 public class AnnotationHelper {
-  private static Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
+  private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
 
   private static final List<Class<? extends IAnnotation>> ALL_ANNOTATIONS = Arrays.asList(
       ITestAnnotation.class,

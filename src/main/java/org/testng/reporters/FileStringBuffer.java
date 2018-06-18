@@ -61,7 +61,7 @@ public class FileStringBuffer implements IBuffer {
       try (FileWriter writer = new FileWriter(m_file, true /* append */)) {
         copy(new StringReader(s.toString()), writer);
       } catch (IOException e) {
-        LOGGER.error(e.getMessage(),e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
     return this;
@@ -85,7 +85,7 @@ public class FileStringBuffer implements IBuffer {
         bw.flush();
       }
     } catch(IOException e) {
-      LOGGER.error(e.getMessage(),e);
+      LOGGER.error(e.getMessage(), e);
     }
   }
 

@@ -196,7 +196,7 @@ public class DomUtil {
           foundMethod.invoke(object, value.toString());
         }
       } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-        Logger.getLogger(DomUtil.class).error(e.getMessage(),e);
+        Logger.getLogger(DomUtil.class).error(e.getMessage(), e);
       }
     }
   }

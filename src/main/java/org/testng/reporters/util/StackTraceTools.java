@@ -9,7 +9,7 @@ import org.testng.ITestNGMethod;
  * @since 5.3
  * @version $Revision: 173 $
  */
-public class StackTraceTools {
+public final class StackTraceTools {
   private StackTraceTools() {
     //defeat instantiation.
   }
@@ -29,8 +29,11 @@ public class StackTraceTools {
     return stack.length - 1;
   }
 
-  /** Finds topmost position of the test method in the stack, or top of stack if <code>method</code> is not in it. */
-  public static StackTraceElement[] getTestNGInstrastructure(StackTraceElement[] stack,ITestNGMethod method) {
+  /**
+   * Finds topmost position of the test method in the stack, or top of stack if <code>method</code>
+   * is not in it.
+   */
+  public static StackTraceElement[] getTestNGInstrastructure(StackTraceElement[] stack, ITestNGMethod method) {
     if (method == null || stack == null) {
       return new StackTraceElement[]{};
     }

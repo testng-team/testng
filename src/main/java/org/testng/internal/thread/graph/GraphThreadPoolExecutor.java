@@ -60,7 +60,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         execute(worker);
       }
       catch(Exception ex) {
-        Logger.getLogger(GraphThreadPoolExecutor.class).error(ex.getMessage(),ex);
+        Logger.getLogger(GraphThreadPoolExecutor.class).error(ex.getMessage(), ex);
       }
     }
   }

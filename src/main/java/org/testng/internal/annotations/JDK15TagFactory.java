@@ -464,7 +464,7 @@ public class JDK15TagFactory {
       result = m.invoke(test);
     }
     catch (Exception e) {
-      Logger.getLogger(JDK15TagFactory.class).error(e.getMessage(),e);
+      Logger.getLogger(JDK15TagFactory.class).error(e.getMessage(), e);
     }
     return result;
   }

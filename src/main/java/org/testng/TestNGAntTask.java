@@ -1,14 +1,14 @@
 package org.testng;
 
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
@@ -1019,26 +1019,10 @@ public class TestNGAntTask extends Task {
   }
 
   private void readAndPrintFile(String fileName) {
-    File file = new File(fileName);
-    BufferedReader br = null;
     try {
-      br = new BufferedReader(new FileReader(file));
-      String line = br.readLine();
-      while (line != null) {
-        log("  " + line, Project.MSG_INFO);
-        line = br.readLine();
-      }
-    }
-    catch(IOException ex) {
+      Files.readAllLines(Paths.get(fileName)).forEach(line -> log("  " + line, Project.MSG_INFO));
+    } catch (IOException ex) {
       LOGGER.error(ex.getMessage(), ex);
-    } finally {
-      if (br != null) {
-        try {
-          br.close();
-        } catch (IOException e) {
-          LOGGER.error(e.getMessage(), e);
-        }
-      }
     }
   }
 

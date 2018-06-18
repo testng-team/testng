@@ -24,8 +24,8 @@ import java.util.Set;
  *
  */
 public class JUnitMethodFinder implements ITestMethodFinder {
-  private String m_testName;
-  private IAnnotationFinder m_annotationFinder;
+  private final String m_testName;
+  private final IAnnotationFinder m_annotationFinder;
 
   public JUnitMethodFinder(String testName, IAnnotationFinder finder) {
     m_testName = testName;

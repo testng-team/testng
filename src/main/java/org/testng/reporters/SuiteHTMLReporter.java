@@ -308,15 +308,9 @@ public class SuiteHTMLReporter implements IReporter {
       bw.append("<br/><em>").append(suite.getName()).append("</em><p/>");
       bw.append("<small><i>(Hover the method name to see the test class name)</i></small><p/>\n");
 
-      Collection<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
+      List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
       if (alphabetical) {
-	@SuppressWarnings({"unchecked"})
-	Comparator<? super ITestNGMethod>  alphabeticalComparator = (o1, o2) -> {
-    IInvokedMethod m1 = (IInvokedMethod) o1;
-    IInvokedMethod m2 = (IInvokedMethod) o2;
-    return m1.getTestMethod().getMethodName().compareTo(m2.getTestMethod().getMethodName());
-  };
-	((List) invokedMethods).sort(alphabeticalComparator);
+        invokedMethods.sort(Comparator.comparing(o -> o.getTestMethod().getMethodName()));
       }
 
       SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");

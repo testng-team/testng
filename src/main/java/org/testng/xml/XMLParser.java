@@ -29,7 +29,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     try {
       parser = spf.newSAXParser();
     } catch (ParserConfigurationException | SAXException e) {
-      Logger.getLogger(XMLParser.class).error(e.getMessage(),e);
+      Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
     }
     m_saxParser = parser;
   }

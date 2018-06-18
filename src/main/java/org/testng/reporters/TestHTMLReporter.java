@@ -316,7 +316,7 @@ public class TestHTMLReporter extends TestListenerAdapter {
       writer.append("</body>\n</html>");
     } catch (IOException e) {
       if (TestRunner.getVerbose() > 1) {
-        Logger.getLogger(TestRunner.class).error(e.getMessage(),e);
+        Logger.getLogger(TestRunner.class).error(e.getMessage(), e);
       }
       else {
         ppp(e.getMessage());

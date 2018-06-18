@@ -90,7 +90,7 @@ public class Main implements IReporter {
         Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all); 
       }
     } catch (IOException e) {
-      Logger.getLogger(Main.class).error(e.getMessage(),e);
+      Logger.getLogger(Main.class).error(e.getMessage(), e);
     }
   }
 }
