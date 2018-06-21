@@ -725,17 +725,14 @@ public class XmlTest implements Cloneable {
   }
 
   public Map<String, String> getXmlDependencyGroups() {
+    Map<String, String> result = m_xmlDependencyGroups;
     if (m_xmlGroups != null) {
-      Map<String, String> result = Maps.newHashMap();
       List<XmlDependencies> deps = m_xmlGroups.getDependencies();
       for (XmlDependencies d : deps) {
         result.putAll(d.getDependencies());
       }
-      return result;
-    } else {
-      // deprecated
-      return m_xmlDependencyGroups;
     }
+    return result;
   }
 
   @ParentSetter
