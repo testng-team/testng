@@ -1,6 +1,7 @@
 package org.testng;
 
 import org.testng.collections.Objects;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 import javax.annotation.Nonnull;
@@ -54,6 +55,7 @@ class SuiteResult implements ISuiteResult, Comparable {
     }
     catch(Exception ex) {
       ex.printStackTrace();
+      Logger.getLogger(SuiteResult.class).error(ex.getMessage(), ex);
     }
 
     return result;

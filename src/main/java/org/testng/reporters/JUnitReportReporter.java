@@ -40,7 +40,7 @@ public class JUnitReportReporter implements IReporter {
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
     ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
-    SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap(false);
+    SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap<>(false);
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       addMapping(mapping, suite.getExcludedMethods());
@@ -60,31 +60,6 @@ public class JUnitReportReporter implements IReporter {
         }
       }
     }
-
-    // A list of iterators for all the passed configuration, explanation below
-//    ListMultiMap<Class<?>, ITestResult> beforeConfigurations = Maps.newListMultiMap();
-//    ListMultiMap<Class<?>, ITestResult> afterConfigurations = Maps.newListMultiMap();
-//    for (Map.Entry<Class<?>, Set<ITestResult>> es : passedConfigurations.entrySet()) {
-//      for (ITestResult tr : es.getValue()) {
-//        ITestNGMethod method = tr.getMethod();
-//        if (method.isBeforeMethodConfiguration()) {
-//          beforeConfigurations.put(method.getRealClass(), tr);
-//        }
-//        if (method.isAfterMethodConfiguration()) {
-//          afterConfigurations.put(method.getRealClass(), tr);
-//        }
-//      }
-//    }
-//    Map<Object, Iterator<ITestResult>> befores = Maps.newHashMap();
-//    for (Map.Entry<Class<?>, List<ITestResult>> es : beforeConfigurations.getEntrySet()) {
-//      List<ITestResult> tr = es.getValue();
-//      for (ITestResult itr : es.getValue()) {
-//      }
-//    }
-//    Map<Class<?>, Iterator<ITestResult>> afters = Maps.newHashMap();
-//    for (Map.Entry<Class<?>, List<ITestResult>> es : afterConfigurations.getEntrySet()) {
-//      afters.put(es.getKey(), es.getValue().iterator());
-//    }
 
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
@@ -178,14 +153,8 @@ public class JUnitReportReporter implements IReporter {
 
   private static Collection<ITestResult> sort(Set<ITestResult> results) {
     List<ITestResult> sortedResults = new ArrayList<>(results);
-    Collections.sort(sortedResults, new Comparator<ITestResult> () {
-
-      @Override
-      public int compare(ITestResult o1, ITestResult o2) {
-        return Integer.compare(o1.getMethod().getPriority(), o2.getMethod().getPriority());
-      }
-    });
-    return sortedResults;
+    sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
+    return Collections.unmodifiableList(sortedResults);
   }
 
   private static int getDisabledTestCount(Set<ITestNGMethod> methods) {
@@ -297,21 +266,17 @@ public class JUnitReportReporter implements IReporter {
   }
 
   private static class TestTag {
-    public Properties properties;
-    public String message;
-    public String type;
-    public String stackTrace;
+    Properties properties;
+    String message;
+    String type;
+    String stackTrace;
     String childTag;
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
     for (ITestResult tr : allResults) {
       Class<?> cls = tr.getMethod().getTestClass().getRealClass();
-      Set<ITestResult> l = out.get(cls);
-      if (l == null) {
-        l = Sets.newHashSet();
-        out.put(cls, l);
-      }
+      Set<ITestResult> l = out.computeIfAbsent(cls, k -> Sets.newHashSet());
       l.add(tr);
     }
   }

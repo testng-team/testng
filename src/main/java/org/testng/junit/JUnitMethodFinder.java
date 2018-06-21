@@ -9,8 +9,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
@@ -26,45 +24,19 @@ import java.util.Set;
  *
  */
 public class JUnitMethodFinder implements ITestMethodFinder {
-  private String m_testName = null;
-  private IAnnotationFinder m_annotationFinder = null;
+  private final String m_testName;
+  private final IAnnotationFinder m_annotationFinder;
 
   public JUnitMethodFinder(String testName, IAnnotationFinder finder) {
     m_testName = testName;
     m_annotationFinder = finder;
   }
 
-  private Constructor findConstructor(Class cls, Class[] parameters) {
-    Constructor result = null;
-
-    try {
-      result = cls.getConstructor(parameters);
-    }
-    catch (SecurityException | NoSuchMethodException ex) {
-      // ignore
-    }
-
-    return result;
-  }
-
   @Override
   public ITestNGMethod[] getTestMethods(Class cls, XmlTest xmlTest) {
-    ITestNGMethod[] result =
-      privateFindTestMethods(new INameFilter() {
-        @Override
-        public boolean accept(ConstructorOrMethod method) {
-          return method.getName().startsWith("test") &&
-            method.getParameterTypes().length == 0;
-        }
-    }, cls);
 
-//    ppp("=====");
-//    ppp("FIND TEST METHOD RETURNING ");
-//    for (ITestMethod m : result) {
-//      ppp("  " + m);
-//    }
-//    ppp("=====");
-    return result;
+    return privateFindTestMethods(method -> method.getName().startsWith("test") &&
+      method.getParameterTypes().length == 0, cls);
   }
 
   private ITestNGMethod[] privateFindTestMethods(INameFilter filter, Class cls) {
@@ -89,8 +61,6 @@ public class JUnitMethodFinder implements ITestMethodFinder {
         ConstructorOrMethod method = m.getConstructorOrMethod();
         String methodName = method.getName();
         if(filter.accept(method) && !acceptedMethodNames.contains(methodName)) {
-          //          if (m.getName().startsWith("test")) {
-          //            ppp("Found JUnit test method: " + tm);
           vResult.add(m);
           acceptedMethodNames.add(methodName);
         }
@@ -98,59 +68,17 @@ public class JUnitMethodFinder implements ITestMethodFinder {
       current = current.getSuperclass();
     }
 
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+    return vResult.toArray(new ITestNGMethod[0]);
   }
-
-  private static void ppp(String s) {
-    System.out.println("[JUnitMethodFinder] " + s);
-  }
-
-  private Object instantiate(Class cls) {
-    Object result = null;
-
-    Constructor ctor = findConstructor(cls, new Class[] { String.class });
-    try {
-      if (null != ctor) {
-        result = ctor.newInstance(new Object[] { m_testName });
-      }
-      else {
-        ctor = cls.getConstructor(new Class[0]);
-        result = ctor.newInstance(new Object[0]);
-      }
-    }
-    catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException ex) {
-      ex.printStackTrace();
-    } catch (InstantiationException ex) {
-      System.err.println("Couldn't find a constructor with a String parameter on your JUnit test class.");
-      ex.printStackTrace();
-    }
-
-    return result;
-  }
-
 
   @Override
   public ITestNGMethod[] getBeforeTestMethods(Class cls) {
-    ITestNGMethod[] result = privateFindTestMethods(new INameFilter() {
-        @Override
-        public boolean accept(ConstructorOrMethod method) {
-          return "setUp".equals(method.getName());
-        }
-      }, cls);
-
-    return result;
+    return privateFindTestMethods(method -> "setUp".equals(method.getName()), cls);
   }
 
   @Override
   public ITestNGMethod[] getAfterTestMethods(Class cls) {
-    ITestNGMethod[] result =  privateFindTestMethods(new INameFilter() {
-        @Override
-        public boolean accept(ConstructorOrMethod method) {
-          return "tearDown".equals(method.getName());
-        }
-      }, cls);
-
-    return result;
+    return privateFindTestMethods(method -> "tearDown".equals(method.getName()), cls);
   }
 
   @Override

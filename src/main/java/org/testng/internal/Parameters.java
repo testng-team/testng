@@ -845,7 +845,7 @@ public class Parameters {
     private final Method currentTestMethod;
     private final ITestContext context;
     private Object[] parameterValues;
-    public ITestResult testResult;
+    private final ITestResult testResult;
 
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
       this(params, methodParams, null, null, null, null);

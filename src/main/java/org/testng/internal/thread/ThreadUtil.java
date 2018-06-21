@@ -2,6 +2,7 @@ package org.testng.internal.thread;
 
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -62,7 +63,7 @@ public class ThreadUtil {
         pooledExecutor.invokeAll(callables);
       }
     } catch (InterruptedException handled) {
-      handled.printStackTrace();
+      Logger.getLogger(ThreadUtil.class).error(handled.getMessage(), handled);
       Thread.currentThread().interrupt();
     } finally {
       pooledExecutor.shutdown();

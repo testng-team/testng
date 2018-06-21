@@ -2,6 +2,7 @@ package org.testng.xml.dom;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -195,7 +196,7 @@ public class DomUtil {
           foundMethod.invoke(object, value.toString());
         }
       } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-        e.printStackTrace();
+        Logger.getLogger(DomUtil.class).error(e.getMessage(), e);
       }
     }
   }

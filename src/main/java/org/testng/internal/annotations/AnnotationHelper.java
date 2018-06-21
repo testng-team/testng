@@ -20,6 +20,7 @@ import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
 import org.testng.internal.reflect.ReflectionHelper;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
 
 /**
@@ -30,6 +31,7 @@ import org.testng.xml.XmlTest;
  * @author cbeust
  */
 public class AnnotationHelper {
+  private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
 
   private static final List<Class<? extends IAnnotation>> ALL_ANNOTATIONS = Arrays.asList(
       ITestAnnotation.class,
@@ -252,7 +254,7 @@ public class AnnotationHelper {
 
     }
     catch (SecurityException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage(), e);
     }
     return vResult.values().toArray(new ITestNGMethod[0]);
     }

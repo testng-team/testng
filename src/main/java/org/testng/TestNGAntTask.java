@@ -1,14 +1,14 @@
 package org.testng;
 
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
@@ -38,6 +38,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
 
 import static java.lang.Boolean.TRUE;
@@ -159,7 +160,9 @@ public class TestNGAntTask extends Task {
       //lower-case to better look in build scripts
       testng, junit, mixed
   }
-  
+
+  private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
+
   /**
    * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
    */
@@ -506,7 +509,7 @@ public class TestNGAntTask extends Task {
       bw.flush();
     }
     catch(IOException e) {
-      e.printStackTrace();
+      LOGGER.error(e.getMessage(), e);
     }
     finally {
       try {
@@ -518,7 +521,7 @@ public class TestNGAntTask extends Task {
         }
       }
       catch(IOException e) {
-        e.printStackTrace();
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
@@ -1016,26 +1019,10 @@ public class TestNGAntTask extends Task {
   }
 
   private void readAndPrintFile(String fileName) {
-    File file = new File(fileName);
-    BufferedReader br = null;
     try {
-      br = new BufferedReader(new FileReader(file));
-      String line = br.readLine();
-      while (line != null) {
-        log("  " + line, Project.MSG_INFO);
-        line = br.readLine();
-      }
-    }
-    catch(IOException ex) {
-      ex.printStackTrace();
-    } finally {
-      if (br != null) {
-        try {
-          br.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
+      Files.readAllLines(Paths.get(fileName)).forEach(line -> log("  " + line, Project.MSG_INFO));
+    } catch (IOException ex) {
+      LOGGER.error(ex.getMessage(), ex);
     }
   }
 

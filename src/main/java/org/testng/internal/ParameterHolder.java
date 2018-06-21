@@ -20,9 +20,9 @@ public class ParameterHolder {
     NATIVE //Native injection is involved.
   }
 
-  public IDataProviderMethod dataProviderHolder;
-  public Iterator<Object[]> parameters;
-  public ParameterOrigin origin;
+  final IDataProviderMethod dataProviderHolder;
+  final Iterator<Object[]> parameters;
+  final ParameterOrigin origin;
 
   public ParameterHolder(Iterator<Object[]> parameters, ParameterOrigin origin, IDataProviderMethod dph) {
     super();

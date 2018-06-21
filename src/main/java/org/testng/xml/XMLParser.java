@@ -9,6 +9,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.testng.TestNGException;
+import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -28,7 +29,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     try {
       parser = spf.newSAXParser();
     } catch (ParserConfigurationException | SAXException e) {
-      e.printStackTrace();
+      Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
     }
     m_saxParser = parser;
   }
@@ -67,27 +68,5 @@ abstract public class XMLParser<T> implements IFileParser<T> {
       return false;
     }
   }
-
-//  private static void ppp(String s) {
-//    System.out.println("[Parser] " + s);
-//  }
-
-//  /**
-//   *
-//   * @param argv ignored
-//   * @throws FileNotFoundException if the
-//   * @throws ParserConfigurationException
-//   * @throws SAXException
-//   * @throws IOException
-//   * @since 1.0
-//   */
-//  public static void main(String[] argv)
-//    throws FileNotFoundException, ParserConfigurationException, SAXException, IOException
-//  {
-//    XmlSuite l =
-//      new Parser("c:/eclipse-workspace/testng/test/testng.xml").parse();
-//
-//    System.out.println(l);
-//  }  @Override
 
 }

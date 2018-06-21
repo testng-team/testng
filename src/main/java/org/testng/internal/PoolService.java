@@ -51,7 +51,7 @@ public class PoolService<FutureType> {
     for (Future<FutureType> take : takes) {
       try {
         result.add(take.get());
-      } catch (InterruptedException | ExecutionException e) {
+      } catch (InterruptedException | ExecutionException e) { //NOSONAR
         throw new TestNGException(e);
       }
     }

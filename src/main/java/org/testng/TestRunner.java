@@ -48,6 +48,7 @@ import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
 import org.testng.internal.thread.graph.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.IWorker;
 import org.testng.junit.IJUnitTestRunner;
+import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -68,6 +69,7 @@ public class TestRunner
     implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
 
   private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
+  private static final Logger LOGGER = Logger.getLogger(TestRunner.class);
 
   private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
@@ -101,7 +103,7 @@ public class TestRunner
 
   // Information about this test run
 
-  private Date m_startDate = null;
+  private Date m_startDate = new Date();
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
@@ -574,7 +576,7 @@ public class TestRunner
             tr.run(tc, methods.toArray(new String[0]));
           }
           catch(Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex.getMessage(), ex);
           }
           finally {
             runMethods.addAll(tr.getTestMethods());
@@ -636,7 +638,7 @@ public class TestRunner
             executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
             executor.shutdownNow();
           } catch (InterruptedException handled) {
-            handled.printStackTrace();
+            LOGGER.error(handled.getMessage(), handled);
             Thread.currentThread().interrupt();
           }
         }
