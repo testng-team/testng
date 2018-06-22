@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1740: Bumped up artifact version of dependencies for java 8 support (Atul Agrawal)
 Fixed: GITHUB-1834: Ensure group dependency defined via suite xml is considered (Krishnan Mahadevan)
 New  : Expose Graph Visualisation representation for users to build real-time debugging tools (Krishnan Mahadevan)
 Fixed: GITHUB-574: String cannot be cast to Integer if log property is set in maven pom.xml (Krishnan Mahadevan)
