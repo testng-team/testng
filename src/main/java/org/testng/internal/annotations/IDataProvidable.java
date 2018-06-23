@@ -7,8 +7,10 @@ package org.testng.internal.annotations;
  */
 public interface IDataProvidable {
   String getDataProvider();
+
   void setDataProvider(String v);
 
   Class<?> getDataProviderClass();
+
   void setDataProviderClass(Class<?> v);
 }

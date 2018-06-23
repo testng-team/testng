@@ -7,13 +7,11 @@ import java.util.List;
 /**
  * An implementation of IFactory
  *
- * Created on Dec 20, 2005
+ * <p>Created on Dec 20, 2005
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class FactoryAnnotation
-  extends BaseAnnotation
-  implements IFactoryAnnotation
-{
+public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
   private String[] m_parameters = {};
   private String m_dataProvider = null;
   private Class<?> m_dataProviderClass;

@@ -42,7 +42,8 @@ import org.testng.internal.collections.Pair;
 /**
  * This class implements IAnnotationFinder with JDK5 annotations
  *
- * Created on Dec 20, 2005
+ * <p>Created on Dec 20, 2005
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
@@ -81,8 +82,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     // overriding
     if (a.equals(org.testng.annotations.Listeners.class)) {
       return cls.getAnnotation(a);
-    }
-    else {
+    } else {
       while (cls != null) {
         A result = cls.getAnnotation(a);
         if (result != null) {
@@ -102,24 +102,31 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(Class<?> clazz, Method m, Class<A> annotationClass) {
+  public <A extends IAnnotation> A findAnnotation(
+      Class<?> clazz, Method m, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '"
-              + annotationClass + "' not found.");
+      throw new IllegalArgumentException(
+          "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     Annotation annotation = m.getAnnotation(a);
-    return findAnnotation(m.getDeclaringClass(), annotation, annotationClass, null, null, m,
-            new Pair<>(annotation, m), clazz);
-
+    return findAnnotation(
+        m.getDeclaringClass(),
+        annotation,
+        annotationClass,
+        null,
+        null,
+        m,
+        new Pair<>(annotation, m),
+        clazz);
   }
 
   @Override
   public <A extends IAnnotation> A findAnnotation(ITestNGMethod tm, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '"
-            + annotationClass + "' not found.");
+      throw new IllegalArgumentException(
+          "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass = m.getDeclaringClass();
@@ -130,12 +137,13 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     if (annotation == null) {
       annotation = testClass.getAnnotation(a);
     }
-    return findAnnotation(testClass, annotation, annotationClass, null, null, m,
-        new Pair<>(annotation, m), null);
+    return findAnnotation(
+        testClass, annotation, annotationClass, null, null, m, new Pair<>(annotation, m), null);
   }
 
   @Override
-  public <A extends IAnnotation> A findAnnotation(ConstructorOrMethod com, Class<A> annotationClass) {
+  public <A extends IAnnotation> A findAnnotation(
+      ConstructorOrMethod com, Class<A> annotationClass) {
     if (com.getConstructor() != null) {
       return findAnnotation(com.getConstructor(), annotationClass);
     }
@@ -145,22 +153,25 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return null;
   }
 
-  private void transform(IAnnotation a, Class<?> testClass,
-                         Constructor<?> testConstructor, Method testMethod, Class<?> whichClass)  {
+  private void transform(
+      IAnnotation a,
+      Class<?> testClass,
+      Constructor<?> testConstructor,
+      Method testMethod,
+      Class<?> whichClass) {
     //
     // Transform @Test
     //
     if (a instanceof ITestAnnotation) {
       if (m_transformer instanceof org.testng.internal.annotations.IAnnotationTransformer) {
         org.testng.internal.annotations.IAnnotationTransformer transformer =
-                (org.testng.internal.annotations.IAnnotationTransformer)m_transformer;
-        transformer.transform((ITestAnnotation) a, testClass, testConstructor, testMethod, whichClass);
+            (org.testng.internal.annotations.IAnnotationTransformer) m_transformer;
+        transformer.transform(
+            (ITestAnnotation) a, testClass, testConstructor, testMethod, whichClass);
       } else {
         m_transformer.transform((ITestAnnotation) a, testClass, testConstructor, testMethod);
       }
-    }
-
-    else if (m_transformer instanceof IAnnotationTransformer2) {
+    } else if (m_transformer instanceof IAnnotationTransformer2) {
       IAnnotationTransformer2 transformer2 = (IAnnotationTransformer2) m_transformer;
 
       //
@@ -168,7 +179,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       //
       if (a instanceof IConfigurationAnnotation) {
         IConfigurationAnnotation configuration = (IConfigurationAnnotation) a;
-        transformer2.transform(configuration,testClass, testConstructor, testMethod);
+        transformer2.transform(configuration, testClass, testConstructor, testMethod);
       }
 
       //
@@ -183,16 +194,14 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       //
       else if (a instanceof IFactoryAnnotation) {
         transformer2.transform((IFactoryAnnotation) a, testMethod);
-      }
-
-      else if (m_transformer instanceof IAnnotationTransformer3) {
+      } else if (m_transformer instanceof IAnnotationTransformer3) {
         IAnnotationTransformer3 transformer = (IAnnotationTransformer3) m_transformer;
 
         //
         // Transform @Listeners
         //
         if (a instanceof IListenersAnnotation) {
-          transformer.transform((IListenersAnnotation)a, testClass);
+          transformer.transform((IListenersAnnotation) a, testClass);
         }
       } // End IAnnotationTransformer3
     } // End IAnnotationTransformer2
@@ -202,30 +211,49 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '"
-          + annotationClass + "' not found.");
+      throw new IllegalArgumentException(
+          "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     Annotation annotation = findAnnotationInSuperClasses(cls, a);
-    return findAnnotation(cls, annotation, annotationClass, cls, null, null,
-        new Pair<>(annotation, annotationClass), null);
+    return findAnnotation(
+        cls,
+        annotation,
+        annotationClass,
+        cls,
+        null,
+        null,
+        new Pair<>(annotation, annotationClass),
+        null);
   }
 
   @Override
   public <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
-      throw new IllegalArgumentException("Java @Annotation class for '"
-          + annotationClass + "' not found.");
+      throw new IllegalArgumentException(
+          "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     Annotation annotation = cons.getAnnotation(a);
-    return findAnnotation(cons.getDeclaringClass(), annotation, annotationClass, null, cons, null,
-        new Pair<>(annotation, cons), null);
+    return findAnnotation(
+        cons.getDeclaringClass(),
+        annotation,
+        annotationClass,
+        null,
+        cons,
+        null,
+        new Pair<>(annotation, cons),
+        null);
   }
 
-  private <A extends IAnnotation> A findAnnotation(Class cls, Annotation a,
-      Class<A> annotationClass, Class<?> testClass,
-      Constructor<?> testConstructor, Method testMethod, Pair<Annotation, ?> p,
-                                                   Class<?> whichClass) {
+  private <A extends IAnnotation> A findAnnotation(
+      Class cls,
+      Annotation a,
+      Class<A> annotationClass,
+      Class<?> testClass,
+      Constructor<?> testConstructor,
+      Method testMethod,
+      Pair<Annotation, ?> p,
+      Class<?> whichClass) {
     if (a == null) {
       return null;
     }
@@ -274,7 +302,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     for (int i = 0; i < annotations.length; i++) {
       for (Annotation a : annotations[i]) {
         if (a instanceof Optional) {
-          result[i] = ((Optional)a).value();
+          result[i] = ((Optional) a).value();
           break;
         }
       }

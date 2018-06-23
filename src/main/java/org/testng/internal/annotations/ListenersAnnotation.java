@@ -16,5 +16,4 @@ public class ListenersAnnotation implements IListeners, IAnnotation {
   public void setValue(Class<? extends ITestNGListener>[] value) {
     m_value = value;
   }
-
 }
