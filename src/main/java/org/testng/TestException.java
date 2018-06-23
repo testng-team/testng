@@ -1,9 +1,6 @@
 package org.testng;
 
-/**
- * Exception thrown when an exception happens while running a test
- * method.
- */
+/** Exception thrown when an exception happens while running a test method. */
 public class TestException extends TestNGException {
 
   private static final long serialVersionUID = -7946644025188038804L;
@@ -12,9 +9,9 @@ public class TestException extends TestNGException {
     super(s);
   }
 
-	public TestException(Throwable t) {
-		super(t);
-	}
+  public TestException(Throwable t) {
+    super(t);
+  }
 
   public TestException(String message, Throwable t) {
     super(message, t);

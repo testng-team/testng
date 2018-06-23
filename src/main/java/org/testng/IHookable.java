@@ -1,13 +1,12 @@
 package org.testng;
 
 /**
- * If a test class implements this interface, its run() method
- * will be invoked instead of each @Test method found.  The invocation of
- * the test method will then be performed upon invocation of the callBack()
- * method of the IHookCallBack parameter.
+ * If a test class implements this interface, its run() method will be invoked instead of each @Test
+ * method found. The invocation of the test method will then be performed upon invocation of the
+ * callBack() method of the IHookCallBack parameter.
  *
- * This is useful to test classes that require JAAS authentication, which can
- * be implemented as follows:
+ * <p>This is useful to test classes that require JAAS authentication, which can be implemented as
+ * follows:
  *
  * <pre>
  * public void run(final IHookCallBack icb, ITestResult testResult) {
@@ -22,10 +21,9 @@ package org.testng;
  * }
  * </pre>
  *
- * @author cbeust
- * Jan 28, 2006
+ * @author cbeust Jan 28, 2006
  */
 public interface IHookable extends ITestNGListener {
 
-    void run(IHookCallBack callBack, ITestResult testResult);
+  void run(IHookCallBack callBack, ITestResult testResult);
 }

@@ -3,8 +3,8 @@ package org.testng;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A state object that records the status of the suite run. Mainly used to
- * figure out if there are any @BeforeSuite failures.
+ * A state object that records the status of the suite run. Mainly used to figure out if there are
+ * any @BeforeSuite failures.
  */
 public class SuiteRunState {
 

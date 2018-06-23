@@ -5,11 +5,10 @@ import org.testng.internal.MethodInstance;
 import java.util.List;
 
 /**
- * A method interceptor that preserves the order in which test classes were found in
- * the &lt;test&gt; tag.
+ * A method interceptor that preserves the order in which test classes were found in the
+ * &lt;test&gt; tag.
  *
  * @author cbeust
- *
  */
 class PreserveOrderMethodInterceptor implements IMethodInterceptor {
 
@@ -18,5 +17,4 @@ class PreserveOrderMethodInterceptor implements IMethodInterceptor {
     methods.sort(MethodInstance.SORT_BY_INDEX);
     return methods;
   }
-
 }

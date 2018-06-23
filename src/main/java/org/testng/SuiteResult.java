@@ -6,14 +6,10 @@ import org.testng.xml.XmlSuite;
 
 import javax.annotation.Nonnull;
 
-/**
- * This class logs the result of an entire Test Suite (defined by a
- * property file).
- *
- */
+/** This class logs the result of an entire Test Suite (defined by a property file). */
 class SuiteResult implements ISuiteResult, Comparable {
-  //FIXME: Is m_propertyFileName needed?
-	private String m_propertyFileName =  null;
+  // FIXME: Is m_propertyFileName needed?
+  private String m_propertyFileName = null;
   private final XmlSuite m_suite;
   private final ITestContext m_testContext;
 
@@ -22,24 +18,18 @@ class SuiteResult implements ISuiteResult, Comparable {
     m_testContext = tr;
   }
 
-  /**
-   * @return Returns the propertyFileName.
-   */
+  /** @return Returns the propertyFileName. */
   @Override
   public String getPropertyFileName() {
     return m_propertyFileName;
   }
 
-  /**
-   * @return Returns the singleTestRunner.
-   */
+  /** @return Returns the singleTestRunner. */
   @Override
   public ITestContext getTestContext() {
     return m_testContext;
   }
-  /**
-   * @return Returns the suite.
-   */
+  /** @return Returns the suite. */
   public XmlSuite getSuite() {
     return m_suite;
   }
@@ -52,8 +42,7 @@ class SuiteResult implements ISuiteResult, Comparable {
       String n1 = getTestContext().getName();
       String n2 = other.getTestContext().getName();
       result = n1.compareTo(n2);
-    }
-    catch(Exception ex) {
+    } catch (Exception ex) {
       ex.printStackTrace();
       Logger.getLogger(SuiteResult.class).error(ex.getMessage(), ex);
     }
@@ -61,15 +50,9 @@ class SuiteResult implements ISuiteResult, Comparable {
     return result;
   }
 
-  /**
-   * Returns the test context name.
-   * {@inheritDoc}
-   */
+  /** Returns the test context name. {@inheritDoc} */
   @Override
   public String toString() {
-    return Objects.toStringHelper(getClass())
-        .add("context", getTestContext().getName())
-        .toString();
+    return Objects.toStringHelper(getClass()).add("context", getTestContext().getName()).toString();
   }
-
 }

@@ -7,11 +7,11 @@ package org.testng;
  */
 public interface IRetryAnalyzer {
 
-    /**
-     * Returns true if the test method has to be retried, false otherwise.
-     *
-     * @param result The result of the test method that just ran.
-     * @return true if the test method has to be retried, false otherwise.
-     */
-    boolean retry(ITestResult result);
+  /**
+   * Returns true if the test method has to be retried, false otherwise.
+   *
+   * @param result The result of the test method that just ran.
+   * @return true if the test method has to be retried, false otherwise.
+   */
+  boolean retry(ITestResult result);
 }

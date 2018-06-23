@@ -9,7 +9,6 @@ import org.testng.internal.Yaml;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.Set;
 
 /**
  * Convert XML files to YAML and vice versa.
- * 
+ *
  * @author cbeust
  */
 public class Converter {
@@ -50,12 +49,12 @@ public class Converter {
     try {
       jc.parse(args);
       File f = new File(m_outputDirectory);
-      if (! f.exists()) f.mkdir();
+      if (!f.exists()) f.mkdir();
 
       for (String file : m_files) {
         Set<XmlSuite> allSuites = Sets.newHashSet();
         Parser parser = new Parser(file);
-        parser.setLoadClasses(false);  // we might not have these classes on the classpath
+        parser.setLoadClasses(false); // we might not have these classes on the classpath
         findAllSuites(parser.parse(), allSuites);
 
         for (XmlSuite suite : allSuites) {
@@ -68,18 +67,15 @@ public class Converter {
           if (file.endsWith(".xml")) {
             File newFile = new File(m_outputDirectory, baseName + ".yaml");
             writeFile(newFile, Yaml.toYaml(suite).toString());
-          }
-          else if (file.endsWith(".yaml")) {
+          } else if (file.endsWith(".yaml")) {
             File newFile = new File(m_outputDirectory, baseName + ".xml");
             writeFile(newFile, suite.toXml());
-          }
-          else {
+          } else {
             throw new TestNGException("Unknown file type:" + file);
           }
         }
       }
-    }
-    catch(ParameterException ex) {
+    } catch (ParameterException ex) {
       System.out.println("Error: " + ex.getMessage());
       jc.usage();
     }

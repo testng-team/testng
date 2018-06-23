@@ -6,20 +6,15 @@ import org.testng.collections.Maps;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A method interceptor that sorts its methods per instances (i.e. per class).
- */
+/** A method interceptor that sorts its methods per instances (i.e. per class). */
 class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
 
   @Override
-  public List<IMethodInstance> intercept(List<IMethodInstance> methods,
-      ITestContext context)  {
+  public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
     return groupMethodsByInstance(methods);
   }
 
-  /**
-   * The default method interceptor which sorts methods by instances (i.e. by class).
-   */
+  /** The default method interceptor which sorts methods by instances (i.e. by class). */
   private List<IMethodInstance> groupMethodsByInstance(List<IMethodInstance> methods) {
     List<Object> instanceList = Lists.newArrayList();
     Map<Object, List<IMethodInstance>> map = Maps.newLinkedHashMap();
@@ -39,5 +34,4 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
 
     return result;
   }
-
 }

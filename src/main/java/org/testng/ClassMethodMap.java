@@ -10,10 +10,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * This class maintains a map of {@code <Class, List<ITestNGMethod>>}.
- * It is used by TestWorkers to determine if the method they just ran
- * is the last of its class, in which case it's time to invoke all the
- * afterClass methods.
+ * This class maintains a map of {@code <Class, List<ITestNGMethod>>}. It is used by TestWorkers to
+ * determine if the method they just ran is the last of its class, in which case it's time to invoke
+ * all the afterClass methods.
  *
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
@@ -29,7 +28,7 @@ public class ClassMethodMap {
       // Only add to the class map methods that are included in the
       // method selector. We can pass a null context here since the selector
       // should already have been initialized
-      if (xmlMethodSelector != null && ! xmlMethodSelector.includeMethod(null, m, true)) {
+      if (xmlMethodSelector != null && !xmlMethodSelector.includeMethod(null, m, true)) {
         continue;
       }
 
@@ -43,10 +42,7 @@ public class ClassMethodMap {
     }
   }
 
-  /**
-   * Remove the method from this map and returns true if it is the last
-   * of its class.
-   */
+  /** Remove the method from this map and returns true if it is the last of its class. */
   public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
     Collection<ITestNGMethod> l = classMap.get(instance);
     if (l == null) {
@@ -72,10 +68,10 @@ public class ClassMethodMap {
   }
 
   public void clear() {
-    for(Set<Object> instances: beforeClassMethods.values()) {
+    for (Set<Object> instances : beforeClassMethods.values()) {
       instances.clear();
     }
-    for(Set<Object> instances: afterClassMethods.values()) {
+    for (Set<Object> instances : afterClassMethods.values()) {
       instances.clear();
     }
     beforeClassMethods.clear();

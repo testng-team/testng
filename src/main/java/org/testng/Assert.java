@@ -15,40 +15,38 @@ import java.util.Map;
 import java.util.Set;
 import org.testng.collections.Lists;
 
-
 /**
- * Assertion tool class. Presents assertion methods with a more natural parameter order.
- * The order is always <B>actualValue</B>, <B>expectedValue</B> [, message].
+ * Assertion tool class. Presents assertion methods with a more natural parameter order. The order
+ * is always <B>actualValue</B>, <B>expectedValue</B> [, message].
  *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class Assert {
 
-  public static final String ARRAY_MISMATCH_TEMPLATE = "arrays differ firstly at element [%d]; "
-      + "expected value is <%s> but was <%s>. %s";
+  public static final String ARRAY_MISMATCH_TEMPLATE =
+      "arrays differ firstly at element [%d]; " + "expected value is <%s> but was <%s>. %s";
 
-  /**
-   * Protect constructor since it is a static only class
-   */
+  /** Protect constructor since it is a static only class */
   protected Assert() {
     // hide constructor
   }
 
   /**
-   * Asserts that a condition is true. If it isn't,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that a condition is true. If it isn't, an AssertionError, with the given message, is
+   * thrown.
+   *
    * @param condition the condition to evaluate
    * @param message the assertion error message
    */
   public static void assertTrue(boolean condition, String message) {
-    if(!condition) {
+    if (!condition) {
       failNotEquals(condition, Boolean.TRUE, message);
     }
   }
 
   /**
-   * Asserts that a condition is true. If it isn't,
-   * an AssertionError is thrown.
+   * Asserts that a condition is true. If it isn't, an AssertionError is thrown.
+   *
    * @param condition the condition to evaluate
    */
   public static void assertTrue(boolean condition) {
@@ -56,20 +54,21 @@ public class Assert {
   }
 
   /**
-   * Asserts that a condition is false. If it isn't,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that a condition is false. If it isn't, an AssertionError, with the given message, is
+   * thrown.
+   *
    * @param condition the condition to evaluate
    * @param message the assertion error message
    */
   public static void assertFalse(boolean condition, String message) {
-    if(condition) {
+    if (condition) {
       failNotEquals(condition, Boolean.FALSE, message); // TESTNG-81
     }
   }
 
   /**
-   * Asserts that a condition is false. If it isn't,
-   * an AssertionError is thrown.
+   * Asserts that a condition is false. If it isn't, an AssertionError is thrown.
+   *
    * @param condition the condition to evaluate
    */
   public static void assertFalse(boolean condition) {
@@ -91,52 +90,51 @@ public class Assert {
 
   /**
    * Fails a test with the given message.
+   *
    * @param message the assertion error message
    */
   public static void fail(String message) {
     throw new AssertionError(message);
   }
 
-  /**
-   * Fails a test with no message.
-   */
+  /** Fails a test with no message. */
   public static void fail() {
     fail(null);
   }
 
   /**
-   * Asserts that two objects are equal. If they are not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two objects are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEquals(Object actual, Object expected, String message) {
     if (expected != null && expected.getClass().isArray()) {
-       assertArrayEquals(actual, expected, message);
-       return;
+      assertArrayEquals(actual, expected, message);
+      return;
     }
     assertEqualsImpl(actual, expected, message);
   }
 
   /**
-   * Differs from {@link #assertEquals(Object, Object, String)} by not taking arrays into
-   * special consideration hence comparing them by reference. Intended to be called directly
-   * to test equality of collections content.
+   * Differs from {@link #assertEquals(Object, Object, String)} by not taking arrays into special
+   * consideration hence comparing them by reference. Intended to be called directly to test
+   * equality of collections content.
    */
-  private static void assertEqualsImpl(Object actual, Object expected,
-          String message) {
-      if((expected == null) && (actual == null)) {
-        return;
-      }
-      if(expected == null ^ actual == null) {
-        failNotEquals(actual, expected, message);
-      }
-      if (expected.equals(actual) && actual.equals(expected)) {
-        return;
-      }
+  private static void assertEqualsImpl(Object actual, Object expected, String message) {
+    if ((expected == null) && (actual == null)) {
+      return;
+    }
+    if (expected == null ^ actual == null) {
       failNotEquals(actual, expected, message);
     }
+    if (expected.equals(actual) && actual.equals(expected)) {
+      return;
+    }
+    failNotEquals(actual, expected, message);
+  }
 
   private static void assertArrayEquals(Object actual, Object expected, String message) {
     if (expected == actual) {
@@ -148,14 +146,16 @@ public class Assert {
     if (null == actual) {
       fail("expected not null array, but null found. " + message);
     }
-    //is called only when expected is an array
+    // is called only when expected is an array
     if (!actual.getClass().isArray()) {
       failNotEquals(actual, expected, message);
     }
     int expectedLength = Array.getLength(expected);
     if (expectedLength != Array.getLength(actual)) {
-      failNotEquals(Array.getLength(actual), expectedLength, message == null ? "" : message
-              + " (Array lengths are not the same)");
+      failNotEquals(
+          Array.getLength(actual),
+          expectedLength,
+          message == null ? "" : message + " (Array lengths are not the same)");
     }
     for (int i = 0; i < expectedLength; i++) {
       Object _actual = Array.get(actual, i);
@@ -163,17 +163,19 @@ public class Assert {
       try {
         assertEquals(_actual, _expected);
       } catch (AssertionError ae) {
-        failNotEquals(actual, expected, message == null ? "" : message
-                + " (values at index " + i + " are not the same)");
+        failNotEquals(
+            actual,
+            expected,
+            message == null ? "" : message + " (values at index " + i + " are not the same)");
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(byte[] actual, byte[] expected) {
@@ -181,28 +183,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(byte[] actual, byte[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Byte.toString(expected[i]), Byte.toString(actual[i]), message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Byte.toString(expected[i]),
+                Byte.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(short[] actual, short[] expected) {
@@ -210,29 +218,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(short[] actual, short[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Short.toString(expected[i]), Short.toString(actual[i]),
-            message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Short.toString(expected[i]),
+                Short.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(int[] actual, int[] expected) {
@@ -240,29 +253,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(int[] actual, int[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Integer.toString(expected[i]), Integer.toString(actual[i]),
-            message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Integer.toString(expected[i]),
+                Integer.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(boolean[] actual, boolean[] expected) {
@@ -270,29 +288,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(boolean[] actual, boolean[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Boolean.toString(expected[i]), Boolean.toString(actual[i]),
-            message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Boolean.toString(expected[i]),
+                Boolean.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(char[] actual, char[] expected) {
@@ -300,29 +323,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(char[] actual, char[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Character.toString(expected[i]), Character.toString(actual[i]),
-            message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Character.toString(expected[i]),
+                Character.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(float[] actual, float[] expected) {
@@ -330,29 +358,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(float[] actual, float[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Float.toString(expected[i]), Float.toString(actual[i]),
-            message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Float.toString(expected[i]),
+                Float.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(double[] actual, double[] expected) {
@@ -360,29 +393,34 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(double[] actual, double[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Double.toString(expected[i]), Double.toString(actual[i]),
-            message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Double.toString(expected[i]),
+                Double.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(long[] actual, long[] expected) {
@@ -390,34 +428,43 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
    *
-   * @param actual   the actual value
+   * @param actual the actual value
    * @param expected the expected value
-   * @param message  the assertion error message
+   * @param message the assertion error message
    */
   public static void assertEquals(long[] actual, long[] expected, String message) {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
       if (expected[i] != actual[i]) {
-        fail(String.format(ARRAY_MISMATCH_TEMPLATE, i, Long.toString(expected[i]), Long.toString(actual[i]), message));
+        fail(
+            String.format(
+                ARRAY_MISMATCH_TEMPLATE,
+                i,
+                Long.toString(expected[i]),
+                Long.toString(actual[i]),
+                message));
       }
     }
   }
 
   /**
-   * This methods check referential equality of given arguments as well as references length (assuming they are arrays).
-   * Successful execution of this method guaranties arrays length equality.
+   * This methods check referential equality of given arguments as well as references length
+   * (assuming they are arrays). Successful execution of this method guaranties arrays length
+   * equality.
    *
    * @param actualArray array of elements
    * @param expectedArray array of elements
    * @param message the assertion error message
-   * @return {@code true} if {@code actualArray} and {@code expectedArray} are the same, {@code false} otherwise. If
-   * references are different and arrays length are different {@link AssertionError} is thrown.
+   * @return {@code true} if {@code actualArray} and {@code expectedArray} are the same, {@code
+   *     false} otherwise. If references are different and arrays length are different {@link
+   *     AssertionError} is thrown.
    */
-  private static boolean checkRefEqualityAndLength(Object actualArray, Object expectedArray, String message) {
+  private static boolean checkRefEqualityAndLength(
+      Object actualArray, Object expectedArray, String message) {
     if (expectedArray == actualArray) {
       return true;
     }
@@ -428,14 +475,16 @@ public class Assert {
       fail("expectedArray not null array, but null found. " + message);
     }
 
-    assertEquals(Array.getLength(actualArray), Array.getLength(expectedArray),
+    assertEquals(
+        Array.getLength(actualArray),
+        Array.getLength(expectedArray),
         "arrays don't have the same size. " + message);
     return false;
   }
 
   /**
-   * Asserts that two objects are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two objects are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -444,8 +493,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that two Strings are equal. If they are not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two Strings are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -455,8 +505,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that two Strings are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two Strings are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -465,9 +515,10 @@ public class Assert {
   }
 
   /**
-   * Asserts that two doubles are equal concerning a delta.  If they are not,
-   * an AssertionError, with the given message, is thrown.  If the expected
-   * value is infinity then the delta value is ignored.
+   * Asserts that two doubles are equal concerning a delta. If they are not, an AssertionError, with
+   * the given message, is thrown. If the expected value is infinity then the delta value is
+   * ignored.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param delta the absolute tolerable difference between the actual and expected values
@@ -476,25 +527,23 @@ public class Assert {
   public static void assertEquals(double actual, double expected, double delta, String message) {
     // handle infinity specially since subtracting to infinite values gives NaN and the
     // the following test fails
-    if(Double.isInfinite(expected)) {
-      if(!(expected == actual)) {
+    if (Double.isInfinite(expected)) {
+      if (!(expected == actual)) {
         failNotEquals(actual, expected, message);
       }
-    }
-    else if (Double.isNaN(expected)) {
+    } else if (Double.isNaN(expected)) {
       if (!Double.isNaN(actual)) {
         failNotEquals(actual, expected, message);
       }
-    }
-    else if(!(Math.abs(expected - actual) <= delta)) {
+    } else if (!(Math.abs(expected - actual) <= delta)) {
       failNotEquals(actual, expected, message);
     }
   }
 
   /**
-   * Asserts that two doubles are equal concerning a delta. If they are not,
-   * an AssertionError is thrown. If the expected value is infinity then the
-   * delta value is ignored.
+   * Asserts that two doubles are equal concerning a delta. If they are not, an AssertionError is
+   * thrown. If the expected value is infinity then the delta value is ignored.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param delta the absolute tolerable difference between the actual and expected values
@@ -504,9 +553,10 @@ public class Assert {
   }
 
   /**
-   * Asserts that two floats are equal concerning a delta. If they are not,
-   * an AssertionError, with the given message, is thrown.  If the expected
-   * value is infinity then the delta value is ignored.
+   * Asserts that two floats are equal concerning a delta. If they are not, an AssertionError, with
+   * the given message, is thrown. If the expected value is infinity then the delta value is
+   * ignored.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param delta the absolute tolerable difference between the actual and expected values
@@ -515,20 +565,19 @@ public class Assert {
   public static void assertEquals(float actual, float expected, float delta, String message) {
     // handle infinity specially since subtracting to infinite values gives NaN and the
     // the following test fails
-    if(Float.isInfinite(expected)) {
-      if(!(expected == actual)) {
+    if (Float.isInfinite(expected)) {
+      if (!(expected == actual)) {
         failNotEquals(actual, expected, message);
       }
-    }
-    else if(!(Math.abs(expected - actual) <= delta)) {
+    } else if (!(Math.abs(expected - actual) <= delta)) {
       failNotEquals(actual, expected, message);
     }
   }
 
   /**
-   * Asserts that two floats are equal concerning a delta. If they are not,
-   * an AssertionError is thrown. If the expected
-   * value is infinity then the delta value is ignored.
+   * Asserts that two floats are equal concerning a delta. If they are not, an AssertionError is
+   * thrown. If the expected value is infinity then the delta value is ignored.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param delta the absolute tolerable difference between the actual and expected values
@@ -538,8 +587,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that two longs are equal. If they are not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two longs are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -549,8 +599,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that two longs are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two longs are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -559,19 +609,20 @@ public class Assert {
   }
 
   /**
-   * Asserts that two booleans are equal. If they are not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two booleans are equal. If they are not, an AssertionError, with the given
+   * message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEquals(boolean actual, boolean expected, String message) {
-    assertEquals( Boolean.valueOf(actual), Boolean.valueOf(expected), message);
+    assertEquals(Boolean.valueOf(actual), Boolean.valueOf(expected), message);
   }
 
   /**
-   * Asserts that two booleans are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two booleans are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -580,8 +631,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that two bytes are equal. If they are not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two bytes are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -591,8 +643,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that two bytes are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two bytes are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -601,8 +653,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that two chars are equal. If they are not,
-   * an AssertionFailedError, with the given message, is thrown.
+   * Asserts that two chars are equal. If they are not, an AssertionFailedError, with the given
+   * message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -612,8 +665,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that two chars are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two chars are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -622,8 +675,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that two shorts are equal. If they are not,
-   * an AssertionFailedError, with the given message, is thrown.
+   * Asserts that two shorts are equal. If they are not, an AssertionFailedError, with the given
+   * message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
@@ -633,8 +687,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that two shorts are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two shorts are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -643,19 +697,20 @@ public class Assert {
   }
 
   /**
-   * Asserts that two ints are equal. If they are not,
-   * an AssertionFailedError, with the given message, is thrown.
+   * Asserts that two ints are equal. If they are not, an AssertionFailedError, with the given
+   * message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
-  public static void assertEquals(int actual,  int expected, String message) {
+  public static void assertEquals(int actual, int expected, String message) {
     assertEquals(Integer.valueOf(actual), Integer.valueOf(expected), message);
   }
 
   /**
-   * Asserts that two ints are equal. If they are not,
-   * an AssertionError is thrown.
+   * Asserts that two ints are equal. If they are not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -664,8 +719,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that an object isn't null. If it is,
-   * an AssertionError is thrown.
+   * Asserts that an object isn't null. If it is, an AssertionError is thrown.
+   *
    * @param object the assertion object
    */
   public static void assertNotNull(Object object) {
@@ -673,15 +728,16 @@ public class Assert {
   }
 
   /**
-   * Asserts that an object isn't null. If it is,
-   * an AssertionFailedError, with the given message, is thrown.
+   * Asserts that an object isn't null. If it is, an AssertionFailedError, with the given message,
+   * is thrown.
+   *
    * @param object the assertion object
    * @param message the assertion error message
    */
   public static void assertNotNull(Object object, String message) {
     if (object == null) {
       String formatted = "";
-      if(message != null) {
+      if (message != null) {
         formatted = message + " ";
       }
       fail(formatted + "expected object to not be null");
@@ -690,8 +746,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that an object is null. If it is not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that an object is null. If it is not, an AssertionError, with the given message, is
+   * thrown.
+   *
    * @param object the assertion object
    */
   public static void assertNull(Object object) {
@@ -699,8 +756,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that an object is null. If it is not,
-   * an AssertionFailedError, with the given message, is thrown.
+   * Asserts that an object is null. If it is not, an AssertionFailedError, with the given message,
+   * is thrown.
+   *
    * @param object the assertion object
    * @param message the assertion error message
    */
@@ -711,22 +769,23 @@ public class Assert {
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they do not,
-   * an AssertionFailedError, with the given message, is thrown.
+   * Asserts that two objects refer to the same object. If they do not, an AssertionFailedError,
+   * with the given message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertSame(Object actual, Object expected, String message) {
-    if(expected == actual) {
+    if (expected == actual) {
       return;
     }
     failNotSame(actual, expected, message);
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two objects refer to the same object. If they do not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -735,21 +794,23 @@ public class Assert {
   }
 
   /**
-   * Asserts that two objects do not refer to the same objects. If they do,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two objects do not refer to the same objects. If they do, an AssertionError, with
+   * the given message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertNotSame(Object actual, Object expected, String message) {
-    if(expected == actual) {
+    if (expected == actual) {
       failSame(actual, expected, message);
     }
   }
 
   /**
-   * Asserts that two objects do not refer to the same object. If they do,
-   * an AssertionError is thrown.
+   * Asserts that two objects do not refer to the same object. If they do, an AssertionError is
+   * thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -757,23 +818,23 @@ public class Assert {
     assertNotSame(actual, expected, null);
   }
 
-  static private void failSame(Object actual, Object expected, String message) {
+  private static void failSame(Object actual, Object expected, String message) {
     String formatted = "";
-    if(message != null) {
+    if (message != null) {
       formatted = message + " ";
     }
     fail(formatted + ASSERT_LEFT2 + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
-  static private void failNotSame(Object actual, Object expected, String message) {
+  private static void failNotSame(Object actual, Object expected, String message) {
     String formatted = "";
-    if(message != null) {
+    if (message != null) {
       formatted = message + " ";
     }
     fail(formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
-  static private void failNotEquals(Object actual , Object expected, String message ) {
+  private static void failNotEquals(Object actual, Object expected, String message) {
     fail(format(actual, expected, message));
   }
 
@@ -792,10 +853,9 @@ public class Assert {
     return formatted + ASSERT_LEFT_INEQUALITY + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
   }
 
-
   /**
-   * Asserts that two collections contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two collections contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
    * @param actual the actual value
    * @param expected the expected value
@@ -805,14 +865,15 @@ public class Assert {
   }
 
   /**
-   * Asserts that two collections contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two collections contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEquals(Collection<?> actual, Collection<?> expected, String message) {
-    if(actual == expected) {
+    if (actual == expected) {
       return;
     }
 
@@ -824,12 +885,15 @@ public class Assert {
       }
     }
 
-    assertEquals(actual.size(), expected.size(), (message == null ? "" : message + ": ") + "lists don't have the same size");
+    assertEquals(
+        actual.size(),
+        expected.size(),
+        (message == null ? "" : message + ": ") + "lists don't have the same size");
 
     Iterator<?> actIt = actual.iterator();
     Iterator<?> expIt = expected.iterator();
     int i = -1;
-    while(actIt.hasNext() && expIt.hasNext()) {
+    while (actIt.hasNext() && expIt.hasNext()) {
       i++;
       Object e = expIt.next();
       Object a = actIt.next();
@@ -839,84 +903,92 @@ public class Assert {
       assertEqualsImpl(a, e, errorMessage);
     }
   }
-  
-  /** Asserts that two iterators return the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
-   * Please note that this assert iterates over the elements and modifies the state of the iterators.
+
+  /**
+   * Asserts that two iterators return the same elements in the same order. If they do not, an
+   * AssertionError is thrown. Please note that this assert iterates over the elements and modifies
+   * the state of the iterators.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(Iterator<?> actual, Iterator<?> expected) {
     assertEquals(actual, expected, null);
   }
-  
-  /** Asserts that two iterators return the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
-   * Please note that this assert iterates over the elements and modifies the state of the iterators.
+
+  /**
+   * Asserts that two iterators return the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown. Please note that this assert iterates over
+   * the elements and modifies the state of the iterators.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
-    if(actual == expected) {
+    if (actual == expected) {
       return;
     }
-    if(actual == null || expected == null) {
-      String msg = message != null ? message : "Iterators not equal: expected: " + expected + " and actual: " + actual;
+    if (actual == null || expected == null) {
+      String msg =
+          message != null
+              ? message
+              : "Iterators not equal: expected: " + expected + " and actual: " + actual;
       fail(msg);
     }
 
     int i = -1;
-    while(actual.hasNext() && expected.hasNext()) {
-      
+    while (actual.hasNext() && expected.hasNext()) {
+
       i++;
       Object e = expected.next();
       Object a = actual.next();
       String explanation = "Iterators differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
-      
+
       assertEqualsImpl(a, e, errorMessage);
-      
     }
-    
-    if(actual.hasNext()) { 
-      
+
+    if (actual.hasNext()) {
+
       String explanation = "Actual iterator returned more elements than the expected iterator.";
       String errorMessage = message == null ? explanation : message + ": " + explanation;
       fail(errorMessage);
-      
-    } else if(expected.hasNext()) {
-      
+
+    } else if (expected.hasNext()) {
+
       String explanation = "Expected iterator returned more elements than the actual iterator.";
       String errorMessage = message == null ? explanation : message + ": " + explanation;
       fail(errorMessage);
-      
     }
-    
   }
-  
-  /** Asserts that two iterables return iterators with the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+
+  /**
+   * Asserts that two iterables return iterators with the same elements in the same order. If they
+   * do not, an AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
   public static void assertEquals(Iterable<?> actual, Iterable<?> expected) {
     assertEquals(actual, expected, null);
   }
-  
-  /** Asserts that two iterables return iterators with the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+
+  /**
+   * Asserts that two iterables return iterators with the same elements in the same order. If they
+   * do not, an AssertionError, with the given message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEquals(Iterable<?> actual, Iterable<?> expected, String message) {
-    if(actual == expected) {
+    if (actual == expected) {
       return;
     }
-    
-    if(actual == null || expected == null) {
-      if(message != null) {
+
+    if (actual == null || expected == null) {
+      if (message != null) {
         fail(message);
       } else {
         fail("Iterables not equal: expected: " + expected + " and actual: " + actual);
@@ -925,22 +997,20 @@ public class Assert {
 
     Iterator<?> actIt = actual.iterator();
     Iterator<?> expIt = expected.iterator();
-    
+
     assertEquals(actIt, expIt, message);
   }
-  
-  
-    
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEquals(Object[] actual, Object[] expected, String message) {
-    if(actual == expected) {
+    if (actual == expected) {
       return;
     }
 
@@ -955,14 +1025,15 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in no particular order. If they do not,
-   * an AssertionError, with the given message, is thrown.
+   * Asserts that two arrays contain the same elements in no particular order. If they do not, an
+   * AssertionError, with the given message, is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
-    if(actual == expected) {
+    if (actual == expected) {
       return;
     }
 
@@ -974,8 +1045,7 @@ public class Assert {
 
     if (actual.length != expected.length) {
       failAssertNoEqual(
-          "Arrays do not have the same size:" + actual.length + " != " + expected.length,
-          message);
+          "Arrays do not have the same size:" + actual.length + " != " + expected.length, message);
     }
 
     List<Object> actualCollection = Lists.newArrayList();
@@ -1001,8 +1071,8 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in the same order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in the same order. If they do not, an
+   * AssertionError is thrown.
    *
    * @param actual the actual value
    * @param expected the expected value
@@ -1012,8 +1082,9 @@ public class Assert {
   }
 
   /**
-   * Asserts that two arrays contain the same elements in no particular order. If they do not,
-   * an AssertionError is thrown.
+   * Asserts that two arrays contain the same elements in no particular order. If they do not, an
+   * AssertionError is thrown.
+   *
    * @param actual the actual value
    * @param expected the expected value
    */
@@ -1021,16 +1092,12 @@ public class Assert {
     assertEqualsNoOrder(actual, expected, null);
   }
 
-  /**
-   * Asserts that two sets are equal.
-   */
+  /** Asserts that two sets are equal. */
   public static void assertEquals(Set<?> actual, Set<?> expected) {
     assertEquals(actual, expected, null);
   }
-  
-	/**
-	 * Assert set equals
-	 */
+
+  /** Assert set equals */
   public static void assertEquals(Set<?> actual, Set<?> expected, String message) {
     if (actual == expected) {
       return;
@@ -1084,9 +1151,7 @@ public class Assert {
     }
   }
 
-  /**
-   * Asserts that two maps are equal.
-   */
+  /** Asserts that two maps are equal. */
   public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
     if (actual == expected) {
       return;
@@ -1106,17 +1171,22 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      String assertMessage = message != null ? message : "Maps do not match for key:"
-          + key + " actual:" + value + " expected:" + expectedValue;
+      String assertMessage =
+          message != null
+              ? message
+              : "Maps do not match for key:"
+                  + key
+                  + " actual:"
+                  + value
+                  + " expected:"
+                  + expectedValue;
       assertEqualsImpl(value, expectedValue, assertMessage);
     }
-
   }
 
   public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected) {
     assertEqualsDeep(actual, expected, null);
   }
-
 
   public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
     if (actual == expected) {
@@ -1137,15 +1207,21 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      String assertMessage = message != null ? message : "Maps do not match for key:"
-          + key + " actual:" + value + " expected:" + expectedValue;
+      String assertMessage =
+          message != null
+              ? message
+              : "Maps do not match for key:"
+                  + key
+                  + " actual:"
+                  + value
+                  + " expected:"
+                  + expectedValue;
       if (expectedValue.getClass().isArray()) {
         assertArrayEquals(value, expectedValue, assertMessage);
       } else {
         assertEqualsImpl(value, expectedValue, assertMessage);
       }
     }
-
   }
 
   /////
@@ -1335,19 +1411,19 @@ public class Assert {
   }
 
   /**
-   * This interface facilitates the use of {@link #expectThrows} from Java 8. It allows
-   * method references to both void and non-void methods to be passed directly into
-   * expectThrows without wrapping, even if they declare checked exceptions.
-   * <p/>
-   * This interface is not meant to be implemented directly.
+   * This interface facilitates the use of {@link #expectThrows} from Java 8. It allows method
+   * references to both void and non-void methods to be passed directly into expectThrows without
+   * wrapping, even if they declare checked exceptions.
+   *
+   * <p>This interface is not meant to be implemented directly.
    */
   public interface ThrowingRunnable {
     void run() throws Throwable;
   }
 
   /**
-   * Asserts that {@code runnable} throws an exception when invoked. If it does not, an
-   * {@link AssertionError} is thrown.
+   * Asserts that {@code runnable} throws an exception when invoked. If it does not, an {@link
+   * AssertionError} is thrown.
    *
    * @param runnable A function that is expected to throw an exception when invoked
    * @since 6.9.5
@@ -1357,48 +1433,52 @@ public class Assert {
   }
 
   /**
-   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when
-   * executed. If it does not throw an exception, an {@link AssertionError} is thrown. If it
-   * throws the wrong type of exception, an {@code AssertionError} is thrown describing the
-   * mismatch; the exception that was actually thrown can be obtained by calling {@link
-   * AssertionError#getCause}.
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed.
+   * If it does not throw an exception, an {@link AssertionError} is thrown. If it throws the wrong
+   * type of exception, an {@code AssertionError} is thrown describing the mismatch; the exception
+   * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
    *
    * @param throwableClass the expected type of the exception
-   * @param runnable       A function that is expected to throw an exception when invoked
+   * @param runnable A function that is expected to throw an exception when invoked
    * @since 6.9.5
    */
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-  public static <T extends Throwable> void assertThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
+  public static <T extends Throwable> void assertThrows(
+      Class<T> throwableClass, ThrowingRunnable runnable) {
     expectThrows(throwableClass, runnable);
   }
 
   /**
-   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when
-   * executed and returns the exception. If {@code runnable} does not throw an exception, an
-   * {@link AssertionError} is thrown. If it throws the wrong type of exception, an {@code
-   * AssertionError} is thrown describing the mismatch; the exception that was actually thrown can
-   * be obtained by calling {@link AssertionError#getCause}.
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed
+   * and returns the exception. If {@code runnable} does not throw an exception, an {@link
+   * AssertionError} is thrown. If it throws the wrong type of exception, an {@code AssertionError}
+   * is thrown describing the mismatch; the exception that was actually thrown can be obtained by
+   * calling {@link AssertionError#getCause}.
    *
    * @param throwableClass the expected type of the exception
-   * @param runnable       A function that is expected to throw an exception when invoked
+   * @param runnable A function that is expected to throw an exception when invoked
    * @return The exception thrown by {@code runnable}
    * @since 6.9.5
    */
-  public static <T extends Throwable> T expectThrows(Class<T> throwableClass, ThrowingRunnable runnable) {
+  public static <T extends Throwable> T expectThrows(
+      Class<T> throwableClass, ThrowingRunnable runnable) {
     try {
       runnable.run();
     } catch (Throwable t) {
       if (throwableClass.isInstance(t)) {
         return throwableClass.cast(t);
       } else {
-        String mismatchMessage = String.format("Expected %s to be thrown, but %s was thrown",
+        String mismatchMessage =
+            String.format(
+                "Expected %s to be thrown, but %s was thrown",
                 throwableClass.getSimpleName(), t.getClass().getSimpleName());
 
         throw new AssertionError(mismatchMessage, t);
       }
     }
-    String message = String.format("Expected %s to be thrown, but nothing was thrown",
-            throwableClass.getSimpleName());
+    String message =
+        String.format(
+            "Expected %s to be thrown, but nothing was thrown", throwableClass.getSimpleName());
     throw new AssertionError(message);
   }
 }
