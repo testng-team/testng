@@ -14,9 +14,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import org.testng.internal.thread.ThreadUtil;
 
-/**
- * Simple wrapper for an ExecutorCompletionService.
- */
+import javax.annotation.Nonnull;
+
+/** Simple wrapper for an ExecutorCompletionService. */
 public class PoolService<FutureType> {
 
   private final ExecutorCompletionService<FutureType> m_completionService;
@@ -24,16 +24,17 @@ public class PoolService<FutureType> {
 
   public PoolService(int threadPoolSize) {
 
-    ThreadFactory threadFactory = new ThreadFactory() {
+    ThreadFactory threadFactory =
+        new ThreadFactory() {
 
-      private final AtomicInteger threadNumber = new AtomicInteger(0);
+          private final AtomicInteger threadNumber = new AtomicInteger(0);
 
-      @Override
-      public Thread newThread(Runnable r) {
-        return new Thread(r,
-            ThreadUtil.THREAD_NAME + "-PoolService-" + threadNumber.getAndIncrement());
-      }
-    };
+          @Override
+          public Thread newThread(@Nonnull Runnable r) {
+            return new Thread(
+                r, ThreadUtil.THREAD_NAME + "-PoolService-" + threadNumber.getAndIncrement());
+          }
+        };
     m_executor = Executors.newFixedThreadPool(threadPoolSize, threadFactory);
     m_completionService = new ExecutorCompletionService<>(m_executor);
   }
@@ -49,7 +50,7 @@ public class PoolService<FutureType> {
     for (Future<FutureType> take : takes) {
       try {
         result.add(take.get());
-      } catch (InterruptedException | ExecutionException e) {
+      } catch (InterruptedException | ExecutionException e) { // NOSONAR
         throw new TestNGException(e);
       }
     }

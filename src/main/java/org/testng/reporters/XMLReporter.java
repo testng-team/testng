@@ -20,18 +20,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-/**
- * The main entry for the XML generation operation
- */
+/** The main entry for the XML generation operation */
 public class XMLReporter implements IReporter {
-
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     if (Utils.isStringEmpty(config.getOutputDirectory())) {
       config.setOutputDirectory(outputDirectory);
     }
@@ -44,23 +41,23 @@ public class XMLReporter implements IReporter {
     int retried = 0;
     for (ISuite s : suites) {
       Map<String, ISuiteResult> suiteResults = s.getResults();
-        for (ISuiteResult sr : suiteResults.values()) {
-          ITestContext testContext = sr.getTestContext();
-          passed += testContext.getPassedTests().size();
-          failed += testContext.getFailedTests().size();
-          int retriedPerTest = 0;
-          int skippedPerTest = 0;
-          for (ITestResult result : testContext.getSkippedTests().getAllResults()) {
-            if (result.wasRetried()) {
-              retriedPerTest++;
-            } else {
-              skippedPerTest++;
-            }
+      for (ISuiteResult sr : suiteResults.values()) {
+        ITestContext testContext = sr.getTestContext();
+        passed += testContext.getPassedTests().size();
+        failed += testContext.getFailedTests().size();
+        int retriedPerTest = 0;
+        int skippedPerTest = 0;
+        for (ITestResult result : testContext.getSkippedTests().getAllResults()) {
+          if (result.wasRetried()) {
+            retriedPerTest++;
+          } else {
+            skippedPerTest++;
           }
-          skipped += skippedPerTest;
-          retried += retriedPerTest;
-          ignored += testContext.getExcludedMethods().size();
         }
+        skipped += skippedPerTest;
+        retried += retriedPerTest;
+        ignored += testContext.getExcludedMethods().size();
+      }
     }
 
     rootBuffer = new XMLStringBuffer();
@@ -102,16 +99,16 @@ public class XMLReporter implements IReporter {
 
   private void writeSuite(ISuite suite) {
     switch (config.getFileFragmentationLevel()) {
-    case XMLReporterConfig.FF_LEVEL_NONE:
-      writeSuiteToBuffer(rootBuffer, suite);
-      break;
-    case XMLReporterConfig.FF_LEVEL_SUITE:
-    case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
-      File suiteFile = referenceSuite(rootBuffer, suite);
-      writeSuiteToFile(suiteFile, suite);
-      break;
-    default:
-      throw new AssertionError("Unexpected value: " + config.getFileFragmentationLevel());
+      case XMLReporterConfig.FF_LEVEL_NONE:
+        writeSuiteToBuffer(rootBuffer, suite);
+        break;
+      case XMLReporterConfig.FF_LEVEL_SUITE:
+      case XMLReporterConfig.FF_LEVEL_SUITE_RESULT:
+        File suiteFile = referenceSuite(rootBuffer, suite);
+        writeSuiteToFile(suiteFile, suite);
+        break;
+      default:
+        throw new AssertionError("Unexpected value: " + config.getFileFragmentationLevel());
     }
   }
 
@@ -195,14 +192,16 @@ public class XMLReporter implements IReporter {
     return props;
   }
 
-  /**
-   * Add started-at, finished-at and duration-ms attributes to the <suite> tag
-   */
-  public static void addDurationAttributes(XMLReporterConfig config, Properties attributes,
-      Date minStartDate, Date maxEndDate) {
+  /** Add started-at, finished-at and duration-ms attributes to the <suite> tag */
+  public static void addDurationAttributes(
+      XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
 
-    String startTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(minStartDate.getTime(), config.getTimestampFormat());
-    String endTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(maxEndDate.getTime(), config.getTimestampFormat());
+    String startTime =
+        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+            minStartDate.getTime(), config.getTimestampFormat());
+    String endTime =
+        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+            maxEndDate.getTime(), config.getTimestampFormat());
     long duration = maxEndDate.getTime() - minStartDate.getTime();
 
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
@@ -214,145 +213,109 @@ public class XMLReporter implements IReporter {
     return new LinkedHashSet<>(methods);
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public int getFileFragmentationLevel() {
     return config.getFileFragmentationLevel();
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public void setFileFragmentationLevel(int fileFragmentationLevel) {
     config.setFileFragmentationLevel(fileFragmentationLevel);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public int getStackTraceOutputMethod() {
     return config.getStackTraceOutputMethod();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
     config.setStackTraceOutputMethod(stackTraceOutputMethod);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public String getOutputDirectory() {
     return config.getOutputDirectory();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setOutputDirectory(String outputDirectory) {
     config.setOutputDirectory(outputDirectory);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public boolean isGenerateGroupsAttribute() {
     return config.isGenerateGroupsAttribute();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setGenerateGroupsAttribute(boolean generateGroupsAttribute) {
     config.setGenerateGroupsAttribute(generateGroupsAttribute);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public boolean isSplitClassAndPackageNames() {
     return config.isSplitClassAndPackageNames();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setSplitClassAndPackageNames(boolean splitClassAndPackageNames) {
     config.setSplitClassAndPackageNames(splitClassAndPackageNames);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public String getTimestampFormat() {
     return config.getTimestampFormat();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setTimestampFormat(String timestampFormat) {
     config.setTimestampFormat(timestampFormat);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public boolean isGenerateDependsOnMethods() {
     return config.isGenerateDependsOnMethods();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setGenerateDependsOnMethods(boolean generateDependsOnMethods) {
     config.setGenerateDependsOnMethods(generateDependsOnMethods);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setGenerateDependsOnGroups(boolean generateDependsOnGroups) {
     config.setGenerateDependsOnGroups(generateDependsOnGroups);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public boolean isGenerateDependsOnGroups() {
     return config.isGenerateDependsOnGroups();
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public void setGenerateTestResultAttributes(boolean generateTestResultAttributes) {
     config.setGenerateTestResultAttributes(generateTestResultAttributes);
   }
 
-  /**
-   * @deprecated Use #getConfig() instead
-   */
+  /** @deprecated Use #getConfig() instead */
   @Deprecated
   public boolean isGenerateTestResultAttributes() {
     return config.isGenerateTestResultAttributes();

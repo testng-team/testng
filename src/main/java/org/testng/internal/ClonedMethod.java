@@ -253,36 +253,28 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setIgnoreMissingDependencies(boolean ignore) {
-  }
+  public void setIgnoreMissingDependencies(boolean ignore) {}
 
   @Override
-  public void setInvocationCount(int count) {
-  }
+  public void setInvocationCount(int count) {}
 
   @Override
-  public void setMissingGroup(String group) {
-  }
+  public void setMissingGroup(String group) {}
 
   @Override
-  public void setParameterInvocationCount(int n) {
-  }
+  public void setParameterInvocationCount(int n) {}
 
   @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
-  }
+  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {}
 
   @Override
-  public void setSkipFailedInvocations(boolean skip) {
-  }
+  public void setSkipFailedInvocations(boolean skip) {}
 
   @Override
-  public void setTestClass(ITestClass cls) {
-  }
+  public void setTestClass(ITestClass cls) {}
 
   @Override
-  public void setThreadPoolSize(int threadPoolSize) {
-  }
+  public void setThreadPoolSize(int threadPoolSize) {}
 
   @Override
   public boolean skipFailedInvocations() {
@@ -298,7 +290,7 @@ public class ClonedMethod implements ITestNGMethod {
   public String toString() {
     ConstructorOrMethod m = getConstructorOrMethod();
     String cls = m.getDeclaringClass().getName();
-    StringBuilder result = new StringBuilder(cls).append(".").append( m.getName()).append("(");
+    StringBuilder result = new StringBuilder(cls).append(".").append(m.getName()).append("(");
     int i = 0;
     for (Class<?> p : m.getParameterTypes()) {
       if (i++ > 0) {
@@ -355,9 +347,9 @@ public class ClonedMethod implements ITestNGMethod {
   public Map<String, String> findMethodParameters(XmlTest test) {
     return Collections.emptyMap();
   }
-  
+
   @Override
   public String getQualifiedName() {
-	return getRealClass().getName() + "." + getMethodName();
+    return getRealClass().getName() + "." + getMethodName();
   }
 }

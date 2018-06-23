@@ -37,15 +37,15 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   private XmlSuite m_xmlSuite;
 
-  public FailedReporter() {
-  }
+  public FailedReporter() {}
 
   public FailedReporter(XmlSuite xmlSuite) {
     m_xmlSuite = xmlSuite;
   }
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     for (ISuite suite : suites) {
       generateFailureSuite(suite.getXmlSuite(), suite, outputDirectory);
     }
@@ -54,31 +54,32 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   protected void generateFailureSuite(XmlSuite xmlSuite, ISuite suite, String outputDir) {
     XmlSuite failedSuite = xmlSuite.shallowCopy();
     failedSuite.setName("Failed suite [" + xmlSuite.getName() + "]");
-    m_xmlSuite= failedSuite;
+    m_xmlSuite = failedSuite;
 
     Map<String, ISuiteResult> results = suite.getResults();
 
-      for(Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
-        ISuiteResult suiteResult = entry.getValue();
-        ITestContext testContext = suiteResult.getTestContext();
+    for (Map.Entry<String, ISuiteResult> entry : results.entrySet()) {
+      ISuiteResult suiteResult = entry.getValue();
+      ITestContext testContext = suiteResult.getTestContext();
 
+      generateXmlTest(
+          testContext.getCurrentXmlTest(),
+          testContext,
+          testContext.getFailedTests().getAllResults(),
+          testContext.getSkippedTests().getAllResults());
+    }
 
-        generateXmlTest(testContext.getCurrentXmlTest(),
-                        testContext,
-                        testContext.getFailedTests().getAllResults(),
-                        testContext.getSkippedTests().getAllResults());
-      }
-
-    if(null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
+    if (null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
       Utils.writeUtf8File(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
       Utils.writeUtf8File(suite.getOutputDirectory(), TESTNG_FAILED_XML, failedSuite.toXml());
     }
   }
 
-  private void generateXmlTest(XmlTest xmlTest,
-                               ITestContext context,
-                               Set<ITestResult> failedTests,
-                               Set<ITestResult> skippedTests) {
+  private void generateXmlTest(
+      XmlTest xmlTest,
+      ITestContext context,
+      Set<ITestResult> failedTests,
+      Set<ITestResult> skippedTests) {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
     if (skippedTests.size() > 0 || failedTests.size() > 0) {
@@ -91,12 +92,13 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       allTests.addAll(skippedTests);
       for (ITestResult failedTest : allTests) {
         ITestNGMethod current = failedTest.getMethod();
-        if (! current.isTest()) { // Don't count configuration methods
+        if (!current.isTest()) { // Don't count configuration methods
           continue;
         }
         methodsToReRun.add(current);
-        List<ITestNGMethod> methodsDependedUpon = MethodHelper.getMethodsDependedUpon(current,
-            context.getAllTestMethods(), Systematiser.getComparator());
+        List<ITestNGMethod> methodsDependedUpon =
+            MethodHelper.getMethodsDependedUpon(
+                current, context.getAllTestMethods(), Systematiser.getComparator());
 
         for (ITestNGMethod m : methodsDependedUpon) {
           if (m.isTest()) {
@@ -135,10 +137,9 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     configs.addAll(Arrays.asList(iTestClass.getAfterClassMethods()));
   }
 
-  /**
-   * Generate testng-failed.xml
-   */
-  private void createXmlTest(ITestContext context, List<ITestNGMethod> methods, XmlTest srcXmlTest) {
+  /** Generate testng-failed.xml */
+  private void createXmlTest(
+      ITestContext context, List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     XmlTest xmlTest = new XmlTest(m_xmlSuite);
     xmlTest.setName(context.getName() + "(failed)");
     xmlTest.setBeanShellExpression(srcXmlTest.getExpression());
@@ -154,19 +155,19 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
   /**
    * @param methods The methods we want to represent
    * @param srcXmlTest The {@link XmlTest} object that represents the source.
-   * @return A list of XmlClass objects (each representing a <class> tag) based
-   * on the parameter methods
+   * @return A list of XmlClass objects (each representing a <class> tag) based on the parameter
+   *     methods
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     List<XmlClass> result = Lists.newArrayList();
-    Map<Class, Set<ITestNGMethod>> methodsMap= Maps.newHashMap();
+    Map<Class, Set<ITestNGMethod>> methodsMap = Maps.newHashMap();
 
     for (ITestNGMethod m : methods) {
-      Object instances= m.getInstance();
-      Class clazz= instances == null ? m.getRealClass() : instances.getClass();
-      Set<ITestNGMethod> methodList= methodsMap.get(clazz);
-      if(null == methodList) {
-        methodList= new HashSet<>();
+      Object instances = m.getInstance();
+      Class clazz = instances == null ? m.getRealClass() : instances.getClass();
+      Set<ITestNGMethod> methodList = methodsMap.get(clazz);
+      if (null == methodList) {
+        methodList = new HashSet<>();
         methodsMap.put(clazz, methodList);
       }
       methodList.add(m);
@@ -180,24 +181,24 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
 
     int index = 0;
-    for(Map.Entry<Class, Set<ITestNGMethod>> entry: methodsMap.entrySet()) {
-      Class clazz= entry.getKey();
-      Set<ITestNGMethod> methodList= entry.getValue();
+    for (Map.Entry<Class, Set<ITestNGMethod>> entry : methodsMap.entrySet()) {
+      Class clazz = entry.getKey();
+      Set<ITestNGMethod> methodList = entry.getValue();
       // @author Borojevic
       // Need to check all the methods, not just @Test ones.
-      XmlClass xmlClass= new XmlClass(clazz.getName(), index++, false /* don't load classes */);
-      List<XmlInclude> methodNames= Lists.newArrayList(methodList.size());
+      XmlClass xmlClass = new XmlClass(clazz.getName(), index++, false /* don't load classes */);
+      List<XmlInclude> methodNames = Lists.newArrayList(methodList.size());
       int ind = 0;
-      for(ITestNGMethod m: methodList) {
-        XmlInclude methodName = new XmlInclude(m.getConstructorOrMethod().getName(), m.getFailedInvocationNumbers(),
-                ind++);
+      for (ITestNGMethod m : methodList) {
+        XmlInclude methodName =
+            new XmlInclude(
+                m.getConstructorOrMethod().getName(), m.getFailedInvocationNumbers(), ind++);
         methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
         methodNames.add(methodName);
       }
       xmlClass.setIncludedMethods(methodNames);
       xmlClass.setParameters(parameters);
       result.add(xmlClass);
-
     }
 
     return result;
@@ -205,24 +206,25 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
   /**
    * Get local parameters of one include method from origin test xml.
+   *
    * @param srcXmlTest The {@link XmlTest} object that represents the source.
    * @param method the method we want to find its parameters
    * @return local parameters belong to one test method.
    */
-  private static Map<String, String> findMethodLocalParameters(XmlTest srcXmlTest, ITestNGMethod method) {
-      Class clazz = method.getRealClass();
-            
-      for (XmlClass c : srcXmlTest.getClasses()) {
-        if (clazz == c.getSupportClass()) {
-          for (XmlInclude xmlInclude : c.getIncludedMethods()) {
-            if (xmlInclude.getName().equals(method.getMethodName())) {
-              return xmlInclude.getLocalParameters();
-            }
+  private static Map<String, String> findMethodLocalParameters(
+      XmlTest srcXmlTest, ITestNGMethod method) {
+    Class clazz = method.getRealClass();
+
+    for (XmlClass c : srcXmlTest.getClasses()) {
+      if (clazz == c.getSupportClass()) {
+        for (XmlInclude xmlInclude : c.getIncludedMethods()) {
+          if (xmlInclude.getName().equals(method.getMethodName())) {
+            return xmlInclude.getLocalParameters();
           }
         }
       }
-      
-      return Collections.emptyMap();
-  }
+    }
 
+    return Collections.emptyMap();
+  }
 }

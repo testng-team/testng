@@ -1,8 +1,6 @@
 package org.testng.internal.reflect;
 
-/**
- * Checks the conformance as per data-provide specifications.
- */
+/** Checks the conformance as per data-provide specifications. */
 public class DataProviderMethodMatcher extends AbstractMethodMatcher {
 
   private final DirectMethodMatcher directMethodMatcher;
@@ -15,9 +13,7 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
     this.arrayEndingMethodMatcher = new ArrayEndingMethodMatcher(context);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected boolean hasConformance() {
     boolean matching = false;
@@ -31,17 +27,16 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
     return matching;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public Object[] getConformingArguments(){
+  public Object[] getConformingArguments() {
     if (getConforms() == null) {
       conforms();
     }
     if (matchingMatcher != null) {
       return matchingMatcher.getConformingArguments();
     }
-    throw new MethodMatcherException("Data provider mismatch", getContext().getMethod(), getContext().getArguments());
+    throw new MethodMatcherException(
+        "Data provider mismatch", getContext().getMethod(), getContext().getArguments());
   }
 }

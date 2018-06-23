@@ -5,9 +5,8 @@ import java.util.Map;
 import org.testng.collections.Maps;
 
 /**
- * When an assertion fails, don't throw an exception but record the failure.
- * Calling {@code assertAll()} will cause an exception to be thrown if at
- * least one assertion failed.
+ * When an assertion fails, don't throw an exception but record the failure. Calling {@code
+ * assertAll()} will cause an exception to be thrown if at least one assertion failed.
  */
 public class SoftAssert extends Assertion {
   // LinkedHashMap to preserve the order

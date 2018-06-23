@@ -4,11 +4,11 @@ import org.testng.IRetryAnalyzer;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.ClassHelper;
 
-
 /**
  * An implementation of ITest
  *
- * Created on Dec 20, 2005
+ * <p>Created on Dec 20, 2005
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
@@ -29,17 +29,13 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private boolean m_skipFailedInvocations = false;
   private boolean m_ignoreMissingDependencies = false;
 
-  /**
-   * @return the expectedExceptions
-   */
+  /** @return the expectedExceptions */
   @Override
   public Class<?>[] getExpectedExceptions() {
     return m_expectedExceptions;
   }
 
-  /**
-   * @param expectedExceptions the expectedExceptions to set
-   */
+  /** @param expectedExceptions the expectedExceptions to set */
   @Override
   public void setExpectedExceptions(Class<?>[] expectedExceptions) {
     m_expectedExceptions = expectedExceptions;
@@ -51,8 +47,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public void setExpectedExceptionsMessageRegExp(
-      String expectedExceptionsMessageRegExp) {
+  public void setExpectedExceptionsMessageRegExp(String expectedExceptionsMessageRegExp) {
     m_expectedExceptionsMessageRegExp = expectedExceptionsMessageRegExp;
   }
 
@@ -93,14 +88,13 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
 
   @Override
   public long invocationTimeOut() {
-   return m_invocationTimeOut;
+    return m_invocationTimeOut;
   }
 
   @Override
   public void setInvocationTimeOut(long timeOut) {
     m_invocationTimeOut = timeOut;
   }
-
 
   @Override
   public int getSuccessPercentage() {

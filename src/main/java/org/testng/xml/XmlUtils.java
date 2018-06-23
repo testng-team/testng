@@ -8,11 +8,9 @@ import java.util.Properties;
 
 public class XmlUtils {
 
-  /**
-   * Don't add this property if it's equal to its default value.
-   */
+  /** Don't add this property if it's equal to its default value. */
   public static void setProperty(Properties p, String name, String value, String def) {
-    if (! def.equals(value) && value != null) {
+    if (!def.equals(value) && value != null) {
       p.setProperty(name, value);
     }
   }
@@ -29,7 +27,8 @@ public class XmlUtils {
         continue;
       }
       if (para.getValue() == null) {
-        String msg = String.format("Skipping parameter [%s] since it has a null value", para.getKey());
+        String msg =
+            String.format("Skipping parameter [%s] since it has a null value", para.getKey());
         Utils.log(msg);
         continue;
       }
@@ -38,5 +37,4 @@ public class XmlUtils {
       xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
     }
   }
-
 }

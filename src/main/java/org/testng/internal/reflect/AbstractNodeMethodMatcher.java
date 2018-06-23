@@ -15,14 +15,13 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return conformingParameters;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected boolean hasConformance() {
     boolean matching = false;
     for (final Set<InjectableParameter> injects : getConformanceInjectsOrder()) {
-      final Parameter[] parameters = ReflectionRecipes.filter(getContext().getMethodParameter(), injects);
+      final Parameter[] parameters =
+          ReflectionRecipes.filter(getContext().getMethodParameter(), injects);
       matching = match(parameters, getContext().getArguments());
       if (matching) {
         conformingParameters = parameters;
@@ -32,49 +31,47 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return matching;
   }
 
-  /**
-   * @return injects to check against.
-   */
+  /** @return injects to check against. */
   protected abstract List<Set<InjectableParameter>> getConformanceInjectsOrder();
 
   /**
    * Checks if its possible to gives an array consumable by java method invoker.
    *
    * @param parameters array of parameter instances under question.
-   * @param arguments  instances to be verified.
+   * @param arguments instances to be verified.
    * @return matches or not
    */
   protected abstract boolean match(final Parameter[] parameters, final Object[] arguments);
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Object[] getConformingArguments() {
     if (getConforms() == null) {
       conforms();
     }
     if (getConformingParameters() == null) {
-      throw new MethodMatcherException(this.getClass().getSimpleName() + " mismatch", getContext().getMethod(),
-        getContext().getArguments());
+      throw new MethodMatcherException(
+          this.getClass().getSimpleName() + " mismatch",
+          getContext().getMethod(),
+          getContext().getArguments());
     }
 
     return ReflectionRecipes.inject(
-      getContext().getMethodParameter(),
-      InjectableParameter.Assistant.ALL_INJECTS,
-      matchingArguments(getConformingParameters(), getContext().getArguments()),
-      getContext().getMethod(),
-      getContext().getTestContext(),
-      getContext().getTestResult()
-    );
+        getContext().getMethodParameter(),
+        InjectableParameter.Assistant.ALL_INJECTS,
+        matchingArguments(getConformingParameters(), getContext().getArguments()),
+        getContext().getMethod(),
+        getContext().getTestContext(),
+        getContext().getTestResult());
   }
 
   /**
    * If possible gives an array consumable by java method invoker.
    *
    * @param parameters array of parameter instances under question.
-   * @param arguments  instances to conform.
+   * @param arguments instances to conform.
    * @return conforming argument array
    */
-  protected abstract Object[] matchingArguments(final Parameter[] parameters, final Object[] arguments);
+  protected abstract Object[] matchingArguments(
+      final Parameter[] parameters, final Object[] arguments);
 }

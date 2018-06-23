@@ -1,14 +1,13 @@
 package org.testng;
 
-
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Enumeration;
@@ -38,6 +37,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
 
 import static java.lang.Boolean.TRUE;
@@ -45,61 +45,64 @@ import static org.testng.internal.Utils.isStringNotBlank;
 
 /**
  * TestNG settings:
+ *
  * <ul>
- * <li>classfileset (inner)</li>
- * <li>classfilesetref (attribute)</li>
- * <li>xmlfileset (inner)</li>
- * <li>xmlfilesetref (attribute)</li>
- * <li>enableAssert (attribute)</li>
- * <li>excludedGroups (attribute)</li>
- * <li>groups (attribute)</li>
- * <li>junit (attribute)</li>
- * <li>listener (attribute)</li>
- * <li>outputdir (attribute)</li>
- * <li>parallel (attribute)</li>
- * <li>reporter (attribute)</li>
- * <li>sourcedir (attribute)</li>
- * <li>sourcedirref (attribute)</li>
- * <li>suitename (attribute)</li>
- * <li>suiterunnerclass (attribute)</li>
- * <li>target (attribute)</li>
- * <li>testjar (attribute)</li>
- * <li>testname (attribute)</li>
- * <li>threadcount (attribute)</li>
- * <li>dataproviderthreadcount (attribute)</li>
- * <li>verbose (attribute)</li>
- * <li>testrunfactory (attribute)</li>
- * <li>configFailurepolicy (attribute)</li>
- * <li>randomizeSuites (attribute)</li>
- * <li>methodselectors (attribute)</li>
+ *   <li>classfileset (inner)
+ *   <li>classfilesetref (attribute)
+ *   <li>xmlfileset (inner)
+ *   <li>xmlfilesetref (attribute)
+ *   <li>enableAssert (attribute)
+ *   <li>excludedGroups (attribute)
+ *   <li>groups (attribute)
+ *   <li>junit (attribute)
+ *   <li>listener (attribute)
+ *   <li>outputdir (attribute)
+ *   <li>parallel (attribute)
+ *   <li>reporter (attribute)
+ *   <li>sourcedir (attribute)
+ *   <li>sourcedirref (attribute)
+ *   <li>suitename (attribute)
+ *   <li>suiterunnerclass (attribute)
+ *   <li>target (attribute)
+ *   <li>testjar (attribute)
+ *   <li>testname (attribute)
+ *   <li>threadcount (attribute)
+ *   <li>dataproviderthreadcount (attribute)
+ *   <li>verbose (attribute)
+ *   <li>testrunfactory (attribute)
+ *   <li>configFailurepolicy (attribute)
+ *   <li>randomizeSuites (attribute)
+ *   <li>methodselectors (attribute)
  * </ul>
  *
  * Ant settings:
+ *
  * <ul>
- * <li>classpath (inner)</li>
- * <li>classpathref (attribute)</li>
- * <li>jvm (attribute)</li>
- * <li>workingDir (attribute)</li>
- * <li>env (inner)</li>
- * <li>sysproperty (inner)</li>
- * <li>propertyset (inner)</li>
- * <li>jvmarg (inner)</li>
- * <li>timeout (attribute)</li>
- * <li>haltonfailure (attribute)</li>
- * <li>onHaltTarget (attribute)</li>
- * <li>failureProperty (attribute)</li>
- * <li>haltonFSP (attribute)</li>
- * <li>FSPproperty (attribute)</li>
- * <li>haltonskipped (attribute)</li>
- * <li>skippedProperty (attribute)</li>
- * <li>testRunnerFactory (attribute)</li>
+ *   <li>classpath (inner)
+ *   <li>classpathref (attribute)
+ *   <li>jvm (attribute)
+ *   <li>workingDir (attribute)
+ *   <li>env (inner)
+ *   <li>sysproperty (inner)
+ *   <li>propertyset (inner)
+ *   <li>jvmarg (inner)
+ *   <li>timeout (attribute)
+ *   <li>haltonfailure (attribute)
+ *   <li>onHaltTarget (attribute)
+ *   <li>failureProperty (attribute)
+ *   <li>haltonFSP (attribute)
+ *   <li>FSPproperty (attribute)
+ *   <li>haltonskipped (attribute)
+ *   <li>skippedProperty (attribute)
+ *   <li>testRunnerFactory (attribute)
  * </ul>
  *
  * Debug information:
+ *
  * <ul>
- * <li>dumpCommand (boolean)</li>
- * <li>dumpEnv (boolean)</li>
- * <li>dumpSys (boolean)</li>
+ *   <li>dumpCommand (boolean)
+ *   <li>dumpEnv (boolean)
+ *   <li>dumpSys (boolean)
  * </ul>
  *
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alexandru Popescu</a>
@@ -110,30 +113,33 @@ public class TestNGAntTask extends Task {
 
   protected CommandlineJava m_javaCommand;
 
-  protected List<ResourceCollection> m_xmlFilesets= Lists.newArrayList();
-  protected List<ResourceCollection> m_classFilesets= Lists.newArrayList();
+  protected List<ResourceCollection> m_xmlFilesets = Lists.newArrayList();
+  protected List<ResourceCollection> m_classFilesets = Lists.newArrayList();
   protected File m_outputDir;
   protected File m_testjar;
   protected File m_workingDir;
   private Integer m_timeout;
-  private List<String> m_listeners= Lists.newArrayList();
-  private List<String> m_methodselectors= Lists.newArrayList();
+  private List<String> m_listeners = Lists.newArrayList();
+  private List<String> m_methodselectors = Lists.newArrayList();
   private String m_objectFactory;
   protected String m_testRunnerFactory;
   private boolean m_delegateCommandSystemProperties = false;
 
-  protected Environment m_environment= new Environment();
+  protected Environment m_environment = new Environment();
 
   /** The suite runner name (defaults to TestNG.class.getName(). */
   protected String m_mainClass = TestNG.class.getName();
 
-  /** True if the temporary file created by the Ant Task for command line parameters
-   * to TestNG should be preserved after execution. */
+  /**
+   * True if the temporary file created by the Ant Task for command line parameters to TestNG should
+   * be preserved after execution.
+   */
   protected boolean m_dump;
+
   private boolean m_dumpEnv;
   private boolean m_dumpSys;
 
-  protected boolean m_assertEnabled= true;
+  protected boolean m_assertEnabled = true;
   protected boolean m_haltOnFailure;
   protected String m_onHaltTarget;
   protected String m_failurePropertyName;
@@ -149,30 +155,32 @@ public class TestNGAntTask extends Task {
   protected String m_configFailurePolicy;
   protected Boolean m_randomizeSuites;
   public String m_useDefaultListeners;
-  private String m_suiteName="Ant suite";
-  private String m_testName="Ant test";
+  private String m_suiteName = "Ant suite";
+  private String m_testName = "Ant test";
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
   private Mode mode = Mode.testng;
 
   public enum Mode {
-      //lower-case to better look in build scripts
-      testng, junit, mixed
+    // lower-case to better look in build scripts
+    testng,
+    junit,
+    mixed
   }
-  
-  /**
-   * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
-   */
+
+  private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
+
+  /** The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task */
   private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
 
   private String m_testNames = "";
 
   public void setParallel(String parallel) {
-    m_parallelMode= parallel;
+    m_parallelMode = parallel;
   }
 
   public void setThreadCount(String threadCount) {
-    m_threadCount= threadCount;
+    m_threadCount = threadCount;
   }
 
   public void setDataProviderThreadCount(String dataproviderthreadCount) {
@@ -180,85 +188,85 @@ public class TestNGAntTask extends Task {
   }
 
   public void setUseDefaultListeners(String f) {
-    m_useDefaultListeners= f;
+    m_useDefaultListeners = f;
   }
 
   // Ant task settings
   public void setHaltonfailure(boolean value) {
-    m_haltOnFailure= value;
+    m_haltOnFailure = value;
   }
 
   public void setOnHaltTarget(String targetName) {
-    m_onHaltTarget= targetName;
+    m_onHaltTarget = targetName;
   }
 
   public void setFailureProperty(String propertyName) {
-    m_failurePropertyName= propertyName;
+    m_failurePropertyName = propertyName;
   }
 
   public void setHaltonskipped(boolean value) {
-    m_haltOnSkipped= value;
+    m_haltOnSkipped = value;
   }
 
   public void setSkippedProperty(String propertyName) {
-    m_skippedPropertyName= propertyName;
+    m_skippedPropertyName = propertyName;
   }
 
   public void setHaltonFSP(boolean value) {
-    m_haltOnFSP= value;
+    m_haltOnFSP = value;
   }
 
   public void setFSPProperty(String propertyName) {
-    m_fspPropertyName= propertyName;
+    m_fspPropertyName = propertyName;
   }
 
-  public void setDelegateCommandSystemProperties(boolean value){
+  public void setDelegateCommandSystemProperties(boolean value) {
     m_delegateCommandSystemProperties = value;
   }
 
   /**
-   * Sets the flag to log the command line. When verbose is set to true
-   * the command line parameters are stored in a temporary file stored
-   * in the user's default temporary file directory. The file created is
-   * prefixed with "testng".
+   * Sets the flag to log the command line. When verbose is set to true the command line parameters
+   * are stored in a temporary file stored in the user's default temporary file directory. The file
+   * created is prefixed with "testng".
    */
   public void setDumpCommand(boolean verbose) {
     m_dump = verbose;
   }
 
   /**
-   * Sets the flag to write on <code>System.out</code> the Ant
-   * Environment properties.
+   * Sets the flag to write on <code>System.out</code> the Ant Environment properties.
    *
    * @param verbose <tt>true</tt> for printing
    */
   public void setDumpEnv(boolean verbose) {
-    m_dumpEnv= verbose;
+    m_dumpEnv = verbose;
   }
 
   /**
    * Sets te flag to write on <code>System.out</code> the system properties.
+   *
    * @param verbose <tt>true</tt> for dumping the info
    */
   public void setDumpSys(boolean verbose) {
-    m_dumpSys= verbose;
+    m_dumpSys = verbose;
   }
 
   public void setEnableAssert(boolean flag) {
-    m_assertEnabled= flag;
+    m_assertEnabled = flag;
   }
 
   /**
    * The directory to invoke the VM in.
+   *
    * @param workingDir the directory to invoke the JVM from.
    */
   public void setWorkingDir(File workingDir) {
-    m_workingDir= workingDir;
+    m_workingDir = workingDir;
   }
 
   /**
-   * Sets a particular JVM to be used. Default is 'java' and is solved
-   * by <code>Runtime.exec()</code>.
+   * Sets a particular JVM to be used. Default is 'java' and is solved by <code>Runtime.exec()
+   * </code>.
    *
    * @param jvm the new jvm
    */
@@ -269,14 +277,13 @@ public class TestNGAntTask extends Task {
   /**
    * Set the timeout value (in milliseconds).
    *
-   * <p>If the tests are running for more than this value, the tests
-   * will be canceled.
+   * <p>If the tests are running for more than this value, the tests will be canceled.
    *
-   * </p>
-   * @param value the maximum time (in milliseconds) allowed before declaring the test as 'timed-out'
+   * @param value the maximum time (in milliseconds) allowed before declaring the test as
+   *     'timed-out'
    */
   public void setTimeout(Integer value) {
-    m_timeout= value;
+    m_timeout = value;
   }
 
   public Commandline.Argument createJvmarg() {
@@ -287,9 +294,7 @@ public class TestNGAntTask extends Task {
     getJavaCommand().addSysproperty(sysp);
   }
 
-  /**
-   * Adds an environment variable; used when forking.
-   */
+  /** Adds an environment variable; used when forking. */
   public void addEnv(Environment.Variable var) {
     m_environment.addVariable(var);
   }
@@ -305,6 +310,7 @@ public class TestNGAntTask extends Task {
 
   /**
    * Adds a path to the bootclasspath.
+   *
    * @return reference to the bootclasspath in the embedded java command line
    */
   public Path createBootclasspath() {
@@ -351,26 +357,29 @@ public class TestNGAntTask extends Task {
 
   /**
    * Sets the suite runner class to invoke
+   *
    * @param s the name of the suite runner class
    */
   public void setSuiteRunnerClass(String s) {
-    m_mainClass= s;
+    m_mainClass = s;
   }
 
   /**
    * Sets the suite name
+   *
    * @param s the name of the suite
    */
   public void setSuiteName(String s) {
-    m_suiteName= s;
+    m_suiteName = s;
   }
 
   /**
    * Sets the test name
+   *
    * @param s the name of the test
    */
   public void setTestName(String s) {
-    m_testName= s;
+    m_testName = s;
   }
 
   // TestNG settings
@@ -385,36 +394,38 @@ public class TestNGAntTask extends Task {
 
   /**
    * Sets the test output directory
+   *
    * @param dir the name of directory
    */
   public void setOutputDir(File dir) {
-    m_outputDir= dir;
+    m_outputDir = dir;
   }
 
   /**
    * Sets the test jar
+   *
    * @param s the name of test jar
    */
   public void setTestJar(File s) {
-    m_testjar= s;
+    m_testjar = s;
   }
 
   public void setGroups(String groups) {
-    m_includedGroups= groups;
+    m_includedGroups = groups;
   }
 
   public void setExcludedGroups(String groups) {
-    m_excludedGroups= groups;
+    m_excludedGroups = groups;
   }
 
-  private Integer m_verbose= null;
+  private Integer m_verbose = null;
 
   private Integer m_suiteThreadPoolSize;
 
   private String m_xmlPathInJar;
 
   public void setVerbose(Integer verbose) {
-    m_verbose= verbose;
+    m_verbose = verbose;
   }
 
   public void setReporter(String listener) {
@@ -433,26 +444,24 @@ public class TestNGAntTask extends Task {
     m_suiteThreadPoolSize = n;
   }
 
-  /**
-   * @deprecated Use "listeners"
-   */
+  /** @deprecated Use "listeners" */
   @Deprecated
   public void setListener(String listener) {
     m_listeners.add(listener);
   }
 
   public void setListeners(String listeners) {
-    StringTokenizer st= new StringTokenizer(listeners, " ,");
-    while(st.hasMoreTokens()) {
+    StringTokenizer st = new StringTokenizer(listeners, " ,");
+    while (st.hasMoreTokens()) {
       m_listeners.add(st.nextToken());
     }
   }
 
   public void setMethodSelectors(String methodSelectors) {
-	StringTokenizer st= new StringTokenizer(methodSelectors, " ,");
-	while(st.hasMoreTokens()) {
-	 m_methodselectors.add(st.nextToken());
-	}
+    StringTokenizer st = new StringTokenizer(methodSelectors, " ,");
+    while (st.hasMoreTokens()) {
+      m_methodselectors.add(st.nextToken());
+    }
   }
 
   public void setConfigFailurePolicy(String failurePolicy) {
@@ -470,7 +479,7 @@ public class TestNGAntTask extends Task {
   /**
    * Launches TestNG in a new JVM.
    *
-   * {@inheritDoc}
+   * <p>{@inheritDoc}
    */
   @Override
   public void execute() throws BuildException {
@@ -478,7 +487,7 @@ public class TestNGAntTask extends Task {
 
     CommandlineJava cmd = getJavaCommand();
     cmd.setClassname(m_mainClass);
-    if(m_assertEnabled) {
+    if (m_assertEnabled) {
       cmd.createVmArgument().setValue("-ea");
     }
     if (m_delegateCommandSystemProperties) {
@@ -486,39 +495,36 @@ public class TestNGAntTask extends Task {
     }
     List<String> argv = createArguments();
 
-    String fileName= "";
-    FileWriter fw= null;
-    BufferedWriter bw= null;
+    String fileName = "";
+    FileWriter fw = null;
+    BufferedWriter bw = null;
     try {
-      File f= File.createTempFile("testng", "");
-      fileName= f.getAbsolutePath();
+      File f = File.createTempFile("testng", "");
+      fileName = f.getAbsolutePath();
 
       // If the user asked to see the command, preserve the file
-      if(!m_dump) {
+      if (!m_dump) {
         f.deleteOnExit();
       }
-      fw= new FileWriter(f);
-      bw= new BufferedWriter(fw);
-      for(String arg : argv) {
+      fw = new FileWriter(f);
+      bw = new BufferedWriter(fw);
+      for (String arg : argv) {
         bw.write(arg);
         bw.newLine();
       }
       bw.flush();
-    }
-    catch(IOException e) {
-      e.printStackTrace();
-    }
-    finally {
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage(), e);
+    } finally {
       try {
-        if(bw != null) {
+        if (bw != null) {
           bw.close();
         }
-        if(fw != null) {
+        if (fw != null) {
           fw.close();
         }
-      }
-      catch(IOException e) {
-        e.printStackTrace();
+      } catch (IOException e) {
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
@@ -528,21 +534,22 @@ public class TestNGAntTask extends Task {
 
     cmd.createArgument().setValue("@" + fileName);
 
-    ExecuteWatchdog watchdog= createWatchdog();
-    boolean wasKilled= false;
-    int exitValue= executeAsForked(cmd, watchdog);
-    if(null != watchdog) {
-      wasKilled= watchdog.killedProcess();
+    ExecuteWatchdog watchdog = createWatchdog();
+    boolean wasKilled = false;
+    int exitValue = executeAsForked(cmd, watchdog);
+    if (null != watchdog) {
+      wasKilled = watchdog.killedProcess();
     }
 
     actOnResult(exitValue, wasKilled);
   }
 
   protected List<String> createArguments() {
-	List<String> argv= Lists.newArrayList();
+    List<String> argv = Lists.newArrayList();
     addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.junit);
     addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.mixed);
-    addBooleanIfTrue(argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
+    addBooleanIfTrue(
+        argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
     addIntegerIfNotNull(argv, CommandLineArgs.LOG, m_verbose);
     addDefaultListeners(argv);
     addOutputDir(argv);
@@ -567,13 +574,14 @@ public class TestNGAntTask extends Task {
     addIntegerIfNotNull(argv, CommandLineArgs.SUITE_THREAD_POOL_SIZE, m_suiteThreadPoolSize);
     addStringIfNotNull(argv, CommandLineArgs.XML_PATH_IN_JAR, m_xmlPathInJar);
     addXmlFiles(argv);
-	return argv;
+    return argv;
   }
 
   private void addDefaultListeners(List<String> argv) {
     if (m_useDefaultListeners != null) {
       String useDefaultListeners = "false";
-      if ("yes".equalsIgnoreCase(m_useDefaultListeners) || "true".equalsIgnoreCase(m_useDefaultListeners)) {
+      if ("yes".equalsIgnoreCase(m_useDefaultListeners)
+          || "true".equalsIgnoreCase(m_useDefaultListeners)) {
         useDefaultListeners = "true";
       }
       argv.add(CommandLineArgs.USE_DEFAULT_LISTENERS);
@@ -602,20 +610,22 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  private void addFilesOfRCollection(List<String> argv, String name, List<ResourceCollection> resources) {
-	addArgumentsIfNotEmpty(argv, name, getFiles(resources), ",");
+  private void addFilesOfRCollection(
+      List<String> argv, String name, List<ResourceCollection> resources) {
+    addArgumentsIfNotEmpty(argv, name, getFiles(resources), ",");
   }
 
   private void addListOfStringIfNotEmpty(List<String> argv, String name, List<String> arguments) {
-	addArgumentsIfNotEmpty(argv, name, arguments, ";");
+    addArgumentsIfNotEmpty(argv, name, arguments, ";");
   }
 
-  private void addArgumentsIfNotEmpty(List<String> argv, String name, List<String> arguments, String separator) {
-	if (arguments != null && !arguments.isEmpty()) {
+  private void addArgumentsIfNotEmpty(
+      List<String> argv, String name, List<String> arguments, String separator) {
+    if (arguments != null && !arguments.isEmpty()) {
       argv.add(name);
-      String value= Utils.join(arguments, separator);
-	    argv.add(value);
-  	}
+      String value = Utils.join(arguments, separator);
+      argv.add(value);
+    }
   }
 
   private void addFileIfFile(List<String> argv, String name, File file) {
@@ -624,27 +634,27 @@ public class TestNGAntTask extends Task {
       argv.add(file.getAbsolutePath());
     }
   }
-  
+
   private void addBooleanIfTrue(List<String> argv, String name, Boolean value) {
     if (TRUE.equals(value)) {
       argv.add(name);
     }
   }
-  
+
   private void addIntegerIfNotNull(List<String> argv, String name, Integer value) {
     if (value != null) {
       argv.add(name);
       argv.add(value.toString());
     }
   }
-  
+
   private void addStringIfNotNull(List<String> argv, String name, String value) {
     if (value != null) {
       argv.add(name);
       argv.add(value);
     }
   }
-  
+
   private void addStringIfNotBlank(List<String> argv, String name, String value) {
     if (isStringNotBlank(value)) {
       argv.add(name);
@@ -658,13 +668,11 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  /**
-   * @return the list of the XML file names. This method can be overridden by subclasses.
-   */
+  /** @return the list of the XML file names. This method can be overridden by subclasses. */
   protected List<String> getSuiteFileNames() {
     List<String> result = Lists.newArrayList();
 
-    for(String file : getFiles(m_xmlFilesets)) {
+    for (String file : getFiles(m_xmlFilesets)) {
       result.add(file);
     }
 
@@ -679,7 +687,7 @@ public class TestNGAntTask extends Task {
       String propVal = getProject().getUserProperty(propName);
       if (propName.startsWith("ant.")) {
         log("Excluding ant property: " + propName + ": " + propVal, Project.MSG_DEBUG);
-      }	else {
+      } else {
         log("Including user property: " + propName + ": " + propVal, Project.MSG_DEBUG);
         Environment.Variable var = new Environment.Variable();
         var.setKey(propName);
@@ -690,48 +698,47 @@ public class TestNGAntTask extends Task {
   }
 
   private void printDebugInfo(String fileName) {
-    if(m_dumpSys) {
+    if (m_dumpSys) {
       debug("* SYSTEM PROPERTIES *");
-      Properties props= System.getProperties();
-      Enumeration en= props.propertyNames();
-      while(en.hasMoreElements()) {
-        String key= (String) en.nextElement();
+      Properties props = System.getProperties();
+      Enumeration en = props.propertyNames();
+      while (en.hasMoreElements()) {
+        String key = (String) en.nextElement();
         debug(key + ": " + props.getProperty(key));
       }
       debug("");
     }
-    if(m_dumpEnv) {
-      String[] vars= m_environment.getVariables();
-      if(null != vars && vars.length > 0) {
+    if (m_dumpEnv) {
+      String[] vars = m_environment.getVariables();
+      if (null != vars && vars.length > 0) {
         debug("* ENVIRONMENT *");
-        for(String v: vars) {
+        for (String v : vars) {
           debug(v);
         }
         debug("");
       }
     }
-    if(m_dump) {
+    if (m_dump) {
       dumpCommand(fileName);
     }
   }
 
   private void debug(String message) {
-    log("[TestNGAntTask] "  + message, Project.MSG_DEBUG);
+    log("[TestNGAntTask] " + message, Project.MSG_DEBUG);
   }
 
   protected void actOnResult(int exitValue, boolean wasKilled) {
-    if(exitValue == -1) {
+    if (exitValue == -1) {
       executeHaltTarget(exitValue);
       throw new BuildException("an error occurred when running TestNG tests");
     }
 
-    if((exitValue & ExitCode.HAS_NO_TEST) == ExitCode.HAS_NO_TEST) {
-      if(m_haltOnFailure) {
+    if ((exitValue & ExitCode.HAS_NO_TEST) == ExitCode.HAS_NO_TEST) {
+      if (m_haltOnFailure) {
         executeHaltTarget(exitValue);
         throw new BuildException("No tests were run");
-      }
-      else {
-        if(null != m_failurePropertyName) {
+      } else {
+        if (null != m_failurePropertyName) {
           getProject().setNewProperty(m_failurePropertyName, "true");
         }
 
@@ -739,15 +746,14 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    boolean failed= (ExitCode.hasFailure(exitValue)) || wasKilled;
-    if(failed) {
-      final String msg= wasKilled ? "The tests timed out and were killed." : "The tests failed.";
-      if(m_haltOnFailure) {
+    boolean failed = (ExitCode.hasFailure(exitValue)) || wasKilled;
+    if (failed) {
+      final String msg = wasKilled ? "The tests timed out and were killed." : "The tests failed.";
+      if (m_haltOnFailure) {
         executeHaltTarget(exitValue);
         throw new BuildException(msg);
-      }
-      else {
-        if(null != m_failurePropertyName) {
+      } else {
+        if (null != m_failurePropertyName) {
           getProject().setNewProperty(m_failurePropertyName, "true");
         }
 
@@ -755,13 +761,12 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if(ExitCode.hasSkipped(exitValue)) {
-      if(m_haltOnSkipped) {
+    if (ExitCode.hasSkipped(exitValue)) {
+      if (m_haltOnSkipped) {
         executeHaltTarget(exitValue);
         throw new BuildException("There are TestNG SKIPPED tests");
-      }
-      else {
-        if(null != m_skippedPropertyName) {
+      } else {
+        if (null != m_skippedPropertyName) {
           getProject().setNewProperty(m_skippedPropertyName, "true");
         }
 
@@ -769,13 +774,12 @@ public class TestNGAntTask extends Task {
       }
     }
 
-    if(ExitCode.hasFailureWithinSuccessPercentage(exitValue)) {
-      if(m_haltOnFSP) {
+    if (ExitCode.hasFailureWithinSuccessPercentage(exitValue)) {
+      if (m_haltOnFSP) {
         executeHaltTarget(exitValue);
         throw new BuildException("There are TestNG FAILED WITHIN SUCCESS PERCENTAGE tests");
-      }
-      else {
-        if(null != m_fspPropertyName) {
+      } else {
+        if (null != m_fspPropertyName) {
           getProject().setNewProperty(m_fspPropertyName, "true");
         }
 
@@ -786,13 +790,13 @@ public class TestNGAntTask extends Task {
 
   /** Executes the target, if any, that user designates executing before failing the test */
   private void executeHaltTarget(int exitValue) {
-    if(m_onHaltTarget != null) {
-      if(m_outputDir != null) {
+    if (m_onHaltTarget != null) {
+      if (m_outputDir != null) {
         getProject().setProperty("testng.outputdir", m_outputDir.getAbsolutePath());
       }
       getProject().setProperty("testng.returncode", String.valueOf(exitValue));
-      Target t= getProject().getTargets().get(m_onHaltTarget);
-      if(t != null) {
+      Target t = getProject().getTargets().get(m_onHaltTarget);
+      if (t != null) {
         t.execute();
       }
     }
@@ -806,22 +810,24 @@ public class TestNGAntTask extends Task {
    * @return the exit status of the subprocess or INVALID.
    */
   protected int executeAsForked(CommandlineJava cmd, ExecuteWatchdog watchdog) {
-    Execute execute= new Execute(new TestNGLogSH(this, Project.MSG_INFO, Project.MSG_WARN, (m_verbose == null || m_verbose < 5)),
-                                 watchdog);
+    Execute execute =
+        new Execute(
+            new TestNGLogSH(
+                this, Project.MSG_INFO, Project.MSG_WARN, (m_verbose == null || m_verbose < 5)),
+            watchdog);
     execute.setCommandline(cmd.getCommandline());
     execute.setAntRun(getProject());
-    if(m_workingDir != null) {
-      if(m_workingDir.exists() && m_workingDir.isDirectory()) {
+    if (m_workingDir != null) {
+      if (m_workingDir.exists() && m_workingDir.isDirectory()) {
         execute.setWorkingDirectory(m_workingDir);
-      }
-      else {
+      } else {
         log("Ignoring invalid working directory : " + m_workingDir, Project.MSG_WARN);
       }
     }
 
-    String[] environment= m_environment.getVariables();
-    if(null != environment) {
-      for(String envEntry : environment) {
+    String[] environment = m_environment.getVariables();
+    if (null != environment) {
+      for (String envEntry : environment) {
         log("Setting environment variable: " + envEntry, Project.MSG_VERBOSE);
       }
     }
@@ -831,20 +837,17 @@ public class TestNGAntTask extends Task {
     log(cmd.describeCommand(), Project.MSG_VERBOSE);
     int retVal;
     try {
-      retVal= execute.execute();
-    }
-    catch(IOException e) {
+      retVal = execute.execute();
+    } catch (IOException e) {
       throw new BuildException("Process fork failed.", e, getLocation());
     }
 
     return retVal;
   }
 
-  /**
-   * Creates or returns the already created <CODE>CommandlineJava</CODE>.
-   */
+  /** Creates or returns the already created <CODE>CommandlineJava</CODE>. */
   protected CommandlineJava getJavaCommand() {
-    if(null == m_javaCommand) {
+    if (null == m_javaCommand) {
       m_javaCommand = new CommandlineJava();
     }
 
@@ -852,14 +855,12 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * @return <tt>null</tt> if there is no timeout value, otherwise the
-   * watchdog instance.
-   *
+   * @return <tt>null</tt> if there is no timeout value, otherwise the watchdog instance.
    * @throws BuildException under unspecified circumstances
    * @since Ant 1.2
    */
   protected ExecuteWatchdog createWatchdog() /*throws BuildException*/ {
-    if(m_timeout == null) {
+    if (m_timeout == null) {
       return null;
     }
 
@@ -869,38 +870,37 @@ public class TestNGAntTask extends Task {
   protected void validateOptions() throws BuildException {
     int suiteCount = getSuiteFileNames().size();
     if (suiteCount == 0
-      && m_classFilesets.size() == 0
-      && Utils.isStringEmpty(m_methods)
-      && ((null == m_testjar) || !m_testjar.isFile())) {
+        && m_classFilesets.size() == 0
+        && Utils.isStringEmpty(m_methods)
+        && ((null == m_testjar) || !m_testjar.isFile())) {
       throw new BuildException("No suites, classes, methods or jar file was specified.");
     }
 
-    if((null != m_includedGroups) && (m_classFilesets.size() == 0 && suiteCount == 0)) {
+    if ((null != m_includedGroups) && (m_classFilesets.size() == 0 && suiteCount == 0)) {
       throw new BuildException("No class filesets or xml file sets specified while using groups");
     }
 
-    if(m_onHaltTarget != null) {
-      if(!getProject().getTargets().containsKey(m_onHaltTarget)) {
+    if (m_onHaltTarget != null) {
+      if (!getProject().getTargets().containsKey(m_onHaltTarget)) {
         throw new BuildException("Target " + m_onHaltTarget + " not found in this project");
       }
     }
-
   }
 
   private ResourceCollection createResourceCollection(Reference ref) {
     Object o = ref.getReferencedObject();
     if (!(o instanceof ResourceCollection)) {
-        throw new BuildException("Only File based ResourceCollections are supported.");
+      throw new BuildException("Only File based ResourceCollections are supported.");
     }
     ResourceCollection rc = (ResourceCollection) o;
     if (!rc.isFilesystemOnly()) {
-        throw new BuildException("Only ResourceCollections from local file system are supported.");
+      throw new BuildException("Only ResourceCollections from local file system are supported.");
     }
     return rc;
   }
 
   private FileSet appendClassSelector(FileSet fs) {
-    FilenameSelector selector= new FilenameSelector();
+    FilenameSelector selector = new FilenameSelector();
     selector.setName("**/*.class");
     selector.setProject(getProject());
     fs.appendSelector(selector);
@@ -909,21 +909,20 @@ public class TestNGAntTask extends Task {
   }
 
   private File findJar() {
-    Class thisClass= getClass();
-    String resource= thisClass.getName().replace('.', '/') + ".class";
-    URL url= thisClass.getClassLoader().getResource(resource);
+    Class thisClass = getClass();
+    String resource = thisClass.getName().replace('.', '/') + ".class";
+    URL url = thisClass.getClassLoader().getResource(resource);
 
-    if(null != url) {
-      String u= url.toString();
-      if(u.startsWith("jar:file:")) {
-        int pling= u.indexOf("!");
-        String jarName= u.substring(4, pling);
+    if (null != url) {
+      String u = url.toString();
+      if (u.startsWith("jar:file:")) {
+        int pling = u.indexOf("!");
+        String jarName = u.substring(4, pling);
 
         return new File(fromURI(jarName));
-      }
-      else if(u.startsWith("file:")) {
-        int tail= u.indexOf(resource);
-        String dirName= u.substring(0, tail);
+      } else if (u.startsWith("file:")) {
+        int tail = u.indexOf(resource);
+        String dirName = u.substring(0, tail);
 
         return new File(fromURI(dirName));
       }
@@ -933,48 +932,49 @@ public class TestNGAntTask extends Task {
   }
 
   private String fromURI(String uri) {
-    URL url= null;
+    URL url = null;
     try {
-      url= new URL(uri);
+      url = new URL(uri);
+    } catch (MalformedURLException murle) {
+      // Gobble exceptions and do nothing.
     }
-    catch(MalformedURLException murle) {
-      //Gobble exceptions and do nothing.
-    }
-    if((null == url) || !("file".equals(url.getProtocol()))) {
+    if ((null == url) || !("file".equals(url.getProtocol()))) {
       throw new IllegalArgumentException("Can only handle valid file: URIs");
     }
 
-    StringBuilder buf= new StringBuilder(url.getHost());
-    if(buf.length() > 0) {
+    StringBuilder buf = new StringBuilder(url.getHost());
+    if (buf.length() > 0) {
       buf.insert(0, File.separatorChar).insert(0, File.separatorChar);
     }
 
-    String file= url.getFile();
-    int queryPos= file.indexOf('?');
+    String file = url.getFile();
+    int queryPos = file.indexOf('?');
     buf.append((queryPos < 0) ? file : file.substring(0, queryPos));
 
-    uri= buf.toString().replace('/', File.separatorChar);
+    uri = buf.toString().replace('/', File.separatorChar);
 
-    if((File.pathSeparatorChar == ';') && uri.startsWith("\\") && (uri.length() > 2)
-      && Character.isLetter(uri.charAt(1)) && (uri.lastIndexOf(':') > -1)) {
-      uri= uri.substring(1);
+    if ((File.pathSeparatorChar == ';')
+        && uri.startsWith("\\")
+        && (uri.length() > 2)
+        && Character.isLetter(uri.charAt(1))
+        && (uri.lastIndexOf(':') > -1)) {
+      uri = uri.substring(1);
     }
 
-    StringBuilder sb= new StringBuilder();
-    CharacterIterator iter= new StringCharacterIterator(uri);
-    for(char c= iter.first(); c != CharacterIterator.DONE; c= iter.next()) {
-      if(c == '%') {
-        char c1= iter.next();
-        if(c1 != CharacterIterator.DONE) {
-          int i1= Character.digit(c1, 16);
-          char c2= iter.next();
-          if(c2 != CharacterIterator.DONE) {
-            int i2= Character.digit(c2, 16);
+    StringBuilder sb = new StringBuilder();
+    CharacterIterator iter = new StringCharacterIterator(uri);
+    for (char c = iter.first(); c != CharacterIterator.DONE; c = iter.next()) {
+      if (c == '%') {
+        char c1 = iter.next();
+        if (c1 != CharacterIterator.DONE) {
+          int i1 = Character.digit(c1, 16);
+          char c2 = iter.next();
+          if (c2 != CharacterIterator.DONE) {
+            int i2 = Character.digit(c2, 16);
             sb.append((char) ((i1 << 4) + i2));
           }
         }
-      }
-      else {
+      } else {
         sb.append(c);
       }
     }
@@ -990,7 +990,7 @@ public class TestNGAntTask extends Task {
    * @throws BuildException
    */
   private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
-    List<String> files= Lists.newArrayList();
+    List<String> files = Lists.newArrayList();
     for (ResourceCollection rc : resources) {
       for (Resource o : rc) {
         if (o instanceof FileResource) {
@@ -998,7 +998,7 @@ public class TestNGAntTask extends Task {
           if (fr.isDirectory()) {
             throw new BuildException("Directory based FileResources are not supported.");
           }
-          if (! fr.isExists()) {
+          if (!fr.isExists()) {
             log("'" + fr.toLongString() + "' does not exist", Project.MSG_VERBOSE);
           }
           files.add(fr.getFile().getAbsolutePath());
@@ -1016,26 +1016,10 @@ public class TestNGAntTask extends Task {
   }
 
   private void readAndPrintFile(String fileName) {
-    File file = new File(fileName);
-    BufferedReader br = null;
     try {
-      br = new BufferedReader(new FileReader(file));
-      String line = br.readLine();
-      while (line != null) {
-        log("  " + line, Project.MSG_INFO);
-        line = br.readLine();
-      }
-    }
-    catch(IOException ex) {
-      ex.printStackTrace();
-    } finally {
-      if (br != null) {
-        try {
-          br.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
+      Files.readAllLines(Paths.get(fileName)).forEach(line -> log("  " + line, Project.MSG_INFO));
+    } catch (IOException ex) {
+      LOGGER.error(ex.getMessage(), ex);
     }
   }
 
@@ -1057,7 +1041,9 @@ public class TestNGAntTask extends Task {
    */
   public void addConfiguredPropertySet(PropertySet sysPropertySet) {
     Properties properties = sysPropertySet.getProperties();
-    log(properties.keySet().size() + " properties found in nested propertyset", Project.MSG_VERBOSE);
+    log(
+        properties.keySet().size() + " properties found in nested propertyset",
+        Project.MSG_VERBOSE);
     for (Object propKeyObj : properties.keySet()) {
       String propKey = (String) propKeyObj;
       Environment.Variable sysProp = new Environment.Variable();
@@ -1073,42 +1059,41 @@ public class TestNGAntTask extends Task {
     }
   }
 
+  @Override
+  protected void handleOutput(String output) {
+    if (output.startsWith(VerboseReporter.LISTENER_PREFIX)) {
+      // send everything from VerboseReporter to verbose level unless log level is > 4
+      log(output, m_verbose < 5 ? Project.MSG_VERBOSE : Project.MSG_INFO);
+    } else {
+      super.handleOutput(output);
+    }
+  }
+
+  private static class TestNGLogOS extends LogOutputStream {
+
+    private Task task;
+    private boolean verbose;
+
+    public TestNGLogOS(Task task, int level, boolean verbose) {
+      super(task, level);
+      this.task = task;
+      this.verbose = verbose;
+    }
+
     @Override
-    protected void handleOutput(String output) {
-        if (output.startsWith(VerboseReporter.LISTENER_PREFIX)) {
-            //send everything from VerboseReporter to verbose level unless log level is > 4
-            log(output, m_verbose < 5 ? Project.MSG_VERBOSE : Project.MSG_INFO);
-        } else {
-            super.handleOutput(output);
-        }
+    protected void processLine(String line, int level) {
+      if (line.startsWith(VerboseReporter.LISTENER_PREFIX)) {
+        task.log(line, verbose ? Project.MSG_VERBOSE : Project.MSG_INFO);
+      } else {
+        super.processLine(line, level);
+      }
     }
+  }
 
-    private static class TestNGLogOS extends LogOutputStream {
+  protected static class TestNGLogSH extends PumpStreamHandler {
 
-        private Task task;
-        private boolean verbose;
-
-        public TestNGLogOS(Task task, int level, boolean verbose) {
-            super(task, level);
-            this.task = task;
-            this.verbose = verbose;
-        }
-
-        @Override
-        protected void processLine(String line, int level) {
-            if (line.startsWith(VerboseReporter.LISTENER_PREFIX)) {
-                task.log(line, verbose ? Project.MSG_VERBOSE : Project.MSG_INFO);
-            } else {
-                super.processLine(line, level);
-            }
-        }
+    public TestNGLogSH(Task task, int outlevel, int errlevel, boolean verbose) {
+      super(new TestNGLogOS(task, outlevel, verbose), new LogOutputStream(task, errlevel));
     }
-
-    protected static class TestNGLogSH extends PumpStreamHandler {
-
-        public TestNGLogSH(Task task, int outlevel, int errlevel, boolean verbose) {
-            super(new TestNGLogOS(task, outlevel, verbose),
-                    new LogOutputStream(task, errlevel));
-        }
-    }
+  }
 }

@@ -46,7 +46,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public Set<K> keySet() {
-    return new HashSet(m_objects.keySet());
+    return new HashSet<>(m_objects.keySet());
   }
 
   public boolean containsKey(K k) {

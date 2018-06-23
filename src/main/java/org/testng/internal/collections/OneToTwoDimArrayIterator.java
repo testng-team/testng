@@ -23,7 +23,7 @@ public class OneToTwoDimArrayIterator implements Iterator<Object[]> {
     if (m_count >= m_objects.length) {
       throw new NoSuchElementException();
     }
-    return new Object[]{m_objects[m_count++]};
+    return new Object[] {m_objects[m_count++]};
   }
 
   @Override

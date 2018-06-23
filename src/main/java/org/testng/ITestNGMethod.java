@@ -9,261 +9,206 @@ import java.util.concurrent.Callable;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
- * <p>
- * This interface is not meant to be implemented by users.
+ *
+ * <p>This interface is not meant to be implemented by users.
  */
 public interface ITestNGMethod extends Cloneable {
 
-    /**
-     * @return The real class on which this method was declared
-     * (can be different from getMethod().getDeclaringClass() if
-     * the test method was defined in a superclass).
-     */
-    Class getRealClass();
-
-    ITestClass getTestClass();
-
-    /**
-     * Sets the test class having this method. This is not necessarily the declaring class.
-     *
-     * @param cls The test class having this method.
-     */
-    void setTestClass(ITestClass cls);
-
-    /**
-     * Returns the method name. This is needed for serialization because
-     * methods are not Serializable.
-     *
-     * @return the method name.
-     */
-    String getMethodName();
-
-    Object getInstance();
-
-    /**
-     * Needed for serialization.
-     */
-    long[] getInstanceHashCodes();
-
-    /**
-     * @return The groups this method belongs to, possibly added to the groups
-     * declared on the class.
-     */
-    String[] getGroups();
-
-    /**
-     * @return The groups this method depends on, possibly added to the groups
-     * declared on the class.
-     */
-    String[] getGroupsDependedUpon();
-
-    /**
-     * If a group was not found.
-     */
-    String getMissingGroup();
-
-    void setMissingGroup(String group);
-
-    /**
-     * Before and After groups
-     */
-    String[] getBeforeGroups();
-
-    String[] getAfterGroups();
-
-    /**
-     * @return The methods  this method depends on, possibly added to the methods
-     * declared on the class.
-     */
-    String[] getMethodsDependedUpon();
-
-    void addMethodDependedUpon(String methodName);
-
-    /**
-     * @return true if this method was annotated with @Test
-     */
-    boolean isTest();
-
-    /**
-     * @return true if this method was annotated with @Configuration
-     * and beforeTestMethod = true
-     */
-    boolean isBeforeMethodConfiguration();
-
-    /**
-     * @return true if this method was annotated with @Configuration
-     * and beforeTestMethod = false
-     */
-    boolean isAfterMethodConfiguration();
-
-    /**
-     * @return true if this method was annotated with @Configuration
-     * and beforeClassMethod = true
-     */
-    boolean isBeforeClassConfiguration();
+  /**
+   * @return The real class on which this method was declared (can be different from
+   *     getMethod().getDeclaringClass() if the test method was defined in a superclass).
+   */
+  Class getRealClass();
 
-    /**
-     * @return true if this method was annotated with @Configuration
-     * and beforeClassMethod = false
-     */
-    boolean isAfterClassConfiguration();
+  ITestClass getTestClass();
 
-    /**
-     * @return true if this method was annotated with @Configuration
-     * and beforeSuite = true
-     */
-    boolean isBeforeSuiteConfiguration();
+  /**
+   * Sets the test class having this method. This is not necessarily the declaring class.
+   *
+   * @param cls The test class having this method.
+   */
+  void setTestClass(ITestClass cls);
 
-    /**
-     * @return true if this method was annotated with @Configuration
-     * and afterSuite = true
-     */
-    boolean isAfterSuiteConfiguration();
+  /**
+   * Returns the method name. This is needed for serialization because methods are not Serializable.
+   *
+   * @return the method name.
+   */
+  String getMethodName();
 
-    /**
-     * @return <tt>true</tt> if this method is a @BeforeTest (@Configuration beforeTest=true)
-     */
-    boolean isBeforeTestConfiguration();
+  Object getInstance();
 
-    /**
-     * @return <tt>true</tt> if this method is an @AfterTest (@Configuration afterTest=true)
-     */
-    boolean isAfterTestConfiguration();
+  /** Needed for serialization. */
+  long[] getInstanceHashCodes();
 
-    boolean isBeforeGroupsConfiguration();
+  /**
+   * @return The groups this method belongs to, possibly added to the groups declared on the class.
+   */
+  String[] getGroups();
 
-    boolean isAfterGroupsConfiguration();
+  /**
+   * @return The groups this method depends on, possibly added to the groups declared on the class.
+   */
+  String[] getGroupsDependedUpon();
 
-    /**
-     * @return The timeout in milliseconds.
-     */
-    long getTimeOut();
+  /** If a group was not found. */
+  String getMissingGroup();
 
-    void setTimeOut(long timeOut);
+  void setMissingGroup(String group);
 
-    /**
-     * @return the number of times this method needs to be invoked.
-     */
-    int getInvocationCount();
+  /** Before and After groups */
+  String[] getBeforeGroups();
 
-    void setInvocationCount(int count);
+  String[] getAfterGroups();
 
-    /**
-     * @return the success percentage for this method (between 0 and 100).
-     */
-    int getSuccessPercentage();
+  /**
+   * @return The methods this method depends on, possibly added to the methods declared on the
+   *     class.
+   */
+  String[] getMethodsDependedUpon();
 
-    /**
-     * @return The id of the thread this method was run in.
-     */
-    String getId();
+  void addMethodDependedUpon(String methodName);
 
-    void setId(String id);
+  /** @return true if this method was annotated with @Test */
+  boolean isTest();
 
-    long getDate();
+  /** @return true if this method was annotated with @Configuration and beforeTestMethod = true */
+  boolean isBeforeMethodConfiguration();
 
-    void setDate(long date);
+  /** @return true if this method was annotated with @Configuration and beforeTestMethod = false */
+  boolean isAfterMethodConfiguration();
 
-    /**
-     * Returns if this ITestNGMethod can be invoked from within IClass.
-     */
-    boolean canRunFromClass(IClass testClass);
+  /** @return true if this method was annotated with @Configuration and beforeClassMethod = true */
+  boolean isBeforeClassConfiguration();
 
-    /**
-     * @return true if this method is alwaysRun=true
-     */
-    boolean isAlwaysRun();
+  /** @return true if this method was annotated with @Configuration and beforeClassMethod = false */
+  boolean isAfterClassConfiguration();
 
-    /**
-     * @return the number of threads to be used when invoking the method on parallel
-     */
-    int getThreadPoolSize();
+  /** @return true if this method was annotated with @Configuration and beforeSuite = true */
+  boolean isBeforeSuiteConfiguration();
 
-    void setThreadPoolSize(int threadPoolSize);
+  /** @return true if this method was annotated with @Configuration and afterSuite = true */
+  boolean isAfterSuiteConfiguration();
 
-    boolean getEnabled();
+  /** @return <tt>true</tt> if this method is a @BeforeTest (@Configuration beforeTest=true) */
+  boolean isBeforeTestConfiguration();
 
-    String getDescription();
+  /** @return <tt>true</tt> if this method is an @AfterTest (@Configuration afterTest=true) */
+  boolean isAfterTestConfiguration();
 
-    void setDescription(String description);
+  boolean isBeforeGroupsConfiguration();
 
-    void incrementCurrentInvocationCount();
+  boolean isAfterGroupsConfiguration();
 
-    int getCurrentInvocationCount();
+  /** @return The timeout in milliseconds. */
+  long getTimeOut();
 
-    void setParameterInvocationCount(int n);
+  void setTimeOut(long timeOut);
 
-    int getParameterInvocationCount();
+  /** @return the number of times this method needs to be invoked. */
+  int getInvocationCount();
 
-    void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker);
+  void setInvocationCount(int count);
 
-    boolean hasMoreInvocation();
+  /** @return the success percentage for this method (between 0 and 100). */
+  int getSuccessPercentage();
 
-    ITestNGMethod clone();
+  /** @return The id of the thread this method was run in. */
+  String getId();
 
-    IRetryAnalyzer getRetryAnalyzer();
+  void setId(String id);
 
-    void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
+  long getDate();
 
-    boolean skipFailedInvocations();
+  void setDate(long date);
 
-    void setSkipFailedInvocations(boolean skip);
+  /** Returns if this ITestNGMethod can be invoked from within IClass. */
+  boolean canRunFromClass(IClass testClass);
 
-    /**
-     * The time under which all invocationCount methods need to complete by.
-     */
-    long getInvocationTimeOut();
+  /** @return true if this method is alwaysRun=true */
+  boolean isAlwaysRun();
 
-    boolean ignoreMissingDependencies();
+  /** @return the number of threads to be used when invoking the method on parallel */
+  int getThreadPoolSize();
 
-    void setIgnoreMissingDependencies(boolean ignore);
+  void setThreadPoolSize(int threadPoolSize);
 
-    /**
-     * Which invocation numbers of this method should be used (only applicable
-     * if it uses a data provider). If this value is an empty list, use all the values
-     * returned from the data provider.  These values are read from the XML file in
-     * the <include invocationNumbers="..."> tag.
-     */
-    List<Integer> getInvocationNumbers();
+  boolean getEnabled();
 
-    void setInvocationNumbers(List<Integer> numbers);
+  String getDescription();
 
-    /**
-     * The list of invocation numbers that failed, which is only applicable for
-     * methods that have a data provider.
-     */
-    void addFailedInvocationNumber(int number);
+  void setDescription(String description);
 
-    List<Integer> getFailedInvocationNumbers();
+  void incrementCurrentInvocationCount();
 
-    /**
-     * The scheduling priority. Lower priorities get scheduled first.
-     */
-    int getPriority();
+  int getCurrentInvocationCount();
 
-    void setPriority(int priority);
+  void setParameterInvocationCount(int n);
 
-    /**
-     * @return the XmlTest this method belongs to.
-     */
-    XmlTest getXmlTest();
+  int getParameterInvocationCount();
 
-    ConstructorOrMethod getConstructorOrMethod();
+  void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker);
 
-    /**
-     * @param test - The {@link XmlTest} object.
-     * @return the parameters found in the include tag, if any
-     */
-    Map<String, String> findMethodParameters(XmlTest test);
+  boolean hasMoreInvocation();
 
-    /**
-     * getRealClass().getName() + "." +  getMethodName()
-     *
-     * @return qualified name for this method
-     */
-    String getQualifiedName();
+  ITestNGMethod clone();
 
-    default boolean isDataDriven() {
-        return false;
-    }
+  IRetryAnalyzer getRetryAnalyzer();
+
+  void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
+
+  boolean skipFailedInvocations();
+
+  void setSkipFailedInvocations(boolean skip);
+
+  /** The time under which all invocationCount methods need to complete by. */
+  long getInvocationTimeOut();
+
+  boolean ignoreMissingDependencies();
+
+  void setIgnoreMissingDependencies(boolean ignore);
+
+  /**
+   * Which invocation numbers of this method should be used (only applicable if it uses a data
+   * provider). If this value is an empty list, use all the values returned from the data provider.
+   * These values are read from the XML file in the <include invocationNumbers="..."> tag.
+   */
+  List<Integer> getInvocationNumbers();
+
+  void setInvocationNumbers(List<Integer> numbers);
+
+  /**
+   * The list of invocation numbers that failed, which is only applicable for methods that have a
+   * data provider.
+   */
+  void addFailedInvocationNumber(int number);
+
+  List<Integer> getFailedInvocationNumbers();
+
+  /** The scheduling priority. Lower priorities get scheduled first. */
+  int getPriority();
+
+  void setPriority(int priority);
+
+  /** @return the XmlTest this method belongs to. */
+  XmlTest getXmlTest();
+
+  ConstructorOrMethod getConstructorOrMethod();
+
+  /**
+   * @param test - The {@link XmlTest} object.
+   * @return the parameters found in the include tag, if any
+   */
+  Map<String, String> findMethodParameters(XmlTest test);
+
+  /**
+   * getRealClass().getName() + "." + getMethodName()
+   *
+   * @return qualified name for this method
+   */
+  String getQualifiedName();
+
+  default boolean isDataDriven() {
+    return false;
+  }
 }

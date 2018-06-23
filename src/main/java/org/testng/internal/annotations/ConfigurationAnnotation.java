@@ -2,19 +2,25 @@ package org.testng.internal.annotations;
 
 import org.testng.annotations.IConfigurationAnnotation;
 
-
 /**
  * An implementation of IConfiguration
  *
- * Created on Dec 16, 2005
+ * <p>Created on Dec 16, 2005
+ *
  * @author cbeust
  */
-public class ConfigurationAnnotation extends TestOrConfiguration implements IConfigurationAnnotation,
-    IBeforeSuite, IAfterSuite,
-    IBeforeTest, IAfterTest,
-    IBeforeGroups, IAfterGroups,
-    IBeforeClass, IAfterClass,
-    IBeforeMethod, IAfterMethod {
+public class ConfigurationAnnotation extends TestOrConfiguration
+    implements IConfigurationAnnotation,
+        IBeforeSuite,
+        IAfterSuite,
+        IBeforeTest,
+        IAfterTest,
+        IBeforeGroups,
+        IAfterGroups,
+        IBeforeClass,
+        IAfterClass,
+        IBeforeMethod,
+        IAfterMethod {
   private boolean m_beforeTestClass = false;
   private boolean m_afterTestClass = false;
   private boolean m_beforeTestMethod = false;
@@ -33,9 +39,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration implements ICon
   private boolean m_firstTimeOnly = false;
   private boolean m_lastTimeOnly = false;
 
-  public ConfigurationAnnotation() {
-
-  }
+  public ConfigurationAnnotation() {}
 
   public void setAfterSuite(boolean afterSuite) {
     m_afterSuite = afterSuite;

@@ -7,13 +7,11 @@ import java.util.List;
 /**
  * An implementation of IDataProvider.
  *
- * Created on Dec 20, 2005
+ * <p>Created on Dec 20, 2005
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class DataProviderAnnotation
-  extends BaseAnnotation
-  implements IDataProviderAnnotation
-{
+public class DataProviderAnnotation extends BaseAnnotation implements IDataProviderAnnotation {
   private String m_name;
   private boolean m_parallel;
   private List<Integer> m_indices;

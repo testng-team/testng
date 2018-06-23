@@ -20,5 +20,4 @@ public class InstanceInfo<T> implements IInstanceInfo<T> {
   public Class<T> getInstanceClass() {
     return m_instanceClass;
   }
-
 }

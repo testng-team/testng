@@ -24,5 +24,4 @@ public class YamlParser implements ISuiteParser {
   public boolean accept(String fileName) {
     return Parser.hasFileScheme(fileName) && fileName.endsWith(".yaml");
   }
-
 }

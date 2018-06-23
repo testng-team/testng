@@ -9,14 +9,21 @@ public class HtmlHelper {
   private static final String CSS_FILE_NAME = "testng.css";
   private static final String MY_CSS_FILE_NAME = "my-testng.css";
 
-  static public String getCssString() {
+  public static String getCssString() {
     return getCssString("..");
   }
 
-  static public String getCssString(String directory) {
-    return
-      "<link href=\"" + directory + "/" + CSS_FILE_NAME + "\" rel=\"stylesheet\" type=\"text/css\" />\n" +
-      "<link href=\"" + directory + "/"+ MY_CSS_FILE_NAME + "\" rel=\"stylesheet\" type=\"text/css\" />\n";
+  public static String getCssString(String directory) {
+    return "<link href=\""
+        + directory
+        + "/"
+        + CSS_FILE_NAME
+        + "\" rel=\"stylesheet\" type=\"text/css\" />\n"
+        + "<link href=\""
+        + directory
+        + "/"
+        + MY_CSS_FILE_NAME
+        + "\" rel=\"stylesheet\" type=\"text/css\" />\n";
   }
 
   public static File generateStylesheet(String outputDirectory) throws IOException {

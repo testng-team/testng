@@ -40,13 +40,17 @@ public final class ReflectionRecipes {
   }
 
   private static void initAssignableMapping() {
-    ASSIGNABLE_MAPPING.put(double.class,
-        Arrays.<Class>asList(Float.class, Long.class, Integer.class, Short.class,Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(float.class,
-        Arrays.<Class>asList(Long.class, Integer.class, Short.class, Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(long.class, Arrays.<Class>asList(Integer.class, Short.class, Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(int.class, Arrays.<Class>asList(Short.class, Character.class,Byte.class));
-    ASSIGNABLE_MAPPING.put(short.class, Arrays.<Class>asList(Character.class, Byte.class));
+    ASSIGNABLE_MAPPING.put(
+        double.class,
+        Arrays.asList(
+            Float.class, Long.class, Integer.class, Short.class, Character.class, Byte.class));
+    ASSIGNABLE_MAPPING.put(
+        float.class,
+        Arrays.asList(Long.class, Integer.class, Short.class, Character.class, Byte.class));
+    ASSIGNABLE_MAPPING.put(
+        long.class, Arrays.asList(Integer.class, Short.class, Character.class, Byte.class));
+    ASSIGNABLE_MAPPING.put(int.class, Arrays.asList(Short.class, Character.class, Byte.class));
+    ASSIGNABLE_MAPPING.put(short.class, Arrays.asList(Character.class, Byte.class));
   }
 
   private ReflectionRecipes() {
@@ -56,7 +60,7 @@ public final class ReflectionRecipes {
   /**
    * Checks if an instance is an instance of the given class.
    *
-   * @param reference  reference class.
+   * @param reference reference class.
    * @param object instance to be tested.
    * @return is an instance-of or not
    */
@@ -82,7 +86,7 @@ public final class ReflectionRecipes {
    * Checks a class instance for being a given interface or its implementation.
    *
    * @param reference reference interface instance.
-   * @param clazz     class instance to be tested.
+   * @param clazz class instance to be tested.
    * @return would an instance of 'clazz' be an instance of reference interface.
    */
   public static boolean isOrImplementsInterface(final Class<?> reference, final Class<?> clazz) {
@@ -105,7 +109,7 @@ public final class ReflectionRecipes {
    * Checks a class instance for being a given class or its sub-class.
    *
    * @param reference reference class instance.
-   * @param clazz     class instance to be tested.
+   * @param clazz class instance to be tested.
    * @return would an instance of 'clazz' be an instance of reference class.
    */
   public static boolean isOrExtends(final Class<?> reference, final Class<?> clazz) {
@@ -146,7 +150,7 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] getMethodParameters(final Method method) {
     if (method == null) {
-      return new Parameter[]{};
+      return new Parameter[] {};
     }
     return getParameters(method.getParameterTypes(), method.getParameterAnnotations());
   }
@@ -159,12 +163,13 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] getConstructorParameters(final Constructor constructor) {
     if (constructor == null) {
-      return new Parameter[]{};
+      return new Parameter[] {};
     }
     return getParameters(constructor.getParameterTypes(), constructor.getParameterAnnotations());
   }
 
-  private static Parameter[] getParameters(Class<?>[] parametersTypes, final Annotation[][] parametersAnnotations) {
+  private static Parameter[] getParameters(
+      Class<?>[] parametersTypes, final Annotation[][] parametersAnnotations) {
     final Parameter[] parameters = new Parameter[parametersTypes.length];
     for (int i = 0; i < parametersTypes.length; i++) {
       parameters[i] = new Parameter(i, parametersTypes[i], parametersAnnotations[i]);
@@ -181,14 +186,16 @@ public final class ReflectionRecipes {
   }
 
   /**
-   * Matches an array of class instances to an array of instances having last class instance an array.
-   * <p>
-   * Assuming upper case letters denote classes and corresponding lowercase its instances. Classes {A,B,C...},
-   * instances {a,b,c1,c2} ==> check for {a,b,{c1,c2}} match or Classes {A,B,C[]}, instances {a,b,c1,c2} ==> check for
-   * {a,b,{c1,c2}} match both of the above cases are equivalent.
+   * Matches an array of class instances to an array of instances having last class instance an
+   * array.
+   *
+   * <p>Assuming upper case letters denote classes and corresponding lowercase its instances.
+   * Classes {A,B,C...}, instances {a,b,c1,c2} ==> check for {a,b,{c1,c2}} match or Classes
+   * {A,B,C[]}, instances {a,b,c1,c2} ==> check for {a,b,{c1,c2}} match both of the above cases are
+   * equivalent.
    *
    * @param classes array of class instances to check against.
-   * @param args    instances to be verified.
+   * @param args instances to be verified.
    * @return matches or not
    */
   public static boolean matchArrayEnding(final Class<?>[] classes, final Object[] args) {
@@ -238,7 +245,7 @@ public final class ReflectionRecipes {
    * Matches an array of class instances to an array of instances.
    *
    * @param classes array of class instances to check against.
-   * @param args    instances to be verified.
+   * @param args instances to be verified.
    * @return matches or not
    */
   public static boolean exactMatch(final Class<?>[] classes, final Object[] args) {
@@ -267,11 +274,11 @@ public final class ReflectionRecipes {
   }
 
   /**
-   * Matches an array of class instances to an array of instances. Such that {int, boolean, float} matches {int,
-   * boolean}
+   * Matches an array of class instances to an array of instances. Such that {int, boolean, float}
+   * matches {int, boolean}
    *
    * @param classes array of class instances to check against.
-   * @param args    instances to be verified.
+   * @param args instances to be verified.
    * @return matches or not
    */
   public static boolean lenientMatch(final Class<?>[] classes, final Object[] args) {
@@ -286,75 +293,80 @@ public final class ReflectionRecipes {
   }
 
   /**
-   * Omits 1. org.testng.ITestContext or its implementations from input array 2. org.testng.ITestResult or its
-   * implementations from input array 3. org.testng.xml.XmlTest or its implementations from input array 4. First
-   * method depending on filters.
-   * <p>
-   * An example would be Input: {ITestContext.class, int.class, Boolean.class, TestContext.class} Output: {int.class,
-   * Boolean.class}
+   * Omits 1. org.testng.ITestContext or its implementations from input array 2.
+   * org.testng.ITestResult or its implementations from input array 3. org.testng.xml.XmlTest or its
+   * implementations from input array 4. First method depending on filters.
+   *
+   * <p>An example would be Input: {ITestContext.class, int.class, Boolean.class, TestContext.class}
+   * Output: {int.class, Boolean.class}
    *
    * @param parameters array of parameter instances under question.
-   * @param filters    filters to use.
+   * @param filters filters to use.
    * @return Injects free array of class instances.
    */
-  public static Parameter[] filter(final Parameter[] parameters, final Set<InjectableParameter> filters) {
-    if (filters != null && !filters.isEmpty()) {
-      boolean firstMethodFiltered = false;
-      final List<Parameter> filterList = new ArrayList<>(parameters.length);
-      for (final Parameter parameter : parameters) {
-        boolean omit = false;
-        for (final InjectableParameter injectableParameter : filters) {
-          omit = canInject(parameter, injectableParameter);
-          switch (injectableParameter) {
-            case CURRENT_TEST_METHOD:
-              if (omit && !firstMethodFiltered) {
-                firstMethodFiltered = true;
-              } else {
-                omit = false;
-              }
-              break;
-            default:
-              break;
-          }
-          if (omit) {
-            break;
-          }
-        }
-        if (!omit) {
-          filterList.add(parameter);
-        }
-      }
-      final Parameter[] filteredArray = new Parameter[filterList.size()];
-      return filterList.toArray(filteredArray);
-    } else {
+  public static Parameter[] filter(
+      final Parameter[] parameters, final Set<InjectableParameter> filters) {
+    boolean proceed = filters != null && !filters.isEmpty();
+    if (!proceed) {
       return parameters;
     }
+    boolean firstMethodFiltered = false;
+    final List<Parameter> filterList = new ArrayList<>(parameters.length);
+    for (final Parameter parameter : parameters) {
+      boolean omit = false;
+      for (final InjectableParameter injectableParameter : filters) {
+        omit = canInject(parameter, injectableParameter);
+        switch (injectableParameter) {
+          case CURRENT_TEST_METHOD:
+            if (omit && !firstMethodFiltered) {
+              firstMethodFiltered = true;
+            } else {
+              omit = false;
+            }
+            break;
+          default:
+            break;
+        }
+        if (omit) {
+          break;
+        }
+      }
+      if (!omit) {
+        filterList.add(parameter);
+      }
+    }
+    final Parameter[] filteredArray = new Parameter[filterList.size()];
+    return filterList.toArray(filteredArray);
   }
 
   /**
    * Injects appropriate arguments.
    *
-   * @param parameters      array of parameter instances under question.
-   * @param filters         filters to use.
-   * @param args            user supplied arguments.
+   * @param parameters array of parameter instances under question.
+   * @param filters filters to use.
+   * @param args user supplied arguments.
    * @param injectionMethod current test method.
-   * @param context         current test context.
-   * @param testResult      on going test results.
+   * @param context current test context.
+   * @param testResult on going test results.
    * @return injected arguments.
    */
-  public static Object[] inject(final Parameter[] parameters, final Set<InjectableParameter> filters,
-                                final Object[] args,
-                                final Method injectionMethod,
-                                final ITestContext context,
-                                final ITestResult testResult) {
+  public static Object[] inject(
+      final Parameter[] parameters,
+      final Set<InjectableParameter> filters,
+      final Object[] args,
+      final Method injectionMethod,
+      final ITestContext context,
+      final ITestResult testResult) {
     return nativelyInject(parameters, filters, args, injectionMethod, context, testResult);
   }
 
-  private static Object[] nativelyInject(final Parameter[] parameters, final Set<InjectableParameter> filters,
-                                         final Object[] args,
-                                         final Object injectionMethod,
-                                         final ITestContext context,
-                                         final ITestResult testResult) {
+  private static Object[] nativelyInject(
+      final Parameter[] parameters,
+      final Set<InjectableParameter> filters,
+      final Object[] args,
+      final Object injectionMethod,
+      final ITestContext context,
+      final ITestResult testResult) {
     if (filters == null || filters.isEmpty()) {
       return args;
     }
@@ -368,25 +380,25 @@ public final class ReflectionRecipes {
         inject = canInject(parameter, injectableParameter);
         if (inject) {
           switch (injectableParameter) {
-          case CURRENT_TEST_METHOD:
-            if (!firstMethodInjected) {
-              firstMethodInjected = true;
-              injectObject = injectionMethod;
-            } else {
-              inject = false;
-            }
-            break;
-          case ITEST_CONTEXT:
-            injectObject = context;
-            break;
-          case ITEST_RESULT:
-            injectObject = testResult;
-            break;
-          case XML_TEST:
-            injectObject = context != null ? context.getCurrentXmlTest() : null;
-            break;
-          default:
-            break;
+            case CURRENT_TEST_METHOD:
+              if (!firstMethodInjected) {
+                firstMethodInjected = true;
+                injectObject = injectionMethod;
+              } else {
+                inject = false;
+              }
+              break;
+            case ITEST_CONTEXT:
+              injectObject = context;
+              break;
+            case ITEST_RESULT:
+              injectObject = testResult;
+              break;
+            case XML_TEST:
+              injectObject = context != null ? context.getCurrentXmlTest() : null;
+              break;
+            default:
+              break;
           }
           if (inject) {
             arguments.add(injectObject);
@@ -394,19 +406,26 @@ public final class ReflectionRecipes {
           }
         }
       }
-      
+
       if (!inject && !queue.backingList.isEmpty()) {
         arguments.add(queue.poll());
       }
     }
     if (!queue.backingList.isEmpty()) {
-      String prefix = "Missing one or more parameters that are being injected by the data provider. " +
-              "Please add the below arguments to the ";
+      String prefix =
+          "Missing one or more parameters that are being injected by the data provider. "
+              + "Please add the below arguments to the ";
       String msg = null;
       if (injectionMethod instanceof Method) {
-        msg = MethodMatcherException.generateMessage(prefix + "method.", (Method) injectionMethod, queue.backingList.toArray());
+        msg =
+            MethodMatcherException.generateMessage(
+                prefix + "method.", (Method) injectionMethod, queue.backingList.toArray());
       } else if (injectionMethod instanceof Constructor) {
-        msg = MethodMatcherException.generateMessage(prefix + "constructor.", (Constructor) injectionMethod, queue.backingList.toArray());
+        msg =
+            MethodMatcherException.generateMessage(
+                prefix + "constructor.",
+                (Constructor) injectionMethod,
+                queue.backingList.toArray());
       }
 
       boolean block = RuntimeBehavior.useStrictParameterMatching();
@@ -423,25 +442,28 @@ public final class ReflectionRecipes {
   /**
    * Injects appropriate arguments.
    *
-   * @param parameters      array of parameter instances under question.
-   * @param filters         filters to use.
-   * @param args            user supplied arguments.
+   * @param parameters array of parameter instances under question.
+   * @param filters filters to use.
+   * @param args user supplied arguments.
    * @param constructor current test method.
-   * @param context         current test context.
-   * @param testResult      on going test results.
+   * @param context current test context.
+   * @param testResult on going test results.
    * @return injected arguments.
    */
-  public static Object[] inject(final Parameter[] parameters, final Set<InjectableParameter> filters,
-                                final Object[] args,
-                                final Constructor constructor,
-                                final ITestContext context,
-                                final ITestResult testResult) {
+  public static Object[] inject(
+      final Parameter[] parameters,
+      final Set<InjectableParameter> filters,
+      final Object[] args,
+      final Constructor constructor,
+      final ITestContext context,
+      final ITestResult testResult) {
     return nativelyInject(parameters, filters, args, constructor, context, testResult);
   }
 
-  private static boolean canInject(final Parameter parameter, final InjectableParameter injectableParameter) {
+  private static boolean canInject(
+      final Parameter parameter, final InjectableParameter injectableParameter) {
     boolean canInject = false;
-    if (parameter != null ) {
+    if (parameter != null) {
       final boolean inject = !parameter.isAnnotationPresent(NoInjection.class);
       switch (injectableParameter) {
         case CURRENT_TEST_METHOD:
@@ -464,7 +486,6 @@ public final class ReflectionRecipes {
     }
     return canInject;
   }
-
 
   private static class ListBackedImmutableQueue<T> {
     private final List<T> backingList;

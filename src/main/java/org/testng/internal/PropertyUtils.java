@@ -20,24 +20,31 @@ public class PropertyUtils {
 
   public static void setProperty(Object instance, String name, String value) {
     if (instance == null) {
-      LOGGER.warn("Cannot set property " + name + " with value " + value + ". The target instance is null");
+      LOGGER.warn(
+          "Cannot set property " + name + " with value " + value + ". The target instance is null");
       return;
     }
 
     Class propClass = getPropertyType(instance.getClass(), name);
     if (propClass == null) {
-      LOGGER.warn("Cannot set property " + name + " with value " + value + ". Property class could not be found");
+      LOGGER.warn(
+          "Cannot set property "
+              + name
+              + " with value "
+              + value
+              + ". Property class could not be found");
       return;
     }
 
     Object realValue = Parameters.convertType(propClass, value, name);
-    //TODO: Here the property desc is serched again
+    // TODO: Here the property desc is serched again
     setPropertyRealValue(instance, name, realValue);
   }
 
   public static Class getPropertyType(Class instanceClass, String propertyName) {
     if (instanceClass == null) {
-      LOGGER.warn("Cannot retrieve property class for " + propertyName + ". Target instance class is null");
+      LOGGER.warn(
+          "Cannot retrieve property class for " + propertyName + ". Target instance class is null");
     }
     PropertyDescriptor propDesc = getPropertyDescriptor(instanceClass, propertyName);
     if (propDesc == null) {
@@ -69,22 +76,23 @@ public class PropertyUtils {
 
   public static void setPropertyRealValue(Object instance, String name, Object value) {
     if (instance == null) {
-      LOGGER.warn("Cannot set property " + name + " with value " + value + ". Targe instance is null");
+      LOGGER.warn(
+          "Cannot set property " + name + " with value " + value + ". Targe instance is null");
       return;
     }
 
     PropertyDescriptor propDesc = getPropertyDescriptor(instance.getClass(), name);
     if (propDesc == null) {
-      LOGGER.warn("Cannot set property " + name + " with value " + value + ". Property does not exist");
+      LOGGER.warn(
+          "Cannot set property " + name + " with value " + value + ". Property does not exist");
       return;
     }
 
     Method method = propDesc.getWriteMethod();
     try {
-      method.invoke(instance, new Object[]{value});
+      method.invoke(instance, value);
     } catch (IllegalAccessException | InvocationTargetException iae) {
       LOGGER.warn("Cannot set property " + name + " with value " + value + ". Cause " + iae);
     }
   }
-
 }

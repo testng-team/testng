@@ -3,9 +3,10 @@ package org.testng.reporters.jq;
 import org.testng.ISuite;
 import org.testng.reporters.XMLStringBuffer;
 
-abstract public class BaseMultiSuitePanel extends BasePanel implements INavigatorPanel {
+public abstract class BaseMultiSuitePanel extends BasePanel implements INavigatorPanel {
 
   abstract String getHeader(ISuite suite);
+
   abstract String getContent(ISuite suite, XMLStringBuffer xsb);
 
   public BaseMultiSuitePanel(Model model) {
@@ -37,5 +38,4 @@ abstract public class BaseMultiSuitePanel extends BasePanel implements INavigato
   public String getPanelName(ISuite suite) {
     return getPrefix() + suiteToTag(suite);
   }
-
 }

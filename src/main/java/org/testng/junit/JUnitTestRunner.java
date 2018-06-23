@@ -1,6 +1,5 @@
 package org.testng.junit;
 
-
 import java.lang.reflect.Constructor;
 
 import org.testng.ITestNGMethod;
@@ -37,15 +36,14 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private ITestResultNotifier m_parentRunner;
 
-  private Map<Test, TestRunInfo> m_tests= new WeakHashMap<>();
-  private List<ITestNGMethod> m_methods= Lists.newArrayList();
+  private Map<Test, TestRunInfo> m_tests = new WeakHashMap<>();
+  private List<ITestNGMethod> m_methods = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
-  public JUnitTestRunner() {
-  }
+  public JUnitTestRunner() {}
 
   public JUnitTestRunner(ITestResultNotifier tr) {
-    m_parentRunner= tr;
+    m_parentRunner = tr;
   }
 
   /**
@@ -60,28 +58,24 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   @Override
   public void setTestResultNotifier(ITestResultNotifier notifier) {
-    m_parentRunner= notifier;
+    m_parentRunner = notifier;
   }
 
-  /**
-   * @see junit.framework.TestListener#startTest(junit.framework.Test)
-   */
+  /** @see junit.framework.TestListener#startTest(junit.framework.Test) */
   @Override
   public void startTest(Test test) {
     m_tests.put(test, new TestRunInfo(Calendar.getInstance().getTimeInMillis()));
   }
 
-
-  /**
-   * @see junit.framework.TestListener#addError(junit.framework.Test, java.lang.Throwable)
-   */
+  /** @see junit.framework.TestListener#addError(junit.framework.Test, java.lang.Throwable) */
   @Override
   public void addError(Test test, Throwable t) {
     recordFailure(test, t);
   }
 
   /**
-   * @see junit.framework.TestListener#addFailure(junit.framework.Test, junit.framework.AssertionFailedError)
+   * @see junit.framework.TestListener#addFailure(junit.framework.Test,
+   *     junit.framework.AssertionFailedError)
    */
   @Override
   public void addFailure(Test test, AssertionFailedError t) {
@@ -89,71 +83,64 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   }
 
   private void recordFailure(Test test, Throwable t) {
-    TestRunInfo tri= m_tests.get(test);
-    if(null != tri) {
+    TestRunInfo tri = m_tests.get(test);
+    if (null != tri) {
       tri.setThrowable(t);
     }
   }
 
-  /**
-   * @see junit.framework.TestListener#endTest(junit.framework.Test)
-   */
+  /** @see junit.framework.TestListener#endTest(junit.framework.Test) */
   @Override
   public void endTest(Test test) {
-    TestRunInfo tri= m_tests.get(test);
-    if(null == tri) {
+    TestRunInfo tri = m_tests.get(test);
+    if (null == tri) {
       return; // HINT: this should never happen. How do I protect myself?
     }
 
-    org.testng.internal.TestResult tr= recordResults(test, tri);
+    org.testng.internal.TestResult tr = recordResults(test, tri);
 
     TestListenerHelper.runTestListeners(tr, m_parentRunner.getTestListeners());
   }
 
-    public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {
-        m_invokedMethodListeners = listeners;
-    }
+  public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {
+    m_invokedMethodListeners = listeners;
+  }
 
+  private org.testng.internal.TestResult recordResults(Test test, TestRunInfo tri) {
+    JUnitTestClass tc = new JUnit3TestClass(test);
+    JUnitTestMethod tm = new JUnit3TestMethod(tc, test);
 
-  private org.testng.internal.TestResult recordResults(Test test, TestRunInfo tri)  {
-    JUnitTestClass tc= new JUnit3TestClass(test);
-    JUnitTestMethod tm= new JUnit3TestMethod(tc, test);
+    org.testng.internal.TestResult tr =
+        new org.testng.internal.TestResult(
+            tc, tm, tri.m_failure, tri.m_start, Calendar.getInstance().getTimeInMillis(), null);
 
-    org.testng.internal.TestResult tr= new org.testng.internal.TestResult(tc,
-            tm,
-                                                                          tri.m_failure,
-                                                                          tri.m_start,
-                                                                          Calendar.getInstance().getTimeInMillis(),
-                                                                          null);
-
-    if(tri.isFailure()) {
+    if (tri.isFailure()) {
       tr.setStatus(ITestResult.FAILURE);
       m_parentRunner.addFailedTest(tm, tr);
-    }
-    else {
+    } else {
       m_parentRunner.addPassedTest(tm, tr);
     }
 
     InvokedMethod im = new InvokedMethod(test, tm, tri.m_start, tr);
     m_parentRunner.addInvokedMethod(im);
     m_methods.add(tm);
-    for (IInvokedMethodListener l: m_invokedMethodListeners) {
-        l.beforeInvocation(im, tr);
+    for (IInvokedMethodListener l : m_invokedMethodListeners) {
+      l.beforeInvocation(im, tr);
     }
 
     return tr;
   }
 
   /**
-   * Returns the Test corresponding to the given suite. This is
-   * a template method, subclasses override runFailed(), clearStatus().
+   * Returns the Test corresponding to the given suite. This is a template method, subclasses
+   * override runFailed(), clearStatus().
    */
   protected Test getTest(Class testClass, String... methods) {
     if (methods.length > 0) {
       TestSuite ts = new TestSuite();
       try {
         Constructor c = testClass.getConstructor(String.class);
-        for (String m: methods) {
+        for (String m : methods) {
           try {
             ts.addTest((Test) c.newInstance(m));
           } catch (InstantiationException ex) {
@@ -176,8 +163,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     Method suiteMethod = null;
     try {
       suiteMethod = testClass.getMethod(SUITE_METHODNAME, new Class[0]);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
 
       // try to extract a test suite automatically
       return new TestSuite(testClass);
@@ -193,13 +179,11 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       if (test == null) {
         return test;
       }
-    }
-    catch (InvocationTargetException e) {
+    } catch (InvocationTargetException e) {
       runFailed(testClass, "failed to invoke method suite():" + e.getTargetException().toString());
 
       return null;
-    }
-    catch (IllegalAccessException e) {
+    } catch (IllegalAccessException e) {
       runFailed(testClass, "failed to invoke method suite():" + e.toString());
 
       return null;
@@ -210,6 +194,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   /**
    * A <code>start</code> implementation that ignores the <code>TestResult</code>
+   *
    * @param testClass the JUnit test class
    */
   @Override
@@ -217,22 +202,17 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     start(testClass, methods);
   }
 
-  /**
-   * Starts a test run. Analyzes the command line arguments and runs the given
-   * test suite.
-   */
+  /** Starts a test run. Analyzes the command line arguments and runs the given test suite. */
   public TestResult start(Class testCase, String... methods) {
     try {
       Test suite = getTest(testCase, methods);
 
-      if(null != suite) {
+      if (null != suite) {
         return doRun(suite);
-      }
-      else {
+      } else {
         runFailed(testCase, "could not create/run JUnit test suite");
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       runFailed(testCase, "could not create/run JUnit test suite: " + e.getMessage());
     }
 
@@ -240,12 +220,11 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   }
 
   protected void runFailed(Class clazz, String message) {
-    throw new TestNGException("Failure in JUnit mode for class " + clazz.getName() + ": " + message);
+    throw new TestNGException(
+        "Failure in JUnit mode for class " + clazz.getName() + ": " + message);
   }
 
-  /**
-   * Creates the TestResult to be used for the test run.
-   */
+  /** Creates the TestResult to be used for the test run. */
   protected TestResult createTestResult() {
     return new TestResult();
   }
@@ -263,7 +242,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     private Throwable m_failure;
 
     public TestRunInfo(long start) {
-      m_start= start;
+      m_start = start;
     }
 
     public boolean isFailure() {
@@ -271,7 +250,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     }
 
     public void setThrowable(Throwable t) {
-      m_failure= t;
+      m_failure = t;
     }
   }
 }

@@ -7,6 +7,7 @@ import java.util.Stack;
 public class Model {
   private Map<String, Object> m_model;
   private Stack<SubModel> m_subModels = new Stack<>();
+
   private static class SubModel {
     String variable;
     Object subModel;
@@ -24,7 +25,7 @@ public class Model {
   }
 
   public Value resolveValue(String variable) {
-    if (! m_subModels.isEmpty()) {
+    if (!m_subModels.isEmpty()) {
       for (SubModel object : m_subModels) {
         Value value = resolveOnClass(object.subModel, variable);
         if (value != null) {
@@ -37,23 +38,23 @@ public class Model {
   }
 
   private Value resolveOnClass(Object object, String variable) {
-//    if (object instanceof Iterable) {
-//      Iterable it = (Iterable) object;
-//      List<Object> result = Lists.newArrayList();
-//      for (Object o : it) {
-//        List<Object> values = resolveOnClass(o, variable);
-//        result.addAll(values);
-//      }
-//      return result;
-//    } else {
-      Class<? extends Object> cls = object.getClass();
-      try {
-        Field f = cls.getField(variable);
-        return new Value(f.get(object));
-      } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
-//        e.printStackTrace();
-      }
-//    }
+    //    if (object instanceof Iterable) {
+    //      Iterable it = (Iterable) object;
+    //      List<Object> result = Lists.newArrayList();
+    //      for (Object o : it) {
+    //        List<Object> values = resolveOnClass(o, variable);
+    //        result.addAll(values);
+    //      }
+    //      return result;
+    //    } else {
+    Class<? extends Object> cls = object.getClass();
+    try {
+      Field f = cls.getField(variable);
+      return new Value(f.get(object));
+    } catch (IllegalAccessException | NoSuchFieldException | SecurityException e) {
+      //        e.printStackTrace();
+    }
+    //    }
 
     return null;
   }

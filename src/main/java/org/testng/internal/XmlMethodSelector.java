@@ -21,14 +21,14 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 
 /**
- * This class is the default method selector used by TestNG to determine
- * which methods need to be included and excluded based on the specification
- * given in testng.xml.
+ * This class is the default method selector used by TestNG to determine which methods need to be
+ * included and excluded based on the specification given in testng.xml.
  *
- * Created on Sep 30, 2005
+ * <p>Created on Sep 30, 2005
  */
-//TODO: Need to investigate as to why is m_includedGroups/m_excludedGroups being created as a map even though
-  //We are only working with the values and the keys are completely ignored.
+// TODO: Need to investigate as to why is m_includedGroups/m_excludedGroups being created as a map
+// even though
+// We are only working with the values and the keys are completely ignored.
 public class XmlMethodSelector implements IMethodSelector {
 
   private static final String QUOTED_DOLLAR = Matcher.quoteReplacement("\\$");
@@ -48,8 +48,8 @@ public class XmlMethodSelector implements IMethodSelector {
   private List<ITestNGMethod> m_testMethods = Collections.emptyList();
 
   @Override
-  public boolean includeMethod(IMethodSelectorContext context,
-      ITestNGMethod tm, boolean isTestMethod) {
+  public boolean includeMethod(
+      IMethodSelectorContext context, ITestNGMethod tm, boolean isTestMethod) {
 
     if (!m_isInitialized) {
       m_isInitialized = true;
@@ -76,10 +76,11 @@ public class XmlMethodSelector implements IMethodSelector {
     }
     List<XmlInclude> includeList = m_includedMethods.get(key);
 
-
     // No groups were specified:
-    if (includedGroups.isEmpty() && excludedGroups.isEmpty()
-        && !hasIncludedMethods() && !hasExcludedMethods()) {
+    if (includedGroups.isEmpty()
+        && excludedGroups.isEmpty()
+        && !hasIncludedMethods()
+        && !hasExcludedMethods()) {
       // If we don't include or exclude any methods, method is in
       result = true;
     } else if (includedGroups.isEmpty() && excludedGroups.isEmpty() && !isTestMethod) {
@@ -102,12 +103,12 @@ public class XmlMethodSelector implements IMethodSelector {
         result = false;
       }
 
-      if(isTestMethod) {
+      if (isTestMethod) {
         // Now filter by method name
         Class<?> methodClass = method.getDeclaringClass();
         String fullMethodName = makeMethodName(methodClass.getName(), method.getName());
 
-        //Check if groups was involved or not. If groups was not involved then we should not be
+        // Check if groups was involved or not. If groups was not involved then we should not be
         // involving the size of the list for evaluation of "isIncluded"
         noGroupsSpecified = (m_includedGroups.isEmpty() && m_excludedGroups.isEmpty());
 
@@ -121,9 +122,12 @@ public class XmlMethodSelector implements IMethodSelector {
             continue;
           }
 
-          List<String> includedMethods = createQualifiedMethodNames(xmlClass, toStringList(xmlClass.getIncludedMethods()));
-          boolean isIncludedInMethods = isIncluded(includedMethods, noGroupsSpecified, fullMethodName);
-          List<String> excludedMethods = createQualifiedMethodNames(xmlClass, xmlClass.getExcludedMethods());
+          List<String> includedMethods =
+              createQualifiedMethodNames(xmlClass, toStringList(xmlClass.getIncludedMethods()));
+          boolean isIncludedInMethods =
+              isIncluded(includedMethods, noGroupsSpecified, fullMethodName);
+          List<String> excludedMethods =
+              createQualifiedMethodNames(xmlClass, xmlClass.getExcludedMethods());
           boolean isExcludedInMethods = isExcluded(excludedMethods, fullMethodName);
           if (result) {
             // If we're about to include this method by group, make sure
@@ -154,7 +158,7 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private void logInclusion(String including, String type, String name) {
-    if (! m_logged.containsKey(name)) {
+    if (!m_logged.containsKey(name)) {
       log(including + " " + type + " " + name);
       m_logged.put(name, name);
     }
@@ -226,8 +230,14 @@ public class XmlMethodSelector implements IMethodSelector {
         return;
       }
     }
-    Utils.log("Warning", 2, "The regular expression \"" + methodName + "\" didn't match any" +
-              " method in class " + c.getName());
+    Utils.log(
+        "Warning",
+        2,
+        "The regular expression \""
+            + methodName
+            + "\" didn't match any"
+            + " method in class "
+            + c.getName());
   }
 
   public void setXmlClasses(List<XmlClass> classes) {
@@ -241,35 +251,28 @@ public class XmlMethodSelector implements IMethodSelector {
     }
   }
 
-  /**
-   * @return Returns the excludedGroups.
-   */
+  /** @return Returns the excludedGroups. */
   public Map<String, String> getExcludedGroups() {
     return m_excludedGroups;
   }
 
-  /**
-   * @return Returns the includedGroups.
-   */
+  /** @return Returns the includedGroups. */
   public Map<String, String> getIncludedGroups() {
     return m_includedGroups;
   }
 
-  /**
-   * @param excludedGroups The excludedGroups to set.
-   */
+  /** @param excludedGroups The excludedGroups to set. */
   public void setExcludedGroups(Map<String, String> excludedGroups) {
     m_excludedGroups = excludedGroups;
   }
 
-  /**
-   * @param includedGroups The includedGroups to set.
-   */
+  /** @param includedGroups The includedGroups to set. */
   public void setIncludedGroups(Map<String, String> includedGroups) {
     m_includedGroups = includedGroups;
   }
 
-  private static boolean isIncluded(Collection<String> includedGroups, boolean noGroupsSpecified, String... groups) {
+  private static boolean isIncluded(
+      Collection<String> includedGroups, boolean noGroupsSpecified, String... groups) {
     if (noGroupsSpecified) {
       return isMemberOf(includedGroups, groups);
     }
@@ -281,7 +284,6 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   /**
-   *
    * @param groups Array of groups on the method
    * @param list Map of regexps of groups to be run
    */
@@ -314,7 +316,7 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   private void init(IMethodSelectorContext context) {
-    String[] groups = m_includedGroups.keySet().toArray(new String[m_includedGroups.size()]);
+    String[] groups = m_includedGroups.keySet().toArray(new String[0]);
     Set<String> groupClosure = new HashSet<>();
     Set<ITestNGMethod> methodClosure = new HashSet<>();
 
@@ -324,8 +326,8 @@ public class XmlMethodSelector implements IMethodSelector {
         includedMethods.add(m);
       }
     }
-    MethodGroupsHelper.findGroupTransitiveClosure(this, includedMethods, m_testMethods,
-        groups, groupClosure, methodClosure);
+    MethodGroupsHelper.findGroupTransitiveClosure(
+        includedMethods, m_testMethods, groups, groupClosure, methodClosure);
 
     // If we are asked to include or exclude specific groups, calculate
     // the transitive closure of all the included groups.  If no include groups
@@ -337,9 +339,7 @@ public class XmlMethodSelector implements IMethodSelector {
     if (!m_includedGroups.isEmpty()) {
       // Make the transitive closure our new included groups
       for (String g : groupClosure) {
-        log("Including group "
-            + (m_includedGroups.containsKey(g) ?
-                ": " : "(implicitly): ") + g);
+        log("Including group " + (m_includedGroups.containsKey(g) ? ": " : "(implicitly): ") + g);
         m_includedGroups.put(g, g);
       }
 

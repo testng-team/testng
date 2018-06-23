@@ -1,5 +1,3 @@
 package org.testng.internal.annotations;
 
-public class BeforeSuiteAnnotation extends BaseBeforeAfter {
-
-}
+public class BeforeSuiteAnnotation extends BaseBeforeAfter {}

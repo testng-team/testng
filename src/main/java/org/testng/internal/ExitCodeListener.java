@@ -11,59 +11,56 @@ import org.testng.xml.XmlSuite;
 import java.util.List;
 
 public class ExitCodeListener implements ITestListener, IReporter {
-    private boolean hasTests = false;
-    private final ExitCode status = new ExitCode();
+  private boolean hasTests = false;
+  private final ExitCode status = new ExitCode();
 
-    public ExitCode getStatus() {
-        return status;
+  public ExitCode getStatus() {
+    return status;
+  }
+
+  public boolean noTestsFound() {
+    return !hasTests;
+  }
+
+  @Override
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+    for (ISuite suite : suites) {
+      for (ISuiteResult suiteResult : suite.getResults().values()) {
+        ITestContext context = suiteResult.getTestContext();
+        status.computeAndUpdate(context);
+      }
     }
+  }
 
-    public boolean noTestsFound() {
-        return !hasTests;
-    }
+  @Override
+  public void onTestStart(ITestResult result) {
+    this.hasTests = true;
+  }
 
-    @Override
-    public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-        for (ISuite suite : suites) {
-            for (ISuiteResult suiteResult : suite.getResults().values()) {
-                ITestContext context = suiteResult.getTestContext();
-                status.computeAndUpdate(context);
-            }
-        }
-    }
+  @Override
+  public void onTestSuccess(ITestResult result) {
+    this.hasTests = true;
+  }
 
-    @Override
-    public void onTestStart(ITestResult result) {
-        this.hasTests = true;
-    }
+  @Override
+  public void onTestFailure(ITestResult result) {
+    this.hasTests = true;
+  }
 
-    @Override
-    public void onTestSuccess(ITestResult result) {
-        this.hasTests = true;
-    }
+  @Override
+  public void onTestSkipped(ITestResult result) {
+    this.hasTests = true;
+  }
 
-    @Override
-    public void onTestFailure(ITestResult result) {
-        this.hasTests = true;
-    }
+  @Override
+  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+    this.hasTests = true;
+  }
 
-    @Override
-    public void onTestSkipped(ITestResult result) {
-        this.hasTests = true;
-    }
+  @Override
+  public void onStart(ITestContext context) {}
 
-    @Override
-    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-        this.hasTests = true;
-    }
-
-    @Override
-    public void onStart(ITestContext context) {
-
-    }
-
-    @Override
-    public void onFinish(ITestContext context) {
-
-    }
+  @Override
+  public void onFinish(ITestContext context) {}
 }

@@ -10,5 +10,4 @@ public class Value {
   public Object get() {
     return m_object;
   }
-
 }

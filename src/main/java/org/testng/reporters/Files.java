@@ -43,7 +43,7 @@ public class Files {
   }
 
   public static void copyFile(InputStream from, File to) throws IOException {
-    if (! to.getParentFile().exists()) {
+    if (!to.getParentFile().exists()) {
       to.getParentFile().mkdirs();
     }
 

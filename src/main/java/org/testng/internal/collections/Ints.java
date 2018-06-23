@@ -1,19 +1,14 @@
 package org.testng.internal.collections;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class Ints {
 
-    private Ints() {
-        throw new AssertionError();
-    }
+  private Ints() {}
 
-    public static List<Integer> asList(int... ints) {
-        ArrayList<Integer> result = new ArrayList<>(ints.length);
-        for (int val : ints) {
-            result.add(val);
-        }
-        return result;
-    }
+  public static List<Integer> asList(int... ints) {
+    return Arrays.stream(ints).boxed().collect(Collectors.toList());
+  }
 }

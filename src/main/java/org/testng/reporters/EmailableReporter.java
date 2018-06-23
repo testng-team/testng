@@ -31,8 +31,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newBufferedWriter;
 
 /**
- * Reported designed to render self-contained HTML top down view of a testing
- * suite.
+ * Reported designed to render self-contained HTML top down view of a testing suite.
  *
  * @since 5.2
  */
@@ -66,8 +65,7 @@ public class EmailableReporter implements IReporter {
   public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
     try {
       m_out = createWriter(outdir);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       L.error("output file", e);
       return;
     }
@@ -95,7 +93,7 @@ public class EmailableReporter implements IReporter {
     startResultSummaryTable();
     int testIndex = 1;
     for (ISuite suite : suites) {
-      if(suites.size()>1) {
+      if (suites.size() > 1) {
         titleRow(suite.getName(), 5);
       }
       Map<String, ISuiteResult> r = suite.getResults();
@@ -103,16 +101,21 @@ public class EmailableReporter implements IReporter {
         ITestContext testContext = r2.getTestContext();
         String testName = testContext.getName();
         m_testIndex = testIndex;
-        resultSummary(suite, testContext.getFailedConfigurations(), testName,
-            "failed", " (configuration methods)");
-        resultSummary(suite, testContext.getFailedTests(), testName, "failed",
-            "");
-        resultSummary(suite, testContext.getSkippedConfigurations(), testName,
-            "skipped", " (configuration methods)");
-        resultSummary(suite, testContext.getSkippedTests(), testName,
-            "skipped", "");
-        resultSummary(suite, testContext.getPassedTests(), testName, "passed",
-            "");
+        resultSummary(
+            suite,
+            testContext.getFailedConfigurations(),
+            testName,
+            "failed",
+            " (configuration methods)");
+        resultSummary(suite, testContext.getFailedTests(), testName, "failed", "");
+        resultSummary(
+            suite,
+            testContext.getSkippedConfigurations(),
+            testName,
+            "skipped",
+            " (configuration methods)");
+        resultSummary(suite, testContext.getSkippedTests(), testName, "skipped", "");
+        resultSummary(suite, testContext.getPassedTests(), testName, "passed", "");
         testIndex++;
       }
     }
@@ -138,8 +141,8 @@ public class EmailableReporter implements IReporter {
     }
   }
 
-  private void resultSummary(ISuite suite, IResultMap tests, String testname, String style,
-      String details) {
+  private void resultSummary(
+      ISuite suite, IResultMap tests, String testname, String style, String details) {
     if (!tests.getAllResults().isEmpty()) {
       StringBuilder buff = new StringBuilder();
       String lastClassName = "";
@@ -158,8 +161,7 @@ public class EmailableReporter implements IReporter {
         if (!className.equalsIgnoreCase(lastClassName)) {
           if (mq > 0) {
             cq += 1;
-            m_out.print("<tr class=\"" + style
-                + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
+            m_out.print("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
             if (mq > 1) {
               m_out.print(" rowspan=\"" + mq + "\"");
             }
@@ -182,12 +184,16 @@ public class EmailableReporter implements IReporter {
         }
         mq += 1;
         if (mq > 1) {
-          buff.append("<tr class=\"").append(style).append(cq % 2 == 0 ? "odd" : "even")
+          buff.append("<tr class=\"")
+              .append(style)
+              .append(cq % 2 == 0 ? "odd" : "even")
               .append("\">");
         }
         String description = method.getDescription();
-        String testInstanceName = resultSet.toArray(new ITestResult[]{})[0].getTestName();
-        buff.append("<td><a href=\"#m").append(m_methodIndex).append("\">")
+        String testInstanceName = resultSet.toArray(new ITestResult[] {})[0].getTestName();
+        buff.append("<td><a href=\"#m")
+            .append(m_methodIndex)
+            .append("\">")
             .append(qualifiedName(method))
             .append(" ");
         if (description != null && !description.isEmpty()) {
@@ -198,15 +204,20 @@ public class EmailableReporter implements IReporter {
           buff.append("<br>(").append(testInstanceName).append(")");
         }
         buff.append("</td>")
-            .append("<td class=\"numi\">").append(resultSet.size()).append("</td>")
-            .append("<td>").append(start).append("</td>")
-            .append("<td class=\"numi\">").append(end - start).append("</td>")
+            .append("<td class=\"numi\">")
+            .append(resultSet.size())
+            .append("</td>")
+            .append("<td>")
+            .append(start)
+            .append("</td>")
+            .append("<td class=\"numi\">")
+            .append(end - start)
+            .append("</td>")
             .append("</tr>");
       }
       if (mq > 0) {
         cq++;
-        m_out.print("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd")
-            + "\">" + "<td");
+        m_out.print("<tr class=\"" + style + (cq % 2 == 0 ? "even" : "odd") + "\">" + "<td");
         if (mq > 1) {
           m_out.print(" rowspan=\"" + mq + "\"");
         }
@@ -218,7 +229,8 @@ public class EmailableReporter implements IReporter {
   /** Starts and defines columns result summary table */
   private void startResultSummaryTable() {
     tableStart("methodOverview", "summary");
-    m_out.println("<tr><th>Class</th>"
+    m_out.println(
+        "<tr><th>Class</th>"
             + "<th>Method</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>");
     m_row = 0;
   }
@@ -246,8 +258,8 @@ public class EmailableReporter implements IReporter {
       ITestNGMethod method = result.getMethod();
       m_methodIndex++;
       String cname = method.getTestClass().getName();
-      m_out.println("<h2 id=\"m" + m_methodIndex + "\">" + cname + ":"
-          + method.getMethodName() + "</h2>");
+      m_out.println(
+          "<h2 id=\"m" + m_methodIndex + "\">" + cname + ":" + method.getMethodName() + "</h2>");
       generateForResult(result, method);
       m_out.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
     }
@@ -271,40 +283,36 @@ public class EmailableReporter implements IReporter {
     }
     List<String> msgs = Reporter.getOutput(ans);
     boolean hasReporterOutput = !msgs.isEmpty();
-    Throwable exception=ans.getThrowable();
-    boolean hasThrowable = exception!=null;
-    if (hasReporterOutput||hasThrowable) {
+    Throwable exception = ans.getThrowable();
+    boolean hasThrowable = exception != null;
+    if (hasReporterOutput || hasThrowable) {
       if (hasParameters) {
         m_out.print("<tr><td");
         if (parameters.length > 1) {
           m_out.print(" colspan=\"" + parameters.length + "\"");
         }
         m_out.println(">");
-      }
-      else {
+      } else {
         m_out.println("<div>");
       }
       if (hasReporterOutput) {
-        if(hasThrowable) {
+        if (hasThrowable) {
           m_out.println("<h3>Test Messages</h3>");
         }
         for (String line : msgs) {
           m_out.println(line + "<br/>");
         }
       }
-      if(hasThrowable) {
-        boolean wantsMinimalOutput = ans.getStatus()==ITestResult.SUCCESS;
-        if(hasReporterOutput) {
-          m_out.println("<h3>"
-              +(wantsMinimalOutput?"Expected Exception":"Failure")
-              +"</h3>");
+      if (hasThrowable) {
+        boolean wantsMinimalOutput = ans.getStatus() == ITestResult.SUCCESS;
+        if (hasReporterOutput) {
+          m_out.println("<h3>" + (wantsMinimalOutput ? "Expected Exception" : "Failure") + "</h3>");
         }
-        generateExceptionReport(exception,method);
+        generateExceptionReport(exception, method);
       }
       if (hasParameters) {
         m_out.println("</td></tr>");
-      }
-      else {
+      } else {
         m_out.println("</div>");
       }
     }
@@ -320,8 +328,8 @@ public class EmailableReporter implements IReporter {
   }
 
   /**
-   * Since the methods will be sorted chronologically, we want to return
-   * the ITestNGMethod from the invoked methods.
+   * Since the methods will be sorted chronologically, we want to return the ITestNGMethod from the
+   * invoked methods.
    */
   private Collection<ITestNGMethod> getMethodSet(IResultMap tests, ISuite suite) {
     List<IInvokedMethod> r = Lists.newArrayList();
@@ -381,21 +389,23 @@ public class EmailableReporter implements IReporter {
         startSummaryRow(overview.getName());
         int q = getMethodSet(overview.getPassedTests(), suite).size();
         qty_pass_m += q;
-        summaryCell(q,Integer.MAX_VALUE);
+        summaryCell(q, Integer.MAX_VALUE);
         q = overview.getPassedTests().size();
         qty_pass_s += q;
-        summaryCell(q,Integer.MAX_VALUE);
+        summaryCell(q, Integer.MAX_VALUE);
         q = getMethodSet(overview.getSkippedTests(), suite).size();
         qty_skip += q;
-        summaryCell(q,0);
+        summaryCell(q, 0);
         q = getMethodSet(overview.getFailedTests(), suite).size();
         qty_fail += q;
-        summaryCell(q,0);
+        summaryCell(q, 0);
         time_start = Math.min(overview.getStartDate().getTime(), time_start);
         time_end = Math.max(overview.getEndDate().getTime(), time_end);
-        summaryCell(formatter.format(
-            (overview.getEndDate().getTime() - overview.getStartDate().getTime()) / 1000.)
-            + " seconds", true);
+        summaryCell(
+            formatter.format(
+                    (overview.getEndDate().getTime() - overview.getStartDate().getTime()) / 1000.)
+                + " seconds",
+            true);
         summaryCell(overview.getIncludedGroups());
         summaryCell(overview.getExcludedGroups());
         m_out.println("</tr>");
@@ -404,10 +414,10 @@ public class EmailableReporter implements IReporter {
     }
     if (qty_tests > 1) {
       m_out.println("<tr class=\"total\"><td>Total</td>");
-      summaryCell(qty_pass_m,Integer.MAX_VALUE);
-      summaryCell(qty_pass_s,Integer.MAX_VALUE);
-      summaryCell(qty_skip,0);
-      summaryCell(qty_fail,0);
+      summaryCell(qty_pass_m, Integer.MAX_VALUE);
+      summaryCell(qty_pass_s, Integer.MAX_VALUE);
+      summaryCell(qty_skip, 0);
+      summaryCell(qty_fail, 0);
       summaryCell(formatter.format((time_end - time_start) / 1000.) + " seconds", true);
       m_out.println("<td colspan=\"2\">&nbsp;</td></tr>");
     }
@@ -419,7 +429,7 @@ public class EmailableReporter implements IReporter {
     for (String v : val) {
       b.append(v).append(" ");
     }
-    summaryCell(b.toString(),true);
+    summaryCell(b.toString(), true);
   }
 
   private void summaryCell(String v, boolean isGood) {
@@ -428,22 +438,27 @@ public class EmailableReporter implements IReporter {
 
   private void startSummaryRow(String label) {
     m_row++;
-    m_out.print("<tr" + (m_row % 2 == 0 ? " class=\"stripe\"" : "")
+    m_out.print(
+        "<tr"
+            + (m_row % 2 == 0 ? " class=\"stripe\"" : "")
             + "><td style=\"text-align:left;padding-right:2em\"><a href=\"#t"
-            + m_testIndex + "\">" + label + "</a>"
+            + m_testIndex
+            + "\">"
+            + label
+            + "</a>"
             + "</td>");
   }
 
   private void summaryCell(int v, int maxexpected) {
-    summaryCell(String.valueOf(v), v<=maxexpected);
+    summaryCell(String.valueOf(v), v <= maxexpected);
   }
 
   private void tableStart(String cssclass, String id) {
-    m_out.println("<table cellspacing=\"0\" cellpadding=\"0\""
-        + (cssclass != null ? " class=\"" + cssclass + "\""
-            : " style=\"padding-bottom:2em\"")
-        + (id != null ? " id=\"" + id + "\"" : "")
-        + ">");
+    m_out.println(
+        "<table cellspacing=\"0\" cellpadding=\"0\""
+            + (cssclass != null ? " class=\"" + cssclass + "\"" : " style=\"padding-bottom:2em\"")
+            + (id != null ? " id=\"" + id + "\"" : "")
+            + ">");
     m_row = 0;
   }
 
@@ -460,13 +475,14 @@ public class EmailableReporter implements IReporter {
     if (id != null) {
       m_out.print(" id=\"" + id + "\"");
     }
-    m_out.println( "><th colspan=\"" + cq + "\">" + label + "</th></tr>");
+    m_out.println("><th colspan=\"" + cq + "\">" + label + "</th></tr>");
     m_row = 0;
   }
 
   /** Starts HTML stream */
   protected void startHtml(PrintWriter out) {
-    out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+    out.println(
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
     out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
     out.println("<head>");
     out.println("<meta charset='utf-8'>");

@@ -74,6 +74,7 @@
       </run>
     </groups>
     <classes>
+      <class name="test.graph.GraphVisualiserTest"/>
       <class name="test.Test1" />
       <class name="test.MethodTest" />
       <class name="test.sample.AfterClassCalledAtEnd"/>
@@ -146,6 +147,7 @@
       <class name="test.bug92.Bug92Test" />
       <class name="test.ReturnValueTest" />
       <class name="test.groupbug.GroupBugTest" />
+      <class name="test.groups.issue1834.IssueTest"/>
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />

@@ -10,8 +10,7 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 /**
- * An interface defining the notification for @Test results and also
- * \@Configuration results.
+ * An interface defining the notification for @Test results and also \@Configuration results.
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>

@@ -1,6 +1,5 @@
 package org.testng.internal.thread;
 
-
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -16,38 +15,39 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
   private IThreadFactory m_threadFactory;
 
   public ExecutorAdapter(int threadCount, IThreadFactory tf) {
-      super(threadCount,
-            threadCount,
-            0L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            (ThreadFactory) tf.getThreadFactory());
-      m_threadFactory = tf;
-   }
+    super(
+        threadCount,
+        threadCount,
+        0L,
+        TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(),
+        (ThreadFactory) tf.getThreadFactory());
+    m_threadFactory = tf;
+  }
 
-   @Override
+  @Override
   public IFutureResult submitRunnable(final Runnable runnable) {
-      return new FutureResultAdapter(super.submit(runnable));
-   }
+    return new FutureResultAdapter(super.submit(runnable));
+  }
 
-   @Override
+  @Override
   public void stopNow() {
-      super.shutdownNow();
-   }
+    super.shutdownNow();
+  }
 
-   @Override
+  @Override
   public boolean awaitTermination(long timeout) {
-     boolean result= false;
-     try {
-      result= super.awaitTermination(timeout, TimeUnit.MILLISECONDS);
-     }
-     catch(InterruptedException handled) {
-       System.out.println("[WARN] ThreadPoolExecutor has been interrupted while awaiting termination");
-       Thread.currentThread().interrupt();
-     }
+    boolean result = false;
+    try {
+      result = super.awaitTermination(timeout, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException handled) {
+      System.out.println(
+          "[WARN] ThreadPoolExecutor has been interrupted while awaiting termination");
+      Thread.currentThread().interrupt();
+    }
 
-     return result;
-   }
+    return result;
+  }
 
   @Override
   public StackTraceElement[][] getStackTraces() {

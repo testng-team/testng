@@ -4,9 +4,7 @@ import org.testng.collections.Lists;
 
 import java.util.List;
 
-/**
- * Log the messages of all the assertions that get run.
- */
+/** Log the messages of all the assertions that get run. */
 public class LoggingAssert extends Assertion {
 
   private List<String> m_messages = Lists.newArrayList();

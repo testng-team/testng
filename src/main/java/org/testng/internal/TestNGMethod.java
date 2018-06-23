@@ -12,12 +12,9 @@ import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-/**
- * This class represents a test method.
- */
+/** This class represents a test method. */
 public class TestNGMethod extends BaseTestMethod {
 
   private int m_threadPoolSize = 0;
@@ -25,45 +22,38 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_successPercentage = 100;
   private boolean isDataDriven = false;
 
-  /**
-   * Constructs a <code>TestNGMethod</code>
-   *
-   * @param method
-   * @param finder
-   */
+  /** Constructs a <code>TestNGMethod</code> */
   public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
     this(method, finder, true, xmlTest, instance);
   }
 
-  private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize,
-      XmlTest xmlTest, Object instance) {
+  private TestNGMethod(
+      Method method,
+      IAnnotationFinder finder,
+      boolean initialize,
+      XmlTest xmlTest,
+      Object instance) {
     super(method.getName(), new ConstructorOrMethod(method), finder, instance);
     setXmlTest(xmlTest);
 
-    if(initialize) {
+    if (initialize) {
       init(xmlTest);
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int getInvocationCount() {
     return m_invocationCount;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int getSuccessPercentage() {
     return m_successPercentage;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isTest() {
     return true;
@@ -71,15 +61,17 @@ public class TestNGMethod extends BaseTestMethod {
 
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
-    setInvocationNumbers(xmlTest.getInvocationNumbers(
-        m_method.getDeclaringClass().getName() + "." + m_method.getName()));
+    setInvocationNumbers(
+        xmlTest.getInvocationNumbers(
+            m_method.getDeclaringClass().getName() + "." + m_method.getName()));
     {
       ITestAnnotation testAnnotation =
           AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
 
       if (testAnnotation == null) {
         // Try on the class
-        testAnnotation = AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
+        testAnnotation =
+            AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
       }
 
       if (null != testAnnotation) {
@@ -107,7 +99,8 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   private static boolean doesTestAnnotationHaveADataProvider(ITestAnnotation testAnnotation) {
-    return !testAnnotation.getDataProvider().trim().isEmpty() || testAnnotation.getDataProviderClass() != null;
+    return !testAnnotation.getDataProvider().trim().isEmpty()
+        || testAnnotation.getDataProviderClass() != null;
   }
 
   private String findDescription(ITestAnnotation testAnnotation, XmlTest xmlTest) {
@@ -130,51 +123,51 @@ public class TestNGMethod extends BaseTestMethod {
     return result;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int getThreadPoolSize() {
     return m_threadPoolSize;
   }
 
-  /**
-   * Sets the number of threads on which this method should be invoked.
-   */
+  /** Sets the number of threads on which this method should be invoked. */
   @Override
   public void setThreadPoolSize(int threadPoolSize) {
     m_threadPoolSize = threadPoolSize;
   }
 
-  /**
-   * Sets the number of invocations for this method.
-   */
+  /** Sets the number of invocations for this method. */
   @Override
   public void setInvocationCount(int counter) {
-    m_invocationCount= counter;
+    m_invocationCount = counter;
   }
 
   /**
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
+   *
    * @see org.testng.internal.BaseTestMethod#clone()
    */
   @Override
   public BaseTestMethod clone() {
-    TestNGMethod clone= new TestNGMethod(getConstructorOrMethod().getMethod(), getAnnotationFinder(), false, getXmlTest(),
-        getInstance());
-    ITestClass tc= getTestClass();
-    NoOpTestClass testClass= new NoOpTestClass(tc);
+    TestNGMethod clone =
+        new TestNGMethod(
+            getConstructorOrMethod().getMethod(),
+            getAnnotationFinder(),
+            false,
+            getXmlTest(),
+            getInstance());
+    ITestClass tc = getTestClass();
+    NoOpTestClass testClass = new NoOpTestClass(tc);
     testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
     testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
-    clone.m_testClass= testClass;
+    clone.m_testClass = testClass;
     clone.setDate(getDate());
     clone.setGroups(getGroups());
-    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.<String>emptyList());
+    clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.emptyList());
     clone.setMethodsDependedUpon(getMethodsDependedUpon());
     clone.setAlwaysRun(isAlwaysRun());
-    clone.m_beforeGroups= getBeforeGroups();
-    clone.m_afterGroups= getAfterGroups();
-    clone.m_currentInvocationCount= m_currentInvocationCount;
+    clone.m_beforeGroups = getBeforeGroups();
+    clone.m_afterGroups = getAfterGroups();
+    clone.m_currentInvocationCount = m_currentInvocationCount;
     clone.setMissingGroup(getMissingGroup());
     clone.setThreadPoolSize(getThreadPoolSize());
     clone.setDescription(getDescription());
@@ -192,9 +185,9 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   private ITestNGMethod[] clone(ITestNGMethod[] sources) {
-    ITestNGMethod[] clones= new ITestNGMethod[sources.length];
-    for(int i= 0; i < sources.length; i++) {
-      clones[i]= sources[i].clone();
+    ITestNGMethod[] clones = new ITestNGMethod[sources.length];
+    for (int i = 0; i < sources.length; i++) {
+      clones[i] = sources[i].clone();
     }
 
     return clones;
@@ -206,14 +199,6 @@ public class TestNGMethod extends BaseTestMethod {
     }
     return ClassHelper.newInstance(instance.getClass());
   }
-
-  /** Sorts ITestNGMethod by Class name. */
-  public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
-          (o1, o2) -> {
-            String c1 = o1.getTestClass().getName();
-            String c2 = o2.getTestClass().getName();
-            return c1.compareTo(c2);
-          };
 
   @Override
   public boolean isDataDriven() {

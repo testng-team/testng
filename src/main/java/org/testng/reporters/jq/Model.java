@@ -52,11 +52,10 @@ public class Model {
         failed.addAll(context.getFailedTests().getAllResults());
         skipped.addAll(context.getSkippedTests().getAllResults());
         passed.addAll(context.getPassedTests().getAllResults());
-        IResultMap[] map = new IResultMap[]{
-                context.getFailedTests(),
-                context.getSkippedTests(),
-                context.getPassedTests()
-        };
+        IResultMap[] map =
+            new IResultMap[] {
+              context.getFailedTests(), context.getSkippedTests(), context.getPassedTests()
+            };
         for (IResultMap m : map) {
           for (ITestResult tr : m.getAllResults()) {
             m_testResultMap.put(tr, getTestResultName(tr));
@@ -108,8 +107,7 @@ public class Model {
 
   private void updateGroups(ISuite suite, ITestResult tr) {
     String[] groups = tr.getMethod().getGroups();
-    m_groupsBySuiteName.putAll(suite.getName(),
-        Arrays.asList(groups));
+    m_groupsBySuiteName.putAll(suite.getName(), Arrays.asList(groups));
     for (String group : groups) {
       m_methodsByGroup.put(group, tr.getMethod().getMethodName());
     }
@@ -133,7 +131,7 @@ public class Model {
 
   public List<ITestResult> getTestResults(ISuite suite) {
     return m_model.get(suite);
-   }
+  }
 
   public static String getTestResultName(ITestResult tr) {
     StringBuilder result = new StringBuilder(tr.getMethod().getMethodName());
@@ -193,7 +191,7 @@ public class Model {
       result.addAll(sr.getTestContext().getPassedTests().getAllResults());
       result.addAll(sr.getTestContext().getFailedTests().getAllResults());
       result.addAll(sr.getTestContext().getSkippedTests().getAllResults());
-      if (! testsOnly) {
+      if (!testsOnly) {
         result.addAll(sr.getTestContext().getPassedConfigurations().getAllResults());
         result.addAll(sr.getTestContext().getFailedConfigurations().getAllResults());
         result.addAll(sr.getTestContext().getSkippedConfigurations().getAllResults());

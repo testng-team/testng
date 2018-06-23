@@ -1,6 +1,6 @@
 package org.testng.mustache;
 
-abstract public class BaseChunk {
+public abstract class BaseChunk {
 
   protected Model m_model;
 

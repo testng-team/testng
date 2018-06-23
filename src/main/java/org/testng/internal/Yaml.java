@@ -18,15 +18,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-/**
- * YAML support for TestNG.
- */
+/** YAML support for TestNG. */
 public final class Yaml {
 
   private Yaml() {}
 
-  public static XmlSuite parse(String filePath, InputStream is)
-      throws FileNotFoundException {
+  public static XmlSuite parse(String filePath, InputStream is) throws FileNotFoundException {
     Constructor constructor = new TestNGConstructor(XmlSuite.class);
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
@@ -70,14 +67,14 @@ public final class Yaml {
   }
 
   private static void maybeAdd(StringBuilder sb, String sp, String key, Object value, Object def) {
-    if (value != null && ! value.equals(def)) {
+    if (value != null && !value.equals(def)) {
       sb.append(sp).append(key).append(": ").append(value.toString()).append("\n");
     }
   }
 
   /**
-   * The main entry point to convert an XmlSuite into YAML. This method is allowed to be used
-   * by external tools (e.g. Eclipse).
+   * The main entry point to convert an XmlSuite into YAML. This method is allowed to be used by
+   * external tools (e.g. Eclipse).
    */
   public static StringBuilder toYaml(XmlSuite suite) {
     StringBuilder result = new StringBuilder();
@@ -86,12 +83,22 @@ public final class Yaml {
     maybeAdd(result, "junit", suite.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, "verbose", suite.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, "threadCount", suite.getThreadCount(), XmlSuite.DEFAULT_THREAD_COUNT);
-    maybeAdd(result, "dataProviderThreadCount", suite.getDataProviderThreadCount(),
+    maybeAdd(
+        result,
+        "dataProviderThreadCount",
+        suite.getDataProviderThreadCount(),
         XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT);
     maybeAdd(result, "timeOut", suite.getTimeOut(), null);
     maybeAdd(result, "parallel", suite.getParallel(), XmlSuite.DEFAULT_PARALLEL);
-    maybeAdd(result, "configFailurePolicy", suite.getConfigFailurePolicy().toString(), XmlSuite.DEFAULT_CONFIG_FAILURE_POLICY);
-    maybeAdd(result, "skipFailedInvocationCounts", suite.skipFailedInvocationCounts(),
+    maybeAdd(
+        result,
+        "configFailurePolicy",
+        suite.getConfigFailurePolicy().toString(),
+        XmlSuite.DEFAULT_CONFIG_FAILURE_POLICY);
+    maybeAdd(
+        result,
+        "skipFailedInvocationCounts",
+        suite.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
     toYaml(result, "parameters", "", suite.getParameters());
@@ -129,7 +136,11 @@ public final class Yaml {
     maybeAdd(result, sp2, "verbose", t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, sp2, "timeOut", t.getTimeOut(), null);
     maybeAdd(result, sp2, "parallel", t.getParallel(), XmlSuite.DEFAULT_PARALLEL);
-    maybeAdd(result, sp2, "skipFailedInvocationCounts", t.skipFailedInvocationCounts(),
+    maybeAdd(
+        result,
+        sp2,
+        "skipFailedInvocationCounts",
+        t.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
     maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlSuite.DEFAULT_PRESERVE_ORDER);
@@ -137,13 +148,17 @@ public final class Yaml {
     toYaml(result, "parameters", sp2, t.getLocalParameters());
 
     if (!t.getIncludedGroups().isEmpty()) {
-      result.append(sp2).append("includedGroups: [ ")
+      result
+          .append(sp2)
+          .append("includedGroups: [ ")
           .append(Utils.join(t.getIncludedGroups(), ","))
           .append(" ]\n");
     }
 
     if (!t.getExcludedGroups().isEmpty()) {
-      result.append(sp2).append("excludedGroups: [ ")
+      result
+          .append(sp2)
+          .append("excludedGroups: [ ")
           .append(Utils.join(t.getExcludedGroups(), ","))
           .append(" ]\n");
     }
@@ -153,11 +168,14 @@ public final class Yaml {
       result.append(sp2).append("metaGroups: { ");
       boolean first = true;
       for (Map.Entry<String, List<String>> entry : mg.entrySet()) {
-        if (! first) {
+        if (!first) {
           result.append(", ");
         }
-        result.append(entry.getKey()).append(": [ ")
-        .append(Utils.join(entry.getValue(), ",")).append(" ] ");
+        result
+            .append(entry.getKey())
+            .append(": [ ")
+            .append(Utils.join(entry.getValue(), ","))
+            .append(" ] ");
         first = false;
       }
       result.append(" }\n");
@@ -165,14 +183,14 @@ public final class Yaml {
 
     if (!t.getXmlPackages().isEmpty()) {
       result.append(sp2).append("xmlPackages:\n");
-      for (XmlPackage xp : t.getXmlPackages())  {
+      for (XmlPackage xp : t.getXmlPackages()) {
         toYaml(result, sp2 + "  - ", xp);
       }
     }
 
     if (!t.getXmlClasses().isEmpty()) {
       result.append(sp2).append("classes:\n");
-      for (XmlClass xc : t.getXmlClasses())  {
+      for (XmlClass xc : t.getXmlClasses()) {
         toYaml(result, sp2 + "  ", xc);
       }
     }
@@ -230,8 +248,8 @@ public final class Yaml {
     generateIncludeExclude(sb, sp, "excludes", p.getExclude());
   }
 
-  private static void generateIncludeExclude(StringBuilder sb, String sp,
-      String key, List<String> includes) {
+  private static void generateIncludeExclude(
+      StringBuilder sb, String sp, String key, List<String> includes) {
     if (!includes.isEmpty()) {
       sb.append(sp).append("  ").append(key).append("\n");
       for (String inc : includes) {
@@ -245,7 +263,7 @@ public final class Yaml {
       out.append("{ ");
       boolean first = true;
       for (Map.Entry<String, String> e : map.entrySet()) {
-        if (! first) {
+        if (!first) {
           out.append(", ");
         }
         first = false;
@@ -255,8 +273,8 @@ public final class Yaml {
     }
   }
 
-  private static void toYaml(StringBuilder sb, String key, String sp,
-      Map<String, String> parameters) {
+  private static void toYaml(
+      StringBuilder sb, String key, String sp, Map<String, String> parameters) {
     if (!parameters.isEmpty()) {
       sb.append(sp).append(key).append(": ");
       mapToYaml(parameters, sb);

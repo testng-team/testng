@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 /**
- * This class allows you to generate an XML text document by pushing
- * and popping tags from a stack maintained internally.
+ * This class allows you to generate an XML text document by pushing and popping tags from a stack
+ * maintained internally.
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
  */
@@ -35,19 +35,16 @@ public class XMLStringBuffer {
   }
 
   /**
-   * @param start A string of spaces indicating the indentation at which
-   * to start the generation. This constructor will not insert an <?xml
-   * prologue.
+   * @param start A string of spaces indicating the indentation at which to start the generation.
+   *     This constructor will not insert an <?xml prologue.
    */
   public XMLStringBuffer(String start) {
     init(Buffer.create(), start);
   }
 
   /**
-   * @param buffer The StringBuffer to use internally to represent the
-   * document.
-   * @param start A string of spaces indicating the indentation at which
-   * to start the generation.
+   * @param buffer The StringBuffer to use internally to represent the document.
+   * @param start A string of spaces indicating the indentation at which to start the generation.
    */
   public XMLStringBuffer(IBuffer buffer, String start) {
     init(buffer, start);
@@ -58,11 +55,10 @@ public class XMLStringBuffer {
   }
 
   /**
-  *
-  * @param start A string of spaces indicating the indentation at which
-  * to start the generation.
-  */
-  private void init(IBuffer buffer, String start, @Nullable String version, @Nullable String encoding) {
+   * @param start A string of spaces indicating the indentation at which to start the generation.
+   */
+  private void init(
+      IBuffer buffer, String start, @Nullable String version, @Nullable String encoding) {
     m_buffer = buffer;
     m_currentIndent = start;
     if (version != null) {
@@ -70,7 +66,7 @@ public class XMLStringBuffer {
     }
   }
 
- /**
+  /**
    * Set the xml version and encoding for this document.
    *
    * @param v the XML version
@@ -93,8 +89,7 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag.  Its value is stored and will be compared against the parameter
-   * passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
    *
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
@@ -107,8 +102,7 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag.  Its value is stored and will be compared against the parameter
-   * passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
    *
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
@@ -118,8 +112,7 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag.  Its value is stored and will be compared against the parameter
-   * passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
    *
    * @param tagName The name of the tag.
    * @param attributes A Properties file representing the attributes (or null)
@@ -138,7 +131,8 @@ public class XMLStringBuffer {
       return result;
     }
     if (attributes.length % 2 != 0) {
-      throw new IllegalArgumentException("Arguments 'attributes' length must be even. Actual: " + attributes.length);
+      throw new IllegalArgumentException(
+          "Arguments 'attributes' length must be even. Actual: " + attributes.length);
     }
     for (int i = 0; i < attributes.length; i += 2) {
       result.put(attributes[i], attributes[i + 1]);
@@ -147,8 +141,7 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag.  Its value is stored and will be compared against the parameter
-   * passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
    *
    * @param tagName The name of the tag.
    */
@@ -156,17 +149,14 @@ public class XMLStringBuffer {
     push(tagName, "");
   }
 
-  /**
-   * Pop the last pushed element without verifying it if matches the previously
-   * pushed tag.
-   */
+  /** Pop the last pushed element without verifying it if matches the previously pushed tag. */
   public void pop() {
     pop(null);
   }
 
   /**
-   * Pop the last pushed element and throws an AssertionError if it doesn't
-   * match the corresponding tag that was pushed earlier.
+   * Pop the last pushed element and throws an AssertionError if it doesn't match the corresponding
+   * tag that was pushed earlier.
    *
    * @param tagName The name of the tag this pop() is supposed to match.
    */
@@ -183,14 +173,15 @@ public class XMLStringBuffer {
 
     String comment = defaultComment;
     if (comment == null) {
-        comment = XMLUtils.extractComment(tagName, t.properties);
+      comment = XMLUtils.extractComment(tagName, t.properties);
     }
-      XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName, comment);
+    XMLUtils.xmlClose(m_buffer, m_currentIndent, t.tagName, comment);
   }
 
   /**
-   * Add a required element to the current tag.  An opening and closing tag
-   * will be generated even if value is null.
+   * Add a required element to the current tag. An opening and closing tag will be generated even if
+   * value is null.
+   *
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
@@ -199,8 +190,9 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Add a required element to the current tag.  An opening and closing tag
-   * will be generated even if value is null.
+   * Add a required element to the current tag. An opening and closing tag will be generated even if
+   * value is null.
+   *
    * @param tagName The name of the tag
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
@@ -208,13 +200,14 @@ public class XMLStringBuffer {
   public void addRequired(String tagName, @Nullable String value, @Nullable Properties attributes) {
     XMLUtils.xmlRequired(m_buffer, m_currentIndent, tagName, value, attributes);
   }
+
   public void addRequired(String tagName, @Nullable String value, String... attributes) {
     addRequired(tagName, value, createProperties(attributes));
   }
 
   /**
-   * Add an optional String element to the current tag.  If value is null, nothing is
-   * added.
+   * Add an optional String element to the current tag. If value is null, nothing is added.
+   *
    * @param tagName The name of the tag
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
@@ -232,8 +225,8 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Add an optional String element to the current tag.  If value is null, nothing is
-   * added.
+   * Add an optional String element to the current tag. If value is null, nothing is added.
+   *
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
@@ -242,21 +235,22 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Add an optional Boolean element to the current tag.  If value is null, nothing is
-   * added.
+   * Add an optional Boolean element to the current tag. If value is null, nothing is added.
+   *
    * @param tagName The name of the tag
    * @param value The value for this tag
    * @param attributes A Properties file containing the attributes (or null)
    */
-  public void addOptional(String tagName, @Nullable Boolean value, @Nullable Properties attributes) {
+  public void addOptional(
+      String tagName, @Nullable Boolean value, @Nullable Properties attributes) {
     if (null != value) {
       XMLUtils.xmlOptional(m_buffer, m_currentIndent, tagName, value.toString(), attributes);
     }
   }
 
   /**
-   * Add an optional Boolean element to the current tag.  If value is null, nothing is
-   * added.
+   * Add an optional Boolean element to the current tag. If value is null, nothing is added.
+   *
    * @param tagName The name of the tag
    * @param value The value for this tag
    */
@@ -268,7 +262,6 @@ public class XMLStringBuffer {
    * Add an empty element tag (e.g. <foo/>)
    *
    * @param tagName The name of the tag
-   *
    */
   public void addEmptyElement(String tagName) {
     addEmptyElement(tagName, (Properties) null);
@@ -276,6 +269,7 @@ public class XMLStringBuffer {
 
   /**
    * Add an empty element tag (e.g. <foo/>)
+   *
    * @param tagName The name of the tag
    * @param attributes A Properties file containing the attributes (or null)
    */
@@ -290,24 +284,24 @@ public class XMLStringBuffer {
   }
 
   public void addComment(String comment) {
-    m_buffer.append(m_currentIndent).append("<!-- " + comment.replaceAll("[-]{2,}", "-") + " -->\n");
+    m_buffer
+        .append(m_currentIndent)
+        .append("<!-- " + comment.replaceAll("[-]{2,}", "-") + " -->\n");
   }
 
   public void addString(String s) {
     m_buffer.append(s);
   }
 
-    public void setDefaultComment(String defaultComment) {
-        this.defaultComment = defaultComment;
-    }
+  public void setDefaultComment(String defaultComment) {
+    this.defaultComment = defaultComment;
+  }
 
-  /**
-   * Add a CDATA tag.
-   */
+  /** Add a CDATA tag. */
   public void addCDATA(String content) {
     if (content != null) {
-        //Solution from https://coderanch.com/t/455930/java/Remove-control-characters
-        content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
+      // Solution from https://coderanch.com/t/455930/java/Remove-control-characters
+      content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
     }
     m_buffer.append(m_currentIndent);
     if (content == null) {
@@ -331,20 +325,16 @@ public class XMLStringBuffer {
     m_buffer.append(EOL);
   }
 
-  /**
-   *
-   * @return The StringBuffer used to create the document.
-   */
+  /** @return The StringBuffer used to create the document. */
   public IBuffer getStringBuffer() {
     return m_buffer;
   }
 
   private static final Pattern INVALID_XML_CHARS =
-      Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+      Pattern.compile(
+          "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
 
-  /**
-   * @return The String representation of the XML for this XMLStringBuffer.
-   */
+  /** @return The String representation of the XML for this XMLStringBuffer. */
   public String toXML() {
     return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
   }

@@ -2,11 +2,11 @@ package org.testng.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.IAnnotationTransformer;
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -33,49 +33,47 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.internal.collections.Ints;
+import org.testng.log4testng.Logger;
 
 /**
- * This class creates implementations of IAnnotations based on the JDK5
- * annotation that was found on the Java element.
+ * This class creates implementations of IAnnotations based on the JDK5 annotation that was found on
+ * the Java element.
  *
- * Created on Dec 20, 2005
+ * <p>Created on Dec 20, 2005
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15TagFactory {
 
-  public <A extends IAnnotation> A createTag(Class<?> cls, Method method, Annotation a,
-                                             Class<A> annotationClass, IAnnotationTransformer transformer) {
+  public <A extends IAnnotation> A createTag(
+      Class<?> cls, Method method, Annotation a, Class<A> annotationClass) {
     IAnnotation result = null;
 
     if (a != null) {
       if (annotationClass == IDataProviderAnnotation.class) {
         result = createDataProviderTag(method, a);
-      }
-      else if (annotationClass == IFactoryAnnotation.class) {
+      } else if (annotationClass == IFactoryAnnotation.class) {
         result = createFactoryTag(cls, a);
-      }
-      else if (annotationClass == IParametersAnnotation.class) {
+      } else if (annotationClass == IParametersAnnotation.class) {
         result = createParametersTag(a);
-      }
-      else if (annotationClass == IObjectFactoryAnnotation.class) {
-        result = createObjectFactoryTag(a);
-      }
-      else if (annotationClass == ITestAnnotation.class) {
-        result = createTestTag(cls, a, transformer);
-      }
-      else if (annotationClass == IListenersAnnotation.class) {
-        result = createListenersTag(cls, a, transformer);
-      }
-      else if (annotationClass == IBeforeSuite.class || annotationClass == IAfterSuite.class ||
-          annotationClass == IBeforeTest.class || annotationClass == IAfterTest.class ||
-          annotationClass == IBeforeGroups.class || annotationClass == IAfterGroups.class ||
-          annotationClass == IBeforeClass.class || annotationClass == IAfterClass.class ||
-          annotationClass == IBeforeMethod.class || annotationClass == IAfterMethod.class)
-      {
-        result = maybeCreateNewConfigurationTag(cls, a, annotationClass);
-      }
-
-      else {
+      } else if (annotationClass == IObjectFactoryAnnotation.class) {
+        result = createObjectFactoryTag();
+      } else if (annotationClass == ITestAnnotation.class) {
+        result = createTestTag(cls, a);
+      } else if (annotationClass == IListenersAnnotation.class) {
+        result = createListenersTag(a);
+      } else if (annotationClass == IBeforeSuite.class
+          || annotationClass == IAfterSuite.class
+          || annotationClass == IBeforeTest.class
+          || annotationClass == IAfterTest.class
+          || annotationClass == IBeforeGroups.class
+          || annotationClass == IAfterGroups.class
+          || annotationClass == IBeforeClass.class
+          || annotationClass == IAfterClass.class
+          || annotationClass == IBeforeMethod.class
+          || annotationClass == IAfterMethod.class) {
+        result = maybeCreateNewConfigurationTag(a, annotationClass);
+      } else {
         throw new TestNGException("Unknown annotation requested:" + annotationClass);
       }
     }
@@ -84,180 +82,299 @@ public class JDK15TagFactory {
     return (A) result;
   }
 
-  private IAnnotation maybeCreateNewConfigurationTag(Class<?> cls, Annotation a,
-      Class<?> annotationClass)
-  {
+  private IAnnotation maybeCreateNewConfigurationTag(Annotation a, Class<?> annotationClass) {
     IAnnotation result = null;
 
     if (annotationClass == IBeforeSuite.class) {
       BeforeSuite bs = (BeforeSuite) a;
-      result = createConfigurationTag(cls, a,
-          true, false,
-          false, false,
-          new String[0], new String[0],
-          false, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IAfterSuite.class) {
+      result =
+          createConfigurationTag(
+              true,
+              false,
+              false,
+              false,
+              new String[0],
+              new String[0],
+              false,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IAfterSuite.class) {
       AfterSuite bs = (AfterSuite) a;
-      result = createConfigurationTag(cls, a,
-          false, true,
-          false, false,
-          new String[0], new String[0],
-          false, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IBeforeTest.class) {
+      result =
+          createConfigurationTag(
+              false,
+              true,
+              false,
+              false,
+              new String[0],
+              new String[0],
+              false,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IBeforeTest.class) {
       BeforeTest bs = (BeforeTest) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
-          true, false,
-          new String[0], new String[0],
-          false, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IAfterTest.class) {
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              true,
+              false,
+              new String[0],
+              new String[0],
+              false,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IAfterTest.class) {
       AfterTest bs = (AfterTest) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, true,
-          new String[0], new String[0],
-          false, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IBeforeGroups.class) {
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              true,
+              new String[0],
+              new String[0],
+              false,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IBeforeGroups.class) {
       BeforeGroups bs = (BeforeGroups) a;
-      final String[] groups= bs.value().length > 0 ? bs.value() : bs.groups();
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, false,
-          groups, new String[0],
-          false, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IAfterGroups.class) {
+      final String[] groups = bs.value().length > 0 ? bs.value() : bs.groups();
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              false,
+              groups,
+              new String[0],
+              false,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IAfterGroups.class) {
       AfterGroups bs = (AfterGroups) a;
-      final String[] groups= bs.value().length > 0 ? bs.value() : bs.groups();
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, false,
-          new String[0], groups,
-          false, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IBeforeClass.class) {
+      final String[] groups = bs.value().length > 0 ? bs.value() : bs.groups();
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              false,
+              new String[0],
+              groups,
+              false,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IBeforeClass.class) {
       BeforeClass bs = (BeforeClass) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, false,
-          new String[0], new String[0],
-          true, false,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IAfterClass.class) {
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              false,
+              new String[0],
+              new String[0],
+              true,
+              false,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IAfterClass.class) {
       AfterClass bs = (AfterClass) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, false,
-          new String[0], new String[0],
-          false, true,
-          false, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, false,
-          bs.timeOut(), new String[0]);
-    }
-    else if (annotationClass == IBeforeMethod.class) {
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              false,
+              new String[0],
+              new String[0],
+              false,
+              true,
+              false,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              false,
+              bs.timeOut(),
+              new String[0]);
+    } else if (annotationClass == IBeforeMethod.class) {
       BeforeMethod bs = (BeforeMethod) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, false,
-          new String[0], new String[0],
-          false, false,
-          true, false,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          bs.firstTimeOnly(), false,
-          bs.timeOut(), bs.onlyForGroups());
-    }
-    else if (annotationClass == IAfterMethod.class) {
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              false,
+              new String[0],
+              new String[0],
+              false,
+              false,
+              true,
+              false,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              bs.firstTimeOnly(),
+              false,
+              bs.timeOut(),
+              bs.onlyForGroups());
+    } else if (annotationClass == IAfterMethod.class) {
       AfterMethod bs = (AfterMethod) a;
-      result = createConfigurationTag(cls, a,
-          false, false,
-          false, false,
-          new String[0], new String[0],
-          false, false,
-          false, true,
-          bs.alwaysRun(),
-          bs.dependsOnGroups(), bs.dependsOnMethods(),
-          bs.description(), bs.enabled(), bs.groups(),
-          bs.inheritGroups(), null,
-          false, bs.lastTimeOnly(),
-          bs.timeOut(), bs.onlyForGroups());
+      result =
+          createConfigurationTag(
+              false,
+              false,
+              false,
+              false,
+              new String[0],
+              new String[0],
+              false,
+              false,
+              false,
+              true,
+              bs.alwaysRun(),
+              bs.dependsOnGroups(),
+              bs.dependsOnMethods(),
+              bs.description(),
+              bs.enabled(),
+              bs.groups(),
+              bs.inheritGroups(),
+              null,
+              false,
+              bs.lastTimeOnly(),
+              bs.timeOut(),
+              bs.onlyForGroups());
     }
 
     return result;
   }
 
-  private IAnnotation createConfigurationTag(Class<?> cls, Annotation a,
-      boolean beforeSuite, boolean afterSuite,
-      boolean beforeTest, boolean afterTest,
-      String[] beforeGroups, String[] afterGroups,
-      boolean beforeClass, boolean afterClass,
-      boolean beforeMethod, boolean afterMethod,
+  private IAnnotation createConfigurationTag(
+      boolean beforeSuite,
+      boolean afterSuite,
+      boolean beforeTest,
+      boolean afterTest,
+      String[] beforeGroups,
+      String[] afterGroups,
+      boolean beforeClass,
+      boolean afterClass,
+      boolean beforeMethod,
+      boolean afterMethod,
       boolean alwaysRun,
-      String[] dependsOnGroups, String[] dependsOnMethods,
-      String description, boolean enabled, String[] groups,
-      boolean inheritGroups, String[] parameters,
-      boolean firstTimeOnly, boolean lastTimeOnly,
-      long timeOut, String[] groupFilters)
-  {
+      String[] dependsOnGroups,
+      String[] dependsOnMethods,
+      String description,
+      boolean enabled,
+      String[] groups,
+      boolean inheritGroups,
+      String[] parameters,
+      boolean firstTimeOnly,
+      boolean lastTimeOnly,
+      long timeOut,
+      String[] groupFilters) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     result.setFakeConfiguration(true);
     result.setBeforeSuite(beforeSuite);
@@ -305,7 +422,9 @@ public class JDK15TagFactory {
   private IAnnotation createFactoryTag(Class<?> cls, Annotation a) {
     FactoryAnnotation result = new FactoryAnnotation();
     Factory c = (Factory) a;
-    Class<?> dpc = findInherited(c.dataProviderClass(), cls, Factory.class, "dataProviderClass", DEFAULT_CLASS);
+    Class<?> dpc =
+        findInherited(
+            c.dataProviderClass(), cls, Factory.class, "dataProviderClass", DEFAULT_CLASS);
     result.setParameters(c.parameters());
     result.setDataProvider(c.dataProvider());
     result.setDataProviderClass(dpc == null || dpc == Object.class ? cls : dpc);
@@ -315,7 +434,7 @@ public class JDK15TagFactory {
     return result;
   }
 
-  private IAnnotation createObjectFactoryTag(Annotation a) {
+  private IAnnotation createObjectFactoryTag() {
     return new ObjectFactoryAnnotation();
   }
 
@@ -327,10 +446,7 @@ public class JDK15TagFactory {
     return result;
   }
 
-  @SuppressWarnings({"deprecation"})
-  private IAnnotation createListenersTag(Class<?> cls, Annotation a,
-      IAnnotationTransformer transformer)
-  {
+  private IAnnotation createListenersTag(Annotation a) {
     ListenersAnnotation result = new ListenersAnnotation();
     Listeners l = (Listeners) a;
     result.setValue(l.value());
@@ -339,30 +455,28 @@ public class JDK15TagFactory {
   }
 
   @SuppressWarnings({"deprecation"})
-  private IAnnotation createTestTag(Class<?> cls, Annotation a,
-      IAnnotationTransformer transformer)
-  {
+  private IAnnotation createTestTag(Class<?> cls, Annotation a) {
     TestAnnotation result = new TestAnnotation();
     Test test = (Test) a;
 
     result.setEnabled(test.enabled());
     result.setGroups(join(test.groups(), findInheritedStringArray(cls, Test.class, "groups")));
     result.setParameters(test.parameters());
-    result.setDependsOnGroups(join(test.dependsOnGroups(),
-        findInheritedStringArray(cls, Test.class, "dependsOnGroups")));
-    result.setDependsOnMethods(join(test.dependsOnMethods(),
-        findInheritedStringArray(cls, Test.class, "dependsOnMethods")));
+    result.setDependsOnGroups(
+        join(test.dependsOnGroups(), findInheritedStringArray(cls, Test.class, "dependsOnGroups")));
+    result.setDependsOnMethods(
+        join(
+            test.dependsOnMethods(),
+            findInheritedStringArray(cls, Test.class, "dependsOnMethods")));
     result.setTimeOut(test.timeOut());
     result.setInvocationTimeOut(test.invocationTimeOut());
     result.setInvocationCount(test.invocationCount());
     result.setThreadPoolSize(test.threadPoolSize());
     result.setSuccessPercentage(test.successPercentage());
     result.setDataProvider(test.dataProvider());
-//    result.setDataProviderClass(test.dataProviderClass() != Object.class ?
-//        test.dataProviderClass() : null);
     result.setDataProviderClass(
-        findInherited(test.dataProviderClass(), cls, Test.class, "dataProviderClass",
-            DEFAULT_CLASS));
+        findInherited(
+            test.dataProviderClass(), cls, Test.class, "dataProviderClass", DEFAULT_CLASS));
     result.setAlwaysRun(test.alwaysRun());
     result.setDescription(
         findInherited(test.description(), cls, Test.class, "description", DEFAULT_STRING));
@@ -384,45 +498,37 @@ public class JDK15TagFactory {
     List<String> result = Lists.newArrayList(strings);
     Set<String> seen = new HashSet<>(Lists.newArrayList(strings));
     for (String s : strings2) {
-      if (! seen.contains(s)) {
+      if (!seen.contains(s)) {
         result.add(s);
       }
     }
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   /**
-   * This interface is used to calculate the default value for various
-   * annotation return types. This is used when looking for an annotation in a
-   * hierarchy. We can't use null as a default since annotation don't allow
-   * nulls, so each type has a different way of defining its own default.
+   * This interface is used to calculate the default value for various annotation return types. This
+   * is used when looking for an annotation in a hierarchy. We can't use null as a default since
+   * annotation don't allow nulls, so each type has a different way of defining its own default.
    */
-  static interface Default<T> {
+  interface Default<T> {
     boolean isDefault(T t);
   }
 
-  private static final Default<Class<?>> DEFAULT_CLASS = new Default<Class<?>>() {
-    @Override
-    public boolean isDefault(Class<?> c) {
-      return c == Object.class;
-    }
-  };
+  private static final Default<Class<?>> DEFAULT_CLASS = c -> c == Object.class;
 
-  private static final Default<String> DEFAULT_STRING = new Default<String>() {
-    @Override
-    public boolean isDefault(String s) {
-      return Utils.isStringEmpty(s);
-    }
-  };
+  private static final Default<String> DEFAULT_STRING = Utils::isStringEmpty;
 
   /**
-   * Find the value of an annotation, starting with the annotation found on the
-   * method, then the class and then parent classes until we either find a
-   * non-default value or we reach the top of the hierarchy (Object).
+   * Find the value of an annotation, starting with the annotation found on the method, then the
+   * class and then parent classes until we either find a non-default value or we reach the top of
+   * the hierarchy (Object).
    */
-  private <T> T findInherited(T methodValue, Class<?> cls,
-      Class<? extends Annotation> annotationClass, String methodName,
+  private <T> T findInherited(
+      T methodValue,
+      Class<?> cls,
+      Class<? extends Annotation> annotationClass,
+      String methodName,
       Default<T> def) {
 
     // Look on the method first and return right away if the annotation is there
@@ -446,14 +552,13 @@ public class JDK15TagFactory {
   }
 
   /**
-   * Find the value of a String[] annotation. The difference with the
-   * findInherited method above is that TestNG aggregates String[] values across
-   * hierarchies. For example, of the method annotation has { "a", "b" } and the
-   * class has { "c" }, the returned value will be { "a", "b", "c" }.
+   * Find the value of a String[] annotation. The difference with the findInherited method above is
+   * that TestNG aggregates String[] values across hierarchies. For example, of the method
+   * annotation has { "a", "b" } and the class has { "c" }, the returned value will be { "a", "b",
+   * "c" }.
    */
-  private String[] findInheritedStringArray(Class<?> cls,
-      Class<? extends Annotation> annotationClass, String methodName)
-  {
+  private String[] findInheritedStringArray(
+      Class<?> cls, Class<? extends Annotation> annotationClass, String methodName) {
     if (null == cls) {
       return new String[0];
     }
@@ -464,31 +569,23 @@ public class JDK15TagFactory {
       Annotation annotation = cls.getAnnotation(annotationClass);
       if (annotation != null) {
         String[] g = (String[]) invokeMethod(annotation, methodName);
-        for (String s : g) {
-          result.add(s);
-        }
+        result.addAll(Arrays.asList(g));
       }
       cls = cls.getSuperclass();
     }
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   private Object invokeMethod(Annotation test, String methodName) {
     Object result = null;
     try {
       // Note:  we should cache methods already looked up
-      Method m = test.getClass().getMethod(methodName, new Class[0]);
-      result = m.invoke(test, new Object[0]);
-    }
-    catch (Exception e) {
-      e.printStackTrace();
+      Method m = test.getClass().getMethod(methodName);
+      result = m.invoke(test);
+    } catch (Exception e) {
+      Logger.getLogger(JDK15TagFactory.class).error(e.getMessage(), e);
     }
     return result;
   }
-
-  private void ppp(String string) {
-    System.out.println("[JDK15TagFactory] " + string);
-  }
-
 }

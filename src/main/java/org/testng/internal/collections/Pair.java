@@ -2,10 +2,6 @@ package org.testng.internal.collections;
 
 import org.testng.collections.Objects;
 
-
-
-
-
 public class Pair<A, B> {
   private final A first;
   private final B second;
@@ -48,16 +44,14 @@ public class Pair<A, B> {
       if (other.first != null) {
         return false;
       }
-    }
-    else if (!first.equals(other.first)) {
+    } else if (!first.equals(other.first)) {
       return false;
     }
     if (second == null) {
       if (other.second != null) {
         return false;
       }
-    }
-    else if (!second.equals(other.second)) {
+    } else if (!second.equals(other.second)) {
       return false;
     }
     return true;

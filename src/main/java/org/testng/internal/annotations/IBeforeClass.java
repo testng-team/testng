@@ -1,5 +1,3 @@
 package org.testng.internal.annotations;
 
-public interface IBeforeClass extends IBaseBeforeAfter {
-
-}
+public interface IBeforeClass extends IBaseBeforeAfter {}

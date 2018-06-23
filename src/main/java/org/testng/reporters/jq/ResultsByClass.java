@@ -13,13 +13,11 @@ public class ResultsByClass {
   public static final Comparator<ITestResult> METHOD_NAME_COMPARATOR =
       new Comparator<ITestResult>() {
 
-    @Override
-    public int compare(ITestResult arg0, ITestResult arg1) {
-      return arg0.getMethod().getMethodName().compareTo(
-          arg1.getMethod().getMethodName());
-    }
-
-  };
+        @Override
+        public int compare(ITestResult arg0, ITestResult arg1) {
+          return arg0.getMethod().getMethodName().compareTo(arg1.getMethod().getMethodName());
+        }
+      };
 
   private ListMultiMap<Class<?>, ITestResult> m_results = Maps.newListMultiMap();
 

@@ -7,7 +7,6 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ITestResultNotifier;
 
-
 /**
  * An abstraction interface over JUnit test runners.
  *
@@ -22,5 +21,4 @@ public interface IJUnitTestRunner {
   void run(Class junitTestClass, String... methods);
 
   List<ITestNGMethod> getTestMethods();
-
 }

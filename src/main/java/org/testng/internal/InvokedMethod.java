@@ -11,10 +11,7 @@ public class InvokedMethod implements IInvokedMethod {
   private final long m_date;
   private final ITestResult m_testResult;
 
-  public InvokedMethod(Object instance,
-                       ITestNGMethod method,
-                       long date,
-                       ITestResult testResult) {
+  public InvokedMethod(Object instance, ITestNGMethod method, long date, ITestResult testResult) {
     m_instance = instance;
     m_testMethod = method;
     m_date = date;

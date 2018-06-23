@@ -23,25 +23,24 @@ import org.testng.internal.collections.Pair;
  *
  * @author Cedric Beust <cedric@beust.com>
  * @author nullin <nalin.makar * gmail.com>
- *
  */
 public class MethodGroupsHelper {
 
   private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
-  private static final Map<Pair<String, String>, Boolean> MATCH_CACHE =
-          new ConcurrentHashMap<>();
+  private static final Map<Pair<String, String>, Boolean> MATCH_CACHE = new ConcurrentHashMap<>();
 
-    /**
-   * Collect all the methods that belong to the included groups and exclude all
-   * the methods that belong to an excluded group.
+  /**
+   * Collect all the methods that belong to the included groups and exclude all the methods that
+   * belong to an excluded group.
    */
-  static void collectMethodsByGroup(ITestNGMethod[] methods,
+  static void collectMethodsByGroup(
+      ITestNGMethod[] methods,
       boolean forTests,
       List<ITestNGMethod> outIncludedMethods,
       List<ITestNGMethod> outExcludedMethods,
       RunInfo runInfo,
-      IAnnotationFinder finder, boolean unique)
-  {
+      IAnnotationFinder finder,
+      boolean unique) {
     for (ITestNGMethod tm : methods) {
       boolean in = false;
       Method m = tm.getConstructorOrMethod().getMethod();
@@ -49,8 +48,14 @@ public class MethodGroupsHelper {
       // @Test method
       //
       if (forTests) {
-        in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, m),
-            runInfo, tm, forTests, unique, outIncludedMethods);
+        in =
+            MethodGroupsHelper.includeMethod(
+                AnnotationHelper.findTest(finder, m),
+                runInfo,
+                tm,
+                forTests,
+                unique,
+                outIncludedMethods);
       }
 
       //
@@ -59,27 +64,35 @@ public class MethodGroupsHelper {
       else {
         IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(finder, m);
         if (annotation.getAlwaysRun()) {
-        	if (!unique || !MethodGroupsHelper.isMethodAlreadyPresent(outIncludedMethods, tm)) {
-        		in = true;
-        	}
-        }
-        else {
-          in = MethodGroupsHelper.includeMethod(AnnotationHelper.findTest(finder, tm),
-              runInfo, tm, forTests, unique, outIncludedMethods);
+          if (!unique || !MethodGroupsHelper.isMethodAlreadyPresent(outIncludedMethods, tm)) {
+            in = true;
+          }
+        } else {
+          in =
+              MethodGroupsHelper.includeMethod(
+                  AnnotationHelper.findTest(finder, tm),
+                  runInfo,
+                  tm,
+                  forTests,
+                  unique,
+                  outIncludedMethods);
         }
       }
       if (in) {
         outIncludedMethods.add(tm);
-      }
-      else {
+      } else {
         outExcludedMethods.add(tm);
       }
     }
   }
 
-  private static boolean includeMethod(ITestOrConfiguration annotation,
-      RunInfo runInfo, ITestNGMethod tm, boolean forTests, boolean unique, List<ITestNGMethod> outIncludedMethods)
-  {
+  private static boolean includeMethod(
+      ITestOrConfiguration annotation,
+      RunInfo runInfo,
+      ITestNGMethod tm,
+      boolean forTests,
+      boolean unique,
+      List<ITestNGMethod> outIncludedMethods) {
     boolean result = false;
 
     if (MethodHelper.isEnabled(annotation)) {
@@ -88,8 +101,7 @@ public class MethodGroupsHelper {
           if (!MethodGroupsHelper.isMethodAlreadyPresent(outIncludedMethods, tm)) {
             result = true;
           }
-        }
-        else {
+        } else {
           result = true;
         }
       }
@@ -98,14 +110,7 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  /**
-   * @param result
-   * @param tm
-   * @return true if a method by a similar name (and same hierarchy) already
-   *         exists
-   */
-  private static boolean isMethodAlreadyPresent(List<ITestNGMethod> result,
-      ITestNGMethod tm) {
+  private static boolean isMethodAlreadyPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
     for (ITestNGMethod m : result) {
       ConstructorOrMethod jm1 = m.getConstructorOrMethod();
       ConstructorOrMethod jm2 = tm.getConstructorOrMethod();
@@ -122,25 +127,20 @@ public class MethodGroupsHelper {
     return false;
   }
 
-  /**
-   * Extracts the map of groups and their corresponding methods from the <code>classes</code>.
-   */
-  public static Map<String, List<ITestNGMethod>> findGroupsMethods(Collection<ITestClass> classes, boolean before) {
+  /** Extracts the map of groups and their corresponding methods from the <code>classes</code>. */
+  public static Map<String, List<ITestNGMethod>> findGroupsMethods(
+      Collection<ITestClass> classes, boolean before) {
     Map<String, List<ITestNGMethod>> result = Maps.newHashMap();
     for (ITestClass cls : classes) {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
         for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
-          List<ITestNGMethod> methodList = result.get(group);
-          if (methodList == null) {
-            methodList = Lists.newArrayList();
-            result.put(group, methodList);
-          }
+          List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> Lists.newArrayList());
           // NOTE(cbeust, 2007/01/23)
           // BeforeGroups/AfterGroups methods should only be invoked once.
           // I should probably use a map instead of a list for a contains(), but
           // this list should usually be fairly short
-          if (! methodList.contains(method)) {
+          if (!methodList.contains(method)) {
             methodList.add(method);
           }
         }
@@ -150,12 +150,12 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  protected static void findGroupTransitiveClosure(XmlMethodSelector xms,
+  protected static void findGroupTransitiveClosure(
       List<ITestNGMethod> includedMethods,
       List<ITestNGMethod> allMethods,
       String[] includedGroups,
-      Set<String> outGroups, Set<ITestNGMethod> outMethods)
-  {
+      Set<String> outGroups,
+      Set<ITestNGMethod> outMethods) {
     Map<ITestNGMethod, ITestNGMethod> runningMethods = Maps.newHashMap();
     for (ITestNGMethod m : includedMethods) {
       runningMethods.put(m, m);
@@ -178,15 +178,15 @@ public class MethodGroupsHelper {
         //
         String[] ig = m.getGroupsDependedUpon();
         for (String g : ig) {
-          if (! runningGroups.containsKey(g)) {
+          if (!runningGroups.containsKey(g)) {
             // Found a new included group, add all the methods it contains to
             // our outMethod closure
             runningGroups.put(g, g);
             ITestNGMethod[] im =
-              MethodGroupsHelper.findMethodsThatBelongToGroup(m,
-                    allMethods.toArray(new ITestNGMethod[allMethods.size()]), g);
+                MethodGroupsHelper.findMethodsThatBelongToGroup(
+                    m, allMethods.toArray(new ITestNGMethod[0]), g);
             for (ITestNGMethod thisMethod : im) {
-              if (! runningMethods.containsKey(thisMethod)) {
+              if (!runningMethods.containsKey(thisMethod)) {
                 runningMethods.put(thisMethod, thisMethod);
                 newMethods.put(thisMethod, thisMethod);
               }
@@ -201,12 +201,11 @@ public class MethodGroupsHelper {
         String[] mdu = m.getMethodsDependedUpon();
         for (String tm : mdu) {
           ITestNGMethod thisMethod = MethodGroupsHelper.findMethodNamed(tm, allMethods);
-          if (thisMethod != null && ! runningMethods.containsKey(thisMethod)) {
+          if (thisMethod != null && !runningMethods.containsKey(thisMethod)) {
             runningMethods.put(thisMethod, thisMethod);
             newMethods.put(thisMethod, thisMethod);
           }
         }
-
       } // methods
 
       //
@@ -240,16 +239,13 @@ public class MethodGroupsHelper {
    * @param method if no group is found, group regex is set as this method's missing group
    * @param methods list of methods to search
    * @param groupRegexp regex representing the group
-   *
-   * @return all the methods that belong to the group specified by the regular
-   * expression groupRegExp.  methods[] is the list of all the methods we
-   * are choosing from and method is the method that owns the dependsOnGroups
-   * statement (only used if a group is missing to flag an error on that method).
+   * @return all the methods that belong to the group specified by the regular expression
+   *     groupRegExp. methods[] is the list of all the methods we are choosing from and method is
+   *     the method that owns the dependsOnGroups statement (only used if a group is missing to flag
+   *     an error on that method).
    */
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(
-      ITestNGMethod method,
-      ITestNGMethod[] methods, String groupRegexp)
-  {
+      ITestNGMethod method, ITestNGMethod[] methods, String groupRegexp) {
     ITestNGMethod[] found = findMethodsThatBelongToGroup(methods, groupRegexp);
 
     if (found.length == 0) {
@@ -262,13 +258,11 @@ public class MethodGroupsHelper {
   /**
    * @param methods list of methods to search
    * @param groupRegexp regex representing the group
-   *
-   * @return all the methods that belong to the group specified by the regular
-   * expression groupRegExp.  methods[] is the list of all the methods we
-   * are choosing from.
+   * @return all the methods that belong to the group specified by the regular expression
+   *     groupRegExp. methods[] is the list of all the methods we are choosing from.
    */
-  protected static ITestNGMethod[] findMethodsThatBelongToGroup(ITestNGMethod[] methods, String groupRegexp)
-  {
+  protected static ITestNGMethod[] findMethodsThatBelongToGroup(
+      ITestNGMethod[] methods, String groupRegexp) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
     final Pattern pattern = getPattern(groupRegexp);
     for (ITestNGMethod tm : methods) {
@@ -281,7 +275,7 @@ public class MethodGroupsHelper {
       }
     }
 
-    return vResult.toArray(new ITestNGMethod[vResult.size()]);
+    return vResult.toArray(new ITestNGMethod[0]);
   }
 
   private static Boolean isMatch(Pattern pattern, String group) {
@@ -302,6 +296,4 @@ public class MethodGroupsHelper {
     }
     return groupPattern;
   }
-
-
 }

@@ -12,55 +12,49 @@ import org.testng.collections.Maps;
 public class MethodInheritance {
 
   /**
-   * A Custom comparator that helps in {@link ITestNGMethod} ordering keeping in mind the class hierarchy.
-   * Here's how the comparator works: <br>
+   * A Custom comparator that helps in {@link ITestNGMethod} ordering keeping in mind the class
+   * hierarchy. Here's how the comparator works: <br>
    * Lets say we have two method objects o1 and o2. <br>
-   * o1 is associated with MyClass and o2 is associated with
-   * AnotherClass.
-   * <ul>
-   *     <li>-1 is returned if  MyClass is the parent of AnotherClass </li>
-   *     <li>1 is returned if AnotherClass is the parent of MyClass </li>
-   *     <li>0 is returned otherwise if MyClass and AnotherClass are the same i.e., both methods belong to the same
-   *     class. </li>
+   * o1 is associated with MyClass and o2 is associated with AnotherClass.
    *
+   * <ul>
+   *   <li>-1 is returned if MyClass is the parent of AnotherClass
+   *   <li>1 is returned if AnotherClass is the parent of MyClass
+   *   <li>0 is returned otherwise if MyClass and AnotherClass are the same i.e., both methods
+   *       belong to the same class.
    * </ul>
    *
    * Working of isAssignableFrom <br>
    * Lets say we have : <br>
+   *
    * <ol>
-   *     <li>interface Oven</li>
-   *     <li>Microwave implements Oven</li>
+   *   <li>interface Oven
+   *   <li>Microwave implements Oven
    * </ol>
    *
    * <ol>
-   *     <li>microwave instanceof Oven : <b>returns true</b></li>
-   *     <li>Oven.class.isAssignableFrom(microwave.getClass()) : <b>returns true</b></li>
+   *   <li>microwave instanceof Oven : <b>returns true</b>
+   *   <li>Oven.class.isAssignableFrom(microwave.getClass()) : <b>returns true</b>
    * </ol>
-   *
    */
-  private static final Comparator<ITestNGMethod> COMPARATOR = new Comparator<ITestNGMethod>() {
-    @Override
-    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      int result = -2;
-      Class<?> thisClass = o1.getRealClass();
-      Class<?> otherClass = o2.getRealClass();
-      if (thisClass.isAssignableFrom(otherClass)) {
-        result = -1;
-      } else if (otherClass.isAssignableFrom(thisClass)) {
-        result = 1;
-      } else if (o1.equals(o2)) {
-        result = 0;
-      }
-      return result;
-    }
-  };
+  private static final Comparator<ITestNGMethod> COMPARATOR =
+      (o1, o2) -> {
+        int result = -2;
+        Class<?> thisClass = o1.getRealClass();
+        Class<?> otherClass = o2.getRealClass();
+        if (thisClass.isAssignableFrom(otherClass)) {
+          result = -1;
+        } else if (otherClass.isAssignableFrom(thisClass)) {
+          result = 1;
+        } else if (o1.equals(o2)) {
+          result = 0;
+        }
+        return result;
+      };
 
-  /**
-   * Look in map for a class that is a superclass of methodClass
-   */
-  private static List<ITestNGMethod> findMethodListSuperClass(Map<Class, List<ITestNGMethod>> map,
-      Class< ? extends ITestNGMethod> methodClass)
-  {
+  /** Look in map for a class that is a superclass of methodClass */
+  private static List<ITestNGMethod> findMethodListSuperClass(
+      Map<Class, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
     for (Map.Entry<Class, List<ITestNGMethod>> entry : map.entrySet()) {
       if (entry.getKey().isAssignableFrom(methodClass)) {
         return entry.getValue();
@@ -69,12 +63,9 @@ public class MethodInheritance {
     return null;
   }
 
-  /**
-   * Look in map for a class that is a subclass of methodClass
-   */
-  private static Class findSubClass(Map<Class, List<ITestNGMethod>> map,
-      Class< ? extends ITestNGMethod> methodClass)
-  {
+  /** Look in map for a class that is a subclass of methodClass */
+  private static Class findSubClass(
+      Map<Class, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
     for (Class cls : map.keySet()) {
       if (methodClass.isAssignableFrom(cls)) {
         return cls;
@@ -85,14 +76,14 @@ public class MethodInheritance {
   }
 
   /**
-   * Fix the methodsDependedUpon to make sure that @Configuration methods
-   * respect inheritance (before methods are invoked in the order Base first
-   * and after methods are invoked in the order Child first)
+   * Fix the methodsDependedUpon to make sure that @Configuration methods respect inheritance
+   * (before methods are invoked in the order Base first and after methods are invoked in the order
+   * Child first)
    *
    * @param methods the list of methods
-   * @param before true if we are handling a before method (meaning, the methods
-   * need to be sorted base class first and subclass last). false otherwise (subclass
-   * methods first, base classes last).
+   * @param before true if we are handling a before method (meaning, the methods need to be sorted
+   *     base class first and subclass last). false otherwise (subclass methods first, base classes
+   *     last).
    */
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
@@ -102,20 +93,18 @@ public class MethodInheritance {
     // Put the list of methods in their hierarchy buckets
     //
     for (ITestNGMethod method : methods) {
-      Class< ? extends ITestNGMethod> methodClass = method.getRealClass();
+      Class<? extends ITestNGMethod> methodClass = method.getRealClass();
       List<ITestNGMethod> l = findMethodListSuperClass(map, methodClass);
       if (null != l) {
         l.add(method);
-      }
-      else {
+      } else {
         Class subClass = findSubClass(map, methodClass);
         if (null != subClass) {
           l = map.get(subClass);
           l.add(method);
           map.remove(subClass);
           map.put(methodClass, l);
-        }
-        else {
+        } else {
           l = Lists.newArrayList();
           l.add(method);
           map.put(methodClass, l);
@@ -151,13 +140,14 @@ public class MethodInheritance {
     }
   }
 
-  private static boolean dependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
+  private static boolean dependencyExists(
+      ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
     return internalDependencyExists(m1, m2, methods) || internalDependencyExists(m2, m1, methods);
   }
 
-  private static boolean internalDependencyExists(ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
-    ITestNGMethod[] methodsNamed =
-      MethodHelper.findDependedUponMethods(m1, methods);
+  private static boolean internalDependencyExists(
+      ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
+    ITestNGMethod[] methodsNamed = MethodHelper.findDependedUponMethods(m1, methods);
 
     for (ITestNGMethod method : methodsNamed) {
       if (method.equals(m2)) {
@@ -167,12 +157,12 @@ public class MethodInheritance {
 
     for (String group : m1.getGroupsDependedUpon()) {
       ITestNGMethod[] methodsThatBelongToGroup =
-        MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
+          MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
       for (ITestNGMethod method : methodsThatBelongToGroup) {
-         if (method.equals(m2)) {
-           return true;
-         }
-       }
+        if (method.equals(m2)) {
+          return true;
+        }
+      }
     }
 
     return false;
@@ -184,23 +174,19 @@ public class MethodInheritance {
       Class c2 = m2.getRealClass();
 
       return c1 == null ? c2 == null : c1.equals(c2);
-    }
-    catch(Exception ex) {
+    } catch (Exception ex) {
       return false;
     }
   }
 
-
   /**
-   * Given a list of methods belonging to the same class hierarchy, orders them
-   * from the base class to the child (if true) or from child to base class (if false)
-   * @param methods
+   * Given a list of methods belonging to the same class hierarchy, orders them from the base class
+   * to the child (if true) or from child to base class (if false)
    */
-  private static void sortMethodsByInheritance(List<ITestNGMethod> methods,
-      boolean baseClassToChild)
-  {
-    Collections.sort(methods, COMPARATOR);
-    if (! baseClassToChild) {
+  private static void sortMethodsByInheritance(
+      List<ITestNGMethod> methods, boolean baseClassToChild) {
+    methods.sort(COMPARATOR);
+    if (!baseClassToChild) {
       Collections.reverse(methods);
     }
   }

@@ -6,6 +6,7 @@ import static org.testng.reporters.jq.BasePanel.D;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 import org.testng.reporters.Files;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
@@ -18,19 +19,26 @@ import java.util.List;
 
 public class Main implements IReporter {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
-  private static final String[] RESOURCES = new String[] {
-    "jquery-1.7.1.min.js", "testng-reports.css", "testng-reports.js",
-    "passed.png", "failed.png", "skipped.png", "navigator-bullet.png",
-    "bullet_point.png", "collapseall.gif"
-  };
+  private static final String[] RESOURCES =
+      new String[] {
+        "jquery-1.7.1.min.js",
+        "testng-reports.css",
+        "testng-reports.js",
+        "passed.png",
+        "failed.png",
+        "skipped.png",
+        "navigator-bullet.png",
+        "bullet_point.png",
+        "collapseall.gif"
+      };
   public static final String REPORT_HEADER_FILE = "header";
 
   private Model m_model;
   private String m_outputDirectory;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     m_model = new Model(suites);
     m_outputDirectory = outputDirectory;
 
@@ -40,14 +48,15 @@ public class Main implements IReporter {
     new BannerPanel(m_model).generate(xsb);
 
     // All the panels selectable from the navigator
-    List<INavigatorPanel> panels = Arrays.<INavigatorPanel>asList(
-        new TestNgXmlPanel(m_model),
-        new TestPanel(m_model),
-        new GroupPanel(m_model),
-        new TimesPanel(m_model),
-        new ReporterPanel(m_model),
-        new IgnoredMethodsPanel(m_model),
-        new ChronologicalPanel(m_model));
+    List<INavigatorPanel> panels =
+        Arrays.asList(
+            new TestNgXmlPanel(m_model),
+            new TestPanel(m_model),
+            new GroupPanel(m_model),
+            new TimesPanel(m_model),
+            new ReporterPanel(m_model),
+            new IgnoredMethodsPanel(m_model),
+            new ChronologicalPanel(m_model));
 
     // Generate the navigator on the left hand side
     new NavigatorPanel(m_model, panels).generate(xsb);
@@ -73,7 +82,8 @@ public class Main implements IReporter {
 
     String all;
     try {
-      try (InputStream header = getClass().getResourceAsStream(TESTNG_RESOURCE_PREFIX + REPORT_HEADER_FILE)) {
+      try (InputStream header =
+          getClass().getResourceAsStream(TESTNG_RESOURCE_PREFIX + REPORT_HEADER_FILE)) {
         if (header == null) {
           throw new RuntimeException("Couldn't find resource header");
         }
@@ -86,11 +96,10 @@ public class Main implements IReporter {
           }
         }
         all = Files.readFile(header);
-        Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all); 
+        Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all);
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getLogger(Main.class).error(e.getMessage(), e);
     }
   }
 }

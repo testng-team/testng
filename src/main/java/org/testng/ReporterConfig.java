@@ -7,21 +7,17 @@ import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
 
 /**
- * Stores the information regarding the configuration of a pluggable report listener. Used also
- * in conjunction with the &lt;reporter&gt; sub-element of the Ant task
+ * Stores the information regarding the configuration of a pluggable report listener. Used also in
+ * conjunction with the &lt;reporter&gt; sub-element of the Ant task
  *
- * NOTE: this class needs to be public. It's used by TestNG Ant task
+ * <p>NOTE: this class needs to be public. It's used by TestNG Ant task
  */
 public class ReporterConfig {
 
-  /**
-   * The class name of the reporter listener
-   */
+  /** The class name of the reporter listener */
   private String m_className;
 
-  /**
-   * The properties of the reporter listener
-   */
+  /** The properties of the reporter listener */
   private final List<Property> m_properties = Lists.newArrayList();
 
   public void addProperty(Property property) {
@@ -85,9 +81,7 @@ public class ReporterConfig {
     return reporterConfig;
   }
 
-  /**
-   * Creates a reporter based on the current configuration
-   */
+  /** Creates a reporter based on the current configuration */
   public IReporter newReporterInstance() {
 
     Class<?> reporterClass = ClassHelper.forName(m_className);
@@ -120,9 +114,9 @@ public class ReporterConfig {
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
-    buf.append("\nClass = " + m_className);
+    buf.append("\nClass = ").append(m_className);
     for (Property prop : m_properties) {
-      buf.append("\n\t " + prop.name + "=" + prop.value);
+      buf.append("\n\t ").append(prop.name).append("=").append(prop.value);
     }
     return buf.toString();
   }

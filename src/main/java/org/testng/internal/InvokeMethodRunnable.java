@@ -4,8 +4,6 @@ import org.testng.IHookable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
-import java.lang.reflect.Method;
-
 /**
  * A Runnable Method invoker.
  *
@@ -18,12 +16,12 @@ public class InvokeMethodRunnable implements Runnable {
   private final IHookable m_hookable;
   private final ITestResult m_testResult;
 
-  public InvokeMethodRunnable(ITestNGMethod thisMethod,
-                              Object instance,
-                              Object[] parameters,
-                              IHookable hookable,
-                              ITestResult testResult)
-  {
+  public InvokeMethodRunnable(
+      ITestNGMethod thisMethod,
+      Object instance,
+      Object[] parameters,
+      IHookable hookable,
+      ITestResult testResult) {
     m_method = thisMethod;
     m_instance = instance;
     m_parameters = parameters;
@@ -39,8 +37,7 @@ public class InvokeMethodRunnable implements Runnable {
       for (int i = 0; i < m_method.getInvocationCount(); i++) {
         runOne();
       }
-    }
-    else {
+    } else {
       runOne();
     }
   }
@@ -53,19 +50,17 @@ public class InvokeMethodRunnable implements Runnable {
         if (m_hookable == null) {
           MethodInvocationHelper.invokeMethod(m.getMethod(), m_instance, m_parameters);
         } else {
-          MethodInvocationHelper.invokeHookable(m_instance, m_parameters, m_hookable, m.getMethod(),
-                                                m_testResult);
+          MethodInvocationHelper.invokeHookable(
+              m_instance, m_parameters, m_hookable, m.getMethod(), m_testResult);
         }
-      }
-      catch(Throwable e) {
+      } catch (Throwable e) {
         t = new TestNGRuntimeException(e.getCause());
       }
-      if(null != t) {
+      if (null != t) {
         Thread.currentThread().interrupt();
         throw t;
       }
-    }
-    finally {
+    } finally {
       m_method.incrementCurrentInvocationCount();
     }
   }

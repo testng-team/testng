@@ -22,15 +22,18 @@ public class Mustache {
       int end;
       if (template.charAt(ti) == '\n') lineNumber++;
 
-      if (template.charAt(ti) == '{' && ti + 1 < template.length()
+      if (template.charAt(ti) == '{'
+          && ti + 1 < template.length()
           && template.charAt(ti + 1) == '{') {
         int index = ti + 2;
         start = index;
         boolean foundEnd = false;
-        while (index < template.length() && ! foundEnd) {
+        while (index < template.length() && !foundEnd) {
           index++;
-          foundEnd = template.charAt(index) == '}' && index + 1 < template.length()
-              && template.charAt(index + 1) == '}';
+          foundEnd =
+              template.charAt(index) == '}'
+                  && index + 1 < template.length()
+                  && template.charAt(index + 1) == '}';
         }
 
         if (foundEnd) {
@@ -95,8 +98,7 @@ public class Mustache {
     return result.toString();
   }
 
-  private int findClosingIndex(String template, int ti,
-      String conditionalVariable) {
+  private int findClosingIndex(String template, int ti, String conditionalVariable) {
     int result = template.lastIndexOf("{{/" + conditionalVariable);
     return result;
   }
@@ -107,6 +109,5 @@ public class Mustache {
     }
   }
 
-  public static void main(String[] args) throws IOException {
-  }
+  public static void main(String[] args) throws IOException {}
 }

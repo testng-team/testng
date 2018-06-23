@@ -17,7 +17,7 @@ public class OneToTwoDimIterator implements Iterator<Object[]> {
 
   @Override
   public Object[] next() {
-    return new Object[]{m_iterator.next()};
+    return new Object[] {m_iterator.next()};
   }
 
   @Override

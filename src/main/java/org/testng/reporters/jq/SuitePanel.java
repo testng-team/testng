@@ -28,12 +28,13 @@ public class SuitePanel extends BasePanel {
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb) {
     String divName = suiteToTag(suite);
     xsb.push(D, C, "panel " + divName, "panel-name", "suite-" + divName);
-    String[] statuses = new String[] { FAILED, SKIPPED, PASSED };
-    ResultsByClass[] results = new ResultsByClass[] {
-        getModel().getFailedResultsByClass(suite),
-        getModel().getSkippedResultsByClass(suite),
-        getModel().getPassedResultsByClass(suite),
-    };
+    String[] statuses = new String[] {FAILED, SKIPPED, PASSED};
+    ResultsByClass[] results =
+        new ResultsByClass[] {
+          getModel().getFailedResultsByClass(suite),
+          getModel().getSkippedResultsByClass(suite),
+          getModel().getPassedResultsByClass(suite),
+        };
 
     for (int i = 0; i < results.length; i++) {
       ResultsByClass byClass = results[i];
@@ -44,8 +45,8 @@ public class SuitePanel extends BasePanel {
     xsb.pop(D);
   }
 
-  private void generateClassPanel(Class c, List<ITestResult> results, XMLStringBuffer xsb,
-      String status, ISuite suite) {
+  private void generateClassPanel(
+      Class c, List<ITestResult> results, XMLStringBuffer xsb, String status, ISuite suite) {
     xsb.push(D, C, "suite-" + suiteToTag(suite) + "-class-" + status);
     xsb.push(D, C, "main-panel-header rounded-window-top");
 
@@ -86,16 +87,15 @@ public class SuitePanel extends BasePanel {
     if (tr.getStatus() != ITestResult.SUCCESS && tr.getThrowable() != null) {
       StringBuilder stackTrace = new StringBuilder();
       stackTrace.append(Utils.shortStackTrace(tr.getThrowable(), true));
-      xsb.addOptional(D, stackTrace.toString() + "\n",
-          C, "stack-trace");
+      xsb.addOptional(D, stackTrace.toString() + "\n", C, "stack-trace");
     }
 
     // Description?
     String description = tr.getMethod().getDescription();
-    if (! Strings.isNullOrEmpty(description)) {
-        xsb.push("em");
-        xsb.addString("(" + description + ")");
-        xsb.pop("em");
+    if (!Strings.isNullOrEmpty(description)) {
+      xsb.push("em");
+      xsb.addString("(" + description + ")");
+      xsb.pop("em");
     }
 
     xsb.pop(D);

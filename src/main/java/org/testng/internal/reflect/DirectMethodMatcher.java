@@ -18,9 +18,7 @@ public class DirectMethodMatcher extends AbstractNodeMethodMatcher {
     super(context);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected List<Set<InjectableParameter>> getConformanceInjectsOrder() {
     final List<Set<InjectableParameter>> injectsOrder = new ArrayList<>(1);
@@ -29,17 +27,13 @@ public class DirectMethodMatcher extends AbstractNodeMethodMatcher {
     return injectsOrder;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected boolean match(final Parameter[] parameters, final Object[] arguments) {
     return ReflectionRecipes.exactMatch(parameters, getContext().getArguments());
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected Object[] matchingArguments(Parameter[] parameters, Object[] arguments) {
     return arguments;

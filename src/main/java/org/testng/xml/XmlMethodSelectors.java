@@ -11,8 +11,7 @@ public class XmlMethodSelectors {
 
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
 
-  public XmlMethodSelectors() {
-  }
+  public XmlMethodSelectors() {}
 
   public List<XmlMethodSelector> getMethodSelectors() {
     return m_methodSelectors;
@@ -29,7 +28,7 @@ public class XmlMethodSelectors {
       for (XmlMethodSelector selector : m_methodSelectors) {
         xsb.getStringBuffer().append(selector.toXml(indent + "  "));
       }
-  
+
       xsb.pop("method-selectors");
     }
     return xsb.toXML();

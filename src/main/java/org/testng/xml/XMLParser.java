@@ -9,12 +9,13 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.testng.TestNGException;
+import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-abstract public class XMLParser<T> implements IFileParser<T> {
+public abstract class XMLParser<T> implements IFileParser<T> {
 
-  private final static SAXParser m_saxParser;
+  private static final SAXParser m_saxParser;
 
   static {
     SAXParserFactory spf = loadSAXParserFactory();
@@ -28,7 +29,7 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     try {
       parser = spf.newSAXParser();
     } catch (ParserConfigurationException | SAXException e) {
-      e.printStackTrace();
+      Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
     }
     m_saxParser = parser;
   }
@@ -50,44 +51,18 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     try {
       return SAXParserFactory.newInstance();
     } catch (FactoryConfigurationError fcerr) {
-      throw new TestNGException("Cannot initialize a SAXParserFactory. Root cause: " + fcerr.getMessage(), fcerr);
+      throw new TestNGException(
+          "Cannot initialize a SAXParserFactory. Root cause: " + fcerr.getMessage(), fcerr);
     }
   }
 
-
-  /**
-   * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
-   */
+  /** Tests if the current <code>SAXParserFactory</code> supports DTD validation. */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
       spf.getFeature("http://xml.org/sax/features/validation");
       return true;
-    }
-    catch(Exception ex) {
+    } catch (Exception ex) {
       return false;
     }
   }
-
-//  private static void ppp(String s) {
-//    System.out.println("[Parser] " + s);
-//  }
-
-//  /**
-//   *
-//   * @param argv ignored
-//   * @throws FileNotFoundException if the
-//   * @throws ParserConfigurationException
-//   * @throws SAXException
-//   * @throws IOException
-//   * @since 1.0
-//   */
-//  public static void main(String[] argv)
-//    throws FileNotFoundException, ParserConfigurationException, SAXException, IOException
-//  {
-//    XmlSuite l =
-//      new Parser("c:/eclipse-workspace/testng/test/testng.xml").parse();
-//
-//    System.out.println(l);
-//  }  @Override
-
 }

@@ -29,7 +29,8 @@ public class MethodMatcherException extends TestNGException {
     super(cause);
   }
 
-  static String generateMessage(final String message, final Constructor constructor, final Object[] args) {
+  static String generateMessage(
+      final String message, final Constructor constructor, final Object[] args) {
     Parameter[] parameter = null;
     String name = null;
     if (constructor != null) {
@@ -39,7 +40,8 @@ public class MethodMatcherException extends TestNGException {
     return generateMessage(message, name, "Constructor", parameter, args);
   }
 
-  public static String generateMessage(final String message, final Method method, final Object[] args) {
+  public static String generateMessage(
+      final String message, final Method method, final Object[] args) {
     Parameter[] parameter = null;
     String name = null;
     if (method != null) {
@@ -49,11 +51,12 @@ public class MethodMatcherException extends TestNGException {
     return generateMessage(message, name, "Method", parameter, args);
   }
 
-  private static String generateMessage(final String message,
-                                        final String name,
-                                        final String prefix,
-                                        Parameter[] parameter,
-                                        final Object[] args) {
+  private static String generateMessage(
+      final String message,
+      final String name,
+      final String prefix,
+      Parameter[] parameter,
+      final Object[] args) {
     final StringBuilder sb = new StringBuilder();
     sb.append(message).append("\n").append(prefix).append(": ");
     if (name != null) {
@@ -89,5 +92,4 @@ public class MethodMatcherException extends TestNGException {
       return object.toString();
     }
   }
-
 }

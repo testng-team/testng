@@ -5,7 +5,6 @@ import org.testng.collections.Maps;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -14,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-/**
- * <code>Parser</code> is a parser for a TestNG XML test suite file.
- */
+/** <code>Parser</code> is a parser for a TestNG XML test suite file. */
 public class Parser {
 
   /** The name of the TestNG DTD. */
@@ -33,6 +30,7 @@ public class Parser {
 
   private static final ISuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
   private static final List<ISuiteParser> PARSERS = Lists.newArrayList();
+
   static {
     ServiceLoader<ISuiteParser> suiteParserLoader = ServiceLoader.load(ISuiteParser.class);
     for (ISuiteParser parser : suiteParserLoader) {
@@ -40,8 +38,10 @@ public class Parser {
     }
   }
 
-  /** The file name of the xml suite being parsed. This may be null if the Parser
-   * has not been initialized with a file name. TODO CQ This member is never used. */
+  /**
+   * The file name of the xml suite being parsed. This may be null if the Parser has not been
+   * initialized with a file name. TODO CQ This member is never used.
+   */
   private String m_fileName;
 
   private InputStream m_inputStream;
@@ -50,21 +50,17 @@ public class Parser {
   private boolean m_loadClasses = true;
 
   /**
-   * Constructs a <code>Parser</code> to use the inputStream as the source of
-   * the xml test suite to parse.
-   * @param fileName the filename corresponding to the inputStream or null if
-   * unknown.
+   * Constructs a <code>Parser</code> to use the inputStream as the source of the xml test suite to
+   * parse.
+   *
+   * @param fileName the filename corresponding to the inputStream or null if unknown.
    */
   public Parser(String fileName) {
     init(fileName, null);
   }
 
-  /**
-   * Creates a parser that will try to find the DEFAULT_FILENAME from the jar.
-   * @throws FileNotFoundException if the DEFAULT_FILENAME resource is not
-   * found in the classpath.
-   */
-  public Parser() throws FileNotFoundException {
+  /** Creates a parser that will try to find the DEFAULT_FILENAME from the jar. */
+  public Parser() {
     init(null, null);
   }
 
@@ -81,9 +77,7 @@ public class Parser {
     m_postProcessor = processor;
   }
 
-  /**
-   * If false, don't try to load the classes during the parsing.
-   */
+  /** If false, don't try to load the classes during the parsing. */
   public void setLoadClasses(boolean loadClasses) {
     m_loadClasses = loadClasses;
   }
@@ -99,14 +93,12 @@ public class Parser {
   }
 
   /**
-   * Parses the TestNG test suite and returns the corresponding XmlSuite,
-   * and possibly, other XmlSuite that are pointed to by <suite-files>
-   * tags.
+   * Parses the TestNG test suite and returns the corresponding XmlSuite, and possibly, other
+   * XmlSuite that are pointed to by <suite-files> tags.
    *
    * @return the parsed TestNG test suite.
-   *
-   * @throws IOException if an I/O error occurs while parsing the test suite file or
-   * if the default testng.xml file is not found.
+   * @throws IOException if an I/O error occurs while parsing the test suite file or if the default
+   *     testng.xml file is not found.
    */
   public Collection<XmlSuite> parse() throws IOException {
     // Each suite found is put in this list, using their canonical
@@ -155,15 +147,15 @@ public class Parser {
         toBeRemoved.add(currentFile);
 
         if (childToParentMap.containsKey(currentFile)) {
-           XmlSuite parentSuite = childToParentMap.get(currentFile);
-           //Set parent
-           currentXmlSuite.setParentSuite(parentSuite);
-           //append children
-           parentSuite.getChildSuites().add(currentXmlSuite);
+          XmlSuite parentSuite = childToParentMap.get(currentFile);
+          // Set parent
+          currentXmlSuite.setParentSuite(parentSuite);
+          // append children
+          parentSuite.getChildSuites().add(currentXmlSuite);
         }
 
         if (null == resultSuite) {
-           resultSuite = currentXmlSuite;
+          resultSuite = currentXmlSuite;
         }
 
         List<String> suiteFiles = currentXmlSuite.getSuiteFiles();
@@ -193,10 +185,9 @@ public class Parser {
 
       toBeParsed.addAll(toBeAdded);
       toBeAdded = Lists.newArrayList();
-
     }
 
-    //returning a list of single suite to keep changes minimum
+    // returning a list of single suite to keep changes minimum
     List<XmlSuite> resultList = Lists.newArrayList();
     resultList.add(resultSuite);
 
@@ -205,23 +196,22 @@ public class Parser {
     } else {
       return resultList;
     }
-
   }
 
   /**
-   *
    * @param uri - The uri to be verified.
    * @return - <code>true</code> if the uri has "file:" as its scheme.
    */
   public static boolean hasFileScheme(String uri) {
     URI constructedURI = constructURI(uri);
     if (constructedURI == null) {
-      //There were difficulties in constructing the URI. Falling back to considering the URI as a file.
+      // There were difficulties in constructing the URI. Falling back to considering the URI as a
+      // file.
       return true;
     }
     String scheme = constructedURI.getScheme();
-    //A URI is regarded as having a file scheme if it either has its scheme as "file"
-    //(or) if the scheme is null (which is true when uri's represent local file system path.)
+    // A URI is regarded as having a file scheme if it either has its scheme as "file"
+    // (or) if the scheme is null (which is true when uri's represent local file system path.)
     return scheme == null || "file".equalsIgnoreCase(scheme);
   }
 
@@ -229,21 +219,23 @@ public class Parser {
     return Lists.newArrayList(parse());
   }
 
-  public static Collection<XmlSuite> parse(String suite, IPostProcessor processor) throws IOException {
+  public static Collection<XmlSuite> parse(String suite, IPostProcessor processor)
+      throws IOException {
     return newParser(suite, processor).parse();
   }
 
-  public static Collection<XmlSuite> parse(InputStream is, IPostProcessor processor) throws IOException {
+  public static Collection<XmlSuite> parse(InputStream is, IPostProcessor processor)
+      throws IOException {
     return newParser(is, processor).parse();
   }
-  
+
   public static boolean canParse(String fileName) {
     for (ISuiteParser parser : PARSERS) {
       if (parser.accept(fileName)) {
         return true;
       }
     }
-      
+
     return DEFAULT_FILE_PARSER.accept(fileName);
   }
 
@@ -266,6 +258,4 @@ public class Parser {
       return null;
     }
   }
-
 }
-

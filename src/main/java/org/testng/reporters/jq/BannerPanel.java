@@ -15,10 +15,8 @@ public class BannerPanel extends BasePanel {
     xsb.addEmptyElement("br");
     int failedCount = getModel().getAllFailedResults().size();
     String testResult = failedCount > 0 ? ", " + pluralize(failedCount, "failed test") : "";
-    String subTitle = pluralize(getModel().getSuites().size(), "suite")
-        + testResult;
+    String subTitle = pluralize(getModel().getSuites().size(), "suite") + testResult;
     xsb.addRequired(S, subTitle, C, "top-banner-font-1");
     xsb.pop(D);
   }
-
 }

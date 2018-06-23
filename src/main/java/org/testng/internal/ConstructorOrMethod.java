@@ -23,7 +23,9 @@ public class ConstructorOrMethod {
   }
 
   public Class<?> getDeclaringClass() {
-    return getMethod() != null ? getMethod().getDeclaringClass() : getConstructor().getDeclaringClass();
+    return getMethod() != null
+        ? getMethod().getDeclaringClass()
+        : getConstructor().getDeclaringClass();
   }
 
   public String getName() {
@@ -31,7 +33,9 @@ public class ConstructorOrMethod {
   }
 
   public Class[] getParameterTypes() {
-    return getMethod() != null ? getMethod().getParameterTypes() : getConstructor().getParameterTypes();
+    return getMethod() != null
+        ? getMethod().getParameterTypes()
+        : getConstructor().getParameterTypes();
   }
 
   public Method getMethod() {
@@ -53,23 +57,16 @@ public class ConstructorOrMethod {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     ConstructorOrMethod other = (ConstructorOrMethod) obj;
     if (getConstructor() == null) {
-      if (other.getConstructor() != null)
-        return false;
-    } else if (!getConstructor().equals(other.getConstructor()))
-      return false;
+      if (other.getConstructor() != null) return false;
+    } else if (!getConstructor().equals(other.getConstructor())) return false;
     if (getMethod() == null) {
-      if (other.getMethod() != null)
-        return false;
-    } else if (!getMethod().equals(other.getMethod()))
-      return false;
+      if (other.getMethod() != null) return false;
+    } else if (!getMethod().equals(other.getMethod())) return false;
     return true;
   }
 

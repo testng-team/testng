@@ -30,17 +30,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-
 public class JUnitReportReporter implements IReporter {
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String defaultOutputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String defaultOutputDirectory) {
 
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
     ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
-    SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap(false);
+    SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap<>(false);
     for (ISuite suite : suites) {
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       addMapping(mapping, suite.getExcludedMethods());
@@ -61,31 +60,6 @@ public class JUnitReportReporter implements IReporter {
       }
     }
 
-    // A list of iterators for all the passed configuration, explanation below
-//    ListMultiMap<Class<?>, ITestResult> beforeConfigurations = Maps.newListMultiMap();
-//    ListMultiMap<Class<?>, ITestResult> afterConfigurations = Maps.newListMultiMap();
-//    for (Map.Entry<Class<?>, Set<ITestResult>> es : passedConfigurations.entrySet()) {
-//      for (ITestResult tr : es.getValue()) {
-//        ITestNGMethod method = tr.getMethod();
-//        if (method.isBeforeMethodConfiguration()) {
-//          beforeConfigurations.put(method.getRealClass(), tr);
-//        }
-//        if (method.isAfterMethodConfiguration()) {
-//          afterConfigurations.put(method.getRealClass(), tr);
-//        }
-//      }
-//    }
-//    Map<Object, Iterator<ITestResult>> befores = Maps.newHashMap();
-//    for (Map.Entry<Class<?>, List<ITestResult>> es : beforeConfigurations.getEntrySet()) {
-//      List<ITestResult> tr = es.getValue();
-//      for (ITestResult itr : es.getValue()) {
-//      }
-//    }
-//    Map<Class<?>, Iterator<ITestResult>> afters = Maps.newHashMap();
-//    for (Map.Entry<Class<?>, List<ITestResult>> es : afterConfigurations.getEntrySet()) {
-//      afters.put(es.getKey(), es.getValue().iterator());
-//    }
-
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
       Properties p1 = new Properties();
@@ -95,13 +69,13 @@ public class JUnitReportReporter implements IReporter {
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
       int errors = 0;
-      int skipped= 0;
+      int skipped = 0;
       int testCount = 0;
       float totalTime = 0;
 
       Collection<ITestResult> iTestResults = sort(entry.getValue());
 
-      for (ITestResult tr: iTestResults) {
+      for (ITestResult tr : iTestResults) {
 
         long time = tr.getEndMillis() - tr.getStartMillis();
 
@@ -173,19 +147,12 @@ public class JUnitReportReporter implements IReporter {
       String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
       Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
     }
-
   }
 
   private static Collection<ITestResult> sort(Set<ITestResult> results) {
     List<ITestResult> sortedResults = new ArrayList<>(results);
-    Collections.sort(sortedResults, new Comparator<ITestResult> () {
-
-      @Override
-      public int compare(ITestResult o1, ITestResult o2) {
-        return Integer.compare(o1.getMethod().getPriority(), o2.getMethod().getPriority());
-      }
-    });
-    return sortedResults;
+    sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
+    return Collections.unmodifiableList(sortedResults);
   }
 
   private static int getDisabledTestCount(Set<ITestNGMethod> methods) {
@@ -237,11 +204,11 @@ public class JUnitReportReporter implements IReporter {
   }
 
   /** Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter */
-  private boolean putElement(XMLStringBuffer xsb, String tagName, Properties attributes, boolean hasChildElements) {
+  private boolean putElement(
+      XMLStringBuffer xsb, String tagName, Properties attributes, boolean hasChildElements) {
     if (hasChildElements) {
       xsb.push(tagName, attributes);
-    }
-    else {
+    } else {
       xsb.addEmptyElement(tagName, attributes);
     }
     return hasChildElements;
@@ -257,19 +224,18 @@ public class JUnitReportReporter implements IReporter {
   /**
    * Add the time of the configuration method to this test method.
    *
-   * The only problem with this method is that the timing of a test method
-   * might not be added to the time of the same configuration method that ran before
-   * it but since they should all be equivalent, this should never be an issue.
+   * <p>The only problem with this method is that the timing of a test method might not be added to
+   * the time of the same configuration method that ran before it but since they should all be
+   * equivalent, this should never be an issue.
    */
-  private long getNextConfiguration(ListMultiMap<Object, ITestResult> configurations,
-      ITestResult tr)
-  {
+  private long getNextConfiguration(
+      ListMultiMap<Object, ITestResult> configurations, ITestResult tr) {
     long result = 0;
 
     List<ITestResult> confResults = configurations.get(tr.getInstance());
     Map<ITestNGMethod, ITestResult> seen = Maps.newHashMap();
     for (ITestResult r : confResults) {
-      if (! seen.containsKey(r.getMethod())) {
+      if (!seen.containsKey(r.getMethod())) {
         result += r.getEndMillis() - r.getStartMillis();
         seen.put(r.getMethod(), r);
       }
@@ -297,28 +263,25 @@ public class JUnitReportReporter implements IReporter {
   }
 
   private static class TestTag {
-    public Properties properties;
-    public String message;
-    public String type;
-    public String stackTrace;
+    Properties properties;
+    String message;
+    String type;
+    String stackTrace;
     String childTag;
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
     for (ITestResult tr : allResults) {
       Class<?> cls = tr.getMethod().getTestClass().getRealClass();
-      Set<ITestResult> l = out.get(cls);
-      if (l == null) {
-        l = Sets.newHashSet();
-        out.put(cls, l);
-      }
+      Set<ITestResult> l = out.computeIfAbsent(cls, k -> Sets.newHashSet());
       l.add(tr);
     }
   }
 
-  private void addMapping(SetMultiMap<Class<?>, ITestNGMethod> mapping, Collection<ITestNGMethod> methods) {
+  private void addMapping(
+      SetMultiMap<Class<?>, ITestNGMethod> mapping, Collection<ITestNGMethod> methods) {
     for (ITestNGMethod method : methods) {
-      if (! method.getEnabled()) {
+      if (!method.getEnabled()) {
         mapping.put(method.getRealClass(), method);
       }
     }

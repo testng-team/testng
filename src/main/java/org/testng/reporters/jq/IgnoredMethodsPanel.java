@@ -12,7 +12,6 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-
   @Override
   public String getPrefix() {
     return "ignored-methods-";
@@ -50,5 +49,4 @@ public class IgnoredMethodsPanel extends BaseMultiSuitePanel {
   public String getNavigatorLink(ISuite suite) {
     return "Ignored methods";
   }
-
 }

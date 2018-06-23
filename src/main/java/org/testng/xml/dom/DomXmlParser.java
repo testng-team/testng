@@ -1,5 +1,6 @@
 package org.testng.xml.dom;
 
+import org.testng.log4testng.Logger;
 import org.testng.xml.ISuiteParser;
 import org.testng.xml.Parser;
 import org.testng.xml.XMLParser;
@@ -10,7 +11,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
     try {
       result = parse2(currentFile, inputStream, loadClasses);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getLogger(DomXmlParser.class).error(e.getMessage(), e);
     }
 
     return result;
@@ -33,9 +33,8 @@ public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
     return Parser.hasFileScheme(fileName) && fileName.endsWith(".xml");
   }
 
-  public XmlSuite parse2(String currentFile, InputStream inputStream,
-      boolean loadClasses) throws ParserConfigurationException, SAXException,
-      IOException, XPathExpressionException {
+  public XmlSuite parse2(String currentFile, InputStream inputStream, boolean loadClasses)
+      throws ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true); // never forget this!
     DocumentBuilder builder = factory.newDocumentBuilder();
@@ -44,26 +43,7 @@ public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
     DomUtil xpu = new DomUtil(doc);
     XmlSuite result = new XmlSuite();
     xpu.populate(result);
-//    XPathFactory xpathFactory = XPathFactory.newInstance();
-//    XPath xpath = xpathFactory.newXPath();
-//
-//    {
-//      XPathExpression expr = xpath.compile("//suite");
-//      Object result = expr.evaluate(doc, XPathConstants.NODESET);
-//      NodeList nodes = (NodeList) result;
-//      for (int i = 0; i < nodes.getLength(); i++) {
-//        Node node = nodes.item(i);
-//        for (int j = 0; j < node.getAttributes().getLength(); j++) {
-//          System.out.println(node.getAttributes().item(j));
-//        }
-//      }
-//    }
 
-//    {
-//      XPathExpression expr = xpath.compile("//suite/@name");
-//      Object result = expr.evaluate(doc, XPathConstants.STRING);
-//      System.out.println("NAME:" + result);
-//    }
     System.out.println(result.toXml());
     return result;
   }

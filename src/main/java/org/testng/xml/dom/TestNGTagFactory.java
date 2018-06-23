@@ -8,10 +8,6 @@ public class TestNGTagFactory implements ITagFactory {
 
   private Map<String, Class<?>> m_map = Maps.newHashMap();
 
-  public TestNGTagFactory() {
-//    m_map.put("suite-files", XDom.ChildSuite.class);
-  }
-
   @Override
   public Class<?> getClassForTag(String tag) {
     Class<?> result = m_map.get(tag);
@@ -28,5 +24,4 @@ public class TestNGTagFactory implements ITagFactory {
 
     return result;
   }
-
 }

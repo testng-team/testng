@@ -4,7 +4,7 @@ import org.testng.ISuite;
 
 import java.util.List;
 
-abstract public class BasePanel implements IPanel {
+public abstract class BasePanel implements IPanel {
   public static final String C = "class";
   public static final String D = "div";
   public static final String S = "span";
@@ -24,13 +24,14 @@ abstract public class BasePanel implements IPanel {
   }
 
   protected static String pluralize(int count, String singular) {
-    return Integer.toString(count) + " " + (count == 0 || count > 1
-        ? (singular.endsWith("s") ? singular + "es" : singular + "s")
-        : singular);
+    return Integer.toString(count)
+        + " "
+        + (count == 0 || count > 1
+            ? (singular.endsWith("s") ? singular + "es" : singular + "s")
+            : singular);
   }
 
   protected static String suiteToTag(ISuite suite) {
     return suite.getName().replaceAll("[^A-Za-z0-9]", "_");
   }
-
 }

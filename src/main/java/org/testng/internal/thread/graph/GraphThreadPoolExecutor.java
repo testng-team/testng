@@ -6,6 +6,7 @@ import org.testng.internal.DynamicGraph;
 import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.thread.TestNGThreadFactory;
+import org.testng.log4testng.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -15,9 +16,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * An Executor that launches tasks per batches. It takes a {@code DynamicGraph}
- * of tasks to be run and a {@code IThreadWorkerFactory} to initialize/create
- * {@code Runnable} wrappers around those tasks
+ * An Executor that launches tasks per batches. It takes a {@code DynamicGraph} of tasks to be run
+ * and a {@code IThreadWorkerFactory} to initialize/create {@code Runnable} wrappers around those
+ * tasks
  */
 public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
@@ -26,9 +27,22 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private final Map<T, IWorker<T>> mapping = Maps.newConcurrentMap();
   private final Map<T, T> upstream = Maps.newConcurrentMap();
 
-  public GraphThreadPoolExecutor(String name, DynamicGraph<T> graph, IThreadWorkerFactory<T> factory, int corePoolSize,
-      int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, new TestNGThreadFactory(name));
+  public GraphThreadPoolExecutor(
+      String name,
+      DynamicGraph<T> graph,
+      IThreadWorkerFactory<T> factory,
+      int corePoolSize,
+      int maximumPoolSize,
+      long keepAliveTime,
+      TimeUnit unit,
+      BlockingQueue<Runnable> workQueue) {
+    super(
+        corePoolSize,
+        maximumPoolSize,
+        keepAliveTime,
+        unit,
+        workQueue,
+        new TestNGThreadFactory(name));
     m_graph = graph;
     m_factory = factory;
 
@@ -38,15 +52,13 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   }
 
   public void run() {
-    synchronized(m_graph) {
+    synchronized (m_graph) {
       List<T> freeNodes = m_graph.getFreeNodes();
       runNodes(freeNodes);
     }
   }
 
-  /**
-   * Create one worker per node and execute them.
-   */
+  /** Create one worker per node and execute them. */
   private void runNodes(List<T> freeNodes) {
     List<IWorker<T>> workers = m_factory.createWorkers(freeNodes);
     mapNodeToWorker(workers, freeNodes);
@@ -57,9 +69,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       setStatus(worker, Status.RUNNING);
       try {
         execute(worker);
-      }
-      catch(Exception ex) {
-        ex.printStackTrace();
+      } catch (Exception ex) {
+        Logger.getLogger(GraphThreadPoolExecutor.class).error(ex.getMessage(), ex);
       }
     }
   }
@@ -80,7 +91,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   }
 
   private void setStatus(IWorker<T> worker, Status status) {
-    synchronized(m_graph) {
+    synchronized (m_graph) {
       for (T m : worker.getTasks()) {
         m_graph.setStatus(m, status);
       }
@@ -134,38 +145,38 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   }
 
   private class PhoneyWorker implements IWorker<T> {
-      private long threadId;
+    private long threadId;
 
-      public PhoneyWorker(long threadId) {
-          this.threadId = threadId;
-      }
+    public PhoneyWorker(long threadId) {
+      this.threadId = threadId;
+    }
 
-      @Override
-      public List<T> getTasks() {
-          return null;
-      }
+    @Override
+    public List<T> getTasks() {
+      return null;
+    }
 
-      @Override
-      public long getTimeOut() {
-          return 0;
-      }
+    @Override
+    public long getTimeOut() {
+      return 0;
+    }
 
-      @Override
-      public int getPriority() {
-          return 0;
-      }
+    @Override
+    public int getPriority() {
+      return 0;
+    }
 
-      @Override
-      public int compareTo(@Nonnull IWorker<T> o) {
-          return 0;
-      }
+    @Override
+    public int compareTo(@Nonnull IWorker<T> o) {
+      return 0;
+    }
 
-      @Override
-      public void run() {}
+    @Override
+    public void run() {}
 
-      @Override
-      public long getThreadIdToRunOn() {
-          return threadId;
-      }
+    @Override
+    public long getThreadIdToRunOn() {
+      return threadId;
+    }
   }
 }
