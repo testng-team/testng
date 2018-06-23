@@ -1,10 +1,7 @@
 package org.testng.junit;
 
-/**
- *
- * @author lukas
- */
+/** @author lukas */
 interface JUnitTestRecognizer {
 
-    boolean isTest(Class c);
+  boolean isTest(Class c);
 }

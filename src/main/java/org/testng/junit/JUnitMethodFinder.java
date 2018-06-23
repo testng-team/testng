@@ -14,14 +14,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 /**
- * This class locates all test and configuration methods according to JUnit.
- * It is used to change the strategy used by TestRunner to locate its test
- * methods.
+ * This class locates all test and configuration methods according to JUnit. It is used to change
+ * the strategy used by TestRunner to locate its test methods.
  *
  * @author Cedric Beust, May 3, 2004
- *
  */
 public class JUnitMethodFinder implements ITestMethodFinder {
   private final String m_testName;
@@ -35,8 +32,9 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   @Override
   public ITestNGMethod[] getTestMethods(Class cls, XmlTest xmlTest) {
 
-    return privateFindTestMethods(method -> method.getName().startsWith("test") &&
-      method.getParameterTypes().length == 0, cls);
+    return privateFindTestMethods(
+        method -> method.getName().startsWith("test") && method.getParameterTypes().length == 0,
+        cls);
   }
 
   private ITestNGMethod[] privateFindTestMethods(INameFilter filter, Class cls) {
@@ -52,15 +50,18 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     // Collect all methods that start with test
     //
     Class current = cls;
-    while(!(current == Object.class)) {
+    while (!(current == Object.class)) {
       Method[] allMethods = ReflectionHelper.excludingMain(current);
-      for(Method allMethod : allMethods) {
-        ITestNGMethod m = new TestNGMethod(/* allMethods[i].getDeclaringClass(), */ allMethod,
-            m_annotationFinder, null,
-            null); /* @@@ */
+      for (Method allMethod : allMethods) {
+        ITestNGMethod m =
+            new TestNGMethod(
+                /* allMethods[i].getDeclaringClass(), */ allMethod,
+                m_annotationFinder,
+                null,
+                null); /* @@@ */
         ConstructorOrMethod method = m.getConstructorOrMethod();
         String methodName = method.getName();
-        if(filter.accept(method) && !acceptedMethodNames.contains(methodName)) {
+        if (filter.accept(method) && !acceptedMethodNames.contains(methodName)) {
           vResult.add(m);
           acceptedMethodNames.add(methodName);
         }
