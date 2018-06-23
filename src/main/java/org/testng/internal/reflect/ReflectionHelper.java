@@ -10,9 +10,8 @@ import java.util.List;
 
 public class ReflectionHelper {
   /**
-   * @return An array of all locally declared methods or equivalent thereof
-   * (such as default methods on Java 8 based interfaces that the given class
-   * implements).
+   * @return An array of all locally declared methods or equivalent thereof (such as default methods
+   *     on Java 8 based interfaces that the given class implements).
    */
   public static Method[] getLocalMethods(Class<?> clazz) {
     Method[] declaredMethods = excludingMain(clazz);
@@ -25,7 +24,6 @@ public class ReflectionHelper {
         }
       }
       return prunedMethods.toArray(new Method[0]);
-
     }
     Method[] result = new Method[declaredMethods.length + defaultMethods.size()];
     System.arraycopy(declaredMethods, 0, result, 0, declaredMethods.length);
@@ -38,15 +36,17 @@ public class ReflectionHelper {
   }
 
   /**
-   * @return An array of all locally declared methods or equivalent thereof
-   * (such as default methods on Java 8 based interfaces that the given class
-   * implements) but excludes the <code>main()</code> method alone.
+   * @return An array of all locally declared methods or equivalent thereof (such as default methods
+   *     on Java 8 based interfaces that the given class implements) but excludes the <code>main()
+   *     </code> method alone.
    */
   public static Method[] excludingMain(Class<?> clazz) {
     Method[] declaredMethods = clazz.getDeclaredMethods();
     List<Method> pruned = new LinkedList<>();
-    for (Method declaredMethod :declaredMethods) {
-      if ("main".equals(declaredMethod.getName()) && isStaticVoid(declaredMethod) && acceptsStringArray(declaredMethod)) {
+    for (Method declaredMethod : declaredMethods) {
+      if ("main".equals(declaredMethod.getName())
+          && isStaticVoid(declaredMethod)
+          && acceptsStringArray(declaredMethod)) {
         continue;
       }
       pruned.add(declaredMethod);
@@ -55,14 +55,16 @@ public class ReflectionHelper {
   }
 
   /**
-   * A helper method that looks for a given annotation in the current class (or) in any of the super classes
+   * A helper method that looks for a given annotation in the current class (or) in any of the super
+   * classes
    *
    * @param typedTestClass - The class to search for
-   * @param annotation     - The annotation to look for
-   * @param <T>            - The annotation type
+   * @param annotation - The annotation to look for
+   * @param <T> - The annotation type
    * @return - Either the annotation if found (or) <code>null.</code>
    */
-  public static <T extends Annotation> T findAnnotation(Class<?> typedTestClass, Class<T> annotation) {
+  public static <T extends Annotation> T findAnnotation(
+      Class<?> typedTestClass, Class<T> annotation) {
     if (typedTestClass == null || annotation == null) {
       return null;
     }
@@ -106,5 +108,4 @@ public class ReflectionHelper {
     }
     return result;
   }
-
 }

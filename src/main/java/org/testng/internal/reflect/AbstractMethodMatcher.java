@@ -17,9 +17,7 @@ public abstract class AbstractMethodMatcher implements MethodMatcher {
     return conforms;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean conforms() {
     boolean hasConformance = false;

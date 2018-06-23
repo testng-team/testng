@@ -19,9 +19,7 @@ public class ArrayEndingMethodMatcher extends AbstractNodeMethodMatcher {
     super(context);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected List<Set<InjectableParameter>> getConformanceInjectsOrder() {
     final List<Set<InjectableParameter>> injectsOrder = new ArrayList<>(1);
@@ -39,9 +37,7 @@ public class ArrayEndingMethodMatcher extends AbstractNodeMethodMatcher {
     return ReflectionRecipes.matchArrayEnding(parameters, getContext().getArguments());
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   protected Object[] matchingArguments(final Parameter[] parameters, final Object[] arguments) {
     final Class<?>[] classes = ReflectionRecipes.classesFromParameters(parameters);
@@ -56,5 +52,4 @@ public class ArrayEndingMethodMatcher extends AbstractNodeMethodMatcher {
     objects[classes.length - 1] = array;
     return objects;
   }
-
 }

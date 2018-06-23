@@ -20,14 +20,16 @@ public class MethodMatcherContext {
   /**
    * Constructs a context for MethodMatchers.
    *
-   * @param method      current method.
-   * @param arguments   user arguments.
+   * @param method current method.
+   * @param arguments user arguments.
    * @param testContext current test context.
-   * @param testResult  current test results.
+   * @param testResult current test results.
    */
   public MethodMatcherContext(
-    final Method method, final Object[] arguments,
-    final ITestContext testContext, final ITestResult testResult) {
+      final Method method,
+      final Object[] arguments,
+      final ITestContext testContext,
+      final ITestResult testResult) {
     this.method = method;
     this.methodParameter = ReflectionRecipes.getMethodParameters(method);
     this.arguments = arguments;
@@ -54,5 +56,4 @@ public class MethodMatcherContext {
   public ITestResult getTestResult() {
     return testResult;
   }
-
 }
