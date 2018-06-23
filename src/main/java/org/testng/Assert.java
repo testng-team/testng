@@ -369,16 +369,14 @@ public class Assert {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Float.toString(expected[i]),
-                Float.toString(actual[i]),
-                message));
+      assertEquals(actual[i], expected[i],
+              String.format(
+                      ARRAY_MISMATCH_TEMPLATE,
+                      i,
+                      Float.toString(expected[i]),
+                      Float.toString(actual[i]),
+                      message));
       }
-    }
   }
 
   /**
@@ -404,15 +402,13 @@ public class Assert {
     if (checkRefEqualityAndLength(actual, expected, message)) return;
 
     for (int i = 0; i < expected.length; i++) {
-      if (expected[i] != actual[i]) {
-        fail(
-            String.format(
-                ARRAY_MISMATCH_TEMPLATE,
-                i,
-                Double.toString(expected[i]),
-                Double.toString(actual[i]),
-                message));
-      }
+      assertEquals(actual[i], expected[i],
+              String.format(
+                      ARRAY_MISMATCH_TEMPLATE,
+                      i,
+                      Double.toString(expected[i]),
+                      Double.toString(actual[i]),
+                      message));
     }
   }
 
@@ -553,6 +549,34 @@ public class Assert {
   }
 
   /**
+   * Asserts that two doubles are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(double actual, double expected, String message) {
+     if (Double.isNaN(expected)) {
+      if (!Double.isNaN(actual)) {
+        failNotEquals(actual, expected, message);
+      }
+    } else if (actual != expected) {
+      failNotEquals(actual, expected, message);
+    }
+  }
+
+  /**
+   * Asserts that two doubles are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(double actual, double expected) {
+    assertEquals(actual, expected, null);
+  }
+
+  /**
    * Asserts that two floats are equal concerning a delta. If they are not, an AssertionError, with
    * the given message, is thrown. If the expected value is infinity then the delta value is
    * ignored.
@@ -567,6 +591,10 @@ public class Assert {
     // the following test fails
     if (Float.isInfinite(expected)) {
       if (!(expected == actual)) {
+        failNotEquals(actual, expected, message);
+      }
+    } else if (Float.isNaN(expected)) {
+      if (!Float.isNaN(actual)) {
         failNotEquals(actual, expected, message);
       }
     } else if (!(Math.abs(expected - actual) <= delta)) {
@@ -584,6 +612,34 @@ public class Assert {
    */
   public static void assertEquals(float actual, float expected, float delta) {
     assertEquals(actual, expected, delta, null);
+  }
+
+  /**
+   * Asserts that two floats are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(float actual, float expected, String message) {
+    if (Float.isNaN(expected)) {
+      if (!Float.isNaN(actual)) {
+        failNotEquals(actual, expected, message);
+      }
+    } else if (actual != expected) {
+      failNotEquals(actual, expected, message);
+    }
+  }
+
+  /**
+   * Asserts that two floats are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(float actual, float expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
