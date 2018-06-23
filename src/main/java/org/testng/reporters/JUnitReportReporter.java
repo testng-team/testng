@@ -30,12 +30,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-
 public class JUnitReportReporter implements IReporter {
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String defaultOutputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String defaultOutputDirectory) {
 
     Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
@@ -70,13 +69,13 @@ public class JUnitReportReporter implements IReporter {
       List<TestTag> testCases = Lists.newArrayList();
       int failures = 0;
       int errors = 0;
-      int skipped= 0;
+      int skipped = 0;
       int testCount = 0;
       float totalTime = 0;
 
       Collection<ITestResult> iTestResults = sort(entry.getValue());
 
-      for (ITestResult tr: iTestResults) {
+      for (ITestResult tr : iTestResults) {
 
         long time = tr.getEndMillis() - tr.getStartMillis();
 
@@ -148,7 +147,6 @@ public class JUnitReportReporter implements IReporter {
       String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
       Utils.writeUtf8File(outputDirectory, getFileName(cls), xsb.toXML());
     }
-
   }
 
   private static Collection<ITestResult> sort(Set<ITestResult> results) {
@@ -206,11 +204,11 @@ public class JUnitReportReporter implements IReporter {
   }
 
   /** Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter */
-  private boolean putElement(XMLStringBuffer xsb, String tagName, Properties attributes, boolean hasChildElements) {
+  private boolean putElement(
+      XMLStringBuffer xsb, String tagName, Properties attributes, boolean hasChildElements) {
     if (hasChildElements) {
       xsb.push(tagName, attributes);
-    }
-    else {
+    } else {
       xsb.addEmptyElement(tagName, attributes);
     }
     return hasChildElements;
@@ -226,19 +224,18 @@ public class JUnitReportReporter implements IReporter {
   /**
    * Add the time of the configuration method to this test method.
    *
-   * The only problem with this method is that the timing of a test method
-   * might not be added to the time of the same configuration method that ran before
-   * it but since they should all be equivalent, this should never be an issue.
+   * <p>The only problem with this method is that the timing of a test method might not be added to
+   * the time of the same configuration method that ran before it but since they should all be
+   * equivalent, this should never be an issue.
    */
-  private long getNextConfiguration(ListMultiMap<Object, ITestResult> configurations,
-      ITestResult tr)
-  {
+  private long getNextConfiguration(
+      ListMultiMap<Object, ITestResult> configurations, ITestResult tr) {
     long result = 0;
 
     List<ITestResult> confResults = configurations.get(tr.getInstance());
     Map<ITestNGMethod, ITestResult> seen = Maps.newHashMap();
     for (ITestResult r : confResults) {
-      if (! seen.containsKey(r.getMethod())) {
+      if (!seen.containsKey(r.getMethod())) {
         result += r.getEndMillis() - r.getStartMillis();
         seen.put(r.getMethod(), r);
       }
@@ -281,9 +278,10 @@ public class JUnitReportReporter implements IReporter {
     }
   }
 
-  private void addMapping(SetMultiMap<Class<?>, ITestNGMethod> mapping, Collection<ITestNGMethod> methods) {
+  private void addMapping(
+      SetMultiMap<Class<?>, ITestNGMethod> mapping, Collection<ITestNGMethod> methods) {
     for (ITestNGMethod method : methods) {
-      if (! method.getEnabled()) {
+      if (!method.getEnabled()) {
         mapping.put(method.getRealClass(), method);
       }
     }

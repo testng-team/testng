@@ -18,7 +18,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-
   @Override
   public String getPrefix() {
     return "times-";
@@ -31,41 +30,43 @@ public class TimesPanel extends BaseMultiSuitePanel {
 
   private String js(ISuite suite) {
     String functionName = "tableData_" + suiteToTag(suite);
-    StringBuilder result = new StringBuilder(
-        "suiteTableInitFunctions.push('" + functionName + "');\n"
-          + "function " + functionName + "() {\n"
-          + "var data = new google.visualization.DataTable();\n"
-          + "data.addColumn('number', 'Number');\n"
-          + "data.addColumn('string', 'Method');\n"
-          + "data.addColumn('string', 'Class');\n"
-          + "data.addColumn('number', 'Time (ms)');\n");
+    StringBuilder result =
+        new StringBuilder(
+            "suiteTableInitFunctions.push('"
+                + functionName
+                + "');\n"
+                + "function "
+                + functionName
+                + "() {\n"
+                + "var data = new google.visualization.DataTable();\n"
+                + "data.addColumn('number', 'Number');\n"
+                + "data.addColumn('string', 'Method');\n"
+                + "data.addColumn('string', 'Class');\n"
+                + "data.addColumn('number', 'Time (ms)');\n");
 
     List<ITestResult> allTestResults = getModel().getAllTestResults(suite);
-    result.append(
-      "data.addRows(" + allTestResults.size() + ");\n");
+    result.append("data.addRows(" + allTestResults.size() + ");\n");
 
-    Collections.sort(allTestResults, new Comparator<ITestResult>() {
-      @Override
-      public int compare(ITestResult o1, ITestResult o2) {
-        long t1 = o1.getEndMillis() - o1.getStartMillis();
-        long t2 = o2.getEndMillis() - o2.getStartMillis();
-        return (int) (t2 - t1);
-      }
-    });
+    Collections.sort(
+        allTestResults,
+        new Comparator<ITestResult>() {
+          @Override
+          public int compare(ITestResult o1, ITestResult o2) {
+            long t1 = o1.getEndMillis() - o1.getStartMillis();
+            long t2 = o2.getEndMillis() - o2.getStartMillis();
+            return (int) (t2 - t1);
+          }
+        });
 
     int index = 0;
     for (ITestResult tr : allTestResults) {
       ITestNGMethod m = tr.getMethod();
       long time = tr.getEndMillis() - tr.getStartMillis();
       result
-          .append("data.setCell(" + index + ", "
-              + "0, " + index + ")\n")
-          .append("data.setCell(" + index + ", "
-              + "1, '" + m.getMethodName() + "')\n")
-          .append("data.setCell(" + index + ", "
-              + "2, '" + m.getTestClass().getName() + "')\n")
-          .append("data.setCell(" + index + ", "
-              + "3, " + time + ");\n");
+          .append("data.setCell(" + index + ", " + "0, " + index + ")\n")
+          .append("data.setCell(" + index + ", " + "1, '" + m.getMethodName() + "')\n")
+          .append("data.setCell(" + index + ", " + "2, '" + m.getTestClass().getName() + "')\n")
+          .append("data.setCell(" + index + ", " + "3, " + time + ");\n");
       Long total = m_totalTime.get(suite.getName());
       if (total == null) {
         total = 0L;
@@ -75,10 +76,14 @@ public class TimesPanel extends BaseMultiSuitePanel {
     }
 
     result.append(
-        "window.suiteTableData['" + suiteToTag(suite) + "']" +
-        		"= { tableData: data, tableDiv: 'times-div-" + suiteToTag(suite) + "'}\n"
-        + "return data;\n" +
-        "}\n");
+        "window.suiteTableData['"
+            + suiteToTag(suite)
+            + "']"
+            + "= { tableData: data, tableDiv: 'times-div-"
+            + suiteToTag(suite)
+            + "'}\n"
+            + "return data;\n"
+            + "}\n");
 
     return result.toString();
   }
@@ -92,8 +97,8 @@ public class TimesPanel extends BaseMultiSuitePanel {
     xsb.pop("script");
     Long time = m_totalTime.get(suite.getName());
     if (time != null) {
-      xsb.addRequired(S, String.format("Total running time: %s", prettyDuration(time)),
-          C, "suite-total-time");
+      xsb.addRequired(
+          S, String.format("Total running time: %s", prettyDuration(time)), C, "suite-total-time");
     }
     xsb.push(D, "id", "times-div-" + suiteToTag(suite));
     xsb.pop(D);

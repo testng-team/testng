@@ -1,9 +1,8 @@
 package org.testng.reporters;
 
 /**
- * interface groups the XML constants
- * tries to emulate what's in org.apache.tools.ant.taskdefs.optional.junit.XMLConstants
- * to be compatible with junitreport
+ * interface groups the XML constants tries to emulate what's in
+ * org.apache.tools.ant.taskdefs.optional.junit.XMLConstants to be compatible with junitreport
  */
 public interface XMLConstants {
   /** the testsuites element for the aggregate document */

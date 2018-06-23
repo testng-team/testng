@@ -10,7 +10,6 @@ public class TestNgXmlPanel extends BaseMultiSuitePanel {
     super(model);
   }
 
-
   @Override
   public String getPrefix() {
     return "test-xml-";
@@ -36,5 +35,4 @@ public class TestNgXmlPanel extends BaseMultiSuitePanel {
     if (fqName == null) fqName = "/[unset file name]";
     return fqName.substring(fqName.lastIndexOf("/") + 1);
   }
-
 }

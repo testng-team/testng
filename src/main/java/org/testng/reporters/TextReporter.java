@@ -12,9 +12,7 @@ import org.testng.internal.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple reporter that collects the results and prints them on standard out.
- */
+/** A simple reporter that collects the results and prints them on standard out. */
 public class TextReporter extends TestListenerAdapter {
 
   private static final String LINE = "\n===============================================\n";
@@ -52,23 +50,23 @@ public class TextReporter extends TestListenerAdapter {
         stackTrace = Utils.shortStackTrace(ex, false);
       }
 
-      logResult("FAILED CONFIGURATION",
+      logResult(
+          "FAILED CONFIGURATION",
           Utils.detailedMethodName(tr.getMethod(), false),
           tr.getMethod().getDescription(),
           stackTrace,
           tr.getParameters(),
-          tr.getMethod().getConstructorOrMethod().getParameterTypes()
-      );
+          tr.getMethod().getConstructorOrMethod().getParameterTypes());
     }
 
     for (ITestResult tr : getConfigurationSkips()) {
-      logResult("SKIPPED CONFIGURATION",
+      logResult(
+          "SKIPPED CONFIGURATION",
           Utils.detailedMethodName(tr.getMethod(), false),
           tr.getMethod().getDescription(),
           null,
           tr.getParameters(),
-          tr.getMethod().getConstructorOrMethod().getParameterTypes()
-      );
+          tr.getMethod().getConstructorOrMethod().getParameterTypes());
     }
 
     for (ITestResult tr : getPassedTests()) {
@@ -77,9 +75,9 @@ public class TextReporter extends TestListenerAdapter {
 
     for (ITestResult tr : getFailedTests()) {
       Throwable ex = tr.getThrowable();
-      String stackTrace= "";
+      String stackTrace = "";
       if (ex != null && m_verbose >= 2) {
-        stackTrace= Utils.shortStackTrace(ex, false);
+        stackTrace = Utils.shortStackTrace(ex, false);
       }
 
       logResult("FAILED", tr, stackTrace);
@@ -102,25 +100,40 @@ public class TextReporter extends TestListenerAdapter {
     List<ITestNGMethod> ft = resultsToMethods(getFailedTests());
     StringBuilder logBuf = new StringBuilder(LINE);
     logBuf.append("    ").append(m_testName).append("\n");
-    logBuf.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods()))
-        .append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft))
-        .append(", Skips: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(skippedTests)));
+    logBuf
+        .append("    Tests run: ")
+        .append(Utils.calculateInvokedMethodCount(getAllTestMethods()))
+        .append(", Failures: ")
+        .append(Utils.calculateInvokedMethodCount(ft))
+        .append(", Skips: ")
+        .append(Utils.calculateInvokedMethodCount(resultsToMethods(skippedTests)));
     if (!retriedTests.isEmpty()) {
-      logBuf.append(", Retries: ").append(Utils.calculateInvokedMethodCount(resultsToMethods(retriedTests)));
+      logBuf
+          .append(", Retries: ")
+          .append(Utils.calculateInvokedMethodCount(resultsToMethods(retriedTests)));
     }
     int confFailures = getConfigurationFailures().size();
     int confSkips = getConfigurationSkips().size();
-    if(confFailures > 0 || confSkips > 0) {
-      logBuf.append("\n").append("    Configuration Failures: ").append(confFailures)
-          .append(", Skips: ").append(confSkips);
+    if (confFailures > 0 || confSkips > 0) {
+      logBuf
+          .append("\n")
+          .append("    Configuration Failures: ")
+          .append(confFailures)
+          .append(", Skips: ")
+          .append(confSkips);
     }
     logBuf.append(LINE);
     logResult("", logBuf.toString());
   }
 
   private void logResult(String status, ITestResult tr, String stackTrace) {
-    logResult(status, tr.getName(), tr.getMethod().getDescription(), stackTrace,
-        tr.getParameters(), tr.getMethod().getConstructorOrMethod().getParameterTypes());
+    logResult(
+        status,
+        tr.getName(),
+        tr.getMethod().getDescription(),
+        stackTrace,
+        tr.getParameters(),
+        tr.getMethod().getConstructorOrMethod().getParameterTypes());
   }
 
   private void logExceptions(String status, List<ITestResult> results) {
@@ -133,7 +146,7 @@ public class TextReporter extends TestListenerAdapter {
 
   private void logResult(String status, String message) {
     StringBuilder buf = new StringBuilder();
-    if(isStringNotBlank(status)) {
+    if (isStringNotBlank(status)) {
       buf.append(status).append(": ");
     }
     buf.append(message);
@@ -141,9 +154,13 @@ public class TextReporter extends TestListenerAdapter {
     System.out.println(buf);
   }
 
-  private void logResult(String status, String name,
-          String description, String stackTrace,
-          Object[] params, Class<?>[] paramTypes) {
+  private void logResult(
+      String status,
+      String name,
+      String description,
+      String stackTrace,
+      Object[] params,
+      Class<?>[] paramTypes) {
     StringBuilder msg = new StringBuilder(name);
 
     if (null != params && params.length > 0) {
@@ -152,12 +169,16 @@ public class TextReporter extends TestListenerAdapter {
       // The error might be a data provider parameter mismatch, so make
       // a special case here
       if (params.length != paramTypes.length) {
-        msg.append(name).append(": Wrong number of arguments were passed by ")
-                .append("the Data Provider: found ").append(params.length).append(" but ")
-                .append("expected ").append(paramTypes.length)
-                .append(")");
+        msg.append(name)
+            .append(": Wrong number of arguments were passed by ")
+            .append("the Data Provider: found ")
+            .append(params.length)
+            .append(" but ")
+            .append("expected ")
+            .append(paramTypes.length)
+            .append(")");
       } else {
-        for (int i= 0; i < params.length; i++) {
+        for (int i = 0; i < params.length; i++) {
           if (i > 0) {
             msg.append(", ");
           }

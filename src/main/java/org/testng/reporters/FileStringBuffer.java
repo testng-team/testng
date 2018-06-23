@@ -12,18 +12,16 @@ import java.io.StringReader;
 import java.io.Writer;
 
 /**
- * A string buffer that flushes its content to a temporary file whenever the internal
- * string buffer becomes larger than MAX. If the buffer never reaches that size, no file
- * is ever created and everything happens in memory, so the overhead compared to
- * StringBuffer/StringBuilder is minimal.
+ * A string buffer that flushes its content to a temporary file whenever the internal string buffer
+ * becomes larger than MAX. If the buffer never reaches that size, no file is ever created and
+ * everything happens in memory, so the overhead compared to StringBuffer/StringBuilder is minimal.
  *
- * Note: calling toString() will force the entire string to be loaded in memory, use
- * toWriter() if you need to avoid this.
+ * <p>Note: calling toString() will force the entire string to be loaded in memory, use toWriter()
+ * if you need to avoid this.
  *
- * This class is not multi thread safe.
+ * <p>This class is not multi thread safe.
  *
  * @author Cedric Beust <cedric@beust.com>
- *
  * @since Nov 9, 2012
  */
 public class FileStringBuffer implements IBuffer {
@@ -46,9 +44,10 @@ public class FileStringBuffer implements IBuffer {
   @Override
   public FileStringBuffer append(CharSequence s) {
     if (s == null) {
-      throw new IllegalArgumentException("CharSequence (Argument 0 of FileStringBuffer#append) should not be null");
+      throw new IllegalArgumentException(
+          "CharSequence (Argument 0 of FileStringBuffer#append) should not be null");
     }
-//    m_sb.append(s);
+    //    m_sb.append(s);
     if (m_sb.length() > m_maxCharacters) {
       flushToFile();
     }
@@ -70,7 +69,8 @@ public class FileStringBuffer implements IBuffer {
   @Override
   public void toWriter(Writer fw) {
     if (fw == null) {
-      throw new IllegalArgumentException("Writer (Argument 0 of FileStringBuffer#toWriter) should not be null");
+      throw new IllegalArgumentException(
+          "Writer (Argument 0 of FileStringBuffer#toWriter) should not be null");
     }
     try {
       BufferedWriter bw = new BufferedWriter(fw);
@@ -84,13 +84,12 @@ public class FileStringBuffer implements IBuffer {
         }
         bw.flush();
       }
-    } catch(IOException e) {
+    } catch (IOException e) {
       LOGGER.error(e.getMessage(), e);
     }
   }
 
-  private static void copy(Reader input, Writer output)
-      throws IOException {
+  private static void copy(Reader input, Writer output) throws IOException {
     char[] buf = new char[MAX];
     while (true) {
       int length = input.read(buf);
@@ -108,7 +107,7 @@ public class FileStringBuffer implements IBuffer {
         m_file.deleteOnExit();
         p("Created temp file " + m_file);
       } catch (IOException e) {
-        LOGGER.error(e.getMessage(),e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
 
@@ -135,12 +134,11 @@ public class FileStringBuffer implements IBuffer {
       try {
         result = Files.readFile(m_file);
       } catch (IOException e) {
-        LOGGER.error(e.getMessage(),e);
+        LOGGER.error(e.getMessage(), e);
       }
     } else {
       result = m_sb.toString();
     }
     return result;
   }
-
 }

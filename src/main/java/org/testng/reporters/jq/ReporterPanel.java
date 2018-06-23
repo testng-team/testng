@@ -7,15 +7,12 @@ import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
 
-/**
- * Display the reporter output for each test result.
- */
+/** Display the reporter output for each test result. */
 public class ReporterPanel extends BaseMultiSuitePanel {
 
   public ReporterPanel(Model model) {
     super(model);
   }
-
 
   @Override
   public String getPrefix() {
@@ -32,7 +29,7 @@ public class ReporterPanel extends BaseMultiSuitePanel {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
     for (ITestResult tr : getModel().getAllTestResults(suite)) {
       List<String> lines = Reporter.getOutput(tr);
-      if (! lines.isEmpty()) {
+      if (!lines.isEmpty()) {
         xsb.push(D, C, "reporter-method-div");
         xsb.addRequired(S, Model.getTestResultName(tr), C, "reporter-method-name");
         xsb.push(D, C, "reporter-method-output-div");
@@ -50,5 +47,4 @@ public class ReporterPanel extends BaseMultiSuitePanel {
   public String getNavigatorLink(ISuite suite) {
     return "Reporter output";
   }
-
 }

@@ -4,15 +4,12 @@ import org.testng.ISuite;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlTest;
 
-/**
- * Display the list of <test> tags.
- */
+/** Display the list of <test> tags. */
 public class TestPanel extends BaseMultiSuitePanel {
 
   public TestPanel(Model model) {
     super(model);
   }
-
 
   @Override
   public String getPrefix() {

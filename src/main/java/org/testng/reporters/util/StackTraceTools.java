@@ -11,11 +11,14 @@ import org.testng.ITestNGMethod;
  */
 public final class StackTraceTools {
   private StackTraceTools() {
-    //defeat instantiation.
+    // defeat instantiation.
   }
 
-  /** Finds topmost position of the test method in the stack, or top of stack if <code>method</code> is not in it. */
-  public static int getTestRoot(StackTraceElement[] stack,ITestNGMethod method) {
+  /**
+   * Finds topmost position of the test method in the stack, or top of stack if <code>method</code>
+   * is not in it.
+   */
+  public static int getTestRoot(StackTraceElement[] stack, ITestNGMethod method) {
     if (stack == null || method == null) {
       return -1;
     }
@@ -33,13 +36,14 @@ public final class StackTraceTools {
    * Finds topmost position of the test method in the stack, or top of stack if <code>method</code>
    * is not in it.
    */
-  public static StackTraceElement[] getTestNGInstrastructure(StackTraceElement[] stack, ITestNGMethod method) {
+  public static StackTraceElement[] getTestNGInstrastructure(
+      StackTraceElement[] stack, ITestNGMethod method) {
     if (method == null || stack == null) {
-      return new StackTraceElement[]{};
+      return new StackTraceElement[] {};
     }
-    int slot=StackTraceTools.getTestRoot(stack, method);
-    if(slot>=0) {
-      StackTraceElement[] r=new StackTraceElement[stack.length-slot];
+    int slot = StackTraceTools.getTestRoot(stack, method);
+    if (slot >= 0) {
+      StackTraceElement[] r = new StackTraceElement[stack.length - slot];
       System.arraycopy(stack, slot, r, 0, r.length);
       return r;
     } else {

@@ -27,5 +27,4 @@ public class DotTestListener extends TestListenerAdapter {
       System.out.println("");
     }
   }
-
 }

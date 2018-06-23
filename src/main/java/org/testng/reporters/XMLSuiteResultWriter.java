@@ -24,13 +24,12 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>config</code> property
- * it might generate an additional XML file with the actual content and only reference the file with an <code>url</code>
- * attribute in the passed XMLStringBuffer.
+ * Utility writing an ISuiteResult to an XMLStringBuffer. Depending on the settings in the <code>
+ * config</code> property it might generate an additional XML file with the actual content and only
+ * reference the file with an <code>url</code> attribute in the passed XMLStringBuffer.
  *
  * @author Cosmin Marginean, Mar 16, 2007
  */
-
 public class XMLSuiteResultWriter {
 
   private XMLReporterConfig config;
@@ -40,11 +39,12 @@ public class XMLSuiteResultWriter {
   }
 
   /**
-   * Writes the specified ISuiteResult in the given XMLStringBuffer. Please consider that depending on the settings in
-   * the <code>config</code> property it might generate an additional XML file with the actual content and only
-   * reference the file with an <code>url</code> attribute in the passed XMLStringBuffer.
+   * Writes the specified ISuiteResult in the given XMLStringBuffer. Please consider that depending
+   * on the settings in the <code>config</code> property it might generate an additional XML file
+   * with the actual content and only reference the file with an <code>url</code> attribute in the
+   * passed XMLStringBuffer.
    *
-   * @param xmlBuffer   The XML buffer where to write or reference the suite result
+   * @param xmlBuffer The XML buffer where to write or reference the suite result
    * @param suiteResult The <code>ISuiteResult</code> to serialize
    */
   public void writeSuiteResult(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
@@ -52,11 +52,14 @@ public class XMLSuiteResultWriter {
       writeAllToBuffer(xmlBuffer, suiteResult);
     } else {
       String parentDir =
-              config.getOutputDirectory() + File.separatorChar + suiteResult.getTestContext().getSuite().getName();
+          config.getOutputDirectory()
+              + File.separatorChar
+              + suiteResult.getTestContext().getSuite().getName();
       File file = referenceSuiteResult(xmlBuffer, parentDir, suiteResult);
       XMLStringBuffer suiteXmlBuffer = new XMLStringBuffer();
       writeAllToBuffer(suiteXmlBuffer, suiteResult);
-      Utils.writeUtf8File(file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
+      Utils.writeUtf8File(
+          file.getAbsoluteFile().getParent(), file.getName(), suiteXmlBuffer.toXML());
     }
   }
 
@@ -81,13 +84,17 @@ public class XMLSuiteResultWriter {
       // Sort the results chronologically before adding them
       List<ITestResult> allResults = new ArrayList<>(resultMap.getAllResults());
 
-      new ArrayList(allResults).sort((Comparator<ITestResult>) (o1, o2) -> (int) (o1.getStartMillis() - o2.getStartMillis()));
+      new ArrayList(allResults)
+          .sort(
+              (Comparator<ITestResult>)
+                  (o1, o2) -> (int) (o1.getStartMillis() - o2.getStartMillis()));
 
       testResults.addAll(allResults);
     }
   }
 
-  private File referenceSuiteResult(XMLStringBuffer xmlBuffer, String parentDir, ISuiteResult suiteResult) {
+  private File referenceSuiteResult(
+      XMLStringBuffer xmlBuffer, String parentDir, ISuiteResult suiteResult) {
     Properties attrs = new Properties();
     String suiteResultName = suiteResult.getTestContext().getName() + ".xml";
     attrs.setProperty(XMLReporterConfig.ATTR_URL, suiteResultName);
@@ -110,16 +117,18 @@ public class XMLSuiteResultWriter {
       String className = result.getKey();
       if (config.isSplitClassAndPackageNames()) {
         int dot = className.lastIndexOf('.');
-        attributes.setProperty(XMLReporterConfig.ATTR_NAME,
-                dot > -1 ? className.substring(dot + 1, className.length()) : className);
-        attributes.setProperty(XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
+        attributes.setProperty(
+            XMLReporterConfig.ATTR_NAME,
+            dot > -1 ? className.substring(dot + 1, className.length()) : className);
+        attributes.setProperty(
+            XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
       } else {
         attributes.setProperty(XMLReporterConfig.ATTR_NAME, className);
       }
 
       xmlBuffer.push(XMLReporterConfig.TAG_CLASS, attributes);
       List<ITestResult> sortedResults = result.getValue();
-      Collections.sort( sortedResults );
+      Collections.sort(sortedResults);
       for (ITestResult testResult : sortedResults) {
         addTestResult(xmlBuffer, testResult);
       }
@@ -187,10 +196,15 @@ public class XMLSuiteResultWriter {
       attributes.setProperty(XMLReporterConfig.ATTR_DESC, description);
     }
 
-    attributes.setProperty(XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
+    attributes.setProperty(
+        XMLReporterConfig.ATTR_METHOD_SIG, removeClassName(testResult.getMethod().toString()));
 
-    String startTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(testResult.getStartMillis(), config.getTimestampFormat());
-    String endTime = TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(testResult.getEndMillis(), config.getTimestampFormat());
+    String startTime =
+        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+            testResult.getStartMillis(), config.getTimestampFormat());
+    String endTime =
+        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+            testResult.getEndMillis(), config.getTimestampFormat());
     attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
     attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);
     long duration = testResult.getEndMillis() - testResult.getStartMillis();
@@ -292,7 +306,7 @@ public class XMLSuiteResultWriter {
           xmlBuffer.pop();
           break;
         default:
-          //everything else is ignored for now.
+          // everything else is ignored for now.
       }
 
       xmlBuffer.pop();
@@ -324,7 +338,7 @@ public class XMLSuiteResultWriter {
   private void addTestResultAttributes(XMLStringBuffer xmlBuffer, ITestResult testResult) {
     if (testResult.getAttributeNames() != null && testResult.getAttributeNames().size() > 0) {
       xmlBuffer.push(XMLReporterConfig.TAG_ATTRIBUTES);
-      for (String attrName: testResult.getAttributeNames()) {
+      for (String attrName : testResult.getAttributeNames()) {
         if (attrName == null) {
           continue;
         }
@@ -344,5 +358,4 @@ public class XMLSuiteResultWriter {
       xmlBuffer.pop();
     }
   }
-
 }

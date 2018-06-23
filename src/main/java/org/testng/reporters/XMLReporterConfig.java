@@ -64,82 +64,76 @@ public class XMLReporterConfig {
   }
 
   /**
-   * Indicates that no file fragmentation should be performed. This value
-   * indicates the XML generator to write all the results in one big file. Not
-   * recommended for large test suites.
+   * Indicates that no file fragmentation should be performed. This value indicates the XML
+   * generator to write all the results in one big file. Not recommended for large test suites.
    */
   public static final int FF_LEVEL_NONE = 1;
   /**
-   * Will cause the XML generator to create separate files for each of the
-   * suites. A separate directory will be generated for each suite having the
-   * name of the suite and containing a <code>suite.xml</code> file that will be
-   * referenced in the main file with an <code>url</code> attribute
+   * Will cause the XML generator to create separate files for each of the suites. A separate
+   * directory will be generated for each suite having the name of the suite and containing a <code>
+   * suite.xml</code> file that will be referenced in the main file with an <code>url</code>
+   * attribute
    */
   public static final int FF_LEVEL_SUITE = 2;
   /**
-   * It behaves like <code>FF_LEVEL_SUITE</code>, except that it will also
-   * create a file for each <code>ISuiteResult</code>
+   * It behaves like <code>FF_LEVEL_SUITE</code>, except that it will also create a file for each
+   * <code>ISuiteResult</code>
    */
   public static final int FF_LEVEL_SUITE_RESULT = 3;
 
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss z";
 
   /**
-   * Indicates the way that the file fragmentation should be performed. Set this
-   * property to one of the FF_LEVEL_* values for the desired output structure
+   * Indicates the way that the file fragmentation should be performed. Set this property to one of
+   * the FF_LEVEL_* values for the desired output structure
    */
   private int fileFragmentationLevel = FF_LEVEL_NONE;
 
-  /**
-   * Stack trace output method for the failed tests using one of the
-   * STACKTRACE_* constants.
-   */
+  /** Stack trace output method for the failed tests using one of the STACKTRACE_* constants. */
   private StackTraceLevels stackTraceOutputMethod = StackTraceLevels.FULL;
 
-  private StackTraceLevels stackTraceOutputLevel = StackTraceLevels.parse(RuntimeBehavior.getDefaultStacktraceLevels());
+  private StackTraceLevels stackTraceOutputLevel =
+      StackTraceLevels.parse(RuntimeBehavior.getDefaultStacktraceLevels());
 
   /**
-   * The root output directory where the XMLs will be written. This will default
-   * for now to the default TestNG output directory
+   * The root output directory where the XMLs will be written. This will default for now to the
+   * default TestNG output directory
    */
   private String outputDirectory;
 
   /**
-   * Indicates whether the <code>groups</code> attribute should be generated for
-   * a <code>test-method</code> element. Defaults to false due to the fact that
-   * this might be considered redundant because of the group generation in the
-   * suite file.
+   * Indicates whether the <code>groups</code> attribute should be generated for a <code>test-method
+   * </code> element. Defaults to false due to the fact that this might be considered redundant
+   * because of the group generation in the suite file.
    */
   private boolean generateGroupsAttribute = false;
 
   /**
-   * When <code>true</code> it will generate the &lt;class&lt; element with a
-   * <code>name</code> and a <code>package</code> attribute. Otherwise, the
-   * fully qualified name will be used for the <code>name</code> attribute.
+   * When <code>true</code> it will generate the &lt;class&lt; element with a <code>name</code> and
+   * a <code>package</code> attribute. Otherwise, the fully qualified name will be used for the
+   * <code>name</code> attribute.
    */
   private boolean splitClassAndPackageNames = false;
 
   /**
-   * Indicates whether the <code>depends-on-methods</code> attribute should be
-   * generated for a <code>test-method</code> element
+   * Indicates whether the <code>depends-on-methods</code> attribute should be generated for a
+   * <code>test-method</code> element
    */
   private boolean generateDependsOnMethods = true;
 
   /**
-   * Indicates whether the <code>depends-on-groups</code> attribute should be
-   * generated for a <code>test-method</code> element
+   * Indicates whether the <code>depends-on-groups</code> attribute should be generated for a <code>
+   * test-method</code> element
    */
   private boolean generateDependsOnGroups = true;
 
   /**
-   * Indicates whether {@link ITestResult} attributes should be generated for
-   * each <code>test-method</code> element
+   * Indicates whether {@link ITestResult} attributes should be generated for each <code>test-method
+   * </code> element
    */
   private boolean generateTestResultAttributes = false;
 
-  /**
-   * The output format for timestamps
-   */
+  /** The output format for timestamps */
   private String timestampFormat = FMT_DEFAULT;
 
   public int getFileFragmentationLevel() {
@@ -150,9 +144,7 @@ public class XMLReporterConfig {
     this.fileFragmentationLevel = fileFragmentationLevel;
   }
 
-  /**
-   * @deprecated - Please use {@link XMLReporterConfig#getStackTraceOutput()} instead.
-   */
+  /** @deprecated - Please use {@link XMLReporterConfig#getStackTraceOutput()} instead. */
   @Deprecated
   public int getStackTraceOutputMethod() {
     return stackTraceOutputMethod.getLevel();
@@ -172,7 +164,8 @@ public class XMLReporterConfig {
 
   /**
    * @param stackTraceOutputMethod
-   * @deprecated - Please use {@link XMLReporterConfig#setStackTraceOutput(StackTraceLevels)} instead.
+   * @deprecated - Please use {@link XMLReporterConfig#setStackTraceOutput(StackTraceLevels)}
+   *     instead.
    */
   @Deprecated
   public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
@@ -236,25 +229,19 @@ public class XMLReporterConfig {
   }
 
   public enum StackTraceLevels {
-    /**
-     * No stacktrace will be written in the output file
-     */
+    /** No stacktrace will be written in the output file */
     NONE(0),
-    /**
-     * Write only a short version of the stacktrace
-     */
+    /** Write only a short version of the stacktrace */
     SHORT(1),
-    /**
-     * Write only the full version of the stacktrace
-     */
+    /** Write only the full version of the stacktrace */
     FULL(2),
-    /**
-     * Write both types of stacktrace
-     */
+    /** Write both types of stacktrace */
     BOTH(3);
+
     StackTraceLevels(int level) {
       this.level = level;
     }
+
     private int level;
 
     public int getLevel() {

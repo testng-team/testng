@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
  * Static helpers for XML.
  *
  * @author Cedric Beust Jul 21, 2003
- *
  */
 public final class XMLUtils {
 
@@ -24,16 +23,14 @@ public final class XMLUtils {
   }
 
   /**
-   * Generate tag.
-   * An opening and closing tag will be generated even if value is null.
+   * Generate tag. An opening and closing tag will be generated even if value is null.
+   *
    * @param name name of the tag
    * @param content content for this tag (or null)
    * @param attributes tag attributes (or null)
    */
-  static public String xml(String indent,
-                           String name,
-                           @Nullable String content,
-                           @Nullable Properties attributes) {
+  public static String xml(
+      String indent, String name, @Nullable String content, @Nullable Properties attributes) {
     IBuffer result = Buffer.create();
     xmlOpen(result, indent, name, attributes, true /* no newline */);
     if (content != null) {
@@ -47,7 +44,7 @@ public final class XMLUtils {
   public static String extractComment(String tag, Properties properties) {
     if (properties == null || "span".equals(tag)) return null;
 
-    String[] attributes = new String[] { "id", "name", "class" };
+    String[] attributes = new String[] {"id", "name", "class"};
     for (String a : attributes) {
       String comment = properties.getProperty(a);
       if (comment != null) {
@@ -58,38 +55,43 @@ public final class XMLUtils {
     return null;
   }
 
-  public static void xmlOptional(IBuffer result, String sp,
-      String elementName, Boolean value, Properties attributes) {
+  public static void xmlOptional(
+      IBuffer result, String sp, String elementName, Boolean value, Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value.toString(), attributes);
     }
   }
 
-  public static void xmlOptional(IBuffer result, String sp,
-      String elementName, @Nullable String value, Properties attributes) {
+  public static void xmlOptional(
+      IBuffer result,
+      String sp,
+      String elementName,
+      @Nullable String value,
+      Properties attributes) {
     if (null != value) {
       xmlRequired(result, sp, elementName, value, attributes);
     }
   }
 
-  public static void xmlRequired(IBuffer result, String sp,
-      String elementName, @Nullable String value, @Nullable Properties attributes) {
+  public static void xmlRequired(
+      IBuffer result,
+      String sp,
+      String elementName,
+      @Nullable String value,
+      @Nullable Properties attributes) {
     result.append(xml(sp, elementName, value, attributes));
   }
 
-  public static void xmlOpen(IBuffer result, String indent, String tag,
-      Properties attributes) {
+  public static void xmlOpen(IBuffer result, String indent, String tag, Properties attributes) {
     xmlOpen(result, indent, tag, attributes, false /* no newline */);
   }
 
   /**
-   * Appends the attributes to result. The attributes are added on a single line
-   * as: key1="value1" key2="value2" ... (a space is added before the first key)
+   * Appends the attributes to result. The attributes are added on a single line as: key1="value1"
+   * key2="value2" ... (a space is added before the first key)
    *
-   * @param result
-   *          the buffer to append attributes to.
-   * @param attributes
-   *          the attributes to append (may be null).
+   * @param result the buffer to append attributes to.
+   * @param attributes the attributes to append (may be null).
    */
   public static void appendAttributes(IBuffer result, Properties attributes) {
     if (null != attributes) {
@@ -102,8 +104,8 @@ public final class XMLUtils {
     }
   }
 
-  public static void xmlOpen(IBuffer result, String indent, String tag,
-      Properties attributes, boolean noNewLine) {
+  public static void xmlOpen(
+      IBuffer result, String indent, String tag, Properties attributes, boolean noNewLine) {
     result.append(indent).append("<").append(tag);
     appendAttributes(result, attributes);
     result.append(">");
@@ -113,7 +115,11 @@ public final class XMLUtils {
   }
 
   public static void xmlClose(IBuffer result, String indent, String tag, String comment) {
-    result.append(indent).append("</").append(tag).append(">")
+    result
+        .append(indent)
+        .append("</")
+        .append(tag)
+        .append(">")
         .append(Strings.getValueOrEmpty(comment))
         .append(EOL);
   }
