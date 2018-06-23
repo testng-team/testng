@@ -6,8 +6,8 @@ import org.testng.collections.Maps;
 import java.util.List;
 
 /**
- * A holder class for parameters defined just in this tag and all parameters
- * including the ones inherited from enclosing tags.
+ * A holder class for parameters defined just in this tag and all parameters including the ones
+ * inherited from enclosing tags.
  */
 public class Parameters {
 

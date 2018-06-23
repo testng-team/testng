@@ -17,7 +17,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-//TODO: This class is perhaps not being used anywhere in TestNG. Need to check and remove this if its obsolete.
+// TODO: This class is perhaps not being used anywhere in TestNG. Need to check and remove this if
+// its obsolete.
 public class XDom {
   private Document m_document;
   private ITagFactory m_tagFactory;
@@ -28,7 +29,9 @@ public class XDom {
     m_document = document;
   }
 
-  public Object parse() throws InstantiationException, IllegalAccessException, SecurityException, IllegalArgumentException, InvocationTargetException {
+  public Object parse()
+      throws InstantiationException, IllegalAccessException, SecurityException,
+          IllegalArgumentException, InvocationTargetException {
     Object result = null;
     NodeList nodes = m_document.getChildNodes();
     for (int i = 0; i < nodes.getLength(); i++) {
@@ -41,7 +44,7 @@ public class XDom {
         if (c == null) {
           throw new RuntimeException("No class found for tag " + nodeName);
         }
-  
+
         result = c.newInstance();
         populateAttributes(item, result);
         if (ITagSetter.class.isAssignableFrom(result.getClass())) {
@@ -53,8 +56,9 @@ public class XDom {
     return result;
   }
 
-  public void populateChildren(Node root, Object result) throws InstantiationException,
-      IllegalAccessException, SecurityException, IllegalArgumentException, InvocationTargetException {
+  public void populateChildren(Node root, Object result)
+      throws InstantiationException, IllegalAccessException, SecurityException,
+          IllegalArgumentException, InvocationTargetException {
     p("populateChildren: " + root.getLocalName());
     NodeList childNodes = root.getChildNodes();
     ListMultiMap<String, Object> children = Maps.newListMultiMap();
@@ -74,7 +78,7 @@ public class XDom {
         } else {
           Object object = instantiateElement(c, result);
           if (ITagSetter.class.isAssignableFrom(object.getClass())) {
-            System.out.println("Tag setter:"  + result);
+            System.out.println("Tag setter:" + result);
             ((ITagSetter) object).setProperty(nodeName, result, item);
           } else {
             children.put(nodeName, object);
@@ -83,45 +87,43 @@ public class XDom {
           }
           populateChildren(item, object);
         }
-
       }
     }
   }
 
   /**
-   * Try to find a @ParentSetter. If this fails, try to find a constructor that takes the parent as a parameter.
-   * If this fails, use the default constructor.
+   * Try to find a @ParentSetter. If this fails, try to find a constructor that takes the parent as
+   * a parameter. If this fails, use the default constructor.
    */
   private Object instantiateElement(Class<?> c, Object parent)
-      throws SecurityException,
-          IllegalArgumentException, InstantiationException, IllegalAccessException,
-      InvocationTargetException {
+      throws SecurityException, IllegalArgumentException, InstantiationException,
+          IllegalAccessException, InvocationTargetException {
     Object result;
     Method m = findMethodAnnotatedWith(c, ParentSetter.class);
     if (m != null) {
-        result = c.newInstance();
-    	m.invoke(result, parent);
+      result = c.newInstance();
+      m.invoke(result, parent);
     } else {
-	    try {
-	      result = c.getConstructor(parent.getClass()).newInstance(parent);
-	    } catch(NoSuchMethodException ex) {
-	      result = c.newInstance();
-	    }
+      try {
+        result = c.getConstructor(parent.getClass()).newInstance(parent);
+      } catch (NoSuchMethodException ex) {
+        result = c.newInstance();
+      }
     }
 
     return result;
   }
 
   private Method findMethodAnnotatedWith(Class<?> c, Class<? extends Annotation> annotation) {
-	  for (Method m : c.getMethods()) {
-		  if (m.getAnnotation(annotation) != null) {
-			  return m;
-		  }
-	  }
-	  return null;
+    for (Method m : c.getMethods()) {
+      if (m.getAnnotation(annotation) != null) {
+        return m;
+      }
+    }
+    return null;
   }
 
-private void populateContent(Node item, Object object) {
+  private void populateContent(Node item, Object object) {
     for (int i = 0; i < item.getChildNodes().getLength(); i++) {
       Node child = item.getChildNodes().item(i);
       if (child instanceof Text) {
@@ -136,15 +138,17 @@ private void populateContent(Node item, Object object) {
     for (Pair<Method, Wrapper> pair : pairs) {
       try {
         pair.first().invoke(bean, child.getTextContent());
-      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException | DOMException e) {
+      } catch (IllegalArgumentException
+          | InvocationTargetException
+          | IllegalAccessException
+          | DOMException e) {
         LOGGER.error(e.getMessage(), e);
       }
     }
   }
 
   private boolean invokeOnSetter(Object object, Element element, String nodeName, Object bean) {
-    Pair<Method, Wrapper> pair =
-       Reflect.findSetterForTag(object.getClass(), nodeName, bean);
+    Pair<Method, Wrapper> pair = Reflect.findSetterForTag(object.getClass(), nodeName, bean);
 
     List<Object[]> allParameters;
     if (pair != null) {
@@ -154,7 +158,7 @@ private void populateContent(Node item, Object object) {
           allParameters = pair.second().getParameters(element);
         } else {
           allParameters = Lists.newArrayList();
-          allParameters.add(new Object[] { bean });
+          allParameters.add(new Object[] {bean});
         }
 
         for (Object[] p : allParameters) {
@@ -177,8 +181,7 @@ private void populateContent(Node item, Object object) {
   }
 
   private void setProperty(Object object, String name, Object value) {
-    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(), name,
-        value);
+    Pair<Method, Wrapper> setter = Reflect.findSetterForTag(object.getClass(), name, value);
 
     if (setter != null) {
       Method foundMethod = setter.first();
@@ -206,5 +209,4 @@ private void populateContent(Node item, Object object) {
   private void e(String string) {
     System.out.println("[XDom] [Error] " + string);
   }
-
 }

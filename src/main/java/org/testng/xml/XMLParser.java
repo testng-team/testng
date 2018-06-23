@@ -13,9 +13,9 @@ import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-abstract public class XMLParser<T> implements IFileParser<T> {
+public abstract class XMLParser<T> implements IFileParser<T> {
 
-  private final static SAXParser m_saxParser;
+  private static final SAXParser m_saxParser;
 
   static {
     SAXParserFactory spf = loadSAXParserFactory();
@@ -51,22 +51,18 @@ abstract public class XMLParser<T> implements IFileParser<T> {
     try {
       return SAXParserFactory.newInstance();
     } catch (FactoryConfigurationError fcerr) {
-      throw new TestNGException("Cannot initialize a SAXParserFactory. Root cause: " + fcerr.getMessage(), fcerr);
+      throw new TestNGException(
+          "Cannot initialize a SAXParserFactory. Root cause: " + fcerr.getMessage(), fcerr);
     }
   }
 
-
-  /**
-   * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
-   */
+  /** Tests if the current <code>SAXParserFactory</code> supports DTD validation. */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
       spf.getFeature("http://xml.org/sax/features/validation");
       return true;
-    }
-    catch(Exception ex) {
+    } catch (Exception ex) {
       return false;
     }
   }
-
 }

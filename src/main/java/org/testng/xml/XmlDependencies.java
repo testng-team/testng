@@ -12,7 +12,9 @@ public class XmlDependencies {
 
   private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
 
-  @OnElement(tag = "group", attributes = { "name", "depends-on" })
+  @OnElement(
+      tag = "group",
+      attributes = {"name", "depends-on"})
   public void onGroup(String name, String dependsOn) {
     m_xmlDependencyGroups.put(name, dependsOn);
   }
@@ -36,5 +38,4 @@ public class XmlDependencies {
 
     return xsb.toXML();
   }
-
 }

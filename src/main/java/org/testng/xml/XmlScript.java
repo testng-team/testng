@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import org.testng.xml.dom.TagContent;
 
-
 public class XmlScript {
 
   private String m_language;

@@ -21,16 +21,14 @@ public class Reflect {
     return result;
   }
 
-  public static Pair<Method, Wrapper> findSetterForTag(
-      Class<?> c, String tagName, Object bean) {
+  public static Pair<Method, Wrapper> findSetterForTag(Class<?> c, String tagName, Object bean) {
 
     // Try to find an annotation
     List<Class<? extends Annotation>> annotations =
         Arrays.asList(OnElement.class, OnElementList.class, Tag.class);
     for (Class<? extends Annotation> annotationClass : annotations) {
-      List<Pair<Method, Wrapper>> methods
-          = findMethodsWithAnnotation(c, annotationClass, bean);
-  
+      List<Pair<Method, Wrapper>> methods = findMethodsWithAnnotation(c, annotationClass, bean);
+
       for (Pair<Method, Wrapper> pair : methods) {
         if (pair.second().getTagName().equals(tagName)) {
           return pair;
@@ -39,7 +37,7 @@ public class Reflect {
     }
 
     // try fo find an adder or a setter
-    for (String prefix : new String[] { "add", "set" }) {
+    for (String prefix : new String[] {"add", "set"}) {
       for (Method m : c.getDeclaredMethods()) {
         String methodName = toCamelCase(tagName, prefix);
         if (m.getName().equals(methodName)) {
@@ -67,5 +65,4 @@ public class Reflect {
     }
     return result.toString();
   }
-
 }

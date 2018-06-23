@@ -33,9 +33,8 @@ public class DomXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
     return Parser.hasFileScheme(fileName) && fileName.endsWith(".xml");
   }
 
-  public XmlSuite parse2(String currentFile, InputStream inputStream,
-      boolean loadClasses) throws ParserConfigurationException, SAXException,
-      IOException {
+  public XmlSuite parse2(String currentFile, InputStream inputStream, boolean loadClasses)
+      throws ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true); // never forget this!
     DocumentBuilder builder = factory.newDocumentBuilder();

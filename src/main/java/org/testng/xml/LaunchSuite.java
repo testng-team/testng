@@ -1,6 +1,5 @@
 package org.testng.xml;
 
-
 import static org.testng.internal.Utils.isStringNotBlank;
 
 import org.testng.collections.Lists;
@@ -18,8 +17,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * This class is used to encapsulate a launch. Various synthetic XML files are created
- * depending on whether the user is trying to launch a suite, a class, a method, etc... 
+ * This class is used to encapsulate a launch. Various synthetic XML files are created depending on
+ * whether the user is trying to launch a suite, a class, a method, etc...
  */
 public abstract class LaunchSuite {
   /** This class's log4testng Logger. */
@@ -38,6 +37,7 @@ public abstract class LaunchSuite {
 
   /**
    * Returns the temporary state.
+   *
    * @return the temporary state.
    */
   public boolean isTemporary() {
@@ -45,8 +45,7 @@ public abstract class LaunchSuite {
   }
 
   /**
-   * Saves the suite file in the specified directory and returns the file
-   * pathname.
+   * Saves the suite file in the specified directory and returns the file pathname.
    *
    * @param directory the directory where the suite file is to be saved.
    * @return the file pathname of the saved file.
@@ -55,15 +54,10 @@ public abstract class LaunchSuite {
 
   public abstract XMLStringBuffer getSuiteBuffer();
 
-  /**
-   * <code>ExistingSuite</code> is a non-temporary LaunchSuite based on an existing
-   * file.
-   */
+  /** <code>ExistingSuite</code> is a non-temporary LaunchSuite based on an existing file. */
   public static class ExistingSuite extends LaunchSuite {
 
-    /**
-     * The existing suite path (either relative to the project root or an absolute path)
-     */
+    /** The existing suite path (either relative to the project root or an absolute path) */
     private File m_suitePath;
 
     /**
@@ -82,19 +76,14 @@ public abstract class LaunchSuite {
       throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    /**
-     * Trying to run an existing XML file: copy its content to where the plug-in
-     * expects it.
-     */
+    /** Trying to run an existing XML file: copy its content to where the plug-in expects it. */
     @Override
     public File save(File directory) {
       return m_suitePath;
     }
   }
 
-  /**
-   * <code>CustomizedSuite</code> TODO cquezel JavaDoc.
-   */
+  /** <code>CustomizedSuite</code> TODO cquezel JavaDoc. */
   private abstract static class CustomizedSuite extends LaunchSuite {
     protected String m_projectName;
     protected String m_suiteName;
@@ -113,11 +102,11 @@ public abstract class LaunchSuite {
      * @param parameters
      * @param annotationType
      */
-    private CustomizedSuite(final String projectName,
+    private CustomizedSuite(
+        final String projectName,
         final String className,
         final Map<String, String> parameters,
-        final String annotationType)
-    {
+        final String annotationType) {
       super(true);
 
       m_projectName = projectName;
@@ -178,8 +167,8 @@ public abstract class LaunchSuite {
     protected abstract void initContentBuffer(XMLStringBuffer suiteBuffer);
 
     /**
-     * {@inheritDoc} This implementation saves the suite to the "temp-testng-customsuite.xml"
-     * file in the specified directory.
+     * {@inheritDoc} This implementation saves the suite to the "temp-testng-customsuite.xml" file
+     * in the specified directory.
      */
     @Override
     public File save(File directory) {
@@ -198,7 +187,8 @@ public abstract class LaunchSuite {
      */
     protected void saveSuiteContent(final File file, final XMLStringBuffer content) {
 
-      try (OutputStreamWriter fw = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"))) {
+      try (OutputStreamWriter fw =
+          new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8"))) {
         fw.write(content.getStringBuffer().toString());
       } catch (IOException ioe) {
         // TODO CQ is this normal to swallow exception here
@@ -207,9 +197,7 @@ public abstract class LaunchSuite {
     }
   }
 
-  /**
-   * A <code>MethodsSuite</code> is a suite made up of methods.
-   */
+  /** A <code>MethodsSuite</code> is a suite made up of methods. */
   static class MethodsSuite extends CustomizedSuite {
     protected Collection<String> m_methodNames;
     protected String m_className;
@@ -225,7 +213,8 @@ public abstract class LaunchSuite {
      * @param annotationType (may be null)
      * @param logLevel
      */
-    MethodsSuite(final String projectName,
+    MethodsSuite(
+        final String projectName,
         final String className,
         final Collection<String> methodNames,
         final Map<String, String> parameters,
@@ -238,9 +227,7 @@ public abstract class LaunchSuite {
       m_logLevel = logLevel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
       Properties testAttrs = new Properties();
@@ -267,8 +254,7 @@ public abstract class LaunchSuite {
 
         suiteBuffer.pop("methods");
         suiteBuffer.pop("class");
-      }
-      else {
+      } else {
         suiteBuffer.addEmptyElement("class", classAttrs);
       }
       suiteBuffer.pop("classes");
@@ -280,7 +266,8 @@ public abstract class LaunchSuite {
     protected Map<String, Collection<String>> m_classes;
     protected int m_logLevel;
 
-    ClassesAndMethodsSuite(final String projectName,
+    ClassesAndMethodsSuite(
+        final String projectName,
         final Map<String, Collection<String>> classes,
         final Map<String, String> parameters,
         final String annotationType,
@@ -290,9 +277,7 @@ public abstract class LaunchSuite {
       m_logLevel = logLevel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
       Properties testAttrs = new Properties();
@@ -303,11 +288,11 @@ public abstract class LaunchSuite {
 
       suiteBuffer.push("classes");
 
-      for(Map.Entry<String, Collection<String>> entry : m_classes.entrySet()) {
+      for (Map.Entry<String, Collection<String>> entry : m_classes.entrySet()) {
         Properties classAttrs = new Properties();
         classAttrs.setProperty("name", entry.getKey());
 
-        Collection<String> methodNames= sanitize(entry.getValue());
+        Collection<String> methodNames = sanitize(entry.getValue());
         if ((null != methodNames) && (methodNames.size() > 0)) {
           suiteBuffer.push("class", classAttrs);
 
@@ -321,8 +306,7 @@ public abstract class LaunchSuite {
 
           suiteBuffer.pop("methods");
           suiteBuffer.pop("class");
-        }
-        else {
+        } else {
           suiteBuffer.addEmptyElement("class", classAttrs);
         }
       }
@@ -331,13 +315,13 @@ public abstract class LaunchSuite {
     }
 
     private Collection<String> sanitize(Collection<String> source) {
-      if(null == source) {
+      if (null == source) {
         return null;
       }
 
-      List<String> result= Lists.newArrayList();
-      for(String name: source) {
-        if(isStringNotBlank(name)) {
+      List<String> result = Lists.newArrayList();
+      for (String name : source) {
+        if (isStringNotBlank(name)) {
           result.add(name);
         }
       }
@@ -346,16 +330,15 @@ public abstract class LaunchSuite {
     }
   }
 
-  /**
-   * <code>ClassListSuite</code> TODO cquezel JavaDoc.
-   */
+  /** <code>ClassListSuite</code> TODO cquezel JavaDoc. */
   static class ClassListSuite extends CustomizedSuite {
     protected Collection<String> m_packageNames;
     protected Collection<String> m_classNames;
     protected Collection<String> m_groupNames;
     protected int m_logLevel;
 
-    ClassListSuite(final String projectName,
+    ClassListSuite(
+        final String projectName,
         final Collection<String> packageNames,
         final Collection<String> classNames,
         final Collection<String> groupNames,
@@ -370,9 +353,7 @@ public abstract class LaunchSuite {
       m_logLevel = logLevel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected void initContentBuffer(XMLStringBuffer suiteBuffer) {
       Properties testAttrs = new Properties();

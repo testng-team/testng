@@ -39,9 +39,9 @@ public class XmlGroups {
     return m_dependencies;
   }
 
-//  public void setDependencies(List<XmlDependencies> dependencies) {
-//    m_dependencies = dependencies;
-//  }
+  //  public void setDependencies(List<XmlDependencies> dependencies) {
+  //    m_dependencies = dependencies;
+  //  }
 
   @Tag(name = "dependencies")
   public void setXmlDependencies(XmlDependencies dependencies) {
@@ -52,8 +52,7 @@ public class XmlGroups {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     String indent2 = indent + "  ";
 
-    boolean hasGroups = hasElements(m_defines) || m_run != null
-        || hasElements(m_dependencies);
+    boolean hasGroups = hasElements(m_defines) || m_run != null || hasElements(m_dependencies);
 
     if (hasGroups) {
       xsb.push("groups");
@@ -63,11 +62,11 @@ public class XmlGroups {
       xsb.getStringBuffer().append(d.toXml(indent2));
     }
 
-      if (null != m_run) {
-          //XmlRun is optional and is not always available. So check if its available before running toXml()
-          xsb.getStringBuffer().append(m_run.toXml(indent2));
-      }
-
+    if (null != m_run) {
+      // XmlRun is optional and is not always available. So check if its available before running
+      // toXml()
+      xsb.getStringBuffer().append(m_run.toXml(indent2));
+    }
 
     for (XmlDependencies d : m_dependencies) {
       xsb.getStringBuffer().append(d.toXml(indent2));

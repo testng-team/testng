@@ -32,30 +32,35 @@ public class DomUtil {
       Node item1 = nodes.item(i);
 
       Map<String, NodeProcessor> map = Maps.newHashMap();
-      map.put("parameter", node -> {
-        Element e = (Element) node;
-        parameters.put(e.getAttribute("name"), e.getAttribute("value"));
-      });
-      map.put("test", node -> {
-        XmlTest xmlTest = new XmlTest(xmlSuite);
-        populateTest(xmlTest, node);
-      });
-      map.put("suite-files", node -> {
-        NodeList item2Children = node.getChildNodes();
-        List<String> suiteFiles = Lists.newArrayList();
-        for (int k = 0; k < item2Children.getLength(); k++) {
-          Node item3 = item2Children.item(k);
-          if (item3 instanceof Element) {
-            Element e = (Element) item3;
-            if ("suite-file".equals(item3.getNodeName())) {
-              suiteFiles.add(e.getAttribute("path"));
+      map.put(
+          "parameter",
+          node -> {
+            Element e = (Element) node;
+            parameters.put(e.getAttribute("name"), e.getAttribute("value"));
+          });
+      map.put(
+          "test",
+          node -> {
+            XmlTest xmlTest = new XmlTest(xmlSuite);
+            populateTest(xmlTest, node);
+          });
+      map.put(
+          "suite-files",
+          node -> {
+            NodeList item2Children = node.getChildNodes();
+            List<String> suiteFiles = Lists.newArrayList();
+            for (int k = 0; k < item2Children.getLength(); k++) {
+              Node item3 = item2Children.item(k);
+              if (item3 instanceof Element) {
+                Element e = (Element) item3;
+                if ("suite-file".equals(item3.getNodeName())) {
+                  suiteFiles.add(e.getAttribute("path"));
+                }
+              }
             }
-          }
-        }
-        xmlSuite.setSuiteFiles(suiteFiles);
-      });
+            xmlSuite.setSuiteFiles(suiteFiles);
+          });
       parseNodeAndChildren("suite", item1, xmlSuite, map);
-
     }
 
     xmlSuite.setParameters(parameters);
@@ -65,7 +70,8 @@ public class DomUtil {
     void process(Node node);
   }
 
-  private void parseNodeAndChildren(String name, Node root, Object object, Map<String, NodeProcessor> processors) {
+  private void parseNodeAndChildren(
+      String name, Node root, Object object, Map<String, NodeProcessor> processors) {
     if (name.equals(root.getNodeName()) && root.getAttributes() != null) {
       populateAttributes(root, object);
       NodeList children = root.getChildNodes();
@@ -75,14 +81,14 @@ public class DomUtil {
         NodeProcessor proc = processors.get(nodeName);
         if (proc != null) {
           proc.process(item2);
-        } else if (! nodeName.startsWith("#")){
+        } else if (!nodeName.startsWith("#")) {
           throw new RuntimeException("No processor found for " + nodeName);
         }
       }
     }
   }
 
-    public static Iterator<Node> findChildren(Node node, String name) {
+  public static Iterator<Node> findChildren(Node node, String name) {
     List<Node> result = Lists.newArrayList();
     NodeList children = node.getChildNodes();
     for (int i = 0; i < children.getLength(); i++) {
@@ -152,9 +158,7 @@ public class DomUtil {
     xmlTest.setParameters(testParameters);
   }
 
-  /**
-   * Parse the <define> tag.
-   */
+  /** Parse the <define> tag. */
   private void xmlDefine(XmlTest xmlTest, Node item) {
     NodeList item3Children = item.getChildNodes();
     List<String> groups = Lists.newArrayList();

@@ -24,5 +24,4 @@ public class TestNGTagFactory implements ITagFactory {
 
     return result;
   }
-
 }

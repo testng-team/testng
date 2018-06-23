@@ -12,5 +12,4 @@ public @interface OnElement {
   String tag();
 
   String[] attributes();
-
 }

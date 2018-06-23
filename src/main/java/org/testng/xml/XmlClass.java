@@ -11,9 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * This class describes the tag <class> in testng.xml.
- */
+/** This class describes the tag <class> in testng.xml. */
 public class XmlClass implements Cloneable {
 
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
@@ -24,6 +22,7 @@ public class XmlClass implements Cloneable {
   private int m_index;
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;
+
   private Map<String, String> m_parameters = Maps.newHashMap();
   private XmlTest m_xmlTest;
 
@@ -59,8 +58,7 @@ public class XmlClass implements Cloneable {
     init(className, cls, index, true /* load classes */);
   }
 
-  private void init(String className, Class cls, int index,
-      boolean resolveClass) {
+  private void init(String className, Class cls, int index, boolean resolveClass) {
     m_name = className;
     m_class = cls;
     m_index = index;
@@ -78,75 +76,55 @@ public class XmlClass implements Cloneable {
     }
   }
 
-  /**
-   * @return Returns the className.
-   */
+  /** @return Returns the className. */
   public Class<?> getSupportClass() {
     if (m_class == null) loadClass();
     return m_class;
   }
 
-  /**
-   * @param className The className to set.
-   */
+  /** @param className The className to set. */
   public void setClass(Class className) {
     m_class = className;
   }
 
-  /**
-   * @return Returns the excludedMethods.
-   */
+  /** @return Returns the excludedMethods. */
   public List<String> getExcludedMethods() {
     return m_excludedMethods;
   }
 
-  /**
-   * @param excludedMethods The excludedMethods to set.
-   */
+  /** @param excludedMethods The excludedMethods to set. */
   public void setExcludedMethods(List<String> excludedMethods) {
     m_excludedMethods = excludedMethods;
   }
 
-  /**
-   * @return Returns the includedMethods.
-   */
+  /** @return Returns the includedMethods. */
   public List<XmlInclude> getIncludedMethods() {
     return m_includedMethods;
   }
 
-  /**
-   * @param includedMethods The includedMethods to set.
-   */
+  /** @param includedMethods The includedMethods to set. */
   public void setIncludedMethods(List<XmlInclude> includedMethods) {
     m_includedMethods = includedMethods;
   }
 
-  /**
-   * @return Returns the name.
-   */
+  /** @return Returns the name. */
   public String getName() {
     return m_name;
   }
 
-  /**
-   * @param name The name to set.
-   */
+  /** @param name The name to set. */
   public void setName(String name) {
     m_name = name;
   }
 
-  /**
-   * @return true if the classes need to be loaded.
-   */
+  /** @return true if the classes need to be loaded. */
   public boolean loadClasses() {
     return m_loadClasses;
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(getClass())
-        .add("class", m_name)
-        .toString();
+    return Objects.toStringHelper(getClass()).add("class", m_name).toString();
   }
 
   public String toXml(String indent) {
@@ -162,28 +140,26 @@ public class XmlClass implements Cloneable {
 
       if (hasMethods) {
         xsb.push("methods");
-  
+
         for (XmlInclude m : getIncludedMethods()) {
           xsb.getStringBuffer().append(m.toXml(indent + "    "));
         }
-  
-        for (String m: getExcludedMethods()) {
-          Properties p= new Properties();
+
+        for (String m : getExcludedMethods()) {
+          Properties p = new Properties();
           p.setProperty("name", m);
           xsb.addEmptyElement("exclude", p);
         }
-  
+
         xsb.pop("methods");
       }
 
       xsb.pop("class");
-    }
-    else {
+    } else {
       xsb.addEmptyElement("class", prop);
     }
 
     return xsb.toXML();
-
   }
 
   public static String listToString(List<Integer> invocationNumbers) {
@@ -198,9 +174,7 @@ public class XmlClass implements Cloneable {
     return result.toString();
   }
 
-  /**
-   * Clone an XmlClass by copying all its components.
-   */
+  /** Clone an XmlClass by copying all its components. */
   @Override
   public Object clone() {
     XmlClass result = new XmlClass(getName(), getIndex(), loadClasses());
@@ -211,10 +185,9 @@ public class XmlClass implements Cloneable {
   }
 
   /**
-   * Note that this attribute does not come from the XML file, it's calculated
-   * internally and represents the order in which this class was found in its
-   * &lt;test&gt; tag.  It's used to calculate the ordering of the classes
-   * when preserve-order is true.
+   * Note that this attribute does not come from the XML file, it's calculated internally and
+   * represents the order in which this class was found in its &lt;test&gt; tag. It's used to
+   * calculate the ordering of the classes when preserve-order is true.
    */
   public int getIndex() {
     return m_index;
@@ -230,10 +203,8 @@ public class XmlClass implements Cloneable {
     int result = 1;
     result = prime * result + ((m_class == null) ? 0 : m_class.hashCode());
     result = prime * result + (m_loadClasses ? 1 : 0);
-    result = prime * result
-        + ((m_excludedMethods == null) ? 0 : m_excludedMethods.hashCode());
-    result = prime * result
-        + ((m_includedMethods == null) ? 0 : m_includedMethods.hashCode());
+    result = prime * result + ((m_excludedMethods == null) ? 0 : m_excludedMethods.hashCode());
+    result = prime * result + ((m_includedMethods == null) ? 0 : m_includedMethods.hashCode());
     result = prime * result + m_index;
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
     return result;
@@ -244,26 +215,21 @@ public class XmlClass implements Cloneable {
     if (this == obj) {
       return true;
     }
-    if (obj == null)
-      return XmlSuite.f();
-    if (getClass() != obj.getClass())
-      return XmlSuite.f();
+    if (obj == null) return XmlSuite.f();
+    if (getClass() != obj.getClass()) return XmlSuite.f();
     XmlClass other = (XmlClass) obj;
-    if (other.m_loadClasses != m_loadClasses || !m_excludedMethods.equals(other.m_excludedMethods)) {
+    if (other.m_loadClasses != m_loadClasses
+        || !m_excludedMethods.equals(other.m_excludedMethods)) {
       return XmlSuite.f();
     }
     if (m_includedMethods == null) {
-      if (other.m_includedMethods != null)
-        return XmlSuite.f();
-    } else if (!m_includedMethods.equals(other.m_includedMethods))
-      return XmlSuite.f();
-//    if (m_index != other.m_index)
-//      return XmlSuite.f();
+      if (other.m_includedMethods != null) return XmlSuite.f();
+    } else if (!m_includedMethods.equals(other.m_includedMethods)) return XmlSuite.f();
+    //    if (m_index != other.m_index)
+    //      return XmlSuite.f();
     if (m_name == null) {
-      if (other.m_name != null)
-        return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name))
-      return XmlSuite.f();
+      if (other.m_name != null) return XmlSuite.f();
+    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
 
     return true;
   }
@@ -273,9 +239,7 @@ public class XmlClass implements Cloneable {
     m_parameters.putAll(parameters);
   }
 
-  /**
-   * @return The parameters defined in this test tag and the tags above it.
-   */
+  /** @return The parameters defined in this test tag and the tags above it. */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlTest != null) {
@@ -286,16 +250,14 @@ public class XmlClass implements Cloneable {
   }
 
   /**
-   * @return The parameters defined in this tag, and only this test tag. To retrieve
-   * the inherited parameters as well, call {@code getAllParameters()}.
+   * @return The parameters defined in this tag, and only this test tag. To retrieve the inherited
+   *     parameters as well, call {@code getAllParameters()}.
    */
   public Map<String, String> getLocalParameters() {
     return m_parameters;
   }
 
-  /**
-   * @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()}
-   */
+  /** @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()} */
   @Deprecated
   public Map<String, String> getParameters() {
     return getAllParameters();
