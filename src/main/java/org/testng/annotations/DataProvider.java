@@ -7,12 +7,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Mark a method as supplying data for a test method. The data provider name
- * defaults to method name.
- * The annotated method must return an Object[][] where each
- * Object[] can be assigned the parameter list of the test method.
- * The @Test method that wants to receive data from this DataProvider
- * needs to use a dataProvider name equals to the name of this annotation.
+ * Mark a method as supplying data for a test method. The data provider name defaults to method
+ * name. The annotated method must return an Object[][] where each Object[] can be assigned the
+ * parameter list of the test method. The @Test method that wants to receive data from this
+ * DataProvider needs to use a dataProvider name equals to the name of this annotation.
  *
  * @author cbeust
  */
@@ -21,18 +19,12 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DataProvider {
 
-  /**
-   * The name of this DataProvider.
-   */
+  /** The name of this DataProvider. */
   String name() default "";
 
-  /**
-   * Whether this data provider should be run in parallel.
-   */
+  /** Whether this data provider should be run in parallel. */
   boolean parallel() default false;
 
-  /**
-   * Which indices to run from this data provider, default: all.
-   */
+  /** Which indices to run from this data provider, default: all. */
   int[] indices() default {};
 }
