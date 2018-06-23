@@ -3,9 +3,7 @@ package org.testng.internal.collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- * Custom iterator class over a 2D array
- */
+/** Custom iterator class over a 2D array */
 public class ArrayIterator implements Iterator<Object[]> {
 
   private final Object[][] m_objects;
