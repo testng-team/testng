@@ -10,6 +10,7 @@ import java.util.Stack;
 
 /**
  * Implementation of the Tarjan algorithm to find and display a cycle in a graph.
+ *
  * @author cbeust
  */
 public class Tarjan<T> {
@@ -31,12 +32,11 @@ public class Tarjan<T> {
     m_s.push(v);
 
     for (T vprime : graph.getPredecessors(v)) {
-      if (! m_indices.containsKey(vprime)) {
+      if (!m_indices.containsKey(vprime)) {
         run(graph, vprime);
         int min = Math.min(m_lowlinks.get(v), m_lowlinks.get(vprime));
         m_lowlinks.put(v, min);
-      }
-      else if (m_s.contains(vprime)) {
+      } else if (m_s.contains(vprime)) {
         m_lowlinks.put(v, Math.min(m_lowlinks.get(v), m_indices.get(vprime)));
       }
     }
@@ -47,13 +47,11 @@ public class Tarjan<T> {
       do {
         n = m_s.pop();
         m_cycle.add(n);
-      } while (! n.equals(v));
+      } while (!n.equals(v));
     }
-
   }
 
   public List<T> getCycle() {
     return m_cycle;
   }
-
 }

@@ -14,84 +14,95 @@ import java.util.Collection;
 import java.util.Map;
 
 class ParameterHandler {
-    private final IAnnotationFinder finder;
-    private final Collection<IDataProviderListener> listeners;
+  private final IAnnotationFinder finder;
+  private final Collection<IDataProviderListener> listeners;
 
-    ParameterHandler(IAnnotationFinder finder, Collection<IDataProviderListener> listeners) {
-        this.finder = finder;
-        this.listeners = listeners;
+  ParameterHandler(IAnnotationFinder finder, Collection<IDataProviderListener> listeners) {
+    this.finder = finder;
+    this.listeners = listeners;
+  }
+
+  ParameterBag createParameters(
+      ITestNGMethod testMethod,
+      Map<String, String> parameters,
+      Map<String, String> allParameterNames,
+      ITestContext testContext) {
+    return createParameters(testMethod, parameters, allParameterNames, testContext, null);
+  }
+
+  ParameterBag createParameters(
+      ITestNGMethod testMethod,
+      Map<String, String> parameters,
+      Map<String, String> allParameterNames,
+      ITestContext testContext,
+      Object fedInstance) {
+    return handleParameters(
+        testMethod,
+        testMethod.getInstance(),
+        allParameterNames,
+        parameters,
+        testContext,
+        fedInstance);
+  }
+
+  private ParameterBag handleParameters(
+      ITestNGMethod testMethod,
+      Object instance,
+      Map<String, String> allParameterNames,
+      Map<String, String> parameters,
+      ITestContext testContext,
+      Object fedInstance) {
+    XmlSuite suite = testContext.getCurrentXmlTest().getSuite();
+    try {
+      MethodParameters methodParams =
+          MethodParameters.newInstance(parameters, testMethod, testContext);
+      ParameterHolder paramHolder =
+          Parameters.handleParameters(
+              testMethod,
+              allParameterNames,
+              instance,
+              methodParams,
+              suite,
+              finder,
+              fedInstance,
+              listeners);
+      return new ParameterBag(paramHolder);
+    } catch (Throwable cause) {
+      String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
+      if (Strings.isNotNullAndNotEmpty(msg)) {
+        Utils.error(msg);
+      }
+      ITestResult result = new TestResult(testMethod, cause, testContext);
+      return new ParameterBag(result);
+    }
+  }
+
+  /**
+   * This class holds a {@code ParameterHolder} or in case of an error, a non-null {@code
+   * TestResult} containing the cause
+   */
+  static class ParameterBag {
+    final ParameterHolder parameterHolder;
+    final ITestResult errorResult;
+
+    ParameterBag(ParameterHolder parameterHolder) {
+      this.parameterHolder = parameterHolder;
+      this.errorResult = null;
     }
 
-    ParameterBag createParameters(ITestNGMethod testMethod,
-                                  Map<String, String> parameters,
-                                  Map<String, String> allParameterNames,
-                                  ITestContext testContext) {
-        return createParameters(testMethod, parameters, allParameterNames, testContext, null);
+    ParameterBag(ITestResult errorResult) {
+      this.parameterHolder = null;
+      this.errorResult = errorResult;
     }
 
-    ParameterBag createParameters(ITestNGMethod testMethod,
-                                  Map<String, String> parameters,
-                                  Map<String, String> allParameterNames,
-                                  ITestContext testContext,
-                                  Object fedInstance) {
-        return handleParameters(testMethod, testMethod.getInstance(), allParameterNames, parameters, testContext, fedInstance);
+    boolean hasErrors() {
+      return errorResult != null;
     }
 
-    private ParameterBag handleParameters(ITestNGMethod testMethod,
-                                          Object instance,
-                                          Map<String, String> allParameterNames,
-                                          Map<String, String> parameters,
-                                          ITestContext testContext,
-                                          Object fedInstance) {
-        XmlSuite suite = testContext.getCurrentXmlTest().getSuite();
-        try {
-            MethodParameters methodParams = MethodParameters.newInstance(parameters, testMethod, testContext);
-            ParameterHolder paramHolder = Parameters.handleParameters(testMethod,
-                    allParameterNames,
-                    instance,
-                    methodParams,
-                    suite,
-                    finder,
-                    fedInstance, listeners);
-            return new ParameterBag(paramHolder);
-        } catch (Throwable cause) {
-            String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
-            if (Strings.isNotNullAndNotEmpty(msg)) {
-                Utils.error(msg);
-            }
-            ITestResult result = new TestResult(testMethod, cause, testContext);
-            return new ParameterBag(result);
-        }
+    boolean runInParallel() {
+      return ((parameterHolder != null)
+          && (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
+              && parameterHolder.dataProviderHolder.isParallel()));
     }
-
-    /**
-     * This class holds a {@code ParameterHolder} or in case of an error, a non-null
-     * {@code TestResult} containing the cause
-     */
-    static class ParameterBag {
-        final ParameterHolder parameterHolder;
-        final ITestResult errorResult;
-
-        ParameterBag(ParameterHolder parameterHolder) {
-            this.parameterHolder = parameterHolder;
-            this.errorResult = null;
-        }
-
-        ParameterBag(ITestResult errorResult) {
-            this.parameterHolder = null;
-            this.errorResult = errorResult;
-        }
-
-        boolean hasErrors() {
-            return errorResult != null;
-        }
-
-        boolean runInParallel() {
-            return ((parameterHolder != null) &&
-                    (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER &&
-                    parameterHolder.dataProviderHolder.isParallel())
-            );
-        }
-
-    }
+  }
 }

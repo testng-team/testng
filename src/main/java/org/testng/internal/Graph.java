@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 /**
- * Simple graph class to implement topological sort (used to sort methods based on what groups
- * they depend on).
+ * Simple graph class to implement topological sort (used to sort methods based on what groups they
+ * depend on).
  *
  * @author Cedric Beust, Aug 19, 2004
  */
@@ -54,8 +54,7 @@ public class Graph<T> {
     Node<T> node = findNode(tm);
     if (null == node) {
       throw new TestNGException("Non-existing node: " + tm);
-    }
-    else {
+    } else {
       node.addPredecessor(predecessor);
       addNeighbor(tm, predecessor);
       // Remove these two nodes from the independent list
@@ -74,17 +73,12 @@ public class Graph<T> {
     return m_nodes.values();
   }
 
-  /**
-   * @return All the nodes that don't have any order with each other.
-   */
+  /** @return All the nodes that don't have any order with each other. */
   public Set<T> getIndependentNodes() {
     return m_independentNodes.keySet();
   }
 
-  /**
-   * @return All the nodes that have an order with each other, sorted
-   * in one of the valid sorts.
-   */
+  /** @return All the nodes that have an order with each other, sorted in one of the valid sorts. */
   public List<T> getStrictlySortedNodes() {
     return m_strictlySortedNodes;
   }
@@ -100,11 +94,10 @@ public class Graph<T> {
     //
     List<Node<T>> nodes2 = Lists.newArrayList();
     for (Node<T> n : getNodes()) {
-      if (! isIndependent(n.getObject())) {
+      if (!isIndependent(n.getObject())) {
         ppp("ADDING FOR SORT: " + n.getObject());
         nodes2.add(n.clone());
-      }
-      else {
+      } else {
         ppp("SKIPPING INDEPENDENT NODE " + n);
       }
     }
@@ -118,7 +111,7 @@ public class Graph<T> {
     //
     // Sort
     //
-    while (! nodes2.isEmpty()) {
+    while (!nodes2.isEmpty()) {
 
       //
       // Find all the nodes that don't have any predecessors, add
@@ -133,8 +126,7 @@ public class Graph<T> {
           sb.append(m).append("\n");
         }
         throw new TestNGException(sb.toString());
-      }
-      else {
+      } else {
         m_strictlySortedNodes.add(node.getObject());
         removeFromNodes(nodes2, node);
       }
@@ -149,7 +141,8 @@ public class Graph<T> {
   private void initializeIndependentNodes() {
     if (null == m_independentNodes) {
       List<Node<T>> list = Lists.newArrayList(m_nodes.values());
-      // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
+      // Ideally, we should not have to sort this. However, due to a bug where it treats all the
+      // methods as
       // dependent nodes.
       list.sort(comparator);
 
@@ -169,8 +162,8 @@ public class Graph<T> {
   }
 
   /**
-   * Remove a node from a list of nodes and update the list of predecessors
-   * for all the remaining nodes.
+   * Remove a node from a list of nodes and update the list of predecessors for all the remaining
+   * nodes.
    */
   private void removeFromNodes(List<Node<T>> nodes, Node<T> node) {
     nodes.remove(node);
@@ -187,7 +180,7 @@ public class Graph<T> {
 
   private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
     for (Node<T> n : nodes) {
-      if (! n.hasPredecessors()) {
+      if (!n.hasPredecessors()) {
         return n;
       }
     }
@@ -219,9 +212,9 @@ public class Graph<T> {
     visited.add(o);
     queue.addLast(o);
 
-    while (! queue.isEmpty()) {
+    while (!queue.isEmpty()) {
       for (T obj : getPredecessors(queue.removeFirst())) {
-        if (! visited.contains(obj)) {
+        if (!visited.contains(obj)) {
           visited.add(obj);
           queue.addLast(obj);
           result.addFirst(obj);
@@ -243,11 +236,10 @@ public class Graph<T> {
     return result.toString();
   }
 
-
   /////
   // class Node
   //
-  public static class Node<T>  {
+  public static class Node<T> {
     private T m_object;
     private Map<T, T> m_predecessors = Maps.newHashMap();
 
@@ -256,6 +248,7 @@ public class Graph<T> {
     }
 
     private Set<Node<T>> m_neighbors = new HashSet<>();
+
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);
     }
@@ -277,10 +270,7 @@ public class Graph<T> {
       return m_predecessors;
     }
 
-    /**
-     *
-     * @return true if this predecessor was found and removed
-     */
+    /** @return true if this predecessor was found and removed */
     public boolean removePredecessor(T o) {
       boolean result = false;
 
@@ -289,8 +279,7 @@ public class Graph<T> {
         result = null != m_predecessors.remove(o);
         if (result) {
           ppp("  REMOVED PRED " + o + " FROM NODE " + m_object);
-        }
-        else {
+        } else {
           ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
         }
       }
@@ -317,6 +306,5 @@ public class Graph<T> {
     public boolean hasPredecessors() {
       return m_predecessors.size() > 0;
     }
-
   }
 }

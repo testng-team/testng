@@ -8,7 +8,8 @@ import java.util.Map;
 /**
  * Simple implementation of IMethodSelectorContext
  *
- * Created on Jan 3, 2007
+ * <p>Created on Jan 3, 2007
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class DefaultMethodSelectorContext implements IMethodSelectorContext {
@@ -29,5 +30,4 @@ public class DefaultMethodSelectorContext implements IMethodSelectorContext {
   public void setStopped(boolean stopped) {
     m_isStopped = stopped;
   }
-
 }

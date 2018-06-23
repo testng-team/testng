@@ -21,7 +21,8 @@ import org.testng.collections.Lists;
 /**
  * Utility class that finds all the classes in a given package.
  *
- * Created on Feb 24, 2006
+ * <p>Created on Feb 24, 2006
+ *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
@@ -33,7 +34,7 @@ public class PackageUtils {
   private static final Collection<ClassLoader> classLoaders = new ConcurrentLinkedDeque<>();
 
   private PackageUtils() {
-    //Utility class. Defeat instantiation.
+    // Utility class. Defeat instantiation.
   }
 
   /** Add a class loader to the searchable loaders. */
@@ -42,15 +43,14 @@ public class PackageUtils {
   }
 
   /**
-   *
    * @param packageName - The package name
    * @param included - The inclusion list.
    * @param excluded - The exclusion list
    * @return - The list of all the classes inside this package
    * @throws IOException - if there is an exception.
    */
-  public static String[] findClassesInPackage(String packageName, List<String> included, List<String> excluded)
-    throws IOException {
+  public static String[] findClassesInPackage(
+      String packageName, List<String> included, List<String> excluded) throws IOException {
     String packageOnly = packageName;
     boolean recursive = false;
     if (packageName.endsWith(".*")) {
@@ -60,7 +60,6 @@ public class PackageUtils {
 
     List<String> vResult = Lists.newArrayList();
     String packageDirName = packageOnly.replace('.', '/') + (packageOnly.length() > 0 ? "/" : "");
-
 
     List<URL> dirs = Lists.newArrayList();
     // go through additional class loaders
@@ -76,7 +75,7 @@ public class PackageUtils {
         continue;
       }
       Enumeration<URL> dirEnumeration = classLoader.getResources(packageDirName);
-      while(dirEnumeration.hasMoreElements()){
+      while (dirEnumeration.hasMoreElements()) {
         URL dir = dirEnumeration.nextElement();
         dirs.add(dir);
       }
@@ -84,13 +83,18 @@ public class PackageUtils {
 
     for (URL url : dirs) {
       String protocol = url.getProtocol();
-      if (! matchTestClasspath(url, packageDirName, recursive)) {
+      if (!matchTestClasspath(url, packageDirName, recursive)) {
         continue;
       }
 
       if ("file".equals(protocol)) {
-        findClassesInDirPackage(packageOnly, included, excluded,
-            URLDecoder.decode(url.getFile(), UTF_8), recursive, vResult);
+        findClassesInDirPackage(
+            packageOnly,
+            included,
+            excluded,
+            URLDecoder.decode(url.getFile(), UTF_8),
+            recursive,
+            vResult);
       } else if ("jar".equals(protocol)) {
         JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
         Enumeration<JarEntry> entries = jar.entries();
@@ -102,16 +106,19 @@ public class PackageUtils {
           }
           if (name.startsWith(packageDirName)) {
             int idx = name.lastIndexOf('/');
-            if (idx != - 1) {
+            if (idx != -1) {
               packageName = name.substring(0, idx).replace('/', '.');
             }
 
             if (recursive || packageName.equals(packageOnly)) {
-              //it's not inside a deeper dir
+              // it's not inside a deeper dir
               Utils.log(PACKAGE_UTILS, 4, "Package name is " + packageName);
-              if (name.endsWith(".class") && ! entry.isDirectory()) {
+              if (name.endsWith(".class") && !entry.isDirectory()) {
                 String className = name.substring(packageName.length() + 1, name.length() - 6);
-                Utils.log(PACKAGE_UTILS, 4, "Found class " + className + ", seeing it if it's included or excluded");
+                Utils.log(
+                    PACKAGE_UTILS,
+                    4,
+                    "Found class " + className + ", seeing it if it's included or excluded");
                 includeOrExcludeClass(packageName, className, included, excluded, vResult);
               }
             }
@@ -122,11 +129,17 @@ public class PackageUtils {
           Class[] params = {};
           // BundleURLConnection
           URLConnection connection = url.openConnection();
-          Method thisMethod = url.openConnection().getClass().getDeclaredMethod("getFileURL", params);
+          Method thisMethod =
+              url.openConnection().getClass().getDeclaredMethod("getFileURL", params);
           Object[] paramsObj = {};
           URL fileUrl = (URL) thisMethod.invoke(connection, paramsObj);
-          findClassesInDirPackage(packageOnly, included, excluded,
-              URLDecoder.decode(fileUrl.getFile(), UTF_8), recursive, vResult);
+          findClassesInDirPackage(
+              packageOnly,
+              included,
+              excluded,
+              URLDecoder.decode(fileUrl.getFile(), UTF_8),
+              recursive,
+              vResult);
         } catch (Exception ex) {
           // ignore - probably not an Eclipse OSGi bundle
         }
@@ -146,51 +159,49 @@ public class PackageUtils {
       return null;
     }
 
-    String[] classpathFragments= Utils.split(testClasspath, File.pathSeparator);
+    String[] classpathFragments = Utils.split(testClasspath, File.pathSeparator);
     testClassPaths = new String[classpathFragments.length];
 
-    for(int i= 0; i < classpathFragments.length; i++)  {
+    for (int i = 0; i < classpathFragments.length; i++) {
       String path;
-      if(classpathFragments[i].toLowerCase().endsWith(".jar") || classpathFragments[i].toLowerCase().endsWith(".zip")) {
-        path= classpathFragments[i] + "!/";
-      }
-      else {
-        if(classpathFragments[i].endsWith(File.separator)) {
-          path= classpathFragments[i];
-        }
-        else {
-          path= classpathFragments[i] + "/";
+      if (classpathFragments[i].toLowerCase().endsWith(".jar")
+          || classpathFragments[i].toLowerCase().endsWith(".zip")) {
+        path = classpathFragments[i] + "!/";
+      } else {
+        if (classpathFragments[i].endsWith(File.separator)) {
+          path = classpathFragments[i];
+        } else {
+          path = classpathFragments[i] + "/";
         }
       }
 
-      testClassPaths[i]= path.replace('\\', '/');
+      testClassPaths[i] = path.replace('\\', '/');
     }
 
     return testClassPaths;
   }
 
   private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
-    String[] classpathFragments= getTestClasspath();
-    if(null == classpathFragments) {
+    String[] classpathFragments = getTestClasspath();
+    if (null == classpathFragments) {
       return true;
     }
 
-    String fileName= "";
+    String fileName = "";
     try {
-      fileName= URLDecoder.decode(url.getFile(), UTF_8);
-    }
-    catch(UnsupportedEncodingException ueex) {
+      fileName = URLDecoder.decode(url.getFile(), UTF_8);
+    } catch (UnsupportedEncodingException ueex) {
       // ignore. should never happen
     }
 
-    for(String classpathFrag: classpathFragments) {
-      String path=  classpathFrag + lastFragment;
-      int idx= fileName.indexOf(path);
-      if((idx == -1) || (idx > 0 && fileName.charAt(idx-1) != '/')) {
+    for (String classpathFrag : classpathFragments) {
+      String path = classpathFrag + lastFragment;
+      int idx = fileName.indexOf(path);
+      if ((idx == -1) || (idx > 0 && fileName.charAt(idx - 1) != '/')) {
         continue;
       }
 
-      if(fileName.endsWith(classpathFrag + lastFragment)
+      if (fileName.endsWith(classpathFrag + lastFragment)
           || (recursive && fileName.charAt(idx + path.length()) == '/')) {
         return true;
       }
@@ -199,21 +210,25 @@ public class PackageUtils {
     return false;
   }
 
-  private static void findClassesInDirPackage(String packageName,
-                                              List<String> included,
-                                              List<String> excluded,
-                                              String packagePath,
-                                              final boolean recursive,
-                                              List<String> classes) {
+  private static void findClassesInDirPackage(
+      String packageName,
+      List<String> included,
+      List<String> excluded,
+      String packagePath,
+      final boolean recursive,
+      List<String> classes) {
     File dir = new File(packagePath);
 
     if (!dir.exists() || !dir.isDirectory()) {
       return;
     }
 
-    File[] dirfiles = dir.listFiles(file -> (recursive && file.isDirectory())
-      || (file.getName().endsWith(".class"))
-      || (file.getName().endsWith(".groovy")));
+    File[] dirfiles =
+        dir.listFiles(
+            file ->
+                (recursive && file.isDirectory())
+                    || (file.getName().endsWith(".class"))
+                    || (file.getName().endsWith(".groovy")));
 
     Utils.log(PACKAGE_UTILS, 4, "Looking for test classes in the directory: " + dir);
     if (dirfiles == null) {
@@ -221,17 +236,19 @@ public class PackageUtils {
     }
     for (File file : dirfiles) {
       if (file.isDirectory()) {
-        findClassesInDirPackage(makeFullClassName(packageName, file.getName()),
-                                included,
-                                excluded,
-                                file.getAbsolutePath(),
-                                recursive,
-                                classes);
-      }
-      else {
+        findClassesInDirPackage(
+            makeFullClassName(packageName, file.getName()),
+            included,
+            excluded,
+            file.getAbsolutePath(),
+            recursive,
+            classes);
+      } else {
         String className = file.getName().substring(0, file.getName().lastIndexOf('.'));
-        Utils.log(PACKAGE_UTILS, 4, "Found class " + className
-            + ", seeing it if it's included or excluded");
+        Utils.log(
+            PACKAGE_UTILS,
+            4,
+            "Found class " + className + ", seeing it if it's included or excluded");
         includeOrExcludeClass(packageName, className, included, excluded, classes);
       }
     }
@@ -241,24 +258,22 @@ public class PackageUtils {
     return pkg.length() > 0 ? pkg + "." + cls : cls;
   }
 
-  private static void includeOrExcludeClass(String packageName, String className,
-      List<String> included, List<String> excluded, List<String> classes)
-  {
+  private static void includeOrExcludeClass(
+      String packageName,
+      String className,
+      List<String> included,
+      List<String> excluded,
+      List<String> classes) {
     if (isIncluded(packageName, included, excluded)) {
       Utils.log(PACKAGE_UTILS, 4, "... Including class " + className);
       classes.add(makeFullClassName(packageName, className));
-    }
-    else {
+    } else {
       Utils.log(PACKAGE_UTILS, 4, "... Excluding class " + className);
     }
   }
 
-  /**
-   * @return true if name should be included.
-   */
-  private static boolean isIncluded(String name,
-      List<String> included, List<String> excluded)
-  {
+  /** @return true if name should be included. */
+  private static boolean isIncluded(String name, List<String> included, List<String> excluded) {
     boolean result;
 
     //
@@ -266,17 +281,14 @@ public class PackageUtils {
     //
     if (included.isEmpty() && excluded.isEmpty()) {
       result = true;
-    }
-    else {
+    } else {
       boolean isIncluded = PackageUtils.find(name, included);
       boolean isExcluded = PackageUtils.find(name, excluded);
       if (isIncluded && !isExcluded) {
         result = true;
-      }
-      else if (isExcluded) {
+      } else if (isExcluded) {
         result = false;
-      }
-      else {
+      } else {
         result = included.isEmpty();
       }
     }

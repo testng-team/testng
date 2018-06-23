@@ -31,14 +31,22 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private final List<ITestResult> m_testResults = Lists.newArrayList();
   private int m_failureCount;
 
-  public TestMethodWithDataProviderMethodWorker(Invoker invoker, ITestNGMethod testMethod,
-                                                int parameterIndex,
-                                                Object[] parameterValues, Object instance,
-                                                Map<String, String> parameters, ITestClass testClass,
-                                                ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
-                                                ConfigurationGroupMethods groupMethods,
-                                                ITestContext testContext, boolean skipFailedInvocationCounts,
-                                                int invocationCount, int failureCount, ITestResultNotifier notifier) {
+  public TestMethodWithDataProviderMethodWorker(
+      Invoker invoker,
+      ITestNGMethod testMethod,
+      int parameterIndex,
+      Object[] parameterValues,
+      Object instance,
+      Map<String, String> parameters,
+      ITestClass testClass,
+      ITestNGMethod[] beforeMethods,
+      ITestNGMethod[] afterMethods,
+      ConfigurationGroupMethods groupMethods,
+      ITestContext testContext,
+      boolean skipFailedInvocationCounts,
+      int invocationCount,
+      int failureCount,
+      ITestResultNotifier notifier) {
     m_invoker = invoker;
     m_testMethod = testMethod;
     m_parameterIndex = parameterIndex;
@@ -65,19 +73,20 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     final Invoker.FailureContext failure = new Invoker.FailureContext();
     failure.count = m_failureCount;
     try {
-      tmpResults.add(m_invoker.invokeTestMethod(m_instance,
-          m_testMethod,
-          m_parameterValues,
-          m_parameterIndex,
-          suite,
-          m_parameters,
-          m_testClass,
-          m_beforeMethods,
-          m_afterMethods,
-          m_groupMethods,
-          failure));
-    }
-    finally {
+      tmpResults.add(
+          m_invoker.invokeTestMethod(
+              m_instance,
+              m_testMethod,
+              m_parameterValues,
+              m_parameterIndex,
+              suite,
+              m_parameters,
+              m_testClass,
+              m_beforeMethods,
+              m_afterMethods,
+              m_groupMethods,
+              failure));
+    } finally {
       m_failureCount = failure.count;
       if (failure.instances.isEmpty()) {
         m_testResults.addAll(tmpResults);
@@ -86,11 +95,20 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
           List<ITestResult> retryResults = Lists.newArrayList();
 
           m_failureCount =
-             m_invoker.retryFailed(
-                 instance, m_testMethod, m_parameterValues, m_testClass, m_beforeMethods,
-                 m_afterMethods, m_groupMethods, retryResults,
-                 m_failureCount,
-                 m_testContext, m_parameters, m_parameterIndex).count;
+              m_invoker.retryFailed(
+                      instance,
+                      m_testMethod,
+                      m_parameterValues,
+                      m_testClass,
+                      m_beforeMethods,
+                      m_afterMethods,
+                      m_groupMethods,
+                      retryResults,
+                      m_failureCount,
+                      m_testContext,
+                      m_parameters,
+                      m_parameterIndex)
+                  .count;
           m_testResults.addAll(retryResults);
         }
       }
@@ -103,18 +121,19 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       // If not specified globally, use the attribute
       // on the annotation
       //
-      if (! m_skipFailedInvocationCounts) {
+      if (!m_skipFailedInvocationCounts) {
         m_skipFailedInvocationCounts = m_testMethod.skipFailedInvocations();
       }
       if (m_failureCount > 0 && m_skipFailedInvocationCounts) {
         while (m_invocationCount-- > 0) {
           ITestResult r =
-            new TestResult(m_testMethod.getTestClass(),
-                    m_testMethod,
-              null,
-              start,
-              System.currentTimeMillis(),
-              m_testContext);
+              new TestResult(
+                  m_testMethod.getTestClass(),
+                  m_testMethod,
+                  null,
+                  start,
+                  System.currentTimeMillis(),
+                  m_testContext);
           r.setStatus(TestResult.SKIP);
           m_testResults.add(r);
           m_invoker.runTestListeners(r);

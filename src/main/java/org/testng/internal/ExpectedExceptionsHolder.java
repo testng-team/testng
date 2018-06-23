@@ -15,7 +15,8 @@ public class ExpectedExceptionsHolder {
   private final Class<?>[] expectedClasses;
   private final IExpectedExceptionsHolder holder;
 
-  protected ExpectedExceptionsHolder(IAnnotationFinder finder, ITestNGMethod method, IExpectedExceptionsHolder holder) {
+  protected ExpectedExceptionsHolder(
+      IAnnotationFinder finder, ITestNGMethod method, IExpectedExceptionsHolder holder) {
     this.finder = finder;
     this.method = method;
     expectedClasses = findExpectedClasses(finder, method);
@@ -33,8 +34,7 @@ public class ExpectedExceptionsHolder {
 
   /**
    * @param ite The exception that was just thrown
-   * @return true if the exception that was just thrown is part of the
-   * expected exceptions
+   * @return true if the exception that was just thrown is part of the expected exceptions
    */
   public boolean isExpectedException(Throwable ite) {
     if (!hasExpectedClasses()) {
@@ -47,7 +47,7 @@ public class ExpectedExceptionsHolder {
       return false;
     }
 
-    Class<?> realExceptionClass= ite.getClass();
+    Class<?> realExceptionClass = ite.getClass();
 
     for (Class<?> exception : expectedClasses) {
       if (exception.isAssignableFrom(realExceptionClass) && holder.isThrowableMatching(ite)) {
@@ -64,9 +64,8 @@ public class ExpectedExceptionsHolder {
     }
 
     if (holder.isThrowableMatching(ite)) {
-      return new TestException("Expected exception of " +
-                               getExpectedExceptionsPluralize()
-                               + " but got " + ite, ite);
+      return new TestException(
+          "Expected exception of " + getExpectedExceptionsPluralize() + " but got " + ite, ite);
     } else {
       return new TestException(holder.getWrongExceptionMessage(ite), ite);
     }
@@ -76,8 +75,11 @@ public class ExpectedExceptionsHolder {
     if (!hasExpectedClasses()) {
       return null;
     }
-    return new TestException("Method " + testMethod + " should have thrown an exception of "
-                             + getExpectedExceptionsPluralize());
+    return new TestException(
+        "Method "
+            + testMethod
+            + " should have thrown an exception of "
+            + getExpectedExceptionsPluralize());
   }
 
   private boolean hasExpectedClasses() {

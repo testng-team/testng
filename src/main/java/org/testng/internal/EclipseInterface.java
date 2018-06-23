@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 /**
- * Symbols in this class are used by the Eclipse plug-in, do not modify them
- * without updating the plug-in as well.
+ * Symbols in this class are used by the Eclipse plug-in, do not modify them without updating the
+ * plug-in as well.
  *
  * @author Cedric Beust <cedric@beust.com>
  * @since Aug 25, 2012

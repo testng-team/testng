@@ -16,9 +16,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
-/**
- * This class represents the result of a test.
- */
+/** This class represents the result of a test. */
 public class TestResult implements ITestResult {
 
   private IClass m_testClass = null;
@@ -35,32 +33,30 @@ public class TestResult implements ITestResult {
   private int parameterIndex;
   private boolean m_wasRetried;
 
-  public TestResult() {
-
-  }
+  public TestResult() {}
 
   public TestResult(ITestNGMethod method, Throwable throwable, ITestContext context) {
     long time = System.currentTimeMillis();
     init(method.getTestClass(), method, throwable, time, time, context);
   }
 
-  public TestResult(IClass testClass,
-                    ITestNGMethod method,
-                    Throwable throwable,
-                    long start,
-                    long end,
-                    ITestContext context)
-  {
+  public TestResult(
+      IClass testClass,
+      ITestNGMethod method,
+      Throwable throwable,
+      long start,
+      long end,
+      ITestContext context) {
     init(testClass, method, throwable, start, end, context);
   }
 
-  public void init(IClass testClass,
-                   ITestNGMethod method,
-                   Throwable throwable,
-                   long start,
-                   long end,
-                   ITestContext context)
-  {
+  public void init(
+      IClass testClass,
+      ITestNGMethod method,
+      Throwable throwable,
+      long start,
+      long end,
+      ITestContext context) {
     m_testClass = testClass;
     m_throwable = throwable;
     m_instanceName = m_testClass.getName();
@@ -88,14 +84,14 @@ public class TestResult implements ITestResult {
         // Only display toString() if it's been overridden by the user
         m_name = getMethod().getMethodName();
         try {
-          if (!Object.class.getMethod("toString")
+          if (!Object.class
+              .getMethod("toString")
               .equals(instance.getClass().getMethod("toString"))) {
-            m_instanceName = string.startsWith("class ")
-                ? string.substring("class ".length())
-                : string;
+            m_instanceName =
+                string.startsWith("class ") ? string.substring("class ".length()) : string;
             m_name = m_name + " on " + m_instanceName;
           }
-        } catch(NoSuchMethodException ignore) {
+        } catch (NoSuchMethodException ignore) {
           // ignore
         }
       }
@@ -108,8 +104,8 @@ public class TestResult implements ITestResult {
   }
 
   /**
-   * If this result's related instance implements ITest or use @Test(testName=...), returns its test name,
-   * otherwise returns null.
+   * If this result's related instance implements ITest or use @Test(testName=...), returns its test
+   * name, otherwise returns null.
    */
   @Override
   public String getTestName() {
@@ -128,32 +124,24 @@ public class TestResult implements ITestResult {
     return m_name;
   }
 
-  /**
-   * @return Returns the method.
-   */
+  /** @return Returns the method. */
   @Override
   public ITestNGMethod getMethod() {
     return m_method;
   }
 
-  /**
-   * @param method The method to set.
-   */
+  /** @param method The method to set. */
   public void setMethod(ITestNGMethod method) {
     m_method = method;
   }
 
-  /**
-   * @return Returns the status.
-   */
+  /** @return Returns the status. */
   @Override
   public int getStatus() {
     return m_status;
   }
 
-  /**
-   * @param status The status to set.
-   */
+  /** @param status The status to set. */
   @Override
   public void setStatus(int status) {
     m_status = status;
@@ -164,48 +152,36 @@ public class TestResult implements ITestResult {
     return ITestResult.SUCCESS == m_status;
   }
 
-  /**
-   * @return Returns the testClass.
-   */
+  /** @return Returns the testClass. */
   @Override
   public IClass getTestClass() {
     return m_testClass;
   }
 
-  /**
-   * @param testClass The testClass to set.
-   */
+  /** @param testClass The testClass to set. */
   public void setTestClass(IClass testClass) {
     m_testClass = testClass;
   }
 
-  /**
-   * @return Returns the throwable.
-   */
+  /** @return Returns the throwable. */
   @Override
   public Throwable getThrowable() {
     return m_throwable;
   }
 
-  /**
-   * @param throwable The throwable to set.
-   */
+  /** @param throwable The throwable to set. */
   @Override
   public void setThrowable(Throwable throwable) {
     m_throwable = throwable;
   }
 
-  /**
-   * @return Returns the endMillis.
-   */
+  /** @return Returns the endMillis. */
   @Override
   public long getEndMillis() {
     return m_endMillis;
   }
 
-  /**
-   * @return Returns the startMillis.
-   */
+  /** @return Returns the startMillis. */
   @Override
   public long getStartMillis() {
     return m_startMillis;
@@ -222,18 +198,24 @@ public class TestResult implements ITestResult {
         .add("method", m_method)
         .add("output", output != null && output.size() > 0 ? output.get(0) : null)
         .toString();
-
   }
 
   private static String toString(int status) {
-    switch(status) {
-      case SUCCESS: return "SUCCESS";
-      case FAILURE: return "FAILURE";
-      case SKIP: return "SKIP";
-      case SUCCESS_PERCENTAGE_FAILURE: return "SUCCESS WITHIN PERCENTAGE";
-      case STARTED: return "STARTED";
-      case CREATED: return "CREATED";
-      default: throw new TestNGException("Encountered an un-defined test status of [" + status + "].");
+    switch (status) {
+      case SUCCESS:
+        return "SUCCESS";
+      case FAILURE:
+        return "FAILURE";
+      case SKIP:
+        return "SKIP";
+      case SUCCESS_PERCENTAGE_FAILURE:
+        return "SUCCESS WITHIN PERCENTAGE";
+      case STARTED:
+        return "STARTED";
+      case CREATED:
+        return "CREATED";
+      default:
+        throw new TestNGException("Encountered an un-defined test status of [" + status + "].");
     }
   }
 
@@ -260,7 +242,10 @@ public class TestResult implements ITestResult {
         try {
           Method clone = parameters[i].getClass().getDeclaredMethod("clone");
           m_parameters[i] = clone.invoke(parameters[i]);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException e) {
+        } catch (NoSuchMethodException
+            | InvocationTargetException
+            | IllegalAccessException
+            | SecurityException e) {
           m_parameters[i] = parameters[i];
         }
       } else {
@@ -298,11 +283,11 @@ public class TestResult implements ITestResult {
 
   @Override
   public ITestContext getTestContext() {
-	  return m_context;
+    return m_context;
   }
 
   public void setContext(ITestContext context) {
-	  m_context = context;
+    m_context = context;
   }
 
   @Override

@@ -17,21 +17,21 @@ import java.util.Map;
 public interface IInvoker {
 
   /**
-   * Invoke configuration methods if they belong to the same TestClass
-   * passed in parameter..
+   * Invoke configuration methods if they belong to the same TestClass passed in parameter..
    *
-   * TODO:  Calculate ahead of time which methods should be
-   * invoked for each class.   Might speed things up for users who invoke the same
-   * test class with different parameters in the same suite run.
+   * <p>TODO: Calculate ahead of time which methods should be invoked for each class. Might speed
+   * things up for users who invoke the same test class with different parameters in the same suite
+   * run.
    *
    * @param testClass the class whose configuration methods must be run
    */
-  void invokeConfigurations(IClass testClass,
-                            ITestNGMethod[] allMethods,
-                            XmlSuite suite,
-                            Map<String, String> parameters,
-                            Object[] parameterValues,
-                            Object instance);
+  void invokeConfigurations(
+      IClass testClass,
+      ITestNGMethod[] allMethods,
+      XmlSuite suite,
+      Map<String, String> parameters,
+      Object[] parameterValues,
+      Object instance);
 
   /**
    * Invoke the given method
@@ -39,13 +39,12 @@ public interface IInvoker {
    * @param testMethod
    * @param parameters
    * @param groupMethods
-   *
    * @return a list containing the results of the test methods invocations
    */
-  List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
-                                      Map<String, String> parameters,
-                                      ConfigurationGroupMethods groupMethods,
-                                      Object instance,
-                                      ITestContext testContext);
-
+  List<ITestResult> invokeTestMethods(
+      ITestNGMethod testMethod,
+      Map<String, String> parameters,
+      ConfigurationGroupMethods groupMethods,
+      Object instance,
+      ITestContext testContext);
 }

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 /**
  * A class that contains the expected exceptions and the message regular expression.
+ *
  * @author cbeust
  */
 public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder {
@@ -22,11 +23,7 @@ public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder
     this.method = method;
   }
 
-  /**
-   *   message / regEx  .*      other
-   *   null             true    false
-   *   non-null         true    match
-   */
+  /** message / regEx .* other null true false non-null true match */
   @Override
   public boolean isThrowableMatching(Throwable ite) {
     String messageRegExp = getRegExp();
@@ -36,13 +33,18 @@ public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder
     }
 
     final String message = ite.getMessage();
-    return message != null && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(message).matches();
+    return message != null
+        && Pattern.compile(messageRegExp, Pattern.DOTALL).matcher(message).matches();
   }
 
   public String getWrongExceptionMessage(Throwable ite) {
-    return "The exception was thrown with the wrong message:" +
-           " expected \"" + getRegExp() + "\"" +
-           " but got \"" + ite.getMessage() + "\"";
+    return "The exception was thrown with the wrong message:"
+        + " expected \""
+        + getRegExp()
+        + "\""
+        + " but got \""
+        + ite.getMessage()
+        + "\"";
   }
 
   private String getRegExp() {

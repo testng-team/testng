@@ -9,15 +9,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class contains all the information needed to determine
- * what methods should be run.  It gets invoked by the TestRunner
- * and then goes through its list of method selectors to decide what methods
- * need to be run.
+ * This class contains all the information needed to determine what methods should be run. It gets
+ * invoked by the TestRunner and then goes through its list of method selectors to decide what
+ * methods need to be run.
  */
 public class RunInfo {
 
-  private final List<MethodSelectorDescriptor>
-    m_methodSelectors = Lists.newArrayList();
+  private final List<MethodSelectorDescriptor> m_methodSelectors = Lists.newArrayList();
 
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);
@@ -25,10 +23,7 @@ public class RunInfo {
     m_methodSelectors.add(md);
   }
 
-  /**
-   * @return true as soon as we fond a Method Selector that returns
-   * true for the method "tm".
-   */
+  /** @return true as soon as we fond a Method Selector that returns true for the method "tm". */
   public boolean includeMethod(ITestNGMethod tm, boolean isTestMethod) {
     Collections.sort(m_methodSelectors);
     boolean foundNegative = false;
@@ -38,7 +33,7 @@ public class RunInfo {
     for (MethodSelectorDescriptor mds : m_methodSelectors) {
       // If we found any negative priority, we break as soon as we encounter
       // a selector with a positive priority
-      if (! foundNegative) {
+      if (!foundNegative) {
         foundNegative = mds.getPriority() < 0;
       }
       if (foundNegative && mds.getPriority() >= 0) {

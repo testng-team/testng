@@ -17,14 +17,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-/**
- * Helper methods to parse annotations.
- */
+/** Helper methods to parse annotations. */
 public final class Utils {
 
   private static final String LINE_SEP = RuntimeBehavior.getDefaultLineSeparator();
 
-  private static final char[] SPECIAL_CHARACTERS = {'*','/','\\','?','%',':',';','<','>','&','~','|'};
+  private static final char[] SPECIAL_CHARACTERS = {
+    '*', '/', '\\', '?', '%', ':', ';', '<', '>', '&', '~', '|'
+  };
   public static final char CHAR_REPLACEMENT = '_';
   public static final char UNICODE_REPLACEMENT = 0xFFFD;
   private static final String FORMAT = String.format("[%s]", Utils.class.getSimpleName());
@@ -41,21 +41,17 @@ public final class Utils {
     ESCAPES.put('&', "&amp;");
   }
 
-  /**
-   * Hide constructor for utility class.
-   */
+  /** Hide constructor for utility class. */
   private Utils() {
     // Hide constructor
   }
 
   /**
-   * Splits the given String s into tokens where the separator is
-   * either the space character or the comma character. For example,
-   * if s is "a,b, c" this method returns {"a", "b", "c"}
+   * Splits the given String s into tokens where the separator is either the space character or the
+   * comma character. For example, if s is "a,b, c" this method returns {"a", "b", "c"}
    *
    * @param s the string to split
    * @return the split token
-   *
    * @deprecated Unused
    */
   @Deprecated
@@ -80,9 +76,7 @@ public final class Utils {
     return result.toArray(new XmlClass[classes.length]);
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public static String[] parseMultiLine(String line) {
     List<String> vResult = Lists.newArrayList();
@@ -98,9 +92,11 @@ public final class Utils {
     return vResult.toArray(new String[0]);
   }
 
-  public static void writeUtf8File(@Nullable String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
+  public static void writeUtf8File(
+      @Nullable String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
     try {
-      final File outDir = (outputDir != null) ? new File(outputDir) : new File("").getAbsoluteFile();
+      final File outDir =
+          (outputDir != null) ? new File(outputDir) : new File("").getAbsoluteFile();
       if (!outDir.exists()) {
         outDir.mkdirs();
       }
@@ -108,54 +104,59 @@ public final class Utils {
       if (!file.exists()) {
         file.createNewFile();
       }
-      try (final OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
+      try (final OutputStreamWriter w =
+          new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
         if (prefix != null) {
           w.append(prefix);
         }
         xsb.toWriter(w);
       }
-    } catch(IOException ex) {
+    } catch (IOException ex) {
       LOG.error(ex.getMessage(), ex);
     }
   }
 
   /**
-   * Writes the content of the sb string to the file named filename in outDir encoding the output as UTF-8.
-   * If outDir does not exist, it is created.
+   * Writes the content of the sb string to the file named filename in outDir encoding the output as
+   * UTF-8. If outDir does not exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
+   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory
+   *     is used.
    * @param fileName the filename
    * @param sb the file content
    */
   public static void writeUtf8File(@Nullable String outputDir, String fileName, String sb) {
-    final String outDirPath= outputDir != null ? outputDir : "";
-    final File outDir= new File(outDirPath);
+    final String outDirPath = outputDir != null ? outputDir : "";
+    final File outDir = new File(outDirPath);
     writeFile(outDir, fileName, escapeUnicode(sb), "UTF-8");
   }
 
   /**
-   * Writes the content of the sb string to the file named filename in outDir. If
-   * outDir does not exist, it is created.
+   * Writes the content of the sb string to the file named filename in outDir. If outDir does not
+   * exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory is used.
+   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory
+   *     is used.
    * @param fileName the filename
    * @param sb the file content
    */
   public static void writeFile(@Nullable String outputDir, String fileName, String sb) {
-    final String outDirPath= outputDir != null ? outputDir : "";
-    final File outDir= new File(outDirPath);
+    final String outDirPath = outputDir != null ? outputDir : "";
+    final File outDir = new File(outDirPath);
     writeFile(outDir, fileName, sb, null);
   }
 
   /**
-   * Writes the content of the sb string to the file named filename in outDir. If
-   * outDir does not exist, it is created.
+   * Writes the content of the sb string to the file named filename in outDir. If outDir does not
+   * exist, it is created.
    *
-   * @param outputFolder the output directory (may not exist). If <tt>null</tt> then current directory is used.
+   * @param outputFolder the output directory (may not exist). If <tt>null</tt> then current
+   *     directory is used.
    * @param fileNameParameter the filename
    * @param sb the file content
    */
-  private static void writeFile(@Nullable File outputFolder, String fileNameParameter, String sb, @Nullable String encoding) {
+  private static void writeFile(
+      @Nullable File outputFolder, String fileNameParameter, String sb, @Nullable String encoding) {
     File outDir = outputFolder;
     String fileName = fileNameParameter;
     try {
@@ -173,12 +174,10 @@ public final class Utils {
       log(FORMAT, 3, "  Directory " + outDir + " exists: " + outDir.exists());
       outputFile.createNewFile();
       writeFile(outputFile, sb, encoding);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       if (TestRunner.getVerbose() > 1) {
-        LOG.error(e.getMessage(),e);
-      }
-      else {
+        LOG.error(e.getMessage(), e);
+      } else {
         log(FORMAT, 1, e.getMessage());
       }
     }
@@ -200,17 +199,18 @@ public final class Utils {
   }
 
   /**
-   * Open a BufferedWriter for the specified file. If output directory doesn't
-   * exist, it is created. If the output file exists, it is deleted. The output file is
-   * created in any case.
+   * Open a BufferedWriter for the specified file. If output directory doesn't exist, it is created.
+   * If the output file exists, it is deleted. The output file is created in any case.
+   *
    * @param outputDir output directory. If <tt>null</tt>, then current directory is used
    * @param fileNameParameter file name
    * @throws IOException if anything goes wrong while creating files.
    */
-  public static BufferedWriter openWriter(@Nullable String outputDir, String fileNameParameter) throws IOException {
+  public static BufferedWriter openWriter(@Nullable String outputDir, String fileNameParameter)
+      throws IOException {
     String fileName = fileNameParameter;
-    String outDirPath= outputDir != null ? outputDir : "";
-    File outDir= new File(outDirPath);
+    String outDirPath = outputDir != null ? outputDir : "";
+    File outDir = new File(outDirPath);
     if (!outDir.exists()) {
       outDir.mkdirs();
     }
@@ -220,15 +220,15 @@ public final class Utils {
     return openWriter(outputFile, null);
   }
 
-  private static BufferedWriter openWriter(File outputFile, @Nullable String encoding) throws IOException {
+  private static BufferedWriter openWriter(File outputFile, @Nullable String encoding)
+      throws IOException {
     if (!outputFile.exists()) {
       outputFile.createNewFile();
     }
     OutputStreamWriter osw;
     if (null != encoding) {
       osw = new OutputStreamWriter(new FileOutputStream(outputFile), encoding);
-    }
-    else {
+    } else {
       osw = new OutputStreamWriter(new FileOutputStream(outputFile));
     }
     return new BufferedWriter(osw);
@@ -238,9 +238,7 @@ public final class Utils {
     Utils.log("Utils", 0, s);
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public static void dumpMap(Map<?, ?> result) {
     LOG.info("vvvvv");
@@ -250,9 +248,7 @@ public final class Utils {
     LOG.info("^^^^^");
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public static void dumpMethods(List<ITestNGMethod> allMethods) {
     ppp("======== METHODS:");
@@ -261,9 +257,7 @@ public final class Utils {
     }
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public static String[] dependentGroupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
     List<String> vResult = Lists.newArrayList();
@@ -290,8 +284,9 @@ public final class Utils {
   }
 
   /**
-   * Logs the the message to System.out if level is greater than
-   * or equal to TestRunner.getVerbose(). The message is logged as:
+   * Logs the the message to System.out if level is greater than or equal to
+   * TestRunner.getVerbose(). The message is logged as:
+   *
    * <pre>
    *     "[cls] msg"
    * </pre>
@@ -305,8 +300,7 @@ public final class Utils {
     if (TestRunner.getVerbose() >= level) {
       if (cls.length() > 0) {
         LOG.info("[" + cls + "] " + msg);
-      }
-      else {
+      } else {
         LOG.info(msg);
       }
     }
@@ -324,9 +318,7 @@ public final class Utils {
     return methods.size();
   }
 
-  /**
-   * Tokenize the string using the separator.
-   */
+  /** Tokenize the string using the separator. */
   public static String[] split(String string, String sep) {
     if ((string == null) || (string.length() == 0)) {
       return new String[0];
@@ -351,9 +343,7 @@ public final class Utils {
     return strings.toArray(new String[0]);
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public static void logInvocation(String reason, Method thisMethod, Object[] parameters) {
     String clsName = thisMethod.getDeclaringClass().getName();
@@ -373,7 +363,8 @@ public final class Utils {
     }
   }
 
-  public static void writeResourceToFile(File file, String resourceName, Class<?> clasz) throws IOException {
+  public static void writeResourceToFile(File file, String resourceName, Class<?> clasz)
+      throws IOException {
     InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
     if (inputStream == null) {
       LOG.error("Couldn't find resource on the class path: " + resourceName);
@@ -415,20 +406,19 @@ public final class Utils {
   /**
    * @return an array of two strings: the short stack trace and the long stack trace.
    * @deprecated - Please consider using :
-   * <ul>
-   *     <li>{@link Utils#longStackTrace(Throwable, boolean)} - for getting full stack trace</li>
-   *     <li>{@link Utils#shortStackTrace(Throwable, boolean)} - for getting short stack trace</li>
-   * </ul>
+   *     <ul>
+   *       <li>{@link Utils#longStackTrace(Throwable, boolean)} - for getting full stack trace
+   *       <li>{@link Utils#shortStackTrace(Throwable, boolean)} - for getting short stack trace
+   *     </ul>
    */
   @Deprecated
   public static String[] stackTrace(Throwable t, boolean toHtml) {
-    return new String[] {
-        shortStackTrace(t, toHtml), longStackTrace(t, toHtml)
-    };
+    return new String[] {shortStackTrace(t, toHtml), longStackTrace(t, toHtml)};
   }
 
   /**
    * Helper that returns a short stack trace.
+   *
    * @param t - The {@link Throwable} exception
    * @param toHtml - <code>true</code> if the stacktrace should be translated to html as well
    * @return - A string that represents the short stack trace.
@@ -439,6 +429,7 @@ public final class Utils {
 
   /**
    * Helper that returns a long stack trace.
+   *
    * @param t - The {@link Throwable} exception
    * @param toHtml - <code>true</code> if the stacktrace should be translated to html as well
    * @return - A string that represents the full stack trace.
@@ -467,7 +458,8 @@ public final class Utils {
   }
 
   private enum StackTraceType {
-    SHORT,FULL
+    SHORT,
+    FULL
   }
 
   public static String escapeHtml(String s) {
@@ -499,7 +491,7 @@ public final class Utils {
 
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
-      char ca = Character.isDefined(c) ? c: UNICODE_REPLACEMENT;
+      char ca = Character.isDefined(c) ? c : UNICODE_REPLACEMENT;
       result.append(ca);
     }
 
@@ -514,7 +506,7 @@ public final class Utils {
     try {
       // first line contains the thrown exception
       String line = bufferedReader.readLine();
-      if(line == null) {
+      if (line == null) {
         return "";
       }
       buf.append(line).append(LINE_SEP);
@@ -522,32 +514,27 @@ public final class Utils {
       //
       // the stack frames of the trace
       //
-      String[] excludedStrings = new String[] {
-          "org.testng",
-          "reflect",
-          "org.gradle",
-          "org.apache.maven.surefire"
-      };
+      String[] excludedStrings =
+          new String[] {"org.testng", "reflect", "org.gradle", "org.apache.maven.surefire"};
 
       int excludedCount = 0;
-      while((line = bufferedReader.readLine()) != null) {
+      while ((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;
         for (String excluded : excludedStrings) {
-          if(line.contains(excluded)) {
+          if (line.contains(excluded)) {
             isExcluded = true;
             excludedCount++;
             break;
-           }
+          }
         }
-        if (! isExcluded) {
+        if (!isExcluded) {
           buf.append(line).append(LINE_SEP);
         }
       }
       if (excludedCount > 0) {
         buf.append("... Removed ").append(excludedCount).append(" stack frames");
       }
-    }
-    catch(IOException ioex) {
+    } catch (IOException ioex) {
       // do nothing
     }
 
@@ -555,24 +542,22 @@ public final class Utils {
   }
 
   public static String toString(Object object, Class<?> objectClass) {
-    if(null == object) {
+    if (null == object) {
       return "null";
     }
-    final String toString= object.toString();
-    if(isStringEmpty(toString)) {
+    final String toString = object.toString();
+    if (isStringEmpty(toString)) {
       return "\"\"";
-    }
-    else if (String.class.equals(objectClass)) {
+    } else if (String.class.equals(objectClass)) {
       return "\"" + toString + '\"';
-    }
-    else {
+    } else {
       return toString;
     }
   }
 
   public static String detailedMethodName(ITestNGMethod method, boolean fqn) {
     String tempName = annotationFormFor(method);
-    if (! tempName.isEmpty()) {
+    if (!tempName.isEmpty()) {
       tempName += " ";
     }
     return tempName + (fqn ? method.toString() : method.getMethodName());
@@ -580,38 +565,39 @@ public final class Utils {
 
   /**
    * Given a TestNG method, returns the corresponding annotation based on the method type
+   *
    * @param method - An {@link ITestNGMethod} object.
    * @return - A String representation of the corresponding annotation.
    */
   public static String annotationFormFor(ITestNGMethod method) {
-    if(method.isBeforeSuiteConfiguration()) {
+    if (method.isBeforeSuiteConfiguration()) {
       return "@BeforeSuite";
     }
-    if(method.isBeforeTestConfiguration()) {
+    if (method.isBeforeTestConfiguration()) {
       return "@BeforeTest";
     }
-    if(method.isBeforeClassConfiguration()) {
+    if (method.isBeforeClassConfiguration()) {
       return "@BeforeClass";
     }
-    if(method.isBeforeGroupsConfiguration()) {
+    if (method.isBeforeGroupsConfiguration()) {
       return "@BeforeGroups";
     }
-    if(method.isBeforeMethodConfiguration()) {
+    if (method.isBeforeMethodConfiguration()) {
       return "@BeforeMethod";
     }
-    if(method.isAfterMethodConfiguration()) {
+    if (method.isAfterMethodConfiguration()) {
       return "@AfterMethod";
     }
-    if(method.isAfterGroupsConfiguration()) {
+    if (method.isAfterGroupsConfiguration()) {
       return "@AfterGroups";
     }
-    if(method.isAfterClassConfiguration()) {
+    if (method.isAfterClassConfiguration()) {
       return "@AfterClass";
     }
     if (method.isAfterTestConfiguration()) {
       return "@AfterTest";
     }
-    if(method.isAfterSuiteConfiguration()) {
+    if (method.isAfterSuiteConfiguration()) {
       return "@AfterSuite";
     }
     return "";
@@ -631,26 +617,26 @@ public final class Utils {
   }
 
   /**
-   * If the file name contains special characters like *,/,\ and so on,
-   * exception will be thrown and report file will not be created.<br>
-   * Special characters are platform specific and they are not same for
-   * example on Windows and Macintosh. * is not allowed on Windows, but it is on Macintosh.<br>
-   * In order to have the same behavior of testng on the all platforms, characters like * will
-   * be replaced on all platforms whether they are causing the problem or not.
+   * If the file name contains special characters like *,/,\ and so on, exception will be thrown and
+   * report file will not be created.<br>
+   * Special characters are platform specific and they are not same for example on Windows and
+   * Macintosh. * is not allowed on Windows, but it is on Macintosh.<br>
+   * In order to have the same behavior of testng on the all platforms, characters like * will be
+   * replaced on all platforms whether they are causing the problem or not.
    *
    * @param fileNameParameter file name that could contain special characters.
    * @return fileName with special characters replaced
    */
   public static String replaceSpecialCharacters(String fileNameParameter) {
-   String fileName = fileNameParameter;
-   if (fileName == null || fileName.length() == 0) {
-     return fileName;
-   }
-   for (char element : SPECIAL_CHARACTERS) {
-     fileName = fileName.replace(element, CHAR_REPLACEMENT);
-   }
+    String fileName = fileNameParameter;
+    if (fileName == null || fileName.length() == 0) {
+      return fileName;
+    }
+    for (char element : SPECIAL_CHARACTERS) {
+      fileName = fileName.replace(element, CHAR_REPLACEMENT);
+    }
 
-   return fileName;
+    return fileName;
   }
 
   public static <T> String join(List<T> objects, String separator) {
@@ -664,26 +650,23 @@ public final class Utils {
     return result.toString();
   }
 
-  /**
-   * @deprecated Unused
-   */
+  /** @deprecated Unused */
   @Deprecated
   public static void copyFile(File from, File to) {
     to.getParentFile().mkdirs();
-    try (InputStream in = new FileInputStream(from); OutputStream out = new FileOutputStream(to)) {
+    try (InputStream in = new FileInputStream(from);
+        OutputStream out = new FileOutputStream(to)) {
       byte[] buf = new byte[1024];
       int len;
       while ((len = in.read(buf)) > 0) {
         out.write(buf, 0, len);
       }
-    } catch(IOException e){
-      LOG.error(e.getMessage(),e);
+    } catch (IOException e) {
+      LOG.error(e.getMessage(), e);
     }
   }
 
-  /**
-   * @return a temporary file with the given content.
-   */
+  /** @return a temporary file with the given content. */
   public static File createTempFile(String content) {
     try {
       // Create temp file.
@@ -703,13 +686,14 @@ public final class Utils {
     }
   }
 
-  /**
-   * Make sure that either we have an instance or if not, that the method is static
-   */
+  /** Make sure that either we have an instance or if not, that the method is static */
   public static void checkInstanceOrStatic(Object instance, Method method) {
-    if (instance == null && method != null && ! Modifier.isStatic(method.getModifiers())) {
-      throw new TestNGException("Can't invoke " + method + ": either make it static or add "
-          + "a no-args constructor to your class");
+    if (instance == null && method != null && !Modifier.isStatic(method.getModifiers())) {
+      throw new TestNGException(
+          "Can't invoke "
+              + method
+              + ": either make it static or add "
+              + "a no-args constructor to your class");
     }
   }
 
@@ -722,20 +706,26 @@ public final class Utils {
         return;
       }
     }
-    throw new TestNGException(method.getDeclaringClass().getName() + "."
-              + method.getName() + " MUST return " + toString(returnTypes) + " but returns " + method.getReturnType().getName());
+    throw new TestNGException(
+        method.getDeclaringClass().getName()
+            + "."
+            + method.getName()
+            + " MUST return "
+            + toString(returnTypes)
+            + " but returns "
+            + method.getReturnType().getName());
   }
 
   private static String toString(Class<?>[] classes) {
     StringBuilder sb = new StringBuilder("[ ");
-    for (int i=0; i<classes.length; i++) {
+    for (int i = 0; i < classes.length; i++) {
       Class<?> clazz = classes[i];
       if (clazz.isArray()) {
         sb.append(clazz.getComponentType().getName()).append("[]");
       } else {
         sb.append(clazz.getName());
       }
-      if ( (i+1) < classes.length) { // increment and compare
+      if ((i + 1) < classes.length) { // increment and compare
         sb.append(" or ");
       }
     }
@@ -744,11 +734,10 @@ public final class Utils {
   }
 
   /**
-   * Returns the string representation of the specified object, transparently
-   * handling null references and arrays.
+   * Returns the string representation of the specified object, transparently handling null
+   * references and arrays.
    *
-   * @param obj
-   *            the object
+   * @param obj the object
    * @return the string representation
    */
   public static String toString(Object obj) {

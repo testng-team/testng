@@ -12,9 +12,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
-/**
- * Representation of the graph of methods.
- */
+/** Representation of the graph of methods. */
 public class DynamicGraph<T> {
 
   private final Set<T> m_nodesReady = Sets.newLinkedHashSet();
@@ -24,20 +22,19 @@ public class DynamicGraph<T> {
   private Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   public enum Status {
-    READY, RUNNING, FINISHED
+    READY,
+    RUNNING,
+    FINISHED
   }
 
-  /**
-   * Add a node to the graph.
-   */
+  /** Add a node to the graph. */
   public boolean addNode(T node) {
     return m_nodesReady.add(node);
   }
 
   /**
-   *
-   * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals indicating
-   *               the weightage of a particular node in the graph
+   * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals
+   *     indicating the weightage of a particular node in the graph
    * @param from - Represents the edge that depends on another edge.
    * @param to - Represents the edge on which another edge depends upon.
    */
@@ -49,18 +46,14 @@ public class DynamicGraph<T> {
     visualisers = listener;
   }
 
-  /**
-   * Add an edge between two nodes.
-   */
+  /** Add an edge between two nodes. */
   public void addEdges(int weight, T from, Iterable<T> tos) {
     for (T to : tos) {
       addEdge(weight, from, to);
     }
   }
 
-  /**
-   * @return a set of all the nodes that don't depend on any other nodes.
-   */
+  /** @return a set of all the nodes that don't depend on any other nodes. */
   public List<T> getFreeNodes() {
     // Get a list of nodes that are ready and have no outgoing edges.
     Set<T> free = Sets.newLinkedHashSet(m_nodesReady);
@@ -97,20 +90,16 @@ public class DynamicGraph<T> {
     return Lists.newArrayList(data.keySet());
   }
 
-  /**
-   * Set the status for a set of nodes.
-   */
+  /** Set the status for a set of nodes. */
   public void setStatus(Collection<T> nodes, Status status) {
     for (T n : nodes) {
       setStatus(n, status);
     }
   }
 
-  /**
-   * Set the status for a node.
-   */
+  /** Set the status for a node. */
   public void setStatus(T node, Status status) {
-    switch(status) {
+    switch (status) {
       case RUNNING:
         m_nodesReady.remove(node);
         m_nodesRunning.add(node);
@@ -139,7 +128,6 @@ public class DynamicGraph<T> {
               m_edges.addEdge(weight, in.getKey(), out.getKey(), true);
             }
           }
-
         }
 
         m_edges.removeNode(node);
@@ -155,9 +143,7 @@ public class DynamicGraph<T> {
     this.visualisers.forEach(visualiser -> visualiser.consumeDotDefinition(toDot()));
   }
 
-  /**
-   * @return the number of nodes in this graph.
-   */
+  /** @return the number of nodes in this graph. */
   public int getNodeCount() {
     return m_nodesReady.size() + m_nodesRunning.size() + m_nodesFinished.size();
   }
@@ -167,22 +153,30 @@ public class DynamicGraph<T> {
   }
 
   public Set<T> getNodesWithStatus(Status status) {
-    switch(status) {
-      case READY: return m_nodesReady;
-      case RUNNING: return m_nodesRunning;
-      case FINISHED: return m_nodesFinished;
-      default: throw new IllegalArgumentException();
+    switch (status) {
+      case READY:
+        return m_nodesReady;
+      case RUNNING:
+        return m_nodesRunning;
+      case FINISHED:
+        return m_nodesFinished;
+      default:
+        throw new IllegalArgumentException();
     }
-
   }
 
   @Override
   public String toString() {
-    return "[DynamicGraph " + "\n  Ready:" + m_nodesReady +
-            "\n  Running:" + m_nodesRunning +
-            "\n  Finished:" + m_nodesFinished +
-            "\n  Edges:\n" + m_edges +
-            "]";
+    return "[DynamicGraph "
+        + "\n  Ready:"
+        + m_nodesReady
+        + "\n  Running:"
+        + m_nodesRunning
+        + "\n  Finished:"
+        + m_nodesFinished
+        + "\n  Edges:\n"
+        + m_edges
+        + "]";
   }
 
   private static <T> String dotShortName(T t) {
@@ -191,9 +185,7 @@ public class DynamicGraph<T> {
     return s.substring(0, n2).replaceAll("\\Q.\\E", "_");
   }
 
-  /**
-   * @return a .dot file (GraphViz) version of this graph.
-   */
+  /** @return a .dot file (GraphViz) version of this graph. */
   public String toDot() {
     String FREE = "[style=filled color=yellow]";
     String RUNNING = "[style=filled color=green]";
@@ -219,19 +211,17 @@ public class DynamicGraph<T> {
     return result.toString();
   }
 
-  /**
-   * For tests only
-   */
+  /** For tests only */
   Map<T, Map<T, Integer>> getEdges() {
     return m_edges.getEdges();
   }
 
-  /**
-   * Manage edges and weights between nodes.
-   */
+  /** Manage edges and weights between nodes. */
   private static class Edges<T> {
-    // Maps of edges in the graph organized by incoming or outgoing edges. The integer is the weight of the edge. It's
-    // important that these maps always stay consistent with each other. All modifications should go through addEdge
+    // Maps of edges in the graph organized by incoming or outgoing edges. The integer is the weight
+    // of the edge. It's
+    // important that these maps always stay consistent with each other. All modifications should go
+    // through addEdge
     // and removeNode.
     private final Map<T, Map<T, Integer>> m_incomingEdges = new HashMap<>();
     private final Map<T, Map<T, Integer>> m_outgoingEdges = new HashMap<>();
@@ -254,9 +244,7 @@ public class DynamicGraph<T> {
       addEdgeToMap(m_outgoingEdges, from, to, weight);
     }
 
-    /**
-     * @return the set of nodes that have outgoing edges.
-     */
+    /** @return the set of nodes that have outgoing edges. */
     Set<T> fromNodes() {
       return m_outgoingEdges.keySet();
     }
@@ -272,8 +260,8 @@ public class DynamicGraph<T> {
     }
 
     /**
-     * Return the weight of the edge in the graph that is the reversed direction of edge. For example, if
-     * edge a -> b exists, and edge b -> a is passed in, then return a -> b.
+     * Return the weight of the edge in the graph that is the reversed direction of edge. For
+     * example, if edge a -> b exists, and edge b -> a is passed in, then return a -> b.
      *
      * @param from - the from edge
      * @param to - the to edge
@@ -285,8 +273,8 @@ public class DynamicGraph<T> {
     }
 
     /**
-     * Remove a node from the graph and all associated edges. Each edge needs to be removed from both maps to keep the
-     * maps in sync.
+     * Remove a node from the graph and all associated edges. Each edge needs to be removed from
+     * both maps to keep the maps in sync.
      *
      * @param node Node to remove.
      */
@@ -337,10 +325,10 @@ public class DynamicGraph<T> {
       return true;
     }
 
-
     /**
-     * Remove edges from a map given a node and a list of destination nodes. Given: <pre>{@code
+     * Remove edges from a map given a node and a list of destination nodes. Given:
      *
+     * <pre>{@code
      * m_outgoingEdges:
      *    a -> b
      *         c
@@ -352,10 +340,11 @@ public class DynamicGraph<T> {
      *
      * }</pre>
      *
-     * Then, calling this method to remove node c on both maps as done in removeNode(), would result in a -> c and c -> a
-     * edges being removed.
+     * Then, calling this method to remove node c on both maps as done in removeNode(), would result
+     * in a -> c and c -> a edges being removed.
      */
-    private static <T> void removeEdgesFromMap(Map<T, Map<T, Integer>> map, Collection<T> nodes, T node) {
+    private static <T> void removeEdgesFromMap(
+        Map<T, Map<T, Integer>> map, Collection<T> nodes, T node) {
       for (T k : nodes) {
         Map<T, Integer> edges = map.get(k);
 
@@ -378,7 +367,8 @@ public class DynamicGraph<T> {
     }
 
     /**
-     * Allow raw access to the edges, but protect inside unmodifiableMaps. This is for tests, toString and toDot.
+     * Allow raw access to the edges, but protect inside unmodifiableMaps. This is for tests,
+     * toString and toDot.
      */
     Map<T, Map<T, Integer>> getEdges() {
       Map<T, Map<T, Integer>> edges = Maps.newHashMap();
@@ -394,7 +384,11 @@ public class DynamicGraph<T> {
       for (Map.Entry<T, Map<T, Integer>> es : m_outgoingEdges.entrySet()) {
         sb.append("     ").append(es.getKey()).append("\n");
         for (Map.Entry<T, Integer> to : es.getValue().entrySet()) {
-          sb.append("        (").append(to.getValue()).append(") ").append(to.getKey()).append("\n");
+          sb.append("        (")
+              .append(to.getValue())
+              .append(") ")
+              .append(to.getKey())
+              .append("\n");
         }
       }
       return sb.toString();
@@ -405,7 +399,13 @@ public class DynamicGraph<T> {
         T from = es.getKey();
         for (T to : es.getValue().keySet()) {
           String dotted = finished.contains(from) ? "style=dotted" : "";
-          sb.append("  ").append(dotShortName(from)).append(" -> ").append(dotShortName(to)).append(" [dir=back ").append(dotted).append("]\n");
+          sb.append("  ")
+              .append(dotShortName(from))
+              .append(" -> ")
+              .append(dotShortName(to))
+              .append(" [dir=back ")
+              .append(dotted)
+              .append("]\n");
         }
       }
     }

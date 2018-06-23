@@ -24,19 +24,24 @@ public abstract class BaseClassFinder implements ITestClassFinder {
   }
 
   protected void putIClass(Class<?> cls, IClass iClass) {
-    if (! m_classes.containsKey(cls)) {
+    if (!m_classes.containsKey(cls)) {
       m_classes.put(cls, iClass);
     }
   }
 
-  protected IClass findOrCreateIClass(ITestContext context, Class<?> cls, XmlClass xmlClass,
-                                      Object instance, IAnnotationFinder annotationFinder,
-                                      ITestObjectFactory objectFactory)
-  {
+  protected IClass findOrCreateIClass(
+      ITestContext context,
+      Class<?> cls,
+      XmlClass xmlClass,
+      Object instance,
+      IAnnotationFinder annotationFinder,
+      ITestObjectFactory objectFactory) {
 
-    return m_classes.computeIfAbsent(cls,
-            key -> new ClassImpl(context, key, xmlClass, instance, m_classes, annotationFinder,
-            objectFactory));
+    return m_classes.computeIfAbsent(
+        cls,
+        key ->
+            new ClassImpl(
+                context, key, xmlClass, instance, m_classes, annotationFinder, objectFactory));
   }
 
   @Deprecated
@@ -51,5 +56,5 @@ public abstract class BaseClassFinder implements ITestClassFinder {
   @Override
   public IClass[] findTestClasses() {
     return m_classes.values().toArray(new IClass[0]);
-   }
+  }
 }

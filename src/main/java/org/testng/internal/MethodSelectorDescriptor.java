@@ -6,11 +6,7 @@ import org.testng.ITestNGMethod;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-/**
- * This class describes a method selector:
- * - The class that implements it
- * - Its priority
- */
+/** This class describes a method selector: - The class that implements it - Its priority */
 public class MethodSelectorDescriptor implements Comparable<MethodSelectorDescriptor> {
 
   private final IMethodSelector m_methodSelector;

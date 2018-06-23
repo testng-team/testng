@@ -30,34 +30,33 @@ public class Bsh implements IBsh {
         throw new TestNGException(msg);
       }
       result = (Boolean) evalResult;
-    }
-    catch (EvalError evalError) {
-      Utils.log("bsh.Interpreter", 2, "Cannot evaluate expression:"
-          + expression + ":" + evalError.getMessage());
-    }
-    finally {
+    } catch (EvalError evalError) {
+      Utils.log(
+          "bsh.Interpreter",
+          2,
+          "Cannot evaluate expression:" + expression + ":" + evalError.getMessage());
+    } finally {
       resetContext(interpreter);
     }
 
     return result;
-
   }
 
   private static Interpreter getInterpreter() {
-    if(null == s_interpreter) {
-      s_interpreter= new Interpreter();
+    if (null == s_interpreter) {
+      s_interpreter = new Interpreter();
     }
 
     return s_interpreter;
   }
 
-  private void setContext(Interpreter interpreter, Method method, Map<String, String> groups, ITestNGMethod tm) {
+  private void setContext(
+      Interpreter interpreter, Method method, Map<String, String> groups, ITestNGMethod tm) {
     try {
       interpreter.set("method", method);
       interpreter.set("groups", groups);
       interpreter.set("testngMethod", tm);
-    }
-    catch(EvalError evalError) {
+    } catch (EvalError evalError) {
       throw new TestNGException("Cannot set BSH interpreter", evalError);
     }
   }
@@ -67,10 +66,8 @@ public class Bsh implements IBsh {
       interpreter.unset("method");
       interpreter.unset("groups");
       interpreter.unset("testngMethod");
-    }
-    catch(EvalError evalError) {
+    } catch (EvalError evalError) {
       Utils.log("bsh.Interpreter", 2, "Cannot reset interpreter:" + evalError.getMessage());
     }
   }
-
 }

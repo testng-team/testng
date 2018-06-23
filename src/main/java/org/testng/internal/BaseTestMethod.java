@@ -25,16 +25,14 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
-/**
- * Superclass to represent both &#64;Test and &#64;Configuration methods.
- */
+/** Superclass to represent both &#64;Test and &#64;Configuration methods. */
 public abstract class BaseTestMethod implements ITestNGMethod {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
   /**
-   * The test class on which the test method was found. Note that this is not
-   * necessarily the declaring class.
+   * The test class on which the test method was found. Note that this is not necessarily the
+   * declaring class.
    */
   protected ITestClass m_testClass;
 
@@ -73,7 +71,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private XmlTest m_xmlTest;
   private Object m_instance;
 
-  public BaseTestMethod(String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
+  public BaseTestMethod(
+      String methodName,
+      ConstructorOrMethod com,
+      IAnnotationFinder annotationFinder,
       Object instance) {
     m_methodClass = com.getDeclaringClass();
     m_method = com;
@@ -82,9 +83,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_instance = instance;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isAlwaysRun() {
     return m_isAlwaysRun;
@@ -94,25 +93,19 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_isAlwaysRun = alwaysRun;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Class<?> getRealClass() {
     return m_methodClass;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public ITestClass getTestClass() {
     return m_testClass;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void setTestClass(ITestClass tc) {
     if (tc == null) {
@@ -130,9 +123,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_testClass = tc;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String getMethodName() {
     return m_methodName;
@@ -143,9 +134,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_instance;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long[] getInstanceHashCodes() {
     return m_testClass.getInstanceHashCodes();
@@ -153,6 +142,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc}
+   *
    * @return the addition of groups defined on the class and on this method.
    */
   @Override
@@ -160,113 +150,85 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_groups;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String[] getGroupsDependedUpon() {
     return m_groupsDependedUpon;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String[] getMethodsDependedUpon() {
     return m_methodsDependedUpon;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isTest() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isBeforeSuiteConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isAfterSuiteConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isBeforeTestConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isAfterTestConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isBeforeGroupsConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isAfterGroupsConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isBeforeClassConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isAfterClassConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isBeforeMethodConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean isAfterMethodConfiguration() {
     return false;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long getTimeOut() {
     return m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
@@ -279,6 +241,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc}
+   *
    * @return the number of times this method needs to be invoked.
    */
   @Override
@@ -286,40 +249,31 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return 1;
   }
 
-  /**
-   * No-op.
-   */
+  /** No-op. */
   @Override
-  public void setInvocationCount(int counter) {
-  }
+  public void setInvocationCount(int counter) {}
 
-  /**
-   * {@inheritDoc} Default value for successPercentage.
-   */
+  /** {@inheritDoc} Default value for successPercentage. */
   @Override
   public int getSuccessPercentage() {
     return 100;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String getId() {
     return m_id;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void setId(String id) {
     m_id = id;
   }
 
-
   /**
    * {@inheritDoc}
+   *
    * @return Returns the date.
    */
   @Override
@@ -329,6 +283,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc}
+   *
    * @param date The date to set.
    */
   @Override
@@ -336,17 +291,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_date = date;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean canRunFromClass(IClass testClass) {
     return m_methodClass.isAssignableFrom(testClass.getRealClass());
   }
 
   /**
-   * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated
-   * Java Method.
+   * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated Java Method.
    */
   @Override
   public boolean equals(Object obj) {
@@ -362,16 +314,19 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
     BaseTestMethod other = (BaseTestMethod) obj;
 
-    boolean isEqual = m_testClass == null ? other.m_testClass == null
-        : other.m_testClass != null &&
-          m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-          && m_instance == other.getInstance();
+    boolean isEqual =
+        m_testClass == null
+            ? other.m_testClass == null
+            : other.m_testClass != null
+                && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
+                && m_instance == other.getInstance();
 
     return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
 
   /**
    * {@inheritDoc} This implementation returns the associated Java Method's hash code.
+   *
    * @return the associated Java Method's hash code.
    */
   @Override
@@ -384,11 +339,16 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     // Init groups
     //
     {
-      ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-      ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
+      ITestOrConfiguration annotation =
+          getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+      ITestOrConfiguration classAnnotation =
+          getAnnotationFinder()
+              .findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
 
-      setGroups(getStringArray(null != annotation ? annotation.getGroups() : null,
-          null != classAnnotation ? classAnnotation.getGroups() : null));
+      setGroups(
+          getStringArray(
+              null != annotation ? annotation.getGroups() : null,
+              null != classAnnotation ? classAnnotation.getGroups() : null));
     }
 
     //
@@ -397,16 +357,20 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     initRestOfGroupDependencies(annotationClass);
   }
 
-  protected void initBeforeAfterGroups(Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
-    String[] groupsAtMethodLevel = calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
-    //@BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
+  protected void initBeforeAfterGroups(
+      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+    String[] groupsAtMethodLevel =
+        calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
+    // @BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
     setGroups(getStringArray(groupsAtMethodLevel, null));
     initRestOfGroupDependencies(annotationClass);
   }
 
-  private String[] calculateGroupsTouseConsideringValuesAndGroupValues(Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+  private String[] calculateGroupsTouseConsideringValuesAndGroupValues(
+      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     if (groups == null || groups.length == 0) {
-      ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+      ITestOrConfiguration annotation =
+          getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
       groups = null != annotation ? annotation.getGroups() : null;
     }
     return groups;
@@ -416,8 +380,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     //
     // Init groups depended upon
     //
-    ITestOrConfiguration annotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-    ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
+    ITestOrConfiguration annotation =
+        getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+    ITestOrConfiguration classAnnotation =
+        getAnnotationFinder()
+            .findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
 
     Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
     List<String> xmlGroupDependencies = Lists.newArrayList();
@@ -428,13 +395,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       }
     }
     setGroupsDependedUpon(
-            getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
-                    null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
-            xmlGroupDependencies);
+        getStringArray(
+            null != annotation ? annotation.getDependsOnGroups() : null,
+            null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
+        xmlGroupDependencies);
 
     String[] methodsDependedUpon =
-            getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
-                    null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
+        getStringArray(
+            null != annotation ? annotation.getDependsOnMethods() : null,
+            null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
     // Qualify these methods if they don't have a package
     for (int i = 0; i < methodsDependedUpon.length; i++) {
       String m = methodsDependedUpon[i];
@@ -444,7 +413,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       }
     }
     setMethodsDependedUpon(methodsDependedUpon);
-
   }
 
   private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
@@ -474,7 +442,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private String computeSignature() {
     String classLong = m_method.getDeclaringClass().getName();
     String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
-    StringBuilder result = new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
+    StringBuilder result =
+        new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
     int i = 0;
     for (Class<?> p : m_method.getParameterTypes()) {
       if (i++ > 0) {
@@ -483,7 +452,12 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       result.append(p.getName());
     }
     result.append(")");
-    result.append("[pri:").append(getPriority()).append(", instance:").append(m_instance).append("]");
+    result
+        .append("[pri:")
+        .append(getPriority())
+        .append(", instance:")
+        .append(m_instance)
+        .append("]");
 
     return result.toString();
   }
@@ -499,9 +473,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_signature;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return getSignature();
@@ -533,9 +505,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_methodsDependedUpon = methods;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void addMethodDependedUpon(String method) {
     String[] newMethods = new String[m_methodsDependedUpon.length + 1];
@@ -544,45 +514,34 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_methodsDependedUpon = newMethods;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String getMissingGroup() {
     return m_missingGroup;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void setMissingGroup(String group) {
     m_missingGroup = group;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int getThreadPoolSize() {
     return 0;
   }
 
-  /**
-   * No-op.
-   */
+  /** No-op. */
   @Override
-  public void setThreadPoolSize(int threadPoolSize) {
-  }
+  public void setThreadPoolSize(int threadPoolSize) {}
 
   @Override
   public void setDescription(String description) {
     m_description = description;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String getDescription() {
     return m_description;
@@ -597,17 +556,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_enabled;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String[] getBeforeGroups() {
     return m_beforeGroups;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String[] getAfterGroups() {
     return m_afterGroups;
@@ -741,7 +696,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public Map<String, String> findMethodParameters(XmlTest test) {
     // Get the test+suite parameters
     Map<String, String> result = test.getAllParameters();
-    for (XmlClass xmlClass: test.getXmlClasses()) {
+    for (XmlClass xmlClass : test.getXmlClasses()) {
       if (xmlClass.getName().equals(getTestClass().getName())) {
         result.putAll(xmlClass.getLocalParameters());
         for (XmlInclude include : xmlClass.getIncludedMethods()) {
@@ -758,6 +713,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   @Override
   public String getQualifiedName() {
-	return getRealClass().getName() + "." + getMethodName();
+    return getRealClass().getName() + "." + getMethodName();
   }
 }

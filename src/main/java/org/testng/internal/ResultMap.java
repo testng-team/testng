@@ -66,9 +66,6 @@ public class ResultMap implements IResultMap {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(getClass())
-        .add("map", m_map)
-        .toString();
+    return Objects.toStringHelper(getClass()).add("map", m_map).toString();
   }
-
 }
