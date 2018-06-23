@@ -6,20 +6,21 @@ import java.util.Map;
 
 public final class Strings {
   private Strings() {
-    //Utility class. Defeat instantiation.
+    // Utility class. Defeat instantiation.
   }
+
   public static boolean isNullOrEmpty(String string) {
     return string == null || string.trim().isEmpty();
   }
 
   public static boolean isNotNullAndNotEmpty(String string) {
-    return ! (isNullOrEmpty(string));
+    return !(isNullOrEmpty(string));
   }
 
   /**
    * @param string - The input String.
-   * @return - Returns an empty string if the input String is <code>null</code> (or) empty, else it returns
-   * back the input string.
+   * @return - Returns an empty string if the input String is <code>null</code> (or) empty, else it
+   *     returns back the input string.
    */
   public static String getValueOrEmpty(String string) {
     return isNotNullAndNotEmpty(string) ? string : "";
