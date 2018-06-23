@@ -1,6 +1,5 @@
 package org.testng.collections;
 
-
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -9,15 +8,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Maps {
 
-  public static <K, V> Map<K,V> newHashMap() {
+  public static <K, V> Map<K, V> newHashMap() {
     return new HashMap<>();
   }
 
-  public static <K, V> Map<K,V> newHashtable() {
+  public static <K, V> Map<K, V> newHashtable() {
     return new Hashtable<>();
   }
 
-  public static <K, V> Map<K,V> newConcurrentMap() {
+  public static <K, V> Map<K, V> newConcurrentMap() {
     return new ConcurrentHashMap<>();
   }
 

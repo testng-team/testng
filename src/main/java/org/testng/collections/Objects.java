@@ -4,7 +4,6 @@ import org.testng.util.Strings;
 
 import java.util.List;
 
-
 public final class Objects {
 
   private Objects() {}
@@ -63,9 +62,7 @@ public final class Objects {
     }
 
     private String s(Object o) {
-      return o != null
-          ? (o.toString().isEmpty() ? "\"\"" : o.toString())
-          : "{null}";
+      return o != null ? (o.toString().isEmpty() ? "\"\"" : o.toString()) : "{null}";
     }
 
     @Override
@@ -90,5 +87,4 @@ public final class Objects {
   public static ToStringHelper toStringHelper(Class<?> class1) {
     return new ToStringHelper(class1.getSimpleName());
   }
-
 }
