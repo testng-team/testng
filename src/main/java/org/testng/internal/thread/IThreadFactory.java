@@ -9,9 +9,9 @@ import java.util.List;
  * @version $Revision$
  */
 public interface IThreadFactory {
-   Thread newThread(Runnable run);
+  Thread newThread(Runnable run);
 
-   Object getThreadFactory();
+  Object getThreadFactory();
 
-   List<Thread> getThreads();
+  List<Thread> getThreads();
 }

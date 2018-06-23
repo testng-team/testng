@@ -6,13 +6,13 @@ package org.testng.internal.thread;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface IExecutor {
-   IFutureResult submitRunnable(Runnable runnable);
+  IFutureResult submitRunnable(Runnable runnable);
 
-   void shutdown();
+  void shutdown();
 
-   boolean awaitTermination(long timeout);
+  boolean awaitTermination(long timeout);
 
-   void stopNow();
+  void stopNow();
 
-   StackTraceElement[][] getStackTraces();
+  StackTraceElement[][] getStackTraces();
 }

@@ -6,5 +6,5 @@ package org.testng.internal.thread;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface IFutureResult {
-   Object get() throws InterruptedException, ThreadExecutionException;
+  Object get() throws InterruptedException, ThreadExecutionException;
 }
