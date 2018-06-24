@@ -21,12 +21,9 @@ public class ITCaseOne {
     System.out.printf("RUN %s.one1()\n", getClass());
   }
 
-  /**
-   * Commenting out dependsOnGroups fixes the ordering, that's the bug.
-   */
+  /** Commenting out dependsOnGroups fixes the ordering, that's the bug. */
   @Test(groups = "logic-one", dependsOnGroups = "std-one")
   public void one2() {
     System.out.printf("RUN %s.one2()\n", getClass());
   }
-
 }

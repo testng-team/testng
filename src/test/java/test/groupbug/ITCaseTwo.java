@@ -25,5 +25,4 @@ public class ITCaseTwo {
   public void two2() {
     System.out.printf("RUN %s.two2()\n", getClass());
   }
-
 }
