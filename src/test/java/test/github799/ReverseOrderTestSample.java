@@ -7,21 +7,21 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class ReverseOrderTestSample {
-    int num;
+  int num;
 
-    @Factory(dataProvider = "data")
-    public ReverseOrderTestSample(int n) {
-        num = n;
-    }
+  @Factory(dataProvider = "data")
+  public ReverseOrderTestSample(int n) {
+    num = n;
+  }
 
-    @DataProvider
-    public static Object[][] data() {
-        return new Object[][]{{4}, {1}, {3}, {2}};
-    }
+  @DataProvider
+  public static Object[][] data() {
+    return new Object[][] {{4}, {1}, {3}, {2}};
+  }
 
-    @Test
-    public void test() {
-        Reporter.log(Integer.toString(num));
-        Assert.assertTrue(num > 0);
-    }
+  @Test
+  public void test() {
+    Reporter.log(Integer.toString(num));
+    Assert.assertTrue(num > 0);
+  }
 }

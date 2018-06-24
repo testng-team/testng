@@ -9,5 +9,5 @@ import static java.lang.annotation.ElementType.METHOD;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD, CONSTRUCTOR})
 public @interface TestInfo {
-    String name() default "";
+  String name() default "";
 }

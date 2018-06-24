@@ -2,14 +2,10 @@ package test.github1461;
 
 import org.testng.annotations.Test;
 
-/**
- * we create a test NG class here, which has a global counter, counting all instances.
- */
+/** we create a test NG class here, which has a global counter, counting all instances. */
 public class MyTestClassWithGlobalReferenceCounterSample {
 
-  /**
-   * global counter that keeps track on how many objects are currently on the heap
-   */
+  /** global counter that keeps track on how many objects are currently on the heap */
   public static int currentNumberOfMyTestObjects = 0;
 
   public MyTestClassWithGlobalReferenceCounterSample() {
@@ -28,9 +24,8 @@ public class MyTestClassWithGlobalReferenceCounterSample {
     System.out.println("test method 2");
   }
 
-
   @Override
-  protected void finalize() throws Throwable {
+  protected void finalize() {
     System.out.println("finalize");
     // this will be called when this object is removed from the heap
     --currentNumberOfMyTestObjects;

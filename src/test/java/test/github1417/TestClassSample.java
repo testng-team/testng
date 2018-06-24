@@ -6,16 +6,16 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class TestClassSample {
-    private String browsername;
+  private String browsername;
 
-    @Parameters({"browsername"})
-    @BeforeClass
-    public void beforeClass(String browsername) {
-        this.browsername = browsername;
-    }
+  @Parameters({"browsername"})
+  @BeforeClass
+  public void beforeClass(String browsername) {
+    this.browsername = browsername;
+  }
 
-    @Test
-    public void testMethod() {
-        Assert.assertEquals("firefox", browsername);
-    }
+  @Test
+  public void testMethod() {
+    Assert.assertEquals("firefox", browsername);
+  }
 }
