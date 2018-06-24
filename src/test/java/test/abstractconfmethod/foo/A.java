@@ -1,6 +1,5 @@
 package test.abstractconfmethod.foo;
 
-public abstract class A
-{
-   public abstract void testSetup();
+public abstract class A {
+  public abstract void testSetup();
 }
