@@ -2,7 +2,7 @@ package test.classgroup;
 
 import org.testng.annotations.Test;
 
-@Test(groups = { "first" })
+@Test(groups = {"first"})
 public class First {
   private static boolean m_first1 = false;
   private static boolean m_first2 = false;
@@ -17,7 +17,7 @@ public class First {
     m_first2 = true;
   }
 
-   static boolean allRun() {
+  static boolean allRun() {
     return m_first1 && m_first2;
   }
 }
