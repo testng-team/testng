@@ -8,20 +8,19 @@ import test.SimpleBaseTest;
 
 public class ExitCodeListenerBehaviorTest extends SimpleBaseTest {
 
-    @Test(dataProvider = "getData")
-    public void testMethod(Class<?> clazz, int expectedStatus) {
-        TestNG testNG = create(clazz);
-        testNG.run();
-        Assert.assertEquals(testNG.getStatus(), expectedStatus);
-    }
+  @Test(dataProvider = "getData")
+  public void testMethod(Class<?> clazz, int expectedStatus) {
+    TestNG testNG = create(clazz);
+    testNG.run();
+    Assert.assertEquals(testNG.getStatus(), expectedStatus);
+  }
 
-    @DataProvider
-    public Object[][] getData() {
-        return new Object[][]{
-                {TestClassWithConfigFailureSample.class, 3},
-                {TestClassWithConfigSkipSample.class, 2},
-                {TestClassWithConfigSkipAndFailureSample.class, 3}
-        };
-    }
-
+  @DataProvider
+  public Object[][] getData() {
+    return new Object[][] {
+      {TestClassWithConfigFailureSample.class, 3},
+      {TestClassWithConfigSkipSample.class, 2},
+      {TestClassWithConfigSkipAndFailureSample.class, 3}
+    };
+  }
 }
