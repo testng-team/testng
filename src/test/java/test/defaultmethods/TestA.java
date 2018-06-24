@@ -1,4 +1,3 @@
 package test.defaultmethods;
 
-public class TestA implements InterfaceA {
-}
+public class TestA implements InterfaceA {}
