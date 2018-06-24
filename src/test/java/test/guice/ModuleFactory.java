@@ -11,7 +11,7 @@ public class ModuleFactory implements IModuleFactory {
   public Module createModule(ITestContext context, Class<?> testClass) {
     String parameter = context.getCurrentXmlTest().getParameter("inject");
     String expected = "guice";
-    if (! expected.equals(parameter)) {
+    if (!expected.equals(parameter)) {
       throw new RuntimeException("Excepted parameter to be " + expected + ", got " + parameter);
     }
     if (GuiceModuleFactoryTest.class == testClass) {
@@ -20,5 +20,4 @@ public class ModuleFactory implements IModuleFactory {
       throw new RuntimeException("Don't know how to create a module for class " + testClass);
     }
   }
-
 }

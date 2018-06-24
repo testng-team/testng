@@ -8,8 +8,7 @@ import org.testng.annotations.Test;
 @Guice(moduleFactory = ModuleFactory.class)
 public class GuiceModuleFactoryTest {
 
-  @Inject
-  ISingleton m_singleton;
+  @Inject ISingleton m_singleton;
 
   @Test
   public void singletonShouldWork() {

@@ -11,13 +11,11 @@ import test.SimpleBaseTest;
 public class Guice1Test extends SimpleBaseTest {
   static ISingleton m_object;
 
-  @Inject
-  ISingleton m_singleton;
+  @Inject ISingleton m_singleton;
 
   @Test
   public void singletonShouldWork() {
     m_singleton.doSomething();
     m_object = m_singleton;
   }
-
 }

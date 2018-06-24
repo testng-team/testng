@@ -6,10 +6,6 @@ public class MyServiceProvider implements Provider<MyService> {
 
   @Override
   public MyService get() {
-    return new MyService() {
-      @Override
-      public void serve(MySession mySession) {
-      }
-    };
+    return mySession -> {};
   }
 }

@@ -10,5 +10,4 @@ public class GuiceExampleModule implements Module {
   public void configure(Binder binder) {
     binder.bind(ISingleton.class).to(ExampleSingleton.class).in(Singleton.class);
   }
-
 }

@@ -10,12 +10,9 @@ import com.google.inject.Inject;
 @Test
 @Guice(modules = GuiceTestModule.class)
 public class GuiceParentModuleTest {
-  @Inject
-  MySession mySession;
-  @Inject
-  MyService myService;
-  @Inject
-  ITestContext context;
+  @Inject MySession mySession;
+  @Inject MyService myService;
+  @Inject ITestContext context;
 
   public void testService() {
     Assert.assertNotNull(myService);

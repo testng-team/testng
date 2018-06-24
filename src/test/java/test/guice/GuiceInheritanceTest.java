@@ -6,8 +6,7 @@ import org.testng.annotations.Test;
 
 public class GuiceInheritanceTest extends GuiceBase {
 
-  @Inject
-  ISingleton m_singleton;
+  @Inject ISingleton m_singleton;
 
   @Test
   public void singletonShouldWork() {
