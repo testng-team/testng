@@ -69,14 +69,14 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     Class<?>[] classes = new Class<?>[] {TestSampleA.class, TestSampleB.class};
     File jarfile = JarCreator.generateJar(classes);
     String[] args =
-            new String[] {
-                    "-parallel",
-                    "classes",
-                    "-testjar",
-                    jarfile.getAbsolutePath(),
-                    "-listener",
-                    LocalLogAggregator.class.getCanonicalName()
-            };
+        new String[] {
+          "-parallel",
+          "classes",
+          "-testjar",
+          jarfile.getAbsolutePath(),
+          "-listener",
+          LocalLogAggregator.class.getCanonicalName()
+        };
     TestNG.privateMain(args, null);
     Set<String> logs = LocalLogAggregator.getLogs();
     assertThat(logs).hasSize(2);
@@ -90,20 +90,21 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
 
   private static String createTemporarySuiteAndGetItsPath() throws IOException {
     Path file = Files.createTempFile("testng", ".xml");
-    org.testng.reporters.Files.writeFile(buildSuiteContentThatRefersToInvalidTestClass(), file.toFile());
+    org.testng.reporters.Files.writeFile(
+        buildSuiteContentThatRefersToInvalidTestClass(), file.toFile());
     return file.toFile().getAbsolutePath();
   }
 
   private static String buildSuiteContentThatRefersToInvalidTestClass() {
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\">\n"
-            + "<suite name=\"1810_Suite\">\n"
-            + "    <test name=\"1810_test\">\n"
-            + "        <classes>\n"
-            + "            <class name=\"com.foo.bar.issue1810.ClassDoesnotExist\">\n"
-            + "            </class>\n"
-            + "        </classes>\n"
-            + "    </test>\n"
-            + "</suite>\n";
+        + "<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\">\n"
+        + "<suite name=\"1810_Suite\">\n"
+        + "    <test name=\"1810_test\">\n"
+        + "        <classes>\n"
+        + "            <class name=\"com.foo.bar.issue1810.ClassDoesnotExist\">\n"
+        + "            </class>\n"
+        + "        </classes>\n"
+        + "    </test>\n"
+        + "</suite>\n";
   }
 }

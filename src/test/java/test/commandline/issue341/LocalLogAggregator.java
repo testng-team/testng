@@ -4,12 +4,9 @@ import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class LocalLogAggregator implements IInvokedMethodListener {
