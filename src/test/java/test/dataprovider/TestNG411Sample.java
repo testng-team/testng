@@ -12,10 +12,12 @@ public class TestNG411Sample {
 
   @DataProvider(name = CHECK_MAX_DATA)
   public Object[][] dataProviderCheckMax() {
-    return new Object[][]{{1, 2, 3, 3}};
+    return new Object[][] {{1, 2, 3, 3}};
   }
 
-  @Test(description = "Number of parameters to this test don't match the ones passed by data provider",
+  @Test(
+      description =
+          "Number of parameters to this test don't match the ones passed by data provider",
       dataProvider = CHECK_MAX_DATA)
   public void checkMaxTest(int nr1, int nr2, int expected) {
     Assert.fail("This code shouldn't be executed");
@@ -23,17 +25,21 @@ public class TestNG411Sample {
 
   @DataProvider(name = CHECK_MIN_DATA)
   public Object[][] dataProviderCheckMin() {
-    return new Object[][]{{1, 2}};
+    return new Object[][] {{1, 2}};
   }
 
-  @Test(description = "Number of parameters to this test don't match the ones passed by data provider",
+  @Test(
+      description =
+          "Number of parameters to this test don't match the ones passed by data provider",
       dataProvider = CHECK_MIN_DATA)
   public void checkMinTest(int nr1, int nr2, int expected) {
     Assert.fail("This code shouldn't be executed");
   }
 
-  @Test(description = "Number of parameters to this test don't match the " +
-      "ones passed by data provider. But an object will be injected",
+  @Test(
+      description =
+          "Number of parameters to this test don't match the "
+              + "ones passed by data provider. But an object will be injected",
       dataProvider = CHECK_MIN_DATA)
   public void checkMinTest_injection(int nr1, int nr2, ITestContext ctx) {
     int result = Math.min(nr1, nr2);

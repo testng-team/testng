@@ -18,6 +18,6 @@ public class DependentSample {
   }
 
   @Test(groups = {"b"}, dependsOnGroups = {"a"})
-  public void method2() throws InterruptedException {
+  public void method2() {
   }
 }

@@ -7,11 +7,12 @@ import org.testng.annotations.DataProvider;
 
 public class FieldInjectionProvider {
 
-  @Inject @Named("test")
+  @Inject
+  @Named("test")
   private String value;
 
   @DataProvider(name = "injection")
   public Object[][] create() {
-    return new Object[][]{{value}};
+    return new Object[][] {{value}};
   }
 }

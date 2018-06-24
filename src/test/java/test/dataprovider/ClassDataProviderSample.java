@@ -8,15 +8,10 @@ public class ClassDataProviderSample {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-        new Object[]{"a"},
-        new Object[]{"b"}
-    };
+    return new Object[][] {new Object[] {"a"}, new Object[] {"b"}};
   }
 
-  public void f(String a) {
-  }
+  public void f(String a) {}
 
-  public void g(String a) {
-  }
+  public void g(String a) {}
 }

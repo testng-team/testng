@@ -6,6 +6,6 @@ public class NonStaticProvider {
 
   @DataProvider(name = "external")
   public Object[][] create() {
-    return new Object[][]{{"Cedric"}};
+    return new Object[][] {{"Cedric"}};
   }
 }

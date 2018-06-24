@@ -27,12 +27,11 @@ public class TestInstanceSample {
     Assert.assertTrue(o0.m_n == 1 || o0.m_n == 2);
     m_instanceCount++;
 
-    return new Object[][]{{42}, {43}};
+    return new Object[][] {{42}, {43}};
   }
 
   @Test(dataProvider = "dp")
-  public void f(int o) {
-  }
+  public void f(int o) {}
 
   @Override
   public String toString() {

@@ -5,16 +5,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DataProviderIntegrationSample {
-    @DataProvider
-    public Object[][] testInts() {
-        return new Object[][] {
-            new Object[] {new Integer(4)},
-            new Object[] {new Integer(8)},
-            new Object[] {new Integer(12)}};
-    }
+  @DataProvider
+  public Object[][] testInts() {
+    return new Object[][] {new Object[] {4}, new Object[] {8}, new Object[] {12}};
+  }
 
-    @Test (dataProvider = "testInts", expectedExceptions = IllegalArgumentException.class)
-    public void theTest(String aString) {
-        Assert.assertNotNull(aString);
-    }
+  @Test(dataProvider = "testInts", expectedExceptions = IllegalArgumentException.class)
+  public void theTest(String aString) {
+    Assert.assertNotNull(aString);
+  }
 }

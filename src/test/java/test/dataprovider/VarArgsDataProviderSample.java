@@ -7,10 +7,9 @@ public class VarArgsDataProviderSample {
 
   @DataProvider
   public Object[][] data() {
-    return new Object[][]{new String[]{"a", "b", "c"}};
+    return new Object[][] {new String[] {"a", "b", "c"}};
   }
 
   @Test(dataProvider = "data")
-  public void testWithTwoEntriesInTestToolWindow(String... o) {
-  }
+  public void testWithTwoEntriesInTestToolWindow(String... o) {}
 }

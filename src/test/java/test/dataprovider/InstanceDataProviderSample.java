@@ -8,7 +8,7 @@ public class InstanceDataProviderSample {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][]{{hashCode()}};
+    return new Object[][] {{hashCode()}};
   }
 
   @Test(dataProvider = "dp")

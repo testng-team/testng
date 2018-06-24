@@ -8,16 +8,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Make sure this class can run without causing a ConcurrentModificationException.
- */
+/** Make sure this class can run without causing a ConcurrentModificationException. */
 public class ParallelDataProvider2Sample {
 
   @DataProvider(parallel = true)
   Iterator<Integer[]> provide() {
     List<Integer[]> ret = new ArrayList<>();
     for (int i = 0; i < 1000; i++) {
-      ret.add(new Integer[]{i});
+      ret.add(new Integer[] {i});
     }
     return ret.iterator();
   }

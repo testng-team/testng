@@ -13,12 +13,11 @@ public class MethodSample {
     Assert.assertEquals(m.getName(), "test1");
     Assert.assertEquals(m.getDeclaringClass(), MethodSample.class);
 
-    return new Object[][]{{"Cedric"}, {"Alois"}};
+    return new Object[][] {{"Cedric"}, {"Alois"}};
   }
 
   @Test(dataProvider = "dp1")
-  public void test1(String s) {
-  }
+  public void test1(String s) {}
 
   public static int m_test2 = 0;
   public static int m_test3 = 0;
@@ -37,14 +36,12 @@ public class MethodSample {
     }
     Assert.assertEquals(m.getDeclaringClass(), MethodSample.class);
 
-    return new Object[][]{{"Cedric"}};
+    return new Object[][] {{"Cedric"}};
   }
 
   @Test(dataProvider = "dp2")
-  public void test2(String s) {
-  }
+  public void test2(String s) {}
 
   @Test(dataProvider = "dp2")
-  public void test3(String s) {
-  }
+  public void test3(String s) {}
 }

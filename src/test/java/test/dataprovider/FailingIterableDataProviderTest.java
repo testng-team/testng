@@ -1,6 +1,5 @@
 package test.dataprovider;
 
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
@@ -21,9 +20,9 @@ public class FailingIterableDataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(FailingIterableDataProvider.class);
 
     assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("happyTest");
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "happyTest(1)", "happyTest(2)", "happyTest(3)", "happyTest(4)", "happyTest(5)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "happyTest(1)", "happyTest(2)", "happyTest(3)", "happyTest(4)", "happyTest(5)");
   }
 
   @Test
@@ -36,13 +35,13 @@ public class FailingIterableDataProviderTest extends SimpleBaseTest {
     TestNG tng = create(xmlSuite);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
     assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("happyTest");
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "happyTest(1)", "happyTest(2)", "happyTest(3)", "happyTest(4)", "happyTest(5)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "happyTest(1)", "happyTest(2)", "happyTest(3)", "happyTest(4)", "happyTest(5)");
   }
 }

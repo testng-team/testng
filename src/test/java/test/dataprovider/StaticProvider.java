@@ -6,6 +6,6 @@ public class StaticProvider {
 
   @DataProvider(name = "static")
   public static Object[][] create() {
-    return new Object[][]{{"Cedric"}};
+    return new Object[][] {{"Cedric"}};
   }
 }

@@ -11,7 +11,7 @@ public class OneDimDataProviderSample {
 
   @DataProvider
   public static Object[] staticArray() {
-    return new Object[]{"foo", "bar"};
+    return new Object[] {"foo", "bar"};
   }
 
   @Test(dataProvider = "staticArray")
@@ -21,7 +21,7 @@ public class OneDimDataProviderSample {
 
   @DataProvider
   public Object[] array() {
-    return new Object[]{"foo", "bar"};
+    return new Object[] {"foo", "bar"};
   }
 
   @Test(dataProvider = "array")

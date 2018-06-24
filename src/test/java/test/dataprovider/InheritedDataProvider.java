@@ -6,6 +6,6 @@ public class InheritedDataProvider {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][]{{"a"}};
+    return new Object[][] {{"a"}};
   }
 }

@@ -11,7 +11,7 @@ public class RawIteratorDataProviderSample {
 
   @DataProvider
   public static Iterator staticIterator() {
-    return Arrays.<Object>asList(new Object[]{"foo"}, new Object[]{"bar"}).iterator();
+    return Arrays.<Object>asList(new Object[] {"foo"}, new Object[] {"bar"}).iterator();
   }
 
   @Test(dataProvider = "staticIterator")
@@ -21,7 +21,7 @@ public class RawIteratorDataProviderSample {
 
   @DataProvider
   public Iterator iterator() {
-    return Arrays.<Object>asList(new Object[]{"foo"}, new Object[]{"bar"}).iterator();
+    return Arrays.<Object>asList(new Object[] {"foo"}, new Object[] {"bar"}).iterator();
   }
 
   @Test(dataProvider = "iterator")

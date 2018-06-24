@@ -2,7 +2,6 @@ package test.dataprovider;
 
 import org.assertj.core.api.Condition;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -21,39 +20,34 @@ public class DataProviderTest extends SimpleBaseTest {
   public void oneDimDataProviderShouldWork() {
     InvokedMethodNameListener listener = run(OneDimDataProviderSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "testArray(foo)", "testArray(bar)",
-        "testIterator(foo)", "testIterator(bar)",
-        "testStaticArray(foo)", "testStaticArray(bar)",
-        "testStaticIterator(foo)", "testStaticIterator(bar)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "testArray(foo)", "testArray(bar)",
+            "testIterator(foo)", "testIterator(bar)",
+            "testStaticArray(foo)", "testStaticArray(bar)",
+            "testStaticIterator(foo)", "testStaticIterator(bar)");
   }
 
   @Test
   public void booleanTest() {
     InvokedMethodNameListener listener = run(BooleanDataProviderSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "doStuff(true)", "doStuff(false)"
-    );
+    assertThat(listener.getSucceedMethodNames()).containsExactly("doStuff(true)", "doStuff(false)");
   }
 
   @Test
   public void classTest() {
     InvokedMethodNameListener listener = run(ClassDataProviderSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "f(a)", "f(b)", "g(a)", "g(b)"
-    );
+    assertThat(listener.getSucceedMethodNames()).containsExactly("f(a)", "f(b)", "g(a)", "g(b)");
   }
 
   @Test
   public void configurationAndDataProvidersTest() {
     InvokedMethodNameListener listener = run(ConfigurationAndDataProvidersSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "setUpSuite", "setUpTest", "setUpClass", "setUp", "verifyNames(Test)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("setUpSuite", "setUpTest", "setUpClass", "setUp", "verifyNames(Test)");
   }
 
   @Test
@@ -76,12 +70,13 @@ public class DataProviderTest extends SimpleBaseTest {
   public void should_prefer_dataProvider_explicit_name() {
     InvokedMethodNameListener listener = run(ExplicitDataProviderNameSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly("should_find_exactly_one_data_provider(true)");
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("should_find_exactly_one_data_provider(true)");
   }
 
   /**
-   * Make sure that if a test method fails in the middle of a data provider, the rest
-   * of the data set is still run.
+   * Make sure that if a test method fails in the middle of a data provider, the rest of the data
+   * set is still run.
    */
   @Test
   public void allMethodsShouldBeInvoked() {
@@ -120,13 +115,12 @@ public class DataProviderTest extends SimpleBaseTest {
     // tng.setAnnotationFinder(new JDK14AnnotationFinder());
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "verifyNames(Cedric,36)", "verifyNames(Anne Marie,37)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("verifyNames(Cedric,36)", "verifyNames(Anne Marie,37)");
   }
 
   @Test
@@ -136,11 +130,8 @@ public class DataProviderTest extends SimpleBaseTest {
 
     InvokedMethodNameListener listener = run(MethodSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "test1(Cedric)", "test1(Alois)",
-            "test2(Cedric)",
-            "test3(Cedric)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("test1(Cedric)", "test1(Alois)", "test2(Cedric)", "test3(Cedric)");
     Assert.assertEquals(MethodSample.m_test2, 1);
     Assert.assertEquals(MethodSample.m_test3, 1);
   }
@@ -159,31 +150,29 @@ public class DataProviderTest extends SimpleBaseTest {
   public void constructorOrMethodTest() {
     InvokedMethodNameListener listener = run(ConstructorOrMethodSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactlyInAnyOrder(
             "test1", "test1",
             "test2(Cedric1)", "test2(Alois1)",
-            "test2(Cedric0)", "test2(Alois0)"
-    );
+            "test2(Cedric0)", "test2(Alois0)");
   }
 
   @Test
   public void classInjectionTest() {
     InvokedMethodNameListener listener = run(ClassSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactlyInAnyOrder(
             "test1", "test1",
             "test2(Cedric1)", "test2(Alois1)",
-            "test2(Cedric0)", "test2(Alois0)"
-    );
+            "test2(Cedric0)", "test2(Alois0)");
   }
 
   @Test
   public void iTestNGMethodTest() {
     InvokedMethodNameListener listener = run(ITestNGMethodSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "test1(Cedric)", "test1(Alois)"
-    );
+    assertThat(listener.getSucceedMethodNames()).containsExactly("test1(Cedric)", "test1(Alois)");
   }
 
   @Test
@@ -191,7 +180,8 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(ParallelDataProvider2Sample.class);
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
-    assertThat(listener.getSucceedMethodNames()).are(new RegexCondition("checkCME\\(\\d+\\)|null", true));
+    assertThat(listener.getSucceedMethodNames())
+        .are(new RegexCondition("checkCME\\(\\d+\\)|null", true));
     // TODO null is not an expected value
     // .hasSize(2_000); TODO it is supposed to work
   }
@@ -227,35 +217,39 @@ public class DataProviderTest extends SimpleBaseTest {
   public void parallelDataProviderSample() {
     InvokedMethodNameListener listener = run(ParallelDataProviderSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).hasSize(4)
-        .are(new RegexCondition("verifyData1\\(org\\.testng\\.TestRunner@\\p{XDigit}+,(" +
-            "Cedric,36" + "|" +
-            "Anne,37" + "|" +
-            "A,36" + "|" +
-            "B,37" +
-            ")\\)"));
+    assertThat(listener.getSucceedMethodNames())
+        .hasSize(4)
+        .are(
+            new RegexCondition(
+                "verifyData1\\(org\\.testng\\.TestRunner@\\p{XDigit}+,("
+                    + "Cedric,36"
+                    + "|"
+                    + "Anne,37"
+                    + "|"
+                    + "A,36"
+                    + "|"
+                    + "B,37"
+                    + ")\\)"));
   }
 
   @Test
   public void staticDataProviderTest() {
     InvokedMethodNameListener listener = run(StaticDataProviderSampleSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "verifyConstructorInjection(Cedric)",
-        "verifyExternal(Cedric)",
-        "verifyFieldInjection(Cedric)",
-        "verifyStatic(Cedric)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "verifyConstructorInjection(Cedric)",
+            "verifyExternal(Cedric)",
+            "verifyFieldInjection(Cedric)",
+            "verifyStatic(Cedric)");
   }
 
   @Test
   public void staticDataProviderSampleWithoutGuiceTest() {
     InvokedMethodNameListener listener = run(StaticDataProviderSampleWithoutGuiceSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "verifyExternal(Cedric)",
-        "verifyStatic(Cedric)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("verifyExternal(Cedric)", "verifyStatic(Cedric)");
   }
 
   @Test
@@ -264,46 +258,45 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(TestInstanceFactory.class);
 
     assertThat(TestInstanceSample.m_instanceCount).isEqualTo(2);
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "f(42)", "f(43)",
-        "f(42)", "f(43)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "f(42)", "f(43)",
+            "f(42)", "f(43)");
   }
 
   @Test
   public void testNG411Test() {
     InvokedMethodNameListener listener = run(TestNG411Sample.class);
 
-    assertThat(listener.getSucceedMethodNames()).hasSize(1)
-        .are(new RegexCondition("checkMinTest_injection\\(1,2,org\\.testng\\.TestRunner@\\p{XDigit}+\\)"));
-    assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("checkMaxTest", "checkMinTest");
+    assertThat(listener.getSucceedMethodNames())
+        .hasSize(1)
+        .are(
+            new RegexCondition(
+                "checkMinTest_injection\\(1,2,org\\.testng\\.TestRunner@\\p{XDigit}+\\)"));
+    assertThat(listener.getFailedBeforeInvocationMethodNames())
+        .containsExactly("checkMaxTest", "checkMinTest");
   }
 
   @Test
   public void unnamedDataProviderTest() {
     InvokedMethodNameListener listener = run(UnnamedDataProviderSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "doStuff(true)", "doStuff(false)"
-    );
+    assertThat(listener.getSucceedMethodNames()).containsExactly("doStuff(true)", "doStuff(false)");
   }
 
   @Test
   public void varArgsDataProviderTest() {
     InvokedMethodNameListener listener = run(VarArgsDataProviderSample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "testWithTwoEntriesInTestToolWindow([a,b,c])"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("testWithTwoEntriesInTestToolWindow([a,b,c])");
   }
 
   @Test
   public void createDataTest() {
     InvokedMethodNameListener listener = run(CreateDataTest.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "testMyTest(MyObject{})"
-    );
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testMyTest(MyObject{})");
   }
 
   @Test
@@ -317,33 +310,30 @@ public class DataProviderTest extends SimpleBaseTest {
   public void mixedVarArgsDataProviderTest() {
     InvokedMethodNameListener listener = run(GitHub513Sample.class);
 
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-        "test(a,b,[c,d])"
-    );
+    assertThat(listener.getSucceedMethodNames()).containsExactly("test(a,b,[c,d])");
   }
 
   @Test(description = "GITHUB1509")
   public void testDataProvidersThatReturnNull() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create(Github1509TestClassSample.class);
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
     assertThat(tla.getFailedTests()).size().isEqualTo(1);
     ITestResult result = tla.getFailedTests().get(0);
     String className = Github1509TestClassSample.class.getName() + ".getData()";
-    String msg = "Data Provider public java.lang.Object[][] " + className + " returned a null value";
+    String msg =
+        "Data Provider public java.lang.Object[][] " + className + " returned a null value";
     assertThat(result.getThrowable().getMessage()).contains(msg);
   }
-  
+
   @Test
   public void retryWithDataProvider() {
-      TestNG testng = create(DataProviderRetryTest.class);
-      TestListenerAdapter tla = new TestListenerAdapter();
-      testng.addListener((ITestNGListener) tla);
-      testng.run();
-      assertThat(tla.getFailedTests()).size().isEqualTo(1);
-      assertThat(tla.getSkippedTests()).size().isEqualTo(2);
+    TestNG testng = create(DataProviderRetryTest.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+    assertThat(tla.getFailedTests()).size().isEqualTo(1);
+    assertThat(tla.getSkippedTests()).size().isEqualTo(2);
   }
-  
-  
 }

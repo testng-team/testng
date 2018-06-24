@@ -7,9 +7,7 @@ public class FailedDataProviderSample {
 
   @DataProvider
   public Object[][] dp() {
-    return new Integer[][] {
-        {1}, {2}, {3}
-    };
+    return new Integer[][] {{1}, {2}, {3}};
   }
 
   @Test(dataProvider = "dp")

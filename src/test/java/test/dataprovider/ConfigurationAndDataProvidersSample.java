@@ -8,9 +8,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-/**
- * Make sure that all before methods except beforeTestMethod are invoked before DataProvider.
- */
+/** Make sure that all before methods except beforeTestMethod are invoked before DataProvider. */
 public class ConfigurationAndDataProvidersSample {
 
   private boolean m_beforeSuite = false;
@@ -25,7 +23,7 @@ public class ConfigurationAndDataProvidersSample {
     Assert.assertTrue(m_beforeClass, "beforeClass should have been invoked");
     Assert.assertFalse(m_beforeTestMethod, "beforeMethod should not have been invoked");
 
-    return new Object[][]{{"Test"}};
+    return new Object[][] {{"Test"}};
   }
 
   @Test(dataProvider = "test1")

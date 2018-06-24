@@ -8,12 +8,10 @@ public class GitHub513Sample {
 
   @DataProvider
   public static Object[][] testData() {
-    return new Object[][] {
-        new Object[] { "a", "b", "c", "d" }
-    };
+    return new Object[][] {new Object[] {"a", "b", "c", "d"}};
   }
 
-  @Test(dataProvider="testData")
+  @Test(dataProvider = "testData")
   public void test(String fixedArg1, Object fixedArg2, String... args) {
     Assert.assertEquals(fixedArg1, "a");
     Assert.assertEquals(fixedArg2, "b");

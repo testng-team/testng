@@ -22,7 +22,7 @@ public class FailingIterableDataProvider {
         if (++count == 6) {
           throw new RuntimeException();
         }
-        return new Object[]{count};
+        return new Object[] {count};
       }
 
       @Override
@@ -34,6 +34,6 @@ public class FailingIterableDataProvider {
 
   @Test(dataProvider = "dp")
   public void happyTest(int count) {
-    //pass
+    // pass
   }
 }

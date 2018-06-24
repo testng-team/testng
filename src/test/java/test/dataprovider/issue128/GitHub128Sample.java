@@ -18,7 +18,7 @@ public class GitHub128Sample {
 
   @BeforeMethod
   public void beforeMethod() {
-    //Ensuring that a no-arg configuration method doesn't trigger any errors.
+    // Ensuring that a no-arg configuration method doesn't trigger any errors.
   }
 
   @Test
@@ -28,14 +28,13 @@ public class GitHub128Sample {
 
   @DataProvider(name = "methods")
   public Object[][] getMethods() throws NoSuchMethodException {
-    return new Object[][]{
-        new Object[]{String.class.getMethod("toString"), new Object[0]}
-    };
+    return new Object[][] {new Object[] {String.class.getMethod("toString"), new Object[0]}};
   }
 
   @Test(dataProvider = "methods")
   public void testInvokeRemote(Method param1, Object[] param2) {
-    Assert.fail("The test is supposed to fail because the method param is not defined");;
+    Assert.fail("The test is supposed to fail because the method param is not defined");
+    ;
   }
 
   @Test(dataProvider = "methods")
@@ -46,9 +45,7 @@ public class GitHub128Sample {
 
   @DataProvider(name = "methods2")
   public Object[][] getMethods2() throws NoSuchMethodException {
-    return new Object[][]{
-        new Object[]{new Object[0], String.class.getMethod("toString")}
-    };
+    return new Object[][] {new Object[] {new Object[0], String.class.getMethod("toString")}};
   }
 
   @Test(dataProvider = "methods2")

@@ -4,37 +4,31 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.internal.ConstructorOrMethod;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 public class ClassSample {
 
-    String s;
+  String s;
 
-    @Factory(dataProvider = "dp1")
-    public ClassSample(String s) {
-        this.s = s;
-    }
+  @Factory(dataProvider = "dp1")
+  public ClassSample(String s) {
+    this.s = s;
+  }
 
-    @DataProvider(name = "dp1")
-    public static Object[][] createData1(Class clazz) {
-        Assert.assertEquals(clazz, ClassSample.class);
-        return new Object[][]{{"0"}, {"1"}};
-    }
+  @DataProvider(name = "dp1")
+  public static Object[][] createData1(Class clazz) {
+    Assert.assertEquals(clazz, ClassSample.class);
+    return new Object[][] {{"0"}, {"1"}};
+  }
 
-    @Test
-    public void test1() {
-    }
+  @Test
+  public void test1() {}
 
-    @DataProvider(name = "dp2")
-    public Object[][] createData2(Class clazz) {
-        Assert.assertEquals(clazz, ClassSample.class);
-        return new Object[][]{{"Cedric" + s}, {"Alois" + s}};
-    }
+  @DataProvider(name = "dp2")
+  public Object[][] createData2(Class clazz) {
+    Assert.assertEquals(clazz, ClassSample.class);
+    return new Object[][] {{"Cedric" + s}, {"Alois" + s}};
+  }
 
-    @Test(dataProvider = "dp2")
-    public void test2(String s) {
-    }
+  @Test(dataProvider = "dp2")
+  public void test2(String s) {}
 }

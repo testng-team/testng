@@ -26,8 +26,11 @@ public class FailingDataProviderTest extends SimpleBaseTest {
   public void failingDataProviderAndInvocationCount() {
     InvokedMethodNameListener listener = run(DataProviderWithErrorSample.class);
 
-    assertThat(listener.getSkippedMethodNames()).containsExactly(
-        "testShouldSkip", "testShouldSkip", "testShouldSkipEvenIfSuccessPercentage", "testShouldSkipEvenIfSuccessPercentage"
-    );
+    assertThat(listener.getSkippedMethodNames())
+        .containsExactly(
+            "testShouldSkip",
+            "testShouldSkip",
+            "testShouldSkipEvenIfSuccessPercentage",
+            "testShouldSkipEvenIfSuccessPercentage");
   }
 }

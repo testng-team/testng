@@ -6,33 +6,32 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConstructorSample {
 
-    public static List<String> all = new ArrayList<>(2);
+  public static List<String> all = new ArrayList<>(2);
 
-    private final String s;
+  private final String s;
 
-    @Factory(dataProvider = "dp")
-    public ConstructorSample(String s) {
-        this.s = s;
-    }
+  @Factory(dataProvider = "dp")
+  public ConstructorSample(String s) {
+    this.s = s;
+  }
 
-    @DataProvider(name = "dp")
-    public static Object[][] createData(Constructor c) {
-        Assert.assertEquals(c.getDeclaringClass(), ConstructorSample.class);
-        Assert.assertNotNull(c.getAnnotation(Factory.class));
-        Assert.assertEquals(c.getParameterTypes().length, 1);
-        Assert.assertEquals(c.getParameterTypes()[0], String.class);
+  @DataProvider(name = "dp")
+  public static Object[][] createData(Constructor c) {
+    Assert.assertEquals(c.getDeclaringClass(), ConstructorSample.class);
+    Assert.assertNotNull(c.getAnnotation(Factory.class));
+    Assert.assertEquals(c.getParameterTypes().length, 1);
+    Assert.assertEquals(c.getParameterTypes()[0], String.class);
 
-        return new Object[][]{{"Cedric"}, {"Alois"}};
-    }
+    return new Object[][] {{"Cedric"}, {"Alois"}};
+  }
 
-    @Test
-    public void test() {
-        all.add(s);
-    }
+  @Test
+  public void test() {
+    all.add(s);
+  }
 }

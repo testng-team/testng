@@ -9,23 +9,23 @@ import java.util.Iterator;
 
 public class EmptyDataProviderSample {
 
-    @DataProvider
-    public Object[][] dp1() {
-        return new Object[0][];
-    }
+  @DataProvider
+  public Object[][] dp1() {
+    return new Object[0][];
+  }
 
-    @Test(dataProvider = "dp1")
-    public void test1() {
-        Assert.fail();
-    }
+  @Test(dataProvider = "dp1")
+  public void test1() {
+    Assert.fail();
+  }
 
-    @DataProvider(indices = {2})
-    public Iterator<Object[]> dp2() {
-        return Collections.emptyIterator();
-    }
+  @DataProvider(indices = {2})
+  public Iterator<Object[]> dp2() {
+    return Collections.emptyIterator();
+  }
 
-    @Test(dataProvider = "dp2")
-    public void test2() {
-        Assert.fail();
-    }
+  @Test(dataProvider = "dp2")
+  public void test2() {
+    Assert.fail();
+  }
 }

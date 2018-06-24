@@ -11,7 +11,7 @@ public class FailingDataProviderSample {
     throw new RuntimeException("expected exception from @DP");
   }
 
-  @Test(dataProvider="throwsExpectedException")
+  @Test(dataProvider = "throwsExpectedException")
   public void dpThrowingException() {
     Assert.fail("Method should never get invoked");
   }

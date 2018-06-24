@@ -1,6 +1,5 @@
 package test.dataprovider;
 
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -17,7 +16,7 @@ public class TestContextTest extends SimpleBaseTest {
     TestNG tng = create(TestContextSample.class);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
@@ -26,9 +25,7 @@ public class TestContextTest extends SimpleBaseTest {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][]{
-        {10, "verifyTen"}, {5, "verifyFive"}
-    };
+    return new Object[][] {{10, "verifyTen"}, {5, "verifyFive"}};
   }
 
   @Test(dataProvider = "dp")
@@ -37,12 +34,13 @@ public class TestContextTest extends SimpleBaseTest {
     tng.setGroups(String.valueOf(number));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
     assertThat(listener.getSucceedMethodNames()).hasSize(1);
-    assertThat(listener.getSucceedMethodNames().get(0)).matches(passed + "\\(\\[foo(,foo){" + (number - 1) + "}?\\]\\)");
+    assertThat(listener.getSucceedMethodNames().get(0))
+        .matches(passed + "\\(\\[foo(,foo){" + (number - 1) + "}?\\]\\)");
     assertThat(listener.getFailedMethodNames()).isEmpty();
   }
 }
