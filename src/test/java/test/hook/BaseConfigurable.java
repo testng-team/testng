@@ -8,7 +8,7 @@ import org.testng.annotations.BeforeTest;
 
 import java.lang.reflect.Method;
 
-abstract public class BaseConfigurable implements IConfigurable {
+public abstract class BaseConfigurable implements IConfigurable {
   static int m_hookCount = 0;
   static boolean m_bs = false;
   static boolean m_bt = false;
@@ -35,5 +35,4 @@ abstract public class BaseConfigurable implements IConfigurable {
   public void bc() {
     m_bc = true;
   }
-
 }

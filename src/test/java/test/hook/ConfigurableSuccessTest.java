@@ -7,10 +7,7 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
 
-
-/**
- * Test harness for {@link IConfigurable}
- */
+/** Test harness for {@link IConfigurable} */
 public class ConfigurableSuccessTest extends BaseConfigurable {
   @Override
   public void run(IConfigureCallBack callBack, ITestResult testResult) {
@@ -23,9 +20,5 @@ public class ConfigurableSuccessTest extends BaseConfigurable {
   }
 
   @Test
-  public void hookWasRun() {
-//    Assert.assertEquals(m_hookCount, 2);
-//    Assert.assertTrue(m_bc);
-//    Assert.assertTrue(m_bm);
-  }
+  public void hookWasRun() {}
 }

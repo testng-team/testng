@@ -12,5 +12,4 @@ public class HookListener implements IHookable {
     m_hook = true;
     callBack.runTestMethod(testResult);
   }
-
 }

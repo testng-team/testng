@@ -7,8 +7,8 @@ import org.testng.annotations.Test;
 import test.BaseTest;
 
 /**
- * Because IHookable and IConfigurable are global, it's safer to run them in a
- * sub-TestNG object, otherwise they will be run for your entire test suite...
+ * Because IHookable and IConfigurable are global, it's safer to run them in a sub-TestNG object,
+ * otherwise they will be run for your entire test suite...
  *
  * @author cbeust
  */
@@ -42,7 +42,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccessTest.class);
     run();
 
-    verifyTests("Passed", new String[] { "verify" }, getPassedTests());
+    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
     Assert.assertTrue(HookSuccessTest.m_hook);
     Assert.assertTrue(HookSuccessTest.m_testWasRun);
     Assert.assertEquals(HookSuccessTest.m_parameter, "foo");
@@ -53,7 +53,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccess599Test.class);
     run();
 
-    verifyTests("Passed", new String[] { "verify" }, getPassedTests());
+    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
     Assert.assertTrue(HookSuccess599Test.m_hook);
     Assert.assertTrue(HookSuccess599Test.m_testWasRun);
     Assert.assertEquals(HookSuccess599Test.m_parameter, "foo");
@@ -64,7 +64,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccess862Test.class);
     run();
 
-    verifyTests("Passed", new String[] { "verify" }, getPassedTests());
+    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
   }
 
   @Test
@@ -72,7 +72,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccessWithListenerTest.class);
     run();
 
-    verifyTests("Passed", new String[] { "verify" }, getPassedTests());
+    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
     Assert.assertTrue(HookListener.m_hook);
   }
 
@@ -83,7 +83,7 @@ public class HookableTest extends BaseTest {
 
     // To investigate: TestNG still thinks the test passed since it can't know whether
     // the hook ended up invoking the test or not.
-//    verifyTests("Passed", new String[] { }, getPassedTests());
+    //    verifyTests("Passed", new String[] { }, getPassedTests());
     Assert.assertTrue(HookFailureTest.m_hook);
     Assert.assertFalse(HookFailureTest.m_testWasRun);
   }
@@ -125,5 +125,4 @@ public class HookableTest extends BaseTest {
     Assert.assertFalse(BaseConfigurable.m_bs);
     Assert.assertFalse(BaseConfigurable.m_bt);
   }
-
 }

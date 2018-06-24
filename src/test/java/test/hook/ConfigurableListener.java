@@ -19,5 +19,4 @@ public class ConfigurableListener implements IConfigurable {
     }
     callBack.runConfigurationMethod(testResult);
   }
-
 }

@@ -30,9 +30,7 @@ public class HookSuccess599Test implements IHookable {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-        new Object[] { "foo" }
-    };
+    return new Object[][] {new Object[] {"foo"}};
   }
 
   @Test(dataProvider = "dp", timeOut = 100)

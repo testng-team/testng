@@ -6,9 +6,6 @@ import org.testng.IConfigureCallBack;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
 
-/**
- * Test harness for {@link IConfigurable}
- */
 public class ConfigurableFailureTest extends BaseConfigurable {
 
   @Override
