@@ -11,21 +11,14 @@ public class ClassWithFailedBeforeMethodAndMultipleInvocations {
     throw new RuntimeException("Failing in setUp");
   }
 
-  @DataProvider( name = "data.provider" )
+  @DataProvider(name = "data.provider")
   public Object[][] dataProvider() {
-    return new Object[][] {
-        new Object[] { "data1" },
-        new Object[] { "data2" }
-    };
+    return new Object[][] {new Object[] {"data1"}, new Object[] {"data2"}};
   }
-  
-  @Test( dataProvider = "data.provider" )
-  public void test1( String s ) {
 
-  }
-  
-  @Test( invocationCount = 2 )
-  public void test2() {
-    
-  }
+  @Test(dataProvider = "data.provider")
+  public void test1(String s) {}
+
+  @Test(invocationCount = 2)
+  public void test2() {}
 }

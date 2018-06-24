@@ -8,16 +8,12 @@ public class ClassWithFailedBeforeClassMethod {
 
   @BeforeClass
   public void setupClassFails() {
-    throw new RuntimeException( "setup class fail" );
+    throw new RuntimeException("setup class fail");
   }
 
   @BeforeMethod
-  public void setupMethod() {
-
-  }
+  public void setupMethod() {}
 
   @Test
-  public void test1() {
-
-  }
+  public void test1() {}
 }

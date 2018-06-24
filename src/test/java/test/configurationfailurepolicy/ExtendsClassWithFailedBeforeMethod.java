@@ -6,12 +6,8 @@ import org.testng.annotations.Test;
 public class ExtendsClassWithFailedBeforeMethod extends ClassWithFailedBeforeMethod {
 
   @BeforeMethod
-  public void setupExtension() {
-
-  }
+  public void setupExtension() {}
 
   @Test
-  public void test2() {
-
-  }
+  public void test2() {}
 }

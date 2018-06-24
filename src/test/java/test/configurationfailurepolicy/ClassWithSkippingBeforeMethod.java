@@ -10,10 +10,10 @@ public class ClassWithSkippingBeforeMethod {
 
   @BeforeMethod
   public void beforeMethod() {
-      invocations++;
-      if (invocations ==2) {
-        throw new SkipException("skipping");
-      }
+    invocations++;
+    if (invocations == 2) {
+      throw new SkipException("skipping");
+    }
   }
 
   @Test

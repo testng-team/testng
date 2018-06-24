@@ -6,18 +6,14 @@ import org.testng.annotations.Test;
 
 public class ClassWithFailedBeforeClassMethodAndAfterClass {
 
-    @BeforeClass
-    public void setupClassFails() {
-        throw new RuntimeException( "setup class fail" );
-    }
+  @BeforeClass
+  public void setupClassFails() {
+    throw new RuntimeException("setup class fail");
+  }
 
-    @Test
-    public void test1() {
+  @Test
+  public void test1() {}
 
-    }
-
-    @AfterClass
-    public void tearDownClass() {
-
-    }
+  @AfterClass
+  public void tearDownClass() {}
 }

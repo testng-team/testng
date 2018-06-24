@@ -6,6 +6,6 @@ public class ExtendsClassWithFailedBeforeClassMethod extends ClassWithFailedBefo
 
   @Test
   public void test2() {
-        // should be skipped, but BeforeClass method attempted again
+    // should be skipped, but BeforeClass method attempted again
   }
 }

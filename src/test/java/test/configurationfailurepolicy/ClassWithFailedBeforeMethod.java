@@ -11,7 +11,5 @@ public class ClassWithFailedBeforeMethod {
   }
 
   @Test
-  public void test1() {
-
-  }
+  public void test1() {}
 }
