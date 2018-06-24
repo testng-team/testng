@@ -13,8 +13,8 @@ public class MyTransformer implements IAnnotationTransformer {
   private final List<String> methodNames = new ArrayList<>();
 
   @Override
-  public void transform(ITestAnnotation annotation, Class testClass,
-      Constructor testConstructor, Method testMethod) {
+  public void transform(
+      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
     annotation.setTimeOut(10000);
     if (testMethod != null) {
       switch (testMethod.getName()) {

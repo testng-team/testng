@@ -14,12 +14,15 @@ public class MyListenerTransformer implements IAnnotationTransformer3 {
 
   @Override
   public void transform(IListenersAnnotation annotation, Class testClass) {
-    annotation.setValue(new Class[]{MySuiteListener2.class});
+    annotation.setValue(new Class[] {MySuiteListener2.class});
   }
 
   @Override
-  public void transform(IConfigurationAnnotation annotation, Class testClass,
-                        Constructor testConstructor, Method testMethod) {}
+  public void transform(
+      IConfigurationAnnotation annotation,
+      Class testClass,
+      Constructor testConstructor,
+      Method testMethod) {}
 
   @Override
   public void transform(IDataProviderAnnotation annotation, Method method) {}
@@ -28,6 +31,9 @@ public class MyListenerTransformer implements IAnnotationTransformer3 {
   public void transform(IFactoryAnnotation annotation, Method method) {}
 
   @Override
-  public void transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor,
-                        Method testMethod) {}
+  public void transform(
+      ITestAnnotation annotation,
+      Class testClass,
+      Constructor testConstructor,
+      Method testMethod) {}
 }

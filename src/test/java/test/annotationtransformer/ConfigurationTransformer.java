@@ -12,26 +12,26 @@ import java.lang.reflect.Method;
 public class ConfigurationTransformer implements IAnnotationTransformer2 {
 
   @Override
-  public void transform(ITestAnnotation annotation, Class testClass,
-      Constructor testConstructor, Method testMethod)
-  {
-  }
+  public void transform(
+      ITestAnnotation annotation,
+      Class testClass,
+      Constructor testConstructor,
+      Method testMethod) {}
 
   @Override
-  public void transform(IConfigurationAnnotation annotation, Class testClass,
-      Constructor testConstructor, Method testMethod)
-  {
+  public void transform(
+      IConfigurationAnnotation annotation,
+      Class testClass,
+      Constructor testConstructor,
+      Method testMethod) {
     if (annotation.getBeforeTestMethod()) {
       annotation.setEnabled(false);
     }
   }
 
   @Override
-  public void transform(IDataProviderAnnotation annotation, Method testMethod) {
-  }
+  public void transform(IDataProviderAnnotation annotation, Method testMethod) {}
 
   @Override
-  public void transform(IFactoryAnnotation annotation, Method testMethod) {
-  }
-
+  public void transform(IFactoryAnnotation annotation, Method testMethod) {}
 }

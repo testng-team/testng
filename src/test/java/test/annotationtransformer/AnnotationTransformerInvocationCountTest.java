@@ -18,8 +18,11 @@ public class AnnotationTransformerInvocationCountTest {
     }
 
     @Override
-    public void transform(ITestAnnotation annotation, Class testClass,
-                          Constructor testConstructor, Method testMethod) {
+    public void transform(
+        ITestAnnotation annotation,
+        Class testClass,
+        Constructor testConstructor,
+        Method testMethod) {
       if ("concurrencyTest".equals(testMethod.getName())) {
         annotation.setInvocationCount(invocationCount);
       }
@@ -27,6 +30,5 @@ public class AnnotationTransformerInvocationCountTest {
   }
 
   @Test(invocationCount = 3)
-  public void concurrencyTest() {
-  }
+  public void concurrencyTest() {}
 }

@@ -24,11 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
-  private static final Extractor<ITestResult, String> NAME_EXTRACTOR = (Extractor<ITestResult, String>) ITestResult::getName;
+  private static final Extractor<ITestResult, String> NAME_EXTRACTOR =
+      (Extractor<ITestResult, String>) ITestResult::getName;
 
   /**
-   * Make sure that without a transformer in place, a class-level
-   * annotation invocationCount is correctly used.
+   * Make sure that without a transformer in place, a class-level annotation invocationCount is
+   * correctly used.
    */
   @Test
   public void verifyAnnotationWithoutTransformer() {
@@ -40,20 +41,15 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
+    assertThat(tla.getPassedTests())
+        .extracting(NAME_EXTRACTOR)
         .containsExactly(
-            "five",
-            "four", "four", "four", "four", "four",
-            "three", "three", "three", "three", "three",
-            "two", "two"
-        );
-    assertThat(tla.getFailedTests()).extracting(NAME_EXTRACTOR)
-        .containsExactly("verify");
+            "five", "four", "four", "four", "four", "four", "three", "three", "three", "three",
+            "three", "two", "two");
+    assertThat(tla.getFailedTests()).extracting(NAME_EXTRACTOR).containsExactly("verify");
   }
 
-  /**
-   * Test a transformer on a method-level @Test
-   */
+  /** Test a transformer on a method-level @Test */
   @Test
   public void verifyAnnotationTransformerMethod() {
     TestNG tng = create(AnnotationTransformerSampleTest.class);
@@ -69,14 +65,11 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     assertThat(transformer.getMethodNames()).contains("two", "three", "four", "five", "verify");
 
-    assertThat(tla.getPassedTests()).extracting(NAME_EXTRACTOR)
+    assertThat(tla.getPassedTests())
+        .extracting(NAME_EXTRACTOR)
         .containsExactly(
-            "five", "five", "five", "five", "five",
-            "four", "four", "four", "four",
-            "three", "three", "three",
-            "two", "two",
-            "verify"
-        );
+            "five", "five", "five", "five", "five", "four", "four", "four", "four", "three",
+            "three", "three", "two", "two", "verify");
     assertThat(tla.getFailedTests()).isEmpty();
   }
 
@@ -95,14 +88,16 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   @Test
   public void verifyMyParamTransformerOnlyOneNonNull() {
     assertThat(MyParamTransformer.onlyOneNonNull(null, null, null)).isFalse();
-    assertThat(MyParamTransformer.onlyOneNonNull(
-        MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null)).isFalse();
+    assertThat(
+            MyParamTransformer.onlyOneNonNull(
+                MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null))
+        .isFalse();
     assertThat(MyParamTransformer.onlyOneNonNull(MyParamTransformer.class, null, null)).isTrue();
   }
 
   /**
-   * Without an annotation transformer, we should have zero
-   * passed tests and one failed test called "one".
+   * Without an annotation transformer, we should have zero passed tests and one failed test called
+   * "one".
    */
   @Test
   public void verifyAnnotationTransformerClass2() {
@@ -110,17 +105,15 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   }
 
   /**
-   * With an annotation transformer, we should have one passed
-   * test called "one" and zero failed tests.
+   * With an annotation transformer, we should have one passed test called "one" and zero failed
+   * tests.
    */
   @Test
   public void verifyAnnotationTransformerClass() {
     runTest(new MyTimeOutTransformer(), "one", null);
   }
 
-  private void runTest(IAnnotationTransformer transformer,
-      String passedName, String failedName)
-  {
+  private void runTest(IAnnotationTransformer transformer, String passedName, String failedName) {
     MySuiteListener.triggered = false;
     MySuiteListener2.triggered = false;
     TestNG tng = new TestNG();
@@ -128,14 +121,13 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     if (transformer != null) {
       tng.addListener(transformer);
     }
-    tng.setTestClasses(new Class[] { AnnotationTransformerClassSampleTest.class});
+    tng.setTestClasses(new Class[] {AnnotationTransformerClassSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
     tng.run();
 
-    List<ITestResult> results =
-      passedName != null ? tla.getPassedTests() : tla.getFailedTests();
+    List<ITestResult> results = passedName != null ? tla.getPassedTests() : tla.getFailedTests();
     String name = passedName != null ? passedName : failedName;
 
     Assert.assertEquals(results.size(), 1);
@@ -151,7 +143,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     tng.addListener(new MyListenerTransformer());
-    tng.setTestClasses(new Class[]{AnnotationTransformerClassSampleTest.class});
+    tng.setTestClasses(new Class[] {AnnotationTransformerClassSampleTest.class});
 
     tng.run();
     Assert.assertFalse(MySuiteListener.triggered);
@@ -163,7 +155,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG tng = new TestNG();
     tng.addListener(new ConfigurationTransformer());
     tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { ConfigurationSampleTest.class});
+    tng.setTestClasses(new Class[] {ConfigurationSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -176,7 +168,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyDataProviderTransformer() {
     TestNG tng = create();
     tng.addListener(new DataProviderTransformer());
-    tng.setTestClasses(new Class[] { AnnotationTransformerDataProviderSampleTest.class});
+    tng.setTestClasses(new Class[] {AnnotationTransformerDataProviderSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -189,7 +181,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyFactoryTransformer() {
     TestNG tng = create();
     tng.addListener(new FactoryTransformer());
-    tng.setTestClasses(new Class[] { AnnotationTransformerFactorySampleTest.class});
+    tng.setTestClasses(new Class[] {AnnotationTransformerFactorySampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -201,7 +193,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   @Test(description = "Test for issue #605")
   public void verifyInvocationCountTransformer() {
     TestNG tng = create();
-    tng.setTestClasses(new Class[] { AnnotationTransformerInvocationCountTest.class });
+    tng.setTestClasses(new Class[] {AnnotationTransformerInvocationCountTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -211,7 +203,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng = create();
     tng.addListener(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
-    tng.setTestClasses(new Class[]{AnnotationTransformerInvocationCountTest.class});
+    tng.setTestClasses(new Class[] {AnnotationTransformerInvocationCountTest.class});
     tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -222,17 +214,17 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
   @Test
   public void annotationTransformerInXmlShouldBeRun() throws Exception {
-    String xml = "<suite name=\"SingleSuite\" >" +
-        "  <listeners>" +
-        "    <listener class-name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />" +
-        "  </listeners>" +
-        "  <test enabled=\"true\" name=\"SingleTest\">" +
-        "    <classes>" +
-        "      <class name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />" +
-        "    </classes>" +
-        "  </test>" +
-        "</suite>"
-        ;
+    String xml =
+        "<suite name=\"SingleSuite\" >"
+            + "  <listeners>"
+            + "    <listener class-name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />"
+            + "  </listeners>"
+            + "  <test enabled=\"true\" name=\"SingleTest\">"
+            + "    <classes>"
+            + "      <class name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />"
+            + "    </classes>"
+            + "  </test>"
+            + "</suite>";
 
     ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
     Collection<XmlSuite> suites = new Parser(is).parse();
@@ -245,7 +237,6 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
-
   }
 
   @Test(description = "GITHUB-1790")
