@@ -14,17 +14,19 @@ public class ExpectedExceptionsTest extends BaseTest {
 
   @Test
   public void expectedExceptionsDeprecatedSyntax() {
-    runTest("test.expectedexceptions.SampleExceptions",
-        new String[] { "shouldPass" },
-        new String[] { "shouldFail1", "shouldFail2", "shouldFail3" },
+    runTest(
+        "test.expectedexceptions.SampleExceptions",
+        new String[] {"shouldPass"},
+        new String[] {"shouldFail1", "shouldFail2", "shouldFail3"},
         new String[] {});
   }
 
   @Test
   public void expectedExceptions() {
-    runTest("test.expectedexceptions.SampleExceptions2",
-        new String[] { "shouldPass", "shouldPass2", "shouldPass3", "shouldPass4" },
-        new String[] { "shouldFail1", "shouldFail2", "shouldFail3", "shouldFail4" },
+    runTest(
+        "test.expectedexceptions.SampleExceptions2",
+        new String[] {"shouldPass", "shouldPass2", "shouldPass3", "shouldPass4"},
+        new String[] {"shouldFail1", "shouldFail2", "shouldFail3", "shouldFail4"},
         new String[] {});
   }
 
@@ -37,10 +39,8 @@ public class ExpectedExceptionsTest extends BaseTest {
     Assert.assertFalse(failedTests.isEmpty());
     ITestResult result = failedTests.iterator().next().get(0);
     String actual = result.getThrowable().getMessage().replaceAll("\\n", "");
-    String expected = "The exception was thrown with the wrong message: expected \"expected\" but got \"actual\"";
+    String expected =
+        "The exception was thrown with the wrong message: expected \"expected\" but got \"actual\"";
     Assert.assertEquals(actual, expected);
   }
-
 }
-
-

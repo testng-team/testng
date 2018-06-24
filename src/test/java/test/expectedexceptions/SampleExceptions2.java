@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
  */
 public class SampleExceptions2 {
 
-  @Test(expectedExceptions = NumberFormatException.class )
+  @Test(expectedExceptions = NumberFormatException.class)
   public void shouldPass() {
     throw new NumberFormatException();
   }
@@ -20,16 +20,17 @@ public class SampleExceptions2 {
   }
 
   @Test(expectedExceptions = NumberFormatException.class)
-  public void shouldFail2() {
-  }
+  public void shouldFail2() {}
 
-  @Test(expectedExceptions = NumberFormatException.class,
+  @Test(
+      expectedExceptions = NumberFormatException.class,
       expectedExceptionsMessageRegExp = ".*bomb.*")
   public void shouldPass2() {
     throw new NumberFormatException("This should not bomb at all");
   }
 
-  @Test(expectedExceptions = NumberFormatException.class,
+  @Test(
+      expectedExceptions = NumberFormatException.class,
       expectedExceptionsMessageRegExp = ".*bombc.*")
   public void shouldFail3() {
     throw new NumberFormatException("This should bomb for good");
@@ -40,12 +41,13 @@ public class SampleExceptions2 {
     throw new NumberFormatException(null);
   }
 
-  @Test(expectedExceptions = NumberFormatException.class, expectedExceptionsMessageRegExp = "Multiline.*")
+  @Test(
+      expectedExceptions = NumberFormatException.class,
+      expectedExceptionsMessageRegExp = "Multiline.*")
   public void shouldPass4() {
     throw new NumberFormatException("Multiline\nException");
   }
 
   @Test(expectedExceptions = RuntimeException.class)
-  public void shouldFail4() {
-  }
+  public void shouldFail4() {}
 }

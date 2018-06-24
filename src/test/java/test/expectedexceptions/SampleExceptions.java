@@ -9,21 +9,19 @@ import org.testng.annotations.Test;
  */
 public class SampleExceptions {
 
-  @Test(expectedExceptions = { NumberFormatException.class})
+  @Test(expectedExceptions = {NumberFormatException.class})
   public void shouldPass() {
     throw new NumberFormatException();
   }
 
-  @Test(expectedExceptions = { NumberFormatException.class})
+  @Test(expectedExceptions = {NumberFormatException.class})
   public void shouldFail1() {
     throw new RuntimeException();
   }
 
-  @Test(expectedExceptions = { NumberFormatException.class})
-  public void shouldFail2() {
-  }
+  @Test(expectedExceptions = {NumberFormatException.class})
+  public void shouldFail2() {}
 
   @Test(expectedExceptions = RuntimeException.class)
-  public void shouldFail3() {
-  }
+  public void shouldFail3() {}
 }
