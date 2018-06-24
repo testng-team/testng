@@ -18,7 +18,7 @@ public class AlwaysRunAfter2 {
     m_success = false;
   }
 
-  static public boolean success() {
+  public static boolean success() {
     return m_success;
   }
 }

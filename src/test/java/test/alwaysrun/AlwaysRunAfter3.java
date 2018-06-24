@@ -6,24 +6,22 @@ import org.testng.annotations.Test;
 
 public class AlwaysRunAfter3 {
 
-    private static boolean m_success = false;
+  private static boolean m_success = false;
 
-    @BeforeMethod
-    public void setUpShouldFail() {
-        throw new RuntimeException("Failing in setUp");
-    }
+  @BeforeMethod
+  public void setUpShouldFail() {
+    throw new RuntimeException("Failing in setUp");
+  }
 
-    @AfterMethod(alwaysRun = true)
-    public void afterMethodShouldBeCalled() {
-        m_success = true;
-    }
+  @AfterMethod(alwaysRun = true)
+  public void afterMethodShouldBeCalled() {
+    m_success = true;
+  }
 
-    @Test
-    public void dummy() {
+  @Test
+  public void dummy() {}
 
-    }
-
-    static public boolean success() {
-        return m_success;
-    }
+  public static boolean success() {
+    return m_success;
+  }
 }

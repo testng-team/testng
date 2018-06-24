@@ -8,11 +8,8 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
- * Tests alwaysRun on a before Configuration method.  Invoke this test
- * by running group "A"
+ * Tests alwaysRun on a before Configuration method. Invoke this test by running group "A"
  *
- * @author cbeust
- * @date Mar 11, 2006
  */
 public class AlwaysRunBefore1 {
   private static boolean m_beforeSuiteSuccess = false;
@@ -49,8 +46,9 @@ public class AlwaysRunBefore1 {
   }
 
   public static boolean success() {
-    return m_beforeSuiteSuccess && m_beforeTestSuccess &&
-      m_beforeTestClassSuccess && m_beforeTestMethodSuccess;
+    return m_beforeSuiteSuccess
+        && m_beforeTestSuccess
+        && m_beforeTestClassSuccess
+        && m_beforeTestMethodSuccess;
   }
-
 }
