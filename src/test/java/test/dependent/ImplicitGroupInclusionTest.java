@@ -12,13 +12,9 @@ public class ImplicitGroupInclusionTest extends BaseTest {
     addIncludedGroup("b");
 
     run();
-    String[] passed = {
-        "a", "b", "z"
-     };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"a", "b", "z"};
+    String[] failed = {};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -30,13 +26,9 @@ public class ImplicitGroupInclusionTest extends BaseTest {
     addIncludedGroup("g2");
 
     run();
-    String[] passed = {
-        "m3"
-     };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"m3"};
+    String[] failed = {};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -48,13 +40,9 @@ public class ImplicitGroupInclusionTest extends BaseTest {
     addIncludedGroup("g2");
 
     run();
-    String[] passed = {
-        "m3", "m4"
-     };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"m3", "m4"};
+    String[] failed = {};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -67,13 +55,9 @@ public class ImplicitGroupInclusionTest extends BaseTest {
     addExcludedGroup("exc");
 
     run();
-    String[] passed = {
-        "test1"
-     };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"test1"};
+    String[] failed = {};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -85,16 +69,11 @@ public class ImplicitGroupInclusionTest extends BaseTest {
     addIncludedGroup("windows");
 
     run();
-    String[] passed = {
-        "a", "b"
-     };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"a", "b"};
+    String[] failed = {};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
   }
-
 }

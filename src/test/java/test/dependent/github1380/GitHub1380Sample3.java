@@ -6,8 +6,7 @@ import org.testng.annotations.Test;
 public class GitHub1380Sample3 {
 
   @Test(priority = 2)
-  public void testMethodA() {
-  }
+  public void testMethodA() {}
 
   @Test(dependsOnMethods = "testMethodA", priority = 1)
   public void testMethodB() throws InterruptedException {
@@ -15,6 +14,5 @@ public class GitHub1380Sample3 {
   }
 
   @Test(dependsOnMethods = "testMethodB", priority = 2)
-  public void testMethodC() {
-  }
+  public void testMethodC() {}
 }

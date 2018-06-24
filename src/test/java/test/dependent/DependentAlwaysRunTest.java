@@ -10,14 +10,9 @@ public class DependentAlwaysRunTest extends BaseTest {
     addClass("test.dependent.DependentOnMethod1AlwaysRunSampleTest");
 
     run();
-    String[] passed = {
-        "b", "verify"
-     };
-    String[] failed = {
-       "a"
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"b", "verify"};
+    String[] failed = {"a"};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -28,14 +23,9 @@ public class DependentAlwaysRunTest extends BaseTest {
     addClass("test.dependent.DependentOnGroup1AlwaysRunSampleTest");
 
     run();
-    String[] passed = {
-        "b", "verify"
-     };
-    String[] failed = {
-       "a"
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"b", "verify"};
+    String[] failed = {"a"};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -46,17 +36,11 @@ public class DependentAlwaysRunTest extends BaseTest {
     addClass("test.dependent.DependentOnGroup2AlwaysRunSampleTest");
 
     run();
-    String[] passed = {
-        "a2", "b", "verify"
-     };
-    String[] failed = {
-       "a"
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"a2", "b", "verify"};
+    String[] failed = {"a"};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
   }
-
 }

@@ -12,7 +12,7 @@ public class DepBugSampleTest {
   private static List<String> m_log = new ArrayList<>();
 
   private static void log(String s) {
-//    ppp(s);
+    //    ppp(s);
     m_log.add(s);
   }
 
@@ -25,22 +25,21 @@ public class DepBugSampleTest {
   }
 
   @BeforeClass
-  public void setup() throws Exception {
+  public void setup() {
     log("setup");
   }
 
   @AfterClass
-  public void destroy() throws Exception {
+  public void destroy() {
     log("destroy");
   }
 
   @Test(dependsOnMethods = "send")
-  public void get() throws Exception {
+  public void get() {
     log("get");
   }
 
-  public void send() throws Exception {
+  public void send() {
     log("send");
   }
-
 }

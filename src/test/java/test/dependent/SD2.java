@@ -8,7 +8,7 @@ import java.util.List;
 public class SD2 {
   public static List<String> m_log = new ArrayList<>();
 
-  @Test(groups = { "one" })
+  @Test(groups = {"one"})
   public void oneA() {
     m_log.add("oneA");
   }
@@ -18,19 +18,18 @@ public class SD2 {
     m_log.add("canBeRunAnytime");
   }
 
-  @Test(dependsOnGroups = { "one" } )
+  @Test(dependsOnGroups = {"one"})
   public void secondA() {
     m_log.add("secondA");
   }
 
-  @Test(dependsOnMethods= { "secondA" })
+  @Test(dependsOnMethods = {"secondA"})
   public void thirdA() {
     m_log.add("thirdA");
   }
 
-  @Test(groups = { "one" })
+  @Test(groups = {"one"})
   public void oneB() {
     m_log.add("oneB");
   }
-
 }

@@ -11,18 +11,11 @@ public class MissingMethodTest extends BaseTest {
     addClass("test.dependent.MissingMethodSampleTest");
 
     run();
-    String[] passed = {
-        "explicitlyIgnoreMissingMethod",
-        "alwaysRunDespiteMissingMethod"
-     };
-    String[] failed = {
-    };
-    String[] skipped = {
-    };
+    String[] passed = {"explicitlyIgnoreMissingMethod", "alwaysRunDespiteMissingMethod"};
+    String[] failed = {};
+    String[] skipped = {};
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
-
   }
-
 }

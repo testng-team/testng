@@ -12,7 +12,7 @@ public class SampleDependentConfigurationMethods {
     m_create = true;
   }
 
-  @BeforeMethod(dependsOnMethods = { "createInstance"})
+  @BeforeMethod(dependsOnMethods = {"createInstance"})
   public void firstInvocation() {
     assert m_create : "createInstance() was never called";
     m_first = true;

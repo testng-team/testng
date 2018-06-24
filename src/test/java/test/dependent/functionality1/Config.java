@@ -4,8 +4,8 @@ import org.testng.annotations.BeforeSuite;
 
 public class Config {
 
-   @BeforeSuite (groups = "other")
-   public void beforeSuite(){
-       System.out.println("BeforeSuite group 'other'");
-   }
+  @BeforeSuite(groups = "other")
+  public void beforeSuite() {
+    System.out.println("BeforeSuite group 'other'");
+  }
 }

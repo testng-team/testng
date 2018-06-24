@@ -1,7 +1,6 @@
 package test.dependent.xml;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -20,12 +19,12 @@ public class GroupDependencyTest extends SimpleBaseTest {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-      new Object[] { new String[] { "a", "b", "c", "a1", "b1", "c1" } },
-      new Object[] { new String[] { "a", "c", "b", "a1", "c1", "b1" } },
-      new Object[] { new String[] { "b", "a", "c", "b1", "a1", "c1" } },
-      new Object[] { new String[] { "b", "c", "a", "b1", "c1", "a1" } },
-      new Object[] { new String[] { "c", "b", "a", "c1", "b1", "a1" } },
-      new Object[] { new String[] { "c", "a", "b", "c1", "a1", "b1" } },
+      new Object[] {new String[] {"a", "b", "c", "a1", "b1", "c1"}},
+      new Object[] {new String[] {"a", "c", "b", "a1", "c1", "b1"}},
+      new Object[] {new String[] {"b", "a", "c", "b1", "a1", "c1"}},
+      new Object[] {new String[] {"b", "c", "a", "b1", "c1", "a1"}},
+      new Object[] {new String[] {"c", "b", "a", "c1", "b1", "a1"}},
+      new Object[] {new String[] {"c", "a", "b", "c1", "a1", "b1"}},
     };
   }
 
@@ -53,7 +52,7 @@ public class GroupDependencyTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setXmlSuites(Collections.singletonList(suite));
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     List<ITestResult> t = tla.getPassedTests();

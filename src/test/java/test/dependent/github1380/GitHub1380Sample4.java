@@ -11,10 +11,8 @@ public class GitHub1380Sample4 {
   }
 
   @Test(priority = 2)
-  public void testMethodB() {
-  }
+  public void testMethodB() {}
 
   @Test(priority = 3)
-  public void testMethodC() {
-  }
+  public void testMethodC() {}
 }

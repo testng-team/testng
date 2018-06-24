@@ -15,7 +15,7 @@ public class GroupByInstancesTest extends SimpleBaseTest {
   public void dontGroupByInstances() {
     runTest(false);
   }
-    
+
   @Test
   public void groupByInstances() {
     runTest(true);

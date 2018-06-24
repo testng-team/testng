@@ -6,7 +6,6 @@ import org.testng.annotations.Test;
 /**
  * a will fail but b should run anyway because of alwaysRun=true
  *
- * Created on Nov 18, 2005
  * @author cbeust
  */
 public class DependentOnMethod1AlwaysRunSampleTest {
@@ -18,7 +17,9 @@ public class DependentOnMethod1AlwaysRunSampleTest {
     throw new RuntimeException("Voluntary failure");
   }
 
-  @Test(dependsOnMethods = {"a"}, alwaysRun = true)
+  @Test(
+      dependsOnMethods = {"a"},
+      alwaysRun = true)
   public void b() {
     m_ok = true;
   }

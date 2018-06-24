@@ -12,15 +12,15 @@ public class GroupByInstancesSampleTest {
   public static List<String> m_log = Lists.newArrayList();
 
   private static void log(String method, String country) {
-//    System.out.println("LOG:" + method + "#" + country + " " + Thread.currentThread().getId());
+    //    System.out.println("LOG:" + method + "#" + country + " " +
+    // Thread.currentThread().getId());
     m_log.add(method + "#" + country);
   }
 
   @DataProvider
   public static Object[][] dp() {
     return new Object[][] {
-        new Object[] { "usa" },
-        new Object[] { "uk" },
+      new Object[] {"usa"}, new Object[] {"uk"},
     };
   }
 

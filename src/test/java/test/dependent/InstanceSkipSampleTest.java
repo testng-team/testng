@@ -8,9 +8,8 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 /**
- * Verify that only instances that fail cause dependency failures. In other words,
- * when run, this test should show:
- * passed = [f#1 f#3 g#1 g#3], failed = [f#2], skipped = [g#2]
+ * Verify that only instances that fail cause dependency failures. In other words, when run, this
+ * test should show: passed = [f#1 f#3 g#1 g#3], failed = [f#2], skipped = [g#2]
  *
  * @author Cedric Beust <cedric@beust.com>
  */
@@ -27,9 +26,7 @@ public class InstanceSkipSampleTest {
   @DataProvider
   public static Object[][] dp() {
     return new Object[][] {
-        new Object[] { 1 },
-        new Object[] { 2 },
-        new Object[] { 3 },
+      new Object[] {1}, new Object[] {2}, new Object[] {3},
     };
   }
 
