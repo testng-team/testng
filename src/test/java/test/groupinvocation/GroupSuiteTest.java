@@ -1,7 +1,7 @@
 package test.groupinvocation;
 
 import com.google.common.base.Joiner;
-import org.testng.ITestNGListener;
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -18,22 +18,20 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Test that <suite> tags can have g.
- */
+/** Test that <suite> tags can have g. */
 public class GroupSuiteTest extends SimpleBaseTest {
 
   private static final File PARENT = new File(getPathToResource("groupinvocation"));
 
   @DataProvider
   private static Object[][] dp() {
-    return new Object[][]{
-            {new String[]{"suiteA.xml", "suiteB.xml"}, /* Group in xml */ true},
-            {new String[]{"suiteA.xml", "suiteB.xml"}, /* Group in TestNG */ false},
-            {new String[]{"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in xml */ true},
-            {new String[]{"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in TestNG */ false},
-            {new String[0], /* Group in xml */ true},
-            {new String[0], /* Group in TestNG */ false}
+    return new Object[][] {
+      {new String[] {"suiteA.xml", "suiteB.xml"}, /* Group in xml */ true},
+      {new String[] {"suiteA.xml", "suiteB.xml"}, /* Group in TestNG */ false},
+      {new String[] {"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in xml */ true},
+      {new String[] {"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in TestNG */ false},
+      {new String[0], /* Group in xml */ true},
+      {new String[0], /* Group in TestNG */ false}
     };
   }
 
@@ -86,20 +84,41 @@ public class GroupSuiteTest extends SimpleBaseTest {
     runWithSuite(withSuiteFiles, excludeWithXml, g(), g(), g(), g(), methods);
   }
 
-  private void runWithSuite(String[] withSuiteFiles, boolean excludeWithXml, List<String> suiteGroups, List<String> excludedSuiteGroups,
+  private void runWithSuite(
+      String[] withSuiteFiles,
+      boolean excludeWithXml,
+      List<String> suiteGroups,
+      List<String> excludedSuiteGroups,
       String... methods) {
-    runWithSuite(withSuiteFiles, excludeWithXml, suiteGroups, excludedSuiteGroups, g(), g(), methods);
+    runWithSuite(
+        withSuiteFiles, excludeWithXml, suiteGroups, excludedSuiteGroups, g(), g(), methods);
   }
 
-  private void runWithSuite(List<String> suiteGroups, List<String> excludedSuiteGroups,
-                            List<String> testGroups, List<String> excludedTestGroups,
-                            boolean groupsWithXml, String... methods) {
-    runWithSuite(new String[0], groupsWithXml, suiteGroups, excludedSuiteGroups, testGroups, excludedTestGroups, methods);
+  private void runWithSuite(
+      List<String> suiteGroups,
+      List<String> excludedSuiteGroups,
+      List<String> testGroups,
+      List<String> excludedTestGroups,
+      boolean groupsWithXml,
+      String... methods) {
+    runWithSuite(
+        new String[0],
+        groupsWithXml,
+        suiteGroups,
+        excludedSuiteGroups,
+        testGroups,
+        excludedTestGroups,
+        methods);
   }
 
-  private void runWithSuite(String[] withSuiteFiles, boolean groupsWithXml, List<String> suiteGroups, List<String> excludedSuiteGroups,
-                            List<String> testGroups, List<String> excludedTestGroups,
-                            String... methods) {
+  private void runWithSuite(
+      String[] withSuiteFiles,
+      boolean groupsWithXml,
+      List<String> suiteGroups,
+      List<String> excludedSuiteGroups,
+      List<String> testGroups,
+      List<String> excludedTestGroups,
+      String... methods) {
     TestNG tng = create();
 
     XmlSuite suite = createXmlSuite("Groups");
@@ -118,15 +137,17 @@ public class GroupSuiteTest extends SimpleBaseTest {
       suite.setSuiteFiles(suiteFiles);
       createXmlTest(suite, "Groups-test");
     } else {
-      XmlTest test = createXmlTest(suite, "Groups-test", GroupSuiteSampleTest.class, GroupSuiteSampleTest2.class);
+      XmlTest test =
+          createXmlTest(
+              suite, "Groups-test", GroupSuiteSampleTest.class, GroupSuiteSampleTest2.class);
       test.setIncludedGroups(testGroups);
       test.setExcludedGroups(excludedTestGroups);
     }
 
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(Collections.singletonList(suite));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 

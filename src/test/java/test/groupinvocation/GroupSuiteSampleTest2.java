@@ -13,4 +13,3 @@ public class GroupSuiteSampleTest2 {
   @Test
   public void c2() {}
 }
-
