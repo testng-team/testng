@@ -5,8 +5,7 @@ import org.testng.annotations.Test;
 public class Child extends Base1 {
 
   @Test
-  public void pass() {
-  }
+  public void pass() {}
 
   @Test
   public void fail() {

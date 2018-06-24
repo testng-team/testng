@@ -1,6 +1,5 @@
 package test.failures;
 
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
@@ -18,27 +17,26 @@ public class FailuresTest extends BaseFailuresTest {
 
   private static final String suiteName = "TmpSuite";
 
-  private static final String[] expected = new String[] {
-      "<class name=\"test.failures.Child\">",
-      "<include name=\"fail\"/>",
-      "<include name=\"failFromBase\"/>",
-  };
+  private static final String[] expected =
+      new String[] {
+        "<class name=\"test.failures.Child\">",
+        "<include name=\"fail\"/>",
+        "<include name=\"failFromBase\"/>",
+      };
 
   @Test
   public void shouldIncludeFailedMethodsFromBaseClass() throws IOException {
     Path tempDirectory = Files.createTempDirectory("temp-testng-");
     XmlSuite suite = createXmlSuite(suiteName, "TmpTest", Child.class);
     TestNG tng = create(tempDirectory, suite);
-    tng.addListener((ITestNGListener) new FailedReporter());
+    tng.addListener(new FailedReporter());
     tng.run();
 
-     verify(tempDirectory, suiteName, expected);
+    verify(tempDirectory, suiteName, expected);
   }
 
-  private static final String[] expectedIncludes = new String[] {
-      "<include name=\"f1\"/>",
-      "<include name=\"f2\"/>"
-  };
+  private static final String[] expectedIncludes =
+      new String[] {"<include name=\"f1\"/>", "<include name=\"f2\"/>"};
 
   @Test(enabled = false)
   public void shouldIncludeDependentMethods() throws IOException {
@@ -50,9 +48,8 @@ public class FailuresTest extends BaseFailuresTest {
     verify(tempDirectory, suiteName, expectedIncludes);
   }
 
-  private static final String[] expectedParameter = new String[] {
-      "<parameter name=\"first-name\" value=\"Cedric\"/>"
-  };
+  private static final String[] expectedParameter =
+      new String[] {"<parameter name=\"first-name\" value=\"Cedric\"/>"};
 
   @Test(enabled = false)
   public void shouldIncludeParameters() throws IOException {

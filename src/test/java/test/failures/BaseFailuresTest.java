@@ -1,14 +1,6 @@
 package test.failures;
 
-import org.testng.Assert;
-import org.testng.TestNG;
-import org.testng.reporters.FailedReporter;
-import test.SimpleBaseTest;
-
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
@@ -17,16 +9,20 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.regex.Pattern;
+import org.testng.Assert;
+import org.testng.TestNG;
+import org.testng.reporters.FailedReporter;
+import test.SimpleBaseTest;
 
 public abstract class BaseFailuresTest extends SimpleBaseTest {
 
   protected static TestNG run(TestNG result, Class<?>[] classes, String outputDir) {
-     result.setVerbose(0);
-     result.setOutputDirectory(outputDir);
-     result.setTestClasses(classes);
-     result.run();
+    result.setVerbose(0);
+    result.setOutputDirectory(outputDir);
+    result.setTestClasses(classes);
+    result.run();
 
-     return result;
+    return result;
   }
 
   protected static boolean containsRegularExpressions(Path f, String[] strRegexps) {
@@ -61,23 +57,27 @@ public abstract class BaseFailuresTest extends SimpleBaseTest {
     return true;
   }
 
-  protected static void verify(Path outputDir, String suiteName, String[] expected) throws IOException {
+  protected static void verify(Path outputDir, String suiteName, String[] expected)
+      throws IOException {
     Path f = outputDir.resolve(suiteName).resolve(FailedReporter.TESTNG_FAILED_XML);
     Assert.assertTrue(containsRegularExpressions(f, expected));
 
-    Files.walkFileTree(outputDir, new SimpleFileVisitor<Path>() {
-      @Override
-      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        Files.delete(file);
-        return FileVisitResult.CONTINUE;
-      }
+    Files.walkFileTree(
+        outputDir,
+        new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
+          }
 
-      @Override
-      public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-        Files.delete(dir);
-        return FileVisitResult.CONTINUE;
-      }
-    });
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+          }
+        });
     Files.deleteIfExists(outputDir);
   }
 }
