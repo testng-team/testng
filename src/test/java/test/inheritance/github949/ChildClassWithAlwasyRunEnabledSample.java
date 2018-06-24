@@ -4,10 +4,9 @@ import org.testng.annotations.Test;
 
 public class ChildClassWithAlwasyRunEnabledSample extends ParentClassWithAlwasyRunEnabledSample {
 
-    @Override
-    @Test
-    public void independent() {
-        logMessage();
-    }
-
+  @Override
+  @Test
+  public void independent() {
+    logMessage();
+  }
 }

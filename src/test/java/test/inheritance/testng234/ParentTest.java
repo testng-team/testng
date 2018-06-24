@@ -5,9 +5,7 @@ import org.testng.annotations.Test;
 public abstract class ParentTest {
 
   @Test
-  public void executePolymorphicMethod() {
-  }
+  public void executePolymorphicMethod() {}
 
   protected abstract void polymorphicMethod();
-
 }

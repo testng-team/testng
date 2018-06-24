@@ -26,8 +26,4 @@ public class VerifyTest {
       AssertJUnit.assertEquals(expected[i++], s);
     }
   }
-
-  private static void ppp(String s) {
-    System.out.println("[VerifyTest] " + s);
-  }
 }

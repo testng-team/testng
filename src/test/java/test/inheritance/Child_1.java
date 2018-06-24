@@ -22,5 +22,4 @@ public class Child_1 extends ZBase_0 {
       System.out.println("[C1] " + s);
     }
   }
-
 }

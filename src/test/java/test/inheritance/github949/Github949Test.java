@@ -9,24 +9,22 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 public class Github949Test extends SimpleBaseTest {
-    @Test(dataProvider = "getdata")
-    public void runTest(Class<?> child) {
-        TestNG testng = create(child);
-        testng.run();
-        String prefix = child.getName() + ".";
-        assertThat(CommonBaseClass.messages).containsExactly(prefix + "independent", prefix + "dependent");
-    }
+  @Test(dataProvider = "getdata")
+  public void runTest(Class<?> child) {
+    TestNG testng = create(child);
+    testng.run();
+    String prefix = child.getName() + ".";
+    assertThat(CommonBaseClass.messages)
+        .containsExactly(prefix + "independent", prefix + "dependent");
+  }
 
-    @AfterMethod
-    public void cleanup() {
-        CommonBaseClass.messages.clear();
-    }
+  @AfterMethod
+  public void cleanup() {
+    CommonBaseClass.messages.clear();
+  }
 
-    @DataProvider
-    public Object[][] getdata() {
-        return new Object[][]{
-                {ChildClassSample.class},
-                {ChildClassWithAlwasyRunEnabledSample.class}
-        };
-    }
+  @DataProvider
+  public Object[][] getdata() {
+    return new Object[][] {{ChildClassSample.class}, {ChildClassWithAlwasyRunEnabledSample.class}};
+  }
 }

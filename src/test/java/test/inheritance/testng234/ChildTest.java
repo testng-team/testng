@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-
 public class ChildTest extends ParentTest {
 
   @BeforeClass
@@ -14,7 +13,5 @@ public class ChildTest extends ParentTest {
 
   @Override
   @Test
-  public void polymorphicMethod() {
-  }
-
+  public void polymorphicMethod() {}
 }
