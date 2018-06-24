@@ -7,25 +7,21 @@ import org.testng.annotations.Test;
 
 public class DryRunSample {
 
-    @BeforeSuite
-    public void beforeSuite() {
-        throw new RuntimeException("Error");
-    }
+  @BeforeSuite
+  public void beforeSuite() {
+    throw new RuntimeException("Error");
+  }
 
-    @BeforeClass
-    public void beforeClass() {
-        throw new RuntimeException("error");
-    }
+  @BeforeClass
+  public void beforeClass() {
+    throw new RuntimeException("error");
+  }
 
-    @Test(dataProvider = "dp")
-    public void test1(int i) {
-    }
+  @Test(dataProvider = "dp")
+  public void test1(int i) {}
 
-    @DataProvider(name = "dp")
-    public Object[][] getData() {
-        return new Object[][]{
-                {1},
-                {2}
-        };
-    }
+  @DataProvider(name = "dp")
+  public Object[][] getData() {
+    return new Object[][] {{1}, {2}};
+  }
 }
