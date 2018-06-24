@@ -33,27 +33,21 @@ public class InvokedMethodListenerSubtypeTest {
 
   static class SimpleInvokedMethodListenerDummy implements IInvokedMethodListener {
 
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    }
+    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
 
-    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    }
+    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
   }
 
   static class ExtendedInvokedMethodListenerDummy implements IInvokedMethodListener2 {
 
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult,
-                                 ITestContext context) {
-    }
+    public void beforeInvocation(
+        IInvokedMethod method, ITestResult testResult, ITestContext context) {}
 
-    public void afterInvocation(IInvokedMethod method, ITestResult testResult,
-                                ITestContext context) {
-    }
+    public void afterInvocation(
+        IInvokedMethod method, ITestResult testResult, ITestContext context) {}
 
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    }
+    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
 
-    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    }
+    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
   }
 }
