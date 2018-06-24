@@ -3,10 +3,6 @@ package org.testng.internal.conflistener;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
 public class FailingBeforeSuite {
   @BeforeSuite
   public void beforeSuite() {
@@ -14,6 +10,5 @@ public class FailingBeforeSuite {
   }
 
   @Test
-  public void dummytest() {
-  }
+  public void dummytest() {}
 }

@@ -1,23 +1,23 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Configuration failures" verbose="2">
-	<!--
+  <!--
   <test name="Suite Configuration">
-		<classes>
-			<class name="org.testng.internal.conflistener.FailingBeforeSuite" />
-			<class name="org.testng.internal.conflistener.FailingAfterSuite" />
-		</classes>
+    <classes>
+      <class name="org.testng.internal.conflistener.FailingBeforeSuite" />
+      <class name="org.testng.internal.conflistener.FailingAfterSuite" />
+    </classes>
   </test>
-	-->
-	<test name="Test Configuration">
-		<classes>
-			<class name="org.testng.internal.conflistener.FailingBeforeTest" />
-			<class name="org.testng.internal.conflistener.FailingAfterTest" />
-		</classes>
+  -->
+  <test name="Test Configuration">
+    <classes>
+      <class name="org.testng.internal.conflistener.FailingBeforeTest"/>
+      <class name="org.testng.internal.conflistener.FailingAfterTest"/>
+    </classes>
   </test>
-	<test name="Class Configuration">
-		<classes>
-			<class name="org.testng.internal.conflistener.FailingBeforeClass" />
-      <class name="org.testng.internal.conflistener.FailingAfterClass" />
+  <test name="Class Configuration">
+    <classes>
+      <class name="org.testng.internal.conflistener.FailingBeforeClass"/>
+      <class name="org.testng.internal.conflistener.FailingAfterClass"/>
     </classes>
   </test>
   <!--
