@@ -12,8 +12,7 @@ public class InjectBeforeMethodTest {
   private int m_beforeIndex = 0;
   private int m_afterIndex = 0;
   private static final Object[][] DATA = {
-      new Object[] { "a" },
-      new Object[] { "b" },
+    new Object[] {"a"}, new Object[] {"b"},
   };
 
   @BeforeMethod
@@ -23,12 +22,10 @@ public class InjectBeforeMethodTest {
   }
 
   @BeforeMethod
-  public void before2(Object[] parameters, Method m) {
-  }
+  public void before2(Object[] parameters, Method m) {}
 
   @BeforeMethod
-  public void before3(Method m, Object[] parameters) {
-  }
+  public void before3(Method m, Object[] parameters) {}
 
   @DataProvider
   public Object[][] dp() {
@@ -42,7 +39,5 @@ public class InjectBeforeMethodTest {
   }
 
   @Test(dataProvider = "dp")
-  public void f(String a) {
-  }
-
+  public void f(String a) {}
 }

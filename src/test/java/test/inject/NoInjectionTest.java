@@ -16,22 +16,21 @@ public class NoInjectionTest {
 
   @DataProvider(name = "provider")
   public Object[][] provide() throws Exception {
-      return new Object[][] { { CC.class.getMethod("f") } };
+    return new Object[][] {{CC.class.getMethod("f")}};
   }
 
   @Test(dataProvider = "provider")
   public void withoutInjection(@NoInjection Method m) {
-      Assert.assertEquals(m.getName(), "f");
+    Assert.assertEquals(m.getName(), "f");
   }
 
   @Test(dataProvider = "provider")
   public void withInjection(Method m) {
-      Assert.assertEquals(m.getName(), "withInjection");
+    Assert.assertEquals(m.getName(), "withInjection");
   }
 }
 
 class CC {
 
-  public void f() {
-  }
+  public void f() {}
 }

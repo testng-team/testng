@@ -2,13 +2,11 @@ package test.inject;
 
 import org.testng.Assert;
 import org.testng.ITestContext;
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 
 public class InjectTestContextTest extends SimpleBaseTest {
@@ -18,7 +16,7 @@ public class InjectTestContextTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setTestClasses(new Class[] { Sample.class });
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     Assert.assertEquals(xmlTest.getName(), "Injection");

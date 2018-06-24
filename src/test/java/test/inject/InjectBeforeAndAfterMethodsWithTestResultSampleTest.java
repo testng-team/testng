@@ -47,7 +47,7 @@ public class InjectBeforeAndAfterMethodsWithTestResultSampleTest {
     if (("pass".equals(name) && r.getStatus() == ITestResult.SUCCESS)
         || ("fail".equals(name) && r.getStatus() == ITestResult.FAILURE)
         || ("skip".equals(name) && r.getStatus() == ITestResult.SKIP)) {
-          m_success--;
-        }
+      m_success--;
+    }
   }
 }
