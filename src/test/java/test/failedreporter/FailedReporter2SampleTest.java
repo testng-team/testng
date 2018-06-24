@@ -7,9 +7,7 @@ public class FailedReporter2SampleTest {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-      new Object[] { 0 },
-      new Object[] { 1 },
-      new Object[] { 2 },
+      new Object[] {0}, new Object[] {1}, new Object[] {2},
     };
   }
 

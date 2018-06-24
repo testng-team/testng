@@ -15,7 +15,5 @@ public class FailedReporterSampleTest {
   }
 
   @Test
-  public void f3() {
-  }
-
+  public void f3() {}
 }

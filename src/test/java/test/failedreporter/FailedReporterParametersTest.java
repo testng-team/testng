@@ -1,7 +1,6 @@
 package test.failedreporter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +31,13 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
   }
 
   @Test
-  public void failedSuiteShouldHaveParameters() throws IOException {
+  public void failedSuiteShouldHaveParameters() {
     Map<String, String> suiteParams = create("suite");
     Map<String, String> testParams = create("test");
     Map<String, String> classParams = create("class");
     Map<String, String> methodParams = create("method");
-    //In testng-failed.xml, suite will have both origin suite parameters and children tests parameters.
+    // In testng-failed.xml, suite will have both origin suite parameters and children tests
+    // parameters.
 
     XmlSuite suite = createXmlSuite(suiteParams);
     TestNG tng = create(mTempDirectory.toPath(), suite);
@@ -47,8 +47,10 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
     XmlClass clazz = createXmlClass(test, FailedReporterSampleTest.class, classParams);
     createXmlInclude(clazz, "f2", methodParams);
     tng.run();
-    
-    runAssertions(mTempDirectory, "<parameter name=\"%s\" value=\"%s\"/>", 
+
+    runAssertions(
+        mTempDirectory,
+        "<parameter name=\"%s\" value=\"%s\"/>",
         new String[] {"suiteParam", "testParam", "classParam", "methodParam"});
   }
 

@@ -6,17 +6,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class FailureSample {
-    @BeforeClass
-    public void beforeClassFailureSample() {
-    }
+  @BeforeClass
+  public void beforeClassFailureSample() {}
 
-    @Test
-    public void newTest2() {
-        Assert.fail();
-    }
+  @Test
+  public void newTest2() {
+    Assert.fail();
+  }
 
-    @AfterClass
-    public void afterClassFailureSample() {
-    }
-
+  @AfterClass
+  public void afterClassFailureSample() {}
 }

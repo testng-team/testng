@@ -6,20 +6,15 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
 public class GroupsSampleBase {
-    @BeforeTest (groups = "run")
-    public void baseBeforeTest() {
-    }
+  @BeforeTest(groups = "run")
+  public void baseBeforeTest() {}
 
-    @BeforeClass (alwaysRun = true)
-    public void baseBeforeClassAlwaysRun() {
-    }
+  @BeforeClass(alwaysRun = true)
+  public void baseBeforeClassAlwaysRun() {}
 
-    @BeforeMethod
-    public void baseBeforeMethod() {
-    }
+  @BeforeMethod
+  public void baseBeforeMethod() {}
 
-    @AfterClass
-    public void baseAfterClass() {
-    }
-
+  @AfterClass
+  public void baseAfterClass() {}
 }
