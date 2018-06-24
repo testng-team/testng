@@ -10,17 +10,16 @@ import java.util.Iterator;
 
 public class IteratorEmptyFactorySample {
 
-    @DataProvider(name = "values")
-    public static Iterator<Object[]> values() {
-        return Collections.emptyIterator();
-    }
+  @DataProvider(name = "values")
+  public static Iterator<Object[]> values() {
+    return Collections.emptyIterator();
+  }
 
-    @Factory(dataProvider = "values")
-    public IteratorEmptyFactorySample(int value) {
-    }
+  @Factory(dataProvider = "values")
+  public IteratorEmptyFactorySample(int value) {}
 
-    @Test
-    public void test() {
-        Assert.fail();
-    }
+  @Test
+  public void test() {
+    Assert.fail();
+  }
 }

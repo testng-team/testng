@@ -16,8 +16,7 @@ public class NestedStaticFactorySample {
     @Factory
     public Object[] createInstances() {
       return new NestedStaticFactorySample[] {
-        new NestedStaticFactorySample(1, 0.1f),
-        new NestedStaticFactorySample(10, 0.5f),
+        new NestedStaticFactorySample(1, 0.1f), new NestedStaticFactorySample(10, 0.5f),
       };
     }
   }
@@ -30,8 +29,8 @@ public class NestedStaticFactorySample {
 
   public NestedStaticFactorySample(int capacity, float loadFactor) {
     m_instanceCount++;
-   this.m_capacity=capacity;
-   this.m_loadFactor=loadFactor;
+    this.m_capacity = capacity;
+    this.m_loadFactor = loadFactor;
   }
 
   @Test
@@ -39,7 +38,7 @@ public class NestedStaticFactorySample {
     // Should have three instances:  the default one created by TestNG
     // and two created by the factory
     assertEquals(m_instanceCount, 2);
-    assertTrue((m_capacity == 1 && m_loadFactor == 0.1f) ||
-        m_capacity == 10 && m_loadFactor == 0.5f);
+    assertTrue(
+        (m_capacity == 1 && m_loadFactor == 0.1f) || m_capacity == 10 && m_loadFactor == 0.5f);
   }
 }

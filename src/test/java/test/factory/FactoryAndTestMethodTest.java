@@ -5,7 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-@Test(groups = { "x" })
+@Test(groups = {"x"})
 public class FactoryAndTestMethodTest {
 
   @Factory(dataProvider = "data")
@@ -32,6 +32,6 @@ public class FactoryAndTestMethodTest {
 
   @DataProvider(name = "data")
   public Object[][] makeData() {
-    return new Object[][] { { "foo" } };
+    return new Object[][] {{"foo"}};
   }
 }

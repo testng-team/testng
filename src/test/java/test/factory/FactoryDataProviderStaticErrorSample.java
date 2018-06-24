@@ -13,8 +13,7 @@ public class FactoryDataProviderStaticErrorSample extends BaseFactorySample {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-      new Object[] { 41 },
-      new Object[] { 42 },
+      new Object[] {41}, new Object[] {42},
     };
   }
 }

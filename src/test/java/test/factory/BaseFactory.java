@@ -6,8 +6,6 @@ public class BaseFactory {
 
   @Factory
   public Object[] create() {
-    return new Object[] {
-      new FactoryBaseSample()
-    };
+    return new Object[] {new FactoryBaseSample()};
   }
 }

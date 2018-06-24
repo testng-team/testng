@@ -9,25 +9,22 @@ import java.util.List;
 
 public class ConstructorFactorySample {
 
-    public static final List<String> parameters = new ArrayList<>();
+  public static final List<String> parameters = new ArrayList<>();
 
-    private final String parameter;
+  private final String parameter;
 
-    @Factory(indices = 1, dataProvider = "dp")
-    public ConstructorFactorySample(String parameter) {
-        this.parameter = parameter;
-    }
+  @Factory(indices = 1, dataProvider = "dp")
+  public ConstructorFactorySample(String parameter) {
+    this.parameter = parameter;
+  }
 
-    @Test
-    public void test() {
-        parameters.add(parameter);
-    }
+  @Test
+  public void test() {
+    parameters.add(parameter);
+  }
 
-    @DataProvider
-    public static Object[][] dp() {
-        return new Object[][]{
-                new Object[]{"foo"},
-                new Object[]{"bar"}
-        };
-    }
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][] {new Object[] {"foo"}, new Object[] {"bar"}};
+  }
 }

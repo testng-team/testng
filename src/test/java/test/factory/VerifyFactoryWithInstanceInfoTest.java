@@ -7,7 +7,7 @@ import java.util.List;
 
 public class VerifyFactoryWithInstanceInfoTest {
 
-  @Test(dependsOnGroups = { "first" } )
+  @Test(dependsOnGroups = {"first"})
   public void mainCheck() {
     List<Integer> numbers = FactoryWithInstanceInfo2Sample.getNumbers();
     Assert.assertTrue(numbers.contains(42), "Didn't find 42");

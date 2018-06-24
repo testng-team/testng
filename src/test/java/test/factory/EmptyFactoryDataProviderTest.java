@@ -9,19 +9,19 @@ import test.SimpleBaseTest;
 
 public class EmptyFactoryDataProviderTest extends SimpleBaseTest {
 
-    @Test
-    public void test() {
-        TestNG testng = create(ArrayEmptyFactorySample.class, IteratorEmptyFactorySample.class);
+  @Test
+  public void test() {
+    TestNG testng = create(ArrayEmptyFactorySample.class, IteratorEmptyFactorySample.class);
 
-        TestListenerAdapter tla = new TestListenerAdapter();
-        testng.addListener((ITestNGListener) tla);
-        // Used to check the warning message
-        testng.setVerbose(2);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    // Used to check the warning message
+    testng.setVerbose(2);
 
-        testng.run();
+    testng.run();
 
-        Assert.assertTrue(tla.getFailedTests().isEmpty());
-        Assert.assertTrue(tla.getSkippedTests().isEmpty());
-        Assert.assertTrue(tla.getPassedTests().isEmpty());
-    }
+    Assert.assertTrue(tla.getFailedTests().isEmpty());
+    Assert.assertTrue(tla.getSkippedTests().isEmpty());
+    Assert.assertTrue(tla.getPassedTests().isEmpty());
+  }
 }

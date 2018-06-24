@@ -17,9 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FactoryWithDataProviderTest extends SimpleBaseTest {
 
-  /**
-   * Verify that a factory can receive a data provider
-   */
+  /** Verify that a factory can receive a data provider */
   @Test
   public void verifyDataProvider() {
     TestNG tng = create(FactoryWithDataProvider.class);
@@ -42,7 +40,7 @@ public class FactoryWithDataProviderTest extends SimpleBaseTest {
     TestNG testng = create(xmlSuite);
     testng.addListener(listener);
     testng.run();
-    assertThat(listener.getLogs("test")).containsExactlyElementsOf(Collections.singletonList(RANDOM_VALUE));
+    assertThat(listener.getLogs("test"))
+        .containsExactlyElementsOf(Collections.singletonList(RANDOM_VALUE));
   }
-
 }

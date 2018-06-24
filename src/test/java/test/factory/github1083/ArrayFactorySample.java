@@ -8,21 +8,21 @@ import java.util.List;
 
 public class ArrayFactorySample {
 
-    public static final List<String> parameters = new ArrayList<>();
+  public static final List<String> parameters = new ArrayList<>();
 
-    private final String parameter;
+  private final String parameter;
 
-    private ArrayFactorySample(String parameter) {
-        this.parameter = parameter;
-    }
+  private ArrayFactorySample(String parameter) {
+    this.parameter = parameter;
+  }
 
-    @Test
-    public void test() {
-        parameters.add(parameter);
-    }
+  @Test
+  public void test() {
+    parameters.add(parameter);
+  }
 
-    @Factory(indices = 1)
-    public static Object[] arrayFactory() {
-        return new Object[]{new ArrayFactorySample("foo"), new ArrayFactorySample("bar")};
-    }
+  @Factory(indices = 1)
+  public static Object[] arrayFactory() {
+    return new Object[] {new ArrayFactorySample("foo"), new ArrayFactorySample("bar")};
+  }
 }

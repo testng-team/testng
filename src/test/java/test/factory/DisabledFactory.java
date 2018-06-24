@@ -6,6 +6,6 @@ public class DisabledFactory {
 
   @Factory(enabled = false)
   public Object[] factory() {
-    return new Object[] { new MySample() };
+    return new Object[] {new MySample()};
   }
 }

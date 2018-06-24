@@ -11,8 +11,8 @@ public class FactoryWithDataProvider {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-      new Object[] { new int[] { 3, 5 } },
-      new Object[] { new int[] { 7, 9 } },
+      new Object[] {new int[] {3, 5}},
+      new Object[] {new int[] {7, 9}},
     };
   }
 

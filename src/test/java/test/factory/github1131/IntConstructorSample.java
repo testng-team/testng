@@ -9,19 +9,18 @@ import java.util.List;
 
 public class IntConstructorSample {
 
-    public static final List<Integer> parameters = new ArrayList<>();
+  public static final List<Integer> parameters = new ArrayList<>();
 
-    @Factory(dataProvider = "dataProvider")
-    public IntConstructorSample(int parameter) {
-        parameters.add(parameter);
-    }
+  @Factory(dataProvider = "dataProvider")
+  public IntConstructorSample(int parameter) {
+    parameters.add(parameter);
+  }
 
-    @Test
-    public void test() {
-    }
+  @Test
+  public void test() {}
 
-    @DataProvider
-    public static Object[][] dataProvider() {
-        return new Object[][]{new Object[]{1}, new Object[]{2}};
-    }
+  @DataProvider
+  public static Object[][] dataProvider() {
+    return new Object[][] {new Object[] {1}, new Object[] {2}};
+  }
 }

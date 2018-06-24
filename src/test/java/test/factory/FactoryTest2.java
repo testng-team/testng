@@ -21,7 +21,7 @@ public class FactoryTest2 {
     number = n;
   }
 
-  @Test(groups = { "first" })
+  @Test(groups = {"first"})
   public void testInt() {
     Integer n = number;
     numbers.add(n);

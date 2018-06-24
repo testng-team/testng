@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Test that setUp methods are correctly interleaved even
- * when we use similar instances of a same test class.
+ * Test that setUp methods are correctly interleaved even when we use similar instances of a same
+ * test class.
  */
 public class Factory2Sample {
 
@@ -35,7 +35,8 @@ public class Factory2Sample {
     methods.add("tearDown");
   }
 
-  private static final List<String> EXPECTED_METHODS = Arrays.asList(
+  private static final List<String> EXPECTED_METHODS =
+      Arrays.asList(
           "setUp",
           "testInputImages",
           "tearDown",
@@ -47,8 +48,7 @@ public class Factory2Sample {
           "tearDown",
           "setUp",
           "testImages",
-          "tearDown"
-  );
+          "tearDown");
 
   @AfterSuite
   public void afterSuite() {
@@ -60,7 +60,7 @@ public class Factory2Sample {
     methods.add("testInputImages");
   }
 
-  @Test(dependsOnMethods={"testInputImages"})
+  @Test(dependsOnMethods = {"testInputImages"})
   public void testImages() {
     methods.add("testImages");
   }

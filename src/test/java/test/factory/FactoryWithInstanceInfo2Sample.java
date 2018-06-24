@@ -5,9 +5,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class is created by FactoryWithInstanceInfo2Sample
- */
+/** This class is created by FactoryWithInstanceInfo2Sample */
 public class FactoryWithInstanceInfo2Sample {
 
   private static List<Integer> numbers = new ArrayList<>();
@@ -25,7 +23,7 @@ public class FactoryWithInstanceInfo2Sample {
     number = n;
   }
 
-  @Test(groups = { "first" })
+  @Test(groups = {"first"})
   public void testInt() {
     numbers.add(number);
   }

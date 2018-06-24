@@ -6,21 +6,20 @@ import org.testng.annotations.Test;
 
 public class FactoryWithLocalDataProviderTests {
 
-    public FactoryWithLocalDataProviderTests() {
-    }
+  public FactoryWithLocalDataProviderTests() {}
 
-    @Factory(dataProvider = "data")
-    public FactoryWithLocalDataProviderTests(final int i) {
-        // not important
-    }
+  @Factory(dataProvider = "data")
+  public FactoryWithLocalDataProviderTests(final int i) {
+    // not important
+  }
 
-    @DataProvider
-    public Object[] data() {
-        return new Object[]{1, 2, 3};
-    }
+  @DataProvider
+  public Object[] data() {
+    return new Object[] {1, 2, 3};
+  }
 
-    @Test
-    public void fakeTest() {
-        // not important
-    }
+  @Test
+  public void fakeTest() {
+    // not important
+  }
 }

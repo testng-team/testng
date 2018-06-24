@@ -11,31 +11,29 @@ import java.util.List;
 
 public class DataProviderInstanceInfoFactorySample {
 
-    public static final List<String> parameters = new ArrayList<>();
+  public static final List<String> parameters = new ArrayList<>();
 
-    private final String parameter;
+  private final String parameter;
 
-    private DataProviderInstanceInfoFactorySample(String parameter) {
-        this.parameter = parameter;
-    }
+  private DataProviderInstanceInfoFactorySample(String parameter) {
+    this.parameter = parameter;
+  }
 
-    @Test
-    public void test() {
-        parameters.add(parameter);
-    }
+  @Test
+  public void test() {
+    parameters.add(parameter);
+  }
 
-    @Factory(indices = 1, dataProvider = "dp")
-    public static IInstanceInfo[] arrayFactory(String s) {
-        return new IInstanceInfo[] {
-                new InstanceInfo<>(DataProviderInstanceInfoFactorySample.class, new DataProviderInstanceInfoFactorySample(s))
-        };
-    }
+  @Factory(indices = 1, dataProvider = "dp")
+  public static IInstanceInfo[] arrayFactory(String s) {
+    return new IInstanceInfo[] {
+      new InstanceInfo<>(
+          DataProviderInstanceInfoFactorySample.class, new DataProviderInstanceInfoFactorySample(s))
+    };
+  }
 
-    @DataProvider
-    public static Object[][] dp() {
-        return new Object[][]{
-                new Object[]{"foo"},
-                new Object[]{"bar"}
-        };
-    }
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][] {new Object[] {"foo"}, new Object[] {"bar"}};
+  }
 }

@@ -1,7 +1,6 @@
 package test.factory;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -14,7 +13,7 @@ public class FactoryInSuperClassTest extends SimpleBaseTest {
   public void factoryInSuperClassShouldWork() {
     TestNG tng = create(ChildFactory.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);

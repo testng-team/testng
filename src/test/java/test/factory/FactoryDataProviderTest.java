@@ -1,7 +1,6 @@
 package test.factory;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -18,13 +17,14 @@ public class FactoryDataProviderTest extends SimpleBaseTest {
   public void factoryWithLocalDataProvider() {
     runTest(FactoryDataProviderSample.class, 41, 42);
   }
-  
+
   @Test(description = "Test @Factory(dataProvider) on a data provider in another class (static)")
   public void factoryWithStaticDataProvider() {
     runTest(FactoryDataProviderStaticSample.class, 43, 44);
   }
 
-  @Test(description = "Test @Factory(dataProvider) on a data provider in another class (not static)")
+  @Test(
+      description = "Test @Factory(dataProvider) on a data provider in another class (not static)")
   public void factoryWithNotStaticDataProvider() {
     runTest(FactoryDataProviderNotStaticSample.class, 43, 44);
   }
@@ -34,7 +34,8 @@ public class FactoryDataProviderTest extends SimpleBaseTest {
     runTest(FactoryDataProviderWithNoArgCtorErrorSample.class, 45, 46);
   }
 
-  @Test(expectedExceptions = TestNGException.class,
+  @Test(
+      expectedExceptions = TestNGException.class,
       description = "Should fail because the data provider is not static")
   public void factoryWithNonStaticDataProviderShouldFail() {
     runTest(FactoryDataProviderStaticErrorSample.class, 43, 44);
@@ -43,7 +44,7 @@ public class FactoryDataProviderTest extends SimpleBaseTest {
   private static void runTest(Class<?> cls, int n1, int n2) {
     TestNG tng = create(cls);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 2);

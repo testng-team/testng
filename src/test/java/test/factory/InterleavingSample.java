@@ -39,5 +39,4 @@ public class InterleavingSample {
   public void f2() {
     log(2);
   }
-
 }

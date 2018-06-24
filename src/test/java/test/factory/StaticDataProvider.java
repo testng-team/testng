@@ -7,8 +7,7 @@ public class StaticDataProvider {
   @DataProvider
   public static Object[][] dp() {
     return new Object[][] {
-      new Object[] { 43 },
-      new Object[] { 44 },
+      new Object[] {43}, new Object[] {44},
     };
   }
 }

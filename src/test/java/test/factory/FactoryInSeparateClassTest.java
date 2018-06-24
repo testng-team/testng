@@ -5,12 +5,12 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 /**
- * this is like the FactoryTest, except it creates test instances in a separate
- * class from the test class
+ * this is like the FactoryTest, except it creates test instances in a separate class from the test
+ * class
  */
 public class FactoryInSeparateClassTest {
-  static private boolean m_wasRun = false;
-  static private int m_checkSum = 0;
+  private static boolean m_wasRun = false;
+  private static int m_checkSum = 0;
 
   public static void addToSum(int i) {
     m_checkSum += i;
@@ -25,21 +25,21 @@ public class FactoryInSeparateClassTest {
   @Factory
   public Object[] createObjects() {
     return new Object[] {
-      new MySample(1),
-      new MySample(2),
-      new MySample(3),
+      new MySample(1), new MySample(2), new MySample(3),
     };
   }
 
-   @Test(groups = "testMethodOnFactoryClass", dependsOnGroups={"MySample"})
-    public void checkSum() {
+  @Test(
+      groups = "testMethodOnFactoryClass",
+      dependsOnGroups = {"MySample"})
+  public void checkSum() {
     m_wasRun = true;
-      assert (m_checkSum == 6) :
-        "Test instances made by factory did not invoke their test methods correctly.  expected 6 but got " + m_checkSum;
-    }
+    assert (m_checkSum == 6)
+        : "Test instances made by factory did not invoke their test methods correctly.  expected 6 but got "
+            + m_checkSum;
+  }
 
-    public static boolean wasRun() {
-      return m_wasRun;
-    }
+  public static boolean wasRun() {
+    return m_wasRun;
+  }
 }
-

@@ -12,7 +12,7 @@ import org.testng.internal.InstanceInfo;
 public class FactoryWithInstanceInfoTest {
   static boolean isInvoked = false;
 
-  @Parameters({ "factory-param" })
+  @Parameters({"factory-param"})
   @Factory
   public IInstanceInfo[] createObjectsWithInstanceInfo(String param) {
     assertEquals(param, "FactoryParam", "Incorrect param: " + param);
@@ -20,10 +20,10 @@ public class FactoryWithInstanceInfoTest {
     isInvoked = true;
 
     return new IInstanceInfo[] {
-        new InstanceInfo(FactoryWithInstanceInfo2Sample.class,
-            new FactoryWithInstanceInfo2Sample(42)),
-        new InstanceInfo(FactoryWithInstanceInfo2Sample.class,
-            new FactoryWithInstanceInfo2Sample(43)),
+      new InstanceInfo<>(
+          FactoryWithInstanceInfo2Sample.class, new FactoryWithInstanceInfo2Sample(42)),
+      new InstanceInfo<>(
+          FactoryWithInstanceInfo2Sample.class, new FactoryWithInstanceInfo2Sample(43)),
     };
   }
 

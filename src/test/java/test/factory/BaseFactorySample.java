@@ -15,14 +15,12 @@ public class BaseFactorySample {
   }
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 
   /**
-   * @@@ for some reason, the test results get added in the wrong order if
-   * I don't define a toString() method. Need to investigate.
-   * https://github.com/cbeust/testng/issues/799
-   * TODO Remove the method when issue will be fixed
+   * @@@ for some reason, the test results get added in the wrong order if I don't define a
+   * toString() method. Need to investigate. https://github.com/cbeust/testng/issues/799 TODO Remove
+   * the method when issue will be fixed
    */
   @Override
   public String toString() {

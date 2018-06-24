@@ -8,16 +8,15 @@ import test.SimpleBaseTest;
 
 public class FactoryFailureTest extends SimpleBaseTest {
 
-   @Test
-   public void factoryThrowingShouldNotRunTests() {
-     TestNG tng = create(FactoryFailureSample.class);
+  @Test
+  public void factoryThrowingShouldNotRunTests() {
+    TestNG tng = create(FactoryFailureSample.class);
 
-     try {
-       tng.run();
-       Assert.fail();
-     }
-     catch(Exception ex) {
-       // success
-     }
-   }
+    try {
+      tng.run();
+      Assert.fail();
+    } catch (Exception ex) {
+      // success
+    }
+  }
 }

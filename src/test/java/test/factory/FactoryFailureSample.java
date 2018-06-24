@@ -11,6 +11,5 @@ public class FactoryFailureSample {
   }
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 }

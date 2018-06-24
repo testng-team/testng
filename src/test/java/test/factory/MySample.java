@@ -21,11 +21,12 @@ public class MySample {
   public void testMethod() {
     FactoryInSeparateClassTest.addToSum(i);
     //    assert i > 0 : "MySample was not constructed with correct params";
-      Assert.assertNotEquals(i, 0, "My test was not created by the factory");
+    Assert.assertNotEquals(i, 0, "My test was not created by the factory");
   }
 
   @Test(dependsOnGroups = "testMethodOnFactoryClass")
   public void verifyThatTestMethodOnFactoryClassWasRun() {
-    Assert.assertTrue(FactoryInSeparateClassTest.wasRun(), "Test method on factory class wasn't run");
+    Assert.assertTrue(
+        FactoryInSeparateClassTest.wasRun(), "Test method on factory class wasn't run");
   }
 }

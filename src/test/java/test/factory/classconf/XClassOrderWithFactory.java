@@ -5,19 +5,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
 public class XClassOrderWithFactory {
-  public static final String EXPECTED_LOG= "BTABTABTA";
-  public static final StringBuffer LOG= new StringBuffer();
+  public static final String EXPECTED_LOG = "BTABTABTA";
+  public static final StringBuffer LOG = new StringBuffer();
 
   @Factory
-  public Object[] createInstances() throws Exception {
-      return new Object[] {
-              new XClassOrderTest(), new XClassOrderTest(), new XClassOrderTest()
-          };
+  public Object[] createInstances() {
+    return new Object[] {new XClassOrderTest(), new XClassOrderTest(), new XClassOrderTest()};
   }
 
   public static class XClassOrderTest {

@@ -10,24 +10,24 @@ import java.util.List;
 
 public class InstanceInfoFactorySample {
 
-    public static final List<String> parameters = new ArrayList<>();
+  public static final List<String> parameters = new ArrayList<>();
 
-    private final String parameter;
+  private final String parameter;
 
-    private InstanceInfoFactorySample(String parameter) {
-        this.parameter = parameter;
-    }
+  private InstanceInfoFactorySample(String parameter) {
+    this.parameter = parameter;
+  }
 
-    @Test
-    public void test() {
-        parameters.add(parameter);
-    }
+  @Test
+  public void test() {
+    parameters.add(parameter);
+  }
 
-    @Factory(indices = 1)
-    public static IInstanceInfo[] arrayFactory() {
-        return new IInstanceInfo[] {
-                new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("foo")),
-                new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("bar"))
-        };
-    }
+  @Factory(indices = 1)
+  public static IInstanceInfo[] arrayFactory() {
+    return new IInstanceInfo[] {
+      new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("foo")),
+      new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("bar"))
+    };
+  }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class VerifyFactoryTest {
 
-  @Test(dependsOnGroups = { "first" } )
+  @Test(dependsOnGroups = {"first"})
   public void mainCheck() {
     List<Integer> numbers = FactoryTest2.getNumbers();
     Assert.assertTrue(numbers.contains(42), "Didn't find 42");

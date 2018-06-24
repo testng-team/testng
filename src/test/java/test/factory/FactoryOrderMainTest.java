@@ -17,7 +17,7 @@ public class FactoryOrderMainTest extends SimpleBaseTest {
   public void factoriesShouldBeInvokedInTheOrderOfCreation() {
     TestNG tng = create(OrderFactory.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     List<ITestResult> passed = tla.getPassedTests();

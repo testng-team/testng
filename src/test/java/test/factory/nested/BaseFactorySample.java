@@ -9,6 +9,6 @@ public abstract class BaseFactorySample {
   @Factory
   public Object[] createObjects() {
     AbstractBaseSample test = buildTest();
-    return new Object[]{test};
+    return new Object[] {test};
   }
 }

@@ -15,11 +15,10 @@ public class ExcludedFactory {
   }
 
   @Test(groups = EXCLUDED_GROUP)
-  public void emptyTest() {
-  }
+  public void emptyTest() {}
 
   @DataProvider(name = "empty")
   private static Object[][] provider() {
-    return new Object[][]{{1}};
+    return new Object[][] {{1}};
   }
 }

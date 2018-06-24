@@ -12,17 +12,14 @@ public class OrderSample {
     value = j;
   }
 
-  @BeforeClass(groups = { "s1ds" })
-  public void setup() {
-  }
+  @BeforeClass(groups = {"s1ds"})
+  public void setup() {}
 
-  @Test(groups = { "s1ds" })
-  public void methodC1() throws Exception {
-  }
+  @Test(groups = {"s1ds"})
+  public void methodC1() {}
 
-  @AfterClass(groups = { "s1ds" })
-  public void cleanup() {
-  }
+  @AfterClass(groups = {"s1ds"})
+  public void cleanup() {}
 
   @Override
   public String toString() {

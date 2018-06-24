@@ -6,13 +6,9 @@ import org.testng.annotations.Factory;
 public class InterleavingFactorySample {
   @Factory
   public Object[] factory() {
-    return new Object[] {
-        new InterleavingSample(1), new InterleavingSample(2)
-    };
+    return new Object[] {new InterleavingSample(1), new InterleavingSample(2)};
   }
 
   @BeforeClass
-  public void beforeB() {
-  }
+  public void beforeB() {}
 }
-
