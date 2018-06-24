@@ -32,5 +32,4 @@ public class AttributeTest {
     assertThat(names).contains("test2");
     assertThat(ctx.getAttribute("test2")).isEqualTo("2");
   }
-
 }
