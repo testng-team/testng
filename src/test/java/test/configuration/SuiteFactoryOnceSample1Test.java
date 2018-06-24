@@ -19,7 +19,5 @@ public class SuiteFactoryOnceSample1Test {
   }
 
   @Test
-  public void g1() {
-  }
-
+  public void g1() {}
 }

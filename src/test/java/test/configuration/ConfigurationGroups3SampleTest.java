@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * beforeGroups test:  make sure that if before methods are scattered on
- * more than one class, they are still taken into account
+ * beforeGroups test: make sure that if before methods are scattered on more than one class, they
+ * are still taken into account
  *
  * @author cbeust
- * @date Mar 3, 2006
  */
 public class ConfigurationGroups3SampleTest extends Base3 {
   private boolean m_before = false;
-  static private boolean m_f1 = false;
+  private static boolean m_f1 = false;
 
   @BeforeGroups("cg34-1")
   public void before1() {
@@ -62,5 +61,4 @@ public class ConfigurationGroups3SampleTest extends Base3 {
   public static boolean getF1() {
     return m_f1;
   }
-
 }

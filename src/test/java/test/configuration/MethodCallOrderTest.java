@@ -34,7 +34,6 @@ public class MethodCallOrderTest {
     s_beforeMethod = false;
   }
 
-
   @BeforeMethod
   public void beforeMethod() {
     assertTrue(s_beforeSuite);
@@ -54,7 +53,8 @@ public class MethodCallOrderTest {
 
   @AfterMethod
   public void afterMethod() {
-    assertFalse(ExternalConfigurationClass.s_afterMethod, "afterTestMethod shouldn't have been run");
+    assertFalse(
+        ExternalConfigurationClass.s_afterMethod, "afterTestMethod shouldn't have been run");
     assertFalse(ExternalConfigurationClass.s_afterClass, "afterTestClass shouldn't have been run");
     assertFalse(ExternalConfigurationClass.s_afterTest, "afterTest should haven't been run");
 

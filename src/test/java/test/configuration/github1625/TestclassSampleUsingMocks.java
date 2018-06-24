@@ -9,22 +9,20 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 public class TestclassSampleUsingMocks {
-    @Mock
-    List<String> list;
+  @Mock List<String> list;
 
+  @BeforeClass
+  public void beforeClass() {
+    MockitoAnnotations.initMocks(this);
+  }
 
-    @BeforeClass
-    public void beforeClass() {
-        MockitoAnnotations.initMocks(this);
-    }
+  @Test
+  public void first() {
+    Assert.assertNotNull(list);
+  }
 
-    @Test
-    public void first() {
-        Assert.assertNotNull(list);
-    }
-
-    @Test
-    public void second() {
-        Assert.assertNotNull(list);
-    }
+  @Test
+  public void second() {
+    Assert.assertNotNull(list);
+  }
 }

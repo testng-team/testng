@@ -6,6 +6,6 @@ public class SuiteFactoryOnceSample2Test {
 
   @Factory
   public Object[] factory() {
-    return new Object[] { new SuiteFactoryOnceSample1Test(), new SuiteFactoryOnceSample1Test() };
+    return new Object[] {new SuiteFactoryOnceSample1Test(), new SuiteFactoryOnceSample1Test()};
   }
 }

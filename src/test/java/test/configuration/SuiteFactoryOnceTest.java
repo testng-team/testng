@@ -17,7 +17,5 @@ public class SuiteFactoryOnceTest extends SimpleBaseTest {
 
     assertThat(SuiteFactoryOnceSample1Test.m_before).isEqualTo(1);
     assertThat(SuiteFactoryOnceSample1Test.m_after).isEqualTo(1);
-
   }
-
 }

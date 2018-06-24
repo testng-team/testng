@@ -8,16 +8,15 @@ import org.testng.annotations.Test;
 public class ConfigurationWithParameters {
   private String m_param;
 
-  @Parameters({ "param" })
+  @Parameters({"param"})
   @BeforeTest
   public void testInit(String param) {
     m_param = param;
   }
 
-  @Parameters({ "param" })
+  @Parameters({"param"})
   @Test
   public void testMethod(String param) {
     Assert.assertEquals(m_param, param);
   }
-
 }

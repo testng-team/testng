@@ -9,20 +9,20 @@ import java.util.List;
 
 public class TestclassSampleWithoutUsingMocks {
 
-    private List<String> list;
+  private List<String> list;
 
-    @BeforeClass
-    public void beforeClass() {
-        list = new ArrayList<>();
-    }
+  @BeforeClass
+  public void beforeClass() {
+    list = new ArrayList<>();
+  }
 
-    @Test
-    public void first() {
-        Assert.assertNotNull(list);
-    }
+  @Test
+  public void first() {
+    Assert.assertNotNull(list);
+  }
 
-    @Test
-    public void second() {
-        Assert.assertNotNull(list);
-    }
+  @Test
+  public void second() {
+    Assert.assertNotNull(list);
+  }
 }

@@ -44,7 +44,7 @@ public class ConfigurationGroups6SampleTest {
     m_after = true;
   }
 
-  @Test(dependsOnGroups = { "cg6-1" })
+  @Test(dependsOnGroups = {"cg6-1"})
   public void verify() {
     log("verify");
     Assert.assertTrue(m_run1, "run1() wasn't run");
@@ -61,5 +61,4 @@ public class ConfigurationGroups6SampleTest {
       System.out.println("[ConfigurationGroups4SampleTest] " + s);
     }
   }
-
 }

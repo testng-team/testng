@@ -51,5 +51,4 @@ public class ConfigurationGroups4SampleTest {
       System.out.println("[ConfigurationGroups4SampleTest] " + s);
     }
   }
-
 }

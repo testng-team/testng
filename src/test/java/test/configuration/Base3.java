@@ -5,11 +5,9 @@ import org.testng.annotations.BeforeGroups;
 
 public class Base3 {
 
-  static private boolean m_before = false;
+  private static boolean m_before = false;
 
-  /**
-   * @return the m_before
-   */
+  /** @return the m_before */
   public static boolean getBefore() {
     return m_before;
   }
@@ -31,5 +29,4 @@ public class Base3 {
       System.out.println("[Base3] " + s);
     }
   }
-
 }

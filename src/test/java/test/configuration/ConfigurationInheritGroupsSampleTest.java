@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-@Test(groups = { "group1" })
+@Test(groups = {"group1"})
 public class ConfigurationInheritGroupsSampleTest {
   private boolean m_ok = false;
 

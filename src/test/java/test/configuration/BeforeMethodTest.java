@@ -24,6 +24,5 @@ public class BeforeMethodTest {
     ITestNGMethod[] methods = m_context.getAllTestMethods();
     Assert.assertEquals(1, methods.length);
     Assert.assertEquals(methods[0].getConstructorOrMethod().getName(), "mainTest");
-
   }
 }

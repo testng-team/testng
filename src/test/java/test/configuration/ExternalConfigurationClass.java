@@ -8,7 +8,6 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 
-
 public class ExternalConfigurationClass {
   public static boolean s_afterMethod;
   public static boolean s_afterClass;

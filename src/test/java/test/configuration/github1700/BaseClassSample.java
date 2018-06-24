@@ -9,12 +9,13 @@ import java.util.List;
 
 public class BaseClassSample {
 
-    public static List<String> messages = Lists.newArrayList();
-    @BeforeMethod(alwaysRun = true)
-    public void setUp(Method method) {
-        if (method.getName().endsWith("test1")) {
-            Assert.assertEquals(2, 1);
-        }
-        messages.add(getClass().getCanonicalName() + ".setup()");
+  public static List<String> messages = Lists.newArrayList();
+
+  @BeforeMethod(alwaysRun = true)
+  public void setUp(Method method) {
+    if (method.getName().endsWith("test1")) {
+      Assert.assertEquals(2, 1);
     }
+    messages.add(getClass().getCanonicalName() + ".setup()");
+  }
 }

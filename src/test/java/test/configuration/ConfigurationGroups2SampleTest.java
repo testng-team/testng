@@ -8,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * beforeGroups test:  make sure that the beforeGroups method is invoked
- * only once even if two test methods belong to the group
+ * beforeGroups test: make sure that the beforeGroups method is invoked only once even if two test
+ * methods belong to the group
  *
  * @author cbeust
- * @date Mar 3, 2006
  */
 public class ConfigurationGroups2SampleTest {
   private boolean m_before = false;
@@ -66,5 +65,4 @@ public class ConfigurationGroups2SampleTest {
       System.out.println("[ConfigurationGroups2SampleTest] " + s);
     }
   }
-
 }

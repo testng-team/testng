@@ -12,29 +12,28 @@ import java.util.List;
 public class ConfigurationGroups7SampleTest {
   private List<String> m_log = new ArrayList<>();
 
-   @BeforeGroups({"A"})
-   private void initA() {
-     m_log.add("1");
-   }
+  @BeforeGroups({"A"})
+  private void initA() {
+    m_log.add("1");
+  }
 
-   @Test(groups = {"A"})
-   public void testSomething() {
-     m_log.add("2");
-   }
+  @Test(groups = {"A"})
+  public void testSomething() {
+    m_log.add("2");
+  }
 
-   @Test(groups = {"A"})
-   public void testSomethingMore() {
-     m_log.add("2");
-   }
+  @Test(groups = {"A"})
+  public void testSomethingMore() {
+    m_log.add("2");
+  }
 
-   @AfterGroups({"A"})
-   private void cleanUpA() {
-     m_log.add("3");
-   }
+  @AfterGroups({"A"})
+  private void cleanUpA() {
+    m_log.add("3");
+  }
 
-   @Test(dependsOnGroups = "A")
-   public void verify() {
-     Assert.assertEquals(Arrays.asList(new String[] { "1", "2", "2", "3"}), m_log);
-   }
-
+  @Test(dependsOnGroups = "A")
+  public void verify() {
+    Assert.assertEquals(Arrays.asList("1", "2", "2", "3"), m_log);
+  }
 }

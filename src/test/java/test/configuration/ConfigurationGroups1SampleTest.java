@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Simple beforeGroups test:  1 before method and 2 test method
+ * Simple beforeGroups test: 1 before method and 2 test method
  *
  * @author cbeust
  * @date Mar 3, 2006
@@ -55,5 +55,4 @@ public class ConfigurationGroups1SampleTest {
       System.out.println("[ConfigurationGroups1SampleTest] " + s);
     }
   }
-
 }

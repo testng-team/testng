@@ -9,8 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Run with group "A" and "B"
- * Make sure that only methods and configurations belonging to that group
+ * Run with group "A" and "B" Make sure that only methods and configurations belonging to that group
  * get invoked.
  *
  * @author cbeust
@@ -24,12 +23,12 @@ public class ConfigurationGroups8SampleTest {
     m_log.add("should not be invoked");
   }
 
-  @Test(groups = { "A" })
+  @Test(groups = {"A"})
   public void testSomething() {
     m_log.add("1");
   }
 
-  @Test(groups = { "A" })
+  @Test(groups = {"A"})
   public void testSomethingMore() {
     m_log.add("1");
   }
@@ -46,8 +45,6 @@ public class ConfigurationGroups8SampleTest {
 
   @Test(dependsOnGroups = "A", groups = "B")
   public void verify() {
-    Assert.assertEquals(Arrays.asList(new String[] { "1", "a", "1", "a" }),
-        m_log);
+    Assert.assertEquals(Arrays.asList("1", "a", "1", "a"), m_log);
   }
-
 }

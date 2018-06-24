@@ -26,6 +26,5 @@ public class ConfigurationListenerSampleTest {
   }
 
   @Test
-  public void f1() {
-  }
+  public void f1() {}
 }

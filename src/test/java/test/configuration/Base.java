@@ -18,7 +18,4 @@ public class Base {
     m_count++;
   }
 
-  private static void ppp(String s) {
-    System.out.println("[Base] " + s);
-  }
 }

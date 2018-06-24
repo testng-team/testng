@@ -22,36 +22,28 @@ public class GroupsTest {
   public void verifyDataProviderAfterGroups() {
     runTest(ConfigurationGroupDataProviderSampleTest.class,
         ConfigurationGroupDataProviderSampleTest.m_list,
-        Arrays.asList(new Integer[] {
-            1, 2, 2, 2, 3
-      }));
+        Arrays.asList(1, 2, 2, 2, 3));
   }
 
   @Test
   public void verifyIteratorDataProviderAfterGroups() {
     runTest(ConfigurationGroupIteratorDataProviderSampleTest.class,
         ConfigurationGroupIteratorDataProviderSampleTest.m_list,
-        Arrays.asList(new Integer[] {
-                1, 2, 2, 2, 3
-        }));
+        Arrays.asList(1, 2, 2, 2, 3));
   }
 
   @Test
   public void verifyParametersAfterGroups() {
     runTest(ConfigurationGroupInvocationCountSampleTest.class,
         ConfigurationGroupInvocationCountSampleTest.m_list,
-        Arrays.asList(new Integer[] {
-            1, 2, 2, 2, 3
-      }));
+        Arrays.asList(1, 2, 2, 2, 3));
   }
 
   @Test
   public void verifyBothAfterGroups() {
     runTest(ConfigurationGroupBothSampleTest.class,
         ConfigurationGroupBothSampleTest.m_list,
-        Arrays.asList(new Integer[] {
-          1, 2, 2, 2, 2, 2, 2, 3
-      }));
+        Arrays.asList(1, 2, 2, 2, 2, 2, 2, 3));
   }
 
   private void runTest(Class cls, List<Integer> list, List<Integer> expected) {

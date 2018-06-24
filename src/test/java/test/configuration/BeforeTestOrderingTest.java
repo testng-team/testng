@@ -32,7 +32,8 @@ public class BeforeTestOrderingTest {
     m_testNames.add(testName);
   }
 
-  private static final List<String> expected = Arrays.asList("bt1", "f1", "at1", "bt2", "f2", "at2");
+  private static final List<String> expected =
+      Arrays.asList("bt1", "f1", "at1", "bt2", "f2", "at2");
 
   @Test
   public void verifyBeforeTestOrdering() throws IOException {
@@ -50,7 +51,7 @@ public class BeforeTestOrderingTest {
 
     TestNG tng = TestHelper.createTestNG();
     TestListenerAdapter tl = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tl);
+    tng.addListener(tl);
     tng.setXmlSuites(Collections.singletonList(s));
     tng.run();
 

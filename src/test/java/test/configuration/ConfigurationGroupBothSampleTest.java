@@ -10,33 +10,41 @@ import java.util.Collections;
 import java.util.List;
 
 public class ConfigurationGroupBothSampleTest {
-  static List<Integer> m_list = Collections.synchronizedList(new ArrayList<Integer>());
+  static List<Integer> m_list = Collections.synchronizedList(new ArrayList<>());
 
-  private synchronized static void addToList(Integer n) {
+  private static synchronized void addToList(Integer n) {
     m_list.add(n);
   }
 
-  @BeforeGroups(groups={"twice"}, value={"twice"})
-  public void a(){
+  @BeforeGroups(
+      groups = {"twice"},
+      value = {"twice"})
+  public void a() {
     ppp("BEFORE()");
     addToList(1);
   }
 
-  @Test(groups={"twice"}, dataProvider="MyData", invocationCount = 2, threadPoolSize=2)
+  @Test(
+      groups = {"twice"},
+      dataProvider = "MyData",
+      invocationCount = 2,
+      threadPoolSize = 2)
   public void b(int a, int b) {
     addToList(2);
-    ppp("B()"  + a + "," + b);
+    ppp("B()" + a + "," + b);
   }
 
-  @AfterGroups(groups={"twice"}, value={"twice"})
-  public void c(){
+  @AfterGroups(
+      groups = {"twice"},
+      value = {"twice"})
+  public void c() {
     addToList(3);
     ppp("AFTER()");
   }
 
-  @DataProvider(name="MyData")
-  public Object[][] input(){
-    return new Object[][]{ {1,1}, {2,2}, {3,3}};
+  @DataProvider(name = "MyData")
+  public Object[][] input() {
+    return new Object[][] {{1, 1}, {2, 2}, {3, 3}};
   }
 
   private void ppp(String string) {
@@ -44,6 +52,4 @@ public class ConfigurationGroupBothSampleTest {
       System.out.println("[A] " + string + " on Thread:" + Thread.currentThread());
     }
   }
-
-
 }

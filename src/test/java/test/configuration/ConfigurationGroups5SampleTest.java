@@ -40,7 +40,7 @@ public class ConfigurationGroups5SampleTest {
     m_run2 = true;
   }
 
-  @AfterGroups({ "cg5-1", "cg5-2"})
+  @AfterGroups({"cg5-1", "cg5-2"})
   public void after() {
     log("after");
     m_afterCount++;
@@ -51,7 +51,7 @@ public class ConfigurationGroups5SampleTest {
     m_after = true;
   }
 
-  @Test(dependsOnGroups = { "cg5-1", "cg5-2" })
+  @Test(dependsOnGroups = {"cg5-1", "cg5-2"})
   public void verify() {
     log("verify");
     Assert.assertTrue(m_run1, "run1() wasn't run");
@@ -69,5 +69,4 @@ public class ConfigurationGroups5SampleTest {
       System.out.println("[ConfigurationGroups5SampleTest] " + s);
     }
   }
-
 }

@@ -21,8 +21,4 @@ public class BeforeTestOrdering1Test extends BaseBeforeTestOrdering {
     log("f1");
   }
 
-  private static void ppp(String s) {
-    System.out.println("[BeforeTestOrdering1Test] " + s);
-  }
-
 }

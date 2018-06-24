@@ -1,7 +1,6 @@
 package test.configuration;
 
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
@@ -17,14 +16,12 @@ public class SingleConfigurationTest {
   private static int m_before;
 
   @Factory(dataProvider = "dp")
-  public SingleConfigurationTest(int n) {
-  }
+  public SingleConfigurationTest(int n) {}
 
   @DataProvider
   public static Object[][] dp() {
     return new Object[][] {
-        new Object[] { 42 },
-        new Object[] { 43 },
+      new Object[] {42}, new Object[] {43},
     };
   }
 
