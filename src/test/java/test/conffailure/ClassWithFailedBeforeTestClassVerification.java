@@ -23,11 +23,9 @@ public class ClassWithFailedBeforeTestClassVerification {
 
   // Adding this method or @Configuration will never be invoked
   @Test
-  public void dummy() {
+  public void dummy() {}
 
-  }
-
-  static public boolean success() {
+  public static boolean success() {
     return m_success1 && m_success2;
   }
 }

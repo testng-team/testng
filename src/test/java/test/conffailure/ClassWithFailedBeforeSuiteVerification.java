@@ -20,7 +20,7 @@ public class ClassWithFailedBeforeSuiteVerification {
     m_success2 = false;
   }
 
-  static public boolean success() {
+  public static boolean success() {
     return m_success1 && m_success2;
   }
 }

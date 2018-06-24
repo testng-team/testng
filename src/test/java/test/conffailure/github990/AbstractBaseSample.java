@@ -8,18 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBaseSample {
-    public static List<String> messages = new ArrayList<>();
+  public static List<String> messages = new ArrayList<>();
 
-    @BeforeTest
-    protected void setup() {
-        throw new RuntimeException("Fail the test.");
-    }
+  @BeforeTest
+  protected void setup() {
+    throw new RuntimeException("Fail the test.");
+  }
 
-    @Test
-    protected abstract void execute();
+  @Test
+  protected abstract void execute();
 
-    @AfterTest(alwaysRun = true)
-    protected void cleanup() {
-        messages.add("cleanup");
-    }
+  @AfterTest(alwaysRun = true)
+  protected void cleanup() {
+    messages.add("cleanup");
+  }
 }

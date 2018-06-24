@@ -8,5 +8,4 @@ public class ClassWithFailedBeforeSuite {
   public void setUpShouldFail() {
     throw new RuntimeException("Failing in setUp");
   }
-
 }

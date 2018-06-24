@@ -11,8 +11,5 @@ public class ClassWithFailedBeforeTestClass {
 
   // Adding this method or @Configuration will never be invoked
   @Test
-  public void dummy() {
-
-  }
-
+  public void dummy() {}
 }
