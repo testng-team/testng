@@ -2,18 +2,12 @@ package test.dependsongroup;
 
 import org.testng.annotations.Test;
 
-@Test(groups = { "zero" })
+@Test(groups = {"zero"})
 public class ZeroSampleTest {
 
   @Test
-  public void zeroA() {
-//    System.out.println("zeroA");
-  }
+  public void zeroA() {}
 
   @Test
-  public void zeroB() {
-//    System.out.println("zeroB");
-  }
-
+  public void zeroB() {}
 }
-
