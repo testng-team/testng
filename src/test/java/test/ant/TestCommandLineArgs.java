@@ -6,18 +6,10 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 
-
-/**
- * Tests some of the functionality in {@link TestNGCommandLineArgs}.
- *
- * @author jkuhnert
- */
-public class TestCommandLineArgs
-{
+public class TestCommandLineArgs {
 
   @Test
-  public void testUnixPathResolution()
-  {
+  public void testUnixPathResolution() {
     String path = "/wee/wom/flibble.txt";
 
     String[] segments = path.split("[/\\\\]", -1);
@@ -27,8 +19,7 @@ public class TestCommandLineArgs
   }
 
   @Test
-  public void testDOSPathResolution()
-  {
+  public void testDOSPathResolution() {
     String path = "c:\\\\com\\pants\\wibble.txt";
 
     String[] segments = path.split("[/\\\\]", -1);
@@ -38,8 +29,7 @@ public class TestCommandLineArgs
   }
 
   @Test
-  public void testPathResolution()
-  {
+  public void testPathResolution() {
     File file = new File("CHANGES.txt");
 
     assert file.exists();

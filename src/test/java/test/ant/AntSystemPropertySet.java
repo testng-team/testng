@@ -6,16 +6,15 @@ import static org.testng.Assert.assertNotNull;
 import org.testng.annotations.Test;
 
 /**
- * Test whether nested propertysets are passed passed from the ant task. Executed by the "run:antprop" target
- * in test/build.xml.
+ * Test whether nested propertysets are passed passed from the ant task. Executed by the
+ * "run:antprop" target in test/build.xml.
  *
  * @author <a href="mailto:ttopwells@gmail.com">Todd Wells</a>
  */
 public class AntSystemPropertySet {
 
   @Test
-  public void outputTestProperties()
-  {
+  public void outputTestProperties() {
     assertNotNull(System.getProperty("syspropset1"), "syspropset1 not found");
     assertEquals(System.getProperty("syspropset1"), "value 1", "Wrong value for syspropset1");
 
