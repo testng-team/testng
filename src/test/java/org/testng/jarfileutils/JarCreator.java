@@ -14,45 +14,42 @@ import java.io.IOException;
 
 public class JarCreator {
 
-    private static final String PREFIX = "testng";
-    private static final String ARCHIVE_NAME = "testng-tests.jar";
+  private static final String PREFIX = "testng";
+  private static final String ARCHIVE_NAME = "testng-tests.jar";
 
-    public static File generateJar() throws IOException {
-        return generateJar(getTestClasses(), getResources(), PREFIX, ARCHIVE_NAME);
-    }
+  public static File generateJar() throws IOException {
+    return generateJar(getTestClasses(), getResources(), PREFIX, ARCHIVE_NAME);
+  }
 
-    public static File generateJar(Class<?>[] classes) throws IOException {
-        return generateJar(classes, new String[] {}, PREFIX, ARCHIVE_NAME);
-    }
+  public static File generateJar(Class<?>[] classes) throws IOException {
+    return generateJar(classes, new String[] {}, PREFIX, ARCHIVE_NAME);
+  }
 
-    public static File generateJar(Class<?>[] classes, String[] resources, String prefix, String archiveName) throws IOException {
-        File jarFile = File.createTempFile(prefix, ".jar");
-        JavaArchive archive = ShrinkWrap.create(JavaArchive.class, archiveName)
-                .addClasses(classes);
-        for (String resource : resources) {
-            archive = archive.addAsResource(resource);
-        }
-        archive.as(ZipExporter.class).exportTo(jarFile, true);
-        return jarFile;
+  public static File generateJar(
+      Class<?>[] classes, String[] resources, String prefix, String archiveName)
+      throws IOException {
+    File jarFile = File.createTempFile(prefix, ".jar");
+    JavaArchive archive = ShrinkWrap.create(JavaArchive.class, archiveName).addClasses(classes);
+    for (String resource : resources) {
+      archive = archive.addAsResource(resource);
     }
+    archive.as(ZipExporter.class).exportTo(jarFile, true);
+    return jarFile;
+  }
 
-    private static Class<?>[] getTestClasses() {
-        return new Class<?>[] {
-                SampleTest1.class,
-                SampleTest2.class,
-                SampleTest3.class,
-                SampleTest4.class,
-                SampleTest5.class
-        };
-    }
+  private static Class<?>[] getTestClasses() {
+    return new Class<?>[] {
+      SampleTest1.class, SampleTest2.class, SampleTest3.class, SampleTest4.class, SampleTest5.class
+    };
+  }
 
-    private static String[] getResources() {
-        return new String[] {
-                "jarfileutils/testng-tests.xml",
-                "jarfileutils/child.xml",
-                "jarfileutils/child/child.xml",
-                "jarfileutils/child/childofchild/childofchild.xml",
-                "jarfileutils/childofchild/childofchild.xml"
-        };
-    }
+  private static String[] getResources() {
+    return new String[] {
+      "jarfileutils/testng-tests.xml",
+      "jarfileutils/child.xml",
+      "jarfileutils/child/child.xml",
+      "jarfileutils/child/childofchild/childofchild.xml",
+      "jarfileutils/childofchild/childofchild.xml"
+    };
+  }
 }
