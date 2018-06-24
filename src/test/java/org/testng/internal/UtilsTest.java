@@ -15,32 +15,31 @@ import static org.testng.internal.Utils.join;
  * @author Tomas Pollak
  */
 public class UtilsTest {
-	private static final char INVALID_CHAR = 0xFFFE;
-	private static final char REPLACEMENT_CHAR = 0xFFFD;
+  private static final char INVALID_CHAR = 0xFFFE;
+  private static final char REPLACEMENT_CHAR = 0xFFFD;
 
-	@Test
-	public void escapeUnicode() {
-		assertEquals(Utils.escapeUnicode("test"), "test");
-		assertEquals(Utils.escapeUnicode(String.valueOf(INVALID_CHAR)),
-				String.valueOf(REPLACEMENT_CHAR));
+  @Test
+  public void escapeUnicode() {
+    assertEquals(Utils.escapeUnicode("test"), "test");
+    assertEquals(
+        Utils.escapeUnicode(String.valueOf(INVALID_CHAR)), String.valueOf(REPLACEMENT_CHAR));
+  }
 
-	}
+  @Test
+  public void createEmptyStringWhenJoiningEmptyListWithJoin() {
+    List<String> emptyList = emptyList();
+    assertEquals("", join(emptyList, ","));
+  }
 
-	@Test
-	public void createEmptyStringWhenJoiningEmptyListWithJoin() throws Exception {
-		List<String> emptyList = emptyList();
-		assertEquals("", join(emptyList, ","));
-	}
+  @Test
+  public void joinTwoStringsWithJoinStrings() {
+    List<String> twoStrings = asList("one", "two");
+    assertEquals("one,two", Utils.join(twoStrings, ","));
+  }
 
-	@Test
-	public void joinTwoStringsWithJoinStrings() throws Exception {
-		List<String> twoStrings = asList("one", "two");
-		assertEquals("one,two", Utils.join(twoStrings, ","));
-	}
-
-	@Test
-	public void createEmptyStringWhenJoiningEmptyListWithJoinStrings() throws Exception {
-		List<String> emptyList = emptyList();
-		assertEquals("", Utils.join(emptyList, ","));
-	}
+  @Test
+  public void createEmptyStringWhenJoiningEmptyListWithJoinStrings() {
+    List<String> emptyList = emptyList();
+    assertEquals("", Utils.join(emptyList, ","));
+  }
 }

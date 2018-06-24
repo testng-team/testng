@@ -68,8 +68,7 @@ public class MethodInstanceTest {
 
     try {
       methods.sort(MethodInstance.SORT_BY_INDEX);
-    }
-    catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException ex) {
       Assert.fail("Comparison method violates its general contract!");
     }
   }
@@ -79,8 +78,11 @@ public class MethodInstanceTest {
     return new MethodInstance(new TestNGMethodStub(null, testClass));
   }
 
-  private MethodInstance buildMethodInstance(String xmlTestName, String xmlClassName, int xmlClassIndex, String methodName) {
-    TestClassStub testClass = new TestClassStub(new XmlTestStub(xmlTestName), new XmlClassStub(xmlClassName, xmlClassIndex));
+  private MethodInstance buildMethodInstance(
+      String xmlTestName, String xmlClassName, int xmlClassIndex, String methodName) {
+    TestClassStub testClass =
+        new TestClassStub(
+            new XmlTestStub(xmlTestName), new XmlClassStub(xmlClassName, xmlClassIndex));
     return new MethodInstance(new TestNGMethodStub(methodName, testClass));
   }
 
@@ -160,8 +162,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void addInstance(Object instance) {
-    }
+    public void addInstance(Object instance) {}
 
     @Override
     public Object[] getInstances(boolean reuse) {
@@ -227,7 +228,6 @@ public class MethodInstanceTest {
     public ITestNGMethod[] getAfterGroupsMethods() {
       return new ITestNGMethod[0];
     }
-
   }
 
   public static class TestNGMethodStub implements ITestNGMethod {
@@ -238,7 +238,6 @@ public class MethodInstanceTest {
     public TestNGMethodStub(String methodName, TestClassStub testClassStub) {
       this.methodName = methodName;
       this.testClassStub = testClassStub;
-
     }
 
     @Override
@@ -257,8 +256,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setTestClass(ITestClass cls) {
-    }
+    public void setTestClass(ITestClass cls) {}
 
     @Override
     public String getMethodName() {
@@ -291,8 +289,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setMissingGroup(String group) {
-    }
+    public void setMissingGroup(String group) {}
 
     @Override
     public String[] getBeforeGroups() {
@@ -310,8 +307,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void addMethodDependedUpon(String methodName) {
-    }
+    public void addMethodDependedUpon(String methodName) {}
 
     @Override
     public boolean isTest() {
@@ -374,8 +370,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setTimeOut(long timeOut) {
-    }
+    public void setTimeOut(long timeOut) {}
 
     @Override
     public int getInvocationCount() {
@@ -383,12 +378,10 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setInvocationCount(int count) {
-    }
+    public void setInvocationCount(int count) {}
 
     @Override
-    public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {
-    }
+    public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {}
 
     @Override
     public boolean hasMoreInvocation() {
@@ -406,8 +399,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setId(String id) {
-    }
+    public void setId(String id) {}
 
     @Override
     public long getDate() {
@@ -415,8 +407,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setDate(long date) {
-    }
+    public void setDate(long date) {}
 
     @Override
     public boolean canRunFromClass(IClass testClass) {
@@ -434,8 +425,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setThreadPoolSize(int threadPoolSize) {
-    }
+    public void setThreadPoolSize(int threadPoolSize) {}
 
     @Override
     public boolean getEnabled() {
@@ -448,12 +438,10 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setDescription(String description) {
-    }
+    public void setDescription(String description) {}
 
     @Override
-    public void incrementCurrentInvocationCount() {
-    }
+    public void incrementCurrentInvocationCount() {}
 
     @Override
     public int getCurrentInvocationCount() {
@@ -461,8 +449,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setParameterInvocationCount(int n) {
-    }
+    public void setParameterInvocationCount(int n) {}
 
     @Override
     public int getParameterInvocationCount() {
@@ -475,8 +462,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
-    }
+    public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {}
 
     @Override
     public boolean skipFailedInvocations() {
@@ -484,8 +470,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setSkipFailedInvocations(boolean skip) {
-    }
+    public void setSkipFailedInvocations(boolean skip) {}
 
     @Override
     public long getInvocationTimeOut() {
@@ -498,8 +483,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setIgnoreMissingDependencies(boolean ignore) {
-    }
+    public void setIgnoreMissingDependencies(boolean ignore) {}
 
     @Override
     public List<Integer> getInvocationNumbers() {
@@ -507,12 +491,10 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setInvocationNumbers(List<Integer> numbers) {
-    }
+    public void setInvocationNumbers(List<Integer> numbers) {}
 
     @Override
-    public void addFailedInvocationNumber(int number) {
-    }
+    public void addFailedInvocationNumber(int number) {}
 
     @Override
     public List<Integer> getFailedInvocationNumbers() {
@@ -525,8 +507,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setPriority(int priority) {
-    }
+    public void setPriority(int priority) {}
 
     @Override
     public XmlTest getXmlTest() {
@@ -545,8 +526,7 @@ public class MethodInstanceTest {
 
     @Override
     public String getQualifiedName() {
-  	  return getRealClass().getName() + "." + getMethodName();
+      return getRealClass().getName() + "." + getMethodName();
     }
   }
-
 }

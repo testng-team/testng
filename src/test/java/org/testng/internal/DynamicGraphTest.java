@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -91,7 +90,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     dg.setStatus(x, Status.FINISHED);
     dg.setStatus(y, Status.FINISHED);
     assertFreeNodesEquals(dg, a1);
-    
+
     dg.setStatus(a1, Status.RUNNING);
     assertFreeNodesEquals(dg);
     dg.setStatus(a1, Status.FINISHED);
@@ -143,7 +142,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     assertFreeNodesEquals(dg);
     dg.setStatus(x, Status.FINISHED);
     assertFreeNodesEquals(dg, a1);
-    
+
     dg.setStatus(a1, Status.RUNNING);
     assertFreeNodesEquals(dg);
     dg.setStatus(a1, Status.FINISHED);
@@ -162,65 +161,67 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
   @Test
   public void test3() {
-          DynamicGraph<Node> dg = new DynamicGraph<>();
-          Node a = new Node("a");
-          Node b = new Node("b");
-          Node c = new Node("c");
-          dg.addNode(a);
-          dg.addNode(b);
-          dg.addNode(c);
-          dg.addEdge(1, a, b);
-          dg.addEdge(0, c, b);
-          dg.addEdge(0, b, a);
+    DynamicGraph<Node> dg = new DynamicGraph<>();
+    Node a = new Node("a");
+    Node b = new Node("b");
+    Node c = new Node("c");
+    dg.addNode(a);
+    dg.addNode(b);
+    dg.addNode(c);
+    dg.addEdge(1, a, b);
+    dg.addEdge(0, c, b);
+    dg.addEdge(0, b, a);
 
-          assertFreeNodesEquals(dg, b);
+    assertFreeNodesEquals(dg, b);
 
-          dg.setStatus(b, Status.RUNNING);
-          assertFreeNodesEquals(dg);
-          dg.setStatus(b, Status.FINISHED);
-          assertFreeNodesEquals(dg, a);
+    dg.setStatus(b, Status.RUNNING);
+    assertFreeNodesEquals(dg);
+    dg.setStatus(b, Status.FINISHED);
+    assertFreeNodesEquals(dg, a);
 
-          dg.setStatus(a, Status.RUNNING);
-          assertFreeNodesEquals(dg);
-          dg.setStatus(a, Status.FINISHED);
-          assertFreeNodesEquals(dg, c);
+    dg.setStatus(a, Status.RUNNING);
+    assertFreeNodesEquals(dg);
+    dg.setStatus(a, Status.FINISHED);
+    assertFreeNodesEquals(dg, c);
 
-          dg.setStatus(c, Status.RUNNING);
-          assertFreeNodesEquals(dg);
-          dg.setStatus(c, Status.FINISHED);
-          assertFreeNodesEquals(dg);
+    dg.setStatus(c, Status.RUNNING);
+    assertFreeNodesEquals(dg);
+    dg.setStatus(c, Status.FINISHED);
+    assertFreeNodesEquals(dg);
   }
 
   @Test
   public void test4() {
-          DynamicGraph<Node> dg = new DynamicGraph<>();
-          Node a = new Node("a");
-          Node b = new Node("b");
-          dg.addNode(a);
-          dg.addNode(b);
-          dg.addEdge(0, b, a);
+    DynamicGraph<Node> dg = new DynamicGraph<>();
+    Node a = new Node("a");
+    Node b = new Node("b");
+    dg.addNode(a);
+    dg.addNode(b);
+    dg.addEdge(0, b, a);
 
-          assertFreeNodesEquals(dg, a);
+    assertFreeNodesEquals(dg, a);
 
-          dg.setStatus(a, Status.RUNNING);
-          assertFreeNodesEquals(dg);
+    dg.setStatus(a, Status.RUNNING);
+    assertFreeNodesEquals(dg);
 
-          dg.setStatus(a, Status.FINISHED);
-          assertFreeNodesEquals(dg, b);
+    dg.setStatus(a, Status.FINISHED);
+    assertFreeNodesEquals(dg, b);
 
-          dg.setStatus(b, Status.RUNNING);
-          assertFreeNodesEquals(dg);
+    dg.setStatus(b, Status.RUNNING);
+    assertFreeNodesEquals(dg);
 
-          dg.setStatus(b, Status.FINISHED);
-          assertFreeNodesEquals(dg);
+    dg.setStatus(b, Status.FINISHED);
+    assertFreeNodesEquals(dg);
   }
+
   @Test
   public void testOrderingOfEdgesWithSameWeight() {
-    Class<?>[] classes = new Class[] {
-        TestClassContainerForGitHubIssue1360.TestNG1.class,
-        TestClassContainerForGitHubIssue1360.TestNG2.class,
-        TestClassContainerForGitHubIssue1360.TestNG3.class
-    };
+    Class<?>[] classes =
+        new Class[] {
+          TestClassContainerForGitHubIssue1360.TestNG1.class,
+          TestClassContainerForGitHubIssue1360.TestNG2.class,
+          TestClassContainerForGitHubIssue1360.TestNG3.class
+        };
     List<ITestNGMethod> methods = extractTestNGMethods(classes);
     DynamicGraph<ITestNGMethod> graph = new DynamicGraph<>();
 
@@ -241,33 +242,36 @@ public class DynamicGraphTest extends SimpleBaseTest {
       }
       previousPriority = currentPriority;
     }
-    List<String> expected = Arrays.asList("TestNG1.test1TestNG1", "TestNG2.test1TestNG2", "TestNG3.test1TestNG3");
+    List<String> expected =
+        Arrays.asList("TestNG1.test1TestNG1", "TestNG2.test1TestNG2", "TestNG3.test1TestNG3");
     runAssertion(graph, expected);
-    expected = Arrays.asList("TestNG1.test2TestNG1", "TestNG2.test2TestNG2", "TestNG3.test2TestNG3");
+    expected =
+        Arrays.asList("TestNG1.test2TestNG1", "TestNG2.test2TestNG2", "TestNG3.test2TestNG3");
     runAssertion(graph, expected);
 
-    expected = Arrays.asList("TestNG1.test3TestNG1", "TestNG2.test3TestNG2", "TestNG3.test3TestNG3");
+    expected =
+        Arrays.asList("TestNG1.test3TestNG1", "TestNG2.test3TestNG2", "TestNG3.test3TestNG3");
     runAssertion(graph, expected);
   }
-  
+
   @Test
   public void edgeWeightTest1() {
-      List<String> expectedOrder1 = Arrays.asList("t1", "t2", "t3");
-      TestNG tng = create(EdgeWeightTestSample1.class);
-      InvokedMethodNameListener listener = new InvokedMethodNameListener();
-      tng.addListener((ITestNGListener) listener);
-      tng.run();
-      Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder1);
+    List<String> expectedOrder1 = Arrays.asList("t1", "t2", "t3");
+    TestNG tng = create(EdgeWeightTestSample1.class);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+    tng.run();
+    Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder1);
   }
 
   @Test
   public void edgeWeightTest2() {
-      List<String> expectedOrder2 = Arrays.asList("t1", "t2", "t3", "t4", "t5");
-      TestNG tng = create(EdgeWeightTestSample2.class);
-      InvokedMethodNameListener listener = new InvokedMethodNameListener();
-      tng.addListener((ITestNGListener) listener);
-      tng.run();
-      Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
+    List<String> expectedOrder2 = Arrays.asList("t1", "t2", "t3", "t4", "t5");
+    TestNG tng = create(EdgeWeightTestSample2.class);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+    tng.run();
+    Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
   }
 
   private static void runAssertion(DynamicGraph<ITestNGMethod> graph, List<String> expected) {
@@ -280,18 +284,20 @@ public class DynamicGraphTest extends SimpleBaseTest {
   }
 
   private static String constructName(ITestNGMethod method) {
-    return method.getConstructorOrMethod().getDeclaringClass().getSimpleName() + "." + method.getMethodName();
+    return method.getConstructorOrMethod().getDeclaringClass().getSimpleName()
+        + "."
+        + method.getMethodName();
   }
 
   @Test
   public void testDuplicationFunctionality() {
-      XmlSuite suite = createXmlSuite("suite", "test", TestClassSample.class);
-      TestNG testng = create(suite);
-      MethodMultiplyingInterceptor tla = new MethodMultiplyingInterceptor();
-      testng.addListener((ITestNGListener) tla);
-      testng.run();
-      int expected = tla.getMultiplyCount() + tla.getOriginalMethodCount();
-      assertThat(tla.getPassedTests().size()).isEqualTo(expected);
+    XmlSuite suite = createXmlSuite("suite", "test", TestClassSample.class);
+    TestNG testng = create(suite);
+    MethodMultiplyingInterceptor tla = new MethodMultiplyingInterceptor();
+    testng.addListener(tla);
+    testng.run();
+    int expected = tla.getMultiplyCount() + tla.getOriginalMethodCount();
+    assertThat(tla.getPassedTests().size()).isEqualTo(expected);
   }
 
   @Test(expectedExceptions = IllegalStateException.class)
@@ -304,7 +310,8 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
   @Test
   public void testAllowedCycles() {
-    // Cycles with differing weights are explicitly allowed as the graph will discard the lowest weighted edge in
+    // Cycles with differing weights are explicitly allowed as the graph will discard the lowest
+    // weighted edge in
     // order to free up the cycle.
     DynamicGraph<String> dg = new DynamicGraph<>();
     dg.addEdge(0, "a", "b");
@@ -336,17 +343,17 @@ public class DynamicGraphTest extends SimpleBaseTest {
   }
 
   /**
-   * Inefficient algorithms within DynamicGraph can quickly make the execution time explode. This test puts some
-   * minimal limits on the time it takes to process the graph. At the time of the addition of this test, it took
-   * less than 100ms to execute. 2000ms gives enough headroom to prevent flaky failures because of external conditions
-   * such as slower or lower CPU resources.
+   * Inefficient algorithms within DynamicGraph can quickly make the execution time explode. This
+   * test puts some minimal limits on the time it takes to process the graph. At the time of the
+   * addition of this test, it took less than 100ms to execute. 2000ms gives enough headroom to
+   * prevent flaky failures because of external conditions such as slower or lower CPU resources.
    */
   @Test(timeOut = 2000)
   public void testLotsOfEdges() {
     // https://github.com/cbeust/testng/issues/1710
     TestNG tng = create(LotsOfEdgesTest.class);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     tng.run();
   }
 
@@ -362,7 +369,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     List<Integer> fizzBuzz = Lists.newArrayList();
     List<Integer> other = Lists.newArrayList();
 
-    for (int i = 0; i < 100; i ++) {
+    for (int i = 0; i < 100; i++) {
       dg.addNode(i);
 
       if (i % 15 == 0) {
@@ -376,7 +383,8 @@ public class DynamicGraphTest extends SimpleBaseTest {
       }
     }
 
-    // Fizzbuzz based dependencies – fizz depends on other, buzz depends on fizz, fizzbuzz depends on buzz.
+    // Fizzbuzz based dependencies – fizz depends on other, buzz depends on fizz, fizzbuzz depends
+    // on buzz.
     for (Integer f : fizz) {
       for (Integer o : other) {
         dg.addEdge(0, f, o);

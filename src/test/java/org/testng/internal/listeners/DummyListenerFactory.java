@@ -5,18 +5,14 @@ import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
 
 public class DummyListenerFactory implements ITestNGListenerFactory, IExecutionListener {
-    @Override
-    public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
-        return this;
-    }
+  @Override
+  public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
+    return this;
+  }
 
-    @Override
-    public void onExecutionStart() {
+  @Override
+  public void onExecutionStart() {}
 
-    }
-
-    @Override
-    public void onExecutionFinish() {
-
-    }
+  @Override
+  public void onExecutionFinish() {}
 }

@@ -4,7 +4,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class ParameterizedSampleTestClass {
-    @Test
-    @Parameters("foo")
-    public void testMethod(String foo) {}
+  @Test
+  @Parameters("foo")
+  public void testMethod(String foo) {}
 }
