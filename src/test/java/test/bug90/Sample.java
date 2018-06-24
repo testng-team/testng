@@ -7,14 +7,11 @@ public class Sample {
   static boolean m_afterClassWasRun = false;
 
   @Test
-  public void test1() {
-  }
-
+  public void test1() {}
 
   @Test
-  public void test2() {
-  }
-  
+  public void test2() {}
+
   @AfterClass
   public void afterClass() {
     m_afterClassWasRun = true;
