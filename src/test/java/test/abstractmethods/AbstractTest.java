@@ -1,7 +1,6 @@
 package test.abstractmethods;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -13,7 +12,7 @@ public class AbstractTest extends SimpleBaseTest {
   public void abstractShouldRun() {
     TestNG tng = create(CRUDTest2.class);
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 2);

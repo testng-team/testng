@@ -3,11 +3,8 @@ package test.abstractmethods;
 public class CRUDTest2 extends CRUDTest {
 
   @Override
-  public void create() {
-  }
+  public void create() {}
 
   @Override
-  public void read() {
-  }
-
+  public void read() {}
 }

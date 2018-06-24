@@ -2,7 +2,7 @@ package test.abstractmethods;
 
 import org.testng.annotations.Test;
 
-abstract public class CRUDTest {
+public abstract class CRUDTest {
 
   @Test
   public abstract void create();
