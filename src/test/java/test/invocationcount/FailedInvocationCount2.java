@@ -26,5 +26,4 @@ public class FailedInvocationCount2 {
       throw new RuntimeException();
     }
   }
-
 }

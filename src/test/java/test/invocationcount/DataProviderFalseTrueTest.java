@@ -9,5 +9,4 @@ public class DataProviderFalseTrueTest extends DataProviderBase {
 
   @AfterMethod(lastTimeOnly = true)
   public void afterMethod() {}
-
 }
