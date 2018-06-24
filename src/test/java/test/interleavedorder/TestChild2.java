@@ -3,7 +3,6 @@ package test.interleavedorder;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
-
 public class TestChild2 extends BaseTestClass {
   @BeforeClass
   public void beforeTestChildTwoClass() {
@@ -22,5 +21,4 @@ public class TestChild2 extends BaseTestClass {
       System.out.println("[TestChild2] " + s);
     }
   }
-
 }

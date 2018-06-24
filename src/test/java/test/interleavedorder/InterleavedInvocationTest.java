@@ -13,7 +13,6 @@ import testhelper.OutputDirectoryPatch;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class InterleavedInvocationTest extends BaseTest {
   public static List<String> LOG = new ArrayList<>();
 
@@ -24,8 +23,9 @@ public class InterleavedInvocationTest extends BaseTest {
 
   private void verifyInvocation(int number, List<String> log, int index) {
     Assert.assertEquals(log.get(index), "beforeTestChild" + number + "Class");
-    Assert.assertTrue(("test1".equals(log.get(index + 1)) && "test2".equals(LOG.get(index + 2)))
-        || ("test2".equals(LOG.get(index + 1)) && "test1".equals(LOG.get(index + 2))),
+    Assert.assertTrue(
+        ("test1".equals(log.get(index + 1)) && "test2".equals(LOG.get(index + 2)))
+            || ("test2".equals(LOG.get(index + 1)) && "test1".equals(LOG.get(index + 2))),
         "test methods were not invoked correctly");
     Assert.assertEquals(log.get(index + 3), "afterTestChild" + number + "Class");
   }
@@ -35,8 +35,8 @@ public class InterleavedInvocationTest extends BaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] { TestChild1.class, TestChild2.class });
-    testng.addListener((ITestNGListener) tla);
+    testng.setTestClasses(new Class[] {TestChild1.class, TestChild2.class});
+    testng.addListener(tla);
     testng.setVerbose(0);
     testng.run();
 

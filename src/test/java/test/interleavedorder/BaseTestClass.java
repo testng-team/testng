@@ -2,7 +2,6 @@ package test.interleavedorder;
 
 import org.testng.annotations.Test;
 
-
 public class BaseTestClass {
   @Test
   public void testOne() {
@@ -21,5 +20,4 @@ public class BaseTestClass {
       System.out.println(getClass().toString() + " " + s);
     }
   }
-
 }
