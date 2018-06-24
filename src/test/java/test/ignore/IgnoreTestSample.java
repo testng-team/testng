@@ -5,10 +5,10 @@ import org.testng.annotations.Test;
 
 public class IgnoreTestSample {
 
-    @Test
-    public void test() {}
+  @Test
+  public void test() {}
 
-    @Test
-    @Ignore
-    public void ignoredTest() {}
+  @Test
+  @Ignore
+  public void ignoredTest() {}
 }

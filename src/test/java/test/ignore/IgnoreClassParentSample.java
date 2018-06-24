@@ -6,6 +6,6 @@ import org.testng.annotations.Test;
 @Ignore
 public class IgnoreClassParentSample {
 
-    @Test
-    public void parentTest() {}
+  @Test
+  public void parentTest() {}
 }
