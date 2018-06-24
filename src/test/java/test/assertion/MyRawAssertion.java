@@ -40,27 +40,28 @@ public class MyRawAssertion extends Assertion {
   }
 
   public void myAssert(final String actual, final boolean expected, final String message) {
-    doAssert(new IAssert() {
-      @Override
-      public String getMessage() {
-        return message;
-      }
+    doAssert(
+        new IAssert() {
+          @Override
+          public String getMessage() {
+            return message;
+          }
 
-      @Override
-      public void doAssert() {
-        Assert.assertNotNull(actual, message);
-        Assert.assertTrue(expected, message);
-      }
+          @Override
+          public void doAssert() {
+            Assert.assertNotNull(actual, message);
+            Assert.assertTrue(expected, message);
+          }
 
-      @Override
-      public Object getActual() {
-        return actual;
-      }
+          @Override
+          public Object getActual() {
+            return actual;
+          }
 
-      @Override
-      public Object getExpected() {
-        return expected;
-      }
-    });
+          @Override
+          public Object getExpected() {
+            return expected;
+          }
+        });
   }
 }

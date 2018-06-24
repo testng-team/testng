@@ -17,17 +17,18 @@ public class SoftAssertTest {
   public void testOnSucceedAndFailureCalled() {
     final Collection<IAssert> succeed = new ArrayList<>();
     final Collection<IAssert> failures = new ArrayList<>();
-    final SoftAssert sa = new SoftAssert() {
-      @Override
-      public void onAssertSuccess(IAssert assertCommand) {
-        succeed.add(assertCommand);
-      }
+    final SoftAssert sa =
+        new SoftAssert() {
+          @Override
+          public void onAssertSuccess(IAssert assertCommand) {
+            succeed.add(assertCommand);
+          }
 
-      @Override
-      public void onAssertFailure(IAssert assertCommand, AssertionError ex) {
-        failures.add(assertCommand);
-      }
-    };
+          @Override
+          public void onAssertFailure(IAssert assertCommand, AssertionError ex) {
+            failures.add(assertCommand);
+          }
+        };
     sa.assertTrue(true);
     sa.assertTrue(false);
     Assert.assertEquals(succeed.size(), 1, succeed.toString());
@@ -50,6 +51,7 @@ public class SoftAssertTest {
       Assert.assertFalse(lines[1].contains(message));
     }
   }
+
   private static final String hiddenMsg = "hidden msg";
 
   @Test(description = "GITHUB-1778", dataProvider = "dp")
@@ -75,5 +77,4 @@ public class SoftAssertTest {
     String stackTrace = sw.toString();
     Assert.assertTrue(stackTrace.contains(text));
   }
-
 }

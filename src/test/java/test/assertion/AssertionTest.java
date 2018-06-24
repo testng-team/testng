@@ -27,8 +27,13 @@ public class AssertionTest {
     rawAssertion.myAssert("test", true, "Raw test");
 
     assertThat(rawAssertion.getMethods())
-        .containsExactly("onBeforeAssert", "onAssertSuccess", "onAfterAssert",
-                         "onBeforeAssert", "onAssertSuccess", "onAfterAssert");
+        .containsExactly(
+            "onBeforeAssert",
+            "onAssertSuccess",
+            "onAfterAssert",
+            "onBeforeAssert",
+            "onAssertSuccess",
+            "onAfterAssert");
   }
 
   @Test(expectedExceptions = AssertionError.class, expectedExceptionsMessageRegExp = "Raw test .*")
@@ -39,8 +44,13 @@ public class AssertionTest {
     } catch (AssertionError error) {
 
       assertThat(rawAssertion.getMethods())
-          .containsExactly("onBeforeAssert", "onAssertSuccess", "onAfterAssert",
-                           "onBeforeAssert", "onAssertFailure", "onAfterAssert");
+          .containsExactly(
+              "onBeforeAssert",
+              "onAssertSuccess",
+              "onAfterAssert",
+              "onBeforeAssert",
+              "onAssertFailure",
+              "onAfterAssert");
 
       throw error;
     }
