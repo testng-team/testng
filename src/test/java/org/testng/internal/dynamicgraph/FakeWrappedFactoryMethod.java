@@ -5,15 +5,15 @@ import org.testng.internal.WrappedTestNGMethod;
 
 public class FakeWrappedFactoryMethod extends WrappedTestNGMethod {
 
-    private Object instance;
+  private Object instance;
 
-    public FakeWrappedFactoryMethod(ITestNGMethod testNGMethod, Object instance) {
-        super(testNGMethod);
-        this.instance = instance;
-    }
+  public FakeWrappedFactoryMethod(ITestNGMethod testNGMethod, Object instance) {
+    super(testNGMethod);
+    this.instance = instance;
+  }
 
-    @Override
-    public Object getInstance() {
-        return instance;
-    }
+  @Override
+  public Object getInstance() {
+    return instance;
+  }
 }
