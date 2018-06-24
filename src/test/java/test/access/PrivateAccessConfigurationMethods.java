@@ -9,9 +9,7 @@ import org.testng.annotations.Test;
  *
  * @author cbeust
  */
-public class PrivateAccessConfigurationMethods
-  extends BasePrivateAccessConfigurationMethods
-{
+public class PrivateAccessConfigurationMethods extends BasePrivateAccessConfigurationMethods {
   private boolean m_private = false;
   private boolean m_default = false;
   private boolean m_protected = false;
@@ -47,6 +45,5 @@ public class PrivateAccessConfigurationMethods
     Assert.assertTrue(m_baseProtected, "protected base @Configuration should have been run");
     Assert.assertTrue(m_baseDefault, "default base @Configuration should have been run");
     Assert.assertTrue(m_basePrivate, "private base @Configuration should not have been run");
-
   }
 }
