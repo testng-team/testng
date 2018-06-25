@@ -53,7 +53,7 @@ public class DependencyMap {
     List<ITestNGMethod> l = m_dependencies.get(methodName);
     if (l.isEmpty()) {
       // Try to fetch dependencies by using the test class in the method name.
-      // This is usually needed in scenarios wherein a child class overrides a base class method
+      // This is usually needed in scenarios wherein a child class overrides a base class method.
       // So the dependency name needs to be adjusted to use the test class name instead of using the
       // declared class.
       l = m_dependencies.get(constructMethodNameUsingTestClass(methodName, fromMethod));
@@ -64,7 +64,7 @@ public class DependencyMap {
     for (ITestNGMethod m : l) {
       // If they are in the same class hierarchy, they must belong to the same instance,
       // otherwise, it's a method depending on a method in a different class so we
-      // don't bother checking the instance
+      // don't bother checking the instance.
       if (isSameInstance(fromMethod, m)
           || belongToDifferentClassHierarchy(fromMethod, m)
           || hasInstance(fromMethod, m)) {
