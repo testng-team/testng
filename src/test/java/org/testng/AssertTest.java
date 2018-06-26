@@ -164,16 +164,40 @@ public class AssertTest {
 
   @Test
   public void compareFloatArrays() {
-    float[] actual = {(float) Math.PI, (float) Math.E};
-    float[] expected = {(float) Math.PI, (float) Math.E};
+    float[] actual = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL, Float.MAX_VALUE,
+            Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+    float[] expected = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL, Float.MAX_VALUE,
+            Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
     Assert.assertEquals(actual, expected);
   }
 
   @Test
+  public void compareFloatArraysWithNaNValues() {
+    Assert.assertEquals(new float[] { Float.NaN }, new float[] { Float.NaN });
+  }
+
+  @Test
+  public void compareFloatWithNaNValues() {
+    Assert.assertEquals((float) Float.NaN ,(float) Float.NaN);
+  }
+
+  @Test
   public void compareDoubleArrays() {
-    double[] actual = {Math.PI, Math.E};
-    double[] expected = {Math.PI, Math.E};
+    double[] actual = {Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL, Double.MAX_VALUE,
+            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+    double[] expected = {Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL, Double.MAX_VALUE,
+            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
     Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void compareDoubleArraysWithNaNValues() {
+    Assert.assertEquals(new double[] { Double.NaN }, new double[] { Double.NaN });
+  }
+
+  @Test
+  public void compareDoubleWithNaNValues() {
+    Assert.assertEquals( (double) Double.NaN , (double) Double.NaN);
   }
 
   @Test(expectedExceptions = AssertionError.class)
