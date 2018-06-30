@@ -6,7 +6,7 @@
             <script language="beanshell">
                 <![CDATA[
                 whatTest = System.getProperty("testToRun");
-                if (whatTest == null || whatTest.trim().isEmpty()) return true;
+                if (whatTest == void || whatTest.trim().isEmpty()) return true;
                 whatTest.contains(testngMethod.getXmlTest().getName());
                 ]]>
             </script>
