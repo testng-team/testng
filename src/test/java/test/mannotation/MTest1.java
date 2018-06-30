@@ -16,7 +16,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 @Test(enabled = true, groups = {"group1", "group2"},
-    alwaysRun = true, parameters = {"param1", "param2"},
+    alwaysRun = true,
     dependsOnGroups = {"dg1", "dg2"}, dependsOnMethods = {"dm1", "dm2"},
     timeOut = 42, invocationCount = 43, successPercentage = 44,
     threadPoolSize = 3,
@@ -26,7 +26,7 @@ public class MTest1 {
   public MTest1() {}
 
   @Test(enabled = true, groups = {"group3", "group4"},
-      alwaysRun = true, parameters = {"param3", "param4"},
+      alwaysRun = true,
       dependsOnGroups = {"dg3", "dg4"}, dependsOnMethods = {"dm3", "dm4"},
       timeOut = 142, invocationCount = 143, successPercentage = 61,
       dataProvider = "dp2", description = "Method description",
@@ -50,13 +50,12 @@ public class MTest1 {
   @Test(groups = {"ogroup1", "ogroup2"}, dependsOnGroups = {"odg1", "odg2"}, dependsOnMethods = {"odm1", "odm2"},
           description = "beforeSuite description", enabled = false, alwaysRun = true,
           expectedExceptions = {MTest1.class, MTest2.class})
-  @Parameters({"oparam1", "oparam2"})
   @DataProvider(name = "dp4")
   public Object[][] otherConfigurations() {
     return null;
   }
 
-  @Factory(parameters = {"pf1", "pf2"})
+  @Factory
   public void factory() {}
 
   @Parameters({"pp1", "pp2", "pp3"})

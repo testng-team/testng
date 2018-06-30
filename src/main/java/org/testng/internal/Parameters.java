@@ -739,17 +739,7 @@ public class Parameters {
     // Else, use the deprecated syntax
     //
     else {
-      IParameterizable a = (IParameterizable) finder.findAnnotation(m, annotationClass);
-      if (null != a && a.getParameters() != null && a.getParameters().length > 0) {
-        String[] parameterNames = a.getParameters();
-        extraParameters =
-            createParametersForMethod(
-                m, types, extraOptionalValues, atName, parameterNames, params, xmlSuite);
-      } else {
-        extraParameters =
-            createParametersForMethod(
-                m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
-      }
+      extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
     }
 
     //

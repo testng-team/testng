@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-@Test(sequential = true)
+@Test(singleThreaded = true)
 public class BugBase {
   static Set<Long> m_threadIds;
 

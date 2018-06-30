@@ -4,9 +4,6 @@ import org.testng.annotations.ITestOrConfiguration;
 
 /**
  * Base interface for IBeforeSuite, IAfterSuite, etc...
- *
- * @author cbeust
- * @since Jun 22, 2006
  */
 public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /** Whether methods on this class/method are enabled. */

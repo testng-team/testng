@@ -4,7 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 public class BaseAnnotation {
-  private Class m_testClass;
+
+  private Class<?> m_testClass;
   private Method m_method;
   private Constructor m_constructor;
 
@@ -24,11 +25,11 @@ public class BaseAnnotation {
     m_method = method;
   }
 
-  public Class getTestClass() {
+  public Class<?> getTestClass() {
     return m_testClass;
   }
 
-  public void setTestClass(Class testClass) {
+  public void setTestClass(Class<?> testClass) {
     m_testClass = testClass;
   }
 }

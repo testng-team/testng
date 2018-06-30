@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 
 /**
  * Describes how to pass parameters to a &#64;Test method.
- *
- * @author <a href="mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
 @Retention(RUNTIME)
 @Target({METHOD, CONSTRUCTOR, TYPE})

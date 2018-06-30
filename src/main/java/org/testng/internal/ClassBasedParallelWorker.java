@@ -96,7 +96,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
 
   private static boolean isSequential(
       org.testng.annotations.ITestAnnotation test, XmlTest xmlTest) {
-    return test != null && (test.getSequential() || test.getSingleThreaded())
+    return test != null && test.getSingleThreaded()
         || XmlSuite.ParallelMode.CLASSES.equals(xmlTest.getParallel());
   }
 
