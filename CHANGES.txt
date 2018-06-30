@@ -51,6 +51,7 @@ Fixed: GITHUB-1710: Inefficient DynamicGraph causes hang with only 100 tests. (S
 Fixed: GITHUB-1716: Potential NPE in jq.Main reporter (Krishnan Mahadevan)
 Fixed: GITHUB-1709: @Ignore doesn't work when used on child class, and parent has @Test methods (Krishnan Mahadevan)
 Fixed: GITHUB-1706: Retrying of methods fail when test method involves native injection (Krishnan Mahadevan)
+Fixed: GITHUB-1827: TestNG does not throw an error when a test class does not have a proper constructor (Julien Herr & Krishnan Mahadevan)
 
 6.14.3
 Fixed: GITHUB-1077: TestNG cannot handle load (Aheiss)

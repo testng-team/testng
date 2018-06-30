@@ -37,7 +37,7 @@ public class ClassHelperTest {
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
     IObjectFactory objectFactory = new ObjectFactoryImpl();
     Object object =
-        ClassHelper.createInstance1(declaringClass, classes, xmlTest, finder, objectFactory);
+        ClassHelper.createInstance1(declaringClass, classes, xmlTest, finder, objectFactory, false);
     Assert.assertTrue(object instanceof ITest);
     Assert.assertEquals(((ITest) object).getTestName(), GITHUB_1456);
   }

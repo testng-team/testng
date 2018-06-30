@@ -180,6 +180,7 @@
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
+      <class name="test.objectfactory.github1827.GitHub1827Test"/>
       <class name="test.github1490.VerifyDataProviderListener"/>      
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>

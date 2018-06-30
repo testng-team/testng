@@ -76,7 +76,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
     //
     // TestClasses and instances
     //
-    Object[] instances = getInstances(false);
+    Object[] instances = getInstances(true);
     for (Object instance : instances) {
       if (instance instanceof ITest) {
         testName = ((ITest) instance).getTestName();
