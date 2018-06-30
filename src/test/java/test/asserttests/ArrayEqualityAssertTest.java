@@ -281,15 +281,15 @@ public class ArrayEqualityAssertTest {
         "arrays inside Iterables which are inside Iterables themselves are compared by reference in assertEquals");
   }
 
-  @Test(expectedExceptions = AssertionError.class)
+  @Test
   public void arrayInsideArrayAssertEquals() {
     int[][] array = new int[][] {new int[] {42}};
     int[][] arrayCopy = new int[][] {new int[] {42}};
     assertEquals(
-        array, arrayCopy, "arrays inside arrays are compared by reference in assertEquals");
+        array, arrayCopy, "arrays inside arrays are compared by value in assertEquals");
   }
 
-  @Test(expectedExceptions = AssertionError.class)
+  @Test
   public void arrayDeepInArraysAssertEquals() {
     int[][][] array = new int[][][] {new int[][] {new int[] {42}}};
     int[][][] arrayCopy = new int[][][] {new int[][] {new int[] {42}}};
@@ -297,7 +297,7 @@ public class ArrayEqualityAssertTest {
     assertEquals(
         array,
         arrayCopy,
-        "arrays inside arrays which are inside arrays themselves are compared by reference in assertEquals");
+        "arrays inside arrays which are inside arrays themselves are compared by value in assertEquals");
   }
 
   @SuppressWarnings("unchecked")

@@ -955,7 +955,6 @@ public class Assert {
       Object a = actIt.next();
       String explanation = "Lists differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
-
       assertEqualsImpl(a, e, errorMessage);
     }
   }
@@ -1077,7 +1076,24 @@ public class Assert {
         fail("Arrays not equal: " + Arrays.toString(expected) + " and " + Arrays.toString(actual));
       }
     }
-    assertEquals(Arrays.asList(actual), Arrays.asList(expected), message);
+    if (actual.length != expected.length) {
+      failAssertNoEqual(
+              "Arrays do not have the same size:" + actual.length + " != " + expected.length, message);
+    }
+
+    for(int i=0; i<expected.length; i++) {
+      Object e = expected[i];
+      Object a = actual[i];
+      String explanation = "Arrays differ at element [" + i + "]: " + e + " != " + a;
+      String errorMessage = message == null ? explanation : message + ": " + explanation;
+      //Compare by value for multi-dimensional array.
+      if(e.getClass().isArray()) {
+        assertEquals(a, e, errorMessage);
+      } else {
+        assertEqualsImpl(a, e, errorMessage);
+      }
+    }
+
   }
 
   /**
