@@ -96,7 +96,7 @@ public class ClassImpl implements IClass {
     return m_xmlClass;
   }
 
-  private Object getDefaultInstance() {
+  private Object getDefaultInstance(boolean create) {
     if (m_defaultInstance == null) {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
@@ -112,7 +112,8 @@ public class ClassImpl implements IClass {
                   m_classes,
                   m_testContext.getCurrentXmlTest(),
                   m_annotationFinder,
-                  m_objectFactory);
+                  m_objectFactory,
+                  create);
         }
       }
     }
@@ -179,11 +180,12 @@ public class ClassImpl implements IClass {
                   m_classes,
                   m_testContext.getCurrentXmlTest(),
                   m_annotationFinder,
-                  m_objectFactory)
+                  m_objectFactory,
+                  create)
             };
       }
     } else {
-      Object defaultInstance = getDefaultInstance();
+      Object defaultInstance = getDefaultInstance(create);
       if (defaultInstance != null) {
         result = new Object[] {defaultInstance};
       }

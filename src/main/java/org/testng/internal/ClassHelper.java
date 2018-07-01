@@ -330,10 +330,12 @@ public final class ClassHelper {
       Map<Class<?>, IClass> classes,
       XmlTest xmlTest,
       IAnnotationFinder finder,
-      ITestObjectFactory objectFactory) {
+      ITestObjectFactory objectFactory,
+      boolean create
+  ) {
     if (objectFactory instanceof IObjectFactory) {
       return createInstance1(
-          declaringClass, classes, xmlTest, finder, (IObjectFactory) objectFactory);
+          declaringClass, classes, xmlTest, finder, (IObjectFactory) objectFactory, create);
     } else if (objectFactory instanceof IObjectFactory2) {
       return createInstance2(declaringClass, (IObjectFactory2) objectFactory);
     } else {
@@ -350,7 +352,9 @@ public final class ClassHelper {
       Map<Class<?>, IClass> classes,
       XmlTest xmlTest,
       IAnnotationFinder finder,
-      IObjectFactory objectFactory) {
+      IObjectFactory objectFactory,
+      boolean create
+  ) {
     Object result = null;
 
     try {
@@ -360,6 +364,11 @@ public final class ClassHelper {
       //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
+        IFactoryAnnotation factoryAnnotation = finder.findAnnotation(constructor, IFactoryAnnotation.class);
+        if (factoryAnnotation != null) {
+          return null;
+        }
+
         IParametersAnnotation parametersAnnotation =
             finder.findAnnotation(constructor, IParametersAnnotation.class);
         if (parametersAnnotation != null) { // null if the annotation is @Factory
@@ -437,12 +446,13 @@ public final class ClassHelper {
           cause);
     }
 
-    if (result == null && !Modifier.isPublic(declaringClass.getModifiers())) {
-      // result should not be null
-      throw new TestNGException(
-          "An error occurred while instantiating class "
-              + declaringClass.getName()
-              + ". Check to make sure it can be accessed/instantiated.");
+    if (result == null && create) {
+      String suffix = "instantiated";
+      if (!Modifier.isPublic(declaringClass.getModifiers())) {
+        suffix += "/accessed.";
+      }
+      throw new TestNGException("An error occurred while instantiating class " + declaringClass.getName() + ". "
+              + "Check to make sure it can be " + suffix);
     }
 
     return result;
