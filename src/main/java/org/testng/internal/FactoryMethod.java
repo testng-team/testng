@@ -158,6 +158,10 @@ public class FactoryMethod extends BaseTestMethod {
       int position = 0;
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
+        if (parameters == null) {
+          // skipped value
+          continue;
+        }
         ConstructorOrMethod com = getConstructorOrMethod();
         if (com.getMethod() != null) {
           Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);

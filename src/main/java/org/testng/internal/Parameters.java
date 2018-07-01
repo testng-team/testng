@@ -879,7 +879,11 @@ public class Parameters {
             public Object[] next() {
               testMethod.setParameterInvocationCount(index);
               Object[] next = parameters.next();
+              if (next == null) {
+                throw new TestNGException("Parameters must not be null");
+              }
               if (!allIndices.isEmpty() && !allIndices.contains(index)) {
+                // Skip parameters
                 next = null;
               }
               index++;
