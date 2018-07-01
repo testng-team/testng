@@ -1,5 +1,6 @@
 package test.triangle;
 
+import org.testng.Assert;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -9,33 +10,11 @@ import org.testng.annotations.Test;
  */
 public class CheckCount {
 
-  @Test(parameters = { "expected-calls" })
-  public void testCheckCountDeprecated(String expectedCalls){
-    try {
-
-      //      System.out.println("\n\ntestCheckCount time = " + System.currentTimeMillis());
-      int i = Integer.valueOf(expectedCalls);
-      int numCalls =  CountCalls.getNumCalls();
-      assert (numCalls == i)  : "Count calls expected " + i + " but got " + numCalls;
-    }
-    catch (NumberFormatException nfe) {
-      assert false : "CountCalls needs an expected-calls numeric parameter";
-    }
-  }
-
   @Parameters({ "expected-calls" })
   @Test
-  public void testCheckCount(String expectedCalls){
-    try {
-
-      //      System.out.println("\n\ntestCheckCount time = " + System.currentTimeMillis());
-      int i = Integer.valueOf(expectedCalls);
-      int numCalls =  CountCalls.getNumCalls();
-      assert (numCalls == i)  : "Count calls expected " + i + " but got " + numCalls;
-    }
-    catch (NumberFormatException nfe) {
-      assert false : "CountCalls needs an expected-calls numeric parameter";
-    }
+  public void testCheckCount(String expectedCalls) {
+    int i = Integer.valueOf(expectedCalls);
+    int numCalls =  CountCalls.getNumCalls();
+    Assert.assertEquals(numCalls, i);
   }
-
 }

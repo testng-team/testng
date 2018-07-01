@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 /**
  * Turn off TestNG injection for a parameter.
- *
- * @author Cedric Beust, July 9th, 2010
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({PARAMETER})

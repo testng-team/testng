@@ -17,8 +17,6 @@ import java.lang.annotation.Target;
  *
  * <p>Note that listeners specified this way are global to your entire suite, just like listeners
  * specified in testng.xml.
- *
- * @author Cedric Beust, Mar 26, 2010
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({TYPE})

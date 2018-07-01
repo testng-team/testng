@@ -2,10 +2,6 @@ package org.testng.annotations;
 
 /**
  * This interface captures methods common to @Test and @Configuration
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public interface ITestOrConfiguration extends IParameterizable {
   /**

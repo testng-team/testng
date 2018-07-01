@@ -26,10 +26,6 @@ import org.testng.xml.XmlTest;
 /**
  * Helper methods to find @Test and @Configuration tags. They minimize the amount of casting we need
  * to do.
- *
- * <p>Created on Dec 20, 2005
- *
- * @author cbeust
  */
 public class AnnotationHelper {
   private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
@@ -204,7 +200,6 @@ public class AnnotationHelper {
     result.setEnabled(bs.getEnabled());
     result.setGroups(bs.getGroups());
     result.setInheritGroups(bs.getInheritGroups());
-    result.setParameters(bs.getParameters());
     result.setTimeOut(bs.getTimeOut());
   }
 

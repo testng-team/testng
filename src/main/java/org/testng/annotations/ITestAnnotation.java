@@ -5,10 +5,6 @@ import org.testng.internal.annotations.IDataProvidable;
 
 /**
  * Encapsulate the &#64;Test / &#64;testng.test annotation.
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
 public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   /**
@@ -57,10 +53,6 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   String getTestName();
 
   void setTestName(String s);
-
-  boolean getSequential();
-
-  void setSequential(boolean f);
 
   boolean getSingleThreaded();
 

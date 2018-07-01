@@ -41,12 +41,9 @@ import org.testng.internal.collections.Pair;
 
 /**
  * This class implements IAnnotationFinder with JDK5 annotations
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
+
   private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
   private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
       new ConcurrentHashMap<>();
@@ -54,7 +51,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
 
   private IAnnotationTransformer m_transformer;
 
-  @SuppressWarnings({"deprecation"})
   public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
     m_transformer = transformer;
     m_annotationMap.put(IListenersAnnotation.class, Listeners.class);

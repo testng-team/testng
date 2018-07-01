@@ -33,7 +33,6 @@ public class MAnnotationSampleTest {
     Assert.assertTrue(test1.getEnabled());
     Assert.assertEquals(test1.getGroups(), new String[] { "group1", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEquals(test1.getParameters(), new String[] { "param1", "param2" });
     Assert.assertEqualsNoOrder(test1.getDependsOnGroups(), new String[] { "dg1", "dg2" },  "depends on groups");
     Assert.assertEqualsNoOrder( test1.getDependsOnMethods(), new String[] { "dm1", "dm2" });
     Assert.assertEquals(test1.getTimeOut(), 42);
@@ -66,7 +65,6 @@ public class MAnnotationSampleTest {
     Assert.assertTrue(test1.getEnabled());
     Assert.assertEqualsNoOrder(test1.getGroups(), new String[] { "group1", "group3", "group4", "group2" });
     Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEquals(test1.getParameters(), new String[] { "param3", "param4" });
     Assert.assertEqualsNoOrder(test1.getDependsOnGroups(), new String[] { "dg1", "dg2", "dg3", "dg4" });
     Assert.assertEqualsNoOrder(test1.getDependsOnMethods(), new String[] { "dm1", "dm2", "dm3", "dm4" });
     Assert.assertEquals(test1.getTimeOut(), 142);
@@ -93,7 +91,6 @@ public class MAnnotationSampleTest {
     IFactoryAnnotation factory= m_finder.findAnnotation(method, IFactoryAnnotation.class);
 
     Assert.assertNotNull(factory);
-    Assert.assertEquals(factory.getParameters(), new String[] { "pf1", "pf2" });
   }
 
   public void verifyParameters() throws SecurityException, NoSuchMethodException
