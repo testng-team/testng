@@ -6,13 +6,9 @@ import java.util.List;
 
 /**
  * An implementation of IFactory
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
-  private String[] m_parameters = {};
+
   private String m_dataProvider = null;
   private Class<?> m_dataProviderClass;
   private boolean m_enabled = true;
@@ -26,15 +22,6 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
   @Override
   public void setDataProvider(String dataProvider) {
     m_dataProvider = dataProvider;
-  }
-
-  @Override
-  public String[] getParameters() {
-    return m_parameters;
-  }
-
-  public void setParameters(String[] parameters) {
-    m_parameters = parameters;
   }
 
   public void setDataProviderClass(Class<?> dataProviderClass) {

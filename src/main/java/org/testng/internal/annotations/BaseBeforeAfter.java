@@ -1,7 +1,7 @@
 package org.testng.internal.annotations;
 
 public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeAfter {
-  private String[] m_parameters = {};
+
   private boolean m_alwaysRun = false;
   private boolean m_inheritGroups = true;
   private String[] m_beforeGroups = {};
@@ -26,16 +26,6 @@ public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeA
 
   public void setInheritGroups(boolean inheritGroups) {
     m_inheritGroups = inheritGroups;
-  }
-
-  @Override
-  public void setParameters(String[] parameters) {
-    m_parameters = parameters;
-  }
-
-  @Override
-  public String[] getParameters() {
-    return m_parameters;
   }
 
   @Override

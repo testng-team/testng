@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
  * the test method which is going to be fed by this data provider.
  *
  * <p>This annotation is ignored everywhere else.
- *
- * @author cbeust
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({PARAMETER})

@@ -6,12 +6,9 @@ import org.testng.internal.ClassHelper;
 
 /**
  * An implementation of ITest
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
+
   private long m_invocationTimeOut = 0;
   private int m_invocationCount = 1;
   private int m_threadPoolSize = 0;
@@ -23,7 +20,6 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private String m_suiteName = "";
   private String m_testName = "";
   private boolean m_singleThreaded = false;
-  private boolean m_sequential = false;
   private Class<?> m_dataProviderClass = null;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = false;
@@ -149,16 +145,6 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   @Override
   public void setSingleThreaded(boolean singleThreaded) {
     m_singleThreaded = singleThreaded;
-  }
-
-  @Override
-  public boolean getSequential() {
-    return m_sequential;
-  }
-
-  @Override
-  public void setSequential(boolean sequential) {
-    m_sequential = sequential;
   }
 
   @Override

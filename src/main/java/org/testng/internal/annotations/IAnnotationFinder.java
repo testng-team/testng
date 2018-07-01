@@ -10,8 +10,6 @@ import org.testng.internal.ConstructorOrMethod;
 /**
  * This interface defines how annotations are found on classes, methods and constructors. It will be
  * implemented by both JDK 1.4 and JDK 5 annotation finders.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public interface IAnnotationFinder {
 

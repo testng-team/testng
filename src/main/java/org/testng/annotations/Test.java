@@ -11,8 +11,6 @@ import java.lang.annotation.Target;
 
 /**
  * Mark a class or a method as part of the test.
- *
- * @author Cedric Beust, Apr 26, 2004
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD, TYPE})
@@ -22,15 +20,6 @@ public @interface Test {
 
   /** Whether methods on this class/method are enabled. */
   boolean enabled() default true;
-
-  /**
-   * The list of variables used to fill the parameters of this method. These variables must be
-   * defined in the property file.
-   *
-   * @deprecated Use @Parameters
-   */
-  @Deprecated
-  String[] parameters() default {};
 
   /**
    * The list of groups this method depends on. Every method member of one of these groups is
@@ -124,9 +113,6 @@ public @interface Test {
    * not at the class level.
    */
   String testName() default "";
-
-  /** @deprecated Use singleThreaded */
-  boolean sequential() default false;
 
   /**
    * If set to true, all the methods on this test class are guaranteed to run in the same thread,

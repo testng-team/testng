@@ -13,15 +13,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Factory {
   /**
-   * The list of variables used to fill the parameters of this method. These variables must be
-   * defined in the property file.
-   *
-   * @deprecated Use @Parameters
-   */
-  @Deprecated
-  String[] parameters() default {};
-
-  /**
    * The name of the data provider for this test method.
    *
    * @see org.testng.annotations.DataProvider

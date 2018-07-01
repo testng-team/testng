@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation specifies what Guice modules should be used to instantiate this test class.
- *
- * @author Cedric Beust <cedric@beust.com>
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(TYPE)
