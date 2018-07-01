@@ -387,7 +387,7 @@ public class TestRunner
     // Groups
     m_xmlMethodSelector.setIncludedGroups(createGroups(m_xmlTest.getIncludedGroups()));
     m_xmlMethodSelector.setExcludedGroups(createGroups(m_xmlTest.getExcludedGroups()));
-    m_xmlMethodSelector.setExpression(m_xmlTest.getExpression());
+    m_xmlMethodSelector.setScript(m_xmlTest.getScript());
 
     // Methods
     m_xmlMethodSelector.setXmlClasses(m_xmlTest.getXmlClasses());

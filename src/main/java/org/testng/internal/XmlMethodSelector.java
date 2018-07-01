@@ -19,12 +19,11 @@ import org.testng.collections.Maps;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlScript;
 
 /**
  * This class is the default method selector used by TestNG to determine which methods need to be
  * included and excluded based on the specification given in testng.xml.
- *
- * <p>Created on Sep 30, 2005
  */
 // TODO: Need to investigate as to why is m_includedGroups/m_excludedGroups being created as a map
 // even though
@@ -35,15 +34,13 @@ public class XmlMethodSelector implements IMethodSelector {
 
   // List of methods included implicitly
   private final ListMultiMap<String, XmlInclude> m_includedMethods = Maps.newListMultiMap();
-  private final IBsh m_bsh = Dynamic.hasBsh() ? new Bsh() : new BshMock();
   private final Map<String, String> m_logged = Maps.newHashMap();
 
   // Groups included and excluded for this run
   private Map<String, String> m_includedGroups = Maps.newHashMap();
   private Map<String, String> m_excludedGroups = Maps.newHashMap();
   private List<XmlClass> m_classes = Collections.emptyList();
-  // The BeanShell expression for this test, if any
-  private String m_expression = null;
+  private ScriptMethodSelector scriptSelector;
   private boolean m_isInitialized = false;
   private List<ITestNGMethod> m_testMethods = Collections.emptyList();
 
@@ -56,8 +53,8 @@ public class XmlMethodSelector implements IMethodSelector {
       init(context);
     }
 
-    if (m_expression != null) {
-      return m_bsh.includeMethodFromExpression(m_expression, tm);
+    if (scriptSelector != null) {
+      return scriptSelector.includeMethodFromExpression(tm);
     }
     return includeMethodFromIncludeExclude(tm, isTestMethod);
   }
@@ -304,8 +301,19 @@ public class XmlMethodSelector implements IMethodSelector {
     Utils.log("XmlMethodSelector", 4, s);
   }
 
+  /**
+   * @deprecated Use {@link #setScript(XmlScript)} instead
+   */
+  @Deprecated
   public void setExpression(String expression) {
-    m_expression = expression;
+    XmlScript script = new XmlScript();
+    script.setLanguage("BeanShell");
+    script.setExpression(expression);
+    setScript(script);
+  }
+
+  public void setScript(XmlScript script) {
+    scriptSelector = (script == null) ? null : ScriptSelectorFactory.getScriptSelector(script);
   }
 
   @Override

@@ -256,7 +256,7 @@ tests:
   - name: Method selectors
     classes:
       - test.methodselectors.MethodSelectorTest
-      - test.methodselectors.BeanShellTest
+      - test.methodselectors.ScriptTest
       - test.methodselectors.CommandLineTest
 
   - name: Test order invocation
