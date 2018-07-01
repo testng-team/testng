@@ -543,8 +543,8 @@
   <test name="Method selectors">
     <classes>
       <class name="test.methodselectors.MethodSelectorTest" />
-      <class name="test.methodselectors.BeanShellTest" />
-      <class name="test.methodselectors.BeanShellNegativeTest" />
+      <class name="test.methodselectors.ScriptTest" />
+      <class name="test.methodselectors.ScriptNegativeTest" />
       <class name="test.methodselectors.CommandLineTest" />
       <class name="test.methodselectors.MethodSelectorInSuiteTest" />
     </classes>

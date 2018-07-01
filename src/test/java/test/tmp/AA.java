@@ -4,7 +4,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-@Test(sequential = true)
+@Test(singleThreaded = true)
 public class AA {
   private int m_n;
 

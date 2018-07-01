@@ -4,10 +4,6 @@ import org.testng.annotations.IConfigurationAnnotation;
 
 /**
  * An implementation of IConfiguration
- *
- * <p>Created on Dec 16, 2005
- *
- * @author cbeust
  */
 public class ConfigurationAnnotation extends TestOrConfiguration
     implements IConfigurationAnnotation,
@@ -21,6 +17,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration
         IAfterClass,
         IBeforeMethod,
         IAfterMethod {
+
   private boolean m_beforeTestClass = false;
   private boolean m_afterTestClass = false;
   private boolean m_beforeTestMethod = false;
@@ -29,7 +26,6 @@ public class ConfigurationAnnotation extends TestOrConfiguration
   private boolean m_afterTest = false;
   private boolean m_beforeSuite = false;
   private boolean m_afterSuite = false;
-  private String[] m_parameters = {};
   private boolean m_alwaysRun = false;
   private boolean m_inheritGroups = true;
   private String[] m_beforeGroups = {};
@@ -82,11 +78,6 @@ public class ConfigurationAnnotation extends TestOrConfiguration
   }
 
   @Override
-  public void setParameters(String[] parameters) {
-    m_parameters = parameters;
-  }
-
-  @Override
   public boolean getBeforeTestClass() {
     return m_beforeTestClass;
   }
@@ -124,11 +115,6 @@ public class ConfigurationAnnotation extends TestOrConfiguration
   @Override
   public boolean getAfterTest() {
     return m_afterTest;
-  }
-
-  @Override
-  public String[] getParameters() {
-    return m_parameters;
   }
 
   @Override

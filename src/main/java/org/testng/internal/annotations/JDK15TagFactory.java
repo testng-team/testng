@@ -38,10 +38,6 @@ import org.testng.log4testng.Logger;
 /**
  * This class creates implementations of IAnnotations based on the JDK5 annotation that was found on
  * the Java element.
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class JDK15TagFactory {
 
@@ -396,7 +392,6 @@ public class JDK15TagFactory {
     result.setGroups(groups);
     result.setInheritGroups(inheritGroups);
     result.setGroupFilters(groupFilters);
-    result.setParameters(parameters);
     result.setFirstTimeOnly(firstTimeOnly);
     result.setLastTimeOnly(lastTimeOnly);
     result.setTimeOut(timeOut);
@@ -418,14 +413,12 @@ public class JDK15TagFactory {
     return result;
   }
 
-  @SuppressWarnings({"deprecation"})
   private IAnnotation createFactoryTag(Class<?> cls, Annotation a) {
     FactoryAnnotation result = new FactoryAnnotation();
     Factory c = (Factory) a;
     Class<?> dpc =
         findInherited(
             c.dataProviderClass(), cls, Factory.class, "dataProviderClass", DEFAULT_CLASS);
-    result.setParameters(c.parameters());
     result.setDataProvider(c.dataProvider());
     result.setDataProviderClass(dpc == null || dpc == Object.class ? cls : dpc);
     result.setEnabled(c.enabled());
@@ -454,14 +447,12 @@ public class JDK15TagFactory {
     return result;
   }
 
-  @SuppressWarnings({"deprecation"})
   private IAnnotation createTestTag(Class<?> cls, Annotation a) {
     TestAnnotation result = new TestAnnotation();
     Test test = (Test) a;
 
     result.setEnabled(test.enabled());
     result.setGroups(join(test.groups(), findInheritedStringArray(cls, Test.class, "groups")));
-    result.setParameters(test.parameters());
     result.setDependsOnGroups(
         join(test.dependsOnGroups(), findInheritedStringArray(cls, Test.class, "dependsOnGroups")));
     result.setDependsOnMethods(
@@ -484,7 +475,6 @@ public class JDK15TagFactory {
     result.setExpectedExceptionsMessageRegExp(test.expectedExceptionsMessageRegExp());
     result.setSuiteName(test.suiteName());
     result.setTestName(test.testName());
-    result.setSequential(test.sequential());
     result.setSingleThreaded(test.singleThreaded());
     result.setRetryAnalyzer(test.retryAnalyzer());
     result.setSkipFailedInvocations(test.skipFailedInvocations());

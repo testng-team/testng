@@ -2,7 +2,7 @@ package test.thread;
 
 import org.testng.annotations.Test;
 
-@Test(sequential = true)
+@Test(singleThreaded = true)
 public class SequentialSample2Test extends BaseSequentialSample {
 
   public void f1() {

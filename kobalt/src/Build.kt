@@ -55,8 +55,7 @@ val p = project {
         provided("com.google.inject:guice:4.1.0",
                 "com.google.code.findbugs:jsr305:3.0.1"
                 )
-        compile("com.beust:jcommander:1.72",
-                "org.apache-extras.beanshell:bsh:2.0b6"
+        compile("com.beust:jcommander:1.72"
                 )
         provided("org.yaml:snakeyaml:1.17",
                 "org.apache.ant:ant:1.9.7",
@@ -67,7 +66,9 @@ val p = project {
         compile("org.assertj:assertj-core:3.10.0",
                 "org.testng:testng:6.9.13.7",
                 "org.mockito:mockito-core:2.12.0",
+                "org.codehaus.groovy:groovy-all:2.4.7",
                 "org.spockframework:spock-core:1.0-groovy-2.4",
+                "org.apache-extras.beanshell:bsh:2.0b6",
                 "org.jboss.shrinkwrap:shrinkwrap-api:1.2.6",
                 "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6")
     }

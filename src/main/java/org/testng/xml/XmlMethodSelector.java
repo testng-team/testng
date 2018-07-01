@@ -8,11 +8,6 @@ import java.util.Properties;
 
 /**
  * This class describes the tag <method-selector> in testng.xml.
- *
- * <p>Created on Sep 26, 2005
- *
- * @author cbeust
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class XmlMethodSelector {
   // Either this:
@@ -20,7 +15,7 @@ public class XmlMethodSelector {
   private int m_priority;
 
   // Or that:
-  private XmlScript m_script = new XmlScript();
+  private XmlScript m_script;
 
   // For YAML
   public void setClassName(String s) {
@@ -44,30 +39,61 @@ public class XmlMethodSelector {
     m_className = name;
   }
 
+  public XmlScript getScript() {
+    return m_script;
+  }
+
   public void setScript(XmlScript script) {
     m_script = script;
   }
 
-  /** @return Returns the expression. */
+  /**
+   * @return Returns the expression.
+   * @deprecated Use {@link #getScript()} instead.
+   */
+  @Deprecated
   public String getExpression() {
-    return m_script.getScript();
+    if (m_script == null) {
+      return null;
+    }
+    return m_script.getExpression();
   }
 
-  /** @param expression The expression to set. */
+  /**
+   * @param expression The expression to set.
+   * @deprecated Use {@link #setScript(XmlScript)} instead.
+   */
+  @Deprecated
   public void setExpression(String expression) {
-    m_script.setScript(expression);
+    if (m_script == null) {
+      m_script = new XmlScript();
+    }
+    m_script.setExpression(expression);
   }
 
-  /** @return Returns the language. */
+  /**
+   * @return Returns the language.
+   * @deprecated Use {@link #getScript()} instead
+   */
+  @Deprecated
   public String getLanguage() {
+    if (m_script == null) {
+      return null;
+    }
     return m_script.getLanguage();
   }
 
-  /** @param language The language to set. */
+  /**
+   * @param language The language to set.
+   * @deprecated Use {@link #setScript(XmlScript)} instead
+   */
   //  @OnElement(tag = "script", attributes = "language")
+  @Deprecated
   public void setLanguage(String language) {
+    if (m_script == null) {
+      m_script = new XmlScript();
+    }
     m_script.setLanguage(language);
-    //    m_language = language;
   }
 
   public int getPriority() {
@@ -90,11 +116,11 @@ public class XmlMethodSelector {
         clsProp.setProperty("priority", String.valueOf(getPriority()));
       }
       xsb.addEmptyElement("selector-class", clsProp);
-    } else if (getLanguage() != null) {
+    } else if (getScript() != null && getScript().getLanguage() != null) {
       Properties scriptProp = new Properties();
-      scriptProp.setProperty("language", getLanguage());
+      scriptProp.setProperty("language", getScript().getLanguage());
       xsb.push("script", scriptProp);
-      xsb.addCDATA(getExpression());
+      xsb.addCDATA(getScript().getExpression());
       xsb.pop("script");
     } else {
       throw new TestNGException("Invalid Method Selector:  found neither class name nor language");
@@ -110,8 +136,10 @@ public class XmlMethodSelector {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((m_className == null) ? 0 : m_className.hashCode());
-    result = prime * result + ((getExpression() == null) ? 0 : getExpression().hashCode());
-    result = prime * result + ((getLanguage() == null) ? 0 : getLanguage().hashCode());
+    if (getScript() != null) {
+      result = prime * result + ((getScript().getExpression() == null) ? 0 : getScript().getExpression().hashCode());
+      result = prime * result + ((getScript().getLanguage() == null) ? 0 : getScript().getLanguage().hashCode());
+    }
     result = prime * result + m_priority;
     return result;
   }
@@ -125,12 +153,16 @@ public class XmlMethodSelector {
     if (m_className == null) {
       if (other.m_className != null) return XmlSuite.f();
     } else if (!m_className.equals(other.m_className)) return XmlSuite.f();
-    if (getExpression() == null) {
-      if (other.getExpression() != null) return XmlSuite.f();
-    } else if (!getExpression().equals(other.getExpression())) return XmlSuite.f();
-    if (getLanguage() == null) {
-      if (other.getLanguage() != null) return XmlSuite.f();
-    } else if (!getLanguage().equals(other.getLanguage())) return XmlSuite.f();
+    if (getScript() == null || getScript().getExpression() == null) {
+      if (other.getScript() != null && other.getScript().getExpression() != null) return XmlSuite.f();
+    } else if (!getScript().getExpression().equals(other.getScript() == null ? null : other.getScript().getExpression())) {
+      return XmlSuite.f();
+    }
+    if (getScript() == null || getScript().getLanguage() == null) {
+      if (other.getScript() != null && other.getScript().getLanguage() != null) return XmlSuite.f();
+    } else if (!getScript().getLanguage().equals(other.getScript() == null ? null : other.getScript().getLanguage())) {
+      return XmlSuite.f();
+    }
     if (m_priority != other.m_priority) return XmlSuite.f();
     return true;
   }

@@ -246,15 +246,15 @@ public class TestNGContentHandler extends DefaultHandler {
   /** Parse <script> */
   private void xmlScript(boolean start, Attributes attributes) {
     if (start) {
-      //      ppp("OPEN SCRIPT");
       m_currentLanguage = attributes.getValue("language");
       m_currentExpression = "";
     } else {
-      //      ppp("CLOSE SCRIPT:@@" + m_currentExpression + "@@");
-      m_currentSelector.setExpression(m_currentExpression);
-      m_currentSelector.setLanguage(m_currentLanguage);
+      XmlScript script = new XmlScript();
+      script.setExpression(m_currentExpression);
+      script.setLanguage(m_currentLanguage);
+      m_currentSelector.setScript(script);
       if (m_locations.peek() == Location.TEST) {
-        m_currentTest.setBeanShellExpression(m_currentExpression);
+        m_currentTest.setScript(script);
       }
       m_currentLanguage = null;
       m_currentExpression = null;

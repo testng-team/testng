@@ -172,9 +172,6 @@ public class XmlSuite implements Cloneable {
   /** The packages containing test classes. */
   private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
 
-  /** BeanShell expression. */
-  private String m_expression = null;
-
   /** Suite level method selectors. */
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
 
@@ -604,7 +601,6 @@ public class XmlSuite implements Cloneable {
     result.setParameters(getParameters());
     result.setVerbose(getVerbose());
     result.setXmlPackages(getXmlPackages());
-    //    result.setBeanShellExpression(getExpression());
     result.setMethodSelectors(getMethodSelectors());
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
@@ -719,7 +715,6 @@ public class XmlSuite implements Cloneable {
     result =
         prime * result + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy.hashCode());
     result = prime * result + m_dataProviderThreadCount;
-    result = prime * result + ((m_expression == null) ? 0 : m_expression.hashCode());
     result = prime * result + ((m_fileName == null) ? 0 : m_fileName.hashCode());
     result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
     result = prime * result + ((m_listeners == null) ? 0 : m_listeners.hashCode());
@@ -777,13 +772,6 @@ public class XmlSuite implements Cloneable {
       return f();
     }
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount) {
-      return f();
-    }
-    if (m_expression == null) {
-      if (other.m_expression != null) {
-        return f();
-      }
-    } else if (!m_expression.equals(other.m_expression)) {
       return f();
     }
     if (m_isJUnit == null) {

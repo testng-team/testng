@@ -29,6 +29,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -210,8 +211,11 @@ public class BaseTest extends BaseDistributedTest {
     return result;
   }
 
-  protected void setBeanShellExpression(String expression) {
-    getTest().setBeanShellExpression(expression);
+  protected void setScript(String language, String expression) {
+    XmlScript script = new XmlScript();
+    script.setExpression(expression);
+    script.setLanguage(language);
+    getTest().setScript(script);
   }
 
   protected void addPackage(String pkgName, String[] included, String[] excluded) {

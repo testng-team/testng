@@ -419,29 +419,56 @@ public class XmlTest implements Cloneable {
     m_timeOut = timeOut;
   }
 
+  /**
+   * @deprecated Use {@link #setScript(XmlScript)} instead.
+   */
+  @Deprecated
   public void setExpression(String expression) {
     setBeanShellExpression(expression);
   }
 
+  /**
+   * @deprecated Use {@link #setScript(XmlScript)} instead.
+   */
+  @Deprecated
   public void setBeanShellExpression(String expression) {
-    List<XmlMethodSelector> selectors = getMethodSelectors();
-    if (selectors.size() > 0) {
-      selectors.get(0).setExpression(expression);
-    } else if (expression != null) {
-      XmlMethodSelector xms = new XmlMethodSelector();
-      xms.setExpression(expression);
-      xms.setLanguage("BeanShell");
-      getMethodSelectors().add(xms);
+    if (expression != null) {
+      XmlScript script = new XmlScript();
+      script.setExpression(expression);
+      script.setLanguage("BeanShell");
     }
   }
 
-  public String getExpression() {
+  public void setScript(XmlScript script) {
     List<XmlMethodSelector> selectors = getMethodSelectors();
     if (selectors.size() > 0) {
-      return selectors.get(0).getExpression();
-    } else {
+      XmlMethodSelector xms = selectors.get(0);
+      xms.setScript(script);
+    } else if (script != null) {
+      XmlMethodSelector xms = new XmlMethodSelector();
+      selectors.add(xms);
+      xms.setScript(script);
+    }
+  }
+
+  /**
+   * @deprecated Use {@link #getScript()} instead.
+   */
+  @Deprecated
+  public String getExpression() {
+    XmlScript script = getScript();
+    if (script == null) {
       return null;
     }
+    return script.getExpression();
+  }
+
+  public XmlScript getScript() {
+    List<XmlMethodSelector> selectors = getMethodSelectors();
+    if (selectors.isEmpty()) {
+      return null;
+    }
+    return selectors.get(0).getScript();
   }
 
   public String toXml(String indent) {

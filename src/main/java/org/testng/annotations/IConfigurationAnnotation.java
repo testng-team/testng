@@ -2,10 +2,6 @@ package org.testng.annotations;
 
 /**
  * Encapsulate the @Configuration / @testng.configuration annotation
- *
- * <p>Created on Dec 20, 2005
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public interface IConfigurationAnnotation extends ITestOrConfiguration {
   /**
