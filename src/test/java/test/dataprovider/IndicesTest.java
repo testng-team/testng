@@ -42,4 +42,32 @@ public class IndicesTest extends SimpleBaseTest {
             "indicesShouldWork(1)", "indicesShouldWork(3)",
             "indicesShouldWorkWithIterator(1)", "indicesShouldWorkWithIterator(3)");
   }
+
+  @Test
+  public void testIndicesFactory() {
+    InvokedMethodNameListener listener = run(true, IndicesFactorySample.class);
+
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames())
+            .containsExactly("testNameA(3)#testA", "testNameB(3)#testB");
+  }
+
+  @Test(enabled = false, description = "KO https://github.com/cbeust/testng/issues/1253")
+  public void testIndicesFactory2() {
+    XmlSuite xmlSuite = createXmlSuite("Suite");
+    XmlTest xmlTest = createXmlTest(xmlSuite, "Test");
+    XmlClass xmlClass = createXmlClass(xmlTest, IndicesFactorySample.class);
+    createXmlInclude(xmlClass, "testNameA", 0, 0);
+
+    TestNG tng = create(xmlSuite);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+
+    tng.run();
+
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames())
+            .containsExactly("testNameA(3)#testA");
+  }
 }

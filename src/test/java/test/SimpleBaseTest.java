@@ -43,20 +43,28 @@ public class SimpleBaseTest {
   private static final String TEST_RESOURCES_DIR = "test.resources.dir";
 
   public static InvokedMethodNameListener run(Class<?>... testClasses) {
+    return run(false, testClasses);
+  }
+
+  public static InvokedMethodNameListener run(boolean skipConfiguration, Class<?>... testClasses) {
     TestNG tng = create(testClasses);
 
-    return run(tng);
+    return run(skipConfiguration, tng);
   }
 
   public static InvokedMethodNameListener run(XmlSuite... suites) {
-    TestNG tng = create(suites);
-
-    return run(tng);
+    return run(false, suites);
   }
 
-  private static InvokedMethodNameListener run(TestNG tng) {
-    InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+  public static InvokedMethodNameListener run(boolean skipConfiguration, XmlSuite... suites) {
+    TestNG tng = create(suites);
+
+    return run(skipConfiguration, tng);
+  }
+
+  private static InvokedMethodNameListener run(boolean skipConfiguration, TestNG tng) {
+    InvokedMethodNameListener listener = new InvokedMethodNameListener(skipConfiguration);
+    tng.addListener(listener);
 
     tng.run();
 
