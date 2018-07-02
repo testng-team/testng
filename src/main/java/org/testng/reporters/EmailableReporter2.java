@@ -446,22 +446,10 @@ public class EmailableReporter2 implements IReporter {
     // Write test parameters (if any)
     Object[] parameters = result.getParameters();
     int parameterCount = (parameters == null ? 0 : parameters.length);
-    if (parameterCount > 0) {
-      writer.print("<tr class=\"param\">");
-      for (int i = 1; i <= parameterCount; i++) {
-        writer.print("<th>Parameter #");
-        writer.print(i);
-        writer.print("</th>");
-      }
-      writer.print("</tr><tr class=\"param stripe\">");
-      for (Object parameter : parameters) {
-        writer.print("<td>");
-        writer.print(Utils.escapeHtml(Utils.toString(parameter)));
-        writer.print("</td>");
-      }
-      writer.print("</tr>");
-      hasRows = true;
-    }
+    hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
+    parameters = result.getParameters();
+    parameterCount = (parameters == null ? 0 : parameters.length);
+    hasRows = dumpParametersInfo("Parameter", result.getParameters());
 
     // Write reporter messages (if any)
     List<String> reporterMessages = Reporter.getOutput(result);
@@ -514,6 +502,27 @@ public class EmailableReporter2 implements IReporter {
 
     writer.print("</table>");
     writer.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
+  }
+
+  private boolean dumpParametersInfo(String prefix, Object[] parameters) {
+    int parameterCount = (parameters == null ? 0 : parameters.length);
+    if (parameterCount == 0) {
+      return false;
+    }
+    writer.print("<tr class=\"param\">");
+    for (int i = 1; i <= parameterCount; i++) {
+      writer.print(String.format("<th>%s #", prefix));
+      writer.print(i);
+      writer.print("</th>");
+    }
+    writer.print("</tr><tr class=\"param stripe\">");
+    for (Object parameter : parameters) {
+      writer.print("<td>");
+      writer.print(Utils.escapeHtml(Utils.toString(parameter)));
+      writer.print("</td>");
+    }
+    writer.print("</tr>");
+    return true;
   }
 
   protected void writeReporterMessages(List<String> reporterMessages) {

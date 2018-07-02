@@ -78,6 +78,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
     //
     Object[] instances = getInstances(true);
     for (Object instance : instances) {
+      instance = IParameterInfo.embeddedInstance(instance);
       if (instance instanceof ITest) {
         testName = ((ITest) instance).getTestName();
         break;
@@ -107,7 +108,8 @@ class TestClass extends NoOpTestClass implements ITestClass {
     ITestNGMethod[] methods = testMethodFinder.getTestMethods(m_testClass, xmlTest);
     m_testMethods = createTestMethods(methods);
 
-    for (Object instance : iClass.getInstances(false)) {
+    for (Object eachInstance : iClass.getInstances(false)) {
+      Object instance = IParameterInfo.embeddedInstance(eachInstance);
       m_beforeSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               testMethodFinder.getBeforeSuiteMethods(m_testClass),

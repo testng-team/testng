@@ -69,6 +69,12 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   Object getInstance();
 
   /**
+   * @return - A parameter array that was passed to a factory method (or) an empty object array
+   * otherwise.
+   */
+  Object[] getFactoryParameters();
+
+  /**
    * If this result's related instance implements ITest or use @Test(testName=...), returns its test
    * name, otherwise returns null.
    */

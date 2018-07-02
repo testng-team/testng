@@ -183,13 +183,14 @@ public class TestNGClassFinder extends BaseClassFinder {
             "The factory " + fm + " returned a null instance" + "at index " + i);
       }
       Class<?> oneMoreClass;
-      if (IInstanceInfo.class.isAssignableFrom(o.getClass())) {
-        IInstanceInfo<?> ii = (IInstanceInfo) o;
+      Object objToInspect = IParameterInfo.embeddedInstance(o);
+      if (IInstanceInfo.class.isAssignableFrom(objToInspect.getClass())) {
+        IInstanceInfo<?> ii = (IInstanceInfo) objToInspect;
         addInstance(ii);
         oneMoreClass = ii.getInstanceClass();
       } else {
         addInstance(o);
-        oneMoreClass = o.getClass();
+        oneMoreClass = objToInspect.getClass();
       }
       if (!classExists(oneMoreClass)) {
         moreClasses.addClass(oneMoreClass);
@@ -315,7 +316,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   private void addInstance(Object o) {
-    addInstance(o.getClass(), o);
+    addInstance(IParameterInfo.embeddedInstance(o).getClass(), o);
   }
 
   // Class<S> should be replaced by Class<? extends T> but java doesn't fail as expected

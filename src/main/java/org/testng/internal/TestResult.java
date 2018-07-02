@@ -281,7 +281,16 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object getInstance() {
-    return this.m_method.getInstance();
+    return IParameterInfo.embeddedInstance(this.m_method.getInstance());
+  }
+
+  @Override
+  public Object[] getFactoryParameters() {
+    IParameterInfo instance = this.m_method.getFactoryMethodParamsInfo();
+    if (instance != null) {
+      return instance.getParameters();
+    }
+    return new Object[0];
   }
 
   @Override

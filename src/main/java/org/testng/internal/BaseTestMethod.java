@@ -131,7 +131,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   @Override
   public Object getInstance() {
-    return m_instance;
+    return IParameterInfo.embeddedInstance(m_instance);
   }
 
   /** {@inheritDoc} */
@@ -319,7 +319,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
             ? other.m_testClass == null
             : other.m_testClass != null
                 && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                && m_instance == other.getInstance();
+                && getInstance() == other.getInstance();
 
     return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
@@ -456,7 +456,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         .append("[pri:")
         .append(getPriority())
         .append(", instance:")
-        .append(m_instance)
+        .append(getInstance())
+        .append(instanceParameters())
         .append("]");
 
     return result.toString();
@@ -464,6 +465,14 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   public String getSimpleName() {
     return m_method.getDeclaringClass().getSimpleName() + "." + m_method.getName();
+  }
+
+  private String instanceParameters() {
+    IParameterInfo instance = getFactoryMethodParamsInfo();
+    if (instance != null ) {
+      return ", instance params:" + Arrays.toString(instance.getParameters());
+    }
+    return "";
   }
 
   protected String getSignature() {
@@ -714,5 +723,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public String getQualifiedName() {
     return getRealClass().getName() + "." + getMethodName();
+  }
+
+  @Override
+  public IParameterInfo getFactoryMethodParamsInfo() {
+    if (m_instance instanceof IParameterInfo) {
+      return (IParameterInfo) m_instance;
+    }
+    return null;
   }
 }
