@@ -380,6 +380,44 @@ public class Assert {
   }
 
   /**
+   * Asserts that two arrays contain the equal elements concerning a delta in the same order. If they do not, an
+   * AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
+   */
+  public static void assertEquals(float[] actual, float[] expected, float delta) {
+    assertEquals(actual, expected, delta, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the equal elements concerning a delta in the same order. If
+   * they do not, an
+   * AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
+   * @param message the assertion error message
+   */
+  public static void assertEquals(float[] actual, float[] expected, float delta, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) {
+      return;
+    }
+
+    for (int i = 0; i < expected.length; i++) {
+      assertEquals(actual[i], expected[i], delta,
+              String.format(
+                      ARRAY_MISMATCH_TEMPLATE,
+                      i,
+                      Float.toString(expected[i]),
+                      Float.toString(actual[i]),
+                      message));
+    }
+  }
+
+  /**
    * Asserts that two arrays contain the same elements in the same order. If they do not, an
    * AssertionError is thrown.
    *
@@ -403,6 +441,43 @@ public class Assert {
 
     for (int i = 0; i < expected.length; i++) {
       assertEquals(actual[i], expected[i],
+              String.format(
+                      ARRAY_MISMATCH_TEMPLATE,
+                      i,
+                      Double.toString(expected[i]),
+                      Double.toString(actual[i]),
+                      message));
+    }
+  }
+
+  /**
+   * Asserts that two arrays contain the equal elements concerning a delta in the same order. If they do not, an
+   * AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
+   */
+  public static void assertEquals(double[] actual, double[] expected, double delta) {
+    assertEquals(actual, expected, delta, "");
+  }
+
+  /**
+   * Asserts that two arrays contain the equal elements concerning a delta in the same order. If they do not, an
+   * AssertionError, with the given message, is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param delta the absolute tolerable difference between the actual and expected values
+   * @param message the assertion error message
+   */
+  public static void assertEquals(double[] actual, double[] expected, double delta, String message) {
+    if (checkRefEqualityAndLength(actual, expected, message)) {
+      return;
+    }
+
+    for (int i = 0; i < expected.length; i++) {
+      assertEquals(actual[i], expected[i], delta,
               String.format(
                       ARRAY_MISMATCH_TEMPLATE,
                       i,
