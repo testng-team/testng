@@ -172,6 +172,20 @@ public class AssertTest {
   }
 
   @Test
+  public void compareFloatArraysWithDelta() {
+    float[] actual = {0.1f, 0.2f, 0.3f, 0.4f};
+    float[] expected = {0.5f, 0.7f, 0.1f, 0.2f};
+    Assert.assertEquals(actual, expected, 0.5f);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void compareUnEqualFloatArraysWithDelta() {
+    float[] actual = {0.1f, 0.2f, 0.3f, 0.4f};
+    float[] expected = {0.5f, 0.7f, 0.1f, 0.2f};
+    Assert.assertEquals(actual, expected, 0.1f);
+  }
+
+  @Test
   public void compareFloatArraysWithNaNValues() {
     Assert.assertEquals(new float[] { Float.NaN }, new float[] { Float.NaN });
   }
@@ -198,6 +212,20 @@ public class AssertTest {
   @Test
   public void compareDoubleWithNaNValues() {
     Assert.assertEquals( (double) Double.NaN , (double) Double.NaN);
+  }
+
+  @Test
+  public void compareDoubleArraysWithDelta() {
+    double[] actual = {0.1d, 0.2d, 0.3d, 0.4d};
+    double[] expected = {0.5d, 0.7d, 0.1d, 0.2d};
+    Assert.assertEquals(actual, expected, 0.5d);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void compareUnEqualDoubleArraysWithDelta() {
+    double[] actual = {0.1d, 0.2d, 0.3d, 0.4d};
+    double[] expected = {0.5d, 0.7d, 0.1d, 0.2d};
+    Assert.assertEquals(actual, expected, 0.1d);
   }
 
   @Test(expectedExceptions = AssertionError.class)
