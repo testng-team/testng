@@ -183,7 +183,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (comparator == null) {
       throw new IllegalArgumentException("comparator must not be null");
     }
-    ITestRunnerFactory2 iTestRunnerFactory = buildRunnerFactory(comparator);
+    ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
 
     // Order the <test> tags based on their order of appearance in testng.xml
     List<XmlTest> xmlTests = xmlSuite.getTests();
@@ -251,8 +251,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     outputDir = (null != outputdir) ? new File(outputdir).getAbsolutePath() : null;
   }
 
-  private ITestRunnerFactory2 buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
-    ITestRunnerFactory2 factory;
+  private ITestRunnerFactory buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
+    ITestRunnerFactory factory;
 
     if (null == tmpRunnerFactory) {
       factory =
@@ -554,7 +554,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   /** The default implementation of {@link ITestRunnerFactory}. */
-  private static class DefaultTestRunnerFactory implements ITestRunnerFactory2 {
+  private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] failureGenerators;
     private boolean useDefaultListeners;
     private boolean skipFailedInvocationCounts;
@@ -630,7 +630,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-  private static class ProxyTestRunnerFactory implements ITestRunnerFactory2 {
+  private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] failureGenerators;
     private ITestRunnerFactory target;
 
@@ -656,9 +656,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         List<IClassListener> classListeners,
         Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
       TestRunner testRunner;
-      if (target instanceof ITestRunnerFactory2) {
+      if (target instanceof ITestRunnerFactory) {
         testRunner =
-            ((ITestRunnerFactory2) target)
+            ((ITestRunnerFactory) target)
                 .newTestRunner(suite, test, listeners, classListeners, dataProviderListeners);
       } else {
         testRunner = target.newTestRunner(suite, test, listeners, classListeners);
