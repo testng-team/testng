@@ -1,9 +1,6 @@
 package org.testng.internal;
 
-import org.testng.IClass;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
+import org.testng.*;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
@@ -34,12 +31,18 @@ public interface IInvoker {
       Object instance);
 
   /**
-   * Invoke the given method
+   * Invoke all the test methods. Note the plural: the method passed in parameter might be invoked
+   * several times if the test class it belongs to has more than one instance (i.e., if an @Factory
+   * method has been declared somewhere that returns several instances of this TestClass). If
+   * no @Factory method was specified, testMethod will only be invoked once.
    *
-   * @param testMethod
-   * @param parameters
-   * @param groupMethods
-   * @return a list containing the results of the test methods invocations
+   * <p>Note that this method also takes care of invoking the beforeTestMethod and afterTestMethod,
+   * if any.
+   *
+   * <p>Note (alex): this method can be refactored to use a SingleTestMethodWorker that directly
+   * invokes {@link #invokeTestMethod(Object, ITestNGMethod, Object[], int, XmlSuite, Map,
+   * ITestClass, ITestNGMethod[], ITestNGMethod[], ConfigurationGroupMethods, AbstractInvoker.FailureContext)} and
+   * this would simplify the implementation (see how DataTestMethodWorker is used)
    */
   List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
