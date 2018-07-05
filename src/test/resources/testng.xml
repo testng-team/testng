@@ -869,6 +869,7 @@
   <test name="Suite_Related_Tests">
     <classes>
       <class name="test.suites.github1533.Github1533Test"/>
+      <class name="test.suites.github1850.DuplicateChildSuitesInitializationTest"/>
     </classes>
   </test>
 
