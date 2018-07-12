@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1865: testngXmlPathInJar- cannot be cleared when vm terminate(Yehui Wang)
 Fixed: GITHUB-1850: Parser returns a wrong structure when parent suite has duplicate child suites (Chao Qin)
 Fixed: GITHUB-1803: Added new methods for comparing float and double arrays with delta (Atul Agrawal)
 Fixed: GITHUB-1661: Fixed Assert logic for two dimensional arrays (Atul Agrawal)
