@@ -1139,7 +1139,10 @@ public class TestRunner
   }
 
   void addMethodInterceptor(IMethodInterceptor methodInterceptor) {
-    m_methodInterceptors.add(methodInterceptor);
+      //avoid to add interceptor twice when the defined listeners implements both ITestListener and IMethodInterceptor.
+      if (!m_methodInterceptors.contains(methodInterceptor)) {
+          m_methodInterceptors.add(methodInterceptor);
+    }
   }
 
   @Override
