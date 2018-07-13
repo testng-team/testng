@@ -15,7 +15,6 @@ import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.junit.IJUnitTestRunner;
-import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -352,85 +351,23 @@ public final class ClassHelper {
       Map<Class<?>, IClass> classes,
       XmlTest xmlTest,
       IAnnotationFinder finder,
-      IObjectFactory objectFactory,
+      IObjectFactory factory,
       boolean create
   ) {
     Object result = null;
 
     try {
-
-      //
-      // Any annotated constructor?
-      //
       Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-        IFactoryAnnotation factoryAnnotation = finder.findAnnotation(constructor, IFactoryAnnotation.class);
-        if (factoryAnnotation != null) {
+      // Any annotated constructor?
+        try {
+          result = instantiateUsingParameterizedConstructor(finder, constructor, xmlTest, factory);
+        } catch(IllegalArgumentException e) {
           return null;
         }
-
-        IParametersAnnotation parametersAnnotation =
-            finder.findAnnotation(constructor, IParametersAnnotation.class);
-        if (parametersAnnotation != null) { // null if the annotation is @Factory
-          String[] parameterNames = parametersAnnotation.getValue();
-          Object[] parameters =
-              Parameters.createInstantiationParameters(
-                  constructor,
-                  "@Parameters",
-                  finder,
-                  parameterNames,
-                  xmlTest.getAllParameters(),
-                  xmlTest.getSuite());
-          result = objectFactory.newInstance(constructor, parameters);
-        }
-      }
-
-      //
-      // No, just try to instantiate the parameterless constructor (or the one
-      // with a String)
-      //
-      else {
-
-        // If this class is a (non-static) nested class, the constructor contains a hidden
-        // parameter of the type of the enclosing class
-        Class<?>[] parameterTypes = new Class[0];
-        Object[] parameters = new Object[0];
-        Class<?> ec = getEnclosingClass(declaringClass);
-        boolean isStatic = 0 != (declaringClass.getModifiers() & Modifier.STATIC);
-
-        // Only add the extra parameter if the nested class is not static
-        if ((null != ec) && !isStatic) {
-          parameterTypes = new Class[] {ec};
-
-          // Create an instance of the enclosing class so we can instantiate
-          // the nested class (actually, we reuse the existing instance).
-          IClass enclosingIClass = classes.get(ec);
-          Object[] enclosingInstances;
-          if (null != enclosingIClass) {
-            enclosingInstances = enclosingIClass.getInstances(false);
-            if ((null == enclosingInstances) || (enclosingInstances.length == 0)) {
-              Object o = objectFactory.newInstance(ec.getConstructor(parameterTypes));
-              enclosingIClass.addInstance(o);
-              enclosingInstances = new Object[] {o};
-            }
-          } else {
-            enclosingInstances = new Object[] {ec.newInstance()};
-          }
-          Object enclosingClassInstance = enclosingInstances[0];
-
-          parameters = new Object[] {enclosingClassInstance};
-        } // isStatic
-
-        Constructor<?> ct;
-        try {
-          ct = declaringClass.getDeclaredConstructor(parameterTypes);
-        } catch (NoSuchMethodException ex) {
-          ct = declaringClass.getDeclaredConstructor(String.class);
-          parameters = new Object[] {xmlTest.getName()};
-          // If ct == null here, we'll pass a null
-          // constructor to the factory and hope it can deal with it
-        }
-        result = objectFactory.newInstance(ct, parameters);
+      } else {
+        // No, just try to instantiate the parameterless constructor (or the one with a String)
+        result = instantiateUsingDefaultConstructor(declaringClass, classes, xmlTest, factory);
       }
     } catch (TestNGException ex) {
       throw ex;
@@ -440,10 +377,7 @@ public final class ClassHelper {
       // Something else went wrong when running the constructor
       throw new TestNGException(
           "An error occurred while instantiating class "
-              + declaringClass.getName()
-              + ": "
-              + cause.getMessage(),
-          cause);
+              + declaringClass.getName() + ": " + cause.getMessage(), cause);
     }
 
     if (result == null && create) {
@@ -458,22 +392,75 @@ public final class ClassHelper {
     return result;
   }
 
-  /** Class.getEnclosingClass() only exists on JDK5, so reimplementing it here. */
-  private static Class<?> getEnclosingClass(Class<?> declaringClass) {
-    Class<?> result = null;
-
-    String className = declaringClass.getName();
-    int index = className.indexOf('$');
-    if (index != -1) {
-      String ecn = className.substring(0, index);
-      try {
-        result = Class.forName(ecn);
-      } catch (ClassNotFoundException e) {
-        Logger.getLogger(ClassHelper.class).error(e.getMessage(), e);
-      }
+  private static Object instantiateUsingParameterizedConstructor(IAnnotationFinder finder,
+      Constructor<?> constructor, XmlTest xmlTest, IObjectFactory objectFactory) {
+    IFactoryAnnotation factoryAnnotation = finder
+        .findAnnotation(constructor, IFactoryAnnotation.class);
+    if (factoryAnnotation != null) {
+      throw new IllegalArgumentException("No factory annotation found.");
     }
 
-    return result;
+    IParametersAnnotation parametersAnnotation =
+        finder.findAnnotation(constructor, IParametersAnnotation.class);
+    if (parametersAnnotation == null) {
+      // null if the annotation is @Factory
+      return null;
+    }
+    String[] parameterNames = parametersAnnotation.getValue();
+    Object[] parameters =
+        Parameters.createInstantiationParameters(
+            constructor,
+            "@Parameters",
+            finder,
+            parameterNames,
+            xmlTest.getAllParameters(),
+            xmlTest.getSuite());
+    return objectFactory.newInstance(constructor, parameters);
+  }
+
+
+  private static Object instantiateUsingDefaultConstructor(Class<?> declaringClass,
+      Map<Class<?>, IClass> classes, XmlTest xmlTest, IObjectFactory factory)
+      throws NoSuchMethodException, IllegalAccessException, InstantiationException {
+    // If this class is a (non-static) nested class, the constructor contains a hidden
+    // parameter of the type of the enclosing class
+    Class<?>[] parameterTypes = new Class[0];
+    Object[] parameters = new Object[0];
+    Class<?> ec = declaringClass.getEnclosingClass();
+    boolean isStatic = 0 != (declaringClass.getModifiers() & Modifier.STATIC);
+
+    // Only add the extra parameter if the nested class is not static
+    if ((null != ec) && !isStatic) {
+      parameterTypes = new Class[] {ec};
+      parameters = new Object[]{computeParameters(classes, ec, factory)};
+    } // isStatic
+
+    Constructor<?> ct;
+    try {
+      ct = declaringClass.getDeclaredConstructor(parameterTypes);
+    } catch (NoSuchMethodException ex) {
+      ct = declaringClass.getDeclaredConstructor(String.class);
+      parameters = new Object[]{xmlTest.getName()};
+      // If ct == null here, we'll pass a null
+      // constructor to the factory and hope it can deal with it
+    }
+    return factory.newInstance(ct, parameters);
+  }
+
+  private static Object computeParameters(Map<Class<?>, IClass> classes,
+      Class<?> ec, IObjectFactory factory)
+      throws NoSuchMethodException, IllegalAccessException, InstantiationException {
+    // Create an instance of the enclosing class so we can instantiate
+    // the nested class (actually, we reuse the existing instance).
+    IClass enclosingIClass = classes.get(ec);
+    if (enclosingIClass == null) {
+      return ec.newInstance();
+    }
+    Object[] enclosingInstances = enclosingIClass.getInstances(false);
+    if (enclosingInstances == null || enclosingInstances.length == 0) {
+      return factory.newInstance(ec.getConstructor(ec));
+    }
+    return enclosingInstances[0];
   }
 
   /** Find the best constructor given the parameters found on the annotation */
