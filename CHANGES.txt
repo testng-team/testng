@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1863: IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way.(Bin Wu)
 Fixed: GITHUB-1865: testngXmlPathInJar- cannot be cleared when vm terminate(Yehui Wang)
 Fixed: GITHUB-1850: Parser returns a wrong structure when parent suite has duplicate child suites (Chao Qin)
 Fixed: GITHUB-1803: Added new methods for comparing float and double arrays with delta (Atul Agrawal)

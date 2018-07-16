@@ -124,6 +124,15 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(interceptor.getCount(), 1);
   }
+  
+  @Test(description = "GITHUB-1863:IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way")
+  public void methodInterceptorShouldBeRunOnceWhenCustomisedListenerImplementsITestListenerAndIMethodInterceptor() {
+    TestNG tng = create(LSampleTest.class);
+    InterceptorInvokeTwiceSimulateListener interceptor = new InterceptorInvokeTwiceSimulateListener();
+    tng.addListener(interceptor);
+    tng.run();
+    Assert.assertEquals(interceptor.getCount(), 1);
+}
 
   @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
   public void classListenerShouldWork() {
