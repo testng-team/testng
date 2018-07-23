@@ -1,4 +1,5 @@
 Current
+New  : Added ability to create a new instance per test method. (Jason Corbett)
 Fixed: GITHUB-1863: IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way.(Bin Wu)
 Fixed: GITHUB-1865: testngXmlPathInJar- cannot be cleared when vm terminate(Yehui Wang)
 Fixed: GITHUB-1850: Parser returns a wrong structure when parent suite has duplicate child suites (Chao Qin)
