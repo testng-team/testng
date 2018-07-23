@@ -31,6 +31,7 @@ import org.testng.SuiteRunState;
 import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.annotations.NewInstancePerMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -579,6 +580,17 @@ public class Invoker implements IInvoker {
       ITestNGMethod[] afterMethods,
       ConfigurationGroupMethods groupMethods,
       FailureContext failureContext) {
+
+    if(System.getProperties().containsKey("testng.newInstancePerMethod") ||
+       System.getenv().containsKey("TESTNG_NEW_INSTANCE_PER_METHOD") ||
+       instance.getClass().isAnnotationPresent(NewInstancePerMethod.class)) {
+      try {
+        instance = ClassHelper.newInstance(instance.getClass());
+      } catch (TestNGException e) {
+        e.printStackTrace();
+      }
+    }
+
     TestResult testResult = new TestResult();
 
     invokeBeforeGroupsConfigurations(tm, groupMethods, suite, params, instance);
