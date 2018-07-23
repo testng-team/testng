@@ -584,10 +584,22 @@ public class Invoker implements IInvoker {
     if(System.getProperties().containsKey("testng.newInstancePerMethod") ||
        System.getenv().containsKey("TESTNG_NEW_INSTANCE_PER_METHOD") ||
        instance.getClass().isAnnotationPresent(NewInstancePerMethod.class)) {
-      try {
-        instance = ClassHelper.newInstance(instance.getClass());
-      } catch (TestNGException e) {
-        e.printStackTrace();
+      boolean tryConstructor = true;
+      if (Cloneable.class.isAssignableFrom(instance.getClass())) {
+        try {
+          instance = instance.getClass().getDeclaredMethod("clone").invoke(instance);
+          tryConstructor = false;
+        } catch (NoSuchMethodException e) {
+        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException e) {
+        }
+      }
+      if(tryConstructor) {
+        try {
+          instance = ClassHelper.newInstance(instance.getClass());
+        } catch (TestNGException e) {
+          e.printStackTrace();
+        }
       }
     }
 
