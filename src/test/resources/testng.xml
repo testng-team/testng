@@ -911,5 +911,11 @@
     </classes>
   </test>
 
+  <test name="New Instance Per Method tests">
+    <classes>
+      <class name="test.newinstancepermethod.NewInstancePerMethodTests"/>
+    </classes>
+  </test>
+
 </suite>
 
