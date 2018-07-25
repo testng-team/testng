@@ -203,8 +203,6 @@ public class XmlClass implements Cloneable {
     int result = 1;
     result = prime * result + ((m_class == null) ? 0 : m_class.hashCode());
     result = prime * result + (m_loadClasses ? 1 : 0);
-    result = prime * result + ((m_excludedMethods == null) ? 0 : m_excludedMethods.hashCode());
-    result = prime * result + ((m_includedMethods == null) ? 0 : m_includedMethods.hashCode());
     result = prime * result + m_index;
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
     return result;
@@ -218,15 +216,9 @@ public class XmlClass implements Cloneable {
     if (obj == null) return XmlSuite.f();
     if (getClass() != obj.getClass()) return XmlSuite.f();
     XmlClass other = (XmlClass) obj;
-    if (other.m_loadClasses != m_loadClasses
-        || !m_excludedMethods.equals(other.m_excludedMethods)) {
+    if (other.m_loadClasses != m_loadClasses) {
       return XmlSuite.f();
     }
-    if (m_includedMethods == null) {
-      if (other.m_includedMethods != null) return XmlSuite.f();
-    } else if (!m_includedMethods.equals(other.m_includedMethods)) return XmlSuite.f();
-    //    if (m_index != other.m_index)
-    //      return XmlSuite.f();
     if (m_name == null) {
       if (other.m_name != null) return XmlSuite.f();
     } else if (!m_name.equals(other.m_name)) return XmlSuite.f();

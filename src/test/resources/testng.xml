@@ -870,6 +870,7 @@
     <classes>
       <class name="test.suites.github1533.Github1533Test"/>
       <class name="test.suites.github1850.DuplicateChildSuitesInitializationTest"/>
+      <class name="test.suites.github1874.IssueTest"/>
     </classes>
   </test>
 
