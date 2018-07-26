@@ -235,7 +235,8 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     JUnit4TestClass tc = new JUnit4TestClass(test);
     JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
 
-    TestResult tr = new TestResult(tc, tm, null, Calendar.getInstance().getTimeInMillis(), 0, null);
+
+    TestResult tr = TestResult.newTestResultFor(tm);
 
     InvokedMethod im =
         new InvokedMethod(tr.getTestClass(), tr.getMethod(), tr.getStartMillis(), tr);

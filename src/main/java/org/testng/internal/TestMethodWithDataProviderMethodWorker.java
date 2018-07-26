@@ -127,13 +127,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
       if (m_failureCount > 0 && m_skipFailedInvocationCounts) {
         while (m_invocationCount-- > 0) {
           ITestResult r =
-              new TestResult(
-                  m_testMethod.getTestClass(),
-                  m_testMethod,
-                  null,
-                  start,
-                  System.currentTimeMillis(),
-                  m_testContext);
+              TestResult.newEndTimeAwareTestResult(m_testMethod, m_testContext, null, start);
           r.setStatus(TestResult.SKIP);
           m_testResults.add(r);
           m_invoker.runTestResultListener(r);
