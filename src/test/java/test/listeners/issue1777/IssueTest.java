@@ -34,10 +34,12 @@ public class IssueTest extends SimpleBaseTest {
     testNG.run();
     List<String> expectedTestMessages =
         Arrays.asList(
-            "testStart_test_method: test1", "testSkipped_test_method: test1",
+            "testStart_test_method: test1",
             "before_test_method: test1", "after_test_method: test1",
-            "testStart_test_method: test2", "before_test_method: test2",
-            "after_test_method: test2", "testSuccess_test_method: test2");
+            "testSkipped_test_method: test1",
+            "testStart_test_method: test2",
+            "before_test_method: test2", "after_test_method: test2",
+            "testSuccess_test_method: test2");
     assertThat(listener.tstMsgs).containsExactlyElementsOf(expectedTestMessages);
     List<String> expectedConfigMessages =
         Arrays.asList(
