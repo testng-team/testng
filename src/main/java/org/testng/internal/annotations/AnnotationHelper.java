@@ -189,7 +189,6 @@ public class AnnotationHelper {
     return result;
   }
 
-  @SuppressWarnings({"deprecation"})
   private static void finishInitialize(
       ConfigurationAnnotation result, IConfigurationAnnotation bs) {
     result.setFakeConfiguration(true);
