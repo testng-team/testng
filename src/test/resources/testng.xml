@@ -644,6 +644,7 @@
       <class name="test.JUnit4Test" />
       <class name="test.junit4.listeners.Issue323TestRunner"/>
       <class name="test.groovy.GroovyTest" />
+      <class name="test.JUnitTestClassLoader" />
     </classes>
   </test>
 
