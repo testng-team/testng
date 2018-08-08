@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Assertion tool for File centric assertions. Conceptually this is an extension of {@link Assert}
+ * Assertion tool for File centric assertions. Conceptually, this is an extension of {@link Assert}.
  * Presents assertion methods with a more natural parameter order. The order is always
  * <B>actualValue</B>, <B>expectedValue</B> [, message].
  *
@@ -13,14 +13,14 @@ import java.io.IOException;
  */
 public class FileAssert {
 
-  /** Protect constructor since it is a static only class */
+  /** Protect this constructor since it is a static only class. */
   private FileAssert() {
-    // hide constructor
+    // Hide this constructor.
   }
 
   /**
-   * Asserts that a {@code tstvalue} is a proper directory. If it isn't, an AssertionError, with the
-   * given message, is thrown.
+   * Asserts that a {@code tstvalue} is a proper directory. If it isn't, an AssertionError with the
+   * given message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -42,8 +42,8 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is a proper file. If it isn't, an AssertionError, with the
-   * given message, is thrown.
+   * Asserts that a {@code tstvalue} is a proper file. If it isn't, an AssertionError with the
+   * given message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -67,7 +67,7 @@ public class FileAssert {
 
   /**
    * Asserts that a {@code tstvalue} is a file of exactly {@code expected} characters or a directory
-   * of exactly {@code expected} entries. If it isn't, an AssertionError, with the given message, is
+   * of exactly {@code expected} entries. If it isn't, an AssertionError with the given message is
    * thrown.
    *
    * @param tstvalue the file to evaluate
@@ -92,8 +92,8 @@ public class FileAssert {
 
   /**
    * Asserts that a {@code tstvalue} is a file of at least {@code expected} characters or a
-   * directory of at least {@code expected} entries. If it isn't, an AssertionError, with the given
-   * message, is thrown.
+   * directory of at least {@code expected} entries. If it isn't, an AssertionError with the given
+   * message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -118,7 +118,7 @@ public class FileAssert {
 
   /**
    * Asserts that a {@code tstvalue} is a file of at most {@code expected} characters or a directory
-   * of at most {@code expected} entries. If it isn't, an AssertionError, with the given message, is
+   * of at most {@code expected} entries. If it isn't, an AssertionError with the given message is
    * thrown.
    *
    * @param tstvalue the file to evaluate
@@ -143,8 +143,8 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is readable. If it isn't, an AssertionError, with the given
-   * message, is thrown.
+   * Asserts that a {@code tstvalue} is readable. If it isn't, an AssertionError with the given
+   * message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -167,8 +167,8 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is writeable. If it isn't, an AssertionError, with the given
-   * message, is thrown.
+   * Asserts that a {@code tstvalue} is writeable. If it isn't, an AssertionError with the given
+   * message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -191,8 +191,8 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is readable and writeable. If it isn't, an AssertionError, with
-   * the given message, is thrown.
+   * Asserts that a {@code tstvalue} is readable and writeable. If it isn't, an AssertionError with
+   * the given message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -241,7 +241,7 @@ public class FileAssert {
     fail(null);
   }
 
-  /** Formats failure for file assertions */
+  /** Formats failure for file assertions. */
   private static void failFile(File path, String actual, String expected, String message) {
     String formatted = "";
     if (message != null) {
@@ -287,34 +287,37 @@ public class FileAssert {
   private static String fileType(File path) {
     try {
       if (!path.exists()) {
-        return "Non existant";
-      } else if (path.isDirectory()) {
-        return "Directory";
-      } else if (path.isFile()) {
-        return "File";
-      } else {
-        return "Special File";
+        return "Nonexistent";
       }
+	  if (path.isDirectory()) {
+        return "Directory";
+      }
+	  if (path.isFile()) {
+        return "File";
+      }
+      return "Special File";
     } catch (SecurityException e) {
       return "Unauthorized";
     }
   }
 
-  /** String representation of what sort of file {@code path} is. */
+  /** String representation of read and write permissions of {@code path}. */
   private static String fileAccess(File path) {
     try {
       if (!path.exists()) {
-        return "Non existant";
-      } else if (path.canWrite() && path.canRead()) {
-        return "Read/Write Access";
-      } else if (path.canRead()) {
-        return "Read only Access";
-      } else if (path.canWrite()) {
-        return "Write only Access";
-      } else {
-        return "No Access";
+        return "Nonexistent";
+	  }
+      if (path.canRead() && path.canWrite()) {
+        return "Read and Write Access";
+      } 
+	  if (path.canRead()) {
+        return "Read but not Write Access";
       }
-    } catch (SecurityException e) {
+	  if (path.canWrite()) {
+        return "Write but not Read Access";
+      }
+      return "Neither Read nor Write Access";
+	} catch (SecurityException e) {
       return "Unauthorized";
     }
   }
