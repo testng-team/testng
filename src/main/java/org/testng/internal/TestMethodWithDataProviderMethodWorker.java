@@ -136,7 +136,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
                   m_testContext);
           r.setStatus(TestResult.SKIP);
           m_testResults.add(r);
-          m_invoker.runTestListeners(r);
+          m_invoker.runTestResultListener(r);
           m_notifier.addSkippedTest(m_testMethod, r);
         }
       }

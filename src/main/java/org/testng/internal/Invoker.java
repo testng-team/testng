@@ -598,8 +598,7 @@ public class Invoker implements IInvoker {
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
       testResult.setMethod(tm);
-      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, result);
-      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, result);
+      invokeListenersForSkippedTestResult(result, invokedMethod);
       ITestNGMethod[] teardownConfigMethods =
           TestNgMethodUtils.filterTeardownConfigurationMethods(tm, afterMethods);
       invokeConfigurations(
@@ -633,7 +632,7 @@ public class Invoker implements IInvoker {
       // any of the test listeners throws an exception, therefore,
       // invokedMethod must have a value before we get here
       if (!m_suiteState.isFailed()) {
-        runTestListeners(testResult);
+        runTestResultListener(testResult);
       }
 
       log(3, "Invoking " + tm.getQualifiedName());
@@ -710,7 +709,7 @@ public class Invoker implements IInvoker {
       //
       tm.incrementCurrentInvocationCount();
 
-      runTestListeners(testResult);
+      runTestResultListener(testResult);
 
       collectResults(tm, testResult);
 
@@ -991,6 +990,10 @@ public class Invoker implements IInvoker {
           registerSkippedTestResult(
               testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
       m_notifier.addSkippedTest(testMethod, result);
+      InvokedMethod invokedMethod = new InvokedMethod(result.getInstance(), testMethod,
+          System.currentTimeMillis(), result);
+      invokeListenersForSkippedTestResult(result, invokedMethod);
+
       return Collections.singletonList(result);
     }
 
@@ -1035,7 +1038,7 @@ public class Invoker implements IInvoker {
           tr.setStatus(ITestResult.SKIP);
           m_notifier.addSkippedTest(testMethod, tr);
         }
-        runTestListeners(tr);
+        runTestResultListener(tr);
         result.add(tr);
         continue;
       }
@@ -1146,8 +1149,11 @@ public class Invoker implements IInvoker {
               if (failure.count > 0
                   && (m_skipFailedInvocationCounts || testMethod.skipFailedInvocations())) {
                 while (invocationCount-- > 0) {
-                  result.add(
-                      registerSkippedTestResult(testMethod, System.currentTimeMillis(), null));
+                  ITestResult r = registerSkippedTestResult(testMethod, System.currentTimeMillis(), null);
+                  result.add(r);
+                  InvokedMethod invokedMethod =
+                      new InvokedMethod(r.getInstance(), testMethod, System.currentTimeMillis(), r);
+                  invokeListenersForSkippedTestResult(r, invokedMethod);
                 }
               }
             } // end finally
@@ -1165,12 +1171,18 @@ public class Invoker implements IInvoker {
                 m_testContext);
         r.setStatus(TestResult.FAILURE);
         result.add(r);
-        runTestListeners(r);
+        runTestResultListener(r);
         m_notifier.addFailedTest(testMethod, r);
       } // catch
     }
 
     return result;
+  }
+
+  private void invokeListenersForSkippedTestResult(ITestResult r, InvokedMethod invokedMethod) {
+    runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, r);
+    runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, r);
+    runTestResultListener(r);
   }
 
   private ITestResult registerSkippedTestResult(
@@ -1185,11 +1197,10 @@ public class Invoker implements IInvoker {
             m_testContext);
     if (RuntimeBehavior.invokeListenersForSkippedTests()) {
       result.setStatus(ITestResult.STARTED);
-      runTestListeners(result);
+      runTestResultListener(result);
     }
     result.setStatus(TestResult.SKIP);
     Reporter.setCurrentTestResult(result);
-    runTestListeners(result);
 
     return result;
   }
@@ -1517,7 +1528,7 @@ public class Invoker implements IInvoker {
     }
   }
 
-  void runTestListeners(ITestResult tr) {
+  void runTestResultListener(ITestResult tr) {
     TestListenerHelper.runTestListeners(tr, m_notifier.getTestListeners());
   }
 

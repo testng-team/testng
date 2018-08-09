@@ -1,7 +1,8 @@
 package test.priority;
 
+import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -17,7 +18,7 @@ public class PriorityTest extends SimpleBaseTest {
   private void runTest(Class<?> cls, boolean parallel, String... methods) {
     TestNG tng = create(cls);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     if (parallel) {
       tng.setParallel(XmlSuite.ParallelMode.METHODS);
     }
@@ -55,11 +56,17 @@ public class PriorityTest extends SimpleBaseTest {
     TestNG tng = create(SampleTest01.class, SampleTest02.class);
     tng.setParallel(XmlSuite.ParallelMode.CLASSES);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     tng.run();
-    List<String> sampleTest01Methods = Arrays.asList("test0010_createAction", "test0030_advancedSearch",
+    List<String> expected = Arrays.asList("test0010_createAction", "test0030_advancedSearch",
         "test0060_deleteAction");
-    Assert.assertEquals(listener.getMethodsForTestClass(SampleTest01.class), sampleTest01Methods);
+    List<String> allSkipped = listener.getSkippedMethodNames();
+    //Remove skipped methods from SampleTest01's invoked methods.
+    List<String> actual = listener.getMethodsForTestClass(SampleTest01.class)
+        .stream()
+        .filter(each -> !allSkipped.contains(each))
+        .collect(Collectors.toList());
+    Assertions.assertThat(actual).containsExactlyElementsOf(expected);
   }
 
 }

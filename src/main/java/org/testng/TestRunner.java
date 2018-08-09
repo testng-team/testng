@@ -1055,7 +1055,9 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
-    m_testListeners.add(listener);
+    if (!m_testListeners.contains(listener)) {
+      m_testListeners.add(listener);
+    }
   }
 
   public void addListener(ITestNGListener listener) {

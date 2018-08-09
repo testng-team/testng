@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
-import org.testng.IConfigurationListener2;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
@@ -22,9 +21,7 @@ public final class TestListenerHelper {
 
   static void runPreConfigurationListeners(ITestResult tr, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
-      if (icl instanceof IConfigurationListener2) {
-        ((IConfigurationListener2) icl).beforeConfiguration(tr);
-      }
+      icl.beforeConfiguration(tr);
     }
   }
 

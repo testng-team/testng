@@ -1,5 +1,6 @@
 Current
-Fixed: TestNG doesn't use the searchable loaders for JUnit tests
+Fixed: GITHUB-1883: Establish Listener invocation order as tests for documentation purposes (Krishnan Mahadevan)
+Fixed: TestNG doesn't use the searchable loaders for JUnit tests (Igor Ignatev)
 Fixed: GITHUB-1880: @AfterGroups(alwaysRun = true) is not called if there is an exception in @BeforeGroups (Krishnan Mahadevan)
 Fixed: GITHUB-1874: Prevent circular dependency error when suite includes different methods from same class (Krishnan Mahadevan)
 Fixed: GITHUB-1863: IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way.(Bin Wu)

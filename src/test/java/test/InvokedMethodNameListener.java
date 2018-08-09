@@ -68,8 +68,6 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
         if (!(skipConfiguration && method.isConfigurationMethod())) {
           if (wantSkippedMethodAfterInvocation) {
             skippedAfterInvocationMethodNames.add(name);
-          } else {
-            throw new IllegalStateException("A skipped test is not supposed to be invoked");
           }
         }
         break;
