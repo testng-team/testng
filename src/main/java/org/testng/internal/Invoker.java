@@ -168,8 +168,7 @@ public class Invoker implements IInvoker {
         testClass = tm.getTestClass();
       }
 
-      long time = System.currentTimeMillis();
-      ITestResult testResult = new TestResult(testClass, tm, null, time, 0L, m_testContext);
+      ITestResult testResult = TestResult.newContextAwareTestResult(tm, m_testContext);
       testResult.setStatus(ITestResult.STARTED);
 
       IConfigurationAnnotation configurationAnnotation = null;
@@ -579,7 +578,7 @@ public class Invoker implements IInvoker {
       ITestNGMethod[] afterMethods,
       ConfigurationGroupMethods groupMethods,
       FailureContext failureContext) {
-    TestResult testResult = new TestResult();
+    TestResult testResult = TestResult.newEmptyTestResult();
 
     invokeBeforeGroupsConfigurations(tm, groupMethods, suite, params, instance);
 
@@ -619,7 +618,7 @@ public class Invoker implements IInvoker {
     // Create the ExtraOutput for this method
     //
     try {
-      testResult.init(testClass, tm, null, System.currentTimeMillis(), 0, m_testContext);
+      testResult.init(tm, null, System.currentTimeMillis(), 0, m_testContext);
       testResult.setParameters(parameterValues);
       testResult.setParameterIndex(parametersIndex);
       testResult.setHost(m_testContext.getHost());
@@ -1162,13 +1161,7 @@ public class Invoker implements IInvoker {
         }
       } catch (Throwable cause) {
         ITestResult r =
-            new TestResult(
-                testMethod.getTestClass(),
-                testMethod,
-                cause,
-                start,
-                System.currentTimeMillis(),
-                m_testContext);
+            TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, cause, start);
         r.setStatus(TestResult.FAILURE);
         result.add(r);
         runTestResultListener(r);
@@ -1188,13 +1181,7 @@ public class Invoker implements IInvoker {
   private ITestResult registerSkippedTestResult(
       ITestNGMethod testMethod, long start, Throwable throwable) {
     ITestResult result =
-        new TestResult(
-            testMethod.getTestClass(),
-            testMethod,
-            throwable,
-            start,
-            System.currentTimeMillis(),
-            m_testContext);
+        TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
     if (RuntimeBehavior.invokeListenersForSkippedTests()) {
       result.setStatus(ITestResult.STARTED);
       runTestResultListener(result);

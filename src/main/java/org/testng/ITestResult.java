@@ -1,5 +1,9 @@
 package org.testng;
 
+import java.util.Collections;
+import java.util.List;
+import org.testng.collections.Lists;
+
 /**
  * This class describes the result of a test.
  *
@@ -88,4 +92,13 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @param wasRetried - <code>true</code> if the test was retried and <code>false</code> otherwise.
    */
   void setWasRetried(boolean wasRetried);
+
+  /**
+   * @return - The list of either upstream method(s) or configuration method(s) whose failure led to
+   * the current method being skipped. An empty list is returned when the current method is not
+   * a skipped method.
+   */
+  default List<ITestNGMethod> getSkipCausedBy() {
+    return Collections.emptyList();
+  }
 }

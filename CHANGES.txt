@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1878: Provide visibility into the actual method (config/test) that caused a downstream test to be skipped (Krishnan Mahadevan)
 Fixed: GITHUB-1883: Establish Listener invocation order as tests for documentation purposes (Krishnan Mahadevan)
 Fixed: TestNG doesn't use the searchable loaders for JUnit tests (Igor Ignatev)
 Fixed: GITHUB-1880: @AfterGroups(alwaysRun = true) is not called if there is an exception in @BeforeGroups (Krishnan Mahadevan)
