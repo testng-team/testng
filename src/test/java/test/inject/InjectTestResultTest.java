@@ -13,6 +13,6 @@ public class InjectTestResultTest extends SimpleBaseTest {
     TestNG tng = create(InjectBeforeAndAfterMethodsWithTestResultSampleTest.class);
     tng.run();
 
-    Assert.assertEquals(0, InjectBeforeAndAfterMethodsWithTestResultSampleTest.m_success);
+    Assert.assertEquals(InjectBeforeAndAfterMethodsWithTestResultSampleTest.m_success, 0);
   }
 }
