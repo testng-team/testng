@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="435_Suite" parallel="false" verbose="2">
+    <packages>
+        <package name="org.testng.xml.issue435" />
+    </packages>
+    <test name="foo">
+        <groups>
+            <run>
+                <include name="group1" />
+                <include name="group2" />
+            </run>
+        </groups>
+    </test>
+    <test name="bar">
+        <groups>
+            <run>
+                <include name="group3" />
+                <include name="group4" />
+            </run>
+        </groups>
+    </test>
+</suite>

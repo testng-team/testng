@@ -259,11 +259,9 @@ public class TestRunner
     // by plugging in their own custom interceptors as well.
     m_methodInterceptors.add(builtinInterceptor);
 
-    List<XmlPackage> m_packageNamesFromXml = test.getXmlPackages();
-    if (null != m_packageNamesFromXml) {
-      for (XmlPackage xp : m_packageNamesFromXml) {
-        m_testClassesFromXml.addAll(xp.getXmlClasses());
-      }
+    List<XmlPackage> m_packageNamesFromXml = getAllPackages();
+    for (XmlPackage xp : m_packageNamesFromXml) {
+      m_testClassesFromXml.addAll(xp.getXmlClasses());
     }
 
     m_annotationFinder = annotationFinder;
@@ -293,6 +291,23 @@ public class TestRunner
 
     // Finish our initialization
     init();
+  }
+
+  /**
+   * Returns all packages to use for the current test. This includes the test from the test
+   * suite. Never returns null.
+   */
+  private List<XmlPackage> getAllPackages() {
+    final List<XmlPackage> allPackages = Lists.newArrayList();
+    final List<XmlPackage> suitePackages = this.m_xmlTest.getSuite().getPackages();
+    if (suitePackages != null) {
+      allPackages.addAll(suitePackages);
+    }
+    final List<XmlPackage> testPackages = this.m_xmlTest.getPackages();
+    if (testPackages != null) {
+      allPackages.addAll(testPackages);
+    }
+    return allPackages;
   }
 
   public IInvoker getInvoker() {
