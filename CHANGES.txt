@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1892: Configurable InvokedMethodListener (Krishnan Mahadevan)
 Fixed: GITHUB-435: Apply <packages> at suite level to all tests (Siegmar Alber)
 Fixed: GITHUB-1870: Fix Ambiguous behavior of IInvokedMethodListener by clarifying javadocs(Krishnan Mahadevan)
 Fixed: GITHUB-1878: Provide visibility into the actual method (config/test) that caused a downstream test to be skipped (Krishnan Mahadevan)

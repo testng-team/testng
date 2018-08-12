@@ -1,11 +1,7 @@
 package test.listeners.issue1777;
 
-import org.testng.ITestResult;
 import org.testng.TestNG;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
@@ -18,16 +14,10 @@ public class IssueTest extends SimpleBaseTest {
 
   public static final String GITHUB_1777 = "GITHUB-1777";
 
-  @BeforeMethod
-  public void setup(ITestResult result) {
-    if (GITHUB_1777.equalsIgnoreCase(result.getMethod().getDescription())) {
-      System.setProperty(RuntimeBehavior.TESTNG_LISTENERS_ALWAYSRUN, Boolean.TRUE.toString());
-    }
-  }
-
   @Test(description = GITHUB_1777)
   public void testOnStartInvokedForSkippedTests() {
     TestNG testNG = create(TestClassSample.class);
+    testNG.alwaysRunListeners(true);
     testNG.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     MyListener listener = new MyListener();
     testNG.addListener(listener);
@@ -54,10 +44,4 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(listener.cfgMsgs).containsExactlyElementsOf(expectedConfigMessages);
   }
 
-  @AfterMethod
-  public void teardown(ITestResult result) {
-    if (GITHUB_1777.equalsIgnoreCase(result.getMethod().getDescription())) {
-      System.setProperty(RuntimeBehavior.TESTNG_LISTENERS_ALWAYSRUN, Boolean.FALSE.toString());
-    }
-  }
 }

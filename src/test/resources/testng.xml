@@ -165,7 +165,8 @@
       <class name="test.issue107.Issue107Test"/>
       <class name="test.test111.Test1" />
       <class name="test.testng173.TestNG173Test" />
-      <class name="test.listeners.ordering.IssueTest"/>
+      <class name="test.listeners.ordering.ListenerInvocationDefaultBehaviorTest"/>
+      <class name="test.listeners.ordering.ListenerInvocationListenerInvocationDisabledBehaviorTest"/>
       <class name="test.listeners.github551.Test551"/>
       <class name="test.listeners.github1284.TestListeners"/>
       <class name="test.listeners.github1735.ExecutionListenerTest"/>

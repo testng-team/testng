@@ -1173,8 +1173,10 @@ public class Invoker implements IInvoker {
   }
 
   private void invokeListenersForSkippedTestResult(ITestResult r, InvokedMethod invokedMethod) {
-    runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, r);
-    runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, r);
+    if (m_configuration.alwaysRunListeners()) {
+      runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, r);
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, r);
+    }
     runTestResultListener(r);
   }
 
@@ -1182,10 +1184,8 @@ public class Invoker implements IInvoker {
       ITestNGMethod testMethod, long start, Throwable throwable) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
-    if (RuntimeBehavior.invokeListenersForSkippedTests()) {
-      result.setStatus(ITestResult.STARTED);
-      runTestResultListener(result);
-    }
+    result.setStatus(ITestResult.STARTED);
+    runTestResultListener(result);
     result.setStatus(TestResult.SKIP);
     Reporter.setCurrentTestResult(result);
 
