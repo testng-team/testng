@@ -75,6 +75,19 @@ public class XmlSuiteTest extends SimpleBaseTest {
     assertThat(xmlsuite.toXml()).isNotEmpty();
   }
 
+  @Test(description = "GITHUB-435")
+  public void ensureSuiteLevelPackageIsAppliedToAllTests() throws IOException {
+    Parser parser = new Parser("src/test/resources/xml/issue435.xml");
+    List<XmlSuite> suites = parser.parseToList();
+    XmlSuite xmlsuite = suites.get(0);
+    assertThat(xmlsuite.getTests().get(0).getClasses().size()).isEqualTo(0);
+    TestNG testNG = create();
+    testNG.setXmlSuites(suites);
+    testNG.setUseDefaultListeners(false);
+    testNG.run();
+    assertThat(xmlsuite.getTests().get(0).getClasses().size()).isEqualTo(1);
+  }
+
   @Test(description = "GITHUB-1674")
   public void ensureSuiteLevelBeanshellIsAppliedToAllTests() throws IOException {
     PrintStream current = System.out;
