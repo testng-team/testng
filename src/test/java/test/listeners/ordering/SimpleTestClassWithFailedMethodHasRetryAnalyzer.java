@@ -13,7 +13,7 @@ public class SimpleTestClassWithFailedMethodHasRetryAnalyzer {
   }
 
   public static class OnceMore implements IRetryAnalyzer {
-    private static int counter = 1;
+    private int counter = 1;
 
     @Override
     public boolean retry(ITestResult result) {

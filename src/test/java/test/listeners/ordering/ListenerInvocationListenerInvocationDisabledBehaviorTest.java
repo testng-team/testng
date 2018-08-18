@@ -1,6 +1,30 @@
 package test.listeners.ordering;
 
-import static test.listeners.ordering.Constants.*;
+import static test.listeners.ordering.Constants.IALTERSUITELISTENER_ALTER;
+import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS;
+import static test.listeners.ordering.Constants.ICLASSLISTENER_ON_AFTER_CLASS;
+import static test.listeners.ordering.Constants.ICLASSLISTENER_ON_BEFORE_CLASS;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_BEFORE_CONFIGURATION;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_ON_CONFIGURATION_FAILURE;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_ON_CONFIGURATION_SKIP;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_ON_CONFIGURATION_SUCCESS;
+import static test.listeners.ordering.Constants.IDATAPROVIDERLISTENER_AFTER_DATA_PROVIDER_EXECUTION;
+import static test.listeners.ordering.Constants.IDATAPROVIDERLISTENER_BEFORE_DATA_PROVIDER_EXECUTION;
+import static test.listeners.ordering.Constants.IEXECUTIONLISTENER_ON_EXECUTION_FINISH;
+import static test.listeners.ordering.Constants.IEXECUTIONLISTENER_ON_EXECUTION_START;
+import static test.listeners.ordering.Constants.IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION;
+import static test.listeners.ordering.Constants.IINVOKEDMETHODLISTENER_AFTER_INVOCATION;
+import static test.listeners.ordering.Constants.IINVOKEDMETHODLISTENER_BEFORE_INVOCATION;
+import static test.listeners.ordering.Constants.IREPORTER_GENERATE_REPORT;
+import static test.listeners.ordering.Constants.ISUITELISTENER_ON_FINISH;
+import static test.listeners.ordering.Constants.ISUITELISTENER_ON_START;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_FINISH_TEST_TAG;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_START_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_START_TEST_TAG;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_SUCCESS_TEST_METHOD;
+import static test.listeners.ordering.Constants.METHODINTERCEPTOR_INTERCEPT;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +33,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
-public class IssueTest extends SimpleBaseTest {
+public class ListenerInvocationListenerInvocationDisabledBehaviorTest extends SimpleBaseTest {
 
   //Test methods along with configurations
 
@@ -57,9 +81,8 @@ public class IssueTest extends SimpleBaseTest {
         IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
         IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
         ICONFIGURATIONLISTENER_ON_CONFIGURATION_FAILURE,
-        IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
-        IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
-        ITESTLISTENER_ON_TEST_SKIPPED,
+        ITESTLISTENER_ON_START_TEST_METHOD,
+        ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
         ICLASSLISTENER_ON_AFTER_CLASS,
         IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
         ITESTLISTENER_ON_FINISH_TEST_TAG,
@@ -88,9 +111,8 @@ public class IssueTest extends SimpleBaseTest {
         IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
         IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
         ICONFIGURATIONLISTENER_ON_CONFIGURATION_SKIP,
-        IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
-        IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
-        ITESTLISTENER_ON_TEST_SKIPPED,
+        ITESTLISTENER_ON_START_TEST_METHOD,
+        ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
         ICLASSLISTENER_ON_AFTER_CLASS,
         IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
         ITESTLISTENER_ON_FINISH_TEST_TAG,
@@ -262,8 +284,7 @@ public class IssueTest extends SimpleBaseTest {
         IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
         IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
         ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD,
-        IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
-        IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+        ITESTLISTENER_ON_START_TEST_METHOD,
         ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
         ICLASSLISTENER_ON_AFTER_CLASS,
         IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
@@ -296,8 +317,7 @@ public class IssueTest extends SimpleBaseTest {
         ITESTLISTENER_ON_TEST_SUCCESS_TEST_METHOD,
         IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
         IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
-        IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
-        IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+        ITESTLISTENER_ON_START_TEST_METHOD,
         ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD,
         ICLASSLISTENER_ON_AFTER_CLASS,
         IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
@@ -380,6 +400,7 @@ public class IssueTest extends SimpleBaseTest {
     testng.setSkipFailedInvocationCounts(skipInvocationCount);
     UniversalListener listener = new UniversalListener();
     testng.addListener(listener);
+    testng.alwaysRunListeners(false);
     testng.run();
     Assertions.assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
   }

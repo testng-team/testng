@@ -139,9 +139,9 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(Derived1.class, Derived2.class);
     MyClassListener listener = new MyClassListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) adapter);
+    tng.addListener(adapter);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -159,9 +159,9 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(Derived3.class);
     MyClassListener listener = new MyClassListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) adapter);
+    tng.addListener(adapter);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -178,7 +178,7 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(ClassListenerSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) adapter);
+    tng.addListener(adapter);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -195,11 +195,11 @@ public class ListenerTest extends SimpleBaseTest {
     MyClassListener.names.clear();
     TestNG tng = create(Derived3.class);
     MyClassListener listener = new MyClassListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) adapter);
+    tng.addListener(adapter);
     TestAndClassListener tacl = new TestAndClassListener();
-    tng.addListener((ITestNGListener) tacl);
+    tng.addListener(tacl);
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
@@ -211,11 +211,11 @@ public class ListenerTest extends SimpleBaseTest {
   public void methodListenersShouldNotBeCalledForSkippedMethods() {
     GitHub911Listener listener = new GitHub911Listener();
     TestNG tng = create(GitHub911Sample.class);
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     tng.run();
     Assert.assertEquals(listener.onStart, 1);
     Assert.assertEquals(listener.onFinish, 1);
-    Assert.assertEquals(listener.onTestStart, 0);
+    Assert.assertEquals(listener.onTestStart, 2);
     Assert.assertEquals(listener.onTestSuccess, 0);
     Assert.assertEquals(listener.onTestFailure, 0);
     Assert.assertEquals(listener.onTestFailedButWithinSuccessPercentage, 0);
@@ -226,7 +226,7 @@ public class ListenerTest extends SimpleBaseTest {
   public void setStatusShouldWorkInListener() {
     SetStatusListener listener = new SetStatusListener();
     TestNG tng = create(SetStatusSample.class);
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     tng.run();
     Assert.assertEquals(listener.getContext().getFailedTests().size(), 0);
     Assert.assertEquals(listener.getContext().getFailedButWithinSuccessPercentageTests().size(), 0);
@@ -259,7 +259,7 @@ public class ListenerTest extends SimpleBaseTest {
         TestClassContainer.SecondTestClass.class);
     TestNG tng = create(suite);
     ListenerFor956 listener = new ListenerFor956();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
     tng.run();
     List<String> messages = listener.getMessages();
     Assert.assertEquals(messages.size(), 1);
@@ -270,8 +270,8 @@ public class ListenerTest extends SimpleBaseTest {
   public void testFailATestFromOnTestStart() {
     TestNG tng = create(SimpleSample.class);
     TestListenerAdapter adapter = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) adapter);
-    tng.addListener((ITestNGListener) new Listener1393());
+    tng.addListener(adapter);
+    tng.addListener(new Listener1393());
     tng.run();
     Assert.assertEquals(adapter.getPassedTests().size(), 0);
     Assert.assertEquals(adapter.getFailedTests().size(), 1);
@@ -284,7 +284,7 @@ public class ListenerTest extends SimpleBaseTest {
     xmlSuite.setParallel(mode);
     Issue1029InvokedMethodListener listener = new Issue1029InvokedMethodListener();
     TestNG testng = create(xmlSuite);
-    testng.addListener((ITestNGListener) listener);
+    testng.addListener(listener);
     testng.setThreadCount(10);
     testng.setDataProviderThreadCount(10);
     testng.run();

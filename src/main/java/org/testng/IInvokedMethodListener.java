@@ -3,7 +3,14 @@ package org.testng;
 /**
  * A listener that gets invoked before and after a method is invoked by TestNG. This listener will
  * be invoked for configuration and test methods irrespective of whether they passe/fail or
- * get skipped.
+ * get skipped. This listener invocation can be disabled for SKIPPED tests through
+ * one of the below mechanisms:
+ *
+ * <ul>
+ *   <li>Command line parameter <code>alwaysRunListeners</code> </li>
+ *   <li>Build tool</li>
+ *   <li>Via {@link TestNG#alwaysRunListeners(boolean)}</li>
+ * </ul>
  */
 public interface IInvokedMethodListener extends ITestNGListener {
 
