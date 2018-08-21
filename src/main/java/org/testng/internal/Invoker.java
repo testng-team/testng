@@ -258,13 +258,7 @@ public class Invoker implements IInvoker {
     Arrays.stream(source)
         .filter(each -> each instanceof ITestResult)
         .findFirst()
-        .ifPresent(eachSource -> copyAttributes((ITestResult) eachSource, target));
-  }
-
-  private static void copyAttributes(ITestResult source, ITestResult target) {
-    source
-        .getAttributeNames()
-        .forEach(name -> target.setAttribute(name, source.getAttribute(name)));
+        .ifPresent(eachSource -> TestResult.copyAttributes((ITestResult) eachSource, target));
   }
 
   private static Object computeInstance(Object instance, Object inst, ITestNGMethod tm) {
@@ -593,7 +587,7 @@ public class Invoker implements IInvoker {
     if (!confInvocationPassed(tm, tm, testClass, instance)) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext, instance);
       ITestResult result = registerSkippedTestResult(tm, System.currentTimeMillis(), exception);
-      copyAttributes(testResult, result);
+      TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
       testResult.setMethod(tm);
@@ -618,7 +612,10 @@ public class Invoker implements IInvoker {
     // Create the ExtraOutput for this method
     //
     try {
-      testResult.init(tm, null, System.currentTimeMillis(), 0, m_testContext);
+      testResult = TestResult.newTestResultFrom(testResult, tm, m_testContext,System.currentTimeMillis());
+      //Recreate the invoked method object again, because we now have a new test result object
+      invokedMethod = new InvokedMethod(instance, tm, invokedMethod.getDate(), testResult);
+
       testResult.setParameters(parameterValues);
       testResult.setParameterIndex(parametersIndex);
       testResult.setHost(m_testContext.getHost());
