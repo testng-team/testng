@@ -159,7 +159,7 @@ public class DependentTest extends BaseTest {
       {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, true},
       {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}, true},
       {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, true},
-      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodA", "testMethodC"}, true}
+      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodC", "testMethodA"}, true}
     };
   }
 

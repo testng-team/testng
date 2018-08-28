@@ -245,7 +245,17 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   @Override
   public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
-    return getPriority() - other.getPriority();
+    int priorityDiff = getPriority() - other.getPriority();
+    if (priorityDiff != 0) {
+        return priorityDiff;
+    }
+    // Tie break workers that have same priority with alphabetical sort.
+    List<ITestNGMethod> otherTasks = other.getTasks();
+    return getFirstName().compareTo(otherTasks.isEmpty() ? "" : otherTasks.get(0).getMethodName());
+  }
+  
+  private String getFirstName() {
+      return m_methodInstances.size() > 0 ? m_methodInstances.get(0).getMethod().getMethodName() : "";
   }
 
   /** The priority of a worker is the priority of the first method it's going to run. */

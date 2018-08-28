@@ -22,7 +22,7 @@ public class BaseOrderMethodTest {
 
   @Test(
       groups = {"3"},
-      dependsOnGroups = {"2.0"})
+      dependsOnGroups = {"2.0", "2.1"})
   public void third0() {
     verifyGroup(3, m_group2);
     m_group3[0] = true;

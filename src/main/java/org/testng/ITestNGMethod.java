@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
  *
  * <p>This interface is not meant to be implemented by users.
  */
-public interface ITestNGMethod extends Cloneable {
+public interface ITestNGMethod extends Cloneable, Comparable<ITestNGMethod> {
 
   /**
    * @return The real class on which this method was declared (can be different from
@@ -219,5 +219,14 @@ public interface ITestNGMethod extends Cloneable {
    */
   default IParameterInfo getFactoryMethodParamsInfo() {
     return null;
+  }
+  
+  public default int compareTo(ITestNGMethod o) {
+    int priorityDiff = this.getPriority() - o.getPriority();
+    // TODO: re-evaluate whether sorting by name is ok or not.
+    //if (priorityDiff != 0) {
+      return priorityDiff;
+    //}
+    //return this.getMethodName().compareTo(o.getMethodName());
   }
 }

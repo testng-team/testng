@@ -9,6 +9,8 @@ import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.log4testng.Logger;
 
 import javax.annotation.Nonnull;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -20,12 +22,13 @@ import java.util.concurrent.TimeUnit;
  * and a {@code IThreadWorkerFactory} to initialize/create {@code Runnable} wrappers around those
  * tasks
  */
-public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
+public class GraphThreadPoolExecutor<T extends Comparable<T>> extends ThreadPoolExecutor {
 
   private final DynamicGraph<T> m_graph;
   private final IThreadWorkerFactory<T> m_factory;
   private final Map<T, IWorker<T>> mapping = Maps.newConcurrentMap();
   private final Map<T, T> upstream = Maps.newConcurrentMap();
+  private final boolean m_shouldSort;
 
   public GraphThreadPoolExecutor(
       String name,
@@ -35,7 +38,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       int maximumPoolSize,
       long keepAliveTime,
       TimeUnit unit,
-      BlockingQueue<Runnable> workQueue) {
+      BlockingQueue<Runnable> workQueue,
+      boolean shouldSort) {
     super(
         corePoolSize,
         maximumPoolSize,
@@ -45,6 +49,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         new TestNGThreadFactory(name));
     m_graph = graph;
     m_factory = factory;
+    m_shouldSort = shouldSort;
 
     if (m_graph.getFreeNodes().isEmpty()) {
       throw new TestNGException("The graph of methods contains a cycle:" + graph);
@@ -54,6 +59,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   public void run() {
     synchronized (m_graph) {
       List<T> freeNodes = m_graph.getFreeNodes();
+      if (m_shouldSort) {
+          Collections.sort(freeNodes);
+      }
       runNodes(freeNodes);
     }
   }
@@ -84,6 +92,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         shutdown();
       } else {
         List<T> freeNodes = m_graph.getFreeNodes();
+        if (m_shouldSort) {
+            Collections.sort(freeNodes);
+        }
         handleThreadAffinity(freeNodes);
         runNodes(freeNodes);
       }

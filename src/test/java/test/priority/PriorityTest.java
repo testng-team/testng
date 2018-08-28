@@ -51,6 +51,11 @@ public class PriorityTest extends SimpleBaseTest {
     runTest(WithPriorityAndDependsMethodsSample.class, false /* sequential */, "first", "second", "third");
   }
 
+  @Test(description = "Test suite with tests using dependency, priority, and parallel has wrong behavior")
+  public void priorityWithDependsOnMethodsParallel() {
+    runTest(WithPriorityAndDependsMethodsSample.class, true /* parallel */, "first", "third", "second");
+  }
+
   @Test(description = "GITHUB #1334: Order by priority gets messed up when there are failures and dependsOnMethods")
   public void priorityWithDependencyAndFailures() {
     TestNG tng = create(SampleTest01.class, SampleTest02.class);

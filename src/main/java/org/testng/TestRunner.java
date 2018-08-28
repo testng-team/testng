@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -693,8 +691,19 @@ public class TestRunner
       // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
       // removing methods would cause the graph never to terminate (because it would expect
       // termination from methods that never get invoked).
+      ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
       DynamicGraph<ITestNGMethod> graph =
-          DynamicGraphHelper.createDynamicGraph(intercept(m_allTestMethods), getCurrentXmlTest());
+          DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+      if (m_methodInterceptors.size() > 1) {
+          // There's a built-in interceptor, so look for any beyond that one.
+          // If they specified a method interceptor, whatever that returned is the order we're going to run things in.
+          // Method interceptor overrides priority.
+          System.out.println("*&*&*&*&*&*&\nMethod interceptor specified, overriding priority\n*&*&*&*&*&*&");
+          System.out.println("Interceptors: " + m_methodInterceptors);
+          for (int i = 0; i < interceptedOrder.length; ++i) {
+              interceptedOrder[i].setPriority(i);
+          }
+      }
       graph.setVisualisers(this.visualisers);
       if (parallel) {
         if (graph.getNodeCount() > 0) {
@@ -707,7 +716,8 @@ public class TestRunner
                   threadCount,
                   0,
                   TimeUnit.MILLISECONDS,
-                  new LinkedBlockingQueue<>());
+                  new PriorityBlockingQueue<>(),
+                  true);
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -728,18 +738,29 @@ public class TestRunner
         }
       } else {
         List<ITestNGMethod> freeNodes = graph.getFreeNodes();
+        if (true) {
+          Collections.sort(freeNodes);
+        }
 
         if (graph.getNodeCount() > 0 && freeNodes.isEmpty()) {
           throw new TestNGException("No free nodes found in:" + graph);
         }
 
         while (!freeNodes.isEmpty()) {
+          // This is sequential, let's try just running one at a time.
+          // TODO: To optimize this, we can know when we need to get more free nodes by knowing if 
+          // the node we just ran has any dependencies or not. No dependencies? No need to fetch free nodes again.
+          
+          freeNodes = freeNodes.subList(0, 1);
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
             r.run();
           }
           graph.setStatus(freeNodes, Status.FINISHED);
           freeNodes = graph.getFreeNodes();
+          if (true) {
+            Collections.sort(freeNodes);
+          }
         }
       }
     }
