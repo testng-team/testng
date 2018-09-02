@@ -201,7 +201,10 @@ public class Invoker implements IInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && !alwaysRun) {
+        boolean considerFailures =
+                m_testContext.getSuite().getXmlSuite().getConfigFailurePolicy() != XmlSuite.FailurePolicy.CONTINUE;
+        boolean condition = considerFailures || !alwaysRun;
+        if (!confInvocationPassed(tm, currentTestMethod, testClass, instance) && condition) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod =
               new InvokedMethod(instance, tm, System.currentTimeMillis(), testResult);

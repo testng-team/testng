@@ -183,7 +183,7 @@
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
       <class name="test.objectfactory.github1827.GitHub1827Test"/>
-      <class name="test.github1490.VerifyDataProviderListener"/>      
+      <class name="test.github1490.VerifyDataProviderListener"/>
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="test.aftergroups.issue1880.IssueTest"/>
@@ -785,7 +785,7 @@
       <class name="test.sanitycheck.CheckSuiteNamesTest" />
     </classes>
   </test>
-  
+
   <test name="TestNames">
     <classes>
       <class name="org.testng.xml.internal.TestNamesMatcherTest"/>
@@ -812,6 +812,7 @@
       <class name="test.configuration.BeforeClassWithDisabledTest" />
       <class name="test.configuration.github1625.TestRunnerIssue1625"/>
       <class name="test.configuration.issue1753.IssueTest"/>
+      <class name="test.configuration.github1622.Issue1622Test"/>
     </classes>
   </test>
 
