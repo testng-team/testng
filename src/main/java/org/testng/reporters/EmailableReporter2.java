@@ -7,6 +7,7 @@ import java.text.NumberFormat;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlSuite.ParallelMode;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newBufferedWriter;
@@ -189,6 +191,14 @@ public class EmailableReporter2 implements IReporter {
         totalDuration += duration;
 
         testIndex++;
+      }
+      boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(suiteResult.getParallelMode());
+      if (testsInParallel) {
+        Optional<TestResult> maxValue = suiteResult.testResults.stream()
+            .max(Comparator.comparing(TestResult::getDuration));
+        if (maxValue.isPresent()) {
+          totalDuration = Math.max(totalDuration, maxValue.get().duration);
+        }
       }
     }
 
@@ -587,9 +597,11 @@ public class EmailableReporter2 implements IReporter {
   protected static class SuiteResult {
     private final String suiteName;
     private final List<TestResult> testResults = Lists.newArrayList();
+    private final ParallelMode mode;
 
     public SuiteResult(ISuite suite) {
       suiteName = suite.getName();
+      mode = suite.getXmlSuite().getParallel();
       for (ISuiteResult suiteResult : suite.getResults().values()) {
         testResults.add(new TestResult(suiteResult.getTestContext()));
       }
@@ -603,19 +615,18 @@ public class EmailableReporter2 implements IReporter {
     public List<TestResult> getTestResults() {
       return testResults;
     }
+
+    public ParallelMode getParallelMode() {
+      return mode;
+    }
   }
 
   /** Groups {@link ClassResult}s by test, type (configuration or test), and status. */
   protected static class TestResult {
     /** Orders test results by class name and then by method name (in lexicographic order). */
     protected static final Comparator<ITestResult> RESULT_COMPARATOR =
-        (o1, o2) -> {
-          int result = o1.getTestClass().getName().compareTo(o2.getTestClass().getName());
-          if (result == 0) {
-            result = o1.getMethod().getMethodName().compareTo(o2.getMethod().getMethodName());
-          }
-          return result;
-        };
+        Comparator.comparing((ITestResult o) -> o.getTestClass().getName())
+            .thenComparing(o -> o.getMethod().getMethodName());
 
     private final String testName;
     private final List<ClassResult> failedConfigurationResults;
