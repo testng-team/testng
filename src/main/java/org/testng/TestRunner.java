@@ -703,9 +703,9 @@ public class TestRunner
       if (m_methodInterceptors.size() > 1) {
         // There's a built-in interceptor, so look for any beyond that one.
         // If the user specified a method interceptor, whatever that returns is the order we're going to run things in.
-        // Method interceptor overrides priority.
+        // Set a special priority for that case.
         for (int i = 0; i < interceptedOrder.length; ++i) {
-          interceptedOrder[i].setPriority(i);
+          interceptedOrder[i].setInterceptedPriority(i);
         }
         needSort = true;
       } else {

@@ -191,6 +191,10 @@ public interface ITestNGMethod extends Cloneable, Comparable<ITestNGMethod> {
 
   void setPriority(int priority);
 
+  int getInterceptedPriority();
+
+  void setInterceptedPriority(int priority);
+
   /** @return the XmlTest this method belongs to. */
   XmlTest getXmlTest();
 

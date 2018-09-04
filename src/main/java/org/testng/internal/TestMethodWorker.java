@@ -245,12 +245,21 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   @Override
   public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
-    int priorityDiff = getPriority() - other.getPriority();
+    List<ITestNGMethod> otherTasks = other.getTasks();
+    // First compare intercepted priorities
+    int myInterceptedPriority = m_methodInstances.size() > 0 ? m_methodInstances.get(0).getMethod().getInterceptedPriority() : 0;
+    int otherInterceptedPriority = otherTasks.isEmpty() ? 0 : otherTasks.get(0).getInterceptedPriority();
+    int priorityDiff = myInterceptedPriority - otherInterceptedPriority;
     if (priorityDiff != 0) {
         return priorityDiff;
     }
-    // Tie break workers that have same priority with alphabetical sort.
-    List<ITestNGMethod> otherTasks = other.getTasks();
+    
+    // Then compare regular priorities
+    priorityDiff = getPriority() - other.getPriority();
+    if (priorityDiff != 0) {
+        return priorityDiff;
+    }
+    // Tie break workers that have same priority with plain old alphabetical sort.
     return getFirstName().compareTo(otherTasks.isEmpty() ? "" : otherTasks.get(0).getMethodName());
   }
   

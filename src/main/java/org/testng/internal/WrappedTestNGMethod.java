@@ -330,6 +330,16 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
+  public int getInterceptedPriority() {
+    return testNGMethod.getInterceptedPriority();
+  }
+
+  @Override
+  public void setInterceptedPriority(int priority) {
+    testNGMethod.setInterceptedPriority(priority);
+  }
+
+  @Override
   public XmlTest getXmlTest() {
     return testNGMethod.getXmlTest();
   }
