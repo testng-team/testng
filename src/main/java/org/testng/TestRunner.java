@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -697,19 +698,25 @@ public class TestRunner
       ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
       DynamicGraph<ITestNGMethod> graph =
           DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+      // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
+      boolean needSort = false;
       if (m_methodInterceptors.size() > 1) {
-          // There's a built-in interceptor, so look for any beyond that one.
-          // If they specified a method interceptor, whatever that returned is the order we're going to run things in.
-          // Method interceptor overrides priority.
-          System.out.println("*&*&*&*&*&*&\nMethod interceptor specified, overriding priority\n*&*&*&*&*&*&");
-          System.out.println("Interceptors: " + m_methodInterceptors);
-          for (int i = 0; i < interceptedOrder.length; ++i) {
-              interceptedOrder[i].setPriority(i);
-          }
+        // There's a built-in interceptor, so look for any beyond that one.
+        // If the user specified a method interceptor, whatever that returns is the order we're going to run things in.
+        // Method interceptor overrides priority.
+        for (int i = 0; i < interceptedOrder.length; ++i) {
+          interceptedOrder[i].setPriority(i);
+        }
+        needSort = true;
+      } else {
+        // If we have any methods that have a non-default priority on them, we need to sort.
+        needSort = Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
       }
       graph.setVisualisers(this.visualisers);
       if (parallel) {
         if (graph.getNodeCount() > 0) {
+          // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
+          BlockingQueue<Runnable> queue = needSort ? new PriorityBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>();
           GraphThreadPoolExecutor<ITestNGMethod> executor =
               new GraphThreadPoolExecutor<>(
                   "test=" + xmlTest.getName(),
@@ -719,8 +726,8 @@ public class TestRunner
                   threadCount,
                   0,
                   TimeUnit.MILLISECONDS,
-                  new PriorityBlockingQueue<>(),
-                  true);
+                  queue,
+                  needSort);
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -741,7 +748,7 @@ public class TestRunner
         }
       } else {
         List<ITestNGMethod> freeNodes = graph.getFreeNodes();
-        if (true) {
+        if (needSort) {
           Collections.sort(freeNodes);
         }
 
@@ -750,18 +757,18 @@ public class TestRunner
         }
 
         while (!freeNodes.isEmpty()) {
-          // This is sequential, let's try just running one at a time.
-          // TODO: To optimize this, we can know when we need to get more free nodes by knowing if 
-          // the node we just ran has any dependencies or not. No dependencies? No need to fetch free nodes again.
-          
-          freeNodes = freeNodes.subList(0, 1);
+          if (needSort) {
+            // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
+            // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
+            freeNodes = freeNodes.subList(0, 1);
+          }
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
             r.run();
           }
           graph.setStatus(freeNodes, Status.FINISHED);
           freeNodes = graph.getFreeNodes();
-          if (true) {
+          if (needSort) {
             Collections.sort(freeNodes);
           }
         }

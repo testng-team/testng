@@ -18,11 +18,13 @@ public class OrderTest extends SimpleBaseTest {
     assertThat(listener.getSucceedMethodNames()).containsExactly(
         "beforeClass",
         "test1",
-        "test3",
+        // "test3", // The result is not exactly the one from #288 (prior 6.8)
+        // but it respects the class separation
         "test4(one)",
         "test4(two)",
         "test4(three)",
         "test4(four)",
+        "test3",
         "afterClass",
         "beforeClass",
         "test2",
