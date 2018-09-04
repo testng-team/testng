@@ -14,7 +14,7 @@ import com.google.inject.Injector;
  *
  * @author Cedric Beust, Aug 6, 2004
  */
-public interface ISuite extends IAttributes, Comparable<ISuite> {
+public interface ISuite extends IAttributes {
 
   /** @return the name of this suite. */
   String getName();
@@ -86,10 +86,4 @@ public interface ISuite extends IAttributes, Comparable<ISuite> {
    *     providers might cause the actual number of test methods run be bigger than this list.
    */
   List<ITestNGMethod> getAllMethods();
-  
-  public default int compareTo(ISuite o) {
-      // This needs to implement Comparable<T> to be able to be used in the DirectGraph, but
-      // doesn't actually need to sort.
-      return 0;
-  }
 }

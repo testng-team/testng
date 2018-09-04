@@ -24,7 +24,7 @@ import test.TestClassContainerForGitHubIssue1360;
 
 public class DynamicGraphTest extends SimpleBaseTest {
 
-  private static class Node implements Comparable<Node> {
+  private static class Node {
     private final String name;
 
     private Node(String name) {
@@ -35,18 +35,13 @@ public class DynamicGraphTest extends SimpleBaseTest {
     public String toString() {
       return name;
     }
-
-    @Override
-    public int compareTo(Node o) {
-        return name.compareTo(o.name);
-    }
   }
 
-  private static <T extends Comparable<T>> void assertFreeNodesEquals(DynamicGraph<T> graph, T... expected) {
+  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, T... expected) {
     assertFreeNodesEquals(graph, Arrays.asList(expected));
   }
 
-  private static <T extends Comparable<T>> void assertFreeNodesEquals(DynamicGraph<T> graph, List<T> expected) {
+  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, List<T> expected) {
     // Compare free nodes using isEqualTo instead of containsOnly as we care about ordering too.
     assertThat(graph.getFreeNodes()).isEqualTo(expected);
   }

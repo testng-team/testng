@@ -13,7 +13,7 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
 /** Representation of the graph of methods. */
-public class DynamicGraph<T extends Comparable<T>> {
+public class DynamicGraph<T> {
 
   private final Set<T> m_nodesReady = Sets.newLinkedHashSet();
   private final Set<T> m_nodesRunning = Sets.newLinkedHashSet();
@@ -74,7 +74,6 @@ public class DynamicGraph<T extends Comparable<T>> {
     for (T node : free) {
       Map<T, Integer> edges = m_edges.from(node);
       // disjoint returns true if the two collections have no common items.
-      // If the node has no edges coming from it (has no dependencies) or none of the nodes that depend on it are currently in the set of potential returns
       if (edges == null || Collections.disjoint(edges.keySet(), free)) {
         finalResult.add(node);
       }

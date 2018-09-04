@@ -1093,7 +1093,7 @@ public class TestNG {
             Integer.MAX_VALUE,
             TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>(),
-            false);
+            null);
 
     Utils.log("TestNG", 2, "Starting executor for all suites");
     // Run all suites in parallel

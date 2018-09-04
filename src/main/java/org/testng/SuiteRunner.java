@@ -294,11 +294,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   public void setParentInjector(Injector injector) {
     parentInjector = injector;
   }
-  
-  @Override
-  public String toString() {
-    return "[Suite Runner: " + getName() + "]";
-  }
 
   @Override
   public void run() {

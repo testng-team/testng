@@ -34,6 +34,7 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
+import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.ResultMap;
@@ -699,7 +700,7 @@ public class TestRunner
       DynamicGraph<ITestNGMethod> graph =
           DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
       // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
-      boolean needSort = false;
+      boolean needPrioritySort = false;
       if (m_methodInterceptors.size() > 1) {
         // There's a built-in interceptor, so look for any beyond that one.
         // If the user specified a method interceptor, whatever that returns is the order we're going to run things in.
@@ -707,16 +708,17 @@ public class TestRunner
         for (int i = 0; i < interceptedOrder.length; ++i) {
           interceptedOrder[i].setInterceptedPriority(i);
         }
-        needSort = true;
+        needPrioritySort = true;
       } else {
         // If we have any methods that have a non-default priority on them, we need to sort.
-        needSort = Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
+        needPrioritySort = Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
       }
+      Comparator<ITestNGMethod> methodComparator = needPrioritySort ? new TestMethodComparator() : null;
       graph.setVisualisers(this.visualisers);
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
-          BlockingQueue<Runnable> queue = needSort ? new PriorityBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>();
+          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>();
           GraphThreadPoolExecutor<ITestNGMethod> executor =
               new GraphThreadPoolExecutor<>(
                   "test=" + xmlTest.getName(),
@@ -727,7 +729,7 @@ public class TestRunner
                   0,
                   TimeUnit.MILLISECONDS,
                   queue,
-                  needSort);
+                  methodComparator);
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -748,16 +750,17 @@ public class TestRunner
         }
       } else {
         List<ITestNGMethod> freeNodes = graph.getFreeNodes();
-        if (needSort) {
-          Collections.sort(freeNodes);
-        }
 
         if (graph.getNodeCount() > 0 && freeNodes.isEmpty()) {
           throw new TestNGException("No free nodes found in:" + graph);
         }
+        
+        if (needPrioritySort) {
+          Collections.sort(freeNodes, methodComparator);
+        }
 
         while (!freeNodes.isEmpty()) {
-          if (needSort) {
+          if (needPrioritySort) {
             // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
             // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
             freeNodes = freeNodes.subList(0, 1);
@@ -768,8 +771,8 @@ public class TestRunner
           }
           graph.setStatus(freeNodes, Status.FINISHED);
           freeNodes = graph.getFreeNodes();
-          if (needSort) {
-            Collections.sort(freeNodes);
+          if (needPrioritySort) {
+            Collections.sort(freeNodes, methodComparator);
           }
         }
       }
