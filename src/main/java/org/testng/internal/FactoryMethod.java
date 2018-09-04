@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -127,8 +128,8 @@ public class FactoryMethod extends BaseTestMethod {
     return groups.toArray(new String[0]);
   }
 
-  public Object[] invoke() {
-    List<Object> result = Lists.newArrayList();
+  public IParameterInfo[] invoke() {
+    List<IParameterInfo> result = Lists.newArrayList();
 
     Map<String, String> allParameterNames = Maps.newHashMap();
     Parameters.MethodParameters methodParameters =
@@ -166,12 +167,14 @@ public class FactoryMethod extends BaseTestMethod {
         if (com.getMethod() != null) {
           Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
           if (indices == null || indices.isEmpty()) {
-            result.addAll(Arrays.asList(testInstances));
+            result.addAll(Arrays.stream(testInstances).map(instance ->
+              new ParameterInfo(instance, parameters)
+            ).collect(Collectors.toList()));
           } else {
             for (Integer index : indices) {
               int i = index - position;
               if (i >= 0 && i < testInstances.length) {
-                result.add(testInstances[i]);
+                result.add(new ParameterInfo(testInstances[i], parameters));
               }
             }
           }
@@ -188,7 +191,7 @@ public class FactoryMethod extends BaseTestMethod {
               throw new IllegalStateException(
                   "Unsupported ITestObjectFactory " + objectFactory.getClass());
             }
-            result.add(instance);
+            result.add(new ParameterInfo(instance,  parameters));
           }
           position++;
         }
@@ -204,7 +207,7 @@ public class FactoryMethod extends BaseTestMethod {
           t);
     }
 
-    return result.toArray(new Object[0]);
+    return result.toArray(new IParameterInfo[0]);
   }
 
   @Override

@@ -197,7 +197,7 @@ public class ClassImpl implements IClass {
     int m_instanceCount = m_instances.size();
     m_instanceHashCodes = new long[m_instanceCount];
     for (int i = 0; i < m_instanceCount; i++) {
-      m_instanceHashCodes[i] = m_instances.get(i).hashCode();
+      m_instanceHashCodes[i] = computeHashCode(m_instances.get(i));
     }
     return result;
   }
@@ -210,5 +210,9 @@ public class ClassImpl implements IClass {
   @Override
   public void addInstance(Object instance) {
     m_instances.add(instance);
+  }
+
+  private static int computeHashCode(Object instance) {
+    return IParameterInfo.embeddedInstance(instance).hashCode();
   }
 }

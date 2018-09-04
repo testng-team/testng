@@ -1,5 +1,6 @@
 package test.reflect;
 
+import java.util.List;
 import org.testng.IClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -89,6 +90,11 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
+  public Object[] getFactoryParameters() {
+    return new Object[0];
+  }
+
+  @Override
   public String getTestName() {
     return null;
   }
@@ -106,6 +112,11 @@ public class TestResultJustForTesting implements ITestResult {
   @Override
   public void setWasRetried(boolean wasRetried) {
 
+  }
+
+  @Override
+  public List<ITestNGMethod> getSkipCausedBy() {
+    return null;
   }
 
   @Override

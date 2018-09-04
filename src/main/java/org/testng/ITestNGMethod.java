@@ -1,6 +1,7 @@
 package org.testng;
 
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.IParameterInfo;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -210,5 +211,13 @@ public interface ITestNGMethod extends Cloneable {
 
   default boolean isDataDriven() {
     return false;
+  }
+
+  /**
+   * @return - A {@link IParameterInfo} object that represents details about the parameters
+   * associated with the factory method.
+   */
+  default IParameterInfo getFactoryMethodParamsInfo() {
+    return null;
   }
 }
