@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1480: Parallel=methods not working when tests have different priorities set (Micah Lapping-Carr)
 Fixed: GITHUB-1041: Factory data-provider parameters not displayed in test-result (Krishnan Mahadevan)
 Fixed: GITHUB-1901: The overall reported Test time for suite containing parallel tests should be max(tests_times) (Krishnan Mahadevan)
 Fixed: GITHUB-1893: Streamline invocation of "init" method within TestResult to be private (Krishnan Mahadevan)
