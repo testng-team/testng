@@ -700,19 +700,10 @@ public class TestRunner
       DynamicGraph<ITestNGMethod> graph =
           DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
       // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
-      boolean needPrioritySort = false;
-      if (m_methodInterceptors.size() > 1) {
-        // There's a built-in interceptor, so look for any beyond that one.
-        // If the user specified a method interceptor, whatever that returns is the order we're going to run things in.
-        // Set a special priority for that case.
-        for (int i = 0; i < interceptedOrder.length; ++i) {
-          interceptedOrder[i].setInterceptedPriority(i);
-        }
-        needPrioritySort = true;
-      } else {
-        // If we have any methods that have a non-default priority on them, we need to sort.
-        needPrioritySort = Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
-      }
+      // If the user specified a method interceptor, or if we have any methods that have a non-default
+      // priority on them, we need to sort.
+      boolean needPrioritySort = m_methodInterceptors.size() > 1 || 
+          Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
       Comparator<ITestNGMethod> methodComparator = needPrioritySort ? new TestMethodComparator() : null;
       graph.setVisualisers(this.visualisers);
       if (parallel) {
@@ -754,13 +745,10 @@ public class TestRunner
         if (graph.getNodeCount() > 0 && freeNodes.isEmpty()) {
           throw new TestNGException("No free nodes found in:" + graph);
         }
-        
-        if (needPrioritySort) {
-          Collections.sort(freeNodes, methodComparator);
-        }
 
         while (!freeNodes.isEmpty()) {
           if (needPrioritySort) {
+            Collections.sort(freeNodes, methodComparator);
             // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
             // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
             freeNodes = freeNodes.subList(0, 1);
@@ -771,9 +759,6 @@ public class TestRunner
           }
           graph.setStatus(freeNodes, Status.FINISHED);
           freeNodes = graph.getFreeNodes();
-          if (needPrioritySort) {
-            Collections.sort(freeNodes, methodComparator);
-          }
         }
       }
     }
@@ -810,6 +795,16 @@ public class TestRunner
               m_groupMethods.getBeforeGroupsMethods(),
               m_groupMethods.getAfterGroupsMethods());
     }
+
+    // If the user specified a method interceptor, whatever that returns is the order we're going
+    // to run things in. Set the intercepted priority for that case.
+    // There's a built-in interceptor, so look for more than one.
+    if (m_methodInterceptors.size() > 1) {
+      for (int i = 0; i < resultArray.length; ++i) {
+        resultArray[i].setInterceptedPriority(i);
+      }
+    }
+
     return resultArray;
   }
 
