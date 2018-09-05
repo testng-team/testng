@@ -1,6 +1,8 @@
 package test.priority.parallel;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.testng.ITestNGListener;
@@ -198,7 +200,6 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
     public void verifyThatSlowMethodStartedFirstAndEndedLast() {
         EventLog highPriStart = suiteOneTestOneTestMethodLevelEventLogs.stream().filter(e -> {
             String classData = (String) e.getData(EventInfo.CLASS_NAME);
-            System.out.println("Class data is " + classData + ", simple name is " + HighPriorityTestSample.class.getSimpleName());
             boolean rightClass = classData.contains(HighPriorityTestSample.class.getSimpleName());
             return e.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_START && rightClass;
         }).findFirst().get();

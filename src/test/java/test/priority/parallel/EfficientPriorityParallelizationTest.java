@@ -1,6 +1,8 @@
 package test.priority.parallel;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
