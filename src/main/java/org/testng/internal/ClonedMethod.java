@@ -334,6 +334,16 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public int getInterceptedPriority() {
+    return m_method.getInterceptedPriority();
+  }
+
+  @Override
+  public void setInterceptedPriority(int priority) {
+    // ignored
+  }
+
+  @Override
   public XmlTest getXmlTest() {
     return m_method.getXmlTest();
   }

@@ -872,6 +872,13 @@
     </classes>
   </test>
 
+  <test name="Efficient Thread Use With Priority">
+    <classes>
+      <class name="test.priority.parallel.EfficientPriorityParallelizationTest"/>
+      <class name="test.priority.parallel.EfficientPriorityParallelizationTest2"/>
+    </classes>
+  </test>
+
   <test name="Suite_Related_Tests">
     <classes>
       <class name="test.suites.github1533.Github1533Test"/>

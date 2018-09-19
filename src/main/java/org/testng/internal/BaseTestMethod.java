@@ -67,6 +67,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private boolean m_ignoreMissingDependencies;
   private int m_priority;
+  private int m_interceptedPriority;
 
   private XmlTest m_xmlTest;
   private Object m_instance;
@@ -685,6 +686,16 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public void setPriority(int priority) {
     m_priority = priority;
+  }
+
+  @Override
+  public int getInterceptedPriority() {
+    return m_interceptedPriority;
+  }
+
+  @Override
+  public void setInterceptedPriority(int priority) {
+    m_interceptedPriority = priority;
   }
 
   @Override

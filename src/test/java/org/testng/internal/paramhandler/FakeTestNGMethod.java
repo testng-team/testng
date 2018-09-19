@@ -307,6 +307,14 @@ public class FakeTestNGMethod implements ITestNGMethod {
 
   @Override
   public void setPriority(int priority) {}
+  
+  @Override
+  public int getInterceptedPriority() {
+    return 0;
+  }
+  
+  @Override
+  public void setInterceptedPriority(int priority) {}
 
   @Override
   public XmlTest getXmlTest() {

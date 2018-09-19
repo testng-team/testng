@@ -159,7 +159,7 @@ public class DependentTest extends BaseTest {
       {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, true},
       {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}, true},
       {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, true},
-      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodA", "testMethodC"}, true}
+      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodC", "testMethodA"}, true}
     };
   }
 
@@ -175,7 +175,15 @@ public class DependentTest extends BaseTest {
     tng.addListener(listener);
 
     tng.run();
-
-    assertThat(listener.getSucceedMethodNames()).containsExactly(runMethods);
+    
+    if (!isParallel) {
+        // When not running parallel, invoke order and succeed order are the same.
+        assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
+        assertThat(listener.getSucceedMethodNames()).containsExactly(runMethods);
+    } else {
+        // When running parallel, invoke order is consistent, but succeed order isn't.
+        assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
+        assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(runMethods);
+    }
   }
 }

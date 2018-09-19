@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -32,6 +34,7 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
+import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.ResultMap;
@@ -693,11 +696,20 @@ public class TestRunner
       // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
       // removing methods would cause the graph never to terminate (because it would expect
       // termination from methods that never get invoked).
+      ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
       DynamicGraph<ITestNGMethod> graph =
-          DynamicGraphHelper.createDynamicGraph(intercept(m_allTestMethods), getCurrentXmlTest());
+          DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+      // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
+      // If the user specified a method interceptor, or if we have any methods that have a non-default
+      // priority on them, we need to sort.
+      boolean needPrioritySort = m_methodInterceptors.size() > 1 || 
+          Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
+      Comparator<ITestNGMethod> methodComparator = needPrioritySort ? new TestMethodComparator() : null;
       graph.setVisualisers(this.visualisers);
       if (parallel) {
         if (graph.getNodeCount() > 0) {
+          // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
+          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>();
           GraphThreadPoolExecutor<ITestNGMethod> executor =
               new GraphThreadPoolExecutor<>(
                   "test=" + xmlTest.getName(),
@@ -707,7 +719,8 @@ public class TestRunner
                   threadCount,
                   0,
                   TimeUnit.MILLISECONDS,
-                  new LinkedBlockingQueue<>());
+                  queue,
+                  methodComparator);
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -734,6 +747,12 @@ public class TestRunner
         }
 
         while (!freeNodes.isEmpty()) {
+          if (needPrioritySort) {
+            Collections.sort(freeNodes, methodComparator);
+            // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
+            // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
+            freeNodes = freeNodes.subList(0, 1);
+          }
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
             r.run();
@@ -776,6 +795,16 @@ public class TestRunner
               m_groupMethods.getBeforeGroupsMethods(),
               m_groupMethods.getAfterGroupsMethods());
     }
+
+    // If the user specified a method interceptor, whatever that returns is the order we're going
+    // to run things in. Set the intercepted priority for that case.
+    // There's a built-in interceptor, so look for more than one.
+    if (m_methodInterceptors.size() > 1) {
+      for (int i = 0; i < resultArray.length; ++i) {
+        resultArray[i].setInterceptedPriority(i);
+      }
+    }
+
     return resultArray;
   }
 
