@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface AfterGroups {
   /**
-   * The list of groups that this configuration method will run after. If specified it overrides the
+   * The list of groups that this configuration method will run after. If specified, it overrides the
    * list of groups provided through {@link #groups()} attribute. This method is guaranteed to run
    * shortly after the last test method that belongs to any of these groups is invoked.
    */
@@ -32,7 +32,7 @@ public @interface AfterGroups {
   String[] dependsOnGroups() default {};
 
   /**
-   * The list of methods this method depends on. There is no guarantee on the order on which the
+   * The list of methods this method depends on. There is no guarantee of the order on which the
    * methods depended upon will be run, but you are guaranteed that all these methods will be run
    * before the test method that contains this annotation is run. Furthermore, if any of these
    * methods was not a SUCCESS, this test method will not be run and will be flagged as a SKIP.
@@ -43,9 +43,9 @@ public @interface AfterGroups {
 
   /**
    * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
-   * beforeGroups): If set to true, this configuration method will be run regardless of what groups
+   * beforeGroups): if set to true, this configuration method will be run regardless of what groups
    * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): If set to true, this configuration method will
+   * For after methods (afterSuite, afterClass, ...): if set to true, this configuration method will
    * be run even if one or more methods invoked previously failed or was skipped.
    */
   boolean alwaysRun() default false;
