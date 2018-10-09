@@ -17,13 +17,13 @@ public class ConversionUtils {
    * Turns the output of a JUnit 4 @Parameters style data provider into one that is suitable for
    * TestNG's @DataProvider.
    */
-  public static Object[] wrapDataProvider(Class cls, Collection<Object[]> data) {
-    List result = new ArrayList();
+  public static Object[] wrapDataProvider(Class<?> cls, Collection<Object[]> data) {
+    List<Object> result = new ArrayList<>();
     for (Object o : data) {
       Object[] parameters = (Object[]) o;
-      Constructor ctor = null;
+      Constructor<?> ctor = null;
       try {
-        for (Constructor c : cls.getConstructors()) {
+        for (Constructor<?> c : cls.getConstructors()) {
           // Just comparing parameter array sizes. Comparing the parameter types
           // is more error prone since we need to take conversions into account
           // (int -> Integer, etc...).
