@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1931: [NPE] Reporter org.testng.reporters.jq.Main failed (Krishnan Mahadevan)
 New: Remove raw type warnings in ConversionUtils
 Fixed: GITHUB-1480: Parallel=methods not working when tests have different priorities set (Micah Lapping-Carr)
 Fixed: GITHUB-1041: Factory data-provider parameters not displayed in test-result (Krishnan Mahadevan)
