@@ -732,6 +732,12 @@
     </classes>
   </test>
 
+  <test name="Reporters">
+    <classes>
+      <class name="org.testng.reporters.jq.TimesPanelTest" />
+    </classes>
+  </test>
+
   <test name="Invoker">
     <classes>
       <class name="test.groupinvocation.InvokerTest"/>

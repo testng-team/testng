@@ -120,8 +120,13 @@ public class TimesPanel extends BaseMultiSuitePanel {
 
   private long maxTime(ISuite suite) {
     boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(suite.getXmlSuite().getParallel());
+    Long result = m_totalTime.get(suite.getName());
+    // there are no running tests in the suite
+    if (result == null) {
+      return 0L;
+    }
     if (! testsInParallel) {
-      return m_totalTime.get(suite.getName());
+      return result;
     }
     Optional<ITestContext> maxValue = suite.getResults().values().stream()
         .map(ISuiteResult::getTestContext)
@@ -129,7 +134,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
     if (maxValue.isPresent()) {
       return time(maxValue.get());
     }
-    return m_totalTime.get(suite.getName());
+    return result;
   }
 
   private static Long time(ITestContext ctx) {
