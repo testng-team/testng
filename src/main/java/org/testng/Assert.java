@@ -133,7 +133,7 @@ public class Assert {
     if (expected.equals(actual) && actual.equals(expected)) {
       return;
     }
-    failNotEquals(actual, expected, message);
+    fail(format(actual, expected, message, true));
   }
 
   private static void assertArrayEquals(Object actual, Object expected, String message) {
@@ -1196,9 +1196,7 @@ public class Assert {
     }
 
     List<Object> actualCollection = Lists.newArrayList();
-    for (Object a : actual) {
-      actualCollection.add(a);
-    }
+    actualCollection.addAll(Arrays.asList(actual));
     for (Object o : expected) {
       actualCollection.remove(o);
     }
