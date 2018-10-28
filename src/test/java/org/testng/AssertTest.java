@@ -49,8 +49,8 @@ public class AssertTest {
 
   @Test
   public void setAssertEquals() {
-    Set expected = Sets.newHashSet();
-    Set actual = Sets.newHashSet();
+    Set<Object> expected = Sets.newHashSet();
+    Set<Object> actual = Sets.newHashSet();
 
     expected.add(1);
     expected.add("a");
@@ -62,8 +62,8 @@ public class AssertTest {
 
   @Test
   public void mapAssertEquals() {
-    Map expected = Maps.newHashMap();
-    Map actual = Maps.newHashMap();
+    Map<Object, Object> expected = Maps.newHashMap();
+    Map<Object, Object> actual = Maps.newHashMap();
 
     expected.put(null, "a");
     expected.put("a", "a");
@@ -192,7 +192,7 @@ public class AssertTest {
 
   @Test
   public void compareFloatWithNaNValues() {
-    Assert.assertEquals((float) Float.NaN ,(float) Float.NaN);
+    Assert.assertEquals(Float.NaN, Float.NaN);
   }
 
   @Test
@@ -211,7 +211,7 @@ public class AssertTest {
 
   @Test
   public void compareDoubleWithNaNValues() {
-    Assert.assertEquals( (double) Double.NaN , (double) Double.NaN);
+    Assert.assertEquals(Double.NaN, Double.NaN);
   }
 
   @Test
@@ -253,6 +253,18 @@ public class AssertTest {
     Assert.assertEquals(actual, expected);
   }
 
+  @Test(description = "GITHUB-1935", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "expected \\[y\\] but found \\[x\\]")
+  public void testInequalityMessage() {
+    Assert.assertEquals("x", "y");
+  }
+
+  @Test(description = "GITHUB-1935", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect to find \\[x\\] but found \\[x\\]")
+  public void testEqualityMessage() {
+    Assert.assertNotEquals("x", "x");
+  }
+
   class Contrived {
 
     int integer;
@@ -268,9 +280,7 @@ public class AssertTest {
 
       Contrived contrived = (Contrived) o;
 
-      if (integer != contrived.integer) return false;
-
-      return true;
+      return integer == contrived.integer;
     }
 
     @Override
@@ -296,9 +306,7 @@ public class AssertTest {
 
           Asymmetric that = (Asymmetric) o;
 
-          if (character != that.character) return false;
-
-          return true;
+        return character == that.character;
       }
 
       @Override
