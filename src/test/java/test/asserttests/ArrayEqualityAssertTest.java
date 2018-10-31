@@ -2,19 +2,9 @@ package test.asserttests;
 
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertEqualsDeep;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertNotEqualsDeep;
+import static org.testng.Assert.*;
 
 /** Tests different equality cases for nested collections and arrays. */
 public class ArrayEqualityAssertTest {
@@ -189,6 +179,16 @@ public class ArrayEqualityAssertTest {
     setCopy.add(new int[] {42});
 
     assertEqualsDeep(set, setCopy, "arrays inside sets are compared by value in assertEqualsDeep");
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void deepEqualsFailure() {
+      Set<String> actual = new HashSet<>();
+      actual.add("42");
+      Set<String> expected = new HashSet<>();
+      expected.add("42");
+      expected.add("43");
+      assertEqualsDeep(actual, expected, "Sets not equal:");
   }
 
   @Test(expectedExceptions = AssertionError.class)

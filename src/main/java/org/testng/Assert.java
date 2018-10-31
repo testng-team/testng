@@ -1280,13 +1280,18 @@ public class Assert {
       }
     }
 
+    if(expected.size()>actual.size()){
+        if (message == null) {
+            fail("Sets not equal: expected: " + expected + " and actual: " + actual);
+        } else {
+            fail(format(actual,expected,message,true));
+        }
+    }
+
     Iterator<?> actualIterator = actual.iterator();
     Iterator<?> expectedIterator = expected.iterator();
     while (expectedIterator.hasNext()) {
       Object expectedValue = expectedIterator.next();
-      if (!actualIterator.hasNext()) {
-        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-      }
       Object value = actualIterator.next();
       if (expectedValue.getClass().isArray()) {
         assertArrayEquals(value, expectedValue, message);
