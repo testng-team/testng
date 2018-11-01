@@ -2,9 +2,19 @@ package test.asserttests;
 
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertEqualsDeep;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotEqualsDeep;
 
 /** Tests different equality cases for nested collections and arrays. */
 public class ArrayEqualityAssertTest {
