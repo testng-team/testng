@@ -1280,12 +1280,12 @@ public class Assert {
       }
     }
 
-    if(expected.size()>actual.size()){
-        if (message == null) {
-            fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-        } else {
-            fail(format(actual,expected,message,true));
-        }
+    if (expected.size() > actual.size()) {
+      if (message == null) {
+        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
+      } else {
+        fail(format(actual, expected, message, true));
+      }
     }
 
     Iterator<?> actualIterator = actual.iterator();
