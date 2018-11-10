@@ -1281,8 +1281,8 @@ public class Invoker implements IInvoker {
     int status =
         computeTestStatusComparingTestResultAndStatusHolder(testResult, holder, wasResultUnaltered);
     boolean handled = holder.handled;
+    IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer(testResult);
 
-    IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer();
     boolean willRetry =
         retryAnalyzer != null
             && status == ITestResult.FAILURE

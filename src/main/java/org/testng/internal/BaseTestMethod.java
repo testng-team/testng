@@ -16,10 +16,12 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -58,6 +60,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private int m_parameterInvocationCount = 1;
   private Callable<Boolean> m_moreInvocationChecker;
   private IRetryAnalyzer m_retryAnalyzer = null;
+  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
 
@@ -71,6 +74,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   private XmlTest m_xmlTest;
   private Object m_instance;
+
+  private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
 
   public BaseTestMethod(
       String methodName,
@@ -625,8 +630,24 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   @Override
+  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    return getRetryAnalyzerConsideringMethodParameteters(result);
+  }
+
+  @Override
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
     m_retryAnalyzer = retryAnalyzer;
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
+    m_retryAnalyzer = ClassHelper.newInstance(m_retryAnalyzerClass);
+  }
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return m_retryAnalyzerClass;
   }
 
   @Override
@@ -743,4 +764,16 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     }
     return null;
   }
+
+  private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameteters(ITestResult tr) {
+    Object[] key = tr.getParameters();
+    IRetryAnalyzer retryAnalyzer = this.m_retryAnalyzer;
+    if ((key != null && key.length != 0) && retryAnalyzer != null) {
+      String keyAsString = getMethodName() + "_" + Arrays.toString(key);
+      retryAnalyzer = m_testMethodToRetryAnalyzer.computeIfAbsent(keyAsString,
+          o -> ClassHelper.newInstance(this.m_retryAnalyzer.getClass()));
+    }
+    return retryAnalyzer;
+  }
+
 }
