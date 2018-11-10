@@ -184,14 +184,14 @@ public class ClassImpl implements IClass {
                   create)
             };
       }
+    }
+    if (m_instances.size() > 0) {
+      result = m_instances.toArray(new Object[0]);
     } else {
       Object defaultInstance = getDefaultInstance(create);
       if (defaultInstance != null) {
         result = new Object[] {defaultInstance};
       }
-    }
-    if (m_instances.size() > 0) {
-      result = m_instances.toArray(new Object[0]);
     }
 
     int m_instanceCount = m_instances.size();
