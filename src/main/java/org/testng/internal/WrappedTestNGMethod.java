@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -272,6 +273,21 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   @Override
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
     testNGMethod.setRetryAnalyzer(retryAnalyzer);
+  }
+
+  @Override
+  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    return testNGMethod.getRetryAnalyzer(result);
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    testNGMethod.setRetryAnalyzerClass(clazz);
+  }
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return testNGMethod.getRetryAnalyzerClass();
   }
 
   @Override

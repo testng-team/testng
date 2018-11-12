@@ -66,9 +66,18 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setDataProviderClass(Class<?> v);
 
+  /**
+   * @deprecated - This method stands deprecated as of TestNG 7.0.0.
+   * Please use {{@link #getRetryAnalyzerClass()}} instead.
+   */
+  @Deprecated
   IRetryAnalyzer getRetryAnalyzer();
 
   void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c);
+
+  default Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return getRetryAnalyzer().getClass();
+  }
 
   boolean skipFailedInvocations();
 

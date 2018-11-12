@@ -22,6 +22,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private boolean m_singleThreaded = false;
   private Class<?> m_dataProviderClass = null;
   private IRetryAnalyzer m_retryAnalyzer = null;
+  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
   private boolean m_skipFailedInvocations = false;
   private boolean m_ignoreMissingDependencies = false;
 
@@ -157,6 +158,12 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
     if (isRetryAnalyzerNotTestNGInjected(c)) {
       m_retryAnalyzer = ClassHelper.newInstance(c);
     }
+    m_retryAnalyzerClass = c;
+  }
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return m_retryAnalyzerClass;
   }
 
   @Override

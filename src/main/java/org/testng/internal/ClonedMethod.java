@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlTest;
 
@@ -145,6 +146,21 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public IRetryAnalyzer getRetryAnalyzer() {
     return m_method.getRetryAnalyzer();
+  }
+
+  @Override
+  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    return m_method.getRetryAnalyzer(result);
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    m_method.setRetryAnalyzerClass(clazz);
+  }
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return m_method.getRetryAnalyzerClass();
   }
 
   @Override
