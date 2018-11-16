@@ -35,6 +35,11 @@ public class FactoryMethod extends BaseTestMethod {
   private final ITestObjectFactory objectFactory;
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
       m_dataProviderListeners;
+  private String m_factoryCreationFailedMessage = null;
+
+  public String getFactoryCreationFailedMessage() {
+    return m_factoryCreationFailedMessage;
+  }
 
   @SuppressWarnings("unchecked")
   private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
@@ -60,7 +65,7 @@ public class FactoryMethod extends BaseTestMethod {
         continue;
       }
 
-      Object object = ClassHelper.newInstanceOrNull(listener);
+      Object object = InstanceCreator.newInstanceOrNull(listener);
       if (object != null) {
         m_dataProviderListeners.put(key, (IDataProviderListener) object);
       }
@@ -166,6 +171,14 @@ public class FactoryMethod extends BaseTestMethod {
         ConstructorOrMethod com = getConstructorOrMethod();
         if (com.getMethod() != null) {
           Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
+          if (testInstances == null) {
+            testInstances = new Object[] {};
+          }
+          if (testInstances.length == 0) {
+            this.m_factoryCreationFailedMessage = String
+                .format("The Factory method %s.%s() should have produced at-least one instance.",
+                    com.getDeclaringClass().getName(), com.getName());
+          }
           if (indices == null || indices.isEmpty()) {
             result.addAll(Arrays.stream(testInstances).map(instance ->
               new ParameterInfo(instance, parameters)

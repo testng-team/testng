@@ -679,14 +679,14 @@ public class Parameters {
           if (injector != null) {
             instanceToUse = injector.getInstance(dataProviderClass);
           } else {
-            instanceToUse = ClassHelper.newInstance(dataProviderClass);
+            instanceToUse = InstanceCreator.newInstance(dataProviderClass);
           }
         } else {
           instanceToUse = instance;
         }
         // Not a static method but no instance exists, then create new one if possible
         if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
-          instanceToUse = ClassHelper.newInstanceOrNull(cls);
+          instanceToUse = InstanceCreator.newInstanceOrNull(cls);
         }
 
         if (result != null) {

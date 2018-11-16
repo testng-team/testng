@@ -32,6 +32,7 @@ import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.TestMethodComparator;
@@ -417,7 +418,7 @@ public class TestRunner
     if (null != xmlTest.getMethodSelectors()) {
       for (org.testng.xml.XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
         if (selector.getClassName() != null) {
-          IMethodSelector s = ClassHelper.createSelector(selector);
+          IMethodSelector s = InstanceCreator.createSelector(selector);
 
           m_runInfo.addMethodSelector(s, selector.getPriority());
         }
@@ -461,7 +462,7 @@ public class TestRunner
               testMethodFinder,
               m_annotationFinder,
               m_xmlTest,
-              classMap.getXmlClass(ic.getRealClass()));
+              classMap.getXmlClass(ic.getRealClass()), m_testClassFinder.getFactoryCreationFailedMessage());
       m_classMap.put(ic.getRealClass(), tc);
     }
 
@@ -648,7 +649,7 @@ public class TestRunner
               for (XmlInclude inc : includedMethods) {
                 methods.add(inc.getName());
               }
-              IJUnitTestRunner tr = ClassHelper.createTestRunner(TestRunner.this);
+              IJUnitTestRunner tr = IJUnitTestRunner.createTestRunner(TestRunner.this);
               tr.setInvokedMethodListeners(m_invokedMethodListeners);
               try {
                 tr.run(tc, methods.toArray(new String[0]));
