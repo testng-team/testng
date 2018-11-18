@@ -96,7 +96,7 @@ public class ClassImpl implements IClass {
     return m_xmlClass;
   }
 
-  private Object getDefaultInstance(boolean create) {
+  private Object getDefaultInstance(boolean create, String errMsgPrefix) {
     if (m_defaultInstance == null) {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
@@ -107,13 +107,13 @@ public class ClassImpl implements IClass {
           m_defaultInstance = instance;
         } else {
           m_defaultInstance =
-              ClassHelper.createInstance(
+              InstanceCreator.createInstance(
                   m_class,
                   m_classes,
                   m_testContext.getCurrentXmlTest(),
                   m_annotationFinder,
                   m_objectFactory,
-                  create);
+                  create, errMsgPrefix);
         }
       }
     }
@@ -161,34 +161,39 @@ public class ClassImpl implements IClass {
   private Module newModule(Class<Module> module) {
     try {
       Constructor<Module> moduleConstructor = module.getDeclaredConstructor(ITestContext.class);
-      return ClassHelper.newInstance(moduleConstructor, m_testContext);
+      return InstanceCreator.newInstance(moduleConstructor, m_testContext);
     } catch (NoSuchMethodException e) {
-      return ClassHelper.newInstance(module);
+      return InstanceCreator.newInstance(module);
     }
   }
 
   @Override
   public Object[] getInstances(boolean create) {
+    return getInstances(create, "");
+  }
+
+  @Override
+  public Object[] getInstances(boolean create, String errorMsgPrefix) {
     Object[] result = {};
 
     if (m_testContext.getCurrentXmlTest().isJUnit()) {
       if (create) {
         result =
             new Object[] {
-              ClassHelper.createInstance(
-                  m_class,
-                  m_classes,
-                  m_testContext.getCurrentXmlTest(),
-                  m_annotationFinder,
-                  m_objectFactory,
-                  create)
+                InstanceCreator.createInstance(
+                    m_class,
+                    m_classes,
+                    m_testContext.getCurrentXmlTest(),
+                    m_annotationFinder,
+                    m_objectFactory,
+                    create, errorMsgPrefix)
             };
       }
     }
     if (m_instances.size() > 0) {
       result = m_instances.toArray(new Object[0]);
     } else {
-      Object defaultInstance = getDefaultInstance(create);
+      Object defaultInstance = getDefaultInstance(create, errorMsgPrefix);
       if (defaultInstance != null) {
         result = new Object[] {defaultInstance};
       }

@@ -30,6 +30,10 @@ public interface IClass {
    */
   Object[] getInstances(boolean create);
 
+  default Object[] getInstances(boolean create, String errorMsgPrefix) {
+    return getInstances(create);
+  }
+
   long[] getInstanceHashCodes();
 
   void addInstance(Object instance);

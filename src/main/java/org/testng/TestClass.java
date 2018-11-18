@@ -24,6 +24,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
   private String testName;
   private XmlTest xmlTest;
   private XmlClass xmlClass;
+  private String m_errorMsgPrefix;
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
 
@@ -32,7 +33,9 @@ class TestClass extends NoOpTestClass implements ITestClass {
       ITestMethodFinder testMethodFinder,
       IAnnotationFinder annotationFinder,
       XmlTest xmlTest,
-      XmlClass xmlClass) {
+      XmlClass xmlClass,
+      String errorMsgPrefix) {
+    this.m_errorMsgPrefix = errorMsgPrefix;
     init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClass);
   }
 
@@ -76,7 +79,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
     //
     // TestClasses and instances
     //
-    Object[] instances = getInstances(true);
+    Object[] instances = getInstances(true, this.m_errorMsgPrefix);
     for (Object instance : instances) {
       instance = IParameterInfo.embeddedInstance(instance);
       if (instance instanceof ITest) {
@@ -92,6 +95,11 @@ class TestClass extends NoOpTestClass implements ITestClass {
   @Override
   public Object[] getInstances(boolean create) {
     return iClass.getInstances(create);
+  }
+
+  @Override
+  public Object[] getInstances(boolean create, String errorMsgPrefix) {
+    return iClass.getInstances(create, this.m_errorMsgPrefix);
   }
 
   @Override

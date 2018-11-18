@@ -40,6 +40,12 @@ public class TestNGClassFinder extends BaseClassFinder {
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder annotationFinder;
 
+  private String m_factoryCreationFailedMessage = null;
+
+  public String getFactoryCreationFailedMessage() {
+    return m_factoryCreationFailedMessage;
+  }
+
   public TestNGClassFinder(
       ClassInfoMap cim,
       Map<Class<?>, List<Object>> instanceMap,
@@ -197,6 +203,7 @@ public class TestNGClassFinder extends BaseClassFinder {
       }
       i++;
     }
+    this.m_factoryCreationFailedMessage = fm.getFactoryCreationFailedMessage();
     return moreClasses;
   }
 

@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1953: TestNG throws a misleading error when @Factory method returns empty array. (Krishnan Mahadevan)
 Fixed: GITHUB-1946: Retry analyzer does not work properly when coupled with a data provider (Krishnan Mahadevan)
 Fixed: GITHUB-1924: Testclass instantiation fails when both no-arg constructor and factory method present (Krishnan Mahadevan)
 Fixed: GITHUB-1935: Wrong text for assertEquals (Krishnan Mahadevan)
