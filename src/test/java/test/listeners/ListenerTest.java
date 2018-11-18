@@ -20,6 +20,7 @@ import test.listeners.github956.TestClassContainer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import test.listeners.issue1952.TestclassSample;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -291,6 +292,15 @@ public class ListenerTest extends SimpleBaseTest {
     List<String> expected = Collections.nCopies(5, "GITHUB-1029-Test");
     assertThat(listener.getBeforeInvocation()).containsExactlyElementsOf(expected);
     assertThat(listener.getAfterInvocation()).containsExactlyElementsOf(expected);
+  }
+
+  @Test(description = "GITHUB-1952")
+  public void ensureTimeoutListenerIsInvokedForTimingoutTests() {
+    TestNG tng = create(TestclassSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
+    tng.run();
+    assertThat(adapter.getTimedoutTests()).hasSize(1);
   }
 
   @DataProvider(name = "dp")

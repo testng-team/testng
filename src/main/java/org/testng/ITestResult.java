@@ -2,7 +2,7 @@ package org.testng;
 
 import java.util.Collections;
 import java.util.List;
-import org.testng.collections.Lists;
+import org.testng.internal.thread.ThreadTimeoutException;
 
 /**
  * This class describes the result of a test.
@@ -106,5 +106,20 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   default List<ITestNGMethod> getSkipCausedBy() {
     return Collections.emptyList();
+  }
+
+  /**
+   * @param result - The test result of a method
+   * @return - <code>true</code> if the test failure was due to a timeout.
+   */
+  static boolean wasFailureDueToTimeout(ITestResult result) {
+    Throwable cause = result.getThrowable();
+    while (cause != null && !cause.getClass().equals(Throwable.class)) {
+      if (cause instanceof ThreadTimeoutException) {
+        return true;
+      }
+      cause = cause.getCause();
+    }
+    return false;
   }
 }
