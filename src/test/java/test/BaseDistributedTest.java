@@ -3,7 +3,6 @@ package test;
 import org.testng.Assert;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class BaseDistributedTest {

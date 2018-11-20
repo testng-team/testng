@@ -60,7 +60,11 @@ public final class TestListenerHelper {
           itl.onTestFailedButWithinSuccessPercentage(tr);
           break;
         case ITestResult.FAILURE:
-          itl.onTestFailure(tr);
+          if (ITestResult.wasFailureDueToTimeout(tr)) {
+            itl.onTestFailedWithTimeout(tr);
+          } else {
+            itl.onTestFailure(tr);
+          }
           break;
         case ITestResult.SUCCESS:
           itl.onTestSuccess(tr);
