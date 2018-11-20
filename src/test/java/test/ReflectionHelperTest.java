@@ -48,7 +48,7 @@ public class ReflectionHelperTest {
                 pruned.add(method);
             }
         }
-        return pruned.toArray(new Method[pruned.size()]);
+        return pruned.toArray(new Method[0]);
     }
 
     interface Animal {
