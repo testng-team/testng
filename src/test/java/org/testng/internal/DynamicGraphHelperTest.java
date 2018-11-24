@@ -201,7 +201,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
 
   private static Object newInstance(Class<?> clazz) {
     try {
-      return ClassHelper.newInstance(clazz);
+      return InstanceCreator.newInstance(clazz);
     } catch (Exception e) {
       return null;
     }

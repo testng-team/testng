@@ -37,6 +37,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     }
   }
 
+  @SafeVarargs
   private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, T... expected) {
     assertFreeNodesEquals(graph, Arrays.asList(expected));
   }

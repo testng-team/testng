@@ -729,6 +729,7 @@
     <classes>
       <class name="org.testng.internal.UtilsTest" />
       <class name="org.testng.internal.ClassHelperTest"/>
+      <class name="org.testng.internal.InstanceCreatorTest"/>
       <class name="test.issue1430.TestFileToClass"/>
     </classes>
   </test>

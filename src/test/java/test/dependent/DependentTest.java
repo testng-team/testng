@@ -104,9 +104,9 @@ public class DependentTest extends BaseTest {
   public void instanceDependencies() {
     addClass(InstanceSkipSampleTest.class.getName());
     run();
-    verifyInstanceNames("Passed", getPassedTests(), new String[] {"f#1", "f#3", "g#1", "g#3"});
-    verifyInstanceNames("Failed", getFailedTests(), new String[] {"f#2"});
-    verifyInstanceNames("Skipped", getSkippedTests(), new String[] {"g#2"});
+    verifyInstanceNames(getPassedTests(), new String[] {"f#1", "f#3", "g#1", "g#3"});
+    verifyInstanceNames(getFailedTests(), new String[] {"f#2"});
+    verifyInstanceNames(getSkippedTests(), new String[] {"g#2"});
   }
 
   @Test
