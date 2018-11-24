@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -105,7 +106,7 @@ public final class Utils {
         file.createNewFile();
       }
       try (final OutputStreamWriter w =
-          new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
+          new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
         if (prefix != null) {
           w.append(prefix);
         }

@@ -63,12 +63,7 @@ public class PackageUtils {
 
     List<URL> dirs = Lists.newArrayList();
     // go through additional class loaders
-    List<ClassLoader> allClassLoaders = Lists.newArrayList();
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    if (contextClassLoader != null) {
-      allClassLoaders.add(contextClassLoader);
-    }
-    allClassLoaders.addAll(classLoaders);
+    List<ClassLoader> allClassLoaders = ClassHelper.appendContextualClassLoaders(Lists.newArrayList(classLoaders));
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {
