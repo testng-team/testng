@@ -199,7 +199,7 @@ public class TestNGMethod extends BaseTestMethod {
     if (instance == null) {
       return null;
     }
-    return ClassHelper.newInstance(instance.getClass());
+    return InstanceCreator.newInstance(instance.getClass());
   }
 
   @Override

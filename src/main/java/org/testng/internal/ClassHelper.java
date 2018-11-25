@@ -2,9 +2,6 @@ package org.testng.internal;
 
 import java.lang.reflect.Executable;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;

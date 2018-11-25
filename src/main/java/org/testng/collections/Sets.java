@@ -18,6 +18,7 @@ public final class Sets {
     return new HashSet<>(c);
   }
 
+  @SafeVarargs
   public static <V> Set<V> newHashSet(V... a) {
     return newHashSet(Arrays.asList(a));
   }
