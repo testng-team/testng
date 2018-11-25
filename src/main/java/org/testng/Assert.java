@@ -1497,6 +1497,78 @@ public class Assert {
     }
   }
 
+  public static void assertNotEquals(float[] actual, float[] expected, String message) {
+    boolean fail;
+    try {
+      Assert.assertEquals(actual, expected, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(float[] actual, float[] expected) {
+    assertNotEquals(actual, expected, "");
+  }
+
+  public static void assertNotEquals(float[] actual, float[] expected, float delta, String message) {
+    boolean fail;
+    try {
+      Assert.assertEquals(actual, expected, delta, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(float[] actual, float[] expected, float delta) {
+    assertNotEquals(actual, expected, delta,"");
+  }
+
+  public static void assertNotEquals(double[] actual, double[] expected, String message) {
+    boolean fail;
+    try {
+      Assert.assertEquals(actual, expected, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(double[] actual, double[] expected) {
+    assertNotEquals(actual, expected, "");
+  }
+
+  public static void assertNotEquals(double[] actual, double[] expected, double delta, String message) {
+    boolean fail;
+    try {
+      Assert.assertEquals(actual, expected, delta, message);
+      fail = true;
+    } catch (AssertionError e) {
+      fail = false;
+    }
+
+    if (fail) {
+      Assert.fail(message);
+    }
+  }
+
+  public static void assertNotEquals(double[] actual, double[] expected, double delta) {
+    assertNotEquals(actual, expected, delta, "");
+  }
+
   public static void assertNotEqualsDeep(Set<?> actual, Set<?> expected) {
     assertNotEqualsDeep(actual, expected, null);
   }
