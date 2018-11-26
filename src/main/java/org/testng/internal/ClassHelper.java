@@ -1,5 +1,10 @@
 package org.testng.internal;
 
+import java.lang.reflect.Executable;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
@@ -79,6 +84,16 @@ public final class ClassHelper {
     return InstanceCreator.newInstance(constructor, parameters);
   }
 
+  static List<ClassLoader> appendContextualClassLoaders(List<ClassLoader> currentLoaders) {
+    List<ClassLoader> allClassLoaders = Lists.newArrayList();
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    if (contextClassLoader != null) {
+      allClassLoaders.add(contextClassLoader);
+    }
+    allClassLoaders.addAll(currentLoaders);
+    return allClassLoaders;
+  }
+
   /**
    * Tries to load the specified class using the context ClassLoader or if none, than from the
    * default ClassLoader. This method differs from the standard class loading methods in that it
@@ -88,12 +103,7 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    List<ClassLoader> allClassLoaders = Lists.newArrayList();
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    if (contextClassLoader != null) {
-      allClassLoaders.add(contextClassLoader);
-    }
-    allClassLoaders.addAll(classLoaders);
+    List<ClassLoader> allClassLoaders = appendContextualClassLoaders(classLoaders);
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {
@@ -142,24 +152,24 @@ public final class ClassHelper {
   public static List<ConstructorOrMethod> findDeclaredFactoryMethods(
       Class<?> cls, IAnnotationFinder finder) {
     List<ConstructorOrMethod> result = new ArrayList<>();
-
-    for (Method method : getAvailableMethods(cls)) {
-      IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
+    BiConsumer<IFactoryAnnotation, Executable> consumer = (f, executable) -> {
       if (f != null) {
-        ConstructorOrMethod factory = new ConstructorOrMethod(method);
+        ConstructorOrMethod factory = new ConstructorOrMethod(executable);
         factory.setEnabled(f.getEnabled());
         result.add(factory);
       }
+    };
+
+    for (Method method : getAvailableMethods(cls)) {
+      IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
+      consumer.accept(f, method);
     }
 
     for (Constructor constructor : cls.getDeclaredConstructors()) {
       IFactoryAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
-      if (f != null) {
-        ConstructorOrMethod factory = new ConstructorOrMethod(constructor);
-        factory.setEnabled(f.getEnabled());
-        result.add(factory);
-      }
+      consumer.accept(f, constructor);
     }
+
 
     return result;
   }

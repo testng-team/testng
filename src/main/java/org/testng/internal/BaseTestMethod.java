@@ -445,19 +445,16 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_testClass;
   }
 
+  static StringBuilder stringify(String cls, ConstructorOrMethod method) {
+    StringBuilder result =
+        new StringBuilder(cls).append(".").append(method.getName()).append("(");
+    return result.append(method.stringifyParameterTypes()).append(")");
+  }
+
   private String computeSignature() {
     String classLong = m_method.getDeclaringClass().getName();
     String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
-    StringBuilder result =
-        new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
-    int i = 0;
-    for (Class<?> p : m_method.getParameterTypes()) {
-      if (i++ > 0) {
-        result.append(", ");
-      }
-      result.append(p.getName());
-    }
-    result.append(")");
+    StringBuilder result = stringify(cls, m_method);
     result
         .append("[pri:")
         .append(getPriority())
@@ -642,7 +639,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
     m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
-    m_retryAnalyzer = ClassHelper.newInstance(m_retryAnalyzerClass);
+    m_retryAnalyzer = InstanceCreator.newInstance(m_retryAnalyzerClass);
   }
 
   @Override
@@ -771,7 +768,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     if ((key != null && key.length != 0) && retryAnalyzer != null) {
       String keyAsString = getMethodName() + "_" + Arrays.toString(key);
       retryAnalyzer = m_testMethodToRetryAnalyzer.computeIfAbsent(keyAsString,
-          o -> ClassHelper.newInstance(this.m_retryAnalyzer.getClass()));
+          o -> InstanceCreator.newInstance(this.m_retryAnalyzer.getClass()));
     }
     return retryAnalyzer;
   }

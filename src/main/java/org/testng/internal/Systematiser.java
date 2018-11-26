@@ -32,7 +32,7 @@ public final class Systematiser {
               @Override
               public int compare(ITestNGMethod o1, ITestNGMethod o2) {
                 String n1 = o1.getMethodName();
-                String n2 = o1.getMethodName();
+                String n2 = o2.getMethodName();
                 return n1.compareTo(n2);
               }
 

@@ -284,15 +284,7 @@ public class VerboseReporter extends TestListenerAdapter {
     buf.append(m.getDeclaringClass().getName());
     buf.append(".");
     buf.append(m.getName());
-    buf.append("(");
-    int i = 0;
-    for (Class<?> p : m.getParameterTypes()) {
-      if (i++ > 0) {
-        buf.append(", ");
-      }
-      buf.append(p.getName());
-    }
-    buf.append(")");
+    buf.append("(").append(m.stringifyParameterTypes()).append(")");
     return buf.toString();
   }
 
