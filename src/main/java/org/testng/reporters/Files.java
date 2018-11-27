@@ -28,7 +28,7 @@ public class Files {
     BufferedReader br = new BufferedReader(new InputStreamReader(is));
     String line = br.readLine();
     while (line != null) {
-      result.append(line + "\n");
+      result.append(line).append("\n");
       line = br.readLine();
     }
     return result.toString();

@@ -33,8 +33,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
 
-  private RunInfo runInfo = null;
-  private IAnnotationFinder annotationFinder = null;
+  private RunInfo runInfo;
+  private IAnnotationFinder annotationFinder;
   private final Comparator<ITestNGMethod> comparator;
 
   public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {

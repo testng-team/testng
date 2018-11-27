@@ -21,7 +21,6 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.AbstractParallelWorker;
 import org.testng.internal.Attributes;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
@@ -710,7 +709,7 @@ public class TestRunner
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
-          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>();
+          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<>() : new LinkedBlockingQueue<>();
           GraphThreadPoolExecutor<ITestNGMethod> executor =
               new GraphThreadPoolExecutor<>(
                   "test=" + xmlTest.getName(),
@@ -749,7 +748,7 @@ public class TestRunner
 
         while (!freeNodes.isEmpty()) {
           if (needPrioritySort) {
-            Collections.sort(freeNodes, methodComparator);
+            freeNodes.sort(methodComparator);
             // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
             // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
             freeNodes = freeNodes.subList(0, 1);
@@ -1165,7 +1164,7 @@ public class TestRunner
   private IResultMap m_skippedConfigurations = new ResultMap();
   private IResultMap m_failedConfigurations = new ResultMap();
 
-  private class ConfigurationListener implements IConfigurationListener2 {
+  private class ConfigurationListener implements IConfigurationListener {
     @Override
     public void beforeConfiguration(ITestResult tr) {}
 

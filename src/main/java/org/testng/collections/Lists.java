@@ -27,6 +27,7 @@ public final class Lists {
     return new ArrayList<>(c);
   }
 
+  @SafeVarargs
   public static <K> List<K> newArrayList(K... elements) {
     List<K> result = new ArrayList<>();
     Collections.addAll(result, elements);

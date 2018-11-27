@@ -20,7 +20,7 @@ public class ExecutorAdapter extends ThreadPoolExecutor implements IExecutor {
         threadCount,
         0L,
         TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>(),
+        new LinkedBlockingQueue<>(),
         (ThreadFactory) tf.getThreadFactory());
     m_threadFactory = tf;
   }

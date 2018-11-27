@@ -122,7 +122,6 @@ public class ClassImpl implements IClass {
   }
 
   /** @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise */
-  @SuppressWarnings("unchecked")
   private Object getInstanceFromGuice() {
     Injector injector = m_testContext.getInjector(this);
     if (injector == null) return null;
