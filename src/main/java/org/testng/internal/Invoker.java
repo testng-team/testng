@@ -581,8 +581,8 @@ public class Invoker implements IInvoker {
     invokeConfigurations(
         testClass, tm, setupConfigMethods, suite, params, parameterValues, instance, testResult);
 
-    InvokedMethod invokedMethod =
-        new InvokedMethod(instance, tm, System.currentTimeMillis(), testResult);
+    long startTime = System.currentTimeMillis();
+    InvokedMethod invokedMethod = new InvokedMethod(instance, tm, startTime, testResult);
 
     if (!confInvocationPassed(tm, tm, testClass, instance)) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext, instance);
@@ -591,6 +591,7 @@ public class Invoker implements IInvoker {
       m_notifier.addSkippedTest(tm, result);
       tm.incrementCurrentInvocationCount();
       testResult.setMethod(tm);
+      invokedMethod = new InvokedMethod(instance, tm, startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       ITestNGMethod[] teardownConfigMethods =
           TestNgMethodUtils.filterTeardownConfigurationMethods(tm, afterMethods);
