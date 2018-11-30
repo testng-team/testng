@@ -696,7 +696,7 @@
     <classes>
       <class name="test.skipex.SkippedExceptionTest" />
       <class name="test.skipex.SkipAndExpectedTest" />
-      <class name="test.skip.GitHubIssue1878Test"/>
+      <class name="test.skip.ReasonForSkipTest"/>
     </classes>
   </test>
 

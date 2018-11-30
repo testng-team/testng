@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1967: IInvokedMethod ITestResult status set as -1 for test methods skipped due to config failure (Krishnan Mahadevan)
 Fixed: GITHUB-1952: Provide a TestNGListener that can be invoked when a test fails due to a timeout (Krishnan Mahadevan)
 Fixed: GITHUB-1953: TestNG throws a misleading error when @Factory method returns empty array. (Krishnan Mahadevan)
 Fixed: GITHUB-1946: Retry analyzer does not work properly when coupled with a data provider (Krishnan Mahadevan)
