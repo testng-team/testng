@@ -335,7 +335,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     //
     if (invoker != null) {
       if (!beforeSuiteMethods.values().isEmpty()) {
-        invoker.invokeConfigurations(
+        invoker.getConfigInvoker().invokeConfigurations(
             null,
             beforeSuiteMethods.values().toArray(new ITestNGMethod[0]),
             xmlSuite,
@@ -360,7 +360,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // Invoke afterSuite methods
       //
       if (!afterSuiteMethods.values().isEmpty()) {
-        invoker.invokeConfigurations(
+        invoker.getConfigInvoker().invokeConfigurations(
             null,
             afterSuiteMethods.values().toArray(new ITestNGMethod[0]),
             xmlSuite,
