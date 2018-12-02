@@ -612,7 +612,7 @@ public class TestRunner
     // invoke @BeforeTest
     ITestNGMethod[] testConfigurationMethods = getBeforeTestConfigurationMethods();
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      m_invoker.invokeConfigurations(
+      m_invoker.getConfigInvoker().invokeConfigurations(
           null,
           testConfigurationMethods,
           m_xmlTest.getSuite(),
@@ -846,7 +846,7 @@ public class TestRunner
     // invoke @AfterTest
     ITestNGMethod[] testConfigurationMethods = getAfterTestConfigurationMethods();
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      m_invoker.invokeConfigurations(
+      m_invoker.getConfigInvoker().invokeConfigurations(
           null,
           testConfigurationMethods,
           m_xmlTest.getSuite(),

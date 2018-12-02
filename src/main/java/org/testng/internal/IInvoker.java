@@ -24,7 +24,10 @@ public interface IInvoker {
    * run.
    *
    * @param testClass the class whose configuration methods must be run
+   *
+   * @deprecated - This method stands deprecated as of TestNG 7.0.0
    */
+  @Deprecated
   void invokeConfigurations(
       IClass testClass,
       ITestNGMethod[] allMethods,
@@ -36,15 +39,19 @@ public interface IInvoker {
   /**
    * Invoke the given method
    *
-   * @param testMethod
-   * @param parameters
-   * @param groupMethods
    * @return a list containing the results of the test methods invocations
+   *
+   * @deprecated - This method stands deprecated as of TestNG 7.0.0
    */
+  @Deprecated
   List<ITestResult> invokeTestMethods(
       ITestNGMethod testMethod,
       Map<String, String> parameters,
       ConfigurationGroupMethods groupMethods,
       Object instance,
       ITestContext testContext);
+
+  ITestInvoker getTestInvoker();
+
+  IConfigInvoker getConfigInvoker();
 }

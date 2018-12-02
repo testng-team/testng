@@ -32,7 +32,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
   private List<IMethodInstance> m_methodInstances;
-  private final IInvoker m_invoker;
   private final Map<String, String> m_parameters;
   private List<ITestResult> m_testResults = Lists.newArrayList();
   private final ConfigurationGroupMethods m_groupMethods;
@@ -42,16 +41,20 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private long currentThreadId;
   private long threadIdToRunOn = -1;
   private boolean completed = true;
+  private final ITestInvoker m_testInvoker;
+  private final IConfigInvoker m_configInvoker;
 
   public TestMethodWorker(
-      IInvoker invoker,
+      ITestInvoker testInvoker,
+      IConfigInvoker configInvoker,
       List<IMethodInstance> testMethods,
       Map<String, String> parameters,
       ConfigurationGroupMethods groupMethods,
       ClassMethodMap classMethodMap,
       ITestContext testContext,
       List<IClassListener> listeners) {
-    m_invoker = invoker;
+    this.m_testInvoker = testInvoker;
+    this.m_configInvoker = configInvoker;
     m_methodInstances = testMethods;
     m_parameters = parameters;
     m_groupMethods = groupMethods;
@@ -137,7 +140,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // are unpredictable...  Need to think about this more (and make it
     // more efficient)
     List<ITestResult> testResults =
-        m_invoker.invokeTestMethods(tm, m_parameters, m_groupMethods, instance, m_testContext);
+        m_testInvoker.invokeTestMethods(tm, m_groupMethods, instance, m_testContext);
 
     if (testResults != null) {
       m_testResults.addAll(testResults);
@@ -170,7 +173,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         for (IClassListener listener : m_listeners) {
           listener.onBeforeClass(testClass);
         }
-        m_invoker.invokeConfigurations(
+        m_configInvoker.invokeConfigurations(
             testClass,
             testClass.getBeforeClassMethods(),
             m_testContext.getSuite().getXmlSuite(),
@@ -211,7 +214,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       listener.onAfterClass(testClass);
     }
     for (Object invokeInstance : invokeInstances) {
-      m_invoker.invokeConfigurations(
+      m_configInvoker.invokeConfigurations(
           testClass,
           testClass.getAfterClassMethods(),
           m_testContext.getSuite().getXmlSuite(),
@@ -283,14 +286,14 @@ class SingleTestMethodWorker extends TestMethodWorker {
       new ConfigurationGroupMethods(new ITestNGMethod[0], new HashMap<>(), new HashMap<>());
 
   public SingleTestMethodWorker(
-      IInvoker invoker,
+      TestInvoker testInvoker,
+      ConfigInvoker configInvoker,
       IMethodInstance testMethod,
       Map<String, String> parameters,
       ITestContext testContext,
       List<IClassListener> listeners) {
     super(
-        invoker,
-        Collections.singletonList(testMethod),
+        testInvoker, configInvoker, Collections.singletonList(testMethod),
         parameters,
         EMPTY_GROUP_METHODS,
         null,
