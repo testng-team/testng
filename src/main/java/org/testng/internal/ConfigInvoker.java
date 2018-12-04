@@ -24,6 +24,7 @@ import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.ConfigMethodAttributes.Builder;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
@@ -132,8 +133,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (beforeMethodsArray.length > 0) {
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
-      invokeConfigurations(
-          null, beforeMethodsArray, suite, params, /* no parameter values */ null, instance);
+      ConfigMethodAttributes attributes = new Builder()
+          .usingConfigMethodsAs(beforeMethodsArray)
+          .forSuite(suite)
+          .usingParameters(params)
+          .usingInstance(instance)
+          .build();
+      invokeConfigurations(attributes);
     }
 
     //
@@ -189,45 +195,32 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[0]);
     // don't pass the IClass or the instance as the method may be external
     // the invocation must be similar to @BeforeTest/@BeforeSuite
-    invokeConfigurations(
-        null, afterMethodsArray, suite, params, /* no parameter values */ null, instance);
+    ConfigMethodAttributes attributes = new Builder()
+        .usingConfigMethodsAs(afterMethodsArray)
+        .forSuite(suite)
+        .usingParameters(params)
+        .usingInstance(instance)
+        .build();
+
+    invokeConfigurations(attributes);
 
     // Remove the groups so they don't get run again
     groupMethods.removeAfterGroups(filteredGroups.keySet());
   }
 
-  public void invokeConfigurations(
-      IClass testClass,
-      ITestNGMethod[] allMethods,
-      XmlSuite suite,
-      Map<String, String> params,
-      Object[] parameterValues,
-      Object instance) {
-    invokeConfigurations(
-        testClass, null, allMethods, suite, params, parameterValues, instance, null);
-  }
-
-  public void invokeConfigurations(
-      IClass testClass,
-      ITestNGMethod currentTestMethod,
-      ITestNGMethod[] allMethods,
-      XmlSuite suite,
-      Map<String, String> params,
-      Object[] parameterValues,
-      Object instance,
-      ITestResult testMethodResult) {
-    if (null == allMethods || allMethods.length == 0) {
+  public void invokeConfigurations(ConfigMethodAttributes configMethodAttributes) {
+    if (configMethodAttributes.getConfigMethods().length == 0) {
       log(5, "No configuration methods found");
-
       return;
     }
 
-    ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(testClass, allMethods, SAME_CLASS);
+    ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(configMethodAttributes.getTestClass(),
+        configMethodAttributes.getConfigMethods(), SAME_CLASS);
     Object[] parameters = new Object[]{};
 
     for (ITestNGMethod tm : methods) {
-      if (null == testClass) {
-        testClass = tm.getTestClass();
+      if (null == configMethodAttributes.getTestClass()) {
+        configMethodAttributes.setTestClass(tm.getTestClass());
       }
 
       ITestResult testResult = TestResult.newContextAwareTestResult(tm, m_testContext);
@@ -237,7 +230,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       try {
         Object inst = tm.getInstance();
         if (inst == null) {
-          inst = instance;
+          inst = configMethodAttributes.getInstance();
         }
         Class<?> objectClass = inst.getClass();
         ConstructorOrMethod method = tm.getConstructorOrMethod();
@@ -263,51 +256,62 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(currentTestMethod, tm.getGroups() , testClass, instance) && !alwaysRun) {
+        if (hasConfigurationFailureFor(configMethodAttributes.getTestMethod(), tm.getGroups() ,
+            configMethodAttributes.getTestClass(),
+            configMethodAttributes.getInstance()) && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod =
-              new InvokedMethod(instance, tm, System.currentTimeMillis(), testResult);
+              new InvokedMethod(configMethodAttributes.getInstance(), tm, System.currentTimeMillis(), testResult);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setStatus(ITestResult.SKIP);
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
           handleConfigurationSkip(
-              tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
+              tm, testResult, configurationAnnotation,
+              configMethodAttributes.getTestMethod(),
+              configMethodAttributes.getInstance(),
+              configMethodAttributes.getSuite());
           continue;
         }
 
         log(3, "Invoking " + Utils.detailedMethodName(tm, true));
-        if (testMethodResult != null) {
-          ((TestResult) testMethodResult).setMethod(currentTestMethod);
+        if (configMethodAttributes.getTestMethodResult() != null) {
+          ((TestResult) configMethodAttributes.getTestMethodResult()).setMethod(
+              configMethodAttributes.getTestMethod());
         }
 
         parameters =
             Parameters.createConfigurationParameters(
                 tm.getConstructorOrMethod().getMethod(),
-                params,
-                parameterValues,
-                currentTestMethod,
+                configMethodAttributes.getParameters(),
+                configMethodAttributes.getParameterValues(),
+                configMethodAttributes.getTestMethod(),
                 annotationFinder(),
-                suite,
+                configMethodAttributes.getSuite(),
                 m_testContext,
-                testMethodResult);
+                configMethodAttributes.getTestMethodResult());
         testResult.setParameters(parameters);
 
         runConfigurationListeners(testResult, true /* before */);
 
-        Object newInstance = computeInstance(instance, inst, tm);
+        Object newInstance = computeInstance(configMethodAttributes.getInstance(), inst, tm);
         if (isConfigMethodEligibleForScrutiny(tm)) {
-          if (m_executedConfigMethods.add(currentTestMethod)) {
+          if (m_executedConfigMethods.add(configMethodAttributes.getTestMethod())) {
             invokeConfigurationMethod(newInstance, tm, parameters, testResult);
           }
         } else {
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
-        copyAttributesFromNativelyInjectedTestResult(parameters, testMethodResult);
+        copyAttributesFromNativelyInjectedTestResult(parameters,
+            configMethodAttributes.getTestMethodResult());
         runConfigurationListeners(testResult, false /* after */);
       } catch (Throwable ex) {
         handleConfigurationFailure(
-            ex, tm, testResult, configurationAnnotation, currentTestMethod, instance, suite);
-        copyAttributesFromNativelyInjectedTestResult(parameters, testMethodResult);
+            ex, tm, testResult, configurationAnnotation,
+            configMethodAttributes.getTestMethod(),
+            configMethodAttributes.getInstance(),
+            configMethodAttributes.getSuite());
+        copyAttributesFromNativelyInjectedTestResult(parameters,
+            configMethodAttributes.getTestMethodResult());
       }
     } // for methods
   }

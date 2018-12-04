@@ -28,6 +28,7 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.ConfigMethodAttributes.Builder;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.ParameterHandler.ParameterBag;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -638,8 +639,17 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
     ITestNGMethod[] setupConfigMethods =
         TestNgMethodUtils.filterSetupConfigurationMethods(tm, beforeMethods);
-    invoker.invokeConfigurations(
-        testClass, tm, setupConfigMethods, suite, params, parameterValues, instance, testResult);
+    ConfigMethodAttributes attributes = new Builder()
+        .forTestClass(testClass)
+        .forTestMethod(tm)
+        .usingConfigMethodsAs(setupConfigMethods)
+        .forSuite(suite)
+        .usingParameters(params)
+        .usingParameterValues(parameterValues)
+        .usingInstance(instance)
+        .withResult(testResult)
+        .build();
+    invoker.invokeConfigurations(attributes);
 
     long startTime = System.currentTimeMillis();
     InvokedMethod invokedMethod = new InvokedMethod(instance, tm, startTime, testResult);
@@ -779,14 +789,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestNGMethod[] teardownConfigMethods =
         TestNgMethodUtils.filterTeardownConfigurationMethods(tm, afterMethods);
     invoker.invokeConfigurations(
-        testClass,
-        tm,
-        teardownConfigMethods,
-        suite,
-        params,
-        parameterValues,
-        instance,
-        testResult);
+        new Builder().forTestClass(testClass).forTestMethod(tm)
+            .usingConfigMethodsAs(teardownConfigMethods).forSuite(suite).usingParameters(params)
+            .usingParameterValues(parameterValues).usingInstance(instance).withResult(testResult)
+            .build());
     invoker.invokeAfterGroupsConfigurations(tm, groupMethods, suite, params, instance);
   }
 

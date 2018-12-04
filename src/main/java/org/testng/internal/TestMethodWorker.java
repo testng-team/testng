@@ -9,6 +9,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.internal.ConfigMethodAttributes.Builder;
 import org.testng.internal.thread.graph.IWorker;
 
 import javax.annotation.Nonnull;
@@ -173,13 +174,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         for (IClassListener listener : m_listeners) {
           listener.onBeforeClass(testClass);
         }
-        m_configInvoker.invokeConfigurations(
-            testClass,
-            testClass.getBeforeClassMethods(),
-            m_testContext.getSuite().getXmlSuite(),
-            m_parameters,
-            null, /* no parameter values */
-            instance);
+        ConfigMethodAttributes attributes = new Builder()
+            .forTestClass(testClass)
+            .usingConfigMethodsAs(testClass.getBeforeClassMethods())
+            .forSuite(m_testContext.getSuite().getXmlSuite())
+            .usingParameters(m_parameters)
+            .usingInstance(instance)
+            .build();
+        m_configInvoker.invokeConfigurations(attributes);
       }
     }
   }
@@ -214,13 +216,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       listener.onAfterClass(testClass);
     }
     for (Object invokeInstance : invokeInstances) {
-      m_configInvoker.invokeConfigurations(
-          testClass,
-          testClass.getAfterClassMethods(),
-          m_testContext.getSuite().getXmlSuite(),
-          m_parameters,
-          null, /* no parameter values */
-          invokeInstance);
+      ConfigMethodAttributes attributes = new Builder()
+          .forTestClass(testClass)
+          .usingConfigMethodsAs(testClass.getAfterClassMethods())
+          .forSuite(m_testContext.getSuite().getXmlSuite())
+          .usingParameters(m_parameters)
+          .usingInstance(invokeInstance)
+          .build();
+      m_configInvoker.invokeConfigurations(attributes);
     }
   }
 

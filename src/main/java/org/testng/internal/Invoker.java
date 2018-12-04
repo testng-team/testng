@@ -13,7 +13,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.SuiteRunState;
-import org.testng.collections.Lists;
+import org.testng.internal.ConfigMethodAttributes.Builder;
 import org.testng.internal.ITestInvoker.FailureContext;
 import org.testng.xml.XmlSuite;
 
@@ -76,8 +76,14 @@ public class Invoker implements IInvoker {
       Map<String, String> params,
       Object[] parameterValues,
       Object instance) {
-    m_configInvoker
-        .invokeConfigurations(testClass, allMethods, suite, params, parameterValues, instance);
+    ConfigMethodAttributes attributes = new Builder()
+        .forTestClass(testClass)
+        .usingConfigMethodsAs(allMethods)
+        .forSuite(suite).usingParameters(params)
+        .usingParameterValues(parameterValues)
+        .usingInstance(instance)
+        .build();
+    m_configInvoker.invokeConfigurations(attributes);
   }
 
   /**
