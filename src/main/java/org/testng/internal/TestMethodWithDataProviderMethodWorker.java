@@ -5,6 +5,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
+import org.testng.internal.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
@@ -74,16 +75,12 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     try {
       tmpResults.add(
           m_testInvoker.invokeTestMethod(
-              m_instance,
-              m_testMethod,
-              m_parameterValues,
-              m_parameterIndex,
-              suite,
-              m_parameters,
-              m_testClass,
-              m_beforeMethods,
-              m_afterMethods,
-              m_groupMethods,
+              new Builder().usingInstance(m_instance)
+                  .forTestMethod(m_testMethod).withParameterValues(m_parameterValues)
+                  .withParametersIndex(m_parameterIndex).withParameters(m_parameters)
+                  .forTestClass(m_testClass).usingBeforeMethods(m_beforeMethods)
+                  .usingAfterMethods(m_afterMethods).usingGroupMethods(m_groupMethods)
+                  .build(), suite,
               failure));
     } finally {
       m_failureCount = failure.count;
@@ -95,18 +92,15 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
 
           m_failureCount =
               m_testInvoker.retryFailed(
-                      instance,
-                      m_testMethod,
-                      m_parameterValues,
-                      m_testClass,
-                      m_beforeMethods,
-                      m_afterMethods,
-                      m_groupMethods,
-                      retryResults,
+                  new Builder().usingInstance(instance)
+                      .forTestMethod(m_testMethod).withParameterValues(m_parameterValues)
+                      .withParametersIndex(m_parameterIndex).withParameters(m_parameters)
+                      .forTestClass(m_testClass).usingBeforeMethods(m_beforeMethods)
+                      .usingAfterMethods(m_afterMethods).usingGroupMethods(m_groupMethods)
+                      .build(), retryResults,
                       m_failureCount,
-                      m_testContext,
-                      m_parameters,
-                      m_parameterIndex)
+                      m_testContext
+              )
                   .count;
           m_testResults.addAll(retryResults);
         }

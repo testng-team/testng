@@ -8,12 +8,11 @@ import org.testng.IClass;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IInvokedMethodListener;
-import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.SuiteRunState;
-import org.testng.internal.ConfigMethodAttributes.Builder;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.ITestInvoker.FailureContext;
 import org.testng.xml.XmlSuite;
 
@@ -76,7 +75,7 @@ public class Invoker implements IInvoker {
       Map<String, String> params,
       Object[] parameterValues,
       Object instance) {
-    ConfigMethodAttributes attributes = new Builder()
+    ConfigMethodArguments attributes = new Builder()
         .forTestClass(testClass)
         .usingConfigMethodsAs(allMethods)
         .forSuite(suite).usingParameters(params)
@@ -96,8 +95,7 @@ public class Invoker implements IInvoker {
    * if any.
    *
    * <p>Note (alex): this method can be refactored to use a SingleTestMethodWorker that directly
-   * invokes {@link ITestInvoker#invokeTestMethod(Object, ITestNGMethod, Object[], int, XmlSuite, Map,
-   * ITestClass, ITestNGMethod[], ITestNGMethod[], ConfigurationGroupMethods, FailureContext)} and
+   * invokes {@link ITestInvoker#invokeTestMethod(TestMethodArguments, XmlSuite, FailureContext)} and
    * this would simplify the implementation (see how DataTestMethodWorker is used)
    */
   @Override

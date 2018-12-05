@@ -6,8 +6,8 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
-import org.testng.internal.ConfigMethodAttributes;
-import org.testng.internal.ConfigMethodAttributes.Builder;
+import org.testng.internal.ConfigMethodArguments;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
@@ -337,12 +337,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     //
     if (invoker != null) {
       if (!beforeSuiteMethods.values().isEmpty()) {
-        ConfigMethodAttributes attributes = new Builder()
+        ConfigMethodArguments arguments = new Builder()
             .usingConfigMethodsAs(beforeSuiteMethods.values())
             .forSuite(xmlSuite)
             .usingParameters(xmlSuite.getParameters())
             .build();
-        invoker.getConfigInvoker().invokeConfigurations(attributes);
+        invoker.getConfigInvoker().invokeConfigurations(arguments);
       }
 
       Utils.log("SuiteRunner", 3, "Created " + testRunners.size() + " TestRunners");
@@ -361,12 +361,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // Invoke afterSuite methods
       //
       if (!afterSuiteMethods.values().isEmpty()) {
-        ConfigMethodAttributes attributes = new Builder()
+        ConfigMethodArguments arguments = new Builder()
             .usingConfigMethodsAs(afterSuiteMethods.values())
             .forSuite(xmlSuite)
             .usingParameters(xmlSuite.getAllParameters())
             .build();
-        invoker.getConfigInvoker().invokeConfigurations(attributes);
+        invoker.getConfigInvoker().invokeConfigurations(arguments);
       }
     }
   }

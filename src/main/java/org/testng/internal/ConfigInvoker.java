@@ -24,7 +24,7 @@ import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.ConfigMethodAttributes.Builder;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
@@ -109,14 +109,14 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   /**
    * Filter all the beforeGroups methods and invoke only those that apply to the current test
    * method
-   * @param configMethodAttributes
+   * @param arguments
    */
-  public void invokeBeforeGroupsConfigurations(GroupConfigMethodAttributes configMethodAttributes) {
+  public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
     List<ITestNGMethod> filteredMethods = Lists.newArrayList();
-    String[] groups = configMethodAttributes.getTestMethod().getGroups();
+    String[] groups = arguments.getTestMethod().getGroups();
 
     for (String group : groups) {
-      List<ITestNGMethod> methods = configMethodAttributes.getGroupMethods().getBeforeGroupMethodsForGroup(group);
+      List<ITestNGMethod> methods = arguments.getGroupMethods().getBeforeGroupMethodsForGroup(group);
       if (methods != null) {
         filteredMethods.addAll(methods);
       }
@@ -129,36 +129,36 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (beforeMethodsArray.length > 0) {
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
-      ConfigMethodAttributes attributes = new Builder()
+      ConfigMethodArguments configMethodArguments = new Builder()
           .usingConfigMethodsAs(beforeMethodsArray)
-          .forSuite(configMethodAttributes.getSuite())
-          .usingParameters(configMethodAttributes.getParameters())
-          .usingInstance(configMethodAttributes.getInstance())
+          .forSuite(arguments.getSuite())
+          .usingParameters(arguments.getParameters())
+          .usingInstance(arguments.getInstance())
           .build();
-      invokeConfigurations(attributes);
+      invokeConfigurations(configMethodArguments);
     }
 
     //
     // Remove them so they don't get run again
     //
-    configMethodAttributes.getGroupMethods().removeBeforeGroups(groups);
+    arguments.getGroupMethods().removeBeforeGroups(groups);
   }
 
-  public void invokeAfterGroupsConfigurations(GroupConfigMethodAttributes configMethodAttributes) {
+  public void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments) {
     // Skip this if the current method doesn't belong to any group
     // (only a method that belongs to a group can trigger the invocation
     // of afterGroups methods)
-    if (configMethodAttributes.getTestMethod().getGroups().length == 0) {
+    if (arguments.getTestMethod().getGroups().length == 0) {
       return;
     }
 
     // See if the currentMethod is the last method in any of the groups
     // it belongs to
     Map<String, String> filteredGroups = Maps.newHashMap();
-    String[] groups = configMethodAttributes.getTestMethod().getGroups();
+    String[] groups = arguments.getTestMethod().getGroups();
     for (String group : groups) {
-      if (configMethodAttributes.getGroupMethods().isLastMethodForGroup(group,
-          configMethodAttributes.getTestMethod())) {
+      if (arguments.getGroupMethods().isLastMethodForGroup(group,
+          arguments.getTestMethod())) {
         filteredGroups.put(group, group);
       }
     }
@@ -173,7 +173,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Now filteredGroups contains all the groups for which we need to run the afterGroups
     // method.  Find all the methods that correspond to these groups and invoke them.
     for (String g : filteredGroups.values()) {
-      List<ITestNGMethod> methods = configMethodAttributes.getGroupMethods().getAfterGroupMethodsForGroup(g);
+      List<ITestNGMethod> methods = arguments.getGroupMethods().getAfterGroupMethodsForGroup(g);
       // Note:  should put them in a map if we want to make sure the same afterGroups
       // doesn't get run twice
       if (methods != null) {
@@ -187,32 +187,32 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[0]);
     // don't pass the IClass or the instance as the method may be external
     // the invocation must be similar to @BeforeTest/@BeforeSuite
-    ConfigMethodAttributes attributes = new Builder()
+    ConfigMethodArguments configMethodArguments = new Builder()
         .usingConfigMethodsAs(afterMethodsArray)
-        .forSuite(configMethodAttributes.getSuite())
-        .usingParameters(configMethodAttributes.getParameters())
-        .usingInstance(configMethodAttributes.getInstance())
+        .forSuite(arguments.getSuite())
+        .usingParameters(arguments.getParameters())
+        .usingInstance(arguments.getInstance())
         .build();
 
-    invokeConfigurations(attributes);
+    invokeConfigurations(configMethodArguments);
 
     // Remove the groups so they don't get run again
-    configMethodAttributes.getGroupMethods().removeAfterGroups(filteredGroups.keySet());
+    arguments.getGroupMethods().removeAfterGroups(filteredGroups.keySet());
   }
 
-  public void invokeConfigurations(ConfigMethodAttributes configMethodAttributes) {
-    if (configMethodAttributes.getConfigMethods().length == 0) {
+  public void invokeConfigurations(ConfigMethodArguments arguments) {
+    if (arguments.getConfigMethods().length == 0) {
       log(5, "No configuration methods found");
       return;
     }
 
-    ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(configMethodAttributes.getTestClass(),
-        configMethodAttributes.getConfigMethods(), SAME_CLASS);
+    ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(arguments.getTestClass(),
+        arguments.getConfigMethods(), SAME_CLASS);
     Object[] parameters = new Object[]{};
 
     for (ITestNGMethod tm : methods) {
-      if (null == configMethodAttributes.getTestClass()) {
-        configMethodAttributes.setTestClass(tm.getTestClass());
+      if (null == arguments.getTestClass()) {
+        arguments.setTestClass(tm.getTestClass());
       }
 
       ITestResult testResult = TestResult.newContextAwareTestResult(tm, m_testContext);
@@ -222,7 +222,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       try {
         Object inst = tm.getInstance();
         if (inst == null) {
-          inst = configMethodAttributes.getInstance();
+          inst = arguments.getInstance();
         }
         Class<?> objectClass = inst.getClass();
         ConstructorOrMethod method = tm.getConstructorOrMethod();
@@ -248,62 +248,62 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(configMethodAttributes.getTestMethod(), tm.getGroups() ,
-            configMethodAttributes.getTestClass(),
-            configMethodAttributes.getInstance()) && !alwaysRun) {
+        if (hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups() ,
+            arguments.getTestClass(),
+            arguments.getInstance()) && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod =
-              new InvokedMethod(configMethodAttributes.getInstance(), tm, System.currentTimeMillis(), testResult);
+              new InvokedMethod(arguments.getInstance(), tm, System.currentTimeMillis(), testResult);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setStatus(ITestResult.SKIP);
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
           handleConfigurationSkip(
               tm, testResult, configurationAnnotation,
-              configMethodAttributes.getTestMethod(),
-              configMethodAttributes.getInstance(),
-              configMethodAttributes.getSuite());
+              arguments.getTestMethod(),
+              arguments.getInstance(),
+              arguments.getSuite());
           continue;
         }
 
         log(3, "Invoking " + Utils.detailedMethodName(tm, true));
-        if (configMethodAttributes.getTestMethodResult() != null) {
-          ((TestResult) configMethodAttributes.getTestMethodResult()).setMethod(
-              configMethodAttributes.getTestMethod());
+        if (arguments.getTestMethodResult() != null) {
+          ((TestResult) arguments.getTestMethodResult()).setMethod(
+              arguments.getTestMethod());
         }
 
         parameters =
             Parameters.createConfigurationParameters(
                 tm.getConstructorOrMethod().getMethod(),
-                configMethodAttributes.getParameters(),
-                configMethodAttributes.getParameterValues(),
-                configMethodAttributes.getTestMethod(),
+                arguments.getParameters(),
+                arguments.getParameterValues(),
+                arguments.getTestMethod(),
                 annotationFinder(),
-                configMethodAttributes.getSuite(),
+                arguments.getSuite(),
                 m_testContext,
-                configMethodAttributes.getTestMethodResult());
+                arguments.getTestMethodResult());
         testResult.setParameters(parameters);
 
         runConfigurationListeners(testResult, true /* before */);
 
-        Object newInstance = computeInstance(configMethodAttributes.getInstance(), inst, tm);
+        Object newInstance = computeInstance(arguments.getInstance(), inst, tm);
         if (isConfigMethodEligibleForScrutiny(tm)) {
-          if (m_executedConfigMethods.add(configMethodAttributes.getTestMethod())) {
+          if (m_executedConfigMethods.add(arguments.getTestMethod())) {
             invokeConfigurationMethod(newInstance, tm, parameters, testResult);
           }
         } else {
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
         copyAttributesFromNativelyInjectedTestResult(parameters,
-            configMethodAttributes.getTestMethodResult());
+            arguments.getTestMethodResult());
         runConfigurationListeners(testResult, false /* after */);
       } catch (Throwable ex) {
         handleConfigurationFailure(
             ex, tm, testResult, configurationAnnotation,
-            configMethodAttributes.getTestMethod(),
-            configMethodAttributes.getInstance(),
-            configMethodAttributes.getSuite());
+            arguments.getTestMethod(),
+            arguments.getInstance(),
+            arguments.getSuite());
         copyAttributesFromNativelyInjectedTestResult(parameters,
-            configMethodAttributes.getTestMethodResult());
+            arguments.getTestMethodResult());
       }
     } // for methods
   }

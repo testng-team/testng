@@ -9,7 +9,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
-import org.testng.internal.ConfigMethodAttributes.Builder;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.thread.graph.IWorker;
 
 import javax.annotation.Nonnull;
@@ -174,7 +174,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         for (IClassListener listener : m_listeners) {
           listener.onBeforeClass(testClass);
         }
-        ConfigMethodAttributes attributes = new Builder()
+        ConfigMethodArguments attributes = new Builder()
             .forTestClass(testClass)
             .usingConfigMethodsAs(testClass.getBeforeClassMethods())
             .forSuite(m_testContext.getSuite().getXmlSuite())
@@ -216,7 +216,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       listener.onAfterClass(testClass);
     }
     for (Object invokeInstance : invokeInstances) {
-      ConfigMethodAttributes attributes = new Builder()
+      ConfigMethodArguments attributes = new Builder()
           .forTestClass(testClass)
           .usingConfigMethodsAs(testClass.getAfterClassMethods())
           .forSuite(m_testContext.getSuite().getXmlSuite())
