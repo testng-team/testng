@@ -109,18 +109,14 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   /**
    * Filter all the beforeGroups methods and invoke only those that apply to the current test
    * method
+   * @param configMethodAttributes
    */
-  public void invokeBeforeGroupsConfigurations(
-      ITestNGMethod currentTestMethod,
-      ConfigurationGroupMethods groupMethods,
-      XmlSuite suite,
-      Map<String, String> params,
-      Object instance) {
+  public void invokeBeforeGroupsConfigurations(GroupConfigMethodAttributes configMethodAttributes) {
     List<ITestNGMethod> filteredMethods = Lists.newArrayList();
-    String[] groups = currentTestMethod.getGroups();
+    String[] groups = configMethodAttributes.getTestMethod().getGroups();
 
     for (String group : groups) {
-      List<ITestNGMethod> methods = groupMethods.getBeforeGroupMethodsForGroup(group);
+      List<ITestNGMethod> methods = configMethodAttributes.getGroupMethods().getBeforeGroupMethodsForGroup(group);
       if (methods != null) {
         filteredMethods.addAll(methods);
       }
@@ -135,9 +131,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       // the invocation must be similar to @BeforeTest/@BeforeSuite
       ConfigMethodAttributes attributes = new Builder()
           .usingConfigMethodsAs(beforeMethodsArray)
-          .forSuite(suite)
-          .usingParameters(params)
-          .usingInstance(instance)
+          .forSuite(configMethodAttributes.getSuite())
+          .usingParameters(configMethodAttributes.getParameters())
+          .usingInstance(configMethodAttributes.getInstance())
           .build();
       invokeConfigurations(attributes);
     }
@@ -145,28 +141,24 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     //
     // Remove them so they don't get run again
     //
-    groupMethods.removeBeforeGroups(groups);
+    configMethodAttributes.getGroupMethods().removeBeforeGroups(groups);
   }
 
-  public void invokeAfterGroupsConfigurations(
-      ITestNGMethod currentTestMethod,
-      ConfigurationGroupMethods groupMethods,
-      XmlSuite suite,
-      Map<String, String> params,
-      Object instance) {
+  public void invokeAfterGroupsConfigurations(GroupConfigMethodAttributes configMethodAttributes) {
     // Skip this if the current method doesn't belong to any group
     // (only a method that belongs to a group can trigger the invocation
     // of afterGroups methods)
-    if (currentTestMethod.getGroups().length == 0) {
+    if (configMethodAttributes.getTestMethod().getGroups().length == 0) {
       return;
     }
 
     // See if the currentMethod is the last method in any of the groups
     // it belongs to
     Map<String, String> filteredGroups = Maps.newHashMap();
-    String[] groups = currentTestMethod.getGroups();
+    String[] groups = configMethodAttributes.getTestMethod().getGroups();
     for (String group : groups) {
-      if (groupMethods.isLastMethodForGroup(group, currentTestMethod)) {
+      if (configMethodAttributes.getGroupMethods().isLastMethodForGroup(group,
+          configMethodAttributes.getTestMethod())) {
         filteredGroups.put(group, group);
       }
     }
@@ -181,7 +173,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Now filteredGroups contains all the groups for which we need to run the afterGroups
     // method.  Find all the methods that correspond to these groups and invoke them.
     for (String g : filteredGroups.values()) {
-      List<ITestNGMethod> methods = groupMethods.getAfterGroupMethodsForGroup(g);
+      List<ITestNGMethod> methods = configMethodAttributes.getGroupMethods().getAfterGroupMethodsForGroup(g);
       // Note:  should put them in a map if we want to make sure the same afterGroups
       // doesn't get run twice
       if (methods != null) {
@@ -197,15 +189,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // the invocation must be similar to @BeforeTest/@BeforeSuite
     ConfigMethodAttributes attributes = new Builder()
         .usingConfigMethodsAs(afterMethodsArray)
-        .forSuite(suite)
-        .usingParameters(params)
-        .usingInstance(instance)
+        .forSuite(configMethodAttributes.getSuite())
+        .usingParameters(configMethodAttributes.getParameters())
+        .usingInstance(configMethodAttributes.getInstance())
         .build();
 
     invokeConfigurations(attributes);
 
     // Remove the groups so they don't get run again
-    groupMethods.removeAfterGroups(filteredGroups.keySet());
+    configMethodAttributes.getGroupMethods().removeAfterGroups(filteredGroups.keySet());
   }
 
   public void invokeConfigurations(ConfigMethodAttributes configMethodAttributes) {

@@ -439,7 +439,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestClass testClass = testMethod.getTestClass();
     Object[] instances = testClass.getInstances(true);
     for (Object instance : instances) {
-      invoker.invokeBeforeGroupsConfigurations(testMethod, groupMethods, suite, parameters, instance);
+      invoker.invokeBeforeGroupsConfigurations(
+          new GroupConfigMethodAttributes.Builder().forTestMethod(testMethod)
+              .withGroupConfigMethods(groupMethods).forSuite(suite).withParameters(parameters)
+              .forInstance(instance).build());
     }
 
     long maxTimeOut = -1; // 10 seconds
@@ -464,7 +467,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
 
     for (Object instance : instances) {
-      invoker.invokeAfterGroupsConfigurations(testMethod, groupMethods, suite, parameters, instance);
+      invoker.invokeAfterGroupsConfigurations(
+          new GroupConfigMethodAttributes.Builder().forTestMethod(testMethod)
+              .withGroupConfigMethods(groupMethods).forSuite(suite).withParameters(parameters)
+              .forInstance(instance).build());
     }
 
     return result;
@@ -635,7 +641,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       FailureContext failureContext) {
     TestResult testResult = TestResult.newEmptyTestResult();
 
-    invoker.invokeBeforeGroupsConfigurations(tm, groupMethods, suite, params, instance);
+    invoker.invokeBeforeGroupsConfigurations(
+        new GroupConfigMethodAttributes.Builder().forTestMethod(tm).withGroupConfigMethods(groupMethods)
+            .forSuite(suite).withParameters(params).forInstance(instance)
+            .build());
 
     ITestNGMethod[] setupConfigMethods =
         TestNgMethodUtils.filterSetupConfigurationMethods(tm, beforeMethods);
@@ -793,7 +802,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .usingConfigMethodsAs(teardownConfigMethods).forSuite(suite).usingParameters(params)
             .usingParameterValues(parameterValues).usingInstance(instance).withResult(testResult)
             .build());
-    invoker.invokeAfterGroupsConfigurations(tm, groupMethods, suite, params, instance);
+    invoker.invokeAfterGroupsConfigurations(
+        new GroupConfigMethodAttributes.Builder().forTestMethod(tm).withGroupConfigMethods(groupMethods)
+            .forSuite(suite).withParameters(params).forInstance(instance)
+            .build());
   }
 
   private ITestResult registerSkippedTestResult(
