@@ -60,6 +60,15 @@ public interface ITestListener extends ITestNGListener {
     // not implemented
   }
 
+  /**
+   * Invoked each time a test fails due to a timeout.
+   *
+   * @param result <code>ITestResult</code> containing information about the run test
+   */
+  default void onTestFailedWithTimeout(ITestResult result) {
+    onTestFailure(result);
+  }
+
   /** Invoked after the test class is instantiated and before any configuration method is called. */
   default void onStart(ITestContext context) {
     // not implemented

@@ -129,8 +129,4 @@ public class CommandLineTest {
         passed.get(0).getName().equals("method3")));
   }
 
-  private static void ppp(String s) {
-    System.out.println("[CommandLineTest] " + s);
-  }
-
 }

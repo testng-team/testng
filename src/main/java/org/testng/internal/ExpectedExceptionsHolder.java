@@ -37,7 +37,7 @@ public class ExpectedExceptionsHolder {
    * @return true if the exception that was just thrown is part of the expected exceptions
    */
   public boolean isExpectedException(Throwable ite) {
-    if (!hasExpectedClasses()) {
+    if (hasNoExpectedClasses()) {
       return false;
     }
 
@@ -59,7 +59,7 @@ public class ExpectedExceptionsHolder {
   }
 
   public Throwable wrongException(Throwable ite) {
-    if (!hasExpectedClasses()) {
+    if (hasNoExpectedClasses()) {
       return ite;
     }
 
@@ -72,7 +72,7 @@ public class ExpectedExceptionsHolder {
   }
 
   public TestException noException(ITestNGMethod testMethod) {
-    if (!hasExpectedClasses()) {
+    if (hasNoExpectedClasses()) {
       return null;
     }
     return new TestException(
@@ -82,8 +82,8 @@ public class ExpectedExceptionsHolder {
             + getExpectedExceptionsPluralize());
   }
 
-  private boolean hasExpectedClasses() {
-    return expectedClasses != null && expectedClasses.length > 0;
+  private boolean hasNoExpectedClasses() {
+    return expectedClasses == null || expectedClasses.length == 0;
   }
 
   private String getExpectedExceptionsPluralize() {

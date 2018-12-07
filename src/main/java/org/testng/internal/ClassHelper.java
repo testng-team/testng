@@ -1,9 +1,10 @@
 package org.testng.internal;
 
+import java.lang.reflect.Executable;
+import java.util.function.BiConsumer;
 import org.testng.IClass;
 import org.testng.IMethodSelector;
 import org.testng.IObjectFactory;
-import org.testng.IObjectFactory2;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
@@ -20,7 +21,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -32,13 +32,10 @@ import java.util.Vector;
 
 /** Utility class for different class manipulations. */
 public final class ClassHelper {
-  private static final String JUNIT_TESTRUNNER = "org.testng.junit.JUnitTestRunner";
-  private static final String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
 
   /** The additional class loaders to find classes in. */
   private static final List<ClassLoader> classLoaders = new Vector<>();
 
-  private static final String CANNOT_INSTANTIATE_CLASS = "Cannot instantiate class ";
   private static final String CLASS_HELPER = ClassHelper.class.getSimpleName();
 
   /**
@@ -60,36 +57,38 @@ public final class ClassHelper {
     classLoaders.add(loader);
   }
 
+  /**
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static <T> T newInstance(Class<T> clazz) {
-    try {
-      return clazz.newInstance();
-    } catch (IllegalAccessException
-        | InstantiationException
-        | ExceptionInInitializerError
-        | SecurityException
-        | NullPointerException e) {
-      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
-    }
+    return InstanceCreator.newInstance(clazz);
   }
 
+  /**
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static <T> T newInstanceOrNull(Class<T> clazz) {
-    try {
-      Constructor<T> constructor = clazz.getConstructor();
-      return newInstance(constructor);
-    } catch (ExceptionInInitializerError | SecurityException e) {
-      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
-    } catch (NoSuchMethodException e) {
-      return null;
-    }
+    return InstanceCreator.newInstanceOrNull(clazz);
   }
 
+  /**
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
-    try {
-      return constructor.newInstance(parameters);
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-      throw new TestNGException(
-          CANNOT_INSTANTIATE_CLASS + constructor.getDeclaringClass().getName(), e);
+    return InstanceCreator.newInstance(constructor, parameters);
+  }
+
+  static List<ClassLoader> appendContextualClassLoaders(List<ClassLoader> currentLoaders) {
+    List<ClassLoader> allClassLoaders = Lists.newArrayList();
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    if (contextClassLoader != null) {
+      allClassLoaders.add(contextClassLoader);
     }
+    allClassLoaders.addAll(currentLoaders);
+    return allClassLoaders;
   }
 
   /**
@@ -101,12 +100,7 @@ public final class ClassHelper {
    * @return the class or null if the class is not found.
    */
   public static Class<?> forName(final String className) {
-    List<ClassLoader> allClassLoaders = Lists.newArrayList();
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-    if (contextClassLoader != null) {
-      allClassLoaders.add(contextClassLoader);
-    }
-    allClassLoaders.addAll(classLoaders);
+    List<ClassLoader> allClassLoaders = appendContextualClassLoaders(classLoaders);
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {
@@ -149,27 +143,30 @@ public final class ClassHelper {
    * @param finder The finder (JDK 1.4 or JDK 5.0+) use to search for the annotation.
    * @return the @Factory <CODE>methods</CODE>
    */
+  //Code smell: The javadocs for this method says that if more than one Factory method is found
+  //an exception is thrown. But the method is not doing that. This needs more investigation for
+  //regression side effects before being addressed.
   public static List<ConstructorOrMethod> findDeclaredFactoryMethods(
       Class<?> cls, IAnnotationFinder finder) {
     List<ConstructorOrMethod> result = new ArrayList<>();
-
-    for (Method method : getAvailableMethods(cls)) {
-      IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
+    BiConsumer<IFactoryAnnotation, Executable> consumer = (f, executable) -> {
       if (f != null) {
-        ConstructorOrMethod factory = new ConstructorOrMethod(method);
+        ConstructorOrMethod factory = new ConstructorOrMethod(executable);
         factory.setEnabled(f.getEnabled());
         result.add(factory);
       }
+    };
+
+    for (Method method : getAvailableMethods(cls)) {
+      IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
+      consumer.accept(f, method);
     }
 
     for (Constructor constructor : cls.getDeclaredConstructors()) {
       IFactoryAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
-      if (f != null) {
-        ConstructorOrMethod factory = new ConstructorOrMethod(constructor);
-        factory.setEnabled(f.getEnabled());
-        result.add(factory);
-      }
+      consumer.accept(f, constructor);
     }
+
 
     return result;
   }
@@ -208,33 +205,12 @@ public final class ClassHelper {
     return returnValue;
   }
 
+  /**
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static IJUnitTestRunner createTestRunner(TestRunner runner) {
-    IJUnitTestRunner tr = null;
-    try {
-      // try to get runner for JUnit 4 first
-      Class.forName("org.junit.Test");
-      Class<?> clazz = ClassHelper.forName(JUNIT_4_TESTRUNNER);
-      if (clazz != null) {
-        tr = (IJUnitTestRunner) clazz.newInstance();
-        tr.setTestResultNotifier(runner);
-      }
-    } catch (Throwable t) {
-      Utils.log(CLASS_HELPER, 2, "JUnit 4 was not found on the classpath");
-      try {
-        // fallback to JUnit 3
-        Class.forName("junit.framework.Test");
-        Class<?> clazz = ClassHelper.forName(JUNIT_TESTRUNNER);
-        if (clazz != null) {
-          tr = (IJUnitTestRunner) clazz.newInstance();
-          tr.setTestResultNotifier(runner);
-        }
-      } catch (Exception ex) {
-        Utils.log(CLASS_HELPER, 2, "JUnit 3 was not found on the classpath");
-        // there's no JUnit on the classpath
-        throw new TestNGException("Cannot create JUnit runner", ex);
-      }
-    }
-    return tr;
+    return IJUnitTestRunner.createTestRunner(runner);
   }
 
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
@@ -314,38 +290,33 @@ public final class ClassHelper {
     return false;
   }
 
+  /**
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static IMethodSelector createSelector(org.testng.xml.XmlMethodSelector selector) {
-    try {
-      Class<?> cls = Class.forName(selector.getClassName());
-      return (IMethodSelector) cls.newInstance();
-    } catch (Exception ex) {
-      throw new TestNGException("Couldn't find method selector : " + selector.getClassName(), ex);
-    }
+    return InstanceCreator.createSelector(selector);
   }
 
-  /** Create an instance for the given class. */
+  /**
+   * Create an instance for the given class.
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static Object createInstance(
       Class<?> declaringClass,
       Map<Class<?>, IClass> classes,
       XmlTest xmlTest,
       IAnnotationFinder finder,
       ITestObjectFactory objectFactory,
-      boolean create
-  ) {
-    if (objectFactory instanceof IObjectFactory) {
-      return createInstance1(
-          declaringClass, classes, xmlTest, finder, (IObjectFactory) objectFactory, create);
-    } else if (objectFactory instanceof IObjectFactory2) {
-      return createInstance2(declaringClass, (IObjectFactory2) objectFactory);
-    } else {
-      throw new AssertionError("Unknown object factory type:" + objectFactory);
-    }
+      boolean create) {
+    return InstanceCreator.createInstance(declaringClass, classes, xmlTest, finder, objectFactory, create, "");
   }
 
-  private static Object createInstance2(Class<?> declaringClass, IObjectFactory2 objectFactory) {
-    return objectFactory.newInstance(declaringClass);
-  }
-
+  /**
+   * @deprecated - This method is deprecated as of TestNG 7.0.0
+   */
+  @Deprecated
   public static Object createInstance1(
       Class<?> declaringClass,
       Map<Class<?>, IClass> classes,
@@ -354,117 +325,11 @@ public final class ClassHelper {
       IObjectFactory factory,
       boolean create
   ) {
-    Object result = null;
-
-    try {
-      Constructor<?> constructor = findAnnotatedConstructor(finder, declaringClass);
-      if (null != constructor) {
-      // Any annotated constructor?
-        try {
-          result = instantiateUsingParameterizedConstructor(finder, constructor, xmlTest, factory);
-        } catch(IllegalArgumentException e) {
-          return null;
-        }
-      } else {
-        // No, just try to instantiate the parameterless constructor (or the one with a String)
-        result = instantiateUsingDefaultConstructor(declaringClass, classes, xmlTest, factory);
-      }
-    } catch (TestNGException ex) {
-      throw ex;
-    } catch (NoSuchMethodException ex) {
-      // Empty catch block
-    } catch (Throwable cause) {
-      // Something else went wrong when running the constructor
-      throw new TestNGException(
-          "An error occurred while instantiating class "
-              + declaringClass.getName() + ": " + cause.getMessage(), cause);
-    }
-
-    if (result == null && create) {
-      String suffix = "instantiated";
-      if (!Modifier.isPublic(declaringClass.getModifiers())) {
-        suffix += "/accessed.";
-      }
-      throw new TestNGException("An error occurred while instantiating class " + declaringClass.getName() + ". "
-              + "Check to make sure it can be " + suffix);
-    }
-
-    return result;
-  }
-
-  private static Object instantiateUsingParameterizedConstructor(IAnnotationFinder finder,
-      Constructor<?> constructor, XmlTest xmlTest, IObjectFactory objectFactory) {
-    IFactoryAnnotation factoryAnnotation = finder
-        .findAnnotation(constructor, IFactoryAnnotation.class);
-    if (factoryAnnotation != null) {
-      throw new IllegalArgumentException("No factory annotation found.");
-    }
-
-    IParametersAnnotation parametersAnnotation =
-        finder.findAnnotation(constructor, IParametersAnnotation.class);
-    if (parametersAnnotation == null) {
-      // null if the annotation is @Factory
-      return null;
-    }
-    String[] parameterNames = parametersAnnotation.getValue();
-    Object[] parameters =
-        Parameters.createInstantiationParameters(
-            constructor,
-            "@Parameters",
-            finder,
-            parameterNames,
-            xmlTest.getAllParameters(),
-            xmlTest.getSuite());
-    return objectFactory.newInstance(constructor, parameters);
-  }
-
-
-  private static Object instantiateUsingDefaultConstructor(Class<?> declaringClass,
-      Map<Class<?>, IClass> classes, XmlTest xmlTest, IObjectFactory factory)
-      throws NoSuchMethodException, IllegalAccessException, InstantiationException {
-    // If this class is a (non-static) nested class, the constructor contains a hidden
-    // parameter of the type of the enclosing class
-    Class<?>[] parameterTypes = new Class[0];
-    Object[] parameters = new Object[0];
-    Class<?> ec = declaringClass.getEnclosingClass();
-    boolean isStatic = 0 != (declaringClass.getModifiers() & Modifier.STATIC);
-
-    // Only add the extra parameter if the nested class is not static
-    if ((null != ec) && !isStatic) {
-      parameterTypes = new Class[] {ec};
-      parameters = new Object[]{computeParameters(classes, ec, factory)};
-    } // isStatic
-
-    Constructor<?> ct;
-    try {
-      ct = declaringClass.getDeclaredConstructor(parameterTypes);
-    } catch (NoSuchMethodException ex) {
-      ct = declaringClass.getDeclaredConstructor(String.class);
-      parameters = new Object[]{xmlTest.getName()};
-      // If ct == null here, we'll pass a null
-      // constructor to the factory and hope it can deal with it
-    }
-    return factory.newInstance(ct, parameters);
-  }
-
-  private static Object computeParameters(Map<Class<?>, IClass> classes,
-      Class<?> ec, IObjectFactory factory)
-      throws NoSuchMethodException, IllegalAccessException, InstantiationException {
-    // Create an instance of the enclosing class so we can instantiate
-    // the nested class (actually, we reuse the existing instance).
-    IClass enclosingIClass = classes.get(ec);
-    if (enclosingIClass == null) {
-      return ec.newInstance();
-    }
-    Object[] enclosingInstances = enclosingIClass.getInstances(false);
-    if (enclosingInstances == null || enclosingInstances.length == 0) {
-      return factory.newInstance(ec.getConstructor(ec));
-    }
-    return enclosingInstances[0];
+    return InstanceCreator.createInstanceUsingObjectFactory(declaringClass, classes, xmlTest, finder, factory, create, "");
   }
 
   /** Find the best constructor given the parameters found on the annotation */
-  private static Constructor<?> findAnnotatedConstructor(
+  static Constructor<?> findAnnotatedConstructor(
       IAnnotationFinder finder, Class<?> declaringClass) {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
 

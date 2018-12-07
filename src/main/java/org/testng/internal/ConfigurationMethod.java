@@ -330,9 +330,8 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   private void init() {
-    IAnnotation a = AnnotationHelper.findConfiguration(m_annotationFinder, m_method.getMethod());
-    IConfigurationAnnotation annotation = (IConfigurationAnnotation) a;
-    if (a != null) {
+    IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(m_annotationFinder, m_method.getMethod());
+    if (annotation != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
       setEnabled(annotation.getEnabled());
       setDescription(annotation.getDescription());

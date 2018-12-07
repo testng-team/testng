@@ -18,12 +18,14 @@ class InstanceBasedParallelParallelWorker extends AbstractParallelWorker {
       lmm.put(m.getInstance(), m);
     }
     List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
+    IInvoker invoker = arguments.getInvoker();
+    ITestInvoker testInvoker = invoker.getTestInvoker();
+    IConfigInvoker configInvoker = invoker.getConfigInvoker();
     for (Map.Entry<Object, List<ITestNGMethod>> es : lmm.entrySet()) {
       List<IMethodInstance> methodInstances = MethodHelper.methodsToMethodInstances(es.getValue());
       TestMethodWorker tmw =
           new TestMethodWorker(
-              arguments.getInvoker(),
-              methodInstances,
+              testInvoker, configInvoker, methodInstances,
               arguments.getTestContext().getCurrentXmlTest().getAllParameters(),
               arguments.getConfigMethods(),
               arguments.getClassMethodMap(),

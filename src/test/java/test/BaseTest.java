@@ -20,6 +20,7 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.Systematiser;
@@ -57,10 +58,6 @@ public class BaseTest extends BaseDistributedTest {
     return m_configuration;
   }
 
-  protected void setDebug() {
-    getTest().setVerbose(9);
-  }
-
   protected void setParallel(XmlSuite.ParallelMode parallel) {
     getTest().setParallel(parallel);
   }
@@ -86,30 +83,23 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   private Map<Long, XmlTest> m_tests= new HashMap<>();
-  private Map<Long, Map> m_passedTests= new HashMap<>();
-  private Map<Long, Map> m_failedTests= new HashMap<>();
-  private Map<Long, Map> m_skippedTests= new HashMap<>();
-  private Map<Long, XmlTest> m_testConfigs= new HashMap<>();
-  private Map<Long, Map> m_passedConfigs= new HashMap<>();
-  private Map<Long, Map> m_failedConfigs= new HashMap<>();
-  private Map<Long, Map> m_skippedConfigs= new HashMap<>();
-  private Map<Long, Map> m_failedButWithinSuccessPercentageTests= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_passedTests= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_failedTests= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_skippedTests= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_passedConfigs= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_failedConfigs= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_skippedConfigs= new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_failedButWithinSuccessPercentageTests= new HashMap<>();
 
-  protected Map<String, List<ITestResult>> getTests(Map<Long, Map> map) {
-    Map<String, List<ITestResult>> result= map.get(getId());
-    if(null == result) {
-      result= new HashMap<>();
-      map.put(getId(), result);
-    }
-
-    return result;
+  protected Map<String, List<ITestResult>> getTests(Map<Long, Map<String, List<ITestResult>>> map) {
+    return map.computeIfAbsent(getId(), k -> new HashMap<>());
   }
 
   protected XmlTest getTest() {
     return m_tests.get(getId());
   }
 
-  protected void setTests(Map<Long, Map> map, Map m) {
+  protected void setTests(Map<Long, Map<String, List<ITestResult>>> map, Map<String, List<ITestResult>> m) {
     map.put(getId(), m);
   }
 
@@ -141,44 +131,44 @@ public class BaseTest extends BaseDistributedTest {
     return getTests(m_skippedConfigs);
   }
 
-  public void setSkippedTests(Map m) {
+  public void setSkippedTests(Map<String, List<ITestResult>> m) {
     setTests(m_skippedTests, m);
   }
 
-  public void setPassedTests(Map m) {
+  public void setPassedTests(Map<String, List<ITestResult>> m) {
     setTests(m_passedTests, m);
   }
 
-  public void setFailedTests(Map m) {
+  public void setFailedTests(Map<String, List<ITestResult>> m) {
     setTests(m_failedTests, m);
   }
 
-  public void setFailedButWithinSuccessPercentageTests(Map m) {
+  public void setFailedButWithinSuccessPercentageTests(Map<String, List<ITestResult>> m) {
     setTests(m_failedButWithinSuccessPercentageTests, m);
   }
 
-  public void setSkippedConfigs(Map m) {
+  public void setSkippedConfigs(Map<String, List<ITestResult>> m) {
     setTests(m_skippedConfigs, m);
   }
 
-  public void setPassedConfigs(Map m) {
+  public void setPassedConfigs(Map<String, List<ITestResult>> m) {
     setTests(m_passedConfigs, m);
   }
 
-  public void setFailedConfigs(Map m) {
+  public void setFailedConfigs(Map<String, List<ITestResult>> m) {
     setTests(m_failedConfigs, m);
   }
 
 
   protected void run() {
     assert null != getTest() : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
-    setPassedTests(new HashMap());
-    setFailedTests(new HashMap());
-    setSkippedTests(new HashMap());
-    setPassedConfigs(new HashMap());
-    setFailedConfigs(new HashMap());
-    setSkippedConfigs(new HashMap());
-    setFailedButWithinSuccessPercentageTests(new HashMap());
+    setPassedTests(Maps.newHashMap());
+    setFailedTests(Maps.newHashMap());
+    setSkippedTests(Maps.newHashMap());
+    setPassedConfigs(Maps.newHashMap());
+    setFailedConfigs(Maps.newHashMap());
+    setSkippedConfigs(Maps.newHashMap());
+    setFailedButWithinSuccessPercentageTests(Maps.newHashMap());
 
     m_suite.setVerbose(m_verbose != null ? m_verbose : 0);
     SuiteRunner suite = new SuiteRunner(m_configuration,
@@ -233,9 +223,7 @@ public class BaseTest extends BaseDistributedTest {
       }
     }
 
-    XmlClass result= addClass(className);
-
-    return result;
+    return addClass(className);
   }
 
   public void addIncludedMethod(String className, String m) {
@@ -258,21 +246,6 @@ public class BaseTest extends BaseDistributedTest {
     getTest().addExcludedGroup(g);
   }
 
-  public void addMetaGroup(String mg, List<String> l) {
-    getTest().getMetaGroups().put(mg, l);
-  }
-
-  public void addMetaGroup(String mg, String n) {
-    List<String> l= new ArrayList<>();
-    l.add(n);
-    addMetaGroup(mg, l);
-  }
-
-  public void setParameter(String key, String value) {
-    getTest().addParameter(key, value);
-  }
-
-//  @Configuration(beforeTestMethod = true, groups = { "init", "initTest"})
   @BeforeMethod(groups= { "init", "initTest" })
   public void methodSetUp() {
     m_suite= new XmlSuite();
@@ -283,11 +256,8 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
-    List<ITestResult> l= tests.get(t.getMethod().getMethodName());
-    if(null == l) {
-      l= new ArrayList<>();
-      tests.put(t.getMethod().getMethodName(), l);
-    }
+    List<ITestResult> l = tests
+        .computeIfAbsent(t.getMethod().getMethodName(), k -> new ArrayList<>());
     l.add(t);
   }
 
@@ -319,15 +289,8 @@ public class BaseTest extends BaseDistributedTest {
     addTest(getSkippedConfigs(), t);
   }
 
-  private void ppp(String s) {
-    System.out.println("[BaseTest " + getId() + "] " + s);
-  }
-
   protected Long getId() {
     return 42L;
-//    long result = Thread.currentThread().getId();
-////    System.out.println("RETURNING ID " + result);
-//    return result;
   }
 
   public XmlSuite getSuite() {
@@ -346,7 +309,7 @@ public class BaseTest extends BaseDistributedTest {
                                int expected,
                                String message) {
     if(tests.size() > 0) {
-      Set keys= tests.keySet();
+      Set<String> keys = tests.keySet();
       Object firstKey= keys.iterator().next();
       List<ITestResult> passedResult= tests.get(firstKey);
       int n= passedResult.size();
@@ -358,18 +321,7 @@ public class BaseTest extends BaseDistributedTest {
     }
   }
 
-  protected void dumpResults(String name, Map<String, List<ITestResult>> tests) {
-    ppp("============= " + name);
-    for(Map.Entry<String, List<ITestResult>> entry : tests.entrySet()) {
-      ppp("TEST:" + entry.getKey());
-      List<ITestResult> l= entry.getValue();
-      for(ITestResult tr : l) {
-        ppp("   " + tr);
-      }
-    }
-  }
-
-  protected static void verifyInstanceNames(String title, Map<String, List<ITestResult>> actual,
+  protected static void verifyInstanceNames(Map<String, List<ITestResult>> actual,
       String[] expected)
   {
     List<String> actualNames = Lists.newArrayList();

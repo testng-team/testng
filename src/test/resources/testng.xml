@@ -181,6 +181,7 @@
       <class name="test.github1461.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.factory.issue1041.IssueTest"/>
+      <class name="test.factory.issue1924.IssueTest"/>
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
       <class name="test.objectfactory.github1827.GitHub1827Test"/>
@@ -695,7 +696,7 @@
     <classes>
       <class name="test.skipex.SkippedExceptionTest" />
       <class name="test.skipex.SkipAndExpectedTest" />
-      <class name="test.skip.GitHubIssue1878Test"/>
+      <class name="test.skip.ReasonForSkipTest"/>
     </classes>
   </test>
 
@@ -728,6 +729,7 @@
     <classes>
       <class name="org.testng.internal.UtilsTest" />
       <class name="org.testng.internal.ClassHelperTest"/>
+      <class name="org.testng.internal.InstanceCreatorTest"/>
       <class name="test.issue1430.TestFileToClass"/>
     </classes>
   </test>

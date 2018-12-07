@@ -85,6 +85,7 @@ public class TestNGMethod extends BaseTestMethod {
         setDescription(findDescription(testAnnotation, xmlTest));
         setEnabled(testAnnotation.getEnabled());
         setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
+        setRetryAnalyzerClass(testAnnotation.getRetryAnalyzerClass());
         setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
         setInvocationTimeOut(testAnnotation.invocationTimeOut());
         setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
@@ -177,6 +178,7 @@ public class TestNGMethod extends BaseTestMethod {
     clone.m_successPercentage = getSuccessPercentage();
     clone.setTimeOut(getTimeOut());
     clone.setRetryAnalyzer(getRetryAnalyzer());
+    clone.setRetryAnalyzerClass(getRetryAnalyzerClass());
     clone.setSkipFailedInvocations(skipFailedInvocations());
     clone.setInvocationNumbers(getInvocationNumbers());
     clone.setPriority(getPriority());
@@ -197,7 +199,7 @@ public class TestNGMethod extends BaseTestMethod {
     if (instance == null) {
       return null;
     }
-    return ClassHelper.newInstance(instance.getClass());
+    return InstanceCreator.newInstance(instance.getClass());
   }
 
   @Override

@@ -1,16 +1,16 @@
 package test;
 
-import org.testng.Assert;
-
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.collections.Maps;
 
 public class BaseDistributedTest {
   private boolean m_verbose = false;
 
-  protected void verifyTests(String title, String[] exp, Map found) {
-    Map expected = new HashMap();
+  protected void verifyTests(String title, String[] exp, Map<String, List<ITestResult>> found) {
+    Map<String, String> expected = Maps.newHashMap();
     for (String element : exp) {
       expected.put(element, element);
     }

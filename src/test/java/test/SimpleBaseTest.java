@@ -1,7 +1,6 @@
 package test;
 
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;

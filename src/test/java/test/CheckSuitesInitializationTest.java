@@ -35,7 +35,7 @@ public class CheckSuitesInitializationTest extends SimpleBaseTest {
     TestNG tng = create();
     String testngXmlPath = getPathToResource("checksuitesinitialization/parent-suite.xml");
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     tng.run();
     Assert.assertEquals(tla.getPassedTests().size(), 4);
   }

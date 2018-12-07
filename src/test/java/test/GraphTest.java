@@ -12,13 +12,7 @@ import java.util.List;
 
 public class GraphTest {
 
-  private static final Comparator<Node<String>> COMPARATOR = new Comparator<Node<String>>() {
-
-    @Override
-    public int compare(Node<String> o1, Node<String> o2) {
-      return o1.getObject().compareTo(o2.getObject());
-    }
-  };
+  private static final Comparator<Node<String>> COMPARATOR = Comparator.comparing(Node::getObject);
 
   @Test
   public void sort() {
@@ -40,7 +34,7 @@ public class GraphTest {
     g.topologicalSort();
     List<String> l = g.getStrictlySortedNodes();
     int i = 0;
-    Assert.assertTrue("1".equals(l.get(i)));
+    Assert.assertEquals("1", l.get(i));
     i++;
     Assert.assertTrue("2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i)));
     i++;
@@ -48,9 +42,9 @@ public class GraphTest {
     i++;
     Assert.assertTrue("2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i)));
     i++;
-    Assert.assertTrue("3".equals(l.get(i)));
+    Assert.assertEquals("3", l.get(i));
 
-    Assert.assertTrue(1 == g.getIndependentNodes().size());
+    Assert.assertEquals(1, g.getIndependentNodes().size());
   }
 
   @Test(expectedExceptions = org.testng.TestNGException.class)
@@ -112,15 +106,15 @@ public class GraphTest {
     //
     {
       List<String> predecessors = g.findPredecessors("2");
-      Assert.assertTrue(predecessors.size() == 1);
-      Assert.assertTrue(predecessors.get(0).equals("1"));
+      Assert.assertEquals(1, predecessors.size());
+      Assert.assertEquals("1", predecessors.get(0));
     }
 
     {
       List<String> predecessors = g.findPredecessors("3");
 
-      Assert.assertTrue(predecessors.size() == 4);
-      Assert.assertTrue(predecessors.get(0).equals("1"));
+      Assert.assertEquals(4, predecessors.size());
+      Assert.assertEquals("1", predecessors.get(0));
       Assert.assertTrue(predecessors.get(1).equals("2.1")
         || predecessors.get(1).equals("2.2")
         || predecessors.get(1).equals("2"));
@@ -195,7 +189,7 @@ public class GraphTest {
     //
     {
       List<String> predecessors = g.findPredecessors(rootNode);
-      Assert.assertTrue(predecessors.size() == (maxDepth * nodesPerDepth));
+      Assert.assertEquals(predecessors.size(), (maxDepth * nodesPerDepth));
     }
   }
 }

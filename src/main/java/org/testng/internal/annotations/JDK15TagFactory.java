@@ -102,7 +102,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -128,7 +127,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -154,7 +152,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -180,7 +177,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -207,7 +203,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -234,7 +229,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -260,7 +254,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -286,7 +279,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               false,
               bs.timeOut(),
@@ -312,7 +304,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               bs.firstTimeOnly(),
               false,
               bs.timeOut(),
@@ -338,7 +329,6 @@ public class JDK15TagFactory {
               bs.enabled(),
               bs.groups(),
               bs.inheritGroups(),
-              null,
               false,
               bs.lastTimeOnly(),
               bs.timeOut(),
@@ -366,7 +356,6 @@ public class JDK15TagFactory {
       boolean enabled,
       String[] groups,
       boolean inheritGroups,
-      String[] parameters,
       boolean firstTimeOnly,
       boolean lastTimeOnly,
       long timeOut,
@@ -452,13 +441,13 @@ public class JDK15TagFactory {
     Test test = (Test) a;
 
     result.setEnabled(test.enabled());
-    result.setGroups(join(test.groups(), findInheritedStringArray(cls, Test.class, "groups")));
+    result.setGroups(join(test.groups(), findInheritedStringArray(cls, "groups")));
     result.setDependsOnGroups(
-        join(test.dependsOnGroups(), findInheritedStringArray(cls, Test.class, "dependsOnGroups")));
+        join(test.dependsOnGroups(), findInheritedStringArray(cls, "dependsOnGroups")));
     result.setDependsOnMethods(
         join(
             test.dependsOnMethods(),
-            findInheritedStringArray(cls, Test.class, "dependsOnMethods")));
+            findInheritedStringArray(cls, "dependsOnMethods")));
     result.setTimeOut(test.timeOut());
     result.setInvocationTimeOut(test.invocationTimeOut());
     result.setInvocationCount(test.invocationCount());
@@ -514,6 +503,7 @@ public class JDK15TagFactory {
    * class and then parent classes until we either find a non-default value or we reach the top of
    * the hierarchy (Object).
    */
+  @SuppressWarnings("unchecked")
   private <T> T findInherited(
       T methodValue,
       Class<?> cls,
@@ -547,8 +537,7 @@ public class JDK15TagFactory {
    * annotation has { "a", "b" } and the class has { "c" }, the returned value will be { "a", "b",
    * "c" }.
    */
-  private String[] findInheritedStringArray(
-      Class<?> cls, Class<? extends Annotation> annotationClass, String methodName) {
+  private String[] findInheritedStringArray(Class<?> cls, String methodName) {
     if (null == cls) {
       return new String[0];
     }
@@ -556,7 +545,7 @@ public class JDK15TagFactory {
     List<String> result = Lists.newArrayList();
 
     while (cls != null && cls != Object.class) {
-      Annotation annotation = cls.getAnnotation(annotationClass);
+      Annotation annotation = cls.getAnnotation(Test.class);
       if (annotation != null) {
         String[] g = (String[]) invokeMethod(annotation, methodName);
         result.addAll(Arrays.asList(g));

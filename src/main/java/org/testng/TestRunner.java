@@ -21,8 +21,9 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.AbstractParallelWorker;
 import org.testng.internal.Attributes;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassInfoMap;
+import org.testng.internal.ConfigMethodAttributes;
+import org.testng.internal.ConfigMethodAttributes.Builder;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraph;
@@ -32,6 +33,7 @@ import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.TestMethodComparator;
@@ -417,7 +419,7 @@ public class TestRunner
     if (null != xmlTest.getMethodSelectors()) {
       for (org.testng.xml.XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
         if (selector.getClassName() != null) {
-          IMethodSelector s = ClassHelper.createSelector(selector);
+          IMethodSelector s = InstanceCreator.createSelector(selector);
 
           m_runInfo.addMethodSelector(s, selector.getPriority());
         }
@@ -461,7 +463,7 @@ public class TestRunner
               testMethodFinder,
               m_annotationFinder,
               m_xmlTest,
-              classMap.getXmlClass(ic.getRealClass()));
+              classMap.getXmlClass(ic.getRealClass()), m_testClassFinder.getFactoryCreationFailedMessage());
       m_classMap.put(ic.getRealClass(), tc);
     }
 
@@ -612,13 +614,12 @@ public class TestRunner
     // invoke @BeforeTest
     ITestNGMethod[] testConfigurationMethods = getBeforeTestConfigurationMethods();
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      m_invoker.invokeConfigurations(
-          null,
-          testConfigurationMethods,
-          m_xmlTest.getSuite(),
-          m_xmlTest.getAllParameters(),
-          null, /* no parameter values */
-          null /* instance */);
+      ConfigMethodAttributes attributes = new Builder()
+          .usingConfigMethodsAs(testConfigurationMethods)
+          .forSuite(m_xmlTest.getSuite())
+          .usingParameters(m_xmlTest.getAllParameters())
+          .build();
+      m_invoker.getConfigInvoker().invokeConfigurations(attributes);
     }
   }
 
@@ -648,7 +649,7 @@ public class TestRunner
               for (XmlInclude inc : includedMethods) {
                 methods.add(inc.getName());
               }
-              IJUnitTestRunner tr = ClassHelper.createTestRunner(TestRunner.this);
+              IJUnitTestRunner tr = IJUnitTestRunner.createTestRunner(TestRunner.this);
               tr.setInvokedMethodListeners(m_invokedMethodListeners);
               try {
                 tr.run(tc, methods.toArray(new String[0]));
@@ -709,7 +710,7 @@ public class TestRunner
       if (parallel) {
         if (graph.getNodeCount() > 0) {
           // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
-          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<Runnable>() : new LinkedBlockingQueue<Runnable>();
+          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<>() : new LinkedBlockingQueue<>();
           GraphThreadPoolExecutor<ITestNGMethod> executor =
               new GraphThreadPoolExecutor<>(
                   "test=" + xmlTest.getName(),
@@ -748,7 +749,7 @@ public class TestRunner
 
         while (!freeNodes.isEmpty()) {
           if (needPrioritySort) {
-            Collections.sort(freeNodes, methodComparator);
+            freeNodes.sort(methodComparator);
             // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
             // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
             freeNodes = freeNodes.subList(0, 1);
@@ -846,13 +847,12 @@ public class TestRunner
     // invoke @AfterTest
     ITestNGMethod[] testConfigurationMethods = getAfterTestConfigurationMethods();
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      m_invoker.invokeConfigurations(
-          null,
-          testConfigurationMethods,
-          m_xmlTest.getSuite(),
-          m_xmlTest.getAllParameters(),
-          null, /* no parameter values */
-          null /* instance */);
+      ConfigMethodAttributes attributes = new Builder()
+          .usingConfigMethodsAs(testConfigurationMethods)
+          .forSuite(m_xmlTest.getSuite())
+          .usingParameters(m_xmlTest.getAllParameters())
+          .build();
+      m_invoker.getConfigInvoker().invokeConfigurations(attributes);
     }
 
     //
@@ -1164,7 +1164,7 @@ public class TestRunner
   private IResultMap m_skippedConfigurations = new ResultMap();
   private IResultMap m_failedConfigurations = new ResultMap();
 
-  private class ConfigurationListener implements IConfigurationListener2 {
+  private class ConfigurationListener implements IConfigurationListener {
     @Override
     public void beforeConfiguration(ITestResult tr) {}
 

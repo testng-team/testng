@@ -12,15 +12,15 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class ParameterConstructorTest {
-  private String m_string = null;
-  private int m_int = -1;
-  private boolean m_boolean = false;
-  private byte m_byte = -1;
-  private char m_char = 0;
-  private double m_double = 0.0;
-  private float m_float = 0.0f;
-  private long m_long = 0;
-  private short m_short = 0;
+  private String m_string;
+  private int m_int;
+  private boolean m_boolean;
+  private byte m_byte;
+  private char m_char;
+  private double m_double;
+  private float m_float;
+  private long m_long;
+  private short m_short;
 
   @Parameters({ "string", "int", "boolean", "byte", "char", "double",
       "float", "long", "short"  })

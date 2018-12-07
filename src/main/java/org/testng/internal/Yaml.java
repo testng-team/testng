@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
@@ -27,18 +28,18 @@ public final class Yaml {
     Constructor constructor = new TestNGConstructor(XmlSuite.class);
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
-      suiteDescription.putListPropertyType("packages", XmlPackage.class);
-      suiteDescription.putListPropertyType("listeners", String.class);
-      suiteDescription.putListPropertyType("tests", XmlTest.class);
-      suiteDescription.putListPropertyType("method-selectors", XmlMethodSelector.class);
+      suiteDescription.addPropertyParameters("packages", XmlPackage.class);
+      suiteDescription.addPropertyParameters("listeners", String.class);
+      suiteDescription.addPropertyParameters("tests", XmlTest.class);
+      suiteDescription.addPropertyParameters("method-selectors", XmlMethodSelector.class);
       constructor.addTypeDescription(suiteDescription);
     }
 
     {
       TypeDescription testDescription = new TypeDescription(XmlTest.class);
-      testDescription.putListPropertyType("classes", XmlClass.class);
-      testDescription.putMapPropertyType("metaGroups", String.class, List.class);
-      testDescription.putListPropertyType("method-selectors", XmlMethodSelector.class);
+      testDescription.addPropertyParameters("classes", XmlClass.class);
+      testDescription.addPropertyParameters("metaGroups", String.class, List.class);
+      testDescription.addPropertyParameters("method-selectors", XmlMethodSelector.class);
       constructor.addTypeDescription(testDescription);
     }
 
@@ -46,7 +47,7 @@ public final class Yaml {
     if (is == null) {
       is = new FileInputStream(new File(filePath));
     }
-    XmlSuite result = (XmlSuite) y.load(is);
+    XmlSuite result = y.load(is);
 
     result.setFileName(filePath);
 
@@ -101,7 +102,7 @@ public final class Yaml {
         suite.skipFailedInvocationCounts(),
         XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS);
 
-    toYaml(result, "parameters", "", suite.getParameters());
+    toYaml(result, "", suite.getParameters());
     toYaml(result, suite.getPackages());
 
     if (!suite.getListeners().isEmpty()) {
@@ -116,7 +117,7 @@ public final class Yaml {
     if (!suite.getTests().isEmpty()) {
       result.append("tests:\n");
       for (XmlTest t : suite.getTests()) {
-        toYaml(result, "  ", t);
+        toYaml(result, t);
       }
     }
 
@@ -128,9 +129,9 @@ public final class Yaml {
     return result;
   }
 
-  private static void toYaml(StringBuilder result, String sp, XmlTest t) {
-    String sp2 = sp + "  ";
-    result.append(sp).append("- name: ").append(t.getName()).append("\n");
+  private static void toYaml(StringBuilder result, XmlTest t) {
+    String sp2 = Strings.repeat(" ", 2);
+    result.append("  ").append("- name: ").append(t.getName()).append("\n");
 
     maybeAdd(result, sp2, "junit", t.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, sp2, "verbose", t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
@@ -145,7 +146,7 @@ public final class Yaml {
 
     maybeAdd(result, "preserveOrder", sp2, t.getPreserveOrder(), XmlSuite.DEFAULT_PRESERVE_ORDER);
 
-    toYaml(result, "parameters", sp2, t.getLocalParameters());
+    toYaml(result, sp2, t.getLocalParameters());
 
     if (!t.getIncludedGroups().isEmpty()) {
       result
@@ -220,7 +221,7 @@ public final class Yaml {
   private static void toYaml(StringBuilder result, String sp, XmlInclude xi) {
     result.append(sp).append("- name: ").append(xi.getName()).append("\n");
     String sp2 = sp + "  ";
-    toYaml(result, "parameters", sp2, xi.getLocalParameters());
+    toYaml(result, sp2, xi.getLocalParameters());
   }
 
   private static void toYaml(StringBuilder result, String sp, List<String> strings) {
@@ -274,9 +275,9 @@ public final class Yaml {
   }
 
   private static void toYaml(
-      StringBuilder sb, String key, String sp, Map<String, String> parameters) {
+      StringBuilder sb, String sp, Map<String, String> parameters) {
     if (!parameters.isEmpty()) {
-      sb.append(sp).append(key).append(": ");
+      sb.append(sp).append("parameters").append(": ");
       mapToYaml(parameters, sb);
     }
   }
@@ -293,11 +294,11 @@ public final class Yaml {
       @Override
       public Object construct(Node node) {
         if (node.getType().equals(XmlSuite.ParallelMode.class)) {
-          String parallel = (String) constructScalar((ScalarNode) node);
+          String parallel = constructScalar((ScalarNode) node);
           return XmlSuite.ParallelMode.getValidParallel(parallel);
         }
         if (node.getType().equals(XmlSuite.FailurePolicy.class)) {
-          String failurePolicy = (String) constructScalar((ScalarNode) node);
+          String failurePolicy = constructScalar((ScalarNode) node);
           return XmlSuite.FailurePolicy.getValidPolicy(failurePolicy);
         }
         return super.construct(node);

@@ -9,6 +9,17 @@ public final class Strings {
     // Utility class. Defeat instantiation.
   }
 
+  //TODO: When TestNG moves to JDK11 as the default JDK this method needs to be deprecated and removed
+  //because now this method is present in JDK11 as part of the JDK itself.
+  //See http://hg.openjdk.java.net/jdk/jdk/file/fc16b5f193c7/src/java.base/share/classes/java/lang/String.java#l2984
+  public static String repeat(String text, int count) {
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < count; i++) {
+      builder.append(text);
+    }
+    return builder.toString();
+  }
+
   public static boolean isNullOrEmpty(String string) {
     return string == null || string.trim().isEmpty();
   }
