@@ -4,26 +4,17 @@ import java.util.Map;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlSuite;
 
-public class GroupConfigMethodAttributes {
+public class GroupConfigMethodArguments extends Arguments {
 
-  private final ITestNGMethod testMethod;
   private final ConfigurationGroupMethods groupMethods;
   private final XmlSuite suite;
-  private final Map<String, String> params;
-  private final Object instance;
 
-  private GroupConfigMethodAttributes(ITestNGMethod testMethod,
+  private GroupConfigMethodArguments(ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods, XmlSuite suite, Map<String, String> params,
       Object instance) {
-    this.testMethod = testMethod;
+    super(instance, testMethod, params);
     this.groupMethods = groupMethods;
     this.suite = suite;
-    this.params = params;
-    this.instance = instance;
-  }
-
-  public ITestNGMethod getTestMethod() {
-    return testMethod;
   }
 
   public ConfigurationGroupMethods getGroupMethods() {
@@ -75,8 +66,8 @@ public class GroupConfigMethodAttributes {
       return this;
     }
 
-    public GroupConfigMethodAttributes build() {
-      return new GroupConfigMethodAttributes(testMethod, groupMethods, suite, params, instance);
+    public GroupConfigMethodArguments build() {
+      return new GroupConfigMethodArguments(testMethod, groupMethods, suite, params, instance);
     }
   }
 }

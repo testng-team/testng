@@ -22,8 +22,8 @@ import org.testng.collections.Sets;
 import org.testng.internal.AbstractParallelWorker;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassInfoMap;
-import org.testng.internal.ConfigMethodAttributes;
-import org.testng.internal.ConfigMethodAttributes.Builder;
+import org.testng.internal.ConfigMethodArguments;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraph;
@@ -613,13 +613,17 @@ public class TestRunner
 
     // invoke @BeforeTest
     ITestNGMethod[] testConfigurationMethods = getBeforeTestConfigurationMethods();
+    invokeTestConfigurations(testConfigurationMethods);
+  }
+
+  private void invokeTestConfigurations(ITestNGMethod[] testConfigurationMethods) {
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      ConfigMethodAttributes attributes = new Builder()
+      ConfigMethodArguments arguments = new Builder()
           .usingConfigMethodsAs(testConfigurationMethods)
           .forSuite(m_xmlTest.getSuite())
           .usingParameters(m_xmlTest.getAllParameters())
           .build();
-      m_invoker.getConfigInvoker().invokeConfigurations(attributes);
+      m_invoker.getConfigInvoker().invokeConfigurations(arguments);
     }
   }
 
@@ -846,14 +850,7 @@ public class TestRunner
   private void afterRun() {
     // invoke @AfterTest
     ITestNGMethod[] testConfigurationMethods = getAfterTestConfigurationMethods();
-    if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      ConfigMethodAttributes attributes = new Builder()
-          .usingConfigMethodsAs(testConfigurationMethods)
-          .forSuite(m_xmlTest.getSuite())
-          .usingParameters(m_xmlTest.getAllParameters())
-          .build();
-      m_invoker.getConfigInvoker().invokeConfigurations(attributes);
-    }
+    invokeTestConfigurations(testConfigurationMethods);
 
     //
     // Log the end date

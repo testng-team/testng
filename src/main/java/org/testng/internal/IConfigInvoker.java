@@ -8,10 +8,10 @@ public interface IConfigInvoker {
   boolean hasConfigurationFailureFor(
       ITestNGMethod testNGMethod, String[] groups, IClass testClass, Object instance);
 
-  void invokeBeforeGroupsConfigurations(GroupConfigMethodAttributes attributes);
+  void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments);
 
-  void invokeAfterGroupsConfigurations(GroupConfigMethodAttributes attributes);
+  void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments);
 
-  void invokeConfigurations(ConfigMethodAttributes configMethodAttributes);
+  void invokeConfigurations(ConfigMethodArguments arguments);
 
 }

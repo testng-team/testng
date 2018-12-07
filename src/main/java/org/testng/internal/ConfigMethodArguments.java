@@ -7,36 +7,25 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 
-public class ConfigMethodAttributes {
+public class ConfigMethodArguments extends MethodArguments {
 
   private IClass testClass;
-  private final ITestNGMethod currentTestMethod;
   private final ITestNGMethod[] allMethods;
   private final XmlSuite suite;
-  private final Map<String, String> params;
-  private final Object[] parameterValues;
-  private final Object instance;
   private final ITestResult testMethodResult;
 
-  private ConfigMethodAttributes(IClass testClass, ITestNGMethod currentTestMethod,
+  private ConfigMethodArguments(IClass testClass, ITestNGMethod currentTestMethod,
       ITestNGMethod[] allMethods, XmlSuite suite, Map<String, String> params,
       Object[] parameterValues, Object instance, ITestResult testMethodResult) {
+    super(instance, currentTestMethod, params, parameterValues);
     this.testClass = testClass;
-    this.currentTestMethod = currentTestMethod;
     this.allMethods = allMethods;
     this.suite = suite;
-    this.params = params;
-    this.parameterValues = parameterValues;
-    this.instance = instance;
     this.testMethodResult = testMethodResult;
   }
 
   public IClass getTestClass() {
     return testClass;
-  }
-
-  public ITestNGMethod getTestMethod() {
-    return currentTestMethod;
   }
 
   public ITestNGMethod[] getConfigMethods() {
@@ -126,8 +115,8 @@ public class ConfigMethodAttributes {
       return this;
     }
 
-    public ConfigMethodAttributes build() {
-      return new ConfigMethodAttributes(testClass, currentTestMethod, allMethods, suite, params,
+    public ConfigMethodArguments build() {
+      return new ConfigMethodArguments(testClass, currentTestMethod, allMethods, suite, params,
           parameterValues, instance, testMethodResult);
     }
   }

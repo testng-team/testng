@@ -1,8 +1,6 @@
 package org.testng.internal;
 
 import java.util.List;
-import java.util.Map;
-import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -23,31 +21,13 @@ public interface ITestInvoker {
       ITestContext context);
 
   ITestResult invokeTestMethod(
-      Object instance,
-      ITestNGMethod tm,
-      Object[] parameterValues,
-      int parametersIndex,
-      XmlSuite suite,
-      Map<String, String> params,
-      ITestClass testClass,
-      ITestNGMethod[] beforeMethods,
-      ITestNGMethod[] afterMethods,
-      ConfigurationGroupMethods groupMethods,
+      TestMethodArguments arguments, XmlSuite suite,
       FailureContext failureContext);
 
   FailureContext retryFailed(
-      Object instance,
-      ITestNGMethod tm,
-      Object[] paramValues,
-      ITestClass testClass,
-      ITestNGMethod[] beforeMethods,
-      ITestNGMethod[] afterMethods,
-      ConfigurationGroupMethods groupMethods,
-      List<ITestResult> result,
+      TestMethodArguments arguments, List<ITestResult> result,
       int failureCount,
-      ITestContext testContext,
-      Map<String, String> parameters,
-      int parametersIndex);
+      ITestContext testContext);
 
   void runTestResultListener(ITestResult tr);
 }
