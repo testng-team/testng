@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IHookable;
+import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -31,7 +33,6 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.ParameterHandler.ParameterBag;
-import org.testng.internal.TestMethodArguments.Builder;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.internal.thread.graph.IWorker;
@@ -56,6 +57,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     this.m_classListeners = m_classListeners;
     this.m_skipFailedInvocationCounts = m_skipFailedInvocationCounts;
     this.invoker = invoker;
+  }
+
+  @Override
+  public ITestResultNotifier getNotifier() {
+    return m_notifier;
   }
 
   public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
@@ -107,175 +113,29 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // FIXME: Is this correct?
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 || timeOutInvocationCount > 0;
 
-    int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
     ITestClass testClass = testMethod.getTestClass();
-    List<ITestResult> result = Lists.newArrayList();
-    FailureContext failure = new FailureContext();
     ITestNGMethod[] beforeMethods =
         TestNgMethodUtils.filterBeforeTestMethods(testClass, CAN_RUN_FROM_CLASS);
     ITestNGMethod[] afterMethods =
         TestNgMethodUtils.filterAfterTestMethods(testClass, CAN_RUN_FROM_CLASS);
+    int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
+
+    TestMethodArguments arguments = new TestMethodArguments.Builder()
+        .usingInstance(instance)
+        .forTestMethod(testMethod)
+        .withParameters(parameters)
+        .forTestClass(testClass)
+        .usingBeforeMethods(beforeMethods)
+        .usingAfterMethods(afterMethods)
+        .usingGroupMethods(groupMethods)
+        .build();
+    MethodInvocationAgent agent = new MethodInvocationAgent(arguments, this, context);
     while (invocationCount-- > 0) {
-      long start = System.currentTimeMillis();
-
-      Map<String, String> allParameterNames = Maps.newHashMap();
-      ParameterHandler handler = new ParameterHandler(annotationFinder(), m_dataproviderListeners);
-
-      ParameterBag bag =
-          handler.createParameters(
-              testMethod, parameters, allParameterNames, context, instance);
-
-      if (bag.hasErrors()) {
-        ITestResult tr = bag.errorResult;
-        Throwable throwable = Objects.requireNonNull(tr).getThrowable();
-        if (throwable instanceof TestNGException) {
-          tr.setStatus(ITestResult.FAILURE);
-          m_notifier.addFailedTest(testMethod, tr);
-        } else {
-          tr.setStatus(ITestResult.SKIP);
-          m_notifier.addSkippedTest(testMethod, tr);
-        }
-        runTestResultListener(tr);
-        result.add(tr);
-        continue;
-      }
-
-      Iterator<Object[]> allParameterValues = Objects.requireNonNull(bag.parameterHolder).parameters;
-
-      try {
-
-        if (bag.runInParallel()) {
-          TestMethodArguments arguments = new TestMethodArguments.Builder()
-              .forTestMethod(testMethod)
-              .withParameters(parameters)
-              .forTestClass(testClass)
-              .usingBeforeMethods(beforeMethods)
-              .usingAfterMethods(afterMethods)
-              .usingGroupMethods(groupMethods)
-              .usingInstance(instance)
-              .build();
-          List<ITestResult> parallel = runInParallel(
-              arguments, context, suite, invocationCount, failure, allParameterValues);
-          result.addAll(parallel);
-        } else {
-          int parametersIndex = 0;
-          while (allParameterValues.hasNext()) {
-            Object[] next = allParameterValues.next();
-            if (next == null) {
-              // skipped value
-              parametersIndex++;
-              continue;
-            }
-            Object[] parameterValues =
-                Parameters.injectParameters(
-                    next, testMethod.getConstructorOrMethod().getMethod(), context);
-
-            List<ITestResult> tmpResults = Lists.newArrayList();
-            int tmpResultsIndex = -1;
-            TestMethodArguments arguments = new Builder()
-                .usingInstance(instance)
-                .forTestMethod(testMethod)
-                .withParameterValues(parameterValues)
-                .withParametersIndex(parametersIndex)
-                .withParameters(parameters)
-                .forTestClass(testClass)
-                .usingBeforeMethods(beforeMethods)
-                .usingAfterMethods(afterMethods)
-                .usingGroupMethods(groupMethods)
-                .build();
-            try {
-              tmpResults.add(invokeTestMethod(arguments, suite, failure));
-              tmpResultsIndex++;
-            } finally {
-              boolean lastSucces = false;
-              if (tmpResultsIndex >= 0) {
-                lastSucces = (tmpResults.get(tmpResultsIndex).getStatus() == ITestResult.SUCCESS);
-              }
-              if (failure.instances.isEmpty() || lastSucces) {
-                result.addAll(tmpResults);
-              } else {
-                List<ITestResult> retryResults = Lists.newArrayList();
-                failure = retryFailed(arguments, retryResults, failure.count, context);
-                result.addAll(retryResults);
-              }
-
-              // If we have a failure, skip all the
-              // other invocationCounts
-              if (failure.count > 0
-                  && (m_skipFailedInvocationCounts || testMethod.skipFailedInvocations())) {
-                while (invocationCount-- > 0) {
-                  ITestResult r = registerSkippedTestResult(testMethod, System.currentTimeMillis(),
-                      null);
-                  result.add(r);
-                  InvokedMethod invokedMethod =
-                      new InvokedMethod(r.getInstance(), testMethod, System.currentTimeMillis(), r);
-                  invokeListenersForSkippedTestResult(r, invokedMethod);
-                }
-              }
-            } // end finally
-            parametersIndex++;
-          }
-        }
-      } catch (Throwable cause) {
-        ITestResult r =
-            TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, cause, start);
-        r.setStatus(TestResult.FAILURE);
-        result.add(r);
-        runTestResultListener(r);
-        m_notifier.addFailedTest(testMethod, r);
-      } // catch
+      invocationCount = agent.invoke(invocationCount);
     }
 
-    return result;
-  }
-
-  private List<ITestResult> runInParallel(
-      TestMethodArguments arguments, ITestContext context,
-      XmlSuite suite,
-      int invocationCount,
-      FailureContext failure,
-      Iterator<Object[]> allParameterValues) {
-    List<ITestResult> result = Lists.newArrayList();
-    List<TestMethodWithDataProviderMethodWorker> workers = Lists.newArrayList();
-    int parametersIndex = 0;
-    while (allParameterValues.hasNext()) {
-      Object[] next = allParameterValues.next();
-      if (next == null) {
-        // skipped value
-        parametersIndex += 1;
-        continue;
-      }
-      Object[] parameterValues =
-          Parameters.injectParameters(
-              next, arguments.getTestMethod().getConstructorOrMethod().getMethod(), context);
-
-      TestMethodWithDataProviderMethodWorker w =
-          new TestMethodWithDataProviderMethodWorker(
-              this, arguments.getTestMethod(),
-              parametersIndex,
-              parameterValues,
-              arguments.getInstance(),
-              arguments.getParameters(),
-              arguments.getTestClass(),
-              arguments.getBeforeMethods(),
-              arguments.getAfterMethods(),
-              arguments.getGroupMethods(),
-              context,
-              m_skipFailedInvocationCounts,
-              invocationCount,
-              failure.count,
-              m_notifier);
-      workers.add(w);
-      // testng387: increment the param index in the bag.
-      parametersIndex += 1;
-    }
-    PoolService<List<ITestResult>> ps = new PoolService<>(suite.getDataProviderThreadCount());
-    List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
-    for (List<ITestResult> l2 : r) {
-      result.addAll(l2);
-    }
-    return result;
+    return agent.getResult();
   }
 
   /**
@@ -542,7 +402,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
   }
 
-  private void invokeListenersForSkippedTestResult(ITestResult r, InvokedMethod invokedMethod) {
+  public void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod) {
     if (m_configuration.alwaysRunListeners()) {
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, r);
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, r);
@@ -801,7 +661,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     invoker.invokeConfigurations(cfgArgs);
   }
 
-  private ITestResult registerSkippedTestResult(
+  public ITestResult registerSkippedTestResult(
       ITestNGMethod testMethod, long start, Throwable throwable) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
@@ -861,5 +721,79 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return testResult.getStatus();
   }
 
+  private class MethodInvocationAgent {
 
+    private final ITestContext context;
+    private final List<ITestResult> result = Lists.newArrayList();
+    private final FailureContext failure = new FailureContext();
+    private final ITestInvoker invoker;
+    private final TestMethodArguments arguments;
+
+    public MethodInvocationAgent(TestMethodArguments arguments, ITestInvoker invoker, ITestContext context) {
+      this.arguments = arguments;
+      this.invoker = invoker;
+      this.context = context;
+    }
+
+    public List<ITestResult> getResult() {
+      return result;
+    }
+
+    public int invoke(int invCount) {
+      AtomicInteger invocationCount = new AtomicInteger(invCount);
+      long start = System.currentTimeMillis();
+
+      Map<String, String> allParameterNames = Maps.newHashMap();
+      ParameterHandler handler = new ParameterHandler(annotationFinder(), m_dataproviderListeners);
+
+      ParameterBag bag = handler.createParameters(
+          arguments.getTestMethod(),
+          arguments.getParameters(),
+          allParameterNames,
+          context,
+          arguments.getInstance());
+
+      if (bag.hasErrors()) {
+        ITestResult tr = bag.errorResult;
+        Throwable throwable = Objects.requireNonNull(tr).getThrowable();
+        if (throwable instanceof TestNGException) {
+          tr.setStatus(ITestResult.FAILURE);
+          m_notifier.addFailedTest(arguments.getTestMethod(), tr);
+        } else {
+          tr.setStatus(ITestResult.SKIP);
+          m_notifier.addSkippedTest(arguments.getTestMethod(), tr);
+        }
+        runTestResultListener(tr);
+        result.add(tr);
+        return invocationCount.get();
+      }
+
+      Iterator<Object[]> allParameterValues = Objects.requireNonNull(bag.parameterHolder).parameters;
+
+      try {
+
+        IMethodRunner runner = this.invoker.getRunner();
+        if (bag.runInParallel()) {
+          List<ITestResult> parallel = runner.runInParallel(arguments,
+              this.invoker, context, invocationCount, failure,
+              allParameterValues, m_skipFailedInvocationCounts);
+          result.addAll(parallel);
+        } else {
+          List<ITestResult> sequential = runner.runInSequence(arguments,
+              this.invoker, context, invocationCount, failure,
+              allParameterValues, m_skipFailedInvocationCounts);
+          result.addAll(sequential);
+        }
+      } catch (Throwable cause) {
+        ITestResult r =
+            TestResult.newEndTimeAwareTestResult(arguments.getTestMethod(), m_testContext, cause, start);
+        r.setStatus(TestResult.FAILURE);
+        result.add(r);
+        runTestResultListener(r);
+        m_notifier.addFailedTest(arguments.getTestMethod(), r);
+      } // catch
+      return invocationCount.get();
+    }
+
+  }
 }

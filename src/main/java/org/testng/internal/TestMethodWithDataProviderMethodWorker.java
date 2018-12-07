@@ -27,13 +27,13 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private boolean m_skipFailedInvocationCounts;
   private int m_invocationCount;
   private final ITestResultNotifier m_notifier;
-  private final TestInvoker m_testInvoker;
+  private final ITestInvoker m_testInvoker;
 
   private final List<ITestResult> m_testResults = Lists.newArrayList();
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(
-      TestInvoker testInvoker, ITestNGMethod testMethod,
+      ITestInvoker testInvoker, ITestNGMethod testMethod,
       int parameterIndex,
       Object[] parameterValues,
       Object instance,
