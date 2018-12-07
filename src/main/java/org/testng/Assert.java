@@ -1280,7 +1280,7 @@ public class Assert {
       }
     }
 
-    if (expected.size() > actual.size()) {
+    if (expected.size() != actual.size()) {
       if (message == null) {
         fail("Sets not equal: expected: " + expected + " and actual: " + actual);
       } else {

@@ -191,8 +191,8 @@ public class ArrayEqualityAssertTest {
     assertEqualsDeep(set, setCopy, "arrays inside sets are compared by value in assertEqualsDeep");
   }
 
-  @Test
-  public void arrayDeepInSetsAssertEquals() {
+  @Test(expectedExceptions = AssertionError.class)
+  public void arrayDeepInSetsAssertEqualsForExpectedLessThanActual() {
     Set<String> actual = new HashSet<>();
     actual.add("42");
     actual.add("43");
@@ -203,7 +203,7 @@ public class ArrayEqualityAssertTest {
   }
 
   @Test(expectedExceptions = AssertionError.class)
-  public void arrayDeepInSetsAssertEqualsFailure() {
+  public void arrayDeepInSetsAssertEqualsForActualLessThanExpected() {
     Set<String> actual = new HashSet<>();
     actual.add("42");
     Set<String> expected = new HashSet<>();
