@@ -117,15 +117,17 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMthdInst : m_methodInstances) {
       ITestNGMethod testMethod = testMthdInst.getMethod();
-      ITestClass testClass = testMethod.getTestClass();
-
-      invokeBeforeClassMethods(testClass, testMthdInst);
+      if (canInvokeBeforeClassMethods()) {
+        synchronized (testMethod.getTestClass()) {
+          invokeBeforeClassMethods(testMethod.getTestClass(), testMthdInst);
+        }
+      }
 
       // Invoke test method
       try {
         invokeTestMethods(testMethod, testMthdInst.getInstance());
       } finally {
-        invokeAfterClassMethods(testClass, testMthdInst);
+        invokeAfterClassMethods(testMethod.getTestClass(), testMthdInst);
       }
     }
   }
@@ -148,41 +150,30 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
+  private boolean canInvokeBeforeClassMethods() {
+    return m_classMethodMap != null;
+  }
+
   /** Invoke the @BeforeClass methods if not done already */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    // if no BeforeClass than return immediately
-    // used for parallel case when BeforeClass were already invoked
-    if (m_classMethodMap == null) {
-      return;
-    }
-
-    // the whole invocation must be synchronized as other threads must
-    // get a full initialized test object (not the same for @After)
-    // Synchronization on local variables is generally considered a bad practice, but this is an
-    // exception.
-    // We need to ensure that two threads that are querying for the same "Class" then they
-    // should be mutually exclusive. In all other cases, parallelism can be allowed.
-    // DO NOT REMOVE THIS SYNC LOCK.
-    synchronized (testClass) { // NOSONAR
-      Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
-          m_classMethodMap.getInvokedBeforeClassMethods();
-      Set<Object> instances =
-          invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
-      Object instance = mi.getInstance();
-      if (!instances.contains(instance)) {
-        instances.add(instance);
-        for (IClassListener listener : m_listeners) {
-          listener.onBeforeClass(testClass);
-        }
-        ConfigMethodArguments attributes = new Builder()
-            .forTestClass(testClass)
-            .usingConfigMethodsAs(testClass.getBeforeClassMethods())
-            .forSuite(m_testContext.getSuite().getXmlSuite())
-            .usingParameters(m_parameters)
-            .usingInstance(instance)
-            .build();
-        m_configInvoker.invokeConfigurations(attributes);
+    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
+        m_classMethodMap.getInvokedBeforeClassMethods();
+    Set<Object> instances =
+        invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
+    Object instance = mi.getInstance();
+    if (!instances.contains(instance)) {
+      instances.add(instance);
+      for (IClassListener listener : m_listeners) {
+        listener.onBeforeClass(testClass);
       }
+      ConfigMethodArguments attributes = new Builder()
+          .forTestClass(testClass)
+          .usingConfigMethodsAs(testClass.getBeforeClassMethods())
+          .forSuite(m_testContext.getSuite().getXmlSuite())
+          .usingParameters(m_parameters)
+          .usingInstance(instance)
+          .build();
+      m_configInvoker.invokeConfigurations(attributes);
     }
   }
 
