@@ -132,6 +132,9 @@ test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
+    options {
+        listeners.add("org.testng.reporters.FailedInformationOnConsoleReporter")
+    }
     testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
