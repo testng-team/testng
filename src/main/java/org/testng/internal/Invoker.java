@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import java.util.function.BiPredicate;
 import org.testng.IClass;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
@@ -26,10 +27,10 @@ import org.testng.xml.XmlSuite;
 public class Invoker implements IInvoker {
 
   /** Predicate to filter methods */
-  static final Predicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS =
-      new CanRunFromClassPredicate();
+  static final BiPredicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS = ITestNGMethod::canRunFromClass;
   /** Predicate to filter methods */
-  static final Predicate<ITestNGMethod, IClass> SAME_CLASS = new SameClassNamePredicate();
+  static final BiPredicate<ITestNGMethod, IClass> SAME_CLASS =
+      (m, c) -> c == null || m.getTestClass().getName().equals(c.getName());
 
   private final TestInvoker m_testInvoker;
   private final ConfigInvoker m_configInvoker;
@@ -107,24 +108,6 @@ public class Invoker implements IInvoker {
       ITestContext testContext) {
     return m_testInvoker
         .invokeTestMethods(testMethod, groupMethods, instance, testContext);
-  }
-
-  interface Predicate<K, T> {
-    boolean isTrue(K k, T v);
-  }
-
-  static class CanRunFromClassPredicate implements Predicate<ITestNGMethod, IClass> {
-    @Override
-    public boolean isTrue(ITestNGMethod m, IClass v) {
-      return m.canRunFromClass(v);
-    }
-  }
-
-  static class SameClassNamePredicate implements Predicate<ITestNGMethod, IClass> {
-    @Override
-    public boolean isTrue(ITestNGMethod m, IClass c) {
-      return c == null || m.getTestClass().getName().equals(c.getName());
-    }
   }
 
   static void log(int level, String s) {
