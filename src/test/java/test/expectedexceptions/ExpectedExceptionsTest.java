@@ -42,7 +42,5 @@ public class ExpectedExceptionsTest extends BaseTest {
     String expected =
         "The exception was thrown with the wrong message: expected \"expected\" but got \"actual\"";
     Assert.assertEquals(actual, expected);
-    result = getPassedTests().values().iterator().next().get(0);
-    Assert.assertNull(result.getThrowable());
   }
 }

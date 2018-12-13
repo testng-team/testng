@@ -7,10 +7,4 @@ public class TestClassSample {
   public void test() {
     throw new RuntimeException("actual");
   }
-
-  @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "actual")
-  public void passingTest() {
-    throw new RuntimeException("actual");
-  }
-
 }
