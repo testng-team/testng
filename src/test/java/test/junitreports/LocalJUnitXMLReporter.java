@@ -6,7 +6,6 @@ import org.testng.reporters.JUnitXMLReporter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +16,7 @@ public class LocalJUnitXMLReporter extends JUnitXMLReporter implements Testsuite
         super.generateReport(context);
         String dir = context.getOutputDirectory();
         File directory = new File(dir);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".xml");
-            }
-        });
+        File[] files = directory.listFiles((dir1, name) -> name.endsWith(".xml"));
         testsuites.addAll(getSuites(files));
     }
 

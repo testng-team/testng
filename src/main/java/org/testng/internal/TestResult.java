@@ -11,6 +11,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestNGException;
+import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 
@@ -101,27 +102,39 @@ public class TestResult implements ITestResult {
     // toString() if it's been overridden.
     if (instance == null) {
       m_name = m_method.getMethodName();
-    } else {
-      if (instance instanceof ITest) {
-        m_name = ((ITest) instance).getTestName();
-      } else if (method.getTestClass().getTestName() != null) {
-        m_name = method.getTestClass().getTestName();
-      } else {
-        String string = instance.toString();
-        // Only display toString() if it's been overridden by the user
-        m_name = getMethod().getMethodName();
-        try {
-          if (!Object.class
-              .getMethod("toString")
-              .equals(instance.getClass().getMethod("toString"))) {
-            m_instanceName =
-                string.startsWith("class ") ? string.substring("class ".length()) : string;
-            m_name = m_name + " on " + m_instanceName;
-          }
-        } catch (NoSuchMethodException ignore) {
-          // ignore
-        }
+      return;
+    }
+    if (instance instanceof ITest) {
+      m_name = ((ITest) instance).getTestName();
+      if (m_name != null) {
+        return;
       }
+      m_name = m_method.getMethodName();
+      if (TestRunner.getVerbose() > 1) {
+        String msg = String.format(
+            "Warning: [%s] implementation on class [%s] returned null. Defaulting to method name",
+            ITest.class.getName(), instance.getClass().getName());
+        System.err.println(msg);
+      }
+      return;
+    }
+    if (method.getTestClass().getTestName() != null) {
+      m_name = method.getTestClass().getTestName();
+      return;
+    }
+    String string = instance.toString();
+    // Only display toString() if it's been overridden by the user
+    m_name = getMethod().getMethodName();
+    try {
+      if (!Object.class
+          .getMethod("toString")
+          .equals(instance.getClass().getMethod("toString"))) {
+        m_instanceName =
+            string.startsWith("class ") ? string.substring("class ".length()) : string;
+        m_name = m_name + " on " + m_instanceName;
+      }
+    } catch (NoSuchMethodException ignore) {
+      // ignore
     }
   }
 
