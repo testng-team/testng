@@ -689,7 +689,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (exceptionsHolder != null) {
         if (exceptionsHolder.isExpectedException(ite)) {
           testresult.setStatus(ITestResult.SUCCESS);
-          testresult.setThrowable(null);
           holder.status = ITestResult.SUCCESS;
         } else {
           if (isSkipExceptionAndSkip(ite)) {
