@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-993:  Handle null test names from ITest implementation (Krishnan Mahadevan)
 Fixed: GITHUB-1942: assertDeepEquals takes long time to evaluate size mismatch (Kumaran Bharathan)
 Fixed: GITHUB-1967: IInvokedMethod ITestResult status set as -1 for test methods skipped due to config failure (Krishnan Mahadevan)
 Fixed: GITHUB-1952: Provide a TestNGListener that can be invoked when a test fails due to a timeout (Krishnan Mahadevan)
