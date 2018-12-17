@@ -531,7 +531,7 @@ public class TestRunner
             false /* unique */,
             m_excludedMethods,
             comparator);
-    m_classMethodMap = new ClassMethodMap(testMethods, m_xmlMethodSelector);
+    m_classMethodMap = new ClassMethodMap(Arrays.asList(m_allTestMethods), m_xmlMethodSelector);
 
     m_afterXmlTestMethods =
         MethodHelper.collectAndOrderMethods(
