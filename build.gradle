@@ -120,6 +120,7 @@ jar {
             '!org.testng.*',
             '!com.sun.*',
             '*'
+        instruction 'Automatic-Module-Name', 'org.testng'
     }
 }
 
