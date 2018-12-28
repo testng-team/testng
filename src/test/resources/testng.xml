@@ -121,6 +121,7 @@
       <class name="test.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.configuration.github1700.RunTest"/>
+      <class name="test.aftergroups.AfterGroupsBehaviorTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
@@ -189,7 +190,6 @@
       <class name="test.github1490.VerifyDataProviderListener"/>      
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
-      <class name="test.aftergroups.issue1880.IssueTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>
     </classes>
   </test>

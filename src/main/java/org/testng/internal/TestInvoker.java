@@ -31,6 +31,7 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.GroupConfigMethodArguments.Builder;
 import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.ParameterHandler.ParameterBag;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -81,6 +82,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       return Collections.emptyList();
     }
 
+    Map<String, String> parameters = testMethod.findMethodParameters(context.getCurrentXmlTest());
     // By the time this testMethod to be invoked,
     // all dependencies should be already run or we need to skip this method,
     // so invocation count should not affect dependencies check
@@ -97,12 +99,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       InvokedMethod invokedMethod = new InvokedMethod(result.getInstance(), testMethod,
           System.currentTimeMillis(), result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
-
+      testMethod.incrementCurrentInvocationCount();
+      GroupConfigMethodArguments args = new Builder()
+          .forTestMethod(testMethod)
+          .withGroupConfigMethods(groupMethods)
+          .forSuite(suite)
+          .forInstance(instance)
+          .withParameters(parameters)
+          .build();
+      this.invoker.invokeAfterGroupsConfigurations(args);
       return Collections.singletonList(result);
     }
 
-    Map<String, String> parameters =
-        testMethod.findMethodParameters(context.getCurrentXmlTest());
 
     // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.
     if (testMethod.getInvocationCount() > 1 && testMethod.getThreadPoolSize() > 1) {
