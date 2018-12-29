@@ -341,25 +341,20 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
-    //
-    // Init groups
-    //
-    {
-      ITestOrConfiguration annotation =
-          getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-      ITestOrConfiguration classAnnotation =
-          getAnnotationFinder()
-              .findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
-
-      setGroups(
-          getStringArray(
-              null != annotation ? annotation.getGroups() : null,
-              null != classAnnotation ? classAnnotation.getGroups() : null));
+    ITestOrConfiguration annotation =
+        getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+    Object object = getInstance();
+    Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
+    if (object != null) {
+      clazz = object.getClass();
     }
+    ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(clazz, annotationClass);
 
-    //
-    // Init groups depended upon
-    //
+    setGroups(
+        getStringArray(
+            null != annotation ? annotation.getGroups() : null,
+            null != classAnnotation ? classAnnotation.getGroups() : null));
+
     initRestOfGroupDependencies(annotationClass);
   }
 
