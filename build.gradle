@@ -53,6 +53,7 @@ version = '7.0.0-SNAPSHOT'
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'jacoco'
+apply plugin: 'maven'
 apply plugin: 'osgi'
 apply plugin: 'version-injection'
 apply plugin: 'eclipse'
@@ -155,6 +156,27 @@ sonarqube {
         property "sonar.host.url", "https://sonarcloud.io/"
         property "sonar.github.repository", "cbeust/testng"
         property "sonar.github.login", "testng-bot"
+    }
+}
+
+// add all the info required by Maven Central to the pom
+configure(install.repositories.mavenInstaller) {
+    pom.project {
+
+        url 'https://testng.org'
+        description 'TestNG is a testing framework'
+
+        scm {
+            connection 'git@github.com:cbeust/testng.git'
+            url 'https://github.com/cbeust/testng'
+        }
+
+        licenses {
+            license {
+                name 'Apache License'
+                url 'http://apache.org/licenses/LICENSE-2.0'
+            }
+        }
     }
 }
 
