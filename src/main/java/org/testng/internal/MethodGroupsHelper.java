@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -134,7 +137,10 @@ public class MethodGroupsHelper {
     for (ITestClass cls : classes) {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
-        for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
+        String[] grp = before ? method.getBeforeGroups() : method.getAfterGroups();
+        List<String> groups = Stream.concat(Arrays.stream(grp), Arrays.stream(method.getGroups()))
+            .collect(Collectors.toList());
+        for (String group : groups) {
           List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> Lists.newArrayList());
           // NOTE(cbeust, 2007/01/23)
           // BeforeGroups/AfterGroups methods should only be invoked once.
