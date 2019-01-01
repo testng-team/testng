@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-165: @AfterGroups is not executed when group member fails or is skipped (Krishnan Mahadevan)
 Fixed: GITHUB-118: @BeforeGroups only called if group is specified explicitly (Krishnan Mahadevan)
 Fixed: GITHUB-182: Inherited test methods do not get expected group behavior (Krishnan Mahadevan)
 Fixed: GITHUB-1988: Add Automatic-Module-Name to MANIFEST.MF (Krishnan Mahadevan)
