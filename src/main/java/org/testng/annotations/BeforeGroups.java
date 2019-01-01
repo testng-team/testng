@@ -54,7 +54,7 @@ public @interface BeforeGroups {
    * If true, this &#64;Configuration method will belong to groups specified in the &#64;Test
    * annotation on the class (if any).
    */
-  boolean inheritGroups() default true;
+  boolean inheritGroups() default false;
 
   /**
    * The description for this method. The string used will appear in the HTML report and also on
