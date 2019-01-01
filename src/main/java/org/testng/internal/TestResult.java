@@ -12,6 +12,7 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
+import org.testng.annotations.SkipCloning;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 
@@ -276,7 +277,7 @@ public class TestResult implements ITestResult {
     m_parameters = new Object[parameters.length];
     for (int i = 0; i < parameters.length; i++) {
       // Copy parameter if possible because user may change it later
-      if (parameters[i] instanceof Cloneable) {
+      if (canAttemptCloning(parameters[i]) ) {
         try {
           Method clone = parameters[i].getClass().getDeclaredMethod("clone");
           m_parameters[i] = clone.invoke(parameters[i]);
@@ -290,6 +291,17 @@ public class TestResult implements ITestResult {
         m_parameters[i] = parameters[i];
       }
     }
+  }
+
+  private static boolean canAttemptCloning(Object parameter) {
+    if (parameter == null) {
+      return false;
+    }
+    SkipCloning skipCloning = parameter.getClass().getAnnotation(SkipCloning.class);
+    if (skipCloning != null) {
+      return false;
+    }
+    return parameter instanceof Cloneable;
   }
 
   @Override

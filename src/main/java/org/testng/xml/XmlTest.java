@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.testng.TestNG;
 import org.testng.TestNGException;
+import org.testng.annotations.SkipCloning;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.dom.ParentSetter;
@@ -16,6 +17,7 @@ import org.testng.xml.dom.ParentSetter;
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /** This class describes the tag &lt;test&gt; in testng.xml. */
+@SkipCloning
 public class XmlTest implements Cloneable {
 
   public static final int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
