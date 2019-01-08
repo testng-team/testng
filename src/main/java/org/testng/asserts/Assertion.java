@@ -743,4 +743,21 @@ public class Assertion implements IAssertLifecycle {
           }
         });
   }
+
+  /***
+   * Override this method should you want to change
+   * the default way Throwable objects are logged.
+   * @param error Throwable of the Assertion
+   * @return default throwable formatted message for TestNG
+   */
+  protected String getErrorDetails(Throwable error) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(error.getMessage());
+    Throwable cause = error.getCause();
+    while (cause != null) {
+      sb.append(" ").append(cause.getMessage());
+      cause = cause.getCause();
+    }
+    return sb.toString();
+  }
 }
