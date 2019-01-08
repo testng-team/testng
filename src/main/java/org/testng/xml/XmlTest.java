@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import org.testng.TestNG;
 import org.testng.TestNGException;
+import org.testng.annotations.SkipCloning;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.dom.ParentSetter;
@@ -16,6 +17,7 @@ import org.testng.xml.dom.ParentSetter;
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /** This class describes the tag &lt;test&gt; in testng.xml. */
+@SkipCloning
 public class XmlTest implements Cloneable {
 
   public static final int DEFAULT_TIMEOUT_MS = Integer.MAX_VALUE;
@@ -74,6 +76,31 @@ public class XmlTest implements Cloneable {
 
   // For YAML
   public XmlTest() {}
+
+  /**
+   * This constructor acts as a copy constructor. Please note that it does not automatically
+   * associate the copied {@link XmlTest} object with the current {@link XmlSuite} object and
+   * requires it to be done explicitly.
+   *
+   * @param xmlTest - The {@link XmlTest} object to copy from.
+   */
+  public XmlTest(XmlTest xmlTest) {
+    XmlTest result = new XmlTest();
+    result.setName(getName());
+    result.setIncludedGroups(getIncludedGroups());
+    result.setExcludedGroups(getExcludedGroups());
+    result.setJUnit(isJUnit());
+    result.setParallel(getParallel());
+    result.setVerbose(getVerbose());
+    result.setParameters(getLocalParameters());
+    result.setXmlPackages(getXmlPackages());
+    result.setTimeOut(getTimeOut());
+
+    Map<String, List<String>> metagroups = getMetaGroups();
+    for (Map.Entry<String, List<String>> group : metagroups.entrySet()) {
+      result.addMetaGroup(group.getKey(), group.getValue());
+    }
+  }
 
   public void setXmlPackages(List<XmlPackage> packages) {
     m_xmlPackages = Lists.newArrayList(packages);
@@ -482,8 +509,11 @@ public class XmlTest implements Cloneable {
    * <p>The &lt;classes&gt; sub element is ignored for the moment.
    *
    * @return a clone of the current XmlTest
+   * @Deprecated - This method stands deprecated as of TestNG 7.0.0. Please make use of
+   * {@link XmlTest#XmlTest(XmlTest)} instead.
    */
   @Override
+  @Deprecated
   public Object clone() {
     XmlTest result = new XmlTest(getSuite());
 

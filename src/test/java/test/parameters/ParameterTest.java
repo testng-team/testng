@@ -1,6 +1,5 @@
 package test.parameters;
 
-import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -15,6 +14,7 @@ import test.SimpleBaseTest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import test.parameters.issue1994.TestclassSample;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -129,5 +129,13 @@ public class ParameterTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
     assertThat(listener.getPassedTests().isEmpty()).isFalse();
+  }
+
+  @Test(description = "GITHUB-1994")
+  public void testToEnsureNativeInjectionDoesnotResortToCloning() {
+    XmlSuite xmlsuite = createXmlSuite("suite", "test", TestclassSample.class);
+    TestNG testng = create(xmlsuite);
+    testng.run();
+    assertThat(TestclassSample.count).isEqualTo(1);
   }
 }
