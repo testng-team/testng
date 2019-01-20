@@ -1,1 +1,3 @@
 rootProject.name = 'testng'
+enableFeaturePreview('STABLE_PUBLISHING')
+
