@@ -39,6 +39,8 @@ buildScan {
         publishOnFailure()
         tag 'CI'
     }
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 task wrappper(type: Wrapper) {
