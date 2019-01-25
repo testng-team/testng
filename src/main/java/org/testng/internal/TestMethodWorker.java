@@ -9,6 +9,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.thread.graph.IWorker;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
   private List<IMethodInstance> m_methodInstances;
-  private final IInvoker m_invoker;
   private final Map<String, String> m_parameters;
   private List<ITestResult> m_testResults = Lists.newArrayList();
   private final ConfigurationGroupMethods m_groupMethods;
@@ -42,16 +42,20 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private long currentThreadId;
   private long threadIdToRunOn = -1;
   private boolean completed = true;
+  private final ITestInvoker m_testInvoker;
+  private final IConfigInvoker m_configInvoker;
 
   public TestMethodWorker(
-      IInvoker invoker,
+      ITestInvoker testInvoker,
+      IConfigInvoker configInvoker,
       List<IMethodInstance> testMethods,
       Map<String, String> parameters,
       ConfigurationGroupMethods groupMethods,
       ClassMethodMap classMethodMap,
       ITestContext testContext,
       List<IClassListener> listeners) {
-    m_invoker = invoker;
+    this.m_testInvoker = testInvoker;
+    this.m_configInvoker = configInvoker;
     m_methodInstances = testMethods;
     m_parameters = parameters;
     m_groupMethods = groupMethods;
@@ -113,15 +117,17 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMthdInst : m_methodInstances) {
       ITestNGMethod testMethod = testMthdInst.getMethod();
-      ITestClass testClass = testMethod.getTestClass();
-
-      invokeBeforeClassMethods(testClass, testMthdInst);
+      if (canInvokeBeforeClassMethods()) {
+        synchronized (testMethod.getTestClass()) {
+          invokeBeforeClassMethods(testMethod.getTestClass(), testMthdInst);
+        }
+      }
 
       // Invoke test method
       try {
         invokeTestMethods(testMethod, testMthdInst.getInstance());
       } finally {
-        invokeAfterClassMethods(testClass, testMthdInst);
+        invokeAfterClassMethods(testMethod.getTestClass(), testMthdInst);
       }
     }
   }
@@ -137,47 +143,37 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // are unpredictable...  Need to think about this more (and make it
     // more efficient)
     List<ITestResult> testResults =
-        m_invoker.invokeTestMethods(tm, m_parameters, m_groupMethods, instance, m_testContext);
+        m_testInvoker.invokeTestMethods(tm, m_groupMethods, instance, m_testContext);
 
     if (testResults != null) {
       m_testResults.addAll(testResults);
     }
   }
 
+  private boolean canInvokeBeforeClassMethods() {
+    return m_classMethodMap != null;
+  }
+
   /** Invoke the @BeforeClass methods if not done already */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
-    // if no BeforeClass than return immediately
-    // used for parallel case when BeforeClass were already invoked
-    if (m_classMethodMap == null) {
-      return;
-    }
-
-    // the whole invocation must be synchronized as other threads must
-    // get a full initialized test object (not the same for @After)
-    // Synchronization on local variables is generally considered a bad practice, but this is an
-    // exception.
-    // We need to ensure that two threads that are querying for the same "Class" then they
-    // should be mutually exclusive. In all other cases, parallelism can be allowed.
-    // DO NOT REMOVE THIS SYNC LOCK.
-    synchronized (testClass) { // NOSONAR
-      Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
-          m_classMethodMap.getInvokedBeforeClassMethods();
-      Set<Object> instances =
-          invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
-      Object instance = mi.getInstance();
-      if (!instances.contains(instance)) {
-        instances.add(instance);
-        for (IClassListener listener : m_listeners) {
-          listener.onBeforeClass(testClass);
-        }
-        m_invoker.invokeConfigurations(
-            testClass,
-            testClass.getBeforeClassMethods(),
-            m_testContext.getSuite().getXmlSuite(),
-            m_parameters,
-            null, /* no parameter values */
-            instance);
+    Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
+        m_classMethodMap.getInvokedBeforeClassMethods();
+    Set<Object> instances =
+        invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
+    Object instance = mi.getInstance();
+    if (!instances.contains(instance)) {
+      instances.add(instance);
+      for (IClassListener listener : m_listeners) {
+        listener.onBeforeClass(testClass);
       }
+      ConfigMethodArguments attributes = new Builder()
+          .forTestClass(testClass)
+          .usingConfigMethodsAs(testClass.getBeforeClassMethods())
+          .forSuite(m_testContext.getSuite().getXmlSuite())
+          .usingParameters(m_parameters)
+          .usingInstance(instance)
+          .build();
+      m_configInvoker.invokeConfigurations(attributes);
     }
   }
 
@@ -211,13 +207,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       listener.onAfterClass(testClass);
     }
     for (Object invokeInstance : invokeInstances) {
-      m_invoker.invokeConfigurations(
-          testClass,
-          testClass.getAfterClassMethods(),
-          m_testContext.getSuite().getXmlSuite(),
-          m_parameters,
-          null, /* no parameter values */
-          invokeInstance);
+      ConfigMethodArguments attributes = new Builder()
+          .forTestClass(testClass)
+          .usingConfigMethodsAs(testClass.getAfterClassMethods())
+          .forSuite(m_testContext.getSuite().getXmlSuite())
+          .usingParameters(m_parameters)
+          .usingInstance(invokeInstance)
+          .build();
+      m_configInvoker.invokeConfigurations(attributes);
     }
   }
 
@@ -245,7 +242,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   @Override
   public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
-    return getPriority() - other.getPriority();
+    if (m_methodInstances.isEmpty()) {
+        return 0;
+    }
+    List<ITestNGMethod> otherTasks = other.getTasks();
+    if (otherTasks.isEmpty()) {
+        return 0;
+    }
+    return TestMethodComparator.compareStatic(m_methodInstances.get(0).getMethod(), otherTasks.get(0));
   }
 
   /** The priority of a worker is the priority of the first method it's going to run. */
@@ -276,14 +280,14 @@ class SingleTestMethodWorker extends TestMethodWorker {
       new ConfigurationGroupMethods(new ITestNGMethod[0], new HashMap<>(), new HashMap<>());
 
   public SingleTestMethodWorker(
-      IInvoker invoker,
+      TestInvoker testInvoker,
+      ConfigInvoker configInvoker,
       IMethodInstance testMethod,
       Map<String, String> parameters,
       ITestContext testContext,
       List<IClassListener> listeners) {
     super(
-        invoker,
-        Collections.singletonList(testMethod),
+        testInvoker, configInvoker, Collections.singletonList(testMethod),
         parameters,
         EMPTY_GROUP_METHODS,
         null,

@@ -72,7 +72,8 @@ class ParameterHandler {
       if (Strings.isNotNullAndNotEmpty(msg)) {
         Utils.error(msg);
       }
-      ITestResult result = new TestResult(testMethod, cause, testContext);
+
+      ITestResult result = TestResult.newTestResultWithCauseAs(testMethod, testContext, cause);
       return new ParameterBag(result);
     }
   }

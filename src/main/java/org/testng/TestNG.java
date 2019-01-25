@@ -735,6 +735,8 @@ public class TestNG {
 
   private boolean m_randomizeSuites = Boolean.FALSE;
 
+  private boolean m_alwaysRun = Boolean.TRUE;
+
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
   private Boolean m_groupByInstances;
 
@@ -884,6 +886,7 @@ public class TestNG {
     m_configuration.setHookable(m_hookable);
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
+    m_configuration.setAlwaysRunListeners(this.m_alwaysRun);
   }
 
   private void addListeners(XmlSuite s) {
@@ -1089,7 +1092,8 @@ public class TestNG {
             m_suiteThreadPoolSize,
             Integer.MAX_VALUE,
             TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>());
+            new LinkedBlockingQueue<>(),
+            null);
 
     Utils.log("TestNG", 2, "Starting executor for all suites");
     // Run all suites in parallel
@@ -1272,7 +1276,9 @@ public class TestNG {
     //
     try {
       CommandLineArgs cla = new CommandLineArgs();
-      m_jCommander = new JCommander(cla, argv);
+
+      m_jCommander = new JCommander(cla);
+      m_jCommander.parse(argv);
       validateCommandLineParameters(cla);
       result.configure(cla);
     } catch (ParameterException ex) {
@@ -1407,6 +1413,7 @@ public class TestNG {
 
     setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
     setRandomizeSuites(cla.randomizeSuites);
+    alwaysRunListeners(cla.alwaysRunListeners);
   }
 
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
@@ -1419,6 +1426,10 @@ public class TestNG {
 
   public void setRandomizeSuites(boolean randomizeSuites) {
     m_randomizeSuites = randomizeSuites;
+  }
+
+  public void alwaysRunListeners(boolean alwaysRun) {
+    m_alwaysRun = alwaysRun;
   }
 
   /**

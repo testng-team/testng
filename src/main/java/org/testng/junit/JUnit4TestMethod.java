@@ -8,11 +8,10 @@ import org.testng.internal.Utils;
 public class JUnit4TestMethod extends JUnitTestMethod {
 
   public JUnit4TestMethod(JUnitTestClass owner, Description desc) {
-    super(owner, desc.getMethodName(), getMethod(desc), desc);
+    super(owner, desc.getMethodName(), getMethod(owner.getRealClass(), desc), desc);
   }
 
-  private static ConstructorOrMethod getMethod(Description desc) {
-    Class<?> c = desc.getTestClass();
+  private static ConstructorOrMethod getMethod(Class<?> c, Description desc) {
     String method = desc.getMethodName();
     if (JUnit4SpockMethod.isSpockClass(c)) {
       return new JUnit4SpockMethod(desc);

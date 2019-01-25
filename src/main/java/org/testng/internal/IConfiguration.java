@@ -33,4 +33,8 @@ public interface IConfiguration {
   List<IConfigurationListener> getConfigurationListeners();
 
   void addConfigurationListener(IConfigurationListener cl);
+
+  boolean alwaysRunListeners();
+
+  void setAlwaysRunListeners(boolean alwaysRun);
 }

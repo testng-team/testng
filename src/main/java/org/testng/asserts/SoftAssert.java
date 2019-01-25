@@ -37,12 +37,7 @@ public class SoftAssert extends Assertion {
           sb.append(",");
         }
         sb.append("\n\t");
-        sb.append(error.getMessage());
-        Throwable cause = error.getCause();
-        while (cause != null) {
-          sb.append(" ").append(cause.getMessage());
-          cause = cause.getCause();
-        }
+        sb.append(getErrorDetails(error));
       }
       throw new AssertionError(sb.toString());
     }

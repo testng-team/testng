@@ -20,6 +20,7 @@ public class Configuration implements IConfiguration {
       Maps.newHashMap();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
       m_configurationListeners = Maps.newHashMap();
+  private boolean alwaysRunListeners = true;
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -91,5 +92,15 @@ public class Configuration implements IConfiguration {
   @Override
   public void addConfigurationListener(IConfigurationListener cl) {
     m_configurationListeners.put(cl.getClass(), cl);
+  }
+
+  @Override
+  public void setAlwaysRunListeners(boolean alwaysRunListeners) {
+    this.alwaysRunListeners = alwaysRunListeners;
+  }
+
+  @Override
+  public boolean alwaysRunListeners() {
+    return alwaysRunListeners;
   }
 }

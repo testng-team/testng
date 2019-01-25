@@ -80,9 +80,11 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
       List<IMethodInstance> methodInstances,
       Map<String, String> params,
       Class<?> c) {
+    IInvoker invoker = attributes.getInvoker();
+    ITestInvoker testInvoker = invoker.getTestInvoker();
+    IConfigInvoker configInvoker = invoker.getConfigInvoker();
     return new TestMethodWorker(
-        attributes.getInvoker(),
-        findClasses(methodInstances, c),
+        testInvoker, configInvoker, findClasses(methodInstances, c),
         params,
         attributes.getConfigMethods(),
         attributes.getClassMethodMap(),

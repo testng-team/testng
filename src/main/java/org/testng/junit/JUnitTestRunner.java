@@ -111,8 +111,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     JUnitTestMethod tm = new JUnit3TestMethod(tc, test);
 
     org.testng.internal.TestResult tr =
-        new org.testng.internal.TestResult(
-            tc, tm, tri.m_failure, tri.m_start, Calendar.getInstance().getTimeInMillis(), null);
+        org.testng.internal.TestResult.newEndTimeAwareTestResult(tm, null,
+            tri.m_failure, tri.m_start);
 
     if (tri.isFailure()) {
       tr.setStatus(ITestResult.FAILURE);

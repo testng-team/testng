@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -275,6 +276,21 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
+  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    return testNGMethod.getRetryAnalyzer(result);
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    testNGMethod.setRetryAnalyzerClass(clazz);
+  }
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return testNGMethod.getRetryAnalyzerClass();
+  }
+
+  @Override
   public boolean skipFailedInvocations() {
     return testNGMethod.skipFailedInvocations();
   }
@@ -327,6 +343,16 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   @Override
   public void setPriority(int priority) {
     testNGMethod.setPriority(priority);
+  }
+
+  @Override
+  public int getInterceptedPriority() {
+    return testNGMethod.getInterceptedPriority();
+  }
+
+  @Override
+  public void setInterceptedPriority(int priority) {
+    testNGMethod.setInterceptedPriority(priority);
   }
 
   @Override

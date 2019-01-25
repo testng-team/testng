@@ -29,7 +29,7 @@ public class ParameterTest extends SimpleBaseTest {
     TestNG tng = create(suite);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
@@ -50,7 +50,7 @@ public class ParameterTest extends SimpleBaseTest {
     TestNG tng = create(suite);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
@@ -70,7 +70,7 @@ public class ParameterTest extends SimpleBaseTest {
     TestNG tng = create(suite);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
@@ -88,7 +88,7 @@ public class ParameterTest extends SimpleBaseTest {
     TestNG tng = create(suite);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener((ITestNGListener) listener);
+    tng.addListener(listener);
 
     tng.run();
 
@@ -103,7 +103,7 @@ public class ParameterTest extends SimpleBaseTest {
   public void testNativeInjection() {
     TestNG testng = create(Issue1061Sample.class);
     TestListenerAdapter listener = new TestListenerAdapter();
-    testng.addListener((ITestNGListener) listener);
+    testng.addListener(listener);
     testng.run();
     assertThat(listener.getFailedTests().size()).isEqualTo(2);
     String[] expectedMsgs = new String[]{
@@ -126,7 +126,7 @@ public class ParameterTest extends SimpleBaseTest {
     test.setParameters(params);
     TestNG testng = create(suite);
     TestListenerAdapter listener = new TestListenerAdapter();
-    testng.addListener((ITestNGListener) listener);
+    testng.addListener(listener);
     testng.run();
     assertThat(listener.getPassedTests().isEmpty()).isFalse();
   }

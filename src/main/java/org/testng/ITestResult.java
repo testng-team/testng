@@ -1,5 +1,9 @@
 package org.testng;
 
+import java.util.Collections;
+import java.util.List;
+import org.testng.internal.thread.ThreadTimeoutException;
+
 /**
  * This class describes the result of a test.
  *
@@ -65,6 +69,12 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   Object getInstance();
 
   /**
+   * @return - A parameter array that was passed to a factory method (or) an empty object array
+   * otherwise.
+   */
+  Object[] getFactoryParameters();
+
+  /**
    * If this result's related instance implements ITest or use @Test(testName=...), returns its test
    * name, otherwise returns null.
    */
@@ -88,4 +98,28 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @param wasRetried - <code>true</code> if the test was retried and <code>false</code> otherwise.
    */
   void setWasRetried(boolean wasRetried);
+
+  /**
+   * @return - The list of either upstream method(s) or configuration method(s) whose failure led to
+   * the current method being skipped. An empty list is returned when the current method is not
+   * a skipped method.
+   */
+  default List<ITestNGMethod> getSkipCausedBy() {
+    return Collections.emptyList();
+  }
+
+  /**
+   * @param result - The test result of a method
+   * @return - <code>true</code> if the test failure was due to a timeout.
+   */
+  static boolean wasFailureDueToTimeout(ITestResult result) {
+    Throwable cause = result.getThrowable();
+    while (cause != null && !cause.getClass().equals(Throwable.class)) {
+      if (cause instanceof ThreadTimeoutException) {
+        return true;
+      }
+      cause = cause.getCause();
+    }
+    return false;
+  }
 }

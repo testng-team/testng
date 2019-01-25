@@ -79,10 +79,6 @@ public class AnnotationHelper {
     return finder.findAnnotation(c, IFactoryAnnotation.class);
   }
 
-  public static ITestAnnotation findTest(IAnnotationFinder finder, Constructor ctor) {
-    return finder.findAnnotation(ctor, ITestAnnotation.class);
-  }
-
   public static IConfigurationAnnotation findConfiguration(
       IAnnotationFinder finder, ConstructorOrMethod m) {
     IConfigurationAnnotation result = null;
@@ -121,11 +117,6 @@ public class AnnotationHelper {
     }
 
     return result;
-  }
-
-  public static IConfigurationAnnotation findConfiguration(
-      IAnnotationFinder finder, Constructor ctor) {
-    return findConfiguration(finder, new ConstructorOrMethod(ctor));
   }
 
   public static IConfigurationAnnotation findConfiguration(IAnnotationFinder finder, Method m) {
@@ -189,7 +180,6 @@ public class AnnotationHelper {
     return result;
   }
 
-  @SuppressWarnings({"deprecation"})
   private static void finishInitialize(
       ConfigurationAnnotation result, IConfigurationAnnotation bs) {
     result.setFakeConfiguration(true);
@@ -240,7 +230,7 @@ public class AnnotationHelper {
           boolean hasTestNGAnnotation =
               isAnnotationPresent(annotationFinder, m, IFactoryAnnotation.class)
                   || isAnnotationPresent(annotationFinder, m, ITestAnnotation.class)
-                  || isAnnotationPresent(annotationFinder, m, CONFIGURATION_CLASSES);
+                  || isAnnotationPresent(annotationFinder, m);
           boolean isPublic = Modifier.isPublic(m.getModifiers());
           boolean isSynthetic = m.isSynthetic();
           if ((isPublic && hasClassAnnotation && !isSynthetic && (!hasTestNGAnnotation))
@@ -296,12 +286,12 @@ public class AnnotationHelper {
   }
 
   public static <A extends Annotation> A findAnnotationSuperClasses(
-      Class<A> annotationClass, Class parameterClass) {
-    Class c = parameterClass;
+      Class<A> annotationClass, Class<?> parameterClass) {
+    Class<?> c = parameterClass;
     while (c != null) {
-      Annotation result = c.getAnnotation(annotationClass);
+      A result = c.getAnnotation(annotationClass);
       if (result != null) {
-        return (A) result;
+        return result;
       } else {
         c = c.getSuperclass();
       }
@@ -311,9 +301,8 @@ public class AnnotationHelper {
 
   private static boolean isAnnotationPresent(
       IAnnotationFinder annotationFinder,
-      Method m,
-      List<Class<? extends IAnnotation>> annotationClasses) {
-    for (Class a : annotationClasses) {
+      Method m) {
+    for (Class<? extends IAnnotation> a : AnnotationHelper.CONFIGURATION_CLASSES) {
       if (annotationFinder.findAnnotation(m, a) != null) {
         return true;
       }
@@ -328,7 +317,7 @@ public class AnnotationHelper {
       return annotationFinder.findAnnotation(m, annotationClass) != null;
     }
     boolean found = false;
-    for (Class clazz : CONFIGURATION_CLASSES) {
+    for (Class<? extends IAnnotation> clazz : CONFIGURATION_CLASSES) {
       if (annotationFinder.findAnnotation(m, clazz) != null) {
         found = true;
         break;

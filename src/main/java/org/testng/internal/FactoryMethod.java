@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -34,6 +35,11 @@ public class FactoryMethod extends BaseTestMethod {
   private final ITestObjectFactory objectFactory;
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
       m_dataProviderListeners;
+  private String m_factoryCreationFailedMessage = null;
+
+  public String getFactoryCreationFailedMessage() {
+    return m_factoryCreationFailedMessage;
+  }
 
   @SuppressWarnings("unchecked")
   private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
@@ -59,7 +65,7 @@ public class FactoryMethod extends BaseTestMethod {
         continue;
       }
 
-      Object object = ClassHelper.newInstanceOrNull(listener);
+      Object object = InstanceCreator.newInstanceOrNull(listener);
       if (object != null) {
         m_dataProviderListeners.put(key, (IDataProviderListener) object);
       }
@@ -127,8 +133,8 @@ public class FactoryMethod extends BaseTestMethod {
     return groups.toArray(new String[0]);
   }
 
-  public Object[] invoke() {
-    List<Object> result = Lists.newArrayList();
+  public IParameterInfo[] invoke() {
+    List<IParameterInfo> result = Lists.newArrayList();
 
     Map<String, String> allParameterNames = Maps.newHashMap();
     Parameters.MethodParameters methodParameters =
@@ -165,13 +171,23 @@ public class FactoryMethod extends BaseTestMethod {
         ConstructorOrMethod com = getConstructorOrMethod();
         if (com.getMethod() != null) {
           Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
+          if (testInstances == null) {
+            testInstances = new Object[] {};
+          }
+          if (testInstances.length == 0) {
+            this.m_factoryCreationFailedMessage = String
+                .format("The Factory method %s.%s() should have produced at-least one instance.",
+                    com.getDeclaringClass().getName(), com.getName());
+          }
           if (indices == null || indices.isEmpty()) {
-            result.addAll(Arrays.asList(testInstances));
+            result.addAll(Arrays.stream(testInstances).map(instance ->
+              new ParameterInfo(instance, parameters)
+            ).collect(Collectors.toList()));
           } else {
             for (Integer index : indices) {
               int i = index - position;
               if (i >= 0 && i < testInstances.length) {
-                result.add(testInstances[i]);
+                result.add(new ParameterInfo(testInstances[i], parameters));
               }
             }
           }
@@ -188,7 +204,7 @@ public class FactoryMethod extends BaseTestMethod {
               throw new IllegalStateException(
                   "Unsupported ITestObjectFactory " + objectFactory.getClass());
             }
-            result.add(instance);
+            result.add(new ParameterInfo(instance,  parameters));
           }
           position++;
         }
@@ -204,7 +220,7 @@ public class FactoryMethod extends BaseTestMethod {
           t);
     }
 
-    return result.toArray(new Object[0]);
+    return result.toArray(new IParameterInfo[0]);
   }
 
   @Override

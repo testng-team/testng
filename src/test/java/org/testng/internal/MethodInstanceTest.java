@@ -11,6 +11,7 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -462,7 +463,20 @@ public class MethodInstanceTest {
     }
 
     @Override
+    public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+      return null;
+    }
+
+    @Override
     public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {}
+
+    @Override
+    public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+      return null;
+    }
+
+    @Override
+    public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) { }
 
     @Override
     public boolean skipFailedInvocations() {
@@ -508,6 +522,14 @@ public class MethodInstanceTest {
 
     @Override
     public void setPriority(int priority) {}
+
+    @Override
+    public int getInterceptedPriority() {
+      return 0;
+    }
+
+    @Override
+    public void setInterceptedPriority(int priority) {}
 
     @Override
     public XmlTest getXmlTest() {

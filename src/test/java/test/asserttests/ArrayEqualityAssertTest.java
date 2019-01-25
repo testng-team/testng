@@ -192,6 +192,28 @@ public class ArrayEqualityAssertTest {
   }
 
   @Test(expectedExceptions = AssertionError.class)
+  public void arrayDeepInSetsAssertEqualsForExpectedLessThanActual() {
+    Set<String> actual = new HashSet<>();
+    actual.add("42");
+    actual.add("43");
+    Set<String> expected = new HashSet<>();
+    expected.add("42");
+
+    assertEqualsDeep(actual, expected, "Sets not equal:");
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void arrayDeepInSetsAssertEqualsForActualLessThanExpected() {
+    Set<String> actual = new HashSet<>();
+    actual.add("42");
+    Set<String> expected = new HashSet<>();
+    expected.add("42");
+    expected.add("43");
+
+    assertEqualsDeep(actual, expected, "Sets not equal:");
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
   public void arrayInsideSetAssertNotEqualsDeep() {
     Set<int[]> set = new HashSet<>();
     set.add(new int[] {42});

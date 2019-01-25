@@ -13,15 +13,11 @@ import java.util.Collections;
 public class TestHelper {
 
   public static XmlSuite createSuite(String cls, String suiteName) {
-    return createSuite(cls, suiteName, "TmpTest");
-  }
-
-  private static XmlSuite createSuite(String cls, String suiteName, String testName) {
     XmlSuite result = new XmlSuite();
     result.setName(suiteName);
 
     XmlTest test = new XmlTest(result);
-    test.setName(testName);
+    test.setName("TmpTest");
     test.setXmlClasses(Collections.singletonList(new XmlClass(cls)));
 
     return result;
@@ -35,13 +31,13 @@ public class TestHelper {
     return createTestNG(suite, createRandomDirectory());
   }
 
-  public static TestNG createTestNG(XmlSuite suite, Path outputDir) throws IOException {
+  public static TestNG createTestNG(XmlSuite suite, Path outputDir) {
     TestNG result = createTestNG(outputDir);
     result.setXmlSuites(Collections.singletonList(suite));
     return result;
   }
 
-  private static TestNG createTestNG(Path outputDir) throws IOException {
+  private static TestNG createTestNG(Path outputDir) {
     TestNG result = new TestNG();
     result.setOutputDirectory(outputDir.toAbsolutePath().toString());
     result.setVerbose(-1);

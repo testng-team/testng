@@ -119,7 +119,7 @@ public class XMLSuiteResultWriter {
         int dot = className.lastIndexOf('.');
         attributes.setProperty(
             XMLReporterConfig.ATTR_NAME,
-            dot > -1 ? className.substring(dot + 1, className.length()) : className);
+            dot > -1 ? className.substring(dot + 1) : className);
         attributes.setProperty(
             XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
       } else {
@@ -140,11 +140,7 @@ public class XMLSuiteResultWriter {
     Map<String, List<ITestResult>> map = Maps.newHashMap();
     for (ITestResult result : testResults) {
       String className = result.getTestClass().getName();
-      List<ITestResult> list = map.get(className);
-      if (list == null) {
-        list = Lists.newArrayList();
-        map.put(className, list);
-      }
+      List<ITestResult> list = map.computeIfAbsent(className, k -> Lists.newArrayList());
       list.add(result);
     }
     return map;
@@ -250,7 +246,7 @@ public class XMLSuiteResultWriter {
   private String removeClassName(String methodSignature) {
     int firstParanthesisPos = methodSignature.indexOf("(");
     int dotAferClassPos = methodSignature.substring(0, firstParanthesisPos).lastIndexOf(".");
-    return methodSignature.substring(dotAferClassPos + 1, methodSignature.length());
+    return methodSignature.substring(dotAferClassPos + 1);
   }
 
   public void addTestMethodParams(XMLStringBuffer xmlBuffer, ITestResult testResult) {

@@ -55,12 +55,28 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     assertThat(edges).isEmpty();
   }
 
+  @Test(dataProvider = "getSoftDependencyData")
+  public void testCreateDynamicGraphWithSoftDependency(Class<?> clazz) {
+    DynamicGraph<ITestNGMethod> graph = newGraph(clazz);
+    assertThat(graph.getFreeNodes()).hasSize(2);
+    Map<ITestNGMethod, Integer> edges = searchForMethod("b", graph);
+    assertThat(edges).isEmpty();
+    edges = searchForMethod("a", graph);
+    assertThat(edges).isEmpty();
+  }
+
   @DataProvider(name = "getDependencyData")
   public Object[][] getDependencyData() {
     return new Object[][] {
-      {SoftDependencyTestClassSample.class},
       {HardDependencyTestClassSample.class},
       {HardDependencyViaGroupsTestClassSample.class}
+    };
+  }
+
+  @DataProvider(name = "getSoftDependencyData")
+  public Object[][] getSoftDependencyData() {
+    return new Object[][] {
+      {SoftDependencyTestClassSample.class}
     };
   }
 
@@ -185,7 +201,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
 
   private static Object newInstance(Class<?> clazz) {
     try {
-      return ClassHelper.newInstance(clazz);
+      return InstanceCreator.newInstance(clazz);
     } catch (Exception e) {
       return null;
     }

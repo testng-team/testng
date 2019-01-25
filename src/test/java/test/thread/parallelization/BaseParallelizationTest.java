@@ -204,8 +204,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifyEventsOccurBetween(EventLog earlierEventLog, List<EventLog> inBetweenEventLogs, EventLog
             laterEventLog, String failMessage) {
         for (EventLog eventLog : inBetweenEventLogs) {
-            assertTrue(eventLog.getTimeOfEvent() > earlierEventLog.getTimeOfEvent() &&
-                    eventLog.getTimeOfEvent() < laterEventLog.getTimeOfEvent(), failMessage);
+            assertTrue(eventLog.getTimeOfEvent() >= earlierEventLog.getTimeOfEvent() &&
+                    eventLog.getTimeOfEvent() <= laterEventLog.getTimeOfEvent(), failMessage);
         }
     }
 
@@ -756,8 +756,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
             threadPoolSize) {
 
         verifyEventTypeForEventsLogs(listenerStartEventLogs, LISTENER_SUITE_START, "The suite thread pool size is " +
-                threadPoolSize + ", so no more more than " + threadPoolSize + " suites should start running at the " +
-                "the same time if there are more than " + threadPoolSize + " suites remaining to execute.");
+                threadPoolSize + ", so no more than " + threadPoolSize + " suites should start running at the " +
+                "same time if there are more than " + threadPoolSize + " suites remaining to execute.");
         verifyDifferentThreadIdsForEvents(listenerStartEventLogs, "The suite thread pool size is " + threadPoolSize +
                 ", so the thread IDs for all the suite listener's onStart method for the " + threadPoolSize +
                 " currently executing suites should be different");

@@ -7,7 +7,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
@@ -19,24 +18,12 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IParameterizable;
 import org.testng.annotations.IParametersAnnotation;
-import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAfterClass;
-import org.testng.internal.annotations.IAfterGroups;
-import org.testng.internal.annotations.IAfterMethod;
-import org.testng.internal.annotations.IAfterSuite;
-import org.testng.internal.annotations.IAfterTest;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.annotations.IBeforeClass;
-import org.testng.internal.annotations.IBeforeGroups;
-import org.testng.internal.annotations.IBeforeMethod;
-import org.testng.internal.annotations.IBeforeSuite;
-import org.testng.internal.annotations.IBeforeTest;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
 import org.testng.internal.reflect.DataProviderMethodMatcher;
@@ -57,22 +44,6 @@ import org.testng.annotations.*;
  */
 public class Parameters {
   public static final String NULL_VALUE = "null";
-
-  private static final Map<Class<? extends Annotation>, Class<? extends IAnnotation>>
-      ANNOTATION_MAP = new ConcurrentHashMap<>();
-
-  static {
-    ANNOTATION_MAP.put(BeforeSuite.class, IBeforeSuite.class);
-    ANNOTATION_MAP.put(AfterSuite.class, IAfterSuite.class);
-    ANNOTATION_MAP.put(BeforeTest.class, IBeforeTest.class);
-    ANNOTATION_MAP.put(AfterTest.class, IAfterTest.class);
-    ANNOTATION_MAP.put(BeforeClass.class, IBeforeClass.class);
-    ANNOTATION_MAP.put(AfterClass.class, IAfterClass.class);
-    ANNOTATION_MAP.put(BeforeGroups.class, IBeforeGroups.class);
-    ANNOTATION_MAP.put(AfterGroups.class, IAfterGroups.class);
-    ANNOTATION_MAP.put(BeforeMethod.class, IBeforeMethod.class);
-    ANNOTATION_MAP.put(AfterMethod.class, IAfterMethod.class);
-  }
 
   private static List<Class<? extends Annotation>> annotationList =
       Arrays.asList(
@@ -189,10 +160,6 @@ public class Parameters {
 
     Class<? extends Annotation> annotation = retrieveConfigAnnotation(m);
     String name = annotation == null ? "" : annotation.getSimpleName();
-    Class<? extends IAnnotation> annotationClass = null;
-    if (annotation != null) {
-      annotationClass = ANNOTATION_MAP.get(annotation);
-    }
 
     return createParameters(
         new ConstructorOrMethod(m),
@@ -200,7 +167,6 @@ public class Parameters {
             params, methodParams, parameterValues, currentTestMeth, ctx, testResult),
         finder,
         xmlSuite,
-        annotationClass,
         name);
   }
 
@@ -679,14 +645,14 @@ public class Parameters {
           if (injector != null) {
             instanceToUse = injector.getInstance(dataProviderClass);
           } else {
-            instanceToUse = ClassHelper.newInstance(dataProviderClass);
+            instanceToUse = InstanceCreator.newInstance(dataProviderClass);
           }
         } else {
           instanceToUse = instance;
         }
         // Not a static method but no instance exists, then create new one if possible
         if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
-          instanceToUse = ClassHelper.newInstanceOrNull(cls);
+          instanceToUse = InstanceCreator.newInstanceOrNull(cls);
         }
 
         if (result != null) {
@@ -711,13 +677,11 @@ public class Parameters {
     return finder.findOptionalValues(consMethod.getConstructor());
   }
 
-  @SuppressWarnings({"deprecation"})
   private static Object[] createParameters(
       ConstructorOrMethod m,
       MethodParameters params,
       IAnnotationFinder finder,
       XmlSuite xmlSuite,
-      Class<? extends IAnnotation> annotationClass,
       String atName) {
     List<Object> result = Lists.newArrayList();
     String[] extraOptionalValues = extractOptionalValues(finder, m);
@@ -907,7 +871,6 @@ public class Parameters {
             methodParams,
             annotationFinder,
             xmlSuite,
-            ITestAnnotation.class,
             annotationName);
 
     // Mark that this method needs to have at least a certain

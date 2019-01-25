@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
-import org.testng.IConfigurationListener2;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
@@ -22,9 +21,7 @@ public final class TestListenerHelper {
 
   static void runPreConfigurationListeners(ITestResult tr, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
-      if (icl instanceof IConfigurationListener2) {
-        ((IConfigurationListener2) icl).beforeConfiguration(tr);
-      }
+      icl.beforeConfiguration(tr);
     }
   }
 
@@ -63,7 +60,11 @@ public final class TestListenerHelper {
           itl.onTestFailedButWithinSuccessPercentage(tr);
           break;
         case ITestResult.FAILURE:
-          itl.onTestFailure(tr);
+          if (ITestResult.wasFailureDueToTimeout(tr)) {
+            itl.onTestFailedWithTimeout(tr);
+          } else {
+            itl.onTestFailure(tr);
+          }
           break;
         case ITestResult.SUCCESS:
           itl.onTestSuccess(tr);
@@ -78,6 +79,7 @@ public final class TestListenerHelper {
   }
 
   /** @return all the @Listeners annotations found in the current class and its superclasses. */
+  @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
     result.listenerClasses = Lists.newArrayList();

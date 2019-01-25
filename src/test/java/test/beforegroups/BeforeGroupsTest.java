@@ -1,5 +1,6 @@
 package test.beforegroups;
 
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -9,6 +10,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+import test.beforegroups.issue118.TestclassSample;
 import test.beforegroups.issue1694.BaseClassWithBeforeGroups;
 
 import java.io.IOException;
@@ -26,6 +28,17 @@ public class BeforeGroupsTest extends SimpleBaseTest {
   @Test
   public void testParallelMode() throws IOException {
     runTest(XmlSuite.ParallelMode.CLASSES);
+  }
+
+  @Test(description = "GITHUB-118")
+  public void ensureInheritedAttributeWorksForBeforeGroups() {
+    XmlSuite xmlSuite = createXmlSuite("suite", "test", TestclassSample.class);
+    xmlSuite.addIncludedGroup("group1");
+    TestNG testng = create(xmlSuite);
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getFailedTests()).isEmpty();
   }
 
   private static void runTest(XmlSuite.ParallelMode mode) throws IOException {

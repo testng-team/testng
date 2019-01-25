@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -64,7 +67,7 @@ public class MethodGroupsHelper {
       else {
         IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(finder, m);
         if (annotation.getAlwaysRun()) {
-          if (!unique || !MethodGroupsHelper.isMethodAlreadyPresent(outIncludedMethods, tm)) {
+          if (!unique || MethodGroupsHelper.isMethodAlreadyNotPresent(outIncludedMethods, tm)) {
             in = true;
           }
         } else {
@@ -98,7 +101,7 @@ public class MethodGroupsHelper {
     if (MethodHelper.isEnabled(annotation)) {
       if (runInfo.includeMethod(tm, forTests)) {
         if (unique) {
-          if (!MethodGroupsHelper.isMethodAlreadyPresent(outIncludedMethods, tm)) {
+          if (MethodGroupsHelper.isMethodAlreadyNotPresent(outIncludedMethods, tm)) {
             result = true;
           }
         } else {
@@ -110,7 +113,7 @@ public class MethodGroupsHelper {
     return result;
   }
 
-  private static boolean isMethodAlreadyPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
+  private static boolean isMethodAlreadyNotPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
     for (ITestNGMethod m : result) {
       ConstructorOrMethod jm1 = m.getConstructorOrMethod();
       ConstructorOrMethod jm2 = tm.getConstructorOrMethod();
@@ -119,12 +122,12 @@ public class MethodGroupsHelper {
         Class<?> c1 = jm1.getDeclaringClass();
         Class<?> c2 = jm2.getDeclaringClass();
         if (c1.isAssignableFrom(c2) || c2.isAssignableFrom(c1)) {
-          return true;
+          return false;
         }
       }
     }
 
-    return false;
+    return true;
   }
 
   /** Extracts the map of groups and their corresponding methods from the <code>classes</code>. */
@@ -134,7 +137,10 @@ public class MethodGroupsHelper {
     for (ITestClass cls : classes) {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
-        for (String group : before ? method.getBeforeGroups() : method.getAfterGroups()) {
+        String[] grp = before ? method.getBeforeGroups() : method.getAfterGroups();
+        List<String> groups = Stream.concat(Arrays.stream(grp), Arrays.stream(method.getGroups()))
+            .collect(Collectors.toList());
+        for (String group : groups) {
           List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> Lists.newArrayList());
           // NOTE(cbeust, 2007/01/23)
           // BeforeGroups/AfterGroups methods should only be invoked once.
@@ -296,4 +302,5 @@ public class MethodGroupsHelper {
     }
     return groupPattern;
   }
+
 }

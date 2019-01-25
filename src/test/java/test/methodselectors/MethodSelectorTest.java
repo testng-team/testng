@@ -4,6 +4,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import test.BaseTest;
+import test.methodselectors.issue1985.FilteringMethodSelector;
+import test.methodselectors.issue1985.TestClassSample;
 
 public class MethodSelectorTest extends BaseTest {
 
@@ -91,5 +93,16 @@ public class MethodSelectorTest extends BaseTest {
     Assert.assertTrue(getPassedTests().isEmpty());
     Assert.assertTrue(getFailedTests().isEmpty());
     Assert.assertTrue(getSkippedTests().isEmpty());
+  }
+
+  @Test(description = "GITHUB-1985")
+  public void testFilteringOfMethodsWork() {
+    System.setProperty(FilteringMethodSelector.GROUP, "bat");
+    String className = TestClassSample.class.getName();
+    addClass(className);
+    addMethodSelector(FilteringMethodSelector.class.getName(), 0);
+    run();
+    String[] passed = {"batTest"};
+    verifyTests("Passed", passed, getPassedTests());
   }
 }

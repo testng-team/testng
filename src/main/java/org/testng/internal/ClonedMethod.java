@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlTest;
 
@@ -145,6 +146,21 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public IRetryAnalyzer getRetryAnalyzer() {
     return m_method.getRetryAnalyzer();
+  }
+
+  @Override
+  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    return m_method.getRetryAnalyzer(result);
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    m_method.setRetryAnalyzerClass(clazz);
+  }
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return m_method.getRetryAnalyzerClass();
   }
 
   @Override
@@ -290,17 +306,7 @@ public class ClonedMethod implements ITestNGMethod {
   public String toString() {
     ConstructorOrMethod m = getConstructorOrMethod();
     String cls = m.getDeclaringClass().getName();
-    StringBuilder result = new StringBuilder(cls).append(".").append(m.getName()).append("(");
-    int i = 0;
-    for (Class<?> p : m.getParameterTypes()) {
-      if (i++ > 0) {
-        result.append(", ");
-      }
-      result.append(p.getName());
-    }
-    result.append(")");
-
-    return result.toString();
+    return BaseTestMethod.stringify(cls, m).toString();
   }
 
   @Override
@@ -330,6 +336,16 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setPriority(int priority) {
+    // ignored
+  }
+
+  @Override
+  public int getInterceptedPriority() {
+    return m_method.getInterceptedPriority();
+  }
+
+  @Override
+  public void setInterceptedPriority(int priority) {
     // ignored
   }
 

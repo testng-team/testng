@@ -209,13 +209,15 @@ public class MethodHelper {
 
     boolean alwaysRun = false;
     if ((configurationAnnotation.getAfterSuite()
-            || configurationAnnotation.getAfterTest()
-            || configurationAnnotation.getAfterTestClass()
-            || configurationAnnotation.getAfterTestMethod()
-            || configurationAnnotation.getBeforeTestMethod()
-            || configurationAnnotation.getBeforeTestClass()
-            || configurationAnnotation.getBeforeTest()
-            || configurationAnnotation.getBeforeSuite())
+        || configurationAnnotation.getAfterTest()
+        || configurationAnnotation.getAfterTestClass()
+        || configurationAnnotation.getAfterTestMethod()
+        || configurationAnnotation.getBeforeTestMethod()
+        || configurationAnnotation.getBeforeTestClass()
+        || configurationAnnotation.getBeforeTest()
+        || configurationAnnotation.getBeforeSuite()
+        || configurationAnnotation.getBeforeGroups().length != 0
+        || configurationAnnotation.getAfterGroups().length != 0)
         && configurationAnnotation.getAlwaysRun()) {
       alwaysRun = true;
     }

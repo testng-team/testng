@@ -12,7 +12,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -26,23 +25,6 @@ public final class DynamicGraphHelper {
   public static DynamicGraph<ITestNGMethod> createDynamicGraph(
       ITestNGMethod[] methods, XmlTest xmlTest) {
     DynamicGraph<ITestNGMethod> result = new DynamicGraph<>();
-
-    ListMultiMap<Integer, ITestNGMethod> methodsByPriority = Maps.newListMultiMap();
-    for (ITestNGMethod method : methods) {
-      methodsByPriority.put(method.getPriority(), method);
-    }
-    List<Integer> availablePriorities = Lists.newArrayList(methodsByPriority.keySet());
-    Collections.sort(availablePriorities);
-    Integer previousPriority = methods.length > 0 ? availablePriorities.get(0) : 0;
-    for (int i = 1; i < availablePriorities.size(); i++) {
-      Integer currentPriority = availablePriorities.get(i);
-      for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {
-        for (ITestNGMethod p1Method : methodsByPriority.get(currentPriority)) {
-          result.addEdge(TestRunner.PriorityWeight.priority.ordinal(), p1Method, p0Method);
-        }
-      }
-      previousPriority = currentPriority;
-    }
 
     DependencyMap dependencyMap = new DependencyMap(methods);
 

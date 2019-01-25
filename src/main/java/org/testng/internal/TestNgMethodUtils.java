@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.function.BiPredicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -67,12 +68,12 @@ class TestNgMethodUtils {
   }
 
   static ITestNGMethod[] filterBeforeTestMethods(
-      ITestClass testClass, Invoker.Predicate<ITestNGMethod, IClass> predicate) {
+      ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
     return filterMethods(testClass, testClass.getBeforeTestMethods(), predicate);
   }
 
   static ITestNGMethod[] filterAfterTestMethods(
-      ITestClass testClass, Invoker.Predicate<ITestNGMethod, IClass> predicate) {
+      ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
     return filterMethods(testClass, testClass.getAfterTestMethods(), predicate);
   }
 
@@ -80,12 +81,12 @@ class TestNgMethodUtils {
   static ITestNGMethod[] filterMethods(
       IClass testClass,
       ITestNGMethod[] methods,
-      Invoker.Predicate<ITestNGMethod, IClass> predicate) {
+      BiPredicate<ITestNGMethod, IClass> predicate) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
 
     for (ITestNGMethod tm : methods) {
       String msg;
-      if (predicate.isTrue(tm, testClass)
+      if (predicate.test(tm, testClass)
           && (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult))) {
         msg = "Keeping method " + tm + " for class " + testClass;
         vResult.add(tm);

@@ -4,6 +4,7 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.MethodInstanceTest;
 import org.testng.internal.reflect.ReflectionHelper;
@@ -261,7 +262,20 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
+  public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
+    return null;
+  }
+
+  @Override
   public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {}
+
+  @Override
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return null;
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {}
 
   @Override
   public boolean skipFailedInvocations() {
@@ -307,6 +321,14 @@ public class FakeTestNGMethod implements ITestNGMethod {
 
   @Override
   public void setPriority(int priority) {}
+  
+  @Override
+  public int getInterceptedPriority() {
+    return 0;
+  }
+  
+  @Override
+  public void setInterceptedPriority(int priority) {}
 
   @Override
   public XmlTest getXmlTest() {

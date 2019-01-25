@@ -133,7 +133,7 @@ public class Assert {
     if (expected.equals(actual) && actual.equals(expected)) {
       return;
     }
-    failNotEquals(actual, expected, message);
+    fail(format(actual, expected, message, true));
   }
 
   private static void assertArrayEquals(Object actual, Object expected, String message) {
@@ -1196,9 +1196,7 @@ public class Assert {
     }
 
     List<Object> actualCollection = Lists.newArrayList();
-    for (Object a : actual) {
-      actualCollection.add(a);
-    }
+    actualCollection.addAll(Arrays.asList(actual));
     for (Object o : expected) {
       actualCollection.remove(o);
     }
@@ -1282,13 +1280,18 @@ public class Assert {
       }
     }
 
+    if (expected.size() != actual.size()) {
+      if (message == null) {
+        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
+      } else {
+        fail(format(actual, expected, message, true));
+      }
+    }
+
     Iterator<?> actualIterator = actual.iterator();
     Iterator<?> expectedIterator = expected.iterator();
     while (expectedIterator.hasNext()) {
       Object expectedValue = expectedIterator.next();
-      if (!actualIterator.hasNext()) {
-        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-      }
       Object value = actualIterator.next();
       if (expectedValue.getClass().isArray()) {
         assertArrayEquals(value, expectedValue, message);

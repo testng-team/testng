@@ -28,6 +28,7 @@ public class TestListenerAdapter implements IResultListener2 {
   private Collection<ITestResult> m_failedConfs = new ConcurrentLinkedQueue<>();
   private Collection<ITestResult> m_skippedConfs = new ConcurrentLinkedQueue<>();
   private Collection<ITestResult> m_passedConfs = new ConcurrentLinkedQueue<>();
+  private Collection<ITestResult> m_timedOutTests = new ConcurrentLinkedQueue<>();
 
   @Override
   public void onTestSuccess(ITestResult tr) {
@@ -45,6 +46,13 @@ public class TestListenerAdapter implements IResultListener2 {
   public void onTestSkipped(ITestResult tr) {
     m_allTestMethods.add(tr.getMethod());
     m_skippedTests.add(tr);
+  }
+
+  @Override
+  public void onTestFailedWithTimeout(ITestResult tr) {
+    m_allTestMethods.add(tr.getMethod());
+    m_timedOutTests.add(tr);
+    onTestFailure(tr);
   }
 
   @Override
@@ -80,6 +88,13 @@ public class TestListenerAdapter implements IResultListener2 {
   /** @return Returns the skippedTests. */
   public List<ITestResult> getSkippedTests() {
     return new ArrayList<>(m_skippedTests);
+  }
+
+  /**
+   * @return Returns the tests that failed due to a timeout
+   */
+  public Collection<ITestResult> getTimedoutTests() {
+    return new ArrayList<>(m_timedOutTests);
   }
 
   /** @param allTestMethods The allTestMethods to set. */

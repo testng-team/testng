@@ -200,4 +200,12 @@ public class CommandLineArgs {
 
   @Parameter(names = DEBUG, hidden = true, description = "Used to debug TestNG")
   public Boolean debug = Boolean.FALSE;
+
+  public static final String ALWAYS_RUN_LISTENERS = "-alwaysrunlisteners";
+
+  @Parameter(
+      names = ALWAYS_RUN_LISTENERS,
+      description = "Should MethodInvocation Listeners be run even for skipped methods")
+  public Boolean alwaysRunListeners = Boolean.TRUE;
+
 }

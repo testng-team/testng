@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -19,8 +21,9 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.AbstractParallelWorker;
 import org.testng.internal.Attributes;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.ClassInfoMap;
+import org.testng.internal.ConfigMethodArguments;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraph;
@@ -30,8 +33,10 @@ import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
+import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.ResultMap;
@@ -259,11 +264,9 @@ public class TestRunner
     // by plugging in their own custom interceptors as well.
     m_methodInterceptors.add(builtinInterceptor);
 
-    List<XmlPackage> m_packageNamesFromXml = test.getXmlPackages();
-    if (null != m_packageNamesFromXml) {
-      for (XmlPackage xp : m_packageNamesFromXml) {
-        m_testClassesFromXml.addAll(xp.getXmlClasses());
-      }
+    List<XmlPackage> m_packageNamesFromXml = getAllPackages();
+    for (XmlPackage xp : m_packageNamesFromXml) {
+      m_testClassesFromXml.addAll(xp.getXmlClasses());
     }
 
     m_annotationFinder = annotationFinder;
@@ -293,6 +296,23 @@ public class TestRunner
 
     // Finish our initialization
     init();
+  }
+
+  /**
+   * Returns all packages to use for the current test. This includes the test from the test
+   * suite. Never returns null.
+   */
+  private List<XmlPackage> getAllPackages() {
+    final List<XmlPackage> allPackages = Lists.newArrayList();
+    final List<XmlPackage> suitePackages = this.m_xmlTest.getSuite().getPackages();
+    if (suitePackages != null) {
+      allPackages.addAll(suitePackages);
+    }
+    final List<XmlPackage> testPackages = this.m_xmlTest.getPackages();
+    if (testPackages != null) {
+      allPackages.addAll(testPackages);
+    }
+    return allPackages;
   }
 
   public IInvoker getInvoker() {
@@ -399,7 +419,7 @@ public class TestRunner
     if (null != xmlTest.getMethodSelectors()) {
       for (org.testng.xml.XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
         if (selector.getClassName() != null) {
-          IMethodSelector s = ClassHelper.createSelector(selector);
+          IMethodSelector s = InstanceCreator.createSelector(selector);
 
           m_runInfo.addMethodSelector(s, selector.getPriority());
         }
@@ -443,7 +463,7 @@ public class TestRunner
               testMethodFinder,
               m_annotationFinder,
               m_xmlTest,
-              classMap.getXmlClass(ic.getRealClass()));
+              classMap.getXmlClass(ic.getRealClass()), m_testClassFinder.getFactoryCreationFailedMessage());
       m_classMap.put(ic.getRealClass(), tc);
     }
 
@@ -511,7 +531,7 @@ public class TestRunner
             false /* unique */,
             m_excludedMethods,
             comparator);
-    m_classMethodMap = new ClassMethodMap(testMethods, m_xmlMethodSelector);
+    m_classMethodMap = new ClassMethodMap(Arrays.asList(m_allTestMethods), m_xmlMethodSelector);
 
     m_afterXmlTestMethods =
         MethodHelper.collectAndOrderMethods(
@@ -593,14 +613,17 @@ public class TestRunner
 
     // invoke @BeforeTest
     ITestNGMethod[] testConfigurationMethods = getBeforeTestConfigurationMethods();
+    invokeTestConfigurations(testConfigurationMethods);
+  }
+
+  private void invokeTestConfigurations(ITestNGMethod[] testConfigurationMethods) {
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      m_invoker.invokeConfigurations(
-          null,
-          testConfigurationMethods,
-          m_xmlTest.getSuite(),
-          m_xmlTest.getAllParameters(),
-          null, /* no parameter values */
-          null /* instance */);
+      ConfigMethodArguments arguments = new Builder()
+          .usingConfigMethodsAs(testConfigurationMethods)
+          .forSuite(m_xmlTest.getSuite())
+          .usingParameters(m_xmlTest.getAllParameters())
+          .build();
+      m_invoker.getConfigInvoker().invokeConfigurations(arguments);
     }
   }
 
@@ -630,7 +653,7 @@ public class TestRunner
               for (XmlInclude inc : includedMethods) {
                 methods.add(inc.getName());
               }
-              IJUnitTestRunner tr = ClassHelper.createTestRunner(TestRunner.this);
+              IJUnitTestRunner tr = IJUnitTestRunner.createTestRunner(TestRunner.this);
               tr.setInvokedMethodListeners(m_invokedMethodListeners);
               try {
                 tr.run(tc, methods.toArray(new String[0]));
@@ -678,11 +701,20 @@ public class TestRunner
       // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
       // removing methods would cause the graph never to terminate (because it would expect
       // termination from methods that never get invoked).
+      ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
       DynamicGraph<ITestNGMethod> graph =
-          DynamicGraphHelper.createDynamicGraph(intercept(m_allTestMethods), getCurrentXmlTest());
+          DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+      // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
+      // If the user specified a method interceptor, or if we have any methods that have a non-default
+      // priority on them, we need to sort.
+      boolean needPrioritySort = m_methodInterceptors.size() > 1 || 
+          Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
+      Comparator<ITestNGMethod> methodComparator = needPrioritySort ? new TestMethodComparator() : null;
       graph.setVisualisers(this.visualisers);
       if (parallel) {
         if (graph.getNodeCount() > 0) {
+          // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
+          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<>() : new LinkedBlockingQueue<>();
           GraphThreadPoolExecutor<ITestNGMethod> executor =
               new GraphThreadPoolExecutor<>(
                   "test=" + xmlTest.getName(),
@@ -692,7 +724,8 @@ public class TestRunner
                   threadCount,
                   0,
                   TimeUnit.MILLISECONDS,
-                  new LinkedBlockingQueue<>());
+                  queue,
+                  methodComparator);
           executor.run();
           try {
             long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -719,6 +752,12 @@ public class TestRunner
         }
 
         while (!freeNodes.isEmpty()) {
+          if (needPrioritySort) {
+            freeNodes.sort(methodComparator);
+            // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
+            // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
+            freeNodes = freeNodes.subList(0, 1);
+          }
           List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
           for (IWorker<ITestNGMethod> r : runnables) {
             r.run();
@@ -761,6 +800,16 @@ public class TestRunner
               m_groupMethods.getBeforeGroupsMethods(),
               m_groupMethods.getAfterGroupsMethods());
     }
+
+    // If the user specified a method interceptor, whatever that returns is the order we're going
+    // to run things in. Set the intercepted priority for that case.
+    // There's a built-in interceptor, so look for more than one.
+    if (m_methodInterceptors.size() > 1) {
+      for (int i = 0; i < resultArray.length; ++i) {
+        resultArray[i].setInterceptedPriority(i);
+      }
+    }
+
     return resultArray;
   }
 
@@ -801,15 +850,7 @@ public class TestRunner
   private void afterRun() {
     // invoke @AfterTest
     ITestNGMethod[] testConfigurationMethods = getAfterTestConfigurationMethods();
-    if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      m_invoker.invokeConfigurations(
-          null,
-          testConfigurationMethods,
-          m_xmlTest.getSuite(),
-          m_xmlTest.getAllParameters(),
-          null, /* no parameter values */
-          null /* instance */);
-    }
+    invokeTestConfigurations(testConfigurationMethods);
 
     //
     // Log the end date
@@ -1055,7 +1096,9 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
-    m_testListeners.add(listener);
+    if (!m_testListeners.contains(listener)) {
+      m_testListeners.add(listener);
+    }
   }
 
   public void addListener(ITestNGListener listener) {
@@ -1118,7 +1161,7 @@ public class TestRunner
   private IResultMap m_skippedConfigurations = new ResultMap();
   private IResultMap m_failedConfigurations = new ResultMap();
 
-  private class ConfigurationListener implements IConfigurationListener2 {
+  private class ConfigurationListener implements IConfigurationListener {
     @Override
     public void beforeConfiguration(ITestResult tr) {}
 
@@ -1139,7 +1182,10 @@ public class TestRunner
   }
 
   void addMethodInterceptor(IMethodInterceptor methodInterceptor) {
-    m_methodInterceptors.add(methodInterceptor);
+      //avoid to add interceptor twice when the defined listeners implements both ITestListener and IMethodInterceptor.
+      if (!m_methodInterceptors.contains(methodInterceptor)) {
+          m_methodInterceptors.add(methodInterceptor);
+    }
   }
 
   @Override

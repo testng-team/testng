@@ -9,6 +9,9 @@ import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.log4testng.Logger;
 
 import javax.annotation.Nonnull;
+
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -26,6 +29,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   private final IThreadWorkerFactory<T> m_factory;
   private final Map<T, IWorker<T>> mapping = Maps.newConcurrentMap();
   private final Map<T, T> upstream = Maps.newConcurrentMap();
+  private final Comparator<T> m_comparator;
 
   public GraphThreadPoolExecutor(
       String name,
@@ -35,7 +39,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       int maximumPoolSize,
       long keepAliveTime,
       TimeUnit unit,
-      BlockingQueue<Runnable> workQueue) {
+      BlockingQueue<Runnable> workQueue,
+      Comparator<T> comparator) {
     super(
         corePoolSize,
         maximumPoolSize,
@@ -45,6 +50,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         new TestNGThreadFactory(name));
     m_graph = graph;
     m_factory = factory;
+    m_comparator = comparator;
 
     if (m_graph.getFreeNodes().isEmpty()) {
       throw new TestNGException("The graph of methods contains a cycle:" + graph);
@@ -54,6 +60,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   public void run() {
     synchronized (m_graph) {
       List<T> freeNodes = m_graph.getFreeNodes();
+      if (m_comparator != null) {
+          Collections.sort(freeNodes, m_comparator);
+      }
       runNodes(freeNodes);
     }
   }
@@ -84,6 +93,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
         shutdown();
       } else {
         List<T> freeNodes = m_graph.getFreeNodes();
+        if (m_comparator != null) {
+            Collections.sort(freeNodes, m_comparator);
+        }
         handleThreadAffinity(freeNodes);
         runNodes(freeNodes);
       }
