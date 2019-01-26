@@ -2,6 +2,7 @@ package test.asserttests;
 
 import org.testng.Assert;
 import org.testng.Assert.ThrowingRunnable;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Sets;
 
@@ -150,32 +151,32 @@ public class AssertTest {
     Assert.assertEquals(Double.NaN, Double.NaN, 0.0);
   }
 
-  @Test
-  public void arrayWithNullValues_1(){
-    String[] array1 = new String[]{"foo", "bar", null};
-    String[] array2 = new String[]{"foo", "bar", null};
-    Assert.assertEquals(array1,array2);
+  @DataProvider
+  public Object[][] identicalArraysWithNull() {
+    return new Object[][]{
+            {new String[]{"foo", "bar", null}, new String[]{"foo", "bar", null}},
+            {new String[]{"foo", null, "bar"}, new String[]{"foo", null, "bar"}},
+            {new String[]{null, "foo", "bar"}, new String[]{null, "foo", "bar"}}
+    };
   }
 
-  @Test
-  public void arrayWithNullValues_2(){
-    String[] array1 = new String[]{"foo", null, "bar"};
-    String[] array2 = new String[]{"foo", null, "bar"};
-    Assert.assertEquals(array1,array2);
+  @Test(dataProvider="identicalArraysWithNull")
+  public void identicalArraysWithNullValues(String[] actual, String[] expected){
+    Assert.assertEquals(actual, expected);
   }
 
-  @Test
-  public void arrayWithNullValues_3(){
-    String[] array1 = new String[]{null, "foo", "bar"};
-    String[] array2 = new String[]{null, "foo", "bar"};
-    Assert.assertEquals(array1,array2);
+  @DataProvider
+  public Object[][] nonIdenticalArraysWithNull() {
+    return new Object[][]{
+            {new String[]{"foo", "bar", null}, new String[]{"foo", "bar", "not-null"}},
+            {new String[]{"foo", "not-null", "bar"}, new String[]{"foo", null, "bar"}},
+            {new String[]{null, "foo", "bar"}, new String[]{"not-null", "foo", "bar"}}
+    };
   }
 
-  @Test
-  public void arrayWithNullValues_4(){
-    String[] array1 = new String[]{"foo", null, "bar"};
-    String[] array2 = new String[]{"foo", "not-null", "bar"};
-    Assert.assertNotEquals(array1,array2);
+  @Test(dataProvider="nonIdenticalArraysWithNull")
+  public void nonIdenticalarrayWithNullValue(String[] actual, String[] expected){
+    Assert.assertNotEquals(actual, expected);
   }
 
 }
