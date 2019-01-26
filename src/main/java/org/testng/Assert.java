@@ -1165,13 +1165,11 @@ public class Assert {
       if ((a == null && e != null) || (a != null && e == null)) {
         failNotEquals(a, e, message);
       }
-      if(a != null && e != null){
-        //Compare by value for multi-dimensional array.
-        if(e.getClass().isArray()) {
-          assertEquals(a, e, errorMessage);
-        } else {
-          assertEqualsImpl(a, e, errorMessage);
-        }
+      //Compare by value for multi-dimensional array.
+      if(e.getClass().isArray()) {
+        assertEquals(a, e, errorMessage);
+      }else {
+        assertEqualsImpl(a, e, errorMessage);
       }
     }
 
