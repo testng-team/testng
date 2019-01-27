@@ -154,28 +154,28 @@ public class AssertTest {
   @DataProvider
   public Object[][] identicalArraysWithNull() {
     return new Object[][]{
-            {new String[]{"foo", "bar", null}, new String[]{"foo", "bar", null}},
-            {new String[]{"foo", null, "bar"}, new String[]{"foo", null, "bar"}},
-            {new String[]{null, "foo", "bar"}, new String[]{null, "foo", "bar"}}
+            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", null}},
+            { new String[] { "foo", null, "bar"}, new String[] { "foo", null, "bar"}},
+            { new String[] { null, "foo", "bar"}, new String[] { null, "foo", "bar"}}
     };
   }
 
   @Test(dataProvider="identicalArraysWithNull")
-  public void identicalArraysWithNullValues(String[] actual, String[] expected){
+  public void identicalArraysWithNullValues(String[] actual, String[] expected) {
     Assert.assertEquals(actual, expected);
   }
 
   @DataProvider
   public Object[][] nonIdenticalArraysWithNull() {
-    return new Object[][]{
-            {new String[]{"foo", "bar", null}, new String[]{"foo", "bar", "not-null"}},
-            {new String[]{"foo", "not-null", "bar"}, new String[]{"foo", null, "bar"}},
-            {new String[]{null, "foo", "bar"}, new String[]{"not-null", "foo", "bar"}}
+    return new Object[][] {
+            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", "not-null"}},
+            { new String[] { "foo", "not-null", "bar"}, new String[] { "foo", null, "bar"}},
+            { new String[] { null, "foo", "bar"}, new String[] {" not-null", "foo", "bar"}}
     };
   }
 
   @Test(dataProvider="nonIdenticalArraysWithNull")
-  public void nonIdenticalarrayWithNullValue(String[] actual, String[] expected){
+  public void nonIdenticalarrayWithNullValue(String[] actual, String[] expected) {
     Assert.assertNotEquals(actual, expected);
   }
 

@@ -1161,14 +1161,16 @@ public class Assert {
       Object a = actual[i];
       String explanation = "Arrays differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
-      if(a == null && e == null) continue;
+      if (a == null && e == null) {
+        continue;
+      }
       if ((a == null && e != null) || (a != null && e == null)) {
         failNotEquals(a, e, message);
       }
       //Compare by value for multi-dimensional array.
       if(e.getClass().isArray()) {
         assertEquals(a, e, errorMessage);
-      }else {
+      } else {
         assertEqualsImpl(a, e, errorMessage);
       }
     }
