@@ -2,6 +2,7 @@ package test.asserttests;
 
 import org.testng.Assert;
 import org.testng.Assert.ThrowingRunnable;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Sets;
 
@@ -149,4 +150,33 @@ public class AssertTest {
   public void doubleNaNAssertion() {
     Assert.assertEquals(Double.NaN, Double.NaN, 0.0);
   }
+
+  @DataProvider
+  public Object[][] identicalArraysWithNull() {
+    return new Object[][]{
+            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", null}},
+            { new String[] { "foo", null, "bar"}, new String[] { "foo", null, "bar"}},
+            { new String[] { null, "foo", "bar"}, new String[] { null, "foo", "bar"}}
+    };
+  }
+
+  @Test(dataProvider="identicalArraysWithNull")
+  public void identicalArraysWithNullValues(String[] actual, String[] expected) {
+    Assert.assertEquals(actual, expected);
+  }
+
+  @DataProvider
+  public Object[][] nonIdenticalArraysWithNull() {
+    return new Object[][] {
+            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", "not-null"}},
+            { new String[] { "foo", "not-null", "bar"}, new String[] { "foo", null, "bar"}},
+            { new String[] { null, "foo", "bar"}, new String[] {" not-null", "foo", "bar"}}
+    };
+  }
+
+  @Test(dataProvider="nonIdenticalArraysWithNull")
+  public void nonIdenticalarrayWithNullValue(String[] actual, String[] expected) {
+    Assert.assertNotEquals(actual, expected);
+  }
+
 }
