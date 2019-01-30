@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2008: Preserve parameters in each class and not all of the test parameters
 Fixed: GITHUB-1981: Fixes NPE in Assert.assertEquals when an array contains null (Maneesh MS)
 New: Upgrade to gradle5
 New: Added a method in Assertion class to allow downstream TestNG consumers to override the error message (Ryan Laseter)
