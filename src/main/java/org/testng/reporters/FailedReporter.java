@@ -173,11 +173,10 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       methodList.add(m);
     }
 
-    // Ideally, we should preserve each parameter in each class but putting them
-    // all in the same bag for now
-    Map<String, String> parameters = Maps.newHashMap();
+    // Store parameters per XmlClass
+    Map<String,  Map<String,  String>> classParameters = new HashMap<String,Map<String,  String>>();
     for (XmlClass c : srcXmlTest.getClasses()) {
-      parameters.putAll(c.getLocalParameters());
+      classParameters.put(c.getName(),c.getLocalParameters());
     }
 
     int index = 0;
@@ -197,7 +196,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
         methodNames.add(methodName);
       }
       xmlClass.setIncludedMethods(methodNames);
-      xmlClass.setParameters(parameters);
+      xmlClass.setParameters(classParameters.get(xmlClass.getName()));
       result.add(xmlClass);
     }
 
