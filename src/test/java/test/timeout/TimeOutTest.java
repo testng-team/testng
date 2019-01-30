@@ -2,6 +2,8 @@ package test.timeout;
 
 import org.testng.Assert;
 import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.thread.ThreadTimeoutException;
@@ -12,8 +14,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
 import test.timeout.github1493.TestClassSample;
+import test.timeout.issue2009.TimeOutWithParallelSample;
 
 public class TimeOutTest extends BaseTest {
   private final long m_id;
@@ -85,6 +89,18 @@ public class TimeOutTest extends BaseTest {
             String.format("Method %s.testMethod() didn't finish within the time-out 1000", TestClassSample.class.getName()));
   }
 
+  @Test(description = "GITHUB-2009")
+  public void testTimeOutWhenParallelIsMethods() {
+    addClass(TimeOutWithParallelSample.class);
+    setParallel(ParallelMode.METHODS);
+    run();
+    Assert.assertEquals(getFailedTests().values().size(), 1);
+    Assert.assertEquals(getSkippedTests().values().size(), 0);
+    Assert.assertEquals(getPassedTests().values().size(), 0);
+    ITestResult result = getFailedTests().values().iterator().next().get(0);
+    long time = result.getEndMillis() - result.getStartMillis();
+    Assert.assertTrue(time < 2000);
+  }
 
   @Override
   public Long getId() {
