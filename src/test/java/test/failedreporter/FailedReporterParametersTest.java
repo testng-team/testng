@@ -81,7 +81,7 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
 
     TestNG tng = create(xmlSuite);
 
-    Path temp = Files.createTempDirectory("tmp");
+    Path temp = Files.createTempDirectory("preserveParameters");
     tng.setOutputDirectory(temp.toAbsolutePath().toString());
     tng.addListener(new FailedReporter());
     tng.run();
@@ -90,8 +90,12 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
             new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()).parse();
     XmlSuite failedSuite = failedSuites.iterator().next();
     XmlTest failedTest = failedSuite.getTests().get(0);
-    XmlClass failedClass1 = failedTest.getClasses().get(0);
-    XmlClass failedClass2 = failedTest.getClasses().get(1);
+    XmlClass failedClass1 = failedTest.getClasses().stream()
+            .filter( failedClass -> failedClass.getName().equals("test.reports.SimpleFailedSample"))
+            .findFirst().get();
+    XmlClass failedClass2 = failedTest.getClasses().stream()
+            .filter( failedClass -> failedClass.getName().equals("test.failedreporter.FailedReporterParametersTest$AnotherSimpleFailedSample"))
+            .findFirst().get();
 
     // Cheeck class1 Parameters
     Assert.assertEquals("44", failedClass1.getAllParameters().get("sharedParameter"));
