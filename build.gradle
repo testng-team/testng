@@ -25,7 +25,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '1.9'
+    id 'com.gradle.build-scan' version '2.0.2'
     id "com.jfrog.bintray" version "1.7.3"
     id "com.jfrog.artifactory" version "4.4.10"
     id "nebula.optional-base" version "3.1.0"
@@ -34,17 +34,17 @@ plugins {
 }
 
 buildScan {
-    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-    licenseAgree = 'yes'
     link 'GitHub', 'https://github.com/cbeust/testng/tree/master'
     if (System.getenv('CI')) {
         publishOnFailure()
         tag 'CI'
     }
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.5.1'
+task wrappper(type: Wrapper) {
+    gradleVersion = '5.1.1'
 }
 
 group = 'org.testng'
@@ -120,6 +120,7 @@ jar {
             '!org.testng.*',
             '!com.sun.*',
             '*'
+        instruction 'Automatic-Module-Name', 'org.testng'
     }
 }
 
@@ -132,6 +133,9 @@ test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
+    options {
+        listeners.add("org.testng.reporters.FailedInformationOnConsoleReporter")
+    }
     testLogging.showStandardStreams = true
     systemProperties = System.getProperties()
     systemProperties['test.resources.dir'] = 'build/resources/test/'
@@ -143,6 +147,10 @@ allprojects {
         options.addStringOption('Xdoclint:none', '-quiet')
         options.links("https://docs.oracle.com/javase/8/docs/api")
     }
+   tasks.withType(Test){ 
+       maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+
+   }
 }
 
 apply plugin: 'org.sonarqube'

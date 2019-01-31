@@ -26,11 +26,10 @@ public class HtmlHelper {
         + "\" rel=\"stylesheet\" type=\"text/css\" />\n";
   }
 
-  public static File generateStylesheet(String outputDirectory) throws IOException {
+  public static void generateStylesheet(String outputDirectory) throws IOException {
     File stylesheetFile = new File(outputDirectory, CSS_FILE_NAME);
     if (!stylesheetFile.exists()) {
       Utils.writeResourceToFile(stylesheetFile, CSS_FILE_NAME, TestHTMLReporter.class);
     }
-    return stylesheetFile;
   }
 }

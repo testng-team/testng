@@ -13,6 +13,7 @@ public interface Constants {
 
   String ITESTLISTENER_ON_START_TEST_METHOD = "org.testng.ITestListener.onTestStart(ITestResult result)";
   String ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD = "org.testng.ITestListener.onTestFailure(ITestResult result)";
+  String ITESTLISTENER_ON_TEST_TIMEOUT_TEST_METHOD = "org.testng.ITestListener.onTestFailedWithTimeout(ITestResult result)";
   String ITESTLISTENER_ON_TEST_SUCCESS_TEST_METHOD = "org.testng.ITestListener.onTestSuccess(ITestResult result)";
   String ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD = "org.testng.ITestListener.onTestSkipped(ITestResult result)";
 

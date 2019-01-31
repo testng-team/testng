@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import test.junitreports.issue993.SampleTestClass;
 
 import static org.testng.Assert.*;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
@@ -51,13 +52,13 @@ public class JUnitReportsTest extends SimpleBaseTest {
         Path outputDir = TestHelper.createRandomDirectory();
         Class<?>[] classes = new Class<?>[] {FirstTest.class, SecondTest.class, ThirdTest.class};
         Map<Class<?>, Map<String, Integer>> mapping = Maps.newHashMap();
-        mapping.put(FirstTest.class, createMapFor(2,0,0,0,1));
-        mapping.put(SecondTest.class, createMapFor(1,0,0,0,0));
-        mapping.put(ThirdTest.class, createMapFor(1,0,0,0,0));
+        mapping.put(FirstTest.class, createMapFor(2, 1));
+        mapping.put(SecondTest.class, createMapFor(1, 0));
+        mapping.put(ThirdTest.class, createMapFor(1, 0));
 
         TestNG tng = createTests(outputDir, "suite", classes);
         LocalJUnitReportReporter reportReporter = new LocalJUnitReportReporter();
-        tng.addListener((ITestNGListener) reportReporter);
+        tng.addListener(reportReporter);
         tng.run();
         for (Class<?> clazz : classes) {
             Testsuite suite = reportReporter.getTestsuite(clazz.getName());
@@ -76,7 +77,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
         Path outputDir = TestHelper.createRandomDirectory();
         TestNG tng = createTests(outputDir, "suite", Issue1262TestSample.class);
         LocalJUnitReportReporter reportReporter = new LocalJUnitReportReporter();
-        tng.addListener((ITestNGListener) reportReporter);
+        tng.addListener(reportReporter);
         tng.run();
         Testsuite suite = reportReporter.getTestsuite(Issue1262TestSample.class.getName());
         List<String> expected = new LinkedList<String>() {
@@ -94,12 +95,25 @@ public class JUnitReportsTest extends SimpleBaseTest {
         assertEquals(actual,expected);
     }
 
-    private static Map<String, Integer> createMapFor(int testCount, int errors, int ignored, int failures, int skipped) {
+    @Test
+    public void testEnsureTestnameDoesnotAcceptNullValues() throws IOException {
+        Path outputDir = TestHelper.createRandomDirectory();
+        TestNG tng = createTests(outputDir, "suite", SampleTestClass.class);
+        LocalJUnitReportReporter reportReporter = new LocalJUnitReportReporter();
+        tng.addListener(reportReporter);
+        tng.run();
+        Testsuite suite = reportReporter.getTestsuite(SampleTestClass.class.getName());
+        Testcase testcase = suite.getTestcase().get(0);
+        String actual = testcase.getName();
+        assertEquals(actual, "Test_001");
+    }
+
+    private static Map<String, Integer> createMapFor(int testCount, int skipped) {
         Map<String, Integer> map = Maps.newHashMap();
         map.put(TESTS, testCount);
-        map.put(ERRORS, errors);
-        map.put(IGNORED, ignored);
-        map.put(FAILURES, failures);
+        map.put(ERRORS, 0);
+        map.put(IGNORED, 0);
+        map.put(FAILURES, 0);
         map.put(SKIPPED, skipped);
         return map;
     }

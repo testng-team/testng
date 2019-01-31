@@ -15,6 +15,7 @@ public class ParametersTest {
 
   @Test
   @Parameters({"testdata"})
+  @SuppressWarnings("unused")
   public void filterOutInJectedTypesFromOptionalValuesTest(
       XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
     JDK15AnnotationFinder finder = new JDK15AnnotationFinder(null);

@@ -1,8 +1,7 @@
 package test.priority;
 
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -23,7 +22,12 @@ public class PriorityTest extends SimpleBaseTest {
       tng.setParallel(XmlSuite.ParallelMode.METHODS);
     }
     tng.run();
-    Assert.assertEquals(listener.getInvokedMethodNames().toArray(), methods);
+    if (parallel) {
+      //If tests are being executed in parallel, then order of methods is non-deterministic.
+      assertThat(listener.getInvokedMethodNames()).containsExactlyInAnyOrder(methods);
+    } else {
+      assertThat(listener.getInvokedMethodNames()).containsExactly(methods);
+    }
   }
 
   @Test(enabled = false, description = "Make sure priorities work in parallel mode")
@@ -71,7 +75,7 @@ public class PriorityTest extends SimpleBaseTest {
         .stream()
         .filter(each -> !allSkipped.contains(each))
         .collect(Collectors.toList());
-    Assertions.assertThat(actual).containsExactlyElementsOf(expected);
+    assertThat(actual).containsExactlyElementsOf(expected);
   }
 
 }

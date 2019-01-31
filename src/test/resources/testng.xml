@@ -121,6 +121,7 @@
       <class name="test.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.configuration.github1700.RunTest"/>
+      <class name="test.aftergroups.AfterGroupsBehaviorTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
@@ -148,6 +149,7 @@
       <class name="test.ReturnValueTest" />
       <class name="test.groupbug.GroupBugTest" />
       <class name="test.groups.issue1834.IssueTest"/>
+      <class name="test.groups.issue182.IssueTest"/>
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />
@@ -181,13 +183,13 @@
       <class name="test.github1461.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.factory.issue1041.IssueTest"/>
+      <class name="test.factory.issue1924.IssueTest"/>
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
       <class name="test.objectfactory.github1827.GitHub1827Test"/>
       <class name="test.github1490.VerifyDataProviderListener"/>      
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
-      <class name="test.aftergroups.issue1880.IssueTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>
     </classes>
   </test>
@@ -695,7 +697,7 @@
     <classes>
       <class name="test.skipex.SkippedExceptionTest" />
       <class name="test.skipex.SkipAndExpectedTest" />
-      <class name="test.skip.GitHubIssue1878Test"/>
+      <class name="test.skip.ReasonForSkipTest"/>
     </classes>
   </test>
 
@@ -728,7 +730,14 @@
     <classes>
       <class name="org.testng.internal.UtilsTest" />
       <class name="org.testng.internal.ClassHelperTest"/>
+      <class name="org.testng.internal.InstanceCreatorTest"/>
       <class name="test.issue1430.TestFileToClass"/>
+    </classes>
+  </test>
+
+  <test name="Reporters">
+    <classes>
+      <class name="org.testng.reporters.jq.TimesPanelTest" />
     </classes>
   </test>
 

@@ -6,6 +6,8 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
+import org.testng.internal.ConfigMethodArguments;
+import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.Utils;
@@ -335,13 +337,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     //
     if (invoker != null) {
       if (!beforeSuiteMethods.values().isEmpty()) {
-        invoker.invokeConfigurations(
-            null,
-            beforeSuiteMethods.values().toArray(new ITestNGMethod[0]),
-            xmlSuite,
-            xmlSuite.getParameters(),
-            null, /* no parameter values */
-            null /* instance */);
+        ConfigMethodArguments arguments = new Builder()
+            .usingConfigMethodsAs(beforeSuiteMethods.values())
+            .forSuite(xmlSuite)
+            .usingParameters(xmlSuite.getParameters())
+            .build();
+        invoker.getConfigInvoker().invokeConfigurations(arguments);
       }
 
       Utils.log("SuiteRunner", 3, "Created " + testRunners.size() + " TestRunners");
@@ -360,13 +361,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // Invoke afterSuite methods
       //
       if (!afterSuiteMethods.values().isEmpty()) {
-        invoker.invokeConfigurations(
-            null,
-            afterSuiteMethods.values().toArray(new ITestNGMethod[0]),
-            xmlSuite,
-            xmlSuite.getAllParameters(),
-            null, /* no parameter values */
-            null /* instance */);
+        ConfigMethodArguments arguments = new Builder()
+            .usingConfigMethodsAs(afterSuiteMethods.values())
+            .forSuite(xmlSuite)
+            .usingParameters(xmlSuite.getAllParameters())
+            .build();
+        invoker.getConfigInvoker().invokeConfigurations(arguments);
       }
     }
   }
@@ -553,7 +553,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     System.out.println("[SuiteRunner] " + s);
   }
 
-  /** The default implementation of {@link ITestRunnerFactory}. */
+  /** The default implementation of {@link ITestRunnerFactory2}. */
   private static class DefaultTestRunnerFactory implements ITestRunnerFactory2 {
     private ITestListener[] failureGenerators;
     private boolean useDefaultListeners;

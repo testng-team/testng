@@ -260,12 +260,12 @@ public class EmailableReporter implements IReporter {
       String cname = method.getTestClass().getName();
       m_out.println(
           "<h2 id=\"m" + m_methodIndex + "\">" + cname + ":" + method.getMethodName() + "</h2>");
-      generateForResult(result, method);
+      generateForResult(result);
       m_out.println("<p class=\"totop\"><a href=\"#summary\">back to summary</a></p>");
     }
   }
 
-  private void generateForResult(ITestResult ans, ITestNGMethod method) {
+  private void generateForResult(ITestResult ans) {
     Object[] parameters = ans.getParameters();
     boolean hasParameters = parameters != null && parameters.length > 0;
     if (hasParameters) {
@@ -308,7 +308,7 @@ public class EmailableReporter implements IReporter {
         if (hasReporterOutput) {
           m_out.println("<h3>" + (wantsMinimalOutput ? "Expected Exception" : "Failure") + "</h3>");
         }
-        generateExceptionReport(exception, method);
+        generateExceptionReport(exception);
       }
       if (hasParameters) {
         m_out.println("</td></tr>");
@@ -321,7 +321,7 @@ public class EmailableReporter implements IReporter {
     }
   }
 
-  protected void generateExceptionReport(Throwable exception, ITestNGMethod method) {
+  protected void generateExceptionReport(Throwable exception) {
     m_out.print("<div class=\"stacktrace\">");
     m_out.print(Utils.shortStackTrace(exception, true));
     m_out.println("</div>");

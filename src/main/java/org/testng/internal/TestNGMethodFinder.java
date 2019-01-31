@@ -33,8 +33,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
 
-  private RunInfo runInfo = null;
-  private IAnnotationFinder annotationFinder = null;
+  private RunInfo runInfo;
+  private IAnnotationFinder annotationFinder;
   private final Comparator<ITestNGMethod> comparator;
 
   public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
@@ -164,12 +164,12 @@ public class TestNGMethodFinder implements ITestMethodFinder {
           break;
         case BEFORE_GROUPS:
           beforeGroups = configuration.getBeforeGroups();
-          create = beforeGroups.length > 0;
+          create = shouldCreateBeforeAfterGroup(beforeGroups, annotationFinder, clazz, configuration.getInheritGroups());
           isBeforeTestMethod = true;
           break;
         case AFTER_GROUPS:
           afterGroups = configuration.getAfterGroups();
-          create = afterGroups.length > 0;
+          create = shouldCreateBeforeAfterGroup(afterGroups, annotationFinder, clazz, configuration.getInheritGroups());
           isBeforeTestMethod = true;
           break;
         default:
@@ -205,6 +205,18 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         unique,
         excludedMethods,
         comparator);
+  }
+
+  private static boolean shouldCreateBeforeAfterGroup(String[] groups, IAnnotationFinder finder,
+      Class<?> clazz, boolean isInheritGroups) {
+    if (!isInheritGroups) {
+      return groups.length > 0;
+    }
+    ITestAnnotation test = AnnotationHelper.findTest(finder, clazz);
+    if (test == null) {
+      return groups.length > 0;
+    }
+    return groups.length > 0 || test.getGroups().length > 0;
   }
 
   private void addConfigurationMethod(

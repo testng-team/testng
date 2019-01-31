@@ -11,6 +11,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
+import org.testng.util.Strings;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
 import org.testng.xml.dom.Tag;
@@ -333,6 +334,9 @@ public class XmlSuite implements Cloneable {
    * @param name The name to set.
    */
   public void setName(String name) {
+    if (Strings.isNullOrEmpty(name)) {
+      throw new IllegalArgumentException("Suite name cannot be null (or) empty.");
+    }
     m_name = name;
   }
 

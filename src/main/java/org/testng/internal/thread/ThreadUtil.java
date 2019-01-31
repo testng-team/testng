@@ -57,19 +57,15 @@ public class ThreadUtil {
             threadPoolSize,
             timeout,
             TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
+            new LinkedBlockingQueue<>(),
             new TestNGThreadFactory(name));
 
     List<Callable<Object>> callables = Lists.newArrayList();
     for (final Runnable task : tasks) {
       callables.add(
-          new Callable<Object>() {
-
-            @Override
-            public Object call() throws Exception {
-              task.run();
-              return null;
-            }
+          () -> {
+            task.run();
+            return null;
           });
     }
     try {
@@ -89,7 +85,7 @@ public class ThreadUtil {
   /** Returns a readable name of the current executing thread. */
   public static String currentThreadInfo() {
     Thread thread = Thread.currentThread();
-    return String.valueOf(thread.getName() + "@" + thread.hashCode());
+    return thread.getName() + "@" + thread.hashCode();
   }
 
   public static IExecutor createExecutor(int threadCount, String threadFactoryName) {

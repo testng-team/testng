@@ -10,7 +10,7 @@ public class GitHub1380Sample2 {
 
   @Test(priority = 2)
   public void testMethodB() throws InterruptedException {
-    TimeUnit.SECONDS.sleep(1);
+    TimeUnit.SECONDS.sleep(5);
   }
 
   @Test(priority = 1)

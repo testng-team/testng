@@ -60,7 +60,11 @@ public final class TestListenerHelper {
           itl.onTestFailedButWithinSuccessPercentage(tr);
           break;
         case ITestResult.FAILURE:
-          itl.onTestFailure(tr);
+          if (ITestResult.wasFailureDueToTimeout(tr)) {
+            itl.onTestFailedWithTimeout(tr);
+          } else {
+            itl.onTestFailure(tr);
+          }
           break;
         case ITestResult.SUCCESS:
           itl.onTestSuccess(tr);
@@ -75,6 +79,7 @@ public final class TestListenerHelper {
   }
 
   /** @return all the @Listeners annotations found in the current class and its superclasses. */
+  @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
     result.listenerClasses = Lists.newArrayList();

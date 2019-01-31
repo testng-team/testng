@@ -1,5 +1,6 @@
 package test.retryAnalyzer;
 
+import java.util.Arrays;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -28,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import test.retryAnalyzer.issue1946.RetryAnalyzer;
+import test.retryAnalyzer.issue1946.TestclassSample1;
+import test.retryAnalyzer.issue1946.TestclassSample2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -151,6 +155,41 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     testng.run();
     ITestResult firstResult = runAssertions(reporter.getRetried(), "testMethod");
     assertThat(firstResult.getParameters()).containsAll(Collections.singletonList(1));
+  }
+
+  @Test(description = "GITHUB-1946")
+  public void ensureRetriesHappenForDataDrivenTests() {
+    List<String> expected = Arrays.asList(
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param2, value2]",
+
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param2, value2]",
+
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param2, value2]",
+
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param2, value2]",
+
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param2, value2]"
+    );
+    XmlSuite xmlsuite = createXmlSuite("1946_suite");
+    createXmlTest(xmlsuite, "1946_test", TestclassSample1.class, TestclassSample2.class);
+    TestNG testng = create(xmlsuite);
+    testng.run();
+    assertThat(RetryAnalyzer.logs).containsExactlyElementsOf(expected);
   }
 
   private ITestResult runAssertions(Set<ITestResult> results, String methodName) {

@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 
 /**
@@ -20,6 +21,14 @@ public class ConstructorOrMethod {
 
   public ConstructorOrMethod(Constructor c) {
     m_constructor = c;
+  }
+
+  public ConstructorOrMethod(Executable e) {
+    if (e instanceof Constructor) {
+      m_constructor = (Constructor) e;
+    } else {
+      m_method = (Method) e;
+    }
   }
 
   public Class<?> getDeclaringClass() {
@@ -82,5 +91,17 @@ public class ConstructorOrMethod {
   public String toString() {
     if (m_method != null) return m_method.toString();
     else return m_constructor.toString();
+  }
+
+  public String stringifyParameterTypes() {
+    StringBuilder result = new StringBuilder();
+    int i = 0;
+    for (Class<?> p : getParameterTypes()) {
+      if (i++ > 0) {
+        result.append(", ");
+      }
+      result.append(p.getName());
+    }
+    return result.toString();
   }
 }

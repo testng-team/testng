@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
+import test.listeners.issue1952.TestclassSample;
 
 public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
 
@@ -69,6 +70,31 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
         IEXECUTIONLISTENER_ON_EXECUTION_FINISH
     );
     runTest(expected, SimpleTestClassWithFailedConfigAndSkippedTestMethod.class);
+  }
+
+  @Test(description = "Test class has only 1 failed test method due to a timeout")
+  public void testOrderHasTimedoutTestMethod() {
+    List<String> expected = Arrays.asList(
+        IEXECUTIONLISTENER_ON_EXECUTION_START,
+        IALTERSUITELISTENER_ALTER,
+        IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS,
+        ISUITELISTENER_ON_START,
+        ITESTLISTENER_ON_START_TEST_TAG,
+        METHODINTERCEPTOR_INTERCEPT,
+        METHODINTERCEPTOR_INTERCEPT,
+        ICLASSLISTENER_ON_BEFORE_CLASS,
+        ITESTLISTENER_ON_START_TEST_METHOD,
+        IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+        IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+        ITESTLISTENER_ON_TEST_TIMEOUT_TEST_METHOD,
+        ICLASSLISTENER_ON_AFTER_CLASS,
+        IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
+        ITESTLISTENER_ON_FINISH_TEST_TAG,
+        ISUITELISTENER_ON_FINISH,
+        IREPORTER_GENERATE_REPORT,
+        IEXECUTIONLISTENER_ON_EXECUTION_FINISH
+    );
+    runTest(expected, TestclassSample.class);
   }
 
   @Test(description = "Test class has only 1 failed config, 1 skipped config and skipped test method")

@@ -166,6 +166,11 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
   }
 
   @Override
+  public void onTestFailedWithTimeout(ITestResult result) {
+    messages.add("org.testng.ITestListener.onTestFailedWithTimeout(ITestResult result)");
+  }
+
+  @Override
   public void onTestSkipped(ITestResult result) {
     messages.add("org.testng.ITestListener.onTestSkipped(ITestResult result)");
   }

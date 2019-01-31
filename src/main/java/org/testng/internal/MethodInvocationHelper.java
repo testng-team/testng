@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.concurrent.TimeUnit;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -291,9 +292,20 @@ public class MethodInvocationHelper {
         new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
     long startTime = System.currentTimeMillis();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
+    boolean notTimedout = true;
     try {
+      Thread currentThread = Thread.currentThread();
+      new Thread(() -> {
+        try {
+          TimeUnit.MILLISECONDS.sleep(realTimeOut);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+        currentThread.interrupt();
+      }).start();
       imr.run();
-      if (System.currentTimeMillis() <= startTime + realTimeOut) {
+      notTimedout = System.currentTimeMillis() <= startTime + realTimeOut;
+      if (notTimedout) {
         testResult.setStatus(ITestResult.SUCCESS);
       } else {
         ThreadTimeoutException exception =
@@ -307,7 +319,18 @@ public class MethodInvocationHelper {
         testResult.setStatus(ITestResult.FAILURE);
       }
     } catch (Exception ex) {
-      testResult.setThrowable(ex.getCause());
+      if (notTimedout) {
+        testResult.setThrowable(ex.getCause());
+      } else {
+        ThreadTimeoutException exception =
+            new ThreadTimeoutException(
+                "Method "
+                    + tm.getQualifiedName()
+                    + "()"
+                    + " didn't finish within the time-out "
+                    + realTimeOut);
+        testResult.setThrowable(exception);
+      }
       testResult.setStatus(ITestResult.FAILURE);
     }
   }

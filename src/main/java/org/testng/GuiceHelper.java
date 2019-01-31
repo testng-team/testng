@@ -7,7 +7,6 @@ import org.testng.collections.Lists;
 import org.testng.internal.ClassImpl;
 import org.testng.internal.annotations.AnnotationHelper;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 
 class GuiceHelper {
@@ -18,9 +17,9 @@ class GuiceHelper {
   }
 
   Injector getInjector(IClass iClass) {
-    Annotation annotation =
+    Guice guice =
         AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
-    if (annotation == null) {
+    if (guice == null) {
       return null;
     }
     if (iClass instanceof TestClass) {
@@ -31,7 +30,6 @@ class GuiceHelper {
     }
     Injector parentInjector = ((ClassImpl) iClass).getParentInjector();
 
-    Guice guice = (Guice) annotation;
     List<Module> moduleInstances =
         Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
 
