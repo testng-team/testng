@@ -1,6 +1,7 @@
 package org.testng.internal.annotations;
 
 import org.testng.IRetryAnalyzer;
+import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.ClassHelper;
 
@@ -25,6 +26,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
   private boolean m_skipFailedInvocations = false;
   private boolean m_ignoreMissingDependencies = false;
+  private CustomAttribute[] m_attributes = {};
 
   /** @return the expectedExceptions */
   @Override
@@ -184,6 +186,16 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   @Override
   public boolean ignoreMissingDependencies() {
     return m_ignoreMissingDependencies;
+  }
+
+  @Override
+  public CustomAttribute[] getAttributes() {
+    return m_attributes;
+  }
+
+  @Override
+  public void setAttributes(CustomAttribute[] attributes) {
+    m_attributes = attributes;
   }
 
   private static boolean isRetryAnalyzerNotTestNGInjected(Class<? extends IRetryAnalyzer> c) {

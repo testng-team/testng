@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -21,6 +22,7 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
   private boolean isDataDriven = false;
+  private CustomAttribute[] m_attributes = {};
 
   /** Constructs a <code>TestNGMethod</code> */
   public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
@@ -90,6 +92,7 @@ public class TestNGMethod extends BaseTestMethod {
         setInvocationTimeOut(testAnnotation.invocationTimeOut());
         setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
         setPriority(testAnnotation.getPriority());
+        m_attributes = testAnnotation.getAttributes();
       }
 
       // Groups
@@ -205,5 +208,10 @@ public class TestNGMethod extends BaseTestMethod {
   @Override
   public boolean isDataDriven() {
     return isDataDriven;
+  }
+
+  @Override
+  public CustomAttribute[] getAttributes() {
+    return m_attributes;
   }
 }

@@ -934,5 +934,11 @@
     </classes>
   </test>
 
+  <test name="Custom attributes tests">
+    <classes>
+      <class name="test.custom.CustomAttributeTest"/>
+    </classes>
+  </test>
+
 </suite>
 
