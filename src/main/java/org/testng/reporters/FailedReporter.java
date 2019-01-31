@@ -21,10 +21,8 @@ import org.testng.xml.XmlTest;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -88,7 +86,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
 
       // Get the transitive closure of all the failed methods and the methods
       // they depend on
-      Set<ITestResult> allTests = new HashSet<>();
+      Set<ITestResult> allTests = Sets.newHashSet();
       allTests.addAll(failedTests);
       allTests.addAll(skippedTests);
       for (ITestResult failedTest : allTests) {
@@ -168,14 +166,15 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       Class clazz = instances == null ? m.getRealClass() : instances.getClass();
       Set<ITestNGMethod> methodList = methodsMap.get(clazz);
       if (null == methodList) {
-        methodList = new HashSet<>();
+        methodList = Sets.newHashSet();
         methodsMap.put(clazz, methodList);
       }
       methodList.add(m);
     }
 
     // Store parameters per XmlClass
-    Map<String,  Map<String,  String>> classParameters = new HashMap<String,Map<String,  String>>();
+
+    Map<String,  Map<String,  String>> classParameters = Maps.newHashMap();
     for (XmlClass c : srcXmlTest.getClasses()) {
       classParameters.put(c.getName(),c.getLocalParameters());
     }
