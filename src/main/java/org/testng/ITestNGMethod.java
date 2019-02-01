@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
@@ -246,5 +247,13 @@ public interface ITestNGMethod extends Cloneable {
    */
   default IParameterInfo getFactoryMethodParamsInfo() {
     return null;
+  }
+
+  /**
+   * @return - An array of {@link CustomAttribute} that represents the custom attributes associated
+   * with a test.
+   */
+  default CustomAttribute[] getAttributes() {
+    return new CustomAttribute[]{};
   }
 }

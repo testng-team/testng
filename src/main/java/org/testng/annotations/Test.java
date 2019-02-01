@@ -143,4 +143,10 @@ public @interface Test {
 
   /** The scheduling priority. Lower priorities will be scheduled first. */
   int priority() default 0;
+
+  /**
+   * @return - An array of {@link CustomAttribute} that represents a set of custom attributes for a
+   * test method.
+   */
+  CustomAttribute[] attributes() default {};
 }

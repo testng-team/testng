@@ -1,4 +1,5 @@
 Current
+New:   GITHUB-2003: Add to @Test interface fields IDs and issues (Krishnan Mahadevan)
 Fixed: GITHUB-2009: Test Timeout not respected in parallel="methods" mode (Krishnan Mahadevan)
 Fixed: GITHUB-2008: Preserve parameters in each class and not all of the test parameters
 Fixed: GITHUB-1981: Fixes NPE in Assert.assertEquals when an array contains null (Maneesh MS)
