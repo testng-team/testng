@@ -95,4 +95,8 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   int getPriority();
 
   void setPriority(int priority);
+
+  CustomAttribute[] getAttributes();
+
+  void setAttributes(CustomAttribute[] attributes);
 }
