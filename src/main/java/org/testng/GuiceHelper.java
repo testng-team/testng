@@ -77,7 +77,7 @@ public class GuiceHelper {
 
   public static Injector createInjector(ITestContext context, List<Module> moduleInstances) {
     Module parentModule = getParentModule(context);
-    List fullModules = Lists.newArrayList(moduleInstances);
+    List<Module> fullModules = Lists.newArrayList(moduleInstances);
     if (parentModule != null) {
       fullModules.add(parentModule);
     }

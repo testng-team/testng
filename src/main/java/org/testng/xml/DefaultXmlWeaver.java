@@ -30,7 +30,7 @@ class DefaultXmlWeaver implements IWeaveXml {
   public String asXml(XmlSuite xmlSuite) {
     XMLStringBuffer xsb = new XMLStringBuffer();
     xsb.setDefaultComment(defaultComment);
-    xsb.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
+    xsb.setDocType("suite SYSTEM \"" + Parser.HTTPS_TESTNG_DTD_URL + '\"');
     Properties p = new Properties();
     p.setProperty("name", xmlSuite.getName());
     if (xmlSuite.getVerbose() != null) {
