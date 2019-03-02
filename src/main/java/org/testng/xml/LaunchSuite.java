@@ -121,7 +121,7 @@ public abstract class LaunchSuite {
      */
     protected XMLStringBuffer createContentBuffer() {
       XMLStringBuffer suiteBuffer = new XMLStringBuffer();
-      suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + "\"");
+      suiteBuffer.setDocType("suite SYSTEM \"" + Parser.HTTPS_TESTNG_DTD_URL + "\"");
 
       Properties attrs = new Properties();
       attrs.setProperty("parallel", XmlSuite.ParallelMode.NONE.toString());

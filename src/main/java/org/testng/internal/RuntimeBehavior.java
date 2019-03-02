@@ -9,12 +9,17 @@ public final class RuntimeBehavior {
   public static final String TESTNG_MODE_DRYRUN = "testng.mode.dryrun";
   private static final String TEST_CLASSPATH = "testng.test.classpath";
   private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
+  public static final String TESTNG_USE_UNSECURE_URL = "testng.dtd.http";
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
 
   private RuntimeBehavior() {}
 
   public static boolean showTestNGStackFrames() {
     return Boolean.getBoolean(SHOW_TESTNG_STACK_FRAMES);
+  }
+
+  public static boolean useHttpUrlForDtd() {
+    return Boolean.getBoolean(TESTNG_USE_UNSECURE_URL);
   }
 
   public static String getDefaultLineSeparator() {

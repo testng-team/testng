@@ -6,6 +6,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.xml.sax.Attributes;
@@ -89,31 +90,37 @@ public class TestNGContentHandler extends DefaultHandler {
   @Override
   public InputSource resolveEntity(String systemId, String publicId)
       throws IOException, SAXException {
-    InputSource result;
-    if (Parser.DEPRECATED_TESTNG_DTD_URL.equals(publicId)
-        || Parser.TESTNG_DTD_URL.equals(publicId)) {
-      m_validate = true;
-      InputStream is = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
-      if (null == is) {
-        is = Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
-        if (null == is) {
-          System.out.println(
-              "WARNING: couldn't find in classpath "
-                  + publicId
-                  + "\n"
-                  + "Fetching it from the Web site.");
-          result = super.resolveEntity(systemId, publicId);
-        } else {
-          result = new InputSource(is);
-        }
+    if (Parser.isUnRecognizedPublicId(publicId)) {
+      //The Url is not TestNG recognized
+      boolean isHttps = publicId != null && publicId.trim().toLowerCase().startsWith("https");
+      if (isHttps || RuntimeBehavior.useHttpUrlForDtd()) {
+        return super.resolveEntity(systemId, publicId);
       } else {
-        result = new InputSource(is);
+        String msg = "TestNG by default disables loading DTD from unsecure Urls. " +
+            "If you need to explicitly load the DTD from a http url, please do so " +
+            "by using the JVM argument [-D" + RuntimeBehavior.TESTNG_USE_UNSECURE_URL + "=true]";
+        throw new TestNGException(msg);
       }
-    } else {
-      result = super.resolveEntity(systemId, publicId);
     }
+    m_validate = true;
+    InputStream is = loadDtdUsingClassLoader();
+    if (is != null) {
+      return new InputSource(is);
+    }
+    System.out.println(
+        "WARNING: couldn't find in classpath "
+            + publicId
+            + "\n"
+            + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
+    return super.resolveEntity(systemId, Parser.HTTPS_TESTNG_DTD_URL);
+  }
 
-    return result;
+  private InputStream loadDtdUsingClassLoader() {
+    InputStream is = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
+    if (is != null) {
+      return is;
+    }
+    return Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
   }
 
   /** Parse <suite-file> */
@@ -400,18 +407,15 @@ public class TestNGContentHandler extends DefaultHandler {
   public void xmlMethodSelectors(boolean start, Attributes attributes) {
     if (start) {
       m_currentSelectors = new ArrayList<>();
-    } else {
-      switch (m_locations.peek()) {
-        case TEST:
-          m_currentTest.setMethodSelectors(m_currentSelectors);
-          break;
-        default:
-          m_currentSuite.setMethodSelectors(m_currentSelectors);
-          break;
-      }
-
-      m_currentSelectors = null;
+      return;
     }
+    if (m_locations.peek() == Location.TEST) {
+      m_currentTest.setMethodSelectors(m_currentSelectors);
+    } else {
+      m_currentSuite.setMethodSelectors(m_currentSelectors);
+    }
+
+    m_currentSelectors = null;
   }
 
   /** Parse <selector-class> */
@@ -450,7 +454,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   /** Parse <run> */
-  public void xmlRun(boolean start, Attributes attributes) throws SAXException {
+  public void xmlRun(boolean start, Attributes attributes) {
     if (start) {
       m_currentRuns = Lists.newArrayList();
     } else {
@@ -466,7 +470,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   /** Parse <group> */
-  public void xmlGroup(boolean start, Attributes attributes) throws SAXException {
+  public void xmlGroup(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest.addXmlDependencyGroup(
           attributes.getValue("name"), attributes.getValue("depends-on"));
@@ -474,7 +478,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   /** Parse <groups> */
-  public void xmlGroups(boolean start, Attributes attributes) throws SAXException {
+  public void xmlGroups(boolean start, Attributes attributes) {
     if (start) {
       m_currentGroups = new XmlGroups();
       m_currentIncludedGroups = Lists.newArrayList();
@@ -493,14 +497,14 @@ public class TestNGContentHandler extends DefaultHandler {
    * something when the tag opens, the code is inlined below in the startElement() method.
    */
   @Override
-  public void startElement(String uri, String localName, String qName, Attributes attributes)
-      throws SAXException {
+  public void startElement(String uri, String localName, String qName, Attributes attributes) {
     if (!m_validate && !m_hasWarn) {
-      Logger.getLogger(TestNGContentHandler.class)
-          .warn(
-              "It is strongly recommended to add "
-                  + "\"<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\" >\" at the top of your file, "
-                  + "otherwise TestNG may fail or not work as expected.");
+      String msg = String.format(
+          "It is strongly recommended to add "
+              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of your file, "
+              + "otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL
+      );
+      Logger.getLogger(TestNGContentHandler.class).warn(msg);
       m_hasWarn = true;
     }
     String name = attributes.getValue("name");
@@ -649,8 +653,8 @@ public class TestNGContentHandler extends DefaultHandler {
     m_locations.push(l);
   }
 
-  private Location popLocation() {
-    return m_locations.pop();
+  private void popLocation() {
+    m_locations.pop();
   }
 
   private List<Integer> stringToList(String in) {
@@ -663,7 +667,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   @Override
-  public void endElement(String uri, String localName, String qName) throws SAXException {
+  public void endElement(String uri, String localName, String qName) {
     if ("suite".equals(qName)) {
       xmlSuite(false, null);
     } else if ("suite-file".equals(qName)) {
@@ -722,7 +726,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   @Override
-  public void characters(char ch[], int start, int length) {
+  public void characters(char[] ch, int start, int length) {
     if (null != m_currentLanguage && !areWhiteSpaces(ch, start, length)) {
       m_currentExpression += new String(ch, start, length);
     }
@@ -744,7 +748,7 @@ public class TestNGContentHandler extends DefaultHandler {
       if (result == null) {
         result = new StringBuilder(value.substring(startPosition, startIndex));
       } else {
-        result.append(value.substring(startPosition, startIndex));
+        result.append(value, startPosition, startIndex);
       }
       String propertyValue = System.getProperty(property);
       if (propertyValue == null) {
