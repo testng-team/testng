@@ -191,6 +191,7 @@
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>
+      <class name="test.beforegroupdeps.BeforeGroupDependency"/>
     </classes>
   </test>
 
