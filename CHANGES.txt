@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2017: Don't use child injectors for Guice tests (Joe Barnett)
 New:   GITHUB-2003: Add to @Test interface fields IDs and issues (Krishnan Mahadevan)
 Fixed: GITHUB-2009: Test Timeout not respected in parallel="methods" mode (Krishnan Mahadevan)
 Fixed: GITHUB-2008: Preserve parameters in each class and not all of the test parameters

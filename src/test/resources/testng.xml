@@ -768,6 +768,12 @@
     </classes>
   </test>
 
+  <test name="Guice JIT Binding">
+    <classes>
+      <class name="test.guice.jitbinding.JitBindingTest" />
+    </classes>
+  </test>
+
   <test name="Listener invokers">
     <packages>
       <package name="org.testng.internal.invokers"/>
