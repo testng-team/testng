@@ -2,10 +2,12 @@ package org.testng.internal;
 
 import static org.testng.internal.Utils.isStringNotEmpty;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 
+import org.testng.GuiceHelper;
 import org.testng.IClass;
 import org.testng.ISuite;
 import org.testng.ITest;
@@ -20,6 +22,8 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -128,42 +132,15 @@ public class ClassImpl implements IClass {
     return injector.getInstance(m_class);
   }
 
-  @SuppressWarnings("unchecked")
   public Injector getParentInjector() {
     ISuite suite = m_testContext.getSuite();
     // Reuse the previous parent injector, if any
     Injector injector = suite.getParentInjector();
     if (injector == null) {
-      String stageString = suite.getGuiceStage();
-      Stage stage;
-      if (isStringNotEmpty(stageString)) {
-        stage = Stage.valueOf(stageString);
-      } else {
-        stage = Stage.DEVELOPMENT;
-      }
-      if (m_hasParentModule) {
-        Class<Module> parentModule = (Class<Module>) ClassHelper.forName(suite.getParentModule());
-        if (parentModule == null) {
-          throw new TestNGException(
-              "Cannot load parent Guice module class: " + suite.getParentModule());
-        }
-        Module module = newModule(parentModule);
-        injector = com.google.inject.Guice.createInjector(stage, module);
-      } else {
-        injector = com.google.inject.Guice.createInjector(stage);
-      }
+      injector = GuiceHelper.createInjector(m_testContext, Collections.emptyList());
       suite.setParentInjector(injector);
     }
     return injector;
-  }
-
-  private Module newModule(Class<Module> module) {
-    try {
-      Constructor<Module> moduleConstructor = module.getDeclaredConstructor(ITestContext.class);
-      return InstanceCreator.newInstance(moduleConstructor, m_testContext);
-    } catch (NoSuchMethodException e) {
-      return InstanceCreator.newInstance(module);
-    }
   }
 
   @Override
