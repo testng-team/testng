@@ -9,7 +9,7 @@ Send the public key:
   or wwwkeys.at.pgp.net
 
 
-  instructions at https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
+  instructions at https://central.sonatype.org/pages/working-with-pgp-signatures.html
 
 
 Configure ~/.m2/settings.xml with Nexus user/password:
