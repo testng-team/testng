@@ -1,10 +1,10 @@
 package test;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
@@ -13,15 +13,14 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 public class JUnitTestClassLoader extends ClassLoader {
-  private final File tmpDir;
-  public JUnitTestClassLoader() {
+
+  private static Path createTempDir() {
     try {
-      File tmp = File.createTempFile("aaa", null);
-      tmp.delete();
-      tmpDir = tmp.getParentFile();
-    } catch (Exception e) {
-      throw new Error(e);
+      return Files.createTempDirectory("junitclassloader");
+    } catch (IOException e) {
+      throw new TestNGException(e);
     }
+
   }
 
   @Test
@@ -95,19 +94,15 @@ public class JUnitTestClassLoader extends ClassLoader {
 
   private Class<?> compile(String src, String name) throws Exception {
     // compile class and load it into by a custom classloader
-    File srcFile = new File(tmpDir, name + ".java");
-    try (PrintWriter pw = new PrintWriter(new FileWriter(srcFile))) {
-      pw.append(src);
-    }
+    File directory = createTempDir().toFile();
+    File srcFile = new File(directory, name + ".java");
+    Files.write(srcFile.toPath(), src.getBytes(), StandardOpenOption.CREATE_NEW);
     JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
     assertEquals(0, javac.run(null, null, null, srcFile.getCanonicalPath()));
     srcFile.delete();
-    File classFile = new File(tmpDir, name + ".class");
-    byte[] bytes;
-    try (DataInputStream dis = new DataInputStream(new FileInputStream(classFile))) {
-      bytes = new byte[dis.available()];
-      dis.readFully(bytes);
-    }
+    File classFile = new File(directory, name + ".class");
+
+    byte[] bytes = Files.readAllBytes(classFile.toPath());
     classFile.delete();
     return defineClass(name, bytes, 0, bytes.length);
   }
