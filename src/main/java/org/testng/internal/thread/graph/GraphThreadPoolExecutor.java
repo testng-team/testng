@@ -61,7 +61,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     synchronized (m_graph) {
       List<T> freeNodes = m_graph.getFreeNodes();
       if (m_comparator != null) {
-          Collections.sort(freeNodes, m_comparator);
+          freeNodes.sort(m_comparator);
       }
       runNodes(freeNodes);
     }

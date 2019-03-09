@@ -2,7 +2,9 @@ package test.dependent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
@@ -152,38 +154,61 @@ public class DependentTest extends BaseTest {
   @DataProvider
   public static Object[][] dp1380() {
     return new Object[][] {
-      {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, false},
-      {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}, false},
-      {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, false},
-      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodA", "testMethodC"}, false},
-      {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, true},
-      {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}, true},
-      {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}, true},
-      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodC", "testMethodA"}, true}
+      {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
+      {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}},
+      {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
+      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodA", "testMethodC"}},
     };
   }
 
   @Test(dataProvider = "dp1380", description = "GITHUB-1380")
-  public void simpleCyclingDependencyShouldWork(
-      Class<?> testClass, String[] runMethods, boolean isParallel) {
+  public void simpleCyclingDependencyShouldWorkWithoutParallelism(
+      Class<?> testClass, String[] runMethods) {
     TestNG tng = SimpleBaseTest.create(testClass);
-    if (isParallel) {
-      tng.setParallel(ParallelMode.METHODS);
-    }
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
 
     tng.run();
     
-    if (!isParallel) {
         // When not running parallel, invoke order and succeed order are the same.
         assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
         assertThat(listener.getSucceedMethodNames()).containsExactly(runMethods);
-    } else {
-        // When running parallel, invoke order is consistent, but succeed order isn't.
-        assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
-        assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(runMethods);
-    }
+  }
+
+  @DataProvider
+  public static Object[][] dp1380Parallel() {
+    return new Object[][]{
+        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
+        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"},
+            new String[]{"testMethodB", "testMethodC", "testMethodA"}},
+        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
+        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodC", "testMethodA"},
+            new String[]{"testMethodC", "testMethodB", "testMethodA"}
+        }
+    };
+  }
+
+
+  @Test(dataProvider = "dp1380Parallel", description = "GITHUB-1380")
+  public void simpleCyclingDependencyShouldWorkWitParallelism(
+      Class<?> testClass, String[] ...runMethods) {
+    TestNG tng = SimpleBaseTest.create(testClass);
+    tng.setParallel(ParallelMode.METHODS);
+
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+
+    tng.run();
+
+    // When running parallel, invoke order is consistent, but succeed order isn't.
+    assertThat(listener.getInvokedMethodNames()).matches(strings -> {
+      boolean result = false;
+      for (String[] runMethod : runMethods) {
+        result = result || Arrays.asList(runMethod).equals(strings);
+      }
+      return result;
+    });
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(runMethods[0]);
   }
 }
