@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2000: ThreadPoolExecutor ConcurrentModificationException (Krishnan Mahadevan)
 Fixed: GITHUB-2022: Suite.xml files make web request when suite uses DTD over HTTPS (Krishnan Mahadevan)
 Fixed: GITHUB-2017: Don't use child injectors for Guice tests (Joe Barnett)
 New:   GITHUB-2003: Add to @Test interface fields IDs and issues (Krishnan Mahadevan)

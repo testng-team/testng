@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
-  private Map<Object, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
+  private final Map<Object, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked
-  private Map<ITestClass, Set<Object>> beforeClassMethods = Maps.newHashMap();
-  private Map<ITestClass, Set<Object>> afterClassMethods = Maps.newHashMap();
+  private final Map<ITestClass, Set<Object>> beforeClassMethods = Maps.newConcurrentMap();
+  private final Map<ITestClass, Set<Object>> afterClassMethods = Maps.newConcurrentMap();
 
   public ClassMethodMap(List<ITestNGMethod> methods, XmlMethodSelector xmlMethodSelector) {
     for (ITestNGMethod m : methods) {
