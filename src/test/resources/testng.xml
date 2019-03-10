@@ -95,6 +95,7 @@
       <class name="test.failures.FailuresTest" />
       <class name="test.mannotation.MAnnotationSampleTest" />
       <class name="test.mannotation.MAnnotation2SampleTest" />
+      <class name="test.mannotation.issue1976.IssueTest" />
       <class name="test.thread.FactoryTest" />
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />

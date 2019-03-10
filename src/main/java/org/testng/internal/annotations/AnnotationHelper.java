@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Objects;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -29,6 +30,7 @@ import org.testng.xml.XmlTest;
  */
 public class AnnotationHelper {
   private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
+  private static final String SUFFIX = "Please check if all classes being referred to, in the annotation are available in the classpath.";
 
   private static final List<Class<? extends IAnnotation>> ALL_ANNOTATIONS =
       Arrays.asList(
@@ -345,4 +347,41 @@ public class AnnotationHelper {
 
     return result.toString();
   }
-}
+
+  static <A extends Annotation> A getAnnotationFromClass(Class<?> clazz, Class<A> a) {
+    Objects.requireNonNull(clazz, "Cannot retrieve annotations from a null class.");
+    Objects.requireNonNull(a, "Cannot work with a null annotation");
+    try {
+      return clazz.getAnnotation(a);
+    } catch (Throwable t) {
+      String msg = "Encountered problems when parsing the annotation on class " + clazz.getCanonicalName() + ". ";
+      msg += SUFFIX;
+      throw new TypeNotPresentException(msg, t);
+    }
+  }
+
+  static <A extends Annotation> A getAnnotationFromMethod(Method method, Class<A> a) {
+    Objects.requireNonNull(method, "Cannot retrieve annotations from a null class.");
+    Objects.requireNonNull(a, "Cannot work with a null annotation");
+    try {
+      return method.getAnnotation(a);
+    } catch (Throwable t) {
+      String mname = method.getDeclaringClass().getCanonicalName() + "." + method.getName();
+      String msg = "Encountered problems when parsing the annotation on method " + mname + "(). ";
+      msg += SUFFIX;
+      throw new TypeNotPresentException(msg, t);
+    }
+  }
+
+  static <A extends Annotation> A getAnnotationFromConstructor(Constructor<?> c, Class<A> a) {
+    Objects.requireNonNull(c, "Cannot retrieve annotations from a null class.");
+    Objects.requireNonNull(a, "Cannot work with a null annotation");
+    try {
+      return c.getAnnotation(a);
+    } catch (Throwable t) {
+      String msg = "Encountered problems when parsing the annotation on constructor " + c.getName() + ". ";
+      msg += SUFFIX;
+      throw new TypeNotPresentException(msg, t);
+    }
+  }
+ }
