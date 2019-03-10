@@ -1,27 +1,16 @@
 package test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
-
+import java.util.List;
 import org.testng.*;
 import org.testng.annotations.Test;
+import testhelper.CompiledCode;
+import testhelper.SimpleCompiler;
+import testhelper.SourceCode;
+
 import static org.testng.Assert.*;
 
 public class JUnitTestClassLoader extends ClassLoader {
-
-  private static Path createTempDir() {
-    try {
-      return Files.createTempDirectory("junitclassloader");
-    } catch (IOException e) {
-      throw new TestNGException(e);
-    }
-
-  }
 
   @Test
   public void testPassAndFail() throws Exception {
@@ -93,17 +82,10 @@ public class JUnitTestClassLoader extends ClassLoader {
   }
 
   private Class<?> compile(String src, String name) throws Exception {
-    // compile class and load it into by a custom classloader
-    File directory = createTempDir().toFile();
-    File srcFile = new File(directory, name + ".java");
-    Files.write(srcFile.toPath(), src.getBytes(), StandardOpenOption.CREATE_NEW);
-    JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
-    assertEquals(0, javac.run(null, null, null, srcFile.getCanonicalPath()));
-    srcFile.delete();
-    File classFile = new File(directory, name + ".class");
-
-    byte[] bytes = Files.readAllBytes(classFile.toPath());
-    classFile.delete();
+    File directory = SimpleCompiler.createTempDir();
+    SourceCode sourceCode = new SourceCode(name,src, directory, false);
+    List<CompiledCode> compiledCode = SimpleCompiler.compileSourceCode(sourceCode);
+    byte[] bytes = compiledCode.get(0).getByteCode();
     return defineClass(name, bytes, 0, bytes.length);
   }
 
