@@ -361,7 +361,7 @@ public class AnnotationHelper {
   }
 
   static <A extends Annotation> A getAnnotationFromMethod(Method method, Class<A> a) {
-    Objects.requireNonNull(method, "Cannot retrieve annotations from a null class.");
+    Objects.requireNonNull(method, "Cannot retrieve annotations from a null method.");
     Objects.requireNonNull(a, "Cannot work with a null annotation");
     try {
       return method.getAnnotation(a);
@@ -374,7 +374,7 @@ public class AnnotationHelper {
   }
 
   static <A extends Annotation> A getAnnotationFromConstructor(Constructor<?> c, Class<A> a) {
-    Objects.requireNonNull(c, "Cannot retrieve annotations from a null class.");
+    Objects.requireNonNull(c, "Cannot retrieve annotations from a null constructor.");
     Objects.requireNonNull(a, "Cannot work with a null annotation");
     try {
       return c.getAnnotation(a);
