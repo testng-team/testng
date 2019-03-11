@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1987: Retrieve the data provider method's reference from the test method (Krishnan Mahadevan)
 Fixed: GITHUB-1976: Add a proper message when types are missing during annotation parsing (Krishnan Mahadevan)
 Fixed: GITHUB-2000: ThreadPoolExecutor ConcurrentModificationException (Krishnan Mahadevan)
 Fixed: GITHUB-2022: Suite.xml files make web request when suite uses DTD over HTTPS (Krishnan Mahadevan)

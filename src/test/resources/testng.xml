@@ -571,6 +571,7 @@
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
       <class name="test.dataprovider.IndicesTest" />
       <class name="test.dataprovider.DataProviderTest"/>
+      <class name="test.dataprovider.issue1987.IssueTest"/>
     </classes>
   </test>
 

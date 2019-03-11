@@ -778,6 +778,9 @@ public class Parameters {
     ParameterOrigin origin;
 
     if (null != dataProviderMethod) {
+      if (testMethod instanceof TestNGMethod) {
+        ((TestNGMethod) testMethod).setDataProviderMethod(dataProviderMethod);
+      }
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.IDataProviderMethod;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -23,6 +24,7 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_successPercentage = 100;
   private boolean isDataDriven = false;
   private CustomAttribute[] m_attributes = {};
+  private IDataProviderMethod dataProviderMethod = null;
 
   /** Constructs a <code>TestNGMethod</code> */
   public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
@@ -213,5 +215,14 @@ public class TestNGMethod extends BaseTestMethod {
   @Override
   public CustomAttribute[] getAttributes() {
     return m_attributes;
+  }
+
+  @Override
+  public IDataProviderMethod getDataProviderMethod() {
+    return dataProviderMethod;
+  }
+
+  public void setDataProviderMethod(IDataProviderMethod dataProviderMethod) {
+    this.dataProviderMethod = dataProviderMethod;
   }
 }
