@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.testng.IDataProviderMethod;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -71,40 +70,36 @@ public class TestNGMethod extends BaseTestMethod {
     setInvocationNumbers(
         xmlTest.getInvocationNumbers(
             m_method.getDeclaringClass().getName() + "." + m_method.getName()));
-    {
-      ITestAnnotation testAnnotation =
-          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
+    ITestAnnotation testAnnotation =
+        AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
 
-      if (testAnnotation == null) {
-        // Try on the class
-        testAnnotation =
-            AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
-      }
-
-      if (null != testAnnotation) {
-        setTimeOut(testAnnotation.getTimeOut());
-        m_successPercentage = testAnnotation.getSuccessPercentage();
-        isDataDriven = doesTestAnnotationHaveADataProvider(testAnnotation);
-
-        setInvocationCount(testAnnotation.getInvocationCount());
-        setThreadPoolSize(testAnnotation.getThreadPoolSize());
-        setAlwaysRun(testAnnotation.getAlwaysRun());
-        setDescription(findDescription(testAnnotation, xmlTest));
-        setEnabled(testAnnotation.getEnabled());
-        setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
-        setRetryAnalyzerClass(testAnnotation.getRetryAnalyzerClass());
-        setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
-        setInvocationTimeOut(testAnnotation.invocationTimeOut());
-        setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
-        setPriority(testAnnotation.getPriority());
-        m_attributes = testAnnotation.getAttributes();
-      }
-
-      // Groups
-      {
-        initGroups(ITestAnnotation.class);
-      }
+    if (testAnnotation == null) {
+      // Try on the class
+      testAnnotation =
+          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
     }
+
+    if (null != testAnnotation) {
+      setTimeOut(testAnnotation.getTimeOut());
+      m_successPercentage = testAnnotation.getSuccessPercentage();
+      isDataDriven = doesTestAnnotationHaveADataProvider(testAnnotation);
+
+      setInvocationCount(testAnnotation.getInvocationCount());
+      setThreadPoolSize(testAnnotation.getThreadPoolSize());
+      setAlwaysRun(testAnnotation.getAlwaysRun());
+      setDescription(findDescription(testAnnotation, xmlTest));
+      setEnabled(testAnnotation.getEnabled());
+      setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
+      setRetryAnalyzerClass(testAnnotation.getRetryAnalyzerClass());
+      setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
+      setInvocationTimeOut(testAnnotation.invocationTimeOut());
+      setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
+      setPriority(testAnnotation.getPriority());
+      m_attributes = testAnnotation.getAttributes();
+    }
+
+    // Groups
+    initGroups(ITestAnnotation.class);
   }
 
   private static boolean doesTestAnnotationHaveADataProvider(ITestAnnotation testAnnotation) {
