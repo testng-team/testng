@@ -67,9 +67,13 @@ public class TestNGMethod extends BaseTestMethod {
 
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
-    setInvocationNumbers(
-        xmlTest.getInvocationNumbers(
-            m_method.getDeclaringClass().getName() + "." + m_method.getName()));
+    String className = m_method.getDeclaringClass().getName();
+    Object obj = getInstance();
+    if (obj != null) {
+      className = obj.getClass().getName();
+    }
+    setInvocationNumbers(xmlTest.getInvocationNumbers(className + "." + m_method.getName()));
+
     ITestAnnotation testAnnotation =
         AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
 
@@ -192,7 +196,7 @@ public class TestNGMethod extends BaseTestMethod {
     return clone;
   }
 
-  private ITestNGMethod[] clone(ITestNGMethod[] sources) {
+  private static ITestNGMethod[] clone(ITestNGMethod[] sources) {
     return Arrays.stream(sources)
         .map(ITestNGMethod::clone)
         .toArray(ITestNGMethod[]::new);
