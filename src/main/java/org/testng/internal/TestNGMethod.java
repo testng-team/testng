@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.testng.IDataProviderMethod;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -111,22 +114,25 @@ public class TestNGMethod extends BaseTestMethod {
 
   private String findDescription(ITestAnnotation testAnnotation, XmlTest xmlTest) {
     String result = testAnnotation.getDescription();
-    if (result == null) {
-      List<XmlClass> classes = xmlTest.getXmlClasses();
-      for (XmlClass c : classes) {
-        if (c.getName().equals(m_method.getMethod().getDeclaringClass().getName())) {
-          for (XmlInclude include : c.getIncludedMethods()) {
-            if (include.getName().equals(m_method.getName())) {
-              result = include.getDescription();
-              if (result != null) {
-                break;
-              }
-            }
-          }
-        }
-      }
+    if (result != null) {
+      return result;
     }
-    return result;
+    List<XmlClass> classes = xmlTest.getXmlClasses();
+    return classes.stream()
+        .filter(this::classNameMatcher)
+        .flatMap(xmlClass -> xmlClass.getIncludedMethods().stream())
+        .filter(this::methodNameMatcher)
+        .map(XmlInclude::getDescription)
+        .filter(Objects::nonNull)
+        .findFirst().orElse("");
+  }
+
+  private boolean classNameMatcher(XmlClass xmlClass) {
+    return xmlClass.getName().equals(m_method.getMethod().getDeclaringClass().getName());
+  }
+
+  private boolean methodNameMatcher(XmlInclude xmlInclude) {
+    return xmlInclude.getName().equals(m_method.getName());
   }
 
   /** {@inheritDoc} */
@@ -192,12 +198,9 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   private ITestNGMethod[] clone(ITestNGMethod[] sources) {
-    ITestNGMethod[] clones = new ITestNGMethod[sources.length];
-    for (int i = 0; i < sources.length; i++) {
-      clones[i] = sources[i].clone();
-    }
-
-    return clones;
+    return Arrays.stream(sources)
+        .map(ITestNGMethod::clone)
+        .toArray(ITestNGMethod[]::new);
   }
 
   private static IRetryAnalyzer cloneInstance(IRetryAnalyzer instance) {
