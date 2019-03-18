@@ -9,6 +9,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.XmlTest;
 
 import java.util.ArrayList;
@@ -44,12 +45,10 @@ public final class DynamicGraphHelper {
       }
 
       String[] dependentMethods = m.getMethodsDependedUpon();
-      if (dependentMethods != null) {
-        for (String d : dependentMethods) {
-          ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
-          if (m != dm) {
-            result.addEdge(TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
-          }
+      for (String d : dependentMethods) {
+        ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
+        if (m != dm) {
+          result.addEdge(TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
         }
       }
 
@@ -89,7 +88,7 @@ public final class DynamicGraphHelper {
     }
 
     // Group by instances
-    if (xmlTest.getGroupByInstances()) {
+    if (canGroupByInstances(xmlTest)) {
       ListMultiMap<ITestNGMethod, ITestNGMethod> instanceDependencies =
           createInstanceDependencies(methods);
       for (Map.Entry<ITestNGMethod, List<ITestNGMethod>> es : instanceDependencies.entrySet()) {
@@ -103,6 +102,10 @@ public final class DynamicGraphHelper {
 
   private static Comparator<XmlClass> classComparator() {
     return Comparator.comparingInt(XmlClass::getIndex);
+  }
+
+  private static boolean canGroupByInstances(XmlTest xmlTest) {
+    return xmlTest.getGroupByInstances() && ! xmlTest.getParallel().equals(ParallelMode.INSTANCES);
   }
 
   private static ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
