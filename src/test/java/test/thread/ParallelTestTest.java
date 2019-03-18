@@ -34,8 +34,8 @@ public class ParallelTestTest extends BaseTest {
             {false, XmlSuite.ParallelMode.METHODS,   4},
             {true,  XmlSuite.ParallelMode.CLASSES,   2},
             {false, XmlSuite.ParallelMode.CLASSES,   2},
-            {true,  XmlSuite.ParallelMode.INSTANCES, 2},
-            {false, XmlSuite.ParallelMode.INSTANCES, 2}
+            {true,  XmlSuite.ParallelMode.INSTANCES, 4},
+            {false, XmlSuite.ParallelMode.INSTANCES, 4}
     };
   }
 
@@ -50,8 +50,8 @@ public class ParallelTestTest extends BaseTest {
             // isCommandLine, parallelMode, expectedThreadCount
             {true,  XmlSuite.ParallelMode.NONE,      1},
             {false, XmlSuite.ParallelMode.NONE,      1},
-            {true,  XmlSuite.ParallelMode.INSTANCES, 2},
-            {false, XmlSuite.ParallelMode.INSTANCES, 2}
+            {true,  XmlSuite.ParallelMode.INSTANCES, 4},
+            {false, XmlSuite.ParallelMode.INSTANCES, 4}
     };
   }
 

@@ -15,8 +15,8 @@ import java.util.List;
 
 public abstract class AbstractParallelWorker {
 
-  public static AbstractParallelWorker newWorker(XmlSuite.ParallelMode mode) {
-    if (XmlSuite.ParallelMode.INSTANCES.equals(mode)) {
+  public static AbstractParallelWorker newWorker(XmlSuite.ParallelMode mode, boolean groupByInstances) {
+    if (XmlSuite.ParallelMode.INSTANCES.equals(mode) && groupByInstances) {
       return new InstanceBasedParallelParallelWorker();
     }
     return new ClassBasedParallelWorker();
