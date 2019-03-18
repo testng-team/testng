@@ -839,7 +839,7 @@ public class TestRunner
             .testContext(this)
             .listeners(this.m_classListeners.values())
             .build();
-    return AbstractParallelWorker.newWorker(m_xmlTest.getParallel()).createWorkers(args);
+    return AbstractParallelWorker.newWorker(m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances()).createWorkers(args);
   }
 
   //
