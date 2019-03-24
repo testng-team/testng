@@ -6,7 +6,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
 import java.util.Collection;

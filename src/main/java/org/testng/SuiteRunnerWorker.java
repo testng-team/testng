@@ -5,7 +5,7 @@ import org.testng.collections.Maps;
 import org.testng.collections.Objects;
 import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
 import javax.annotation.Nonnull;

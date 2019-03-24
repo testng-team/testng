@@ -5,7 +5,7 @@ import org.testng.ITestNGMethod;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.IWorker;
 
 import java.util.List;
 import java.util.Map;

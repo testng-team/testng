@@ -36,7 +36,7 @@ import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.ParameterHandler.ParameterBag;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
 class TestInvoker extends BaseInvoker implements ITestInvoker {

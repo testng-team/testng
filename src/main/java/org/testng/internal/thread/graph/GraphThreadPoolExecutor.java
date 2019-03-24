@@ -1,31 +1,34 @@
 package org.testng.internal.thread.graph;
 
+import org.testng.IDynamicGraph;
+import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.TestNGException;
 import org.testng.collections.Maps;
-import org.testng.internal.DynamicGraph;
-import org.testng.internal.DynamicGraph.Status;
+import org.testng.IDynamicGraph.Status;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.log4testng.Logger;
 
 import javax.annotation.Nonnull;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.testng.thread.IThreadWorkerFactory;
+import org.testng.thread.IWorker;
 
 /**
  * An Executor that launches tasks per batches. It takes a {@code DynamicGraph} of tasks to be run
  * and a {@code IThreadWorkerFactory} to initialize/create {@code Runnable} wrappers around those
  * tasks
  */
-public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
+public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
+    ITestNGThreadPoolExecutor {
 
-  private final DynamicGraph<T> m_graph;
+  private final IDynamicGraph<T> m_graph;
   private final IThreadWorkerFactory<T> m_factory;
   private final Map<T, IWorker<T>> mapping = Maps.newConcurrentMap();
   private final Map<T, T> upstream = Maps.newConcurrentMap();
@@ -33,7 +36,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
 
   public GraphThreadPoolExecutor(
       String name,
-      DynamicGraph<T> graph,
+      IDynamicGraph<T> graph,
       IThreadWorkerFactory<T> factory,
       int corePoolSize,
       int maximumPoolSize,
@@ -94,7 +97,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
       } else {
         List<T> freeNodes = m_graph.getFreeNodes();
         if (m_comparator != null) {
-            Collections.sort(freeNodes, m_comparator);
+            freeNodes.sort(m_comparator);
         }
         handleThreadAffinity(freeNodes);
         runNodes(freeNodes);
@@ -102,7 +105,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
     }
   }
 
-  private void setStatus(IWorker<T> worker, Status status) {
+  private void setStatus(IWorker<T> worker, IDynamicGraph.Status status) {
     synchronized (m_graph) {
       for (T m : worker.getTasks()) {
         m_graph.setStatus(m, status);
@@ -111,7 +114,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor {
   }
 
   @SuppressWarnings("unchecked")
-  private Status computeStatus(Runnable r) {
+  private IDynamicGraph.Status computeStatus(Runnable r) {
     IWorker<T> worker = (IWorker<T>) r;
     Status status = Status.FINISHED;
     if (RuntimeBehavior.enforceThreadAffinity() && !worker.completed()) {
