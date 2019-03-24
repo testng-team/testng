@@ -7,25 +7,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
 /** Representation of the graph of methods. */
-public class DynamicGraph<T> {
+public class DynamicGraph<T> implements IDynamicGraph<T> {
 
   private final Set<T> m_nodesReady = Sets.newLinkedHashSet();
   private final Set<T> m_nodesRunning = Sets.newLinkedHashSet();
   private final Set<T> m_nodesFinished = Sets.newLinkedHashSet();
   private final Edges<T> m_edges = new Edges<>();
   private Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
-
-  public enum Status {
-    READY,
-    RUNNING,
-    FINISHED
-  }
 
   /** Add a node to the graph. */
   public boolean addNode(T node) {

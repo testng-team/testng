@@ -26,8 +26,6 @@ import org.testng.internal.ConfigMethodArguments;
 import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
-import org.testng.internal.DynamicGraph;
-import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.DynamicGraphHelper;
 import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfiguration;
@@ -49,9 +47,9 @@ import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
-import org.testng.internal.thread.graph.IThreadWorkerFactory;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.ITestNGThreadPoolExecutor;
+import org.testng.thread.IThreadWorkerFactory;
+import org.testng.thread.IWorker;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
@@ -288,7 +286,6 @@ public class TestRunner
 
     if (test.getParallel() != null) {
       log(
-          3,
           "Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
     }
 
@@ -715,7 +712,7 @@ public class TestRunner
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
     ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
-    DynamicGraph<ITestNGMethod> graph =
+    IDynamicGraph<ITestNGMethod> graph =
         DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
     graph.setVisualisers(this.visualisers);
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
@@ -727,8 +724,8 @@ public class TestRunner
       if (graph.getNodeCount() <= 0) {
         return;
       }
-      GraphThreadPoolExecutor<ITestNGMethod> executor =
-          new GraphThreadPoolExecutor<>(
+      ITestNGThreadPoolExecutor executor =
+          this.m_configuration.getExecutorFactory().newTestMethodExecutor(
               "test=" + xmlTest.getName(),
               graph,
               this,
@@ -771,7 +768,7 @@ public class TestRunner
         freeNodes = freeNodes.subList(0, 1);
       }
       createWorkers(freeNodes).forEach(Runnable::run);
-      graph.setStatus(freeNodes, Status.FINISHED);
+      graph.setStatus(freeNodes, IDynamicGraph.Status.FINISHED);
       freeNodes = graph.getFreeNodes();
     }
   }
@@ -869,7 +866,6 @@ public class TestRunner
   /** Logs the beginning of the {@link #beforeRun()} . */
   private void logStart() {
     log(
-        3,
         "Running test "
             + m_testName
             + " on "
@@ -1073,8 +1069,8 @@ public class TestRunner
     }
   }
 
-  private static void log(int level, String s) {
-    Utils.log("TestRunner", level, s);
+  private static void log(String s) {
+    Utils.log("TestRunner", 3, s);
   }
 
   public static int getVerbose() {

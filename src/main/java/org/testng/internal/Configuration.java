@@ -9,6 +9,8 @@ import org.testng.internal.annotations.JDK15AnnotationFinder;
 
 import java.util.List;
 import java.util.Map;
+import org.testng.internal.thread.DefaultThreadPoolExecutorFactory;
+import org.testng.thread.IExecutorFactory;
 
 public class Configuration implements IConfiguration {
 
@@ -21,6 +23,7 @@ public class Configuration implements IConfiguration {
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
       m_configurationListeners = Maps.newHashMap();
   private boolean alwaysRunListeners = true;
+  private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -97,6 +100,17 @@ public class Configuration implements IConfiguration {
   @Override
   public void setAlwaysRunListeners(boolean alwaysRunListeners) {
     this.alwaysRunListeners = alwaysRunListeners;
+  }
+
+  @Override
+  public void setExecutorFactory(IExecutorFactory factory) {
+    this.m_executorFactory = factory;
+
+  }
+
+  @Override
+  public IExecutorFactory getExecutorFactory() {
+    return this.m_executorFactory;
   }
 
   @Override

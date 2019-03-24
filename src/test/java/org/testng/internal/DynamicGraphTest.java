@@ -7,13 +7,14 @@ import java.util.Collections;
 import java.util.List;
 
 import org.testng.Assert;
+import org.testng.IDynamicGraph;
+import org.testng.IDynamicGraph.Status;
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.dynamicgraph.EdgeWeightTestSample1;
 import org.testng.internal.dynamicgraph.EdgeWeightTestSample2;
 import org.testng.internal.dynamicgraph.LotsOfEdgesTest;
@@ -38,11 +39,11 @@ public class DynamicGraphTest extends SimpleBaseTest {
   }
 
   @SafeVarargs
-  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, T... expected) {
+  private static <T> void assertFreeNodesEquals(IDynamicGraph<T> graph, T... expected) {
     assertFreeNodesEquals(graph, Arrays.asList(expected));
   }
 
-  private static <T> void assertFreeNodesEquals(DynamicGraph<T> graph, List<T> expected) {
+  private static <T> void assertFreeNodesEquals(IDynamicGraph<T> graph, List<T> expected) {
     // Compare free nodes using isEqualTo instead of containsOnly as we care about ordering too.
     assertThat(graph.getFreeNodes()).isEqualTo(expected);
   }
@@ -275,7 +276,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
   }
 
-  private static void runAssertion(DynamicGraph<ITestNGMethod> graph, List<String> expected) {
+  private static void runAssertion(IDynamicGraph<ITestNGMethod> graph, List<String> expected) {
     List<ITestNGMethod> p1Methods = graph.getFreeNodes();
     Assert.assertEquals(p1Methods.size(), 3);
     graph.setStatus(p1Methods, Status.FINISHED);
