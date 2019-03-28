@@ -20,6 +20,7 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
+import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.InstanceCreator;
@@ -1106,7 +1107,7 @@ public class TestNG {
     // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
     // used to run related suites in specific order. Parent suites are run only
     // once all the child suites have completed execution
-    IDynamicGraph<ISuite> suiteGraph = new org.testng.internal.DynamicGraph<>();
+    IDynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
     for (XmlSuite xmlSuite : m_suites) {
       populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
     }
