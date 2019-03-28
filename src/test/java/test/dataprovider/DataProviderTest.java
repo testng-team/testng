@@ -12,6 +12,7 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 import java.util.ArrayList;
+import test.dataprovider.issue1691.DataProviderDefinitionAtClassLevelAndNoTestMethodUsage;
 import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
@@ -22,6 +23,18 @@ import test.dataprovider.issue1691.withinheritance.ChildClassWithNoDataProviderI
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataProviderTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-1691")
+  public void testDataProviderInfoIgnored() {
+    InvokedMethodNameListener listener = run(DataProviderDefinitionAtClassLevelAndNoTestMethodUsage.class);
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "verifyHangoutPlaces(Hakuna Matata,Bangalore)",
+            "verifyHangoutPlaces(Gem Inn,Chennai)"
+        );
+    Throwable throwable = listener.getResult("regularTestMethod").getThrowable();
+    assertThat(throwable).isInstanceOf(MethodMatcherException.class);
+  }
 
   @Test(description = "GITHUB-1691", dataProvider = "getClasses")
   public void testDataProviderWhenProvidedAtClassLevel(Class<?> cls) {
@@ -40,6 +53,7 @@ public class DataProviderTest extends SimpleBaseTest {
         {DataProviderDefinitionProvidedPartiallyAtClassLevel.class},
         {DataProviderDefinitionCompletelyProvidedAtClassLevel.class},
         {DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel.class},
+
         //Involves Inheritance
         {ChildClassHasPartialDefinitionOfDataProviderAtClassLevel.class},
         {ChildClassHasFullDefinitionOfDataProviderAtClassLevel.class},
