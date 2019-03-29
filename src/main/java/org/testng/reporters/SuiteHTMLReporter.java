@@ -553,7 +553,7 @@ public class SuiteHTMLReporter implements IReporter {
     int methodCount = 0;
     for (ISuiteResult sr : suiteResults.values()) {
       ITestNGMethod[] methods = sr.getTestContext().getAllTestMethods();
-      methodCount += Utils.calculateInvokedMethodCount(methods);
+      methodCount += methods.length;
 
       // Collect testClasses
       for (ITestNGMethod tm : methods) {

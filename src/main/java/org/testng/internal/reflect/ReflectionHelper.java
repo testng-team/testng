@@ -1,5 +1,7 @@
 package org.testng.internal.reflect;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 
 import java.lang.annotation.Annotation;
@@ -16,7 +18,7 @@ public class ReflectionHelper {
   public static Method[] getLocalMethods(Class<?> clazz) {
     Method[] declaredMethods = excludingMain(clazz);
     List<Method> defaultMethods = getDefaultMethods(clazz);
-    if (defaultMethods == null) {
+    if (defaultMethods.isEmpty()) {
       List<Method> prunedMethods = Lists.newArrayList();
       for (Method declaredMethod : declaredMethods) {
         if (!declaredMethod.isBridge()) {
@@ -95,17 +97,9 @@ public class ReflectionHelper {
   }
 
   private static List<Method> getDefaultMethods(Class<?> clazz) {
-    List<Method> result = null;
-    for (Class<?> ifc : clazz.getInterfaces()) {
-      for (Method ifcMethod : ifc.getMethods()) {
-        if (!Modifier.isAbstract(ifcMethod.getModifiers())) {
-          if (result == null) {
-            result = new LinkedList<>();
-          }
-          result.add(ifcMethod);
-        }
-      }
-    }
-    return result;
+    return Arrays.stream(clazz.getInterfaces())
+        .flatMap(each -> Arrays.stream(each.getMethods()))
+        .filter(method -> !Modifier.isAbstract(method.getModifiers()))
+        .collect(Collectors.toList());
   }
 }

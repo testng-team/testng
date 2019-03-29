@@ -1,20 +1,15 @@
 package test.override;
 
-import org.testng.Assert;
-import org.testng.ITestNGListener;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
-import org.testng.annotations.Test;
-import org.testng.internal.Utils;
-import org.xml.sax.SAXException;
-
-import test.SimpleBaseTest;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import org.testng.Assert;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.TestNGException;
+import org.testng.annotations.Test;
+import org.testng.reporters.Files;
+import test.SimpleBaseTest;
 
 /**
  * Verify that command line switches override parameters in testng.xml.
@@ -23,8 +18,23 @@ import java.util.Collections;
  */
 public class OverrideTest extends SimpleBaseTest {
 
+  private static File createTempFile(String content) {
+    try {
+      // Create temp file.
+      File result = File.createTempFile("testng-tmp", "");
+
+      // Delete temp file when program exits.
+      result.deleteOnExit();
+      Files.writeFile(content, result);
+
+      return result;
+    } catch (IOException e) {
+      throw new TestNGException(e);
+    }
+  }
+
   private void runTest(String include, String exclude) {
-    File f = Utils.createTempFile(
+    File f = createTempFile(
         "<suite name=\"S\">"
         + "  <test name=\"T\">"
         + "    <classes>"
@@ -35,7 +45,7 @@ public class OverrideTest extends SimpleBaseTest {
         );
     TestNG tng = create();
     TestListenerAdapter tla = new TestListenerAdapter();
-    tng.addListener((ITestNGListener) tla);
+    tng.addListener(tla);
     if (include != null) tng.setGroups(include);
     if (exclude != null) tng.setExcludedGroups(exclude);
     tng.setTestSuites(Collections.singletonList(f.getAbsolutePath()));
@@ -45,20 +55,17 @@ public class OverrideTest extends SimpleBaseTest {
   }
 
   @Test(description = "Override -groups")
-  public void overrideIncludeShouldWork()
-      throws ParserConfigurationException, SAXException, IOException {
+  public void overrideIncludeShouldWork() {
     runTest("goodGroup", null);
   }
 
   @Test(description = "Override -excludegroups")
-  public void overrideExcludeShouldWork()
-      throws ParserConfigurationException, SAXException, IOException {
+  public void overrideExcludeShouldWork() {
     runTest(null, "badGroup");
   }
 
   @Test(description = "Override -groups and -excludegroups")
-  public void overrideIncludeAndExcludeShouldWork()
-      throws ParserConfigurationException, SAXException, IOException {
+  public void overrideIncludeAndExcludeShouldWork() {
     runTest("goodGroup", "badGroup");
   }
 }
