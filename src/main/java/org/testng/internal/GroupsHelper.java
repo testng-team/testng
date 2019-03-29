@@ -1,7 +1,8 @@
 package org.testng.internal;
 
+import java.util.HashSet;
+import java.util.stream.Collectors;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,9 @@ public final class GroupsHelper {
    */
   public static Map<String, String> createGroups(
       Map<String, List<String>> metaGroups, List<String> groups) {
-    Map<String, String> result = Maps.newHashMap();
-
     // Groups that were passed on the command line
-    for (String group : groups) {
-      result.put(group, group);
-    }
+    Map<String, String> result = new HashSet<>(groups).stream()
+        .collect(Collectors.toMap(g -> g, g -> g));
 
     if (metaGroups.isEmpty()) {
       return result;

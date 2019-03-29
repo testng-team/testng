@@ -1,22 +1,29 @@
 package org.testng.internal;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
-import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
-import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
-import org.testng.xml.XmlClass;
-
-import java.io.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
 
 /** Helper methods to parse annotations. */
 public final class Utils {
@@ -45,52 +52,6 @@ public final class Utils {
   /** Hide constructor for utility class. */
   private Utils() {
     // Hide constructor
-  }
-
-  /**
-   * Splits the given String s into tokens where the separator is either the space character or the
-   * comma character. For example, if s is "a,b, c" this method returns {"a", "b", "c"}
-   *
-   * @param s the string to split
-   * @return the split token
-   * @deprecated Unused
-   */
-  @Deprecated
-  public static String[] stringToArray(String s) {
-    // TODO CQ would s.split() be a better way of doing this?
-    StringTokenizer st = new StringTokenizer(s, " ,");
-    String[] result = new String[st.countTokens()];
-    for (int i = 0; i < result.length; i++) {
-      result[i] = st.nextToken();
-    }
-
-    return result;
-  }
-
-  public static XmlClass[] classesToXmlClasses(Class<?>[] classes) {
-    List<XmlClass> result = Lists.newArrayList();
-
-    for (Class<?> cls : classes) {
-      result.add(new XmlClass(cls, true /* load classes */));
-    }
-
-    return result.toArray(new XmlClass[classes.length]);
-  }
-
-  /** @deprecated Unused */
-  @Deprecated
-  public static String[] parseMultiLine(String line) {
-    List<String> vResult = Lists.newArrayList();
-    if (isStringNotBlank(line)) {
-      StringTokenizer st = new StringTokenizer(line, " ");
-      while (st.hasMoreTokens()) {
-        vResult.add(st.nextToken());
-      }
-      // Bug in split when passed " " : returns one too many result
-      //      result = line.split(" ");
-    }
-
-    return vResult.toArray(new String[0]);
   }
 
   public static void writeUtf8File(
@@ -235,51 +196,6 @@ public final class Utils {
     return new BufferedWriter(osw);
   }
 
-  private static void ppp(String s) {
-    Utils.log("Utils", 0, s);
-  }
-
-  /** @deprecated Unused */
-  @Deprecated
-  public static void dumpMap(Map<?, ?> result) {
-    LOG.info("vvvvv");
-    for (Map.Entry<?, ?> entry : result.entrySet()) {
-      LOG.info(entry.getKey() + " => " + entry.getValue());
-    }
-    LOG.info("^^^^^");
-  }
-
-  /** @deprecated Unused */
-  @Deprecated
-  public static void dumpMethods(List<ITestNGMethod> allMethods) {
-    ppp("======== METHODS:");
-    for (ITestNGMethod tm : allMethods) {
-      ppp("  " + tm);
-    }
-  }
-
-  /** @deprecated Unused */
-  @Deprecated
-  public static String[] dependentGroupsForThisMethodForTest(Method m, IAnnotationFinder finder) {
-    List<String> vResult = Lists.newArrayList();
-    Class<?> cls = m.getDeclaringClass();
-
-    // Collect groups on the class
-    ITestAnnotation tc = AnnotationHelper.findTest(finder, cls);
-    if (null != tc) {
-      vResult.addAll(Arrays.asList(tc.getDependsOnGroups()));
-    }
-
-    // Collect groups on the method
-    ITestAnnotation tm = AnnotationHelper.findTest(finder, m);
-    if (null != tm) {
-      String[] groups = tm.getDependsOnGroups();
-      vResult.addAll(Arrays.asList(groups));
-    }
-
-    return vResult.toArray(new String[0]);
-  }
-
   public static void log(String msg) {
     log("Utils", 2, msg);
   }
@@ -311,14 +227,6 @@ public final class Utils {
     LOG.error("[Error] " + errorMessage);
   }
 
-  public static int calculateInvokedMethodCount(ITestNGMethod[] methods) {
-    return methods.length;
-  }
-
-  public static int calculateInvokedMethodCount(List<ITestNGMethod> methods) {
-    return methods.size();
-  }
-
   /** Tokenize the string using the separator. */
   public static String[] split(String string, String sep) {
     if ((string == null) || (string.length() == 0)) {
@@ -342,26 +250,6 @@ public final class Utils {
     strings.add(string.substring(start).trim());
 
     return strings.toArray(new String[0]);
-  }
-
-  /** @deprecated Unused */
-  @Deprecated
-  public static void logInvocation(String reason, Method thisMethod, Object[] parameters) {
-    String clsName = thisMethod.getDeclaringClass().getName();
-    int n = clsName.lastIndexOf('.');
-    if (n >= 0) {
-      clsName = clsName.substring(n + 1);
-    }
-    String methodName = clsName + '.' + thisMethod.getName();
-    if (TestRunner.getVerbose() >= 2) {
-      StringBuilder paramString = new StringBuilder();
-      if (parameters != null) {
-        for (Object p : parameters) {
-          paramString.append(p.toString()).append(' ');
-        }
-      }
-      log("", 2, "Invoking " + reason + methodName + '(' + paramString + ')');
-    }
   }
 
   public static void writeResourceToFile(File file, String resourceName, Class<?> clasz)
@@ -402,19 +290,6 @@ public final class Utils {
 
   public static boolean isStringNotEmpty(String s) {
     return !isStringEmpty(s);
-  }
-
-  /**
-   * @return an array of two strings: the short stack trace and the long stack trace.
-   * @deprecated - Please consider using :
-   *     <ul>
-   *       <li>{@link Utils#longStackTrace(Throwable, boolean)} - for getting full stack trace
-   *       <li>{@link Utils#shortStackTrace(Throwable, boolean)} - for getting short stack trace
-   *     </ul>
-   */
-  @Deprecated
-  public static String[] stackTrace(Throwable t, boolean toHtml) {
-    return new String[] {shortStackTrace(t, toHtml), longStackTrace(t, toHtml)};
   }
 
   /**
@@ -605,16 +480,7 @@ public final class Utils {
   }
 
   public static String arrayToString(String[] strings) {
-    StringBuilder result = new StringBuilder();
-    if ((strings != null) && (strings.length > 0)) {
-      for (int i = 0; i < strings.length; i++) {
-        result.append(strings[i]);
-        if (i < strings.length - 1) {
-          result.append(", ");
-        }
-      }
-    }
-    return result.toString();
+    return String.join(", ", strings);
   }
 
   /**
@@ -649,42 +515,6 @@ public final class Utils {
       result.append(objects.get(i).toString());
     }
     return result.toString();
-  }
-
-  /** @deprecated Unused */
-  @Deprecated
-  public static void copyFile(File from, File to) {
-    to.getParentFile().mkdirs();
-    try (InputStream in = new FileInputStream(from);
-        OutputStream out = new FileOutputStream(to)) {
-      byte[] buf = new byte[1024];
-      int len;
-      while ((len = in.read(buf)) > 0) {
-        out.write(buf, 0, len);
-      }
-    } catch (IOException e) {
-      LOG.error(e.getMessage(), e);
-    }
-  }
-
-  /** @return a temporary file with the given content. */
-  public static File createTempFile(String content) {
-    try {
-      // Create temp file.
-      File result = File.createTempFile("testng-tmp", "");
-
-      // Delete temp file when program exits.
-      result.deleteOnExit();
-
-      // Write to temp file
-      try (BufferedWriter out = new BufferedWriter(new FileWriter(result))) {
-        out.write(content);
-      }
-
-      return result;
-    } catch (IOException e) {
-      throw new TestNGException(e);
-    }
   }
 
   /** Make sure that either we have an instance or if not, that the method is static */

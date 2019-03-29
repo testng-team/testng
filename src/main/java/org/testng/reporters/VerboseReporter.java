@@ -143,10 +143,10 @@ public class VerboseReporter extends TestListenerAdapter {
     ITestNGMethod[] ft = resultsToMethods(getFailedTests());
     StringBuilder sb = new StringBuilder("\n===============================================\n");
     sb.append("    ").append(suiteName).append("\n");
-    sb.append("    Tests run: ").append(Utils.calculateInvokedMethodCount(getAllTestMethods()));
-    sb.append(", Failures: ").append(Utils.calculateInvokedMethodCount(ft));
+    sb.append("    Tests run: ").append(getAllTestMethods().length);
+    sb.append(", Failures: ").append(ft.length);
     sb.append(", Skips: ")
-        .append(Utils.calculateInvokedMethodCount(resultsToMethods(getSkippedTests())));
+        .append(resultsToMethods(getSkippedTests()).length);
     int confFailures = getConfigurationFailures().size();
     int confSkips = getConfigurationSkips().size();
     if (confFailures > 0 || confSkips > 0) {

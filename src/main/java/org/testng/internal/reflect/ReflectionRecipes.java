@@ -316,16 +316,12 @@ public final class ReflectionRecipes {
       boolean omit = false;
       for (final InjectableParameter injectableParameter : filters) {
         omit = canInject(parameter, injectableParameter);
-        switch (injectableParameter) {
-          case CURRENT_TEST_METHOD:
-            if (omit && !firstMethodFiltered) {
-              firstMethodFiltered = true;
-            } else {
-              omit = false;
-            }
-            break;
-          default:
-            break;
+        if (injectableParameter == InjectableParameter.CURRENT_TEST_METHOD) {
+          if (omit && !firstMethodFiltered) {
+            firstMethodFiltered = true;
+          } else {
+            omit = false;
+          }
         }
         if (omit) {
           break;
@@ -335,8 +331,7 @@ public final class ReflectionRecipes {
         filterList.add(parameter);
       }
     }
-    final Parameter[] filteredArray = new Parameter[filterList.size()];
-    return filterList.toArray(filteredArray);
+    return filterList.toArray(new Parameter[0]);
   }
 
   /**

@@ -102,15 +102,15 @@ public class TextReporter extends TestListenerAdapter {
     logBuf.append("    ").append(m_testName).append("\n");
     logBuf
         .append("    Tests run: ")
-        .append(Utils.calculateInvokedMethodCount(getAllTestMethods()))
+        .append(getAllTestMethods().length)
         .append(", Failures: ")
-        .append(Utils.calculateInvokedMethodCount(ft))
+        .append(ft.size())
         .append(", Skips: ")
-        .append(Utils.calculateInvokedMethodCount(resultsToMethods(skippedTests)));
+        .append(resultsToMethods(skippedTests).size());
     if (!retriedTests.isEmpty()) {
       logBuf
           .append(", Retries: ")
-          .append(Utils.calculateInvokedMethodCount(resultsToMethods(retriedTests)));
+          .append(resultsToMethods(retriedTests).size());
     }
     int confFailures = getConfigurationFailures().size();
     int confSkips = getConfigurationSkips().size();

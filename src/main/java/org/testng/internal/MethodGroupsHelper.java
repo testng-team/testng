@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
@@ -162,15 +163,10 @@ public class MethodGroupsHelper {
       String[] includedGroups,
       Set<String> outGroups,
       Set<ITestNGMethod> outMethods) {
-    Map<ITestNGMethod, ITestNGMethod> runningMethods = Maps.newHashMap();
-    for (ITestNGMethod m : includedMethods) {
-      runningMethods.put(m, m);
-    }
+    Map<ITestNGMethod, ITestNGMethod> runningMethods = includedMethods.stream().collect(Collectors.toMap(m -> m, m -> m));
 
-    Map<String, String> runningGroups = Maps.newHashMap();
-    for (String thisGroup : includedGroups) {
-      runningGroups.put(thisGroup, thisGroup);
-    }
+    Map<String, String> runningGroups = Arrays.stream(includedGroups)
+        .collect(Collectors.toMap(g -> g, g -> g));
 
     boolean keepGoing = true;
 
@@ -228,15 +224,10 @@ public class MethodGroupsHelper {
   }
 
   private static ITestNGMethod findMethodNamed(String tm, List<ITestNGMethod> allMethods) {
-    for (ITestNGMethod m : allMethods) {
-      // TODO(cbeust):  account for package
-      String methodName = m.getQualifiedName();
-      if (methodName.equals(tm)) {
-        return m;
-      }
-    }
-
-    return null;
+    return allMethods.stream()
+        .filter(m -> m.getQualifiedName().equals(tm))
+        .findFirst()
+        .orElse(null);
   }
 
   /**
@@ -269,19 +260,12 @@ public class MethodGroupsHelper {
    */
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(
       ITestNGMethod[] methods, String groupRegexp) {
-    List<ITestNGMethod> vResult = Lists.newArrayList();
     final Pattern pattern = getPattern(groupRegexp);
-    for (ITestNGMethod tm : methods) {
-      String[] groups = tm.getGroups();
-      for (String group : groups) {
-        Boolean match = isMatch(pattern, group);
-        if (match) {
-          vResult.add(tm);
-        }
-      }
-    }
-
-    return vResult.toArray(new ITestNGMethod[0]);
+    Predicate<ITestNGMethod> matchingGroups = tm -> Arrays.stream(tm.getGroups())
+        .anyMatch(group -> isMatch(pattern, group));
+    return Arrays.stream(methods)
+        .filter(matchingGroups)
+        .toArray(ITestNGMethod[]::new);
   }
 
   private static Boolean isMatch(Pattern pattern, String group) {
