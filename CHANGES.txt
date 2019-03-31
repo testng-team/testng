@@ -1,4 +1,13 @@
 Current
+Fixed: GITHUB-1835: Configurable ThreadPoolExecutor (Krishnan Mahadevan)
+Fixed: GITHUB-1691: Support reading data provider information from Class level @Test annotation (Krishnan Mahadevan)
+Fixed: GITHUB-326: When group-by-instances is set to true the instances created by @Factory does not run in parallel (Krishnan Mahadevan)
+Fixed: GITHUB-1930: Running testng-failed.xml correctly runs failed test in child class but incorrectly runs all tests in base class (Krishnan Mahadevan)
+Fixed: GITHUB-1987: Retrieve the data provider method's reference from the test method (Krishnan Mahadevan)
+Fixed: GITHUB-1976: Add a proper message when types are missing during annotation parsing (Krishnan Mahadevan)
+Fixed: GITHUB-2000: ThreadPoolExecutor ConcurrentModificationException (Krishnan Mahadevan)
+Fixed: GITHUB-2022: Suite.xml files make web request when suite uses DTD over HTTPS (Krishnan Mahadevan)
+Fixed: GITHUB-2017: Don't use child injectors for Guice tests (Joe Barnett)
 New:   GITHUB-2003: Add to @Test interface fields IDs and issues (Krishnan Mahadevan)
 Fixed: GITHUB-2009: Test Timeout not respected in parallel="methods" mode (Krishnan Mahadevan)
 Fixed: GITHUB-2008: Preserve parameters in each class and not all of the test parameters

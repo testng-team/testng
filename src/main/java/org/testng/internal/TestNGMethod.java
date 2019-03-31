@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.Objects;
+import org.testng.IDataProviderMethod;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -23,6 +26,7 @@ public class TestNGMethod extends BaseTestMethod {
   private int m_successPercentage = 100;
   private boolean isDataDriven = false;
   private CustomAttribute[] m_attributes = {};
+  private IDataProviderMethod dataProviderMethod = null;
 
   /** Constructs a <code>TestNGMethod</code> */
   public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
@@ -63,43 +67,43 @@ public class TestNGMethod extends BaseTestMethod {
 
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
-    setInvocationNumbers(
-        xmlTest.getInvocationNumbers(
-            m_method.getDeclaringClass().getName() + "." + m_method.getName()));
-    {
-      ITestAnnotation testAnnotation =
-          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
-
-      if (testAnnotation == null) {
-        // Try on the class
-        testAnnotation =
-            AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
-      }
-
-      if (null != testAnnotation) {
-        setTimeOut(testAnnotation.getTimeOut());
-        m_successPercentage = testAnnotation.getSuccessPercentage();
-        isDataDriven = doesTestAnnotationHaveADataProvider(testAnnotation);
-
-        setInvocationCount(testAnnotation.getInvocationCount());
-        setThreadPoolSize(testAnnotation.getThreadPoolSize());
-        setAlwaysRun(testAnnotation.getAlwaysRun());
-        setDescription(findDescription(testAnnotation, xmlTest));
-        setEnabled(testAnnotation.getEnabled());
-        setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
-        setRetryAnalyzerClass(testAnnotation.getRetryAnalyzerClass());
-        setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
-        setInvocationTimeOut(testAnnotation.invocationTimeOut());
-        setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
-        setPriority(testAnnotation.getPriority());
-        m_attributes = testAnnotation.getAttributes();
-      }
-
-      // Groups
-      {
-        initGroups(ITestAnnotation.class);
-      }
+    String className = m_method.getDeclaringClass().getName();
+    Object obj = getInstance();
+    if (obj != null) {
+      className = obj.getClass().getName();
     }
+    setInvocationNumbers(xmlTest.getInvocationNumbers(className + "." + m_method.getName()));
+
+    ITestAnnotation testAnnotation =
+        AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
+
+    if (testAnnotation == null) {
+      // Try on the class
+      testAnnotation =
+          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getDeclaringClass());
+    }
+
+    if (null != testAnnotation) {
+      setTimeOut(testAnnotation.getTimeOut());
+      m_successPercentage = testAnnotation.getSuccessPercentage();
+      isDataDriven = doesTestAnnotationHaveADataProvider(testAnnotation);
+
+      setInvocationCount(testAnnotation.getInvocationCount());
+      setThreadPoolSize(testAnnotation.getThreadPoolSize());
+      setAlwaysRun(testAnnotation.getAlwaysRun());
+      setDescription(findDescription(testAnnotation, xmlTest));
+      setEnabled(testAnnotation.getEnabled());
+      setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
+      setRetryAnalyzerClass(testAnnotation.getRetryAnalyzerClass());
+      setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
+      setInvocationTimeOut(testAnnotation.invocationTimeOut());
+      setIgnoreMissingDependencies(testAnnotation.ignoreMissingDependencies());
+      setPriority(testAnnotation.getPriority());
+      m_attributes = testAnnotation.getAttributes();
+    }
+
+    // Groups
+    initGroups(ITestAnnotation.class);
   }
 
   private static boolean doesTestAnnotationHaveADataProvider(ITestAnnotation testAnnotation) {
@@ -109,22 +113,25 @@ public class TestNGMethod extends BaseTestMethod {
 
   private String findDescription(ITestAnnotation testAnnotation, XmlTest xmlTest) {
     String result = testAnnotation.getDescription();
-    if (result == null) {
-      List<XmlClass> classes = xmlTest.getXmlClasses();
-      for (XmlClass c : classes) {
-        if (c.getName().equals(m_method.getMethod().getDeclaringClass().getName())) {
-          for (XmlInclude include : c.getIncludedMethods()) {
-            if (include.getName().equals(m_method.getName())) {
-              result = include.getDescription();
-              if (result != null) {
-                break;
-              }
-            }
-          }
-        }
-      }
+    if (result != null) {
+      return result;
     }
-    return result;
+    List<XmlClass> classes = xmlTest.getXmlClasses();
+    return classes.stream()
+        .filter(this::classNameMatcher)
+        .flatMap(xmlClass -> xmlClass.getIncludedMethods().stream())
+        .filter(this::methodNameMatcher)
+        .map(XmlInclude::getDescription)
+        .filter(Objects::nonNull)
+        .findFirst().orElse("");
+  }
+
+  private boolean classNameMatcher(XmlClass xmlClass) {
+    return xmlClass.getName().equals(m_method.getMethod().getDeclaringClass().getName());
+  }
+
+  private boolean methodNameMatcher(XmlInclude xmlInclude) {
+    return xmlInclude.getName().equals(m_method.getName());
   }
 
   /** {@inheritDoc} */
@@ -189,13 +196,10 @@ public class TestNGMethod extends BaseTestMethod {
     return clone;
   }
 
-  private ITestNGMethod[] clone(ITestNGMethod[] sources) {
-    ITestNGMethod[] clones = new ITestNGMethod[sources.length];
-    for (int i = 0; i < sources.length; i++) {
-      clones[i] = sources[i].clone();
-    }
-
-    return clones;
+  private static ITestNGMethod[] clone(ITestNGMethod[] sources) {
+    return Arrays.stream(sources)
+        .map(ITestNGMethod::clone)
+        .toArray(ITestNGMethod[]::new);
   }
 
   private static IRetryAnalyzer cloneInstance(IRetryAnalyzer instance) {
@@ -213,5 +217,14 @@ public class TestNGMethod extends BaseTestMethod {
   @Override
   public CustomAttribute[] getAttributes() {
     return m_attributes;
+  }
+
+  @Override
+  public IDataProviderMethod getDataProviderMethod() {
+    return dataProviderMethod;
+  }
+
+  public void setDataProviderMethod(IDataProviderMethod dataProviderMethod) {
+    this.dataProviderMethod = dataProviderMethod;
   }
 }

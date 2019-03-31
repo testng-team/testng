@@ -1,4 +1,4 @@
-package org.testng.internal.thread.graph;
+package org.testng.thread;
 
 import java.util.List;
 

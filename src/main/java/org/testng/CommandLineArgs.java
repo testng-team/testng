@@ -208,4 +208,12 @@ public class CommandLineArgs {
       description = "Should MethodInvocation Listeners be run even for skipped methods")
   public Boolean alwaysRunListeners = Boolean.TRUE;
 
+  public static final String THREAD_POOL_FACTORY_CLASS = "-threadpoolfactoryclass";
+
+  @Parameter(
+      names = THREAD_POOL_FACTORY_CLASS,
+      description = "The threadpool executor factory implementation that TestNG should use.")
+  public String threadPoolFactoryClass;
+
+
 }

@@ -1,28 +1,16 @@
 package test;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
-
+import java.util.List;
 import org.testng.*;
 import org.testng.annotations.Test;
+import testhelper.CompiledCode;
+import testhelper.SimpleCompiler;
+import testhelper.SourceCode;
+
 import static org.testng.Assert.*;
 
 public class JUnitTestClassLoader extends ClassLoader {
-  private final File tmpDir;
-  public JUnitTestClassLoader() {
-    try {
-      File tmp = File.createTempFile("aaa", null);
-      tmp.delete();
-      tmpDir = tmp.getParentFile();
-    } catch (Exception e) {
-      throw new Error(e);
-    }
-  }
 
   @Test
   public void testPassAndFail() throws Exception {
@@ -94,21 +82,10 @@ public class JUnitTestClassLoader extends ClassLoader {
   }
 
   private Class<?> compile(String src, String name) throws Exception {
-    // compile class and load it into by a custom classloader
-    File srcFile = new File(tmpDir, name + ".java");
-    try (PrintWriter pw = new PrintWriter(new FileWriter(srcFile))) {
-      pw.append(src);
-    }
-    JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
-    assertEquals(0, javac.run(null, null, null, srcFile.getCanonicalPath()));
-    srcFile.delete();
-    File classFile = new File(tmpDir, name + ".class");
-    byte[] bytes;
-    try (DataInputStream dis = new DataInputStream(new FileInputStream(classFile))) {
-      bytes = new byte[dis.available()];
-      dis.readFully(bytes);
-    }
-    classFile.delete();
+    File directory = SimpleCompiler.createTempDir();
+    SourceCode sourceCode = new SourceCode(name,src, directory, false);
+    List<CompiledCode> compiledCode = SimpleCompiler.compileSourceCode(sourceCode);
+    byte[] bytes = compiledCode.get(0).getByteCode();
     return defineClass(name, bytes, 0, bytes.length);
   }
 

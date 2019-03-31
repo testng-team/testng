@@ -591,32 +591,55 @@ public class Parameters {
    */
   private static IDataProvidable findDataProviderInfo(
       ITestClass clazz, ConstructorOrMethod m, IAnnotationFinder finder) {
-    IDataProvidable result;
-
-    if (m.getMethod() != null) {
-      //
-      // @Test(dataProvider) on a method
-      //
-      result = AnnotationHelper.findTest(finder, m.getMethod());
-      if (result == null) {
-        //
-        // @Factory(dataProvider) on a method
-        //
-        result = AnnotationHelper.findFactory(finder, m.getMethod());
-      }
-      if (result == null) {
-        //
-        // @Test(dataProvider) on a class
-        result = AnnotationHelper.findTest(finder, clazz.getRealClass());
-      }
-    } else {
-      //
+    if (m.getMethod() == null) {
       // @Factory(dataProvider) on a constructor
-      //
-      result = AnnotationHelper.findFactory(finder, m.getConstructor());
+      return AnnotationHelper.findFactory(finder, m.getConstructor());
     }
 
-    return result;
+    // @Test(dataProvider) on a method
+    ITestAnnotation result = AnnotationHelper.findTest(finder, m.getMethod());
+    if (result != null) {
+      //We may have a class level @Test annotation on which there might have been a data provider defined
+      // @Test(dataProvider) on a class
+      ITestAnnotation classLevel = AnnotationHelper.findTest(finder, clazz.getRealClass());
+      if (classLevel == null) {
+        return result;
+      }
+      return merge(result, classLevel);
+
+    }
+    // @Factory(dataProvider) on a method
+    IFactoryAnnotation factory = AnnotationHelper.findFactory(finder, m.getMethod());
+    if (factory != null) {
+      return factory;
+    }
+    // @Test(dataProvider) on a class
+    return AnnotationHelper.findTest(finder, clazz.getRealClass());
+
+  }
+
+  private static IDataProvidable merge(ITestAnnotation methodLevel, ITestAnnotation classLevel) {
+    //If no data provider information was provided at class level, then exit
+    if (isDataProviderClassEmpty(classLevel) && isDataProviderNameEmpty(classLevel)) {
+      return methodLevel;
+    }
+
+    if (Strings.isNullOrEmpty(methodLevel.getDataProvider()) &&
+        Strings.isNotNullAndNotEmpty(classLevel.getDataProvider())) {
+      methodLevel.setDataProvider(classLevel.getDataProvider());
+    }
+    if (isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel)) {
+      methodLevel.setDataProviderClass(classLevel.getDataProviderClass());
+    }
+    return methodLevel;
+  }
+
+  private static boolean isDataProviderClassEmpty(ITestAnnotation annotation) {
+    return annotation.getDataProviderClass() == null || Object.class.equals(annotation.getDataProviderClass());
+  }
+
+  private static boolean isDataProviderNameEmpty(ITestAnnotation annotation) {
+    return Strings.isNullOrEmpty(annotation.getDataProvider());
   }
 
   /** Find a method that has a @DataProvider(name=name) */
@@ -778,6 +801,9 @@ public class Parameters {
     ParameterOrigin origin;
 
     if (null != dataProviderMethod) {
+      if (testMethod instanceof TestNGMethod) {
+        ((TestNGMethod) testMethod).setDataProviderMethod(dataProviderMethod);
+      }
       int parameterCount = testMethod.getConstructorOrMethod().getParameterTypes().length;
 
       for (int i = 0; i < parameterCount; i++) {

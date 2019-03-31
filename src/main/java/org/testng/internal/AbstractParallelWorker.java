@@ -6,7 +6,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
 import java.util.Collection;
@@ -15,8 +15,8 @@ import java.util.List;
 
 public abstract class AbstractParallelWorker {
 
-  public static AbstractParallelWorker newWorker(XmlSuite.ParallelMode mode) {
-    if (XmlSuite.ParallelMode.INSTANCES.equals(mode)) {
+  public static AbstractParallelWorker newWorker(XmlSuite.ParallelMode mode, boolean groupByInstances) {
+    if (XmlSuite.ParallelMode.INSTANCES.equals(mode) && groupByInstances) {
       return new InstanceBasedParallelParallelWorker();
     }
     return new ClassBasedParallelWorker();

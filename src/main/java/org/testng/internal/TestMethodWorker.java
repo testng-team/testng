@@ -10,7 +10,7 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 import org.testng.internal.ConfigMethodArguments.Builder;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.IWorker;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;

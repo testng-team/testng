@@ -5,16 +5,61 @@ import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 import java.util.ArrayList;
+import test.dataprovider.issue1691.DataProviderDefinitionAtClassLevelAndNoTestMethodUsage;
+import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
+import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevel;
+import test.dataprovider.issue1691.DataProviderDefinitionProvidedPartiallyAtClassLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassWithNoDataProviderInformationInTestMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataProviderTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-1691")
+  public void testDataProviderInfoIgnored() {
+    InvokedMethodNameListener listener = run(DataProviderDefinitionAtClassLevelAndNoTestMethodUsage.class);
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "verifyHangoutPlaces(Hakuna Matata,Bangalore)",
+            "verifyHangoutPlaces(Gem Inn,Chennai)"
+        );
+    Throwable throwable = listener.getResult("regularTestMethod").getThrowable();
+    assertThat(throwable).isInstanceOf(MethodMatcherException.class);
+  }
+
+  @Test(description = "GITHUB-1691", dataProvider = "getClasses")
+  public void testDataProviderWhenProvidedAtClassLevel(Class<?> cls) {
+    InvokedMethodNameListener listener = run(cls);
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "verifyHangoutPlaces(Hakuna Matata,Bangalore)",
+            "verifyHangoutPlaces(Gem Inn,Chennai)"
+        );
+  }
+
+  @DataProvider
+  public Object[][] getClasses() {
+    return new Object[][]{
+        //No inheritance involved
+        {DataProviderDefinitionProvidedPartiallyAtClassLevel.class},
+        {DataProviderDefinitionCompletelyProvidedAtClassLevel.class},
+        {DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel.class},
+
+        //Involves Inheritance
+        {ChildClassHasPartialDefinitionOfDataProviderAtClassLevel.class},
+        {ChildClassHasFullDefinitionOfDataProviderAtClassLevel.class},
+        {ChildClassWithNoDataProviderInformationInTestMethod.class},
+    };
+  }
 
   @Test(description = "GITHUB-1139")
   public void oneDimDataProviderShouldWork() {

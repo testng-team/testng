@@ -519,7 +519,7 @@ public class JDK15TagFactory {
 
     // Not found, look on the class and then up the hierarchy
     while (cls != null && cls != Object.class) {
-      Annotation annotation = cls.getAnnotation(annotationClass);
+      Annotation annotation = AnnotationHelper.getAnnotationFromClass(cls, annotationClass);
       if (annotation != null) {
         T result = (T) invokeMethod(annotation, methodName);
         if (!def.isDefault(result)) {
@@ -546,7 +546,7 @@ public class JDK15TagFactory {
     List<String> result = Lists.newArrayList();
 
     while (cls != null && cls != Object.class) {
-      Annotation annotation = cls.getAnnotation(Test.class);
+      Annotation annotation = AnnotationHelper.getAnnotationFromClass(cls, Test.class);
       if (annotation != null) {
         String[] g = (String[]) invokeMethod(annotation, methodName);
         result.addAll(Arrays.asList(g));

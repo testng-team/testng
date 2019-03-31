@@ -6,6 +6,8 @@ import org.testng.collections.Lists;
 import org.testng.internal.SuiteRunnerMap;
 
 import java.util.List;
+import org.testng.thread.IThreadWorkerFactory;
+import org.testng.thread.IWorker;
 
 /**
  * An {@code IThreadWorkerFactory} for {@code SuiteRunner}s

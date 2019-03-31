@@ -26,8 +26,6 @@ import org.testng.internal.ConfigMethodArguments;
 import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
-import org.testng.internal.DynamicGraph;
-import org.testng.internal.DynamicGraph.Status;
 import org.testng.internal.DynamicGraphHelper;
 import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfiguration;
@@ -49,9 +47,9 @@ import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
-import org.testng.internal.thread.graph.IThreadWorkerFactory;
-import org.testng.internal.thread.graph.IWorker;
+import org.testng.thread.ITestNGThreadPoolExecutor;
+import org.testng.thread.IThreadWorkerFactory;
+import org.testng.thread.IWorker;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
@@ -288,7 +286,6 @@ public class TestRunner
 
     if (test.getParallel() != null) {
       log(
-          3,
           "Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
     }
 
@@ -689,83 +686,90 @@ public class TestRunner
     m_allTestMethods = runMethods.toArray(new ITestNGMethod[0]);
   }
 
+  private static Comparator<ITestNGMethod> newComparator(boolean needPrioritySort) {
+    return needPrioritySort ? new TestMethodComparator() : null;
+  }
+
+  private boolean sortOnPriority(ITestNGMethod[] interceptedOrder) {
+    return m_methodInterceptors.size() > 1 ||
+        Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
+  }
+
+  // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
+  private static BlockingQueue<Runnable> newQueue(boolean needPrioritySort) {
+    return needPrioritySort ? new PriorityBlockingQueue<>() : new LinkedBlockingQueue<>();
+  }
+
   /**
    * Main method that create a graph of methods and then pass it to the graph executor to run them.
    */
   private void privateRun(XmlTest xmlTest) {
     boolean parallel = xmlTest.getParallel().isParallel();
 
-    {
-      // parallel
-      int threadCount = parallel ? xmlTest.getThreadCount() : 1;
-      // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
-      // removing methods would cause the graph never to terminate (because it would expect
-      // termination from methods that never get invoked).
-      ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
-      DynamicGraph<ITestNGMethod> graph =
-          DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
-      // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
-      // If the user specified a method interceptor, or if we have any methods that have a non-default
-      // priority on them, we need to sort.
-      boolean needPrioritySort = m_methodInterceptors.size() > 1 || 
-          Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
-      Comparator<ITestNGMethod> methodComparator = needPrioritySort ? new TestMethodComparator() : null;
-      graph.setVisualisers(this.visualisers);
-      if (parallel) {
-        if (graph.getNodeCount() > 0) {
-          // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
-          BlockingQueue<Runnable> queue = needPrioritySort ? new PriorityBlockingQueue<>() : new LinkedBlockingQueue<>();
-          GraphThreadPoolExecutor<ITestNGMethod> executor =
-              new GraphThreadPoolExecutor<>(
-                  "test=" + xmlTest.getName(),
-                  graph,
-                  this,
-                  threadCount,
-                  threadCount,
-                  0,
-                  TimeUnit.MILLISECONDS,
-                  queue,
-                  methodComparator);
-          executor.run();
-          try {
-            long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-            Utils.log(
-                "TestRunner",
-                2,
-                "Starting executor for test "
-                    + m_xmlTest.getName()
-                    + " with time out:"
-                    + timeOut
-                    + " milliseconds.");
-            executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-            executor.shutdownNow();
-          } catch (InterruptedException handled) {
-            LOGGER.error(handled.getMessage(), handled);
-            Thread.currentThread().interrupt();
-          }
-        }
-      } else {
-        List<ITestNGMethod> freeNodes = graph.getFreeNodes();
-
-        if (graph.getNodeCount() > 0 && freeNodes.isEmpty()) {
-          throw new TestNGException("No free nodes found in:" + graph);
-        }
-
-        while (!freeNodes.isEmpty()) {
-          if (needPrioritySort) {
-            freeNodes.sort(methodComparator);
-            // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
-            // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
-            freeNodes = freeNodes.subList(0, 1);
-          }
-          List<IWorker<ITestNGMethod>> runnables = createWorkers(freeNodes);
-          for (IWorker<ITestNGMethod> r : runnables) {
-            r.run();
-          }
-          graph.setStatus(freeNodes, Status.FINISHED);
-          freeNodes = graph.getFreeNodes();
-        }
+    // parallel
+    int threadCount = parallel ? xmlTest.getThreadCount() : 1;
+    // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
+    // removing methods would cause the graph never to terminate (because it would expect
+    // termination from methods that never get invoked).
+    ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
+    IDynamicGraph<ITestNGMethod> graph =
+        DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+    graph.setVisualisers(this.visualisers);
+    // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
+    // If the user specified a method interceptor, or if we have any methods that have a non-default
+    // priority on them, we need to sort.
+    boolean needPrioritySort = sortOnPriority(interceptedOrder);
+    Comparator<ITestNGMethod> methodComparator = newComparator(needPrioritySort);
+    if (parallel) {
+      if (graph.getNodeCount() <= 0) {
+        return;
       }
+      ITestNGThreadPoolExecutor executor =
+          this.m_configuration.getExecutorFactory().newTestMethodExecutor(
+              "test=" + xmlTest.getName(),
+              graph,
+              this,
+              threadCount,
+              threadCount,
+              0,
+              TimeUnit.MILLISECONDS,
+              newQueue(needPrioritySort),
+              methodComparator);
+      executor.run();
+      try {
+        long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
+        Utils.log(
+            "TestRunner",
+            2,
+            "Starting executor for test "
+                + m_xmlTest.getName()
+                + " with time out:"
+                + timeOut
+                + " milliseconds.");
+        executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
+        executor.shutdownNow();
+      } catch (InterruptedException handled) {
+        LOGGER.error(handled.getMessage(), handled);
+        Thread.currentThread().interrupt();
+      }
+      return;
+    }
+    List<ITestNGMethod> freeNodes = graph.getFreeNodes();
+
+    if (graph.getNodeCount() > 0 && freeNodes.isEmpty()) {
+      throw new TestNGException("No free nodes found in:" + graph);
+    }
+
+    while (!freeNodes.isEmpty()) {
+      if (needPrioritySort) {
+        freeNodes.sort(methodComparator);
+        // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
+        // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
+        freeNodes = freeNodes.subList(0, 1);
+      }
+      createWorkers(freeNodes).forEach(Runnable::run);
+      graph.setStatus(freeNodes, IDynamicGraph.Status.FINISHED);
+      freeNodes = graph.getFreeNodes();
     }
   }
 
@@ -832,19 +836,15 @@ public class TestRunner
             .testContext(this)
             .listeners(this.m_classListeners.values())
             .build();
-    return AbstractParallelWorker.newWorker(m_xmlTest.getParallel()).createWorkers(args);
+    return AbstractParallelWorker.newWorker(m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances()).createWorkers(args);
   }
 
   //
   // Invoke the workers
   //
   private void runJUnitWorkers(List<? extends IWorker<ITestNGMethod>> workers) {
-    //
     // Sequential run
-    //
-    for (IWorker<ITestNGMethod> tmw : workers) {
-      tmw.run();
-    }
+    workers.forEach(Runnable::run);
   }
 
   private void afterRun() {
@@ -866,7 +866,6 @@ public class TestRunner
   /** Logs the beginning of the {@link #beforeRun()} . */
   private void logStart() {
     log(
-        3,
         "Running test "
             + m_testName
             + " on "
@@ -1004,14 +1003,6 @@ public class TestRunner
     return m_skippedConfigurations;
   }
 
-  //
-  // ITestContext
-  /////
-
-  /////
-  // ITestResultNotifier
-  //
-
   @Override
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
     m_passedTests.addResult(tr, tm);
@@ -1067,9 +1058,6 @@ public class TestRunner
   public List<IConfigurationListener> getConfigurationListeners() {
     return Lists.newArrayList(m_configurationListeners);
   }
-  //
-  // ITestResultNotifier
-  /////
 
   private void logFailedTest(
       ITestNGMethod method, ITestResult tr, boolean withinSuccessPercentage) {
@@ -1081,8 +1069,8 @@ public class TestRunner
     }
   }
 
-  private static void log(int level, String s) {
-    Utils.log("TestRunner", level, s);
+  private static void log(String s) {
+    Utils.log("TestRunner", 3, s);
   }
 
   public static int getVerbose() {
@@ -1238,4 +1226,4 @@ public class TestRunner
   public void addInjector(List<Module> moduleInstances, Injector injector) {
     m_injectors.put(moduleInstances, injector);
   }
-} // TestRunner
+}

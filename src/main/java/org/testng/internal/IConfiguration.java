@@ -4,6 +4,7 @@ import org.testng.*;
 import org.testng.internal.annotations.IAnnotationFinder;
 
 import java.util.List;
+import org.testng.thread.IExecutorFactory;
 
 public interface IConfiguration {
   IAnnotationFinder getAnnotationFinder();
@@ -37,4 +38,8 @@ public interface IConfiguration {
   boolean alwaysRunListeners();
 
   void setAlwaysRunListeners(boolean alwaysRun);
+
+  void setExecutorFactory(IExecutorFactory factory);
+
+  IExecutorFactory getExecutorFactory();
 }

@@ -1,5 +1,7 @@
 package org.testng.xml;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
@@ -22,10 +24,18 @@ public class Parser {
   public static final String TESTNG_DTD = "testng-1.0.dtd";
 
   /** The URL to the deprecated TestNG DTD. */
-  public static final String DEPRECATED_TESTNG_DTD_URL = "http://beust.com/testng/" + TESTNG_DTD;
+  private static final String OLD_TESTNG_DTD_URL = "http://beust.com/testng/" + TESTNG_DTD;
+  private static final String HTTPS_OLD_TESTNG_DTD_URL = "https://beust.com/testng/" + TESTNG_DTD;
 
   /** The URL to the TestNG DTD. */
-  public static final String TESTNG_DTD_URL = "http://testng.org/" + TESTNG_DTD;
+  private static final String TESTNG_DTD_URL = "http://testng.org/" + TESTNG_DTD;
+  public static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
+
+  private static final List<String> URLS = Collections.unmodifiableList(Arrays.asList(
+      OLD_TESTNG_DTD_URL,
+      HTTPS_OLD_TESTNG_DTD_URL,
+      TESTNG_DTD_URL,
+      HTTPS_TESTNG_DTD_URL));
 
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
@@ -38,6 +48,10 @@ public class Parser {
     for (ISuiteParser parser : suiteParserLoader) {
       PARSERS.add(parser);
     }
+  }
+
+  static boolean isUnRecognizedPublicId(String publicId) {
+    return !URLS.contains(publicId);
   }
 
   /**

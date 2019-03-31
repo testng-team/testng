@@ -23,6 +23,7 @@ import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.SuiteRunnerMap;
@@ -32,8 +33,9 @@ import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
-import org.testng.internal.thread.graph.IThreadWorkerFactory;
+import org.testng.thread.IExecutorFactory;
+import org.testng.thread.ITestNGThreadPoolExecutor;
+import org.testng.thread.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
@@ -109,6 +111,8 @@ public class TestNG {
   /** The default name for a test launched from the command line */
   public static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
 
+  private static final String DEFAULT_THREADPOOL_FACTORY = "org.testng.internal.thread.DefaultThreadPoolExecutorFactory";
+
   /** The default name of the result's output directory (keep public, used by Eclipse). */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
 
@@ -140,6 +144,8 @@ public class TestNG {
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
       m_dataProviderListeners = Maps.newHashMap();
+
+  private IExecutorFactory m_executorFactory = null;
 
   public static final Integer DEFAULT_VERBOSE = 1;
 
@@ -753,6 +759,31 @@ public class TestNG {
     m_verbose = verbose;
   }
 
+  public void setExecutorFactoryClass(String clazzName) {
+    this.m_executorFactory = createExecutorFactoryInstanceUsing(clazzName);
+  }
+
+  private IExecutorFactory createExecutorFactoryInstanceUsing(String clazzName) {
+    Class<?> cls = ClassHelper.forName(clazzName);
+    Object instance = InstanceCreator.newInstance(cls);
+    if (instance instanceof IExecutorFactory) {
+      return (IExecutorFactory) instance;
+    }
+    throw new IllegalArgumentException(
+        clazzName + " does not implement " + IExecutorFactory.class.getName());
+  }
+
+  public void setExecutorFactory(IExecutorFactory factory) {
+    this.m_executorFactory = factory;
+  }
+
+  public IExecutorFactory getExecutorFactory() {
+    if (this.m_executorFactory == null) {
+      this.m_executorFactory = createExecutorFactoryInstanceUsing(DEFAULT_THREADPOOL_FACTORY);
+    }
+    return this.m_executorFactory;
+  }
+
   private void initializeCommandLineSuites() {
     if (m_commandLineTestClasses != null || m_commandLineMethods != null) {
       if (null != m_commandLineMethods) {
@@ -887,6 +918,7 @@ public class TestNG {
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
     m_configuration.setAlwaysRunListeners(this.m_alwaysRun);
+    m_configuration.setExecutorFactory(getExecutorFactory());
   }
 
   private void addListeners(XmlSuite s) {
@@ -1075,7 +1107,7 @@ public class TestNG {
     // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
     // used to run related suites in specific order. Parent suites are run only
     // once all the child suites have completed execution
-    DynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
+    IDynamicGraph<ISuite> suiteGraph = new DynamicGraph<>();
     for (XmlSuite xmlSuite : m_suites) {
       populateSuiteGraph(suiteGraph, suiteRunnerMap, xmlSuite);
     }
@@ -1083,8 +1115,7 @@ public class TestNG {
     IThreadWorkerFactory<ISuite> factory =
         new SuiteWorkerFactory(
             suiteRunnerMap, 0 /* verbose hasn't been set yet */, getDefaultSuiteName());
-    GraphThreadPoolExecutor<ISuite> pooledExecutor =
-        new GraphThreadPoolExecutor<>(
+    ITestNGThreadPoolExecutor pooledExecutor = this.getExecutorFactory().newSuiteExecutor(
             "suites",
             suiteGraph,
             factory,
@@ -1156,7 +1187,7 @@ public class TestNG {
    * @param xmlSuite XML Suite
    */
   private void populateSuiteGraph(
-      DynamicGraph<ISuite> suiteGraph /* OUT */, SuiteRunnerMap suiteRunnerMap, XmlSuite xmlSuite) {
+      IDynamicGraph<ISuite> suiteGraph /* OUT */, SuiteRunnerMap suiteRunnerMap, XmlSuite xmlSuite) {
     ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
     if (xmlSuite.getChildSuites().isEmpty()) {
       suiteGraph.addNode(parentSuiteRunner);
@@ -1306,6 +1337,9 @@ public class TestNG {
   protected void configure(CommandLineArgs cla) {
     if (cla.verbose != null) {
       setVerbose(cla.verbose);
+    }
+    if (cla.threadPoolFactoryClass != null) {
+      setExecutorFactoryClass(cla.threadPoolFactoryClass);
     }
     setOutputDirectory(cla.outputDirectory);
 

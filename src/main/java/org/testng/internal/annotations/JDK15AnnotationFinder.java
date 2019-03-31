@@ -77,10 +77,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     // because inheritance of this annotation causes aggregation instead of
     // overriding
     if (a.equals(org.testng.annotations.Listeners.class)) {
-      return cls.getAnnotation(a);
+
+      return AnnotationHelper.getAnnotationFromClass(cls, a);
     } else {
       while (cls != null) {
-        A result = cls.getAnnotation(a);
+        A result = AnnotationHelper.getAnnotationFromClass(cls, a);
+
         if (result != null) {
           return result;
         } else {
@@ -105,7 +107,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       throw new IllegalArgumentException(
           "Java @Annotation class for '" + annotationClass + "' not found.");
     }
-    Annotation annotation = m.getAnnotation(a);
+    Annotation annotation = AnnotationHelper.getAnnotationFromMethod(m, a);
     return findAnnotation(
         m.getDeclaringClass(),
         annotation,
@@ -129,9 +131,9 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     if (tm.getInstance() != null) {
       testClass = tm.getInstance().getClass();
     }
-    Annotation annotation = m.getAnnotation(a);
+    Annotation annotation = AnnotationHelper.getAnnotationFromMethod(m, a);
     if (annotation == null) {
-      annotation = testClass.getAnnotation(a);
+      annotation = AnnotationHelper.getAnnotationFromClass(testClass, a);
     }
     return findAnnotation(
         testClass, annotation, annotationClass, null, null, m, new Pair<>(annotation, m), null);
@@ -229,7 +231,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       throw new IllegalArgumentException(
           "Java @Annotation class for '" + annotationClass + "' not found.");
     }
-    Annotation annotation = cons.getAnnotation(a);
+    Annotation annotation = AnnotationHelper.getAnnotationFromConstructor(cons, a);
     return findAnnotation(
         cons.getDeclaringClass(),
         annotation,

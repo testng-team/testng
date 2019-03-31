@@ -95,6 +95,7 @@
       <class name="test.failures.FailuresTest" />
       <class name="test.mannotation.MAnnotationSampleTest" />
       <class name="test.mannotation.MAnnotation2SampleTest" />
+      <class name="test.mannotation.issue1976.IssueTest" />
       <class name="test.thread.FactoryTest" />
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
@@ -182,6 +183,7 @@
       <class name="test.order.OrderTest" />
       <class name="test.github1461.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
+      <class name="test.factory.issue326.IssueTest"/>
       <class name="test.factory.issue1041.IssueTest"/>
       <class name="test.factory.issue1924.IssueTest"/>
       <class name="test.factory.github328.GitHub328Test" />
@@ -570,6 +572,7 @@
       <class name="test.dataprovider.FailingIterableDataProviderTest" />
       <class name="test.dataprovider.IndicesTest" />
       <class name="test.dataprovider.DataProviderTest"/>
+      <class name="test.dataprovider.issue1987.IssueTest"/>
     </classes>
   </test>
 
@@ -765,6 +768,12 @@
       <class name="test.guice.GuiceTest" />
       <class name="test.guice.GuiceInheritanceTest" />
       <class name="test.guice.GuiceModuleFactoryTest" />
+    </classes>
+  </test>
+
+  <test name="Guice JIT Binding">
+    <classes>
+      <class name="test.guice.jitbinding.JitBindingTest" />
     </classes>
   </test>
 

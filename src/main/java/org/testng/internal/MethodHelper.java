@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import java.util.stream.Collectors;
 import org.testng.IInvokedMethod;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
@@ -425,20 +426,12 @@ public class MethodHelper {
   }
 
   public static List<IMethodInstance> methodsToMethodInstances(List<ITestNGMethod> sl) {
-    List<IMethodInstance> result = new ArrayList<>();
-    for (ITestNGMethod iTestNGMethod : sl) {
-      result.add(new MethodInstance(iTestNGMethod));
-    }
-    return result;
+    return sl.stream().map(MethodInstance::new).collect(Collectors.toList());
   }
 
   public static List<ITestNGMethod> methodInstancesToMethods(
       List<IMethodInstance> methodInstances) {
-    List<ITestNGMethod> result = Lists.newArrayList();
-    for (IMethodInstance imi : methodInstances) {
-      result.add(imi.getMethod());
-    }
-    return result;
+    return methodInstances.stream().map(IMethodInstance::getMethod).collect(Collectors.toList());
   }
 
   public static void dumpInvokedMethodsInfoToConsole(
@@ -462,15 +455,11 @@ public class MethodHelper {
 
   protected static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {
     Set<Method> methods = ClassHelper.getAvailableMethods(methodClass); // TESTNG-139
-    Method result = null;
-    for (Method m : methods) {
-      if (methodName.equals(m.getName())) {
-        result = m;
-        break;
-      }
-    }
-
-    return result != null ? calculateMethodCanonicalName(result) : null;
+    return methods.stream()
+        .filter(method -> methodName.equals(method.getName()))
+        .findFirst()
+        .map(MethodHelper::calculateMethodCanonicalName)
+        .orElse(null);
   }
 
   protected static long calculateTimeOut(ITestNGMethod tm) {
