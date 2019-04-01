@@ -1056,7 +1056,20 @@ public class TestRunner
 
   @Override
   public List<IConfigurationListener> getConfigurationListeners() {
-    return Lists.newArrayList(m_configurationListeners);
+    List<IConfigurationListener> listeners = Lists.newArrayList(m_configurationListeners);
+    for (IConfigurationListener each : this.m_configuration.getConfigurationListeners()) {
+      boolean duplicate = false;
+      for (IConfigurationListener listener : listeners) {
+        if (each.getClass().equals(listener.getClass())) {
+          duplicate = true;
+          break;
+        }
+      }
+      if (!duplicate) {
+        listeners.add(each);
+      }
+    }
+    return Lists.newArrayList(listeners);
   }
 
   private void logFailedTest(
