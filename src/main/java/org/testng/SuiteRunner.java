@@ -387,6 +387,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     return reporters;
   }
 
+  public Collection<IDataProviderListener> getDataProviderListeners() {
+    return this.dataProviderListeners.values();
+  }
+
   private void runSequentially() {
     for (TestRunner tr : testRunners) {
       runTest(tr);
@@ -468,6 +472,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       if (!classListeners.containsKey(classListener.getClass())) {
         classListeners.put(classListener.getClass(), classListener);
       }
+    }
+    if (listener instanceof IDataProviderListener) {
+      IDataProviderListener listenerObject = (IDataProviderListener) listener;
+      this.dataProviderListeners.put(listenerObject.getClass(), listenerObject);
     }
   }
 
