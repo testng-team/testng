@@ -14,7 +14,7 @@ import static org.testng.internal.invokers.InvokedMethodListenerSubtype.EXTENDED
 import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_LISTENER;
 
 /**
- * Hides complexity of calling methods of {@link IInvokedMethodListener}
+ * Hides complexity of calling methods of {@link IInvokedMethodListener}.
  *
  * @author Ansgar Konermann
  */
@@ -28,8 +28,8 @@ public class InvokedMethodListenerInvoker {
    * Creates a new invoker instance which can be used to call the specified {@code listenerMethod}
    * on any number of {@link IInvokedMethodListener}s.
    *
-   * @param listenerMethod method which should be called
-   * @param testResult test result which should be passed to the listener method upon invocation
+   * @param listenerMethod method which should be called.
+   * @param testResult test result which should be passed to the listener method upon invocation.
    * @param testContext test context which should be passed to the listener method upon invocation.
    *     This parameter is only used when calling methods on an {@link IInvokedMethodListener}.
    */
@@ -43,7 +43,7 @@ public class InvokedMethodListenerInvoker {
   }
 
   /**
-   * Invoke the given {@code listenerInstance}, calling the method specified in the constructor of
+   * Invokes the given {@code listenerInstance}, calling the method specified in the constructor of
    * this {@link InvokedMethodListenerInvoker}.
    *
    * @param listenerInstance the listener instance which should be invoked.
