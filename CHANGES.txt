@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2043: IConfigurationListener is not executed and IDataProviderListener is not added to the list of the listeners if a new listener is added at the runtime (Krishnan Mahadevan)
 Fixed: GITHUB-1835: Configurable ThreadPoolExecutor (Krishnan Mahadevan)
 Fixed: GITHUB-1691: Support reading data provider information from Class level @Test annotation (Krishnan Mahadevan)
 Fixed: GITHUB-326: When group-by-instances is set to true the instances created by @Factory does not run in parallel (Krishnan Mahadevan)

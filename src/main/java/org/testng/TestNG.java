@@ -490,7 +490,10 @@ public class TestNG {
     // If it does, create the appropriate XmlSuite, otherwise, create
     // the default one
     //
-    XmlClass[] xmlClasses = Utils.classesToXmlClasses(classes);
+
+    XmlClass[] xmlClasses = Arrays.stream(classes)
+        .map(clazz -> new XmlClass(clazz, true))
+        .toArray(XmlClass[]::new);
     Map<String, XmlSuite> suites = Maps.newHashMap();
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 

@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import test.listeners.issue1952.TestclassSample;
+import test.listeners.issue2043.SampleTestClass;
+import test.listeners.issue2043.listeners.FailFastListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -312,5 +314,14 @@ public class ListenerTest extends SimpleBaseTest {
             {Issue1029SampleTestClassWithFiveInstances.class, XmlSuite.ParallelMode.INSTANCES}
 
     };
+  }
+
+  @Test(description = "GITHUB-2043")
+  public void runTest() {
+    TestNG testng = create(SampleTestClass.class);
+    testng.run();
+    assertThat(FailFastListener.msgs).containsExactly("FailFastListener:afterInvocation",
+        "FailFastListener:beforeDataProviderExecution",
+        "FailFastListener:beforeConfiguration");
   }
 }
