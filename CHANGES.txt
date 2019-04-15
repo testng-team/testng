@@ -101,6 +101,7 @@ Fixed: GITHUB-1706: Retrying of methods fail when test method involves native in
 New  : Removed deprecated attributes from annotations (Julien Herr)
 New  : Support all JSR-223 compatible script engine
 Fixed: GITHUB-1827: TestNG does not throw an error when a test class does not have a proper constructor (Julien Herr & Krishnan Mahadevan)
+Fixed: Annotated default methods of indirectly implemented interfaces should still be called (Ilya Korobitsyn)
 
 6.14.3
 Fixed: GITHUB-1077: TestNG cannot handle load (Aheiss)
