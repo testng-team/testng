@@ -1,14 +1,16 @@
 package org.testng.internal.reflect;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
-import java.util.List;
 
 public class ReflectionHelper {
   /**
@@ -97,9 +99,18 @@ public class ReflectionHelper {
   }
 
   private static List<Method> getDefaultMethods(Class<?> clazz) {
-    return Arrays.stream(clazz.getInterfaces())
+    return getAllInterfaces(clazz).stream()
         .flatMap(each -> Arrays.stream(each.getMethods()))
         .filter(method -> !Modifier.isAbstract(method.getModifiers()))
         .collect(Collectors.toList());
+  }
+
+  private static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
+    Set<Class<?>> result = new HashSet<>();
+    while(clazz != null && clazz != Object.class) {
+      result.addAll(Arrays.asList(clazz.getInterfaces()));
+      clazz = clazz.getSuperclass();
+    }
+    return result;
   }
 }
