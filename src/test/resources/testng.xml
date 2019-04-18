@@ -814,7 +814,6 @@
   <test name="Configuration">
     <classes>
       <class name="test.configuration.BaseGroupsTest" />
-      <class name="test.configuration.BeforeClassThreadTest" />
       <class name="test.configuration.BeforeTestOrderingTest" />
       <class name="test.configuration.ConfigurationTest"/>
       <class name="test.configuration.ExternalConfigurationClass"/>
@@ -828,9 +827,9 @@
       <class name="test.configuration.SuiteTest" />
       <class name="test.configuration.VerifySuiteTest" />
       <class name="test.configuration.SingleConfigurationTest" />
-      <class name="test.configuration.BeforeClassWithDisabledTest" />
       <class name="test.configuration.github1625.TestRunnerIssue1625"/>
       <class name="test.configuration.issue1753.IssueTest"/>
+      <class name="test.configuration.BeforeClassTest"/>
     </classes>
   </test>
 
