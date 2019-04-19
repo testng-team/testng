@@ -42,21 +42,21 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private Map<String, ISuiteResult> suiteResults =
+  private final Map<String, ISuiteResult> suiteResults =
       Collections.synchronizedMap(Maps.newLinkedHashMap());
-  private List<TestRunner> testRunners = Lists.newArrayList();
-  private Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newHashMap();
-  private TestListenerAdapter textReporter = new TestListenerAdapter();
+  private final List<TestRunner> testRunners = Lists.newArrayList();
+  private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newConcurrentMap();
+  private final TestListenerAdapter textReporter = new TestListenerAdapter();
 
   private String outputDir;
   private XmlSuite xmlSuite;
   private Injector parentInjector;
 
-  private List<ITestListener> testListeners = Lists.newArrayList();
+  private final List<ITestListener> testListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> classListeners =
-      Maps.newHashMap();
+      Maps.newConcurrentMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
-      dataProviderListeners = Maps.newHashMap();
+      dataProviderListeners = Maps.newConcurrentMap();
   private ITestRunnerFactory tmpRunnerFactory;
 
   private boolean useDefaultListeners = true;
@@ -69,7 +69,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private ITestObjectFactory objectFactory;
   private Boolean skipFailedInvocationCounts = Boolean.FALSE;
-  private List<IReporter> reporters = Lists.newArrayList();
+  private final List<IReporter> reporters = Lists.newArrayList();
 
   private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       invokedMethodListeners;
@@ -77,9 +77,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   /** The list of all the methods invoked during this run */
   private final Collection<IInvokedMethod> invokedMethods = new ConcurrentLinkedQueue<>();
 
-  private List<ITestNGMethod> allTestMethods = Lists.newArrayList();
-  private SuiteRunState suiteState = new SuiteRunState();
-  private IAttributes attributes = new Attributes();
+  private final List<ITestNGMethod> allTestMethods = Lists.newArrayList();
+  private final SuiteRunState suiteState = new SuiteRunState();
+  private final IAttributes attributes = new Attributes();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   public SuiteRunner(
@@ -162,7 +162,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       objectFactory = suite.getObjectFactory();
     }
     // Add our own IInvokedMethodListener
-    invokedMethodListeners = Maps.newHashMap();
+    invokedMethodListeners = Maps.newConcurrentMap();
     if (invokedMethodListener != null) {
       for (IInvokedMethodListener listener : invokedMethodListener) {
         invokedMethodListeners.put(listener.getClass(), listener);
@@ -402,7 +402,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     tr.run();
 
     ISuiteResult sr = new SuiteResult(xmlSuite, tr);
-    suiteResults.put(tr.getName(), sr);
+    synchronized (suiteResults) {
+      suiteResults.put(tr.getName(), sr);
+    }
   }
 
   /**

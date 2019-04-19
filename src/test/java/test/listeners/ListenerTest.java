@@ -334,4 +334,11 @@ public class ListenerTest extends SimpleBaseTest {
     assertThat(DynamicTestListener.MSGS).containsExactly("Starting testMethod");
   }
 
+  @Test(description = "GITHUB-2061")
+  public void ensureDynamicListenerAdditionsDontTriggerConcurrentModificationExceptions() {
+    TestNG testng = create(test.listeners.issue2061.TestClassSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(0);
+  }
+
 }
