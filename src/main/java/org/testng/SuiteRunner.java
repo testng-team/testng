@@ -477,6 +477,11 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       IDataProviderListener listenerObject = (IDataProviderListener) listener;
       this.dataProviderListeners.put(listenerObject.getClass(), listenerObject);
     }
+    if (listener instanceof ITestListener) {
+      for(TestRunner testRunner : testRunners) {
+        testRunner.addTestListener((ITestListener) listener);
+      }
+    }
   }
 
   @Override

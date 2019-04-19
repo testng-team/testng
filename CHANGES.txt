@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2055: It's not possible to register a new ITestListener at the runtime (Krishnan Mahadevan)
 Fixed: GITHUB-1035: @BeforeClass not executed in parallel when parallel="instances" (Krishnan Mahadevan)
 Fixed: GITHUB-2043: IConfigurationListener is not executed and IDataProviderListener is not added to the list of the listeners if a new listener is added at the runtime (Krishnan Mahadevan)
 Fixed: GITHUB-1835: Configurable ThreadPoolExecutor (Krishnan Mahadevan)
