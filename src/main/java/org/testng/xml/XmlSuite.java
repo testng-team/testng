@@ -20,7 +20,7 @@ import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /** This class describes the tag &lt;suite&gt; in testng.xml. */
 public class XmlSuite implements Cloneable {
-  /** Parallel modes */
+  /** Parallel modes. */
   public enum ParallelMode {
     TESTS("tests", false),
     METHODS("methods"),
@@ -89,7 +89,7 @@ public class XmlSuite implements Cloneable {
     }
   }
 
-  /** Configuration failure policy options */
+  /** Configuration failure policy options. */
   public enum FailurePolicy {
     SKIP("skip"),
     CONTINUE("continue");
@@ -122,10 +122,10 @@ public class XmlSuite implements Cloneable {
   /** The default suite name TODO CQ is this OK as a default name. */
   private static final String DEFAULT_SUITE_NAME = "Default Suite";
 
-  /** The suite name (defaults to DEFAULT_SUITE_NAME) */
+  /** The suite name (defaults to DEFAULT_SUITE_NAME). */
   private String m_name = DEFAULT_SUITE_NAME;
 
-  /** The suite verbose flag. (0 to 10) */
+  /** The suite verbose flag (0 to 10). */
   public static final Integer DEFAULT_VERBOSE = 1;
 
   private Integer m_verbose = null;
@@ -146,7 +146,7 @@ public class XmlSuite implements Cloneable {
 
   private Boolean m_isJUnit = DEFAULT_JUNIT;
 
-  /** mixed mode flag. */
+  /** Mixed mode flag. */
   public static final Boolean DEFAULT_MIXED = Boolean.FALSE;
 
   public static final Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
@@ -157,12 +157,12 @@ public class XmlSuite implements Cloneable {
 
   private int m_threadCount = DEFAULT_THREAD_COUNT;
 
-  /** Thread count for the data provider pool */
+  /** Thread count for the data provider pool. */
   public static final Integer DEFAULT_DATA_PROVIDER_THREAD_COUNT = 10;
 
   private int m_dataProviderThreadCount = DEFAULT_DATA_PROVIDER_THREAD_COUNT;
 
-  /** By default, a method failing will cause all instances of that class to skip */
+  /** By default, a method failing will cause all instances of that class to skip. */
   public static final Boolean DEFAULT_GROUP_BY_INSTANCES = false;
 
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
@@ -182,16 +182,16 @@ public class XmlSuite implements Cloneable {
   /** Suite level parameters. */
   private Map<String, String> m_parameters = Maps.newHashMap();
 
-  /** Name of the XML file */
+  /** Name of the XML file. */
   private String m_fileName;
 
-  /** Time out for methods/tests */
+  /** Time out for methods/tests. */
   private String m_timeOut;
 
-  /** List of child XML suite specified using <suite-file> tags */
+  /** List of child XML suites specified using <suite-file> tags. */
   private List<XmlSuite> m_childSuites = Lists.newArrayList();
 
-  /** Parent XML Suite if this suite was specified in another suite using <suite-file> tag */
+  /** Parent XML suite if this suite was specified in another suite using <suite-file> tag. */
   private XmlSuite m_parentSuite;
 
   private List<String> m_suiteFiles = Lists.newArrayList();
@@ -217,12 +217,12 @@ public class XmlSuite implements Cloneable {
     return parsed;
   }
 
-  /** @return the fileName */
+  /** @return The fileName. */
   public String getFileName() {
     return m_fileName;
   }
 
-  /** @param fileName the fileName to set */
+  /** @param fileName The fileName to set. */
   public void setFileName(String fileName) {
     m_fileName = fileName;
   }
@@ -230,7 +230,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the parallel mode.
    *
-   * @return the parallel mode.
+   * @return The parallel mode.
    */
   public ParallelMode getParallel() {
     return m_parallel;
@@ -263,9 +263,9 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * Sets the parallel mode
+   * Sets the parallel mode.
    *
-   * @param parallel the parallel mode
+   * @param parallel The parallel mode.
    */
   public void setParallel(ParallelMode parallel) {
     if (parallel == null) {
@@ -286,7 +286,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets the configuration failure policy.
    *
-   * @param configFailurePolicy the config failure policy
+   * @param configFailurePolicy The config failure policy.
    */
   public void setConfigFailurePolicy(FailurePolicy configFailurePolicy) {
     m_configFailurePolicy = configFailurePolicy;
@@ -295,7 +295,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the configuration failure policy.
    *
-   * @return the configuration failure policy
+   * @return The configuration failure policy.
    */
   public FailurePolicy getConfigFailurePolicy() {
     return m_configFailurePolicy;
@@ -304,7 +304,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the verbose.
    *
-   * @return the verbose.
+   * @return The verbose.
    */
   public Integer getVerbose() {
     return m_verbose != null ? m_verbose : TestNG.DEFAULT_VERBOSE;
@@ -322,7 +322,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the name.
    *
-   * @return the name.
+   * @return The name.
    */
   public String getName() {
     return m_name;
@@ -343,7 +343,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the test.
    *
-   * @return the test.
+   * @return The test.
    */
   public String getTest() {
     return m_test;
@@ -352,7 +352,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the tests.
    *
-   * @return the tests.
+   * @return The tests.
    */
   public List<XmlTest> getTests() {
     return m_tests;
@@ -366,7 +366,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the method selectors.
    *
-   * @return the method selectors.
+   * @return The method selectors.
    */
   public List<XmlMethodSelector> getMethodSelectors() {
     if (m_xmlMethodSelectors != null) {
@@ -380,7 +380,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets the method selectors.
    *
-   * @param methodSelectors the method selectors.
+   * @param methodSelectors The method selectors.
    */
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
     m_methodSelectors = Lists.newArrayList(methodSelectors);
@@ -394,9 +394,9 @@ public class XmlSuite implements Cloneable {
    */
   private void updateParameters() {
     /*
-     * Whatever parameters are set by user or via XML, should be updated
-     * using parameters from parent suite, if it exists. Parameters from this
-     * suite override the same named parameters from parent suite.
+     * Whatever parameters are set by a user or via XML should be updated
+     * using parameters from the parent suite, if it exists. Parameters from this
+     * suite override the same named parameters from the parent suite.
      */
     if (m_parentSuite != null) {
       Set<String> keySet = m_parentSuite.getParameters().keySet();
@@ -411,7 +411,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets parameters.
    *
-   * @param parameters the parameters.
+   * @param parameters The parameters.
    */
   public void setParameters(Map<String, String> parameters) {
     m_parameters = parameters;
@@ -420,8 +420,8 @@ public class XmlSuite implements Cloneable {
 
   /**
    * Gets the parameters that apply to tests in this suite.<br>
-   * Set of parameters for a suite is appended with parameters from parent suite. Also, parameters
-   * from this suite override the same named parameters from parent suite.
+   * The set of parameters for a suite is appended with parameters from the parent suite. Also, parameters
+   * from this suite override the same named parameters from the parent suite.
    */
   public Map<String, String> getParameters() {
     return m_parameters;
@@ -447,7 +447,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the parameter defined in this suite only.
    *
-   * @param name the parameter name.
+   * @param name The parameter name.
    * @return The parameter defined in this suite only.
    */
   public String getParameter(String name) {
@@ -476,7 +476,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets the JUnit compatibility flag.
    *
-   * @param isJUnit the JUnit compatibility flag.
+   * @param isJUnit The JUnit compatibility flag.
    */
   public void setJUnit(Boolean isJUnit) {
     m_isJUnit = isJUnit;
@@ -498,7 +498,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets the XML packages.
    *
-   * @param packages the XML packages.
+   * @param packages The XML packages.
    */
   public void setXmlPackages(List<XmlPackage> packages) {
     m_xmlPackages = Lists.newArrayList(packages);
@@ -507,7 +507,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the XML packages.
    *
-   * @return the XML packages.
+   * @return The XML packages.
    */
   public List<XmlPackage> getXmlPackages() {
     return m_xmlPackages;
@@ -533,7 +533,7 @@ public class XmlSuite implements Cloneable {
     return XmlWeaver.asXml(this);
   }
 
-  /** @return - The list of listener names that are local to the current &lt;suite&gt; */
+  /** @return - The list of listener names that are local to the current &lt;suite&gt;. */
   public List<String> getLocalListeners() {
     return m_listeners;
   }
@@ -587,9 +587,9 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * This method returns a shallow cloned version. {@link XmlTest} are not copied by this method.
+   * This method returns a shallow cloned version. {@link XmlTest}s are not copied by this method.
    *
-   * @return - A Shallow copied version of {@link XmlSuite}.
+   * @return - A shallow copied version of {@link XmlSuite}.
    */
   public XmlSuite shallowCopy() {
     XmlSuite result = new XmlSuite();
@@ -617,7 +617,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets the timeout.
    *
-   * @param timeOut the timeout.
+   * @param timeOut The timeout.
    */
   public void setTimeOut(String timeOut) {
     m_timeOut = timeOut;
@@ -626,7 +626,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the timeout.
    *
-   * @return the timeout.
+   * @return The timeout.
    */
   public String getTimeOut() {
     return m_timeOut;
@@ -636,8 +636,8 @@ public class XmlSuite implements Cloneable {
    * Returns the timeout as a long value specifying the default value to be used if no timeout was
    * specified.
    *
-   * @param def the the default value to be used if no timeout was specified.
-   * @return the timeout as a long value specifying the default value to be used if no timeout was
+   * @param def The default value to be used if no timeout was specified.
+   * @return The timeout as a long value specifying the default value to be used if no timeout was
    *     specified.
    */
   public long getTimeOut(long def) {
@@ -652,7 +652,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Sets the suite files.
    *
-   * @param files the suite files.
+   * @param files The suite files.
    */
   public void setSuiteFiles(List<String> files) {
     m_suiteFiles = files;
@@ -661,7 +661,7 @@ public class XmlSuite implements Cloneable {
   /**
    * Returns the suite files.
    *
-   * @return the suite files.
+   * @return The suite files.
    */
   public List<String> getSuiteFiles() {
     return m_suiteFiles;
