@@ -118,7 +118,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     for (IMethodInstance testMthdInst : m_methodInstances) {
       ITestNGMethod testMethod = testMthdInst.getMethod();
       if (canInvokeBeforeClassMethods()) {
-        synchronized (testMethod.getTestClass()) {
+        synchronized (testMethod.getInstance()) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMthdInst);
         }
       }

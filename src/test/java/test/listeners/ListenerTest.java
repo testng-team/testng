@@ -23,6 +23,8 @@ import java.util.List;
 import test.listeners.issue1952.TestclassSample;
 import test.listeners.issue2043.SampleTestClass;
 import test.listeners.issue2043.listeners.FailFastListener;
+import test.listeners.issue2055.DynamicTestListener;
+import test.listeners.issue2055.TestClassSample;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -324,4 +326,19 @@ public class ListenerTest extends SimpleBaseTest {
         "FailFastListener:beforeDataProviderExecution",
         "FailFastListener:beforeConfiguration");
   }
+
+  @Test(description = "GITHUB-2055")
+  public void ensureDynamicTestListenerInjection() {
+    TestNG testng = create(TestClassSample.class);
+    testng.run();
+    assertThat(DynamicTestListener.MSGS).containsExactly("Starting testMethod");
+  }
+
+  @Test(description = "GITHUB-2061")
+  public void ensureDynamicListenerAdditionsDontTriggerConcurrentModificationExceptions() {
+    TestNG testng = create(test.listeners.issue2061.TestClassSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(0);
+  }
+
 }

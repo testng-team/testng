@@ -1,3 +1,5 @@
+The release can be validated with this project:  https://github.com/testng-team/release-validator
+
 To publish:
 
 - ./gradlew bintrayUpload will upload the release to JCenter. It will fail if the version is a SNAPSHOT

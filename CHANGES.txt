@@ -1,4 +1,7 @@
 Current
+Fixed: GITHUB-2061: java.util.ConcurrentModificationException after registration of SuiteListener at the runtime (Krishnan Mahadevan)
+Fixed: GITHUB-2055: It's not possible to register a new ITestListener at the runtime (Krishnan Mahadevan)
+Fixed: GITHUB-1035: @BeforeClass not executed in parallel when parallel="instances" (Krishnan Mahadevan)
 Fixed: GITHUB-2043: IConfigurationListener is not executed and IDataProviderListener is not added to the list of the listeners if a new listener is added at the runtime (Krishnan Mahadevan)
 Fixed: GITHUB-1835: Configurable ThreadPoolExecutor (Krishnan Mahadevan)
 Fixed: GITHUB-1691: Support reading data provider information from Class level @Test annotation (Krishnan Mahadevan)
@@ -101,6 +104,7 @@ Fixed: GITHUB-1706: Retrying of methods fail when test method involves native in
 New  : Removed deprecated attributes from annotations (Julien Herr)
 New  : Support all JSR-223 compatible script engine
 Fixed: GITHUB-1827: TestNG does not throw an error when a test class does not have a proper constructor (Julien Herr & Krishnan Mahadevan)
+Fixed: Annotated default methods of indirectly implemented interfaces should still be called (Ilya Korobitsyn)
 
 6.14.3
 Fixed: GITHUB-1077: TestNG cannot handle load (Aheiss)
