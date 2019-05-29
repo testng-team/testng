@@ -11,7 +11,7 @@ public interface ISuiteListener extends ITestNGListener {
     // not implemented
   }
 
-  /** This method is invoked after the SuiteRunner has run all the test suites. */
+  /** This method is invoked after the SuiteRunner has run all the tests in the suite. */
   default void onFinish(ISuite suite) {
     // not implemented
   }
