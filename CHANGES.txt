@@ -1,4 +1,6 @@
 Current
+Fixed: GITHUB-2075: Thread interrupt flag persists between test methods (Krishnan Mahadevan)
+Fixed: GITHUB-2074: Thread Interrupted when using expectedException (Krishnan Mahadevan)
 Fixed: GITHUB-2802: some methods' javadoc in ISuiteListener and ITestListener is misleading (Yehui Wang)
 Fixed: GITHUB-2061: java.util.ConcurrentModificationException after registration of SuiteListener at the runtime (Krishnan Mahadevan)
 Fixed: GITHUB-2055: It's not possible to register a new ITestListener at the runtime (Krishnan Mahadevan)

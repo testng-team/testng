@@ -60,6 +60,7 @@
       <class name="test.Test2" />
       <class name="test.CtorCalledOnce" />
       <class name="test.expectedexceptions.ExpectedExceptionsTest" />
+      <class name="test.expectedexceptions.issue2074.IssueTest"/>
       <class name="test.access.PrivateAccessConfigurationMethods" />
       <class name="test.expectedexceptions.WrappedExpectedExceptionTest" />
       <class name="test.parameters.OptionalParameterTest"/>
