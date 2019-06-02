@@ -133,8 +133,15 @@ public class Model {
     return m_model.get(suite);
   }
 
+  private static String getMethodName(String name) {
+    if (name == null) {
+      return "";
+    }
+    return name;
+  }
+
   public static String getTestResultName(ITestResult tr) {
-    StringBuilder result = new StringBuilder(tr.getMethod().getMethodName());
+    StringBuilder result = new StringBuilder(getMethodName(tr.getMethod().getMethodName()));
     Object[] parameters = tr.getParameters();
     if (parameters.length > 0) {
       result.append("(");

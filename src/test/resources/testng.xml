@@ -112,6 +112,7 @@
       <class name="test.simple.IncludedExcludedTest" />
       <class name="test.reports.ReportTest" />
       <class name="test.reports.XmlReporterTest"/>
+      <class name="test.reports.issue2069.IssueTest"/>
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
 <!--
       <class name="test.jar.JarTest" />
