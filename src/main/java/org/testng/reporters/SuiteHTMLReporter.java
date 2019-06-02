@@ -332,6 +332,13 @@ public class SuiteHTMLReporter implements IReporter {
 
   public static final String BEFORE = "&gt;&gt;";
 
+  private static String getMethodName(String name) {
+    if (name == null) {
+      return "";
+    }
+    return name;
+  }
+
   private void generateMethodsChronologically(
       XmlSuite xmlSuite, ISuite suite, String outputFileName, boolean alphabetical) {
     try (BufferedWriter bw = Utils.openWriter(getOutputDirectory(xmlSuite), outputFileName)) {
@@ -348,7 +355,7 @@ public class SuiteHTMLReporter implements IReporter {
 
       List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
       if (alphabetical) {
-        invokedMethods.sort(Comparator.comparing(o -> o.getTestMethod().getMethodName()));
+        invokedMethods.sort(Comparator.comparing(o -> getMethodName(o.getTestMethod().getMethodName())));
       }
 
       SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
