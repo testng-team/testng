@@ -1229,16 +1229,16 @@ public class TestNG {
       xmlSuite.setConfigFailurePolicy(m_configFailurePolicy);
     }
 
+    Set<XmlMethodSelector> selectors = Sets.newHashSet();
     for (XmlTest t : xmlSuite.getTests()) {
       for (Map.Entry<String, Integer> ms : m_methodDescriptors.entrySet()) {
         XmlMethodSelector xms = new XmlMethodSelector();
         xms.setName(ms.getKey());
         xms.setPriority(ms.getValue());
-        t.getMethodSelectors().add(xms);
+        selectors.add(xms);
       }
-      for (XmlMethodSelector selector : m_selectors) {
-        t.getMethodSelectors().add(selector);
-      }
+      selectors.addAll(m_selectors);
+      t.getMethodSelectors().addAll(Lists.newArrayList(selectors));
     }
 
     suiteRunnerMap.put(xmlSuite, createSuiteRunner(xmlSuite));
