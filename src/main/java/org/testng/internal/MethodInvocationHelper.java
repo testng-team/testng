@@ -129,6 +129,7 @@ public class MethodInvocationHelper {
         throw new TestNGException(thisMethod.getName() + " must be public", e);
       }
     }
+    cleanInterruptStatus();
     return thisMethod.invoke(instance, parameters);
   }
 
@@ -278,6 +279,12 @@ public class MethodInvocationHelper {
       invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
     } else {
       invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult, hookable);
+    }
+  }
+
+  private static void cleanInterruptStatus() {
+    if (Thread.currentThread().isInterrupted()) {
+      Thread.interrupted();
     }
   }
 

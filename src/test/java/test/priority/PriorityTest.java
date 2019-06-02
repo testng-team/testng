@@ -2,6 +2,8 @@ package test.priority;
 
 import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -11,6 +13,7 @@ import test.SimpleBaseTest;
 
 import java.util.Arrays;
 import java.util.List;
+import test.priority.issue2075.InterruptTest;
 
 public class PriorityTest extends SimpleBaseTest {
 
@@ -76,6 +79,17 @@ public class PriorityTest extends SimpleBaseTest {
         .filter(each -> !allSkipped.contains(each))
         .collect(Collectors.toList());
     assertThat(actual).containsExactlyElementsOf(expected);
+  }
+
+  @Test(description = "GITHUB-2075")
+  public void testInterruptStatusWithMethodsThatHavePriorities() {
+    XmlSuite xmlSuite = createXmlSuite("my_suite", "my_test", InterruptTest.class);
+    xmlSuite.setVerbose(2);
+    TestNG tng = create(xmlSuite);
+    TestListenerAdapter listener = new TestListenerAdapter();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getFailedTests()).isEmpty();
   }
 
 }
