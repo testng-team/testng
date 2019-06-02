@@ -1,6 +1,9 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.testng.IInvokedMethod;
@@ -51,8 +54,16 @@ class BaseInvoker {
 
     InvokedMethodListenerInvoker invoker =
         new InvokedMethodListenerInvoker(listenerMethod, testResult, m_testContext);
-    for (IInvokedMethodListener currentListener : m_invokedMethodListeners) {
-      invoker.invokeListener(currentListener, invokedMethod);
+    if(InvokedMethodListenerMethod.BEFORE_INVOCATION.equals(listenerMethod)) {
+        for (IInvokedMethodListener currentListener : m_invokedMethodListeners) {
+            invoker.invokeListener(currentListener, invokedMethod);
+          }
+    }else {
+        List<IInvokedMethodListener> m_invokedMethodListenerList = new ArrayList<>(m_invokedMethodListeners);
+        Collections.reverse(m_invokedMethodListenerList);
+        for (IInvokedMethodListener currentListener : m_invokedMethodListenerList) {
+            invoker.invokeListener(currentListener, invokedMethod);
+          }
     }
   }
 

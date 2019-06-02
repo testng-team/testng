@@ -87,7 +87,7 @@ public class TestRunner
   /** ITestListeners support. */
   private List<ITestListener> m_testListeners = Lists.newArrayList();
 
-  private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private Set<IConfigurationListener> m_configurationListeners = Sets.newLinkedHashSet();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   private IConfigurationListener m_confListener = new ConfigurationListener();
@@ -354,7 +354,7 @@ public class TestRunner
     // Find all the listener factories and collect all the listeners requested in a
     // @Listeners annotation.
     //
-    Set<Class<? extends ITestNGListener>> listenerClasses = Sets.newHashSet();
+    Set<Class<? extends ITestNGListener>> listenerClasses = Sets.newLinkedHashSet();
     Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
 
     for (IClass cls : getTestClasses()) {
@@ -892,10 +892,14 @@ public class TestRunner
    *     finish
    */
   private void fireEvent(boolean isStart) {
-    for (ITestListener itl : m_testListeners) {
-      if (isStart) {
+    if(isStart) {
+      for (ITestListener itl : m_testListeners) {
         itl.onStart(this);
-      } else {
+      }
+    } else {
+      List<ITestListener> m_testListeners_Reverted = new ArrayList<>(m_testListeners);
+      Collections.reverse(m_testListeners_Reverted);
+      for (ITestListener itl : m_testListeners_Reverted) {
         itl.onFinish(this);
       }
     }

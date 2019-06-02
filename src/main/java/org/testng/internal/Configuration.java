@@ -19,9 +19,9 @@ public class Configuration implements IConfiguration {
   private IHookable m_hookable;
   private IConfigurable m_configurable;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
-      m_configurationListeners = Maps.newHashMap();
+      m_configurationListeners = Maps.newLinkedHashMap();
   private boolean alwaysRunListeners = true;
   private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
 

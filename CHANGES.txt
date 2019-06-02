@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2089: Make IExecutionListener, ITestListener, IInvokedMethodListener, IConfigurationListener execute in the order of insertion (Yehui Wang)
 Fixed: GITHUB-2802: some methods' javadoc in ISuiteListener and ITestListener is misleading (Yehui Wang)
 Fixed: GITHUB-2061: java.util.ConcurrentModificationException after registration of SuiteListener at the runtime (Krishnan Mahadevan)
 Fixed: GITHUB-2055: It's not possible to register a new ITestListener at the runtime (Krishnan Mahadevan)

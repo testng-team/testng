@@ -138,9 +138,9 @@ public class TestNG {
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       Maps.newHashMap();
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
       m_dataProviderListeners = Maps.newHashMap();
@@ -165,7 +165,7 @@ public class TestNG {
   private ITestObjectFactory m_objectFactory;
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
-      m_invokedMethodListeners = Maps.newHashMap();
+      m_invokedMethodListeners = Maps.newLinkedHashMap();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -1039,13 +1039,17 @@ public class TestNG {
   }
 
   private void runExecutionListeners(boolean start) {
-    for (IExecutionListener l : m_configuration.getExecutionListeners()) {
-      if (start) {
+    if (start) {
+      for (IExecutionListener l : m_configuration.getExecutionListeners()) {
         l.onExecutionStart();
+        }
       } else {
-        l.onExecutionFinish();
+        List<IExecutionListener> executionListeners = m_configuration.getExecutionListeners();
+        Collections.reverse(executionListeners);
+        for (IExecutionListener l : executionListeners) {
+          l.onExecutionFinish();
+        }
       }
-    }
   }
 
   private static void usage() {

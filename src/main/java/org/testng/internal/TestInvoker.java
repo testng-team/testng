@@ -23,6 +23,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ISuite;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
@@ -207,7 +208,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   public void runTestResultListener(ITestResult tr) {
-    TestListenerHelper.runTestListeners(tr, m_notifier.getTestListeners());
+    if(tr.getStatus() == ITestResult.STARTED) {
+      TestListenerHelper.runTestListeners(tr, m_notifier.getTestListeners());
+    } else {
+      List<ITestListener> test_Listeners_reverted = Lists.newArrayList(m_notifier.getTestListeners());
+      Collections.reverse(test_Listeners_reverted);
+      TestListenerHelper.runTestListeners(tr, test_Listeners_reverted);
+    }
   }
 
   private Collection<IDataProviderListener> dataProviderListeners() {

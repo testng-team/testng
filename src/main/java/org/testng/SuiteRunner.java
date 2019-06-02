@@ -162,7 +162,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       objectFactory = suite.getObjectFactory();
     }
     // Add our own IInvokedMethodListener
-    invokedMethodListeners = Maps.newConcurrentMap();
+    invokedMethodListeners = Collections.synchronizedMap(Maps.newLinkedHashMap());
     if (invokedMethodListener != null) {
       for (IInvokedMethodListener listener : invokedMethodListener) {
         invokedMethodListeners.put(listener.getClass(), listener);
