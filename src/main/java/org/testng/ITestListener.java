@@ -69,12 +69,18 @@ public interface ITestListener extends ITestNGListener {
     onTestFailure(result);
   }
 
-  /** Invoked after the test class is instantiated and before any configuration method is called. */
+  /**
+   * Invoked before running all the test methods belonging to the classes inside the &lt;test&gt; tag
+   * and calling all their Configuration methods.
+   */
   default void onStart(ITestContext context) {
     // not implemented
   }
 
-  /** Invoked after all the tests have run and all their Configuration methods have been called. */
+  /**
+   * Invoked after all the test methods belonging to the classes inside the &lt;test&gt; tag have run
+   * and all their Configuration methods have been called.
+   */
   default void onFinish(ITestContext context) {
     // not implemented
   }
