@@ -8,4 +8,22 @@ To publish:
   - the release to https://oss.sonatype.org/service/local/staging/deploy/maven2
 For a release, you then need to go to https://oss.sonatype.org/index.html#stagingRepositories to manually close and release the distribution.
 
-Note that `./gradlew uploadArchives` is run by Travis after each new push to deploy the latest HEAD to the snapshot directory. As such, the version number of `build.gradle` in the git repo should always be -SNAPSHOT.
+Notes:
+
+- `./gradlew uploadArchives` is run by Travis after each new push to deploy the latest HEAD to the snapshot directory. As such, the version number of `build.gradle` in the git repo should always be -SNAPSHOT.
+- The latest gpg no longer creates `secring.gpg`, but you can generate one with `gpg --export-secret-keys -o ~/.gnupg/secring.gpg`
+- The ID of the key is the last eight hex numbers of the key
+- You should have a `~/.gradle/gradle.properties`:
+
+```
+signing.keyId=<KEY ID, 8 hex numbers>
+signing.password=
+signing.secretKeyRingFile=<PATH TO secring.gpg>
+```
+- Make sure to use Gradle 5.0 because later releases will issue a "duplicate key" error when running
+`./gradlew uploadArchives`
+- If you generate a new key with `gpg --gen-key`, you can then upload it with:
+`gpg --send-keys --keyserver keyserver.ubuntu.com $GPGKEY`
+
+
+
