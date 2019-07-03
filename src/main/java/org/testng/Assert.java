@@ -1307,6 +1307,10 @@ public class Assert {
     }
   }
 
+  public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected) {
+    assertEquals(actual, expected, null);
+  }
+
   /** Asserts that two maps are equal. */
   public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
     if (actual == expected) {
