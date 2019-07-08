@@ -1,5 +1,6 @@
 package org.testng;
 
+import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.IResultListener2;
 
@@ -140,6 +141,16 @@ public class TestListenerAdapter implements IResultListener2 {
 
   public List<ITestResult> getConfigurationSkips() {
     return new ArrayList<>(m_skippedConfs);
+  }
+
+  public List<ITestResult> getRetriedTests(){
+    List<ITestResult> testResults = Lists.newArrayList();
+    for(ITestResult result : getSkippedTests()) {
+      if(result.wasRetried()) {
+          testResults.add(result);
+      }
+    }
+    return testResults;
   }
 
   @Override

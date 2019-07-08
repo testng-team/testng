@@ -711,6 +711,7 @@
       <class name="test.retryAnalyzer.RetryAnalyzerTest" />
       <class name="test.retryAnalyzer.ExitCodeTest" />
       <class name="test.retryAnalyzer.dataprovider.RetryAnalyzerWithDataProviderTest" />
+      <class name="test.retryAnalyzer.retrywithskip.RetrySkipTest" />
     </classes>
   </test>
 
