@@ -77,7 +77,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
 
     for (int ix = 0; ix < workers.size(); ix++) {
       IWorker<T> worker = workers.get(ix);
-      mapNodeToParent(freeNodes, ix);
+      mapNodeToParent(freeNodes);
       setStatus(worker, Status.RUNNING);
       try {
         execute(worker);
@@ -127,25 +127,26 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
     if (!RuntimeBehavior.enforceThreadAffinity()) {
       return;
     }
-    int index = 0;
     for (IWorker<T> runnable : runnables) {
-      T freeNode = freeNodes.get(index++);
-      IWorker<T> w = mapping.get(freeNode);
-      if (w != null) {
-        long current = w.getThreadIdToRunOn();
-        runnable.setThreadIdToRunOn(current);
+      for (T freeNode : freeNodes) {
+        IWorker<T> w = mapping.get(freeNode);
+        if (w != null) {
+          long current = w.getThreadIdToRunOn();
+          runnable.setThreadIdToRunOn(current);
+        }
+        mapping.put(freeNode, runnable);
       }
-      mapping.put(freeNode, runnable);
     }
   }
 
-  private void mapNodeToParent(List<T> freeNodes, int ix) {
+  private void mapNodeToParent(List<T> freeNodes) {
     if (!RuntimeBehavior.enforceThreadAffinity()) {
       return;
     }
-    T key = freeNodes.get(ix);
-    List<T> nodes = m_graph.getDependenciesFor(key);
-    nodes.forEach(eachNode -> upstream.put(eachNode, key));
+    for (T freeNode : freeNodes) {
+      List<T> nodes = m_graph.getDependenciesFor(freeNode);
+      nodes.forEach(eachNode -> upstream.put(eachNode, freeNode));
+    }
   }
 
   private void handleThreadAffinity(List<T> freeNodes) {
@@ -153,9 +154,15 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
       return;
     }
     for (T node : freeNodes) {
-      IWorker<T> w = mapping.get(upstream.get(node));
-      long threadId = w.getCurrentThreadId();
-      mapping.put(node, new PhoneyWorker(threadId));
+      T upstreamNode = upstream.get(node);
+      if (upstreamNode == null) {
+        continue;
+      }
+      IWorker<T> w = mapping.get(upstreamNode);
+      if (w != null) {
+        long threadId = w.getCurrentThreadId();
+        mapping.put(node, new PhoneyWorker(threadId));
+      }
     }
   }
 
