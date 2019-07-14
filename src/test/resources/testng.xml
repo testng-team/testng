@@ -935,6 +935,7 @@
   <test name="threadAffinity">
     <classes>
       <class name="test.thread.parallelization.issue1773.IssueTest"/>
+      <class name="test.thread.parallelization.issue2110.IssueTest"/>
     </classes>
   </test>
 
