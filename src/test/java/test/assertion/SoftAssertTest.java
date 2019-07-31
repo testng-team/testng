@@ -35,6 +35,25 @@ public class SoftAssertTest {
     Assert.assertEquals(failures.size(), 1, failures.toString());
   }
 
+  @DataProvider(name = "messages")
+  public Object[][] getMessages() {
+    String hasMessage = "msg";
+    return new Object[][] {{hasMessage, hasMessage}, {null, "The following asserts failed:"}};
+  }
+
+  @Test(dataProvider = "messages")
+  public void testDefaultMessage(String actualMsg, String expectedMsg) {
+    try {
+      final SoftAssert sa = new SoftAssert();
+      sa.assertTrue(false);
+      sa.assertAll(actualMsg);
+      Assert.fail();
+    } catch (AssertionError exc) {
+      Assert.assertNotNull(exc.getMessage());
+      Assert.assertTrue(exc.getMessage().startsWith(expectedMsg));
+    }
+  }
+
   @Test
   public void testAssertAllCount() {
     String message = "My message";

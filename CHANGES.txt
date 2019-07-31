@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2121: SoftAssert: allow custom message (dr29bart)
 Fixed: GITHUB-2110: NPE is thrown when running with Thread affinity (Krishnan Mahadevan)
 Fixed: GITHUB-2069: JUnit TestSuite not handled correctly in Reports (Krishnan Mahadevan)
 Fixed: GITHUB-2075: Thread interrupt flag persists between test methods (Krishnan Mahadevan)
