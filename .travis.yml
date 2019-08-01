@@ -7,8 +7,8 @@ env:
     - GRADLE_OPTS=-Xmx512m
     - CI=true
 
-before_script:
-  - if [[ "x$JDK" == *'x9'* ]]; then remove_dir_from_path $JAVA_HOME/bin; export JAVA_HOME=/usr/lib/jvm/java-9-oracle; export PATH=$JAVA_HOME/bin:$PATH; java -Xmx32m -version; fi
+before_install:
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -21,11 +21,14 @@ cache:
 matrix:
   fast_finish: true
   allow_failures:
-    - env: JDK=9
+    - env: JDK='Oracle JDK 9'
   include:
-    - jdk: oraclejdk8
-    - jdk: oraclejdk9
-      env: JDK=9
+    - env: JDK='OpenJDK 8'
+      jdk: openjdk8
+    - env: JDK='Oracle JDK 9'
+      jdk: oraclejdk9
+    - env: JDK='OpenJDK 9'
+      install: . ./install-jdk.sh -F 9
 
 script:
   - ./gradlew check --stacktrace --scan
