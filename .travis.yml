@@ -1,3 +1,4 @@
+dist: trusty
 sudo: required
 language: java
 
@@ -25,6 +26,8 @@ matrix:
   include:
     - env: JDK='OpenJDK 8'
       jdk: openjdk8
+    - env: JDK='Oracle JDK 8'
+      jdk: oraclejdk8
     - env: JDK='Oracle JDK 9'
       jdk: oraclejdk9
     - env: JDK='OpenJDK 9'
