@@ -13,8 +13,6 @@ bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
     publications = ['mavenCustom']
-    // Without this, javadocs don't get uploaded
-    configurations = ['archives']
     pkg {
         repo = 'maven'
         name = project.name
