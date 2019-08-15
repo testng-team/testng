@@ -15,5 +15,5 @@ public class EclipseInterface {
   public static final String ASSERT_LEFT2 = "expected not same " + OPENING_CHARACTER;
   public static final String ASSERT_MIDDLE = CLOSING_CHARACTER + " but found " + OPENING_CHARACTER;
   public static final String ASSERT_RIGHT = Character.toString(CLOSING_CHARACTER);
-  public static final String ASSERT_LEFT_INEQUALITY = "did not expect to find " + OPENING_CHARACTER;
+  public static final String ASSERT_LEFT_INEQUALITY = "did expect " + OPENING_CHARACTER;
 }

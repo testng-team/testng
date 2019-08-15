@@ -259,8 +259,8 @@ public class AssertTest {
     Assert.assertEquals("x", "y");
   }
 
-  @Test(description = "GITHUB-1935", expectedExceptions = AssertionError.class,
-      expectedExceptionsMessageRegExp = "did not expect to find \\[x\\] but found \\[x\\]")
+  @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did expect \\[x\\] but found \\[x\\]")
   public void testEqualityMessage() {
     Assert.assertNotEquals("x", "x");
   }
