@@ -129,6 +129,9 @@ public final class Yaml {
     return result;
   }
 
+  /**
+   * Convert a XmlTest into YAML
+   */
   private static void toYaml(StringBuilder result, XmlTest t) {
     String sp2 = Strings.repeat(" ", 2);
     result.append("  ").append("- name: ").append(t.getName()).append("\n");
@@ -164,6 +167,18 @@ public final class Yaml {
           .append(" ]\n");
     }
 
+    if (!t.getXmlDependencyGroups().isEmpty()) {
+      result
+          .append(sp2).append(sp2)
+          .append("xmlDependencyGroups:\n");
+      t
+          .getXmlDependencyGroups()
+          .forEach((k, v) ->
+              result
+                  .append(sp2).append(sp2).append(sp2)
+                  .append(k + ": " + v + "\n"));
+    }
+
     Map<String, List<String>> mg = t.getMetaGroups();
     if (mg.size() > 0) {
       result.append(sp2).append("metaGroups: { ");
@@ -183,7 +198,7 @@ public final class Yaml {
     }
 
     if (!t.getXmlPackages().isEmpty()) {
-      result.append(sp2).append("xmlPackages:\n");
+      result.append(sp2).append(sp2).append("xmlPackages:\n");
       for (XmlPackage xp : t.getXmlPackages()) {
         toYaml(result, sp2 + "  - ", xp);
       }
