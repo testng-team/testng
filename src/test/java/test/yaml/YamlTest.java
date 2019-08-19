@@ -3,16 +3,18 @@ package test.yaml;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.Yaml;
 import org.testng.reporters.Files;
 import org.testng.xml.Parser;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
-
 import test.SimpleBaseTest;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +60,15 @@ public class YamlTest extends SimpleBaseTest {
     Files.writeFile(yaml.toString(), newSuite);
     assertThat(parser.parse(newSuite.getAbsolutePath(), new FileInputStream(file), false))
             .isEqualTo(xmlSuite);
+  }
+
+  @Test(description = "GITHUB-2078")
+  public void testXmlDependencyGroups() throws IOException {
+    String actualXmlFile = "src/test/resources/yaml/2078.xml";
+    XmlSuite actualXmlSuite = new SuiteXmlParser().parse(actualXmlFile, new FileInputStream(actualXmlFile), false);
+    String expectedYamlFile = "src/test/resources/yaml/2078.yaml";
+    String expectedYaml = new String(java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
+    assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualTo(expectedYaml);
   }
 
 }

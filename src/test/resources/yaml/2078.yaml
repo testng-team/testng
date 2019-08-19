@@ -1,0 +1,10 @@
+name: My_Suite
+configFailurePolicy: skip
+tests:
+  - name: My_test
+    xmlDependencyGroups:
+      c: a  b
+      z: c
+    xmlPackages:
+    - name: test.yaml
+
