@@ -260,7 +260,19 @@ public class AssertTest {
   }
 
   @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
-      expectedExceptionsMessageRegExp = "did expect \\[x\\] but found \\[x\\]")
+          expectedExceptionsMessageRegExp = "test expected \\[true\\] but found \\[false\\]")
+  public void testAssertTrueMessage() {
+    Assert.assertTrue(false, "test");
+  }
+
+  @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
+          expectedExceptionsMessageRegExp = "test expected \\[false\\] but found \\[true\\]")
+  public void testAssertFalseMessage() {
+    Assert.assertFalse(true, "test");
+  }
+
+  @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[x\\] but found \\[x\\]")
   public void testEqualityMessage() {
     Assert.assertNotEquals("x", "x");
   }

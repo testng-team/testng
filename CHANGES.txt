@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2118: Default assertion message (Jiong Fu)
 Fixed: GITHUB-2078: Xml to Yaml does not capture the dependency definition in generated Yaml File (Jiong Fu)
 Fixed: GITHUB-2080: Wrong text for assertTrue (Jiong Fu)
 Fixed: GITHUB-2121: SoftAssert: allow custom message (dr29bart)

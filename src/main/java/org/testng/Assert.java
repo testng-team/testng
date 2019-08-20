@@ -1,10 +1,10 @@
 package org.testng;
 
-import static org.testng.internal.EclipseInterface.ASSERT_LEFT;
+import static org.testng.internal.EclipseInterface.ASSERT_EQUAL_LEFT;
 import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
-import static org.testng.internal.EclipseInterface.ASSERT_LEFT_INEQUALITY;
+import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -962,26 +962,24 @@ public class Assert {
     if (message != null) {
       formatted = message + " ";
     }
-    fail(formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
+    fail(formatted + ASSERT_EQUAL_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
   private static void failNotEquals(Object actual, Object expected, String message) {
-    fail(format(actual, expected, message));
+    fail(format(actual, expected, message, true));
   }
 
-  static String format(Object actual, Object expected, String message) {
-    return format(actual, expected, message, false);
-  }
-
-  static String format(Object actual, Object expected, String message, boolean equality) {
+  static String format(Object actual, Object expected, String message, boolean isAssertEquals) {
     String formatted = "";
     if (null != message) {
       formatted = message + " ";
     }
-    if (equality) {
-      return formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
+    if (isAssertEquals) {
+      // if equality is asserted but inequality is found
+      return formatted + ASSERT_EQUAL_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
     }
-    return formatted + ASSERT_LEFT_INEQUALITY + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
+    // if inequality is asserted but equality is found
+    return formatted + ASSERT_UNEQUAL_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
   }
 
   /**
@@ -1398,7 +1396,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(format(actual1, actual2, message, false));
+      fail(format(actual1, actual2, message, false));
     }
   }
 
