@@ -11,9 +11,9 @@ public class EclipseInterface {
   public static final Character OPENING_CHARACTER = '[';
   public static final Character CLOSING_CHARACTER = ']';
 
-  public static final String ASSERT_LEFT = "expected " + OPENING_CHARACTER;
+  public static final String ASSERT_EQUAL_LEFT = "expected " + OPENING_CHARACTER;
+  public static final String ASSERT_UNEQUAL_LEFT = "did not expect " + OPENING_CHARACTER;
   public static final String ASSERT_LEFT2 = "expected not same " + OPENING_CHARACTER;
   public static final String ASSERT_MIDDLE = CLOSING_CHARACTER + " but found " + OPENING_CHARACTER;
   public static final String ASSERT_RIGHT = Character.toString(CLOSING_CHARACTER);
-  public static final String ASSERT_LEFT_INEQUALITY = "did expect " + OPENING_CHARACTER;
 }
