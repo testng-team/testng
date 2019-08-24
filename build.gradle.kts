@@ -62,12 +62,12 @@ plugins {
 dependencies {
     listOf("com.google.code.findbugs:jsr305:3.0.1",
             "org.apache.ant:ant:1.10.3",
-            "junit:junit:4.12",
-            "org.yaml:snakeyaml:1.21").forEach {
+            "junit:junit:4.12").forEach {
         compileOnly(it)
     }
 
-    listOf("com.beust:jcommander:1.72", "com.google.inject:guice:4.1.0:no_aop").forEach {
+    listOf("com.beust:jcommander:1.72", "com.google.inject:guice:4.1.0:no_aop",
+            "org.yaml:snakeyaml:1.21").forEach {
         compile(it)
     }
 
