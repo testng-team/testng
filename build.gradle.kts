@@ -18,6 +18,7 @@ allprojects {
     apply<MavenPublishPlugin>()
     tasks.withType<Javadoc> {
         options {
+            isFailOnError = false
             quiet()
             outputLevel = JavadocOutputLevel.QUIET
 //            jFlags = listOf("-Xdoclint:none", "-quiet")
