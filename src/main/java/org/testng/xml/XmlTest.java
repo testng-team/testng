@@ -697,6 +697,11 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
+  // For YAML
+  public void setXmlDependencyGroups(Map<String, String> xmlDependencyGroups) {
+    this.m_xmlDependencyGroups = xmlDependencyGroups;
+  }
+
   @ParentSetter
   public void setXmlSuite(XmlSuite suite) {
     m_suite = suite;

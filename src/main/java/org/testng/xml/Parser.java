@@ -24,11 +24,13 @@ public class Parser {
   public static final String TESTNG_DTD = "testng-1.0.dtd";
 
   /** The URL to the deprecated TestNG DTD. */
-  private static final String OLD_TESTNG_DTD_URL = "http://beust.com/testng/" + TESTNG_DTD;
+  //It has to be public because its being used by TestNG eclipse plugin
+  public static final String OLD_TESTNG_DTD_URL = "http://beust.com/testng/" + TESTNG_DTD;
   private static final String HTTPS_OLD_TESTNG_DTD_URL = "https://beust.com/testng/" + TESTNG_DTD;
 
   /** The URL to the TestNG DTD. */
-  private static final String TESTNG_DTD_URL = "http://testng.org/" + TESTNG_DTD;
+  //It has to be public because its being used by TestNG eclipse plugin
+  public static final String TESTNG_DTD_URL = "http://testng.org/" + TESTNG_DTD;
   public static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
   private static final List<String> URLS = Collections.unmodifiableList(Arrays.asList(

@@ -1,4 +1,6 @@
 Current
+Fixed: GITHUB-2078: Xml to Yaml does not capture the dependency definition in generated Yaml File (Jiong Fu)
+Fixed: GITHUB-2080: Wrong text for assertTrue (Jiong Fu)
 Fixed: GITHUB-2121: SoftAssert: allow custom message (dr29bart)
 Fixed: GITHUB-2110: NPE is thrown when running with Thread affinity (Krishnan Mahadevan)
 Fixed: GITHUB-2069: JUnit TestSuite not handled correctly in Reports (Krishnan Mahadevan)
