@@ -1,7 +1,5 @@
 package org.testng.xml;
 
-import static org.testng.internal.Utils.isStringBlank;
-
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -21,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import static org.testng.internal.Utils.isStringBlank;
 
 /**
  * Suite definition parser utility.
@@ -268,7 +268,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <test> */
+  /** Parse &lt;test&gt; */
   private void xmlTest(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);

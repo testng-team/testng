@@ -18,7 +18,7 @@ public class XmlClass implements Cloneable {
   private List<String> m_excludedMethods = Lists.newArrayList();
   private String m_name = null;
   private Class m_class = null;
-  /** The index of this class in the <test> tag */
+  /** The index of this class in the &lt;test&gt; tag */
   private int m_index;
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;

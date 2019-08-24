@@ -1,17 +1,12 @@
 package org.testng.xml;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.dom.ParentSetter;
+
+import java.util.*;
 
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
@@ -373,7 +368,7 @@ public class XmlTest implements Cloneable {
 
   /**
    * @deprecated Use {@code getLocalParameters()} instead
-   * @return the parameters defined on this <test> tag only
+   * @return the parameters defined on this &lt;test&gt; tag only
    */
   @Deprecated
   public Map<String, String> getTestParameters() {

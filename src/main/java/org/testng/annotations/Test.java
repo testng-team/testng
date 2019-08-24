@@ -3,11 +3,11 @@ package org.testng.annotations;
 import org.testng.IRetryAnalyzer;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 
 /**
  * Mark a class or a method as part of the test.
@@ -86,7 +86,7 @@ public @interface Test {
 
   /**
    * The description for this method. The string used will appear in the HTML report and also on
-   * standard output if verbose >= 2.
+   * standard output if verbose &gt; 2.
    */
   String description() default "";
 

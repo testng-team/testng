@@ -48,7 +48,7 @@ public @interface AfterSuite {
 
   /**
    * The description for this method. The string used will appear in the HTML report and also on
-   * standard output if verbose >= 2.
+   * standard output if verbose &gt; 2.
    */
   String description() default "";
 

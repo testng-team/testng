@@ -1,16 +1,11 @@
 package org.testng;
 
-import static org.testng.internal.Utils.isStringBlank;
-
+import com.google.inject.Injector;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.Attributes;
-import org.testng.internal.ConfigMethodArguments;
+import org.testng.internal.*;
 import org.testng.internal.ConfigMethodArguments.Builder;
-import org.testng.internal.IConfiguration;
-import org.testng.internal.IInvoker;
-import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
@@ -21,18 +16,10 @@ import org.testng.xml.XmlTest;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.google.inject.Injector;
+import static org.testng.internal.Utils.isStringBlank;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one suite. The test
@@ -411,7 +398,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
    * Implement <suite parallel="tests">. Since this kind of parallelism happens at the suite level,
    * we need a special code path to execute it. All the other parallelism strategies are implemented
    * at the test level in TestRunner#createParallelWorkers (but since this method deals with just
-   * one <test> tag, it can't implement <suite parallel="tests">, which is why we're doing it here).
+   * one &lt;test&gt; tag, it can't implement <suite parallel="tests">, which is why we're doing it here).
    */
   private void runInParallelTestMode() {
     List<Runnable> tasks = Lists.newArrayList(testRunners.size());
