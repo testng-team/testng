@@ -24,8 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
-  private static final Extractor<ITestResult, String> NAME_EXTRACTOR =
-      (Extractor<ITestResult, String>) ITestResult::getName;
+  private static final Extractor<ITestResult, String> NAME_EXTRACTOR = ITestResult::getName;
 
   /**
    * Make sure that without a transformer in place, a class-level annotation invocationCount is
@@ -177,10 +176,11 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 1);
   }
 
-  @Test
-  public void verifyFactoryTransformer() {
+  @Test(description = "GITHUB-2138")
+  public void verifyAnnotationTransformerInvocationForAllApplicableEvents() {
     TestNG tng = create();
-    tng.addListener(new FactoryTransformer());
+    FactoryTransformer transformer = new FactoryTransformer();
+    tng.addListener(transformer);
     tng.setTestClasses(new Class[] {AnnotationTransformerFactorySampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
@@ -188,6 +188,14 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
+    String[] expectedLogs = new String[]{
+        "transform_data_provider",
+        "transform_factory",
+        "transform_test",
+        "transform_config",
+        "transform_listener"
+    };
+    assertThat(transformer.getLogs()).containsExactly(expectedLogs);
   }
 
   @Test(description = "Test for issue #605")
