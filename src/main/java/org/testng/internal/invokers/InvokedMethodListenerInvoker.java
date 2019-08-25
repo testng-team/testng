@@ -4,14 +4,9 @@ import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
-
-import java.util.Map;
 
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerSubtype.EXTENDED_LISTENER;
-import static org.testng.internal.invokers.InvokedMethodListenerSubtype.SIMPLE_LISTENER;
 
 /**
  * Hides complexity of calling methods of {@link IInvokedMethodListener}.
@@ -23,6 +18,7 @@ public class InvokedMethodListenerInvoker {
   private InvokedMethodListenerMethod m_listenerMethod;
   private ITestContext m_testContext;
   private ITestResult m_testResult;
+
 
   /**
    * Creates a new invoker instance which can be used to call the specified {@code listenerMethod}
@@ -54,93 +50,15 @@ public class InvokedMethodListenerInvoker {
    *     {@link IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult, ITestContext)}
    *     method.
    */
-  @SuppressWarnings("unchecked")
   public void invokeListener(
       IInvokedMethodListener listenerInstance, IInvokedMethod invokedMethod) {
-    final InvocationStrategy strategy = obtainStrategyFor(listenerInstance, m_listenerMethod);
-    strategy.callMethod(listenerInstance, invokedMethod, m_testResult, m_testContext);
-  }
-
-  private InvocationStrategy obtainStrategyFor(
-      IInvokedMethodListener listenerInstance, InvokedMethodListenerMethod listenerMethod) {
-    InvokedMethodListenerSubtype invokedMethodListenerSubtype =
-        InvokedMethodListenerSubtype.fromListener(listenerInstance);
-    Map<InvokedMethodListenerMethod, InvocationStrategy> strategiesForListenerType =
-        strategies.get(invokedMethodListenerSubtype);
-    return strategiesForListenerType.get(listenerMethod);
-  }
-
-  private interface InvocationStrategy<LISTENER_TYPE extends IInvokedMethodListener> {
-    void callMethod(
-        LISTENER_TYPE listener,
-        IInvokedMethod invokedMethod,
-        ITestResult testResult,
-        ITestContext testContext);
-  }
-
-  private static class InvokeBeforeInvocationWithoutContextStrategy
-      implements InvocationStrategy<IInvokedMethodListener> {
-    public void callMethod(
-        IInvokedMethodListener listener,
-        IInvokedMethod invokedMethod,
-        ITestResult testResult,
-        ITestContext testContext) {
-      listener.beforeInvocation(invokedMethod, testResult);
+    if (this.m_listenerMethod == BEFORE_INVOCATION) {
+      listenerInstance.beforeInvocation(invokedMethod, m_testResult);
+      listenerInstance.beforeInvocation(invokedMethod, m_testResult, m_testContext);
     }
-  }
-
-  private static class InvokeBeforeInvocationWithContextStrategy
-      implements InvocationStrategy<IInvokedMethodListener> {
-    public void callMethod(
-        IInvokedMethodListener listener,
-        IInvokedMethod invokedMethod,
-        ITestResult testResult,
-        ITestContext testContext) {
-      listener.beforeInvocation(invokedMethod, testResult, testContext);
+    if (this.m_listenerMethod == AFTER_INVOCATION){
+      listenerInstance.afterInvocation(invokedMethod, m_testResult);
+      listenerInstance.afterInvocation(invokedMethod, m_testResult, m_testContext);
     }
-  }
-
-  private static class InvokeAfterInvocationWithoutContextStrategy
-      implements InvocationStrategy<IInvokedMethodListener> {
-    public void callMethod(
-        IInvokedMethodListener listener,
-        IInvokedMethod invokedMethod,
-        ITestResult testResult,
-        ITestContext testContext) {
-      listener.afterInvocation(invokedMethod, testResult);
-    }
-  }
-
-  private static class InvokeAfterInvocationWithContextStrategy
-      implements InvocationStrategy<IInvokedMethodListener> {
-    public void callMethod(
-        IInvokedMethodListener listener,
-        IInvokedMethod invokedMethod,
-        ITestResult testResult,
-        ITestContext testContext) {
-      listener.afterInvocation(invokedMethod, testResult, testContext);
-    }
-  }
-
-  private static final Map<
-          InvokedMethodListenerSubtype, Map<InvokedMethodListenerMethod, InvocationStrategy>>
-      strategies = Maps.newHashMap();
-  private static final Map<InvokedMethodListenerMethod, InvocationStrategy>
-      INVOKE_WITH_CONTEXT_STRATEGIES = Maps.newHashMap();
-  private static final Map<InvokedMethodListenerMethod, InvocationStrategy>
-      INVOKE_WITHOUT_CONTEXT_STRATEGIES = Maps.newHashMap();
-
-  static {
-    INVOKE_WITH_CONTEXT_STRATEGIES.put(
-        BEFORE_INVOCATION, new InvokeBeforeInvocationWithContextStrategy());
-    INVOKE_WITH_CONTEXT_STRATEGIES.put(
-        AFTER_INVOCATION, new InvokeAfterInvocationWithContextStrategy());
-    INVOKE_WITHOUT_CONTEXT_STRATEGIES.put(
-        BEFORE_INVOCATION, new InvokeBeforeInvocationWithoutContextStrategy());
-    INVOKE_WITHOUT_CONTEXT_STRATEGIES.put(
-        AFTER_INVOCATION, new InvokeAfterInvocationWithoutContextStrategy());
-
-    strategies.put(EXTENDED_LISTENER, INVOKE_WITH_CONTEXT_STRATEGIES);
-    strategies.put(SIMPLE_LISTENER, INVOKE_WITHOUT_CONTEXT_STRATEGIES);
   }
 }

@@ -4,6 +4,9 @@ public interface Constants {
 
   String IALTERSUITELISTENER_ALTER = "org.testng.IAlterSuiteListener.alter(List<XmlSuite> suites)";
   String IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS = "org.testng.IAnnotationTransformer.transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod)";
+  String IANNOTATIONTRANSFORMER_TRANSFORM_4_ARGS = "org.testng.IAnnotationTransformer.transform(IConfigurationAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod)";
+  String IANNOTATIONTRANSFORMER_DATAPROVIDER = "org.testng.IAnnotationTransformer.transform(IDataProviderAnnotation annotation, Method method)";
+  String IANNOTATIONTRANSFORMER_FACTORY = "org.testng.IAnnotationTransformer.transform(IFactoryAnnotation annotation, Method method)";
   String METHODINTERCEPTOR_INTERCEPT = "org.testng.IMethodInterceptor.intercept(List<IMethodInstance> methods, ITestContext context)";
   String IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION = "org.testng.IExecutionVisualiser.consumeDotDefinition(String dotDefinition)";
   String IREPORTER_GENERATE_REPORT = "org.testng.IReporter.generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory)";
@@ -24,7 +27,9 @@ public interface Constants {
   String ICLASSLISTENER_ON_AFTER_CLASS = "org.testng.IClassListener.onAfterClass(ITestClass testClass)";
 
   String IINVOKEDMETHODLISTENER_BEFORE_INVOCATION = "org.testng.IInvokedMethodListener.beforeInvocation(IInvokedMethod method, ITestResult testResult)";
+  String IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT = "org.testng.IInvokedMethodListener.beforeInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context)";
   String IINVOKEDMETHODLISTENER_AFTER_INVOCATION = "org.testng.IInvokedMethodListener.afterInvocation(IInvokedMethod method, ITestResult testResult)";
+  String IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT = "org.testng.IInvokedMethodListener.afterInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context)";
 
   String IEXECUTIONLISTENER_ON_EXECUTION_START = "org.testng.IExecutionListener.onExecutionStart()";
   String IEXECUTIONLISTENER_ON_EXECUTION_FINISH = "org.testng.IExecutionListener.onExecutionFinish()";
