@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.testng.IAnnotationTransformer;
-import org.testng.IAnnotationTransformer2;
-import org.testng.IAnnotationTransformer3;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -169,41 +167,18 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       } else {
         m_transformer.transform((ITestAnnotation) a, testClass, testConstructor, testMethod);
       }
-    } else if (m_transformer instanceof IAnnotationTransformer2) {
-      IAnnotationTransformer2 transformer2 = (IAnnotationTransformer2) m_transformer;
-
-      //
-      // Transform a configuration annotation
-      //
-      if (a instanceof IConfigurationAnnotation) {
-        IConfigurationAnnotation configuration = (IConfigurationAnnotation) a;
-        transformer2.transform(configuration, testClass, testConstructor, testMethod);
-      }
-
-      //
-      // Transform @DataProvider
-      //
-      else if (a instanceof IDataProviderAnnotation) {
-        transformer2.transform((IDataProviderAnnotation) a, testMethod);
-      }
-
-      //
-      // Transform @Factory
-      //
-      else if (a instanceof IFactoryAnnotation) {
-        transformer2.transform((IFactoryAnnotation) a, testMethod);
-      } else if (m_transformer instanceof IAnnotationTransformer3) {
-        IAnnotationTransformer3 transformer = (IAnnotationTransformer3) m_transformer;
-
-        //
-        // Transform @Listeners
-        //
-        if (a instanceof IListenersAnnotation) {
-          transformer.transform((IListenersAnnotation) a, testClass);
-        }
-      } // End IAnnotationTransformer3
-    } // End IAnnotationTransformer2
+    } else if (a instanceof IConfigurationAnnotation) {
+      IConfigurationAnnotation configuration = (IConfigurationAnnotation) a;
+      m_transformer.transform(configuration, testClass, testConstructor, testMethod);
+    } else if (a instanceof IDataProviderAnnotation) {
+      m_transformer.transform((IDataProviderAnnotation) a, testMethod);
+    } else if (a instanceof IFactoryAnnotation) {
+      m_transformer.transform((IFactoryAnnotation) a, testMethod);
+    } else if (a instanceof IListenersAnnotation) {
+      m_transformer.transform((IListenersAnnotation) a, testClass);
+    }
   }
+
 
   @Override
   public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass) {

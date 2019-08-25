@@ -1,6 +1,6 @@
 package test.annotationtransformer;
 
-import org.testng.IAnnotationTransformer3;
+import org.testng.IAnnotationTransformer;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
@@ -10,7 +10,7 @@ import org.testng.annotations.ITestAnnotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public class MyListenerTransformer implements IAnnotationTransformer3 {
+public class MyListenerTransformer implements IAnnotationTransformer {
 
   @Override
   public void transform(IListenersAnnotation annotation, Class testClass) {

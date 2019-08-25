@@ -172,7 +172,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (comparator == null) {
       throw new IllegalArgumentException("comparator must not be null");
     }
-    ITestRunnerFactory2 iTestRunnerFactory = buildRunnerFactory(comparator);
+    ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
 
     // Order the <test> tags based on their order of appearance in testng.xml
     List<XmlTest> xmlTests = xmlSuite.getTests();
@@ -240,8 +240,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     outputDir = (null != outputdir) ? new File(outputdir).getAbsolutePath() : null;
   }
 
-  private ITestRunnerFactory2 buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
-    ITestRunnerFactory2 factory;
+  private ITestRunnerFactory buildRunnerFactory(Comparator<ITestNGMethod> comparator) {
+    ITestRunnerFactory factory;
 
     if (null == tmpRunnerFactory) {
       factory =
@@ -555,8 +555,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     System.out.println("[SuiteRunner] " + s);
   }
 
-  /** The default implementation of {@link ITestRunnerFactory2}. */
-  private static class DefaultTestRunnerFactory implements ITestRunnerFactory2 {
+  /** The default implementation of {@link ITestRunnerFactory}. */
+  private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] failureGenerators;
     private boolean useDefaultListeners;
     private boolean skipFailedInvocationCounts;
@@ -632,7 +632,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-  private static class ProxyTestRunnerFactory implements ITestRunnerFactory2 {
+  private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
     private ITestListener[] failureGenerators;
     private ITestRunnerFactory target;
 
@@ -658,13 +658,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         List<IClassListener> classListeners,
         Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
       TestRunner testRunner;
-      if (target instanceof ITestRunnerFactory2) {
-        testRunner =
-            ((ITestRunnerFactory2) target)
-                .newTestRunner(suite, test, listeners, classListeners, dataProviderListeners);
-      } else {
-        testRunner = target.newTestRunner(suite, test, listeners, classListeners);
-      }
+      testRunner = target.newTestRunner(suite, test, listeners, classListeners, dataProviderListeners);
 
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
 
