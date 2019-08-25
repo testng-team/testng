@@ -57,6 +57,7 @@ plugins {
     groovy
     id("org.sonarqube") version "2.7.1"
     id("com.jfrog.bintray") version "1.8.3" // Don't use 1.8.4, crash when publishing
+    id("com.gradle.build-scan") version "2.4.1"
 }
 
 dependencies {
@@ -80,6 +81,12 @@ dependencies {
             "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6").forEach {
         testCompile(it)
     }
+}
+
+buildScan {
+    setTermsOfServiceUrl("https://gradle.com/terms-of-service")
+    setTermsOfServiceAgree("yes")
+    publishAlways()
 }
 
 tasks.jar {
