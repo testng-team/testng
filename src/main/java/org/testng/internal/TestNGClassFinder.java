@@ -274,6 +274,7 @@ public class TestNGClassFinder extends BaseClassFinder {
    */
   private static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
     Class<?> cls = c;
+    boolean result = false;
 
     try {
       for (Class<? extends IAnnotation> annotation : AnnotationHelper.getAllAnnotations()) {
@@ -282,27 +283,33 @@ public class TestNGClassFinder extends BaseClassFinder {
           for (Method m : getAvailableMethods(cls)) {
             IAnnotation ma = annotationFinder.findAnnotation(cls, m, annotation);
             if (null != ma) {
-              return true;
+              //Don't short circuit. Lets run for all methods across all classes.
+              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+              result = true;
             }
           }
 
           // Try on the class
           IAnnotation a = annotationFinder.findAnnotation(cls, annotation);
           if (null != a) {
-            return true;
+            //Don't short circuit. Lets run for all methods across all classes.
+            //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+            result = true;
           }
 
           // Try on the constructors
           for (Constructor ctor : cls.getConstructors()) {
             IAnnotation ca = annotationFinder.findAnnotation(ctor, annotation);
             if (null != ca) {
-              return true;
+              //Don't short circuit. Lets run for all methods across all classes.
+              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+              result = true;
             }
           }
         }
       }
 
-      return false;
+      return result;
 
     } catch (NoClassDefFoundError e) {
       Utils.log(
