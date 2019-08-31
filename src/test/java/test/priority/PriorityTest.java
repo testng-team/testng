@@ -14,6 +14,8 @@ import test.SimpleBaseTest;
 import java.util.Arrays;
 import java.util.List;
 import test.priority.issue2075.InterruptTest;
+import test.priority.issue2137.IssueTest;
+import test.priority.issue2137.OrderListener;
 
 public class PriorityTest extends SimpleBaseTest {
 
@@ -90,6 +92,17 @@ public class PriorityTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
     assertThat(listener.getFailedTests()).isEmpty();
+  }
+
+  @Test(description = "GITHUB-2137")
+  public void testPriorityOrdering() {
+    TestNG testNG = create(IssueTest.class);
+    OrderListener listener = new OrderListener();
+    testNG.addListener(listener);
+    testNG.run();
+    String[] expected =
+        new String[]{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "z"};
+    assertThat(listener.getLogs()).containsExactly(expected);
   }
 
 }

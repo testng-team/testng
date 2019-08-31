@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-2080: Wrong text for assertTrue (Jiong Fu)
+Fixed: GITHUB-2137: Issue with Priority with too low values (Krishnan Mahadevan)
 Fixed: GITHUB-2138: Factory calls are not intercepted by IAnnotationTransformer (Krishnan Mahadevan)
 Fixed: GITHUB-2078: Xml to Yaml does not capture the dependency definition in generated Yaml File (Jiong Fu)
 Fixed: GITHUB-2121: SoftAssert: allow custom message (dr29bart)
