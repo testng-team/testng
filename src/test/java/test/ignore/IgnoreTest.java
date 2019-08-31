@@ -14,10 +14,7 @@ public class IgnoreTest extends SimpleBaseTest {
   @Test
   public void ignore_class_should_not_run_tests() {
     InvokedMethodListener listener = runTest(IgnoreClassSample.class);
-    // assertThat(listener.getInvokedMethods()).isEmpty();
-    // parentTest is not expected but we are not able to find the annotation on child classes
-    // without the test instance
-    assertThat(listener.getInvokedMethods()).containsExactly("parentTest");
+     assertThat(listener.getInvokedMethods()).isEmpty();
   }
 
   @Test
