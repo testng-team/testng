@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 import java.util.stream.Collectors;
+import org.testng.DataProviderHolder;
+import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
 import org.testng.IObjectFactory;
@@ -33,15 +35,13 @@ public class FactoryMethod extends BaseTestMethod {
   private final Object m_instance;
   private final ITestContext m_testContext;
   private final ITestObjectFactory objectFactory;
-  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
-      m_dataProviderListeners;
   private String m_factoryCreationFailedMessage = null;
+  private final DataProviderHolder holder;
 
   public String getFactoryCreationFailedMessage() {
     return m_factoryCreationFailedMessage;
   }
 
-  @SuppressWarnings("unchecked")
   private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
     IListenersAnnotation annotation =
         annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
@@ -50,24 +50,18 @@ public class FactoryMethod extends BaseTestMethod {
     }
     Class<? extends ITestNGListener>[] listeners = annotation.getValue();
     for (Class<? extends ITestNGListener> listener : listeners) {
-      if (!IDataProviderListener.class.isAssignableFrom(listener)) {
-        continue;
+      Object obj = instance;
+      if (obj == null) {
+        obj = InstanceCreator.newInstanceOrNull(listener);
       }
 
-      Class<? extends IDataProviderListener> key =
-          (Class<? extends IDataProviderListener>) listener;
-      if (m_dataProviderListeners.containsKey(key)) {
-        continue;
-      }
-
-      if (instance != null && IDataProviderListener.class.isAssignableFrom(instance.getClass())) {
-        m_dataProviderListeners.put(key, (IDataProviderListener) instance);
-        continue;
-      }
-
-      Object object = InstanceCreator.newInstanceOrNull(listener);
-      if (object != null) {
-        m_dataProviderListeners.put(key, (IDataProviderListener) object);
+      if (obj != null) {
+        if (IDataProviderListener.class.isAssignableFrom(obj.getClass())) {
+          holder.addListener((IDataProviderListener) obj);
+        }
+        if (IDataProviderInterceptor.class.isAssignableFrom(obj.getClass())) {
+          holder.addInterceptor((IDataProviderInterceptor) obj);
+        }
       }
     }
   }
@@ -80,10 +74,9 @@ public class FactoryMethod extends BaseTestMethod {
       Object instance,
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
-      ITestObjectFactory objectFactory,
-      Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
+      ITestObjectFactory objectFactory, DataProviderHolder holder) {
     super(com.getName(), com, annotationFinder, instance);
-    m_dataProviderListeners = dataProviderListeners;
+    this.holder = holder;
     init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
@@ -155,7 +148,7 @@ public class FactoryMethod extends BaseTestMethod {
                 m_testContext.getCurrentXmlTest().getSuite(),
                 m_annotationFinder,
                 null /* fedInstance */,
-                m_dataProviderListeners.values(),
+                this.holder,
                 "@Factory")
             .parameters;
 

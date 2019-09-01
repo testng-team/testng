@@ -10,6 +10,8 @@ import java.util.*;
 
 import javax.annotation.Nullable;
 
+import org.testng.DataProviderHolder;
+import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestClass;
@@ -757,8 +759,7 @@ public class Parameters {
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance,
-      Collection<IDataProviderListener> dataProviderListeners) {
+      Object fedInstance, DataProviderHolder holder) {
     return handleParameters(
         testMethod,
         allParameterNames,
@@ -767,7 +768,7 @@ public class Parameters {
         xmlSuite,
         annotationFinder,
         fedInstance,
-        dataProviderListeners,
+        holder,
         "@Test");
   }
 
@@ -785,8 +786,7 @@ public class Parameters {
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
       Object fedInstance,
-      Collection<IDataProviderListener> dataProviderListeners,
-      String annotationName) {
+      DataProviderHolder holder, String annotationName) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
@@ -811,7 +811,7 @@ public class Parameters {
         allParameterNames.put(n, n);
       }
 
-      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+      for (IDataProviderListener dataProviderListener : holder.getListeners()) {
         dataProviderListener.beforeDataProviderExecution(
             dataProviderMethod, testMethod, methodParams.context);
       }
@@ -826,7 +826,7 @@ public class Parameters {
               fedInstance,
               annotationFinder);
 
-      for (IDataProviderListener dataProviderListener : dataProviderListeners) {
+      for (IDataProviderListener dataProviderListener : holder.getListeners()) {
         dataProviderListener.afterDataProviderExecution(
             dataProviderMethod, testMethod, methodParams.context);
       }
@@ -836,7 +836,7 @@ public class Parameters {
       allIndices.addAll(testMethod.getInvocationNumbers());
       allIndices.addAll(dataProviderMethod.getIndices());
 
-      final Iterator<Object[]> filteredParameters =
+      Iterator<Object[]> filteredParameters =
           new Iterator<Object[]>() {
             int index = 0;
             boolean hasWarn = false;
@@ -877,6 +877,9 @@ public class Parameters {
           };
 
       testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
+      for (IDataProviderInterceptor interceptor: holder.getInterceptors()) {
+        filteredParameters = interceptor.intercept(filteredParameters, dataProviderMethod, testMethod, methodParams.context);
+      }
 
       return new ParameterHolder(
           filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER, dataProviderMethod);

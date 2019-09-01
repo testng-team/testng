@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.testng.DataProviderHolder;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IHookable;
@@ -44,19 +45,19 @@ import org.testng.xml.XmlSuite;
 class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private final ConfigInvoker invoker;
-  private final Collection<IDataProviderListener> m_dataproviderListeners;
+  private final DataProviderHolder holder;
   private final List<IClassListener> m_classListeners;
   private final boolean m_skipFailedInvocationCounts;
 
   public TestInvoker(ITestResultNotifier m_notifier,
       ITestContext m_testContext, SuiteRunState m_suiteState,
       IConfiguration m_configuration, Collection<IInvokedMethodListener> m_invokedMethodListeners,
-      Collection<IDataProviderListener> m_dataproviderListeners,
-      List<IClassListener> m_classListeners, boolean m_skipFailedInvocationCounts,
+      DataProviderHolder holder, List<IClassListener> m_classListeners,
+      boolean m_skipFailedInvocationCounts,
       ConfigInvoker invoker) {
     super(m_notifier, m_invokedMethodListeners, m_testContext, m_suiteState, m_configuration
     );
-    this.m_dataproviderListeners = m_dataproviderListeners;
+    this.holder = holder;
     this.m_classListeners = m_classListeners;
     this.m_skipFailedInvocationCounts = m_skipFailedInvocationCounts;
     this.invoker = invoker;
@@ -178,13 +179,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestContext testContext) {
     FailureContext failure = new FailureContext();
     failure.count = failureCount;
-    Collection<IDataProviderListener> dpListeners = dataProviderListeners();
     do {
       failure.instances = Lists.newArrayList();
       Map<String, String> allParameters = Maps.newHashMap();
       // TODO: This recreates all the parameters every time when we only need
       // one specific set. Should optimize it by only recreating the set needed.
-      ParameterHandler handler = new ParameterHandler(annotationFinder(), dpListeners);
+      ParameterHandler handler = new ParameterHandler(annotationFinder(), this.holder);
 
       ParameterBag bag = handler.createParameters(arguments.getTestMethod(),
           arguments.getParameters(), allParameters, testContext);
@@ -212,13 +212,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private Collection<IDataProviderListener> dataProviderListeners() {
     ISuite suite = this.m_testContext.getSuite();
-    Collection<IDataProviderListener> dpListeners = Sets.newHashSet(m_dataproviderListeners);
+    Collection<IDataProviderListener> dpListeners = Sets.newHashSet(this.holder.getListeners());
     if (suite instanceof SuiteRunner) {
       Collection<IDataProviderListener> listeners = ((SuiteRunner) suite)
           .getDataProviderListeners();
       dpListeners.addAll(listeners);
     }
     return dpListeners;
+  }
+
+  private DataProviderHolder buildDataProviderHolder() {
+    DataProviderHolder holder = new DataProviderHolder();
+    holder.addListeners(dataProviderListeners());
+    holder.addInterceptors(this.holder.getInterceptors());
+    return holder;
   }
 
   /**
@@ -766,7 +773,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       long start = System.currentTimeMillis();
 
       Map<String, String> allParameterNames = Maps.newHashMap();
-      ParameterHandler handler = new ParameterHandler(annotationFinder(), dataProviderListeners());
+      ParameterHandler handler = new ParameterHandler(annotationFinder(), buildDataProviderHolder());
 
       ParameterBag bag = handler.createParameters(
           arguments.getTestMethod(),

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGListenerFactory;
 import org.testng.TestNGException;
@@ -60,7 +61,7 @@ public class TestListenerHelperTest {
     ClassInfoMap classMap = new ClassInfoMap(Collections.singletonList(new XmlClass(testClazz)));
     TestNGClassFinder finder =
         new TestNGClassFinder(
-            classMap, Maps.newHashMap(), new Configuration(), ctx, Maps.newHashMap());
+            classMap, Maps.newHashMap(), new Configuration(), ctx, new DataProviderHolder());
     ITestNGListenerFactory factory =
         TestListenerHelper.createListenerFactory(finder, listenerClazz);
     assertThat(factory).isNotNull();

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import org.testng.DataProviderHolder;
 import org.testng.IDataProviderListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -31,7 +32,7 @@ public class ParameterHandlerTest extends SimpleBaseTest {
   public void beforeClass() {
     Collection<IDataProviderListener> listeners = Collections.emptyList();
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
-    handler = new ParameterHandler(finder, listeners);
+    handler = new ParameterHandler(finder, new DataProviderHolder());
   }
 
   @Test

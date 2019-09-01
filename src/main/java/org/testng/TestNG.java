@@ -144,6 +144,9 @@ public class TestNG {
   private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
       m_dataProviderListeners = Maps.newHashMap();
+  private final Map<Class<? extends IDataProviderInterceptor>, IDataProviderInterceptor>
+      m_dataProviderInterceptors = Maps.newHashMap();
+
 
   private IExecutorFactory m_executorFactory = null;
 
@@ -709,6 +712,10 @@ public class TestNG {
       IDataProviderListener dataProvider = (IDataProviderListener) listener;
       maybeAddListener(m_dataProviderListeners, dataProvider);
     }
+    if (listener instanceof IDataProviderInterceptor) {
+      IDataProviderInterceptor interceptor = (IDataProviderInterceptor) listener;
+      maybeAddListener(m_dataProviderInterceptors, interceptor);
+    }
   }
 
   public Set<IReporter> getReporters() {
@@ -1250,6 +1257,9 @@ public class TestNG {
 
   /** Creates a suite runner and configures its initial state */
   private SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
+    DataProviderHolder holder = new DataProviderHolder();
+    holder.addListeners(m_dataProviderListeners.values());
+    holder.addInterceptors(m_dataProviderInterceptors.values());
     SuiteRunner result =
         new SuiteRunner(
             getConfiguration(),
@@ -1261,7 +1271,7 @@ public class TestNG {
             m_invokedMethodListeners.values(),
             m_testListeners.values(),
             m_classListeners.values(),
-            m_dataProviderListeners,
+            holder,
             Systematiser.getComparator());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {

@@ -3,7 +3,6 @@ package org.testng;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -95,8 +94,7 @@ public class TestRunner
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       Maps.newHashMap();
-  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
-      m_dataProviderListeners;
+  private final DataProviderHolder holder = new DataProviderHolder();
 
   /**
    * All the test methods we found, associated with their respective classes. Note that these test
@@ -174,10 +172,9 @@ public class TestRunner
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
-      Comparator<ITestNGMethod> comparator,
-      Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
+      Comparator<ITestNGMethod> comparator, DataProviderHolder otherHolder) {
     this.comparator = comparator;
-    this.m_dataProviderListeners = Maps.newHashMap(dataProviderListeners);
+    this.holder.merge(otherHolder);
     init(
         configuration,
         suite,
@@ -198,7 +195,6 @@ public class TestRunner
       List<IClassListener> classListeners,
       Comparator<ITestNGMethod> comparator) {
     this.comparator = comparator;
-    this.m_dataProviderListeners = Collections.emptyMap();
     init(
         configuration,
         suite,
@@ -222,7 +218,6 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners) {
     this.comparator = Systematiser.getComparator();
-    this.m_dataProviderListeners = Collections.emptyMap();
     init(
         configuration,
         suite,
@@ -281,8 +276,7 @@ public class TestRunner
             m_suite.getSuiteState(),
             skipFailedInvocationCounts,
             invokedMethodListeners,
-            classListeners,
-            m_dataProviderListeners.values());
+            classListeners, holder);
 
     if (test.getParallel() != null) {
       log(
@@ -440,7 +434,7 @@ public class TestRunner
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
     m_testClassFinder =
         new TestNGClassFinder(
-            classMap, Maps.newHashMap(), m_configuration, this, m_dataProviderListeners);
+            classMap, Maps.newHashMap(), m_configuration, this, holder);
     ITestMethodFinder testMethodFinder =
         new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
 
@@ -1134,7 +1128,11 @@ public class TestRunner
     }
     if (listener instanceof IDataProviderListener) {
       IDataProviderListener dataProviderListener = (IDataProviderListener) listener;
-      m_dataProviderListeners.put(dataProviderListener.getClass(), dataProviderListener);
+      holder.addListener(dataProviderListener);
+    }
+    if (listener instanceof IDataProviderInterceptor) {
+      IDataProviderInterceptor interceptor = (IDataProviderInterceptor) listener;
+      holder.addInterceptor(interceptor);
     }
 
     if (listener instanceof IExecutionVisualiser) {

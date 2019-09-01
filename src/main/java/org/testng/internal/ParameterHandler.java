@@ -1,6 +1,6 @@
 package org.testng.internal;
 
-import org.testng.IDataProviderListener;
+import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -10,16 +10,15 @@ import org.testng.xml.XmlSuite;
 
 import static org.testng.internal.Parameters.MethodParameters;
 
-import java.util.Collection;
 import java.util.Map;
 
 class ParameterHandler {
   private final IAnnotationFinder finder;
-  private final Collection<IDataProviderListener> listeners;
+  private final DataProviderHolder holder;
 
-  ParameterHandler(IAnnotationFinder finder, Collection<IDataProviderListener> listeners) {
+  ParameterHandler(IAnnotationFinder finder, DataProviderHolder holder) {
     this.finder = finder;
-    this.listeners = listeners;
+    this.holder = holder;
   }
 
   ParameterBag createParameters(
@@ -65,7 +64,7 @@ class ParameterHandler {
               suite,
               finder,
               fedInstance,
-              listeners);
+              holder);
       return new ParameterBag(paramHolder);
     } catch (Throwable cause) {
       String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
