@@ -1,4 +1,5 @@
 Current
+New:   GITHUB-2118: Default assertion message (Jiong Fu)
 Fixed: GITHUB-2080: Wrong text for assertTrue (Jiong Fu)
 Fixed: GITHUB-2137: Issue with Priority with too low values (Krishnan Mahadevan)
 Fixed: GITHUB-2138: Factory calls are not intercepted by IAnnotationTransformer (Krishnan Mahadevan)

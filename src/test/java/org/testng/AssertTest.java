@@ -277,6 +277,50 @@ public class AssertTest {
     Assert.assertNotEquals("x", "x");
   }
 
+  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[1.5\\] but found \\[1.5\\]")
+  public void testAssertNotEqualsFloat() {
+    Assert.assertNotEquals(1.5f, 1.5f, 0.5f);
+  }
+
+  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[1.5\\] but found \\[1.5\\]")
+  public void testAssertNotEqualsDouble() {
+    Assert.assertNotEquals(1.5, 1.5, 0.5);
+  }
+
+  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[\\[test\\]\\] but found \\[\\[test\\]\\]")
+  public void testAssertNotEqualsSet() {
+    Set<String> set = new HashSet<>();
+    set.add("test");
+    Assert.assertNotEquals(set, set);
+  }
+
+  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[\\[test\\]\\] but found \\[\\[test\\]\\]")
+  public void testAssertNotEqualsDeepSet() {
+    Set<String> set = new HashSet<>();
+    set.add("test");
+    Assert.assertNotEqualsDeep(set, set);
+  }
+
+  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[\\{key=value\\}\\] but found \\[\\{key=value\\}\\]")
+  public void testAssertNotEqualsMap() {
+    Map<String, String> map = new HashMap<>();
+    map.put("key", "value");
+    Assert.assertNotEquals(map, map);
+  }
+
+  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "did not expect \\[\\{key=value\\}\\] but found \\[\\{key=value\\}\\]")
+  public void testAssertNotEqualsDeepMap() {
+    Map<String, String> map = new HashMap<>();
+    map.put("key", "value");
+    Assert.assertNotEqualsDeep(map, map);
+  }
+
   class Contrived {
 
     int integer;

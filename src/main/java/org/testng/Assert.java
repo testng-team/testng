@@ -1470,7 +1470,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual1, actual2, message, false));
     }
   }
 
@@ -1488,7 +1488,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual1, actual2, message, false));
     }
   }
 
@@ -1506,7 +1506,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual, expected, message, false));
     }
   }
 
@@ -1524,7 +1524,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual, expected, message, false));
     }
   }
 
@@ -1542,7 +1542,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual, expected, message, false));
     }
   }
 
@@ -1560,7 +1560,7 @@ public class Assert {
     }
 
     if (fail) {
-      Assert.fail(message);
+      Assert.fail(format(actual, expected, message, false));
     }
   }
 
