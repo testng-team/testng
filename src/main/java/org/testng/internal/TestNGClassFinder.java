@@ -4,13 +4,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.testng.DataProviderHolder;
 import org.testng.IClass;
-import org.testng.IDataProviderListener;
 import org.testng.IInstanceInfo;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
@@ -35,8 +34,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   private static final String PREFIX = "[TestNGClassFinder]";
   private final ITestContext m_testContext;
   private final Map<Class<?>, List<Object>> m_instanceMap = Maps.newHashMap();
-  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
-      m_dataProviderListeners;
+  private final DataProviderHolder holder;
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder annotationFinder;
 
@@ -50,14 +48,13 @@ public class TestNGClassFinder extends BaseClassFinder {
       ClassInfoMap cim,
       Map<Class<?>, List<Object>> instanceMap,
       IConfiguration configuration,
-      ITestContext testContext,
-      Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
+      ITestContext testContext, DataProviderHolder holder) {
     if (instanceMap == null) {
       throw new IllegalArgumentException("instanceMap must not be null");
     }
 
     m_testContext = testContext;
-    m_dataProviderListeners = dataProviderListeners;
+    this.holder = holder;
     annotationFinder = configuration.getAnnotationFinder();
 
     // Find all the new classes and their corresponding instances
@@ -150,7 +147,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
     TestNGClassFinder finder =
         new TestNGClassFinder(
-            moreClasses, m_instanceMap, configuration, m_testContext, Collections.emptyMap());
+            moreClasses, m_instanceMap, configuration, m_testContext, new DataProviderHolder());
 
     for (IClass ic2 : finder.findTestClasses()) {
       putIClass(ic2.getRealClass(), ic2);
@@ -172,8 +169,7 @@ public class TestNGClassFinder extends BaseClassFinder {
             instance,
             annotationFinder,
             m_testContext,
-            objectFactory,
-            m_dataProviderListeners);
+            objectFactory, holder);
     ClassInfoMap moreClasses = new ClassInfoMap();
 
     if (excludeFactory(fm, m_testContext)) {
