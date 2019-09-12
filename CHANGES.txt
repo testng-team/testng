@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2149: Handle NoClassDefFoundError when classloader fails to load a class
 New:   GITHUB-2111: Provide an interceptor for Data Provider (Krishnan Mahadevan)
 Fixed: GITHUB-1709: @Ignore doesn't work when used on child class, and parent has multiple @Test methods (Krishnan Mahadevan)
 New:   GITHUB-2118: Default assertion message (Jiong Fu)
