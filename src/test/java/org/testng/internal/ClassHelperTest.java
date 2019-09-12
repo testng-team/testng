@@ -1,5 +1,14 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.internal.issue1339.BabyPanda;
@@ -8,14 +17,6 @@ import org.testng.internal.issue1456.TestClassSample;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassHelperTest {
 
@@ -38,6 +39,19 @@ public class ClassHelperTest {
   @Test
   public void testFindClassesInSameTest() {
     runTest(TestClassSample.class, 2, TestClassSample.class, BabyPanda.class);
+  }
+
+  @Test
+  public void testNoClassDefFoundError() {
+      URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{}) {
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            throw new NoClassDefFoundError();
+        }
+      };
+      ClassHelper.addClassLoader(urlClassLoader);
+      String fakeClassName = UUID.randomUUID().toString();
+      Assert.assertNull(ClassHelper.forName(fakeClassName), "The result should be null; no exception should be thrown.");
   }
 
   private static void runTest(Class<?> classToBeFound, int expectedCount, Class<?>... classes) {

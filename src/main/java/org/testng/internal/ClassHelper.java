@@ -108,8 +108,8 @@ public final class ClassHelper {
       }
       try {
         return classLoader.loadClass(className);
-      } catch (ClassNotFoundException ex) {
-        // With additional class loaders, it is legitimate to ignore ClassNotFoundException
+      } catch (ClassNotFoundException | NoClassDefFoundError ex) {
+        // With additional class loaders, it is legitimate to ignore ClassNotFoundException / NoClassDefFoundError
         if (classLoaders.isEmpty()) {
           logClassNotFoundError(className, ex);
         }
@@ -127,7 +127,7 @@ public final class ClassHelper {
     }
   }
 
-  private static void logClassNotFoundError(String className, Exception ex) {
+  private static void logClassNotFoundError(String className, Throwable ex) {
     Utils.log(
         CLASS_HELPER,
         2,
