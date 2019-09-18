@@ -157,7 +157,7 @@ public class MethodInvocationHelper {
       throw new TestNGException("Data Provider " + dataProvider + " returned a null value");
     } else {
       if (!resultHolder.isEmpty()) {
-        throw new TestNGException("Data Provider " + dataProvider + " must return void if using @ProxyInstance");
+        throw new TestNGException("Data Provider " + dataProvider + " must return void if using @ParameterCollector");
       }
     }
     // If it returns an Object[][] or Object[], convert it to an Iterator<Object[]>
