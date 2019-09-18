@@ -46,6 +46,10 @@ public interface IAnnotationFinder {
   /** @return true if the ith parameter of the given method has the annotation @TestInstance. */
   boolean hasTestInstance(Method method, int i);
 
+  /** @return true if the ith parameter of the given method has the annotation
+   * {@link org.testng.annotations.ParameterCollector }. */
+  boolean hasParameterCollector(Method method, int i);
+
   /**
    * @return the @Optional values of this method's parameters (<code>null</code> if the parameter
    *     isn't optional)
