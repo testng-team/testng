@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2157: NullPointerException occurs when a Retried test has an exception in DataProvider (Krishnan Mahadevan)
 Fixed: GITHUB-2150: Upgraded jQuery from 1.7.1 to 3.4.1 to resolve reported prototype pollution vulnerability
 Fixed: GITHUB-2149: Handle NoClassDefFoundError when classloader fails to load a class
 New:   GITHUB-2111: Provide an interceptor for Data Provider (Krishnan Mahadevan)
