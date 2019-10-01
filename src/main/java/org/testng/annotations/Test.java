@@ -144,7 +144,7 @@ public @interface Test {
   /** The scheduling priority. Lower priorities will be scheduled first. */
   int priority() default 0;
   
-  /** The id of test. It helps mapping of test management tools's test id  */
+  /** The id of test. It helps mapping of test management tools's test id. */
   int id() default 0;
 
   /**
