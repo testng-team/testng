@@ -143,6 +143,9 @@ public @interface Test {
 
   /** The scheduling priority. Lower priorities will be scheduled first. */
   int priority() default 0;
+  
+  /** The id of test. It helps mapping of test management tools's test id  */
+  int id() default 0;
 
   /**
    * @return - An array of {@link CustomAttribute} that represents a set of custom attributes for a
