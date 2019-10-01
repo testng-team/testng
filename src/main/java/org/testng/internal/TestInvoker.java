@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.DataProviderHolder;
+import org.testng.DataProviderInvocationException;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IHookable;
@@ -188,6 +189,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       ParameterBag bag = handler.createParameters(arguments.getTestMethod(),
           arguments.getParameters(), allParameters, testContext);
+      ITestResult errorResult = bag.errorResult;
+
+      if (errorResult != null ) {
+        Throwable cause = errorResult.getThrowable();
+        String m = errorResult.getMethod().getMethodName();
+        String msg = String.format("Encountered problems when gathering parameter values for [%s]. Root cause: ", m);
+        throw new DataProviderInvocationException(msg, cause);
+      }
       Object[] parameterValues =
           Parameters.getParametersFromIndex(Objects.requireNonNull(bag.parameterHolder).parameters,
               arguments.getParametersIndex());
