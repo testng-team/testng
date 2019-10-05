@@ -11,6 +11,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+import test.retryAnalyzer.dataprovider.issue2163.TestClassPoweredByDataProviderSample;
 import test.retryAnalyzer.github1519.MyListener;
 import test.retryAnalyzer.github1519.TestClassSample;
 import test.retryAnalyzer.github1600.Github1600Listener;
@@ -190,6 +191,15 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     TestNG testng = create(xmlsuite);
     testng.run();
     assertThat(RetryAnalyzer.logs).containsExactlyElementsOf(expected);
+  }
+
+  @Test(description = "GITHUB-2163")
+  public void ensureRetryDoesntRunEndlesslyForDataDrivenTests() {
+    XmlSuite xmlsuite = createXmlSuite("2163_suite");
+    createXmlTest(xmlsuite, "2163_test", TestClassPoweredByDataProviderSample.class);
+    TestNG testng = create(xmlsuite);
+    testng.run();
+    assertThat(test.retryAnalyzer.dataprovider.issue2163.RetryAnalyzer.logs).hasSize(3);
   }
 
   private ITestResult runAssertions(Set<ITestResult> results, String methodName) {
