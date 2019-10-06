@@ -20,6 +20,7 @@ public class BaseGroupsTest extends SimpleBaseTest {
               + "no matter how many subclasses it has")
   public void verifySingleInvocation() {
     TestNG tng = create(BaseGroupsASampleTest.class, BaseGroupsBSampleTest.class);
+    tng.setGroups("foo");
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);

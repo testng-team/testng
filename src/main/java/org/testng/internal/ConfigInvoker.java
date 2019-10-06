@@ -112,6 +112,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    * @param arguments
    */
   public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
+    if (arguments.isGroupFilteringDisabled()) {
+      return;
+    }
+
     List<ITestNGMethod> filteredMethods = Lists.newArrayList();
     String[] groups = arguments.getTestMethod().getGroups();
 
@@ -149,6 +153,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // (only a method that belongs to a group can trigger the invocation
     // of afterGroups methods)
     if (arguments.getTestMethod().getGroups().length == 0) {
+      return;
+    }
+
+    if (arguments.isGroupFilteringDisabled()) {
       return;
     }
 

@@ -119,6 +119,10 @@ public class XmlTest implements Cloneable {
     return Collections.unmodifiableList(result);
   }
 
+  public boolean isGroupFilteringDisabled() {
+    return getIncludedGroups().isEmpty() && getExcludedGroups().isEmpty();
+  }
+
   /**
    * Sets the XML Classes.
    *
