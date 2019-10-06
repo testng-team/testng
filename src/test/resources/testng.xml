@@ -153,6 +153,7 @@
       <class name="test.groupbug.GroupBugTest" />
       <class name="test.groups.issue1834.IssueTest"/>
       <class name="test.groups.issue182.IssueTest"/>
+      <class name="test.groups.issue2152.IssueTest"/>
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />
@@ -626,13 +627,7 @@
 
   <test name="BeforeGroups-AfterGroups-1" >
     <classes>
-      <class name="test.configuration.ConfigurationGroups1SampleTest" />
-      <class name="test.configuration.ConfigurationGroups2SampleTest" />
-      <class name="test.configuration.ConfigurationGroups3SampleTest" />
-      <class name="test.configuration.ConfigurationGroups4SampleTest" />
-      <class name="test.configuration.ConfigurationGroups5SampleTest" />
-      <class name="test.configuration.ConfigurationGroups6SampleTest" />
-      <class name="test.configuration.ConfigurationGroups7SampleTest" />
+      <class name="test.configuration.ConfigurationGroupsTest" />
     </classes>
   </test>
 
@@ -668,6 +663,11 @@
 
   <!-- Group ordering 1 -->
   <test name="Class Run">
+    <groups>
+      <run>
+        <include name="a"/>
+      </run>
+    </groups>
     <classes>
       <class name="test.regression.groupsordering.A" />
       <class name="test.regression.groupsordering.B" />
@@ -823,7 +823,6 @@
       <class name="test.configuration.ExternalConfigurationClass"/>
       <class name="test.configuration.GroupsTest"/>
       <class name="test.configuration.MethodCallOrderTest"/>
-      <class name="test.configuration.MultipleBeforeGroupTest" />
       <class name="test.configuration.BeforeMethodWithGroupFiltersTest" />
       <class name="test.configuration.AfterMethodWithGroupFiltersTest" />
       <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />

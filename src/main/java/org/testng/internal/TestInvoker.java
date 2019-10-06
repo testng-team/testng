@@ -107,7 +107,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       GroupConfigMethodArguments args = new Builder()
           .forTestMethod(testMethod)
           .withGroupConfigMethods(groupMethods)
-          .forSuite(suite)
           .forInstance(instance)
           .withParameters(parameters)
           .build();
@@ -315,7 +314,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       GroupConfigMethodArguments arguments = new GroupConfigMethodArguments.Builder()
           .forTestMethod(testMethod)
           .withGroupConfigMethods(groupMethods)
-          .forSuite(suite)
           .withParameters(parameters)
           .forInstance(instance)
           .build();
@@ -347,7 +345,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       GroupConfigMethodArguments arguments = new GroupConfigMethodArguments.Builder()
           .forTestMethod(testMethod)
           .withGroupConfigMethods(groupMethods)
-          .forSuite(suite)
           .withParameters(parameters)
           .forInstance(instance)
           .build();
@@ -515,7 +512,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     GroupConfigMethodArguments cfgArgs = new GroupConfigMethodArguments.Builder()
         .forTestMethod(arguments.getTestMethod())
         .withGroupConfigMethods(arguments.getGroupMethods())
-        .forSuite(suite)
         .withParameters(arguments.getParameters())
         .forInstance(arguments.getInstance())
         .build();
@@ -677,7 +673,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     GroupConfigMethodArguments grpArgs = new GroupConfigMethodArguments.Builder()
         .forTestMethod(arguments.getTestMethod())
         .withGroupConfigMethods(arguments.getGroupMethods())
-        .forSuite(suite)
         .withParameters(arguments.getParameters())
         .forInstance(arguments.getInstance())
         .build();

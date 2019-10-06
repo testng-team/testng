@@ -7,14 +7,12 @@ import org.testng.xml.XmlSuite;
 public class GroupConfigMethodArguments extends Arguments {
 
   private final ConfigurationGroupMethods groupMethods;
-  private final XmlSuite suite;
 
   private GroupConfigMethodArguments(ITestNGMethod testMethod,
-      ConfigurationGroupMethods groupMethods, XmlSuite suite, Map<String, String> params,
+      ConfigurationGroupMethods groupMethods, Map<String, String> params,
       Object instance) {
     super(instance, testMethod, params);
     this.groupMethods = groupMethods;
-    this.suite = suite;
   }
 
   public ConfigurationGroupMethods getGroupMethods() {
@@ -22,7 +20,7 @@ public class GroupConfigMethodArguments extends Arguments {
   }
 
   public XmlSuite getSuite() {
-    return suite;
+    return getTestMethod().getXmlTest().getSuite();
   }
 
   public Map<String, String> getParameters() {
@@ -33,11 +31,14 @@ public class GroupConfigMethodArguments extends Arguments {
     return instance;
   }
 
+  public boolean isGroupFilteringDisabled() {
+    return getTestMethod().getXmlTest().isGroupFilteringDisabled();
+  }
+
   public static class Builder {
 
     private ITestNGMethod testMethod;
     private ConfigurationGroupMethods groupMethods;
-    private XmlSuite suite;
     private Map<String, String> params;
     private Object instance;
 
@@ -48,11 +49,6 @@ public class GroupConfigMethodArguments extends Arguments {
 
     public Builder withGroupConfigMethods(ConfigurationGroupMethods groupMethods) {
       this.groupMethods = groupMethods;
-      return this;
-    }
-
-    public Builder forSuite(XmlSuite suite) {
-      this.suite = suite;
       return this;
     }
 
@@ -67,7 +63,7 @@ public class GroupConfigMethodArguments extends Arguments {
     }
 
     public GroupConfigMethodArguments build() {
-      return new GroupConfigMethodArguments(testMethod, groupMethods, suite, params, instance);
+      return new GroupConfigMethodArguments(testMethod, groupMethods, params, instance);
     }
   }
 }

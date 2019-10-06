@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 
 public class ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups {
 
-  @BeforeClass
+  @BeforeClass(groups = "group1")
   public void setupClassFails() {
     throw new RuntimeException("setup class fail");
   }
@@ -19,7 +19,7 @@ public class ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroup
   @Test(groups = "group1")
   public void test1() {}
 
-  @AfterClass
+  @AfterClass(groups = "group1")
   public void tearDownClass() {}
 
   @AfterGroups(groups = "group1")

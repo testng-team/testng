@@ -46,10 +46,11 @@ public class GroupsTest {
         Arrays.asList(1, 2, 2, 2, 2, 2, 2, 3));
   }
 
-  private void runTest(Class cls, List<Integer> list, List<Integer> expected) {
-      m_testNg.setTestClasses(new Class[] {
+  private void runTest(Class<?> cls, List<Integer> list, List<Integer> expected) {
+      m_testNg.setTestClasses(new Class<?>[] {
           cls
       });
+      m_testNg.setGroups("twice");
       m_testNg.run();
       Assert.assertEquals(list, expected);
   }
