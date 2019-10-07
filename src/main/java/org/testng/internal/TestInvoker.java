@@ -180,6 +180,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestContext testContext) {
     FailureContext failure = new FailureContext();
     failure.count = failureCount;
+    failure.representsRetriedMethod = true;
     do {
       failure.instances = Lists.newArrayList();
       Map<String, String> allParameters = Maps.newHashMap();
@@ -529,7 +530,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     InvokedMethod invokedMethod = new InvokedMethod(arguments.getInstance(),
         arguments.getTestMethod(), startTime, testResult);
 
-    if (invoker.hasConfigurationFailureFor(
+    if (!failureContext.representsRetriedMethod && invoker.hasConfigurationFailureFor(
         arguments.getTestMethod(), arguments.getTestMethod().getGroups() ,
         arguments.getTestClass(),
         arguments.getInstance())) {
