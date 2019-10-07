@@ -14,6 +14,7 @@ public interface ITestInvoker {
 
     int count = 0;
     List<Object> instances = Lists.newArrayList();
+    boolean representsRetriedMethod = false;
   }
 
   List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
