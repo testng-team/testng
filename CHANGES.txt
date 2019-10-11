@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2172: Suite summary report table issue with EmailableReporter2.java (Devendra Raju K)
 Fixed: GITHUB-2148: TestNG - configfailurepolicy=“continue” is not working for retried test (Krishnan Mahadevan)
 Fixed: GITHUB-2163: Test is executed infinite number of times when the data provider returns a new object (Krishnan Mahadevan)
 Fixed: GITHUB-2157: NullPointerException occurs when a Retried test has an exception in DataProvider (Krishnan Mahadevan)
