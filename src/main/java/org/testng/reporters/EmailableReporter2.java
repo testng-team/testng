@@ -148,7 +148,7 @@ public class EmailableReporter2 implements IReporter {
 
     int testIndex = 0;
     for (SuiteResult suiteResult : suiteResults) {
-      writer.print("<tr><th colspan=\"7\">");
+      writer.print("<tr><th colspan=\"8\">");
       writer.print(Utils.escapeHtml(suiteResult.getSuiteName()));
       writer.println("</th></tr>");
 
