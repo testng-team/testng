@@ -32,10 +32,12 @@ import java.util.Set;
  */
 public class XMLSuiteResultWriter {
 
-  private XMLReporterConfig config;
+  private final XMLReporterConfig config;
+  private final ICustomizeXmlReport customizer;
 
-  public XMLSuiteResultWriter(XMLReporterConfig config) {
+  public XMLSuiteResultWriter(XMLReporterConfig config, ICustomizeXmlReport customizer) {
     this.config = config;
+    this.customizer = customizer;
   }
 
   /**
@@ -159,6 +161,7 @@ public class XMLSuiteResultWriter {
     if (config.isGenerateTestResultAttributes()) {
       addTestResultAttributes(xmlBuffer, testResult);
     }
+    customizer.addCustomTagsFor(xmlBuffer, testResult);
     xmlBuffer.pop();
   }
 
