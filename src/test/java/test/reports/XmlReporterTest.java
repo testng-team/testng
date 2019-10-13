@@ -17,6 +17,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import test.reports.issue2171.TestClassExample;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,12 +53,29 @@ public class XmlReporterTest extends SimpleBaseTest {
                 .isGreaterThan(1);
     }
 
+    @Test(description = "GITHUB-2171")
+    public void ensureCustomisationOfReportIsSupported() throws Exception {
+        File file = runTest(TestClassExample.class, "issue_2171.xml");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(file);
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String expression = "//test/class/test-method/file/@path";
+        String data = (String) xPath.compile(expression).evaluate(doc, XPathConstants.STRING);
+        assertThat(data.trim()).isEqualTo("issue2171.html");
+    }
+
     private static File runTest(Class<?> clazz) {
+        return runTest(clazz, RuntimeBehavior.FILE_NAME);
+    }
+
+    private static File runTest(Class<?> clazz, String fileName) {
         String suiteName = UUID.randomUUID().toString();
         File fileLocation = createDirInTempDir(suiteName);
         TestNG testng = create(fileLocation.toPath(), clazz);
         testng.setUseDefaultListeners(true);
         testng.run();
-        return new File(fileLocation, RuntimeBehavior.FILE_NAME);
+        return new File(fileLocation, fileName);
+
     }
 }

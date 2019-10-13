@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /** The main entry for the XML generation operation */
-public class XMLReporter implements IReporter {
+public class XMLReporter implements IReporter, ICustomizeXmlReport {
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
@@ -79,7 +79,11 @@ public class XMLReporter implements IReporter {
     Utils.writeUtf8File(config.getOutputDirectory(), fileName(), rootBuffer, null /* no prefix */);
   }
 
-  private static String fileName() {
+  public void addCustomTagsFor(XMLStringBuffer xmlBuffer, ITestResult testResult) {
+
+  }
+
+  public String fileName() {
     return RuntimeBehavior.getDefaultFileNameForXmlReports();
   }
 
@@ -136,7 +140,7 @@ public class XMLReporter implements IReporter {
     writeSuiteGroups(xmlBuffer, suite);
 
     Map<String, ISuiteResult> results = suite.getResults();
-    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config);
+    XMLSuiteResultWriter suiteResultWriter = new XMLSuiteResultWriter(config, this);
     for (Map.Entry<String, ISuiteResult> result : results.entrySet()) {
       suiteResultWriter.writeSuiteResult(xmlBuffer, result.getValue());
     }
