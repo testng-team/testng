@@ -180,25 +180,6 @@ public class Parameters {
         .orElse(null);
   }
 
-  ////////////////////////////////////////////////////////
-
-  /** @deprecated - This method stands deprecated as of TestNG v6.11. There are no alternatives. */
-  @Deprecated
-  public static Object getInjectedParameter(
-      Class<?> c, Method method, ITestContext context, ITestResult testResult) {
-    Object result = null;
-    if (Method.class.equals(c)) {
-      result = method;
-    } else if (ITestContext.class.equals(c)) {
-      result = context;
-    } else if (XmlTest.class.equals(c)) {
-      result = context.getCurrentXmlTest();
-    } else if (ITestResult.class.equals(c)) {
-      result = testResult;
-    }
-    return result;
-  }
-
   private static Object[] createParametersForConstructor(
       Constructor constructor,
       Class<?>[] parameterTypes,

@@ -4,6 +4,7 @@ import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
+import org.testng.internal.InstanceCreator;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -175,7 +176,7 @@ public interface ITestNGMethod extends Cloneable {
   }
 
   default void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-    setRetryAnalyzer(ClassHelper.newInstance(clazz));
+    setRetryAnalyzer(InstanceCreator.newInstance(clazz));
   }
 
   default Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {

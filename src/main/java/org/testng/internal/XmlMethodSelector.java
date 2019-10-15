@@ -301,17 +301,6 @@ public class XmlMethodSelector implements IMethodSelector {
     Utils.log("XmlMethodSelector", 4, s);
   }
 
-  /**
-   * @deprecated Use {@link #setScript(XmlScript)} instead
-   */
-  @Deprecated
-  public void setExpression(String expression) {
-    XmlScript script = new XmlScript();
-    script.setLanguage("BeanShell");
-    script.setExpression(expression);
-    setScript(script);
-  }
-
   public void setScript(XmlScript script) {
     scriptSelector = (script == null) ? null : ScriptSelectorFactory.getScriptSelector(script);
   }

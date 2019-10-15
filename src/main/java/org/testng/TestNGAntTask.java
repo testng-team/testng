@@ -444,12 +444,6 @@ public class TestNGAntTask extends Task {
     m_suiteThreadPoolSize = n;
   }
 
-  /** @deprecated Use "listeners" */
-  @Deprecated
-  public void setListener(String listener) {
-    m_listeners.add(listener);
-  }
-
   public void setListeners(String listeners) {
     StringTokenizer st = new StringTokenizer(listeners, " ,");
     while (st.hasMoreTokens()) {

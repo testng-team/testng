@@ -14,8 +14,4 @@ public class ListMultiMap<K, V> extends MultiMap<K, V, List<V>> {
     return Lists.newArrayList();
   }
 
-  @Deprecated
-  public static <K, V> ListMultiMap<K, V> create() {
-    return Maps.newListMultiMap();
-  }
 }

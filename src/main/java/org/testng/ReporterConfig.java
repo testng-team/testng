@@ -3,6 +3,7 @@ package org.testng;
 import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
 
@@ -89,7 +90,7 @@ public class ReporterConfig {
       return null;
     }
 
-    Object tmp = ClassHelper.newInstance(reporterClass);
+    Object tmp = InstanceCreator.newInstance(reporterClass);
     if (!(tmp instanceof IReporter)) {
       throw new TestNGException(m_className + " is not a IReporter");
     }

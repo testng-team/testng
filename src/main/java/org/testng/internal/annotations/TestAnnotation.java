@@ -3,7 +3,7 @@ package org.testng.internal.annotations;
 import org.testng.IRetryAnalyzer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.internal.ClassHelper;
+import org.testng.internal.InstanceCreator;
 
 /**
  * An implementation of ITest
@@ -158,7 +158,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   @Override
   public void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c) {
     if (isRetryAnalyzerNotTestNGInjected(c)) {
-      m_retryAnalyzer = ClassHelper.newInstance(c);
+      m_retryAnalyzer = InstanceCreator.newInstance(c);
     }
     m_retryAnalyzerClass = c;
   }

@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.reflect.ReflectionRecipes;
 
@@ -41,7 +42,7 @@ final class XmlWeaver {
               + IWeaveXml.class.getName();
       throw new TestNGException(msg);
     }
-    instance = (IWeaveXml) ClassHelper.newInstance(clazz);
+    instance = (IWeaveXml) InstanceCreator.newInstance(clazz);
     return instance;
   }
 
@@ -83,7 +84,7 @@ final class XmlWeaver {
     }
     Class<?> clazzName = ClassHelper.forName(clazz);
     if (ReflectionRecipes.isOrExtends(IWeaveXml.class, clazzName)) {
-      return ClassHelper.newInstance((Class<IWeaveXml>) clazzName);
+      return InstanceCreator.newInstance((Class<IWeaveXml>) clazzName);
     }
     throw new IllegalArgumentException(clazz + " does not implement " + IWeaveXml.class.getName());
   }
