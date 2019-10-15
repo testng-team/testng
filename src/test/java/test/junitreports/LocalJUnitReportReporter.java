@@ -5,7 +5,6 @@ import org.testng.reporters.JUnitReportReporter;
 import org.testng.xml.XmlSuite;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +16,7 @@ public class LocalJUnitReportReporter extends JUnitReportReporter implements Tes
         super.generateReport(xmlSuites, suites, defaultOutputDirectory);
         String dir = defaultOutputDirectory + File.separator + "junitreports";
         File directory = new File(dir);
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".xml");
-            }
-        });
+        File[] files = directory.listFiles((dir1, name) -> name.endsWith(".xml"));
         testsuites.addAll(LocalJUnitXMLReporter.getSuites(files));
     }
 

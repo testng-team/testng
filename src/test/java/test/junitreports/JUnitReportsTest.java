@@ -1,12 +1,19 @@
 package test.junitreports;
 
 import com.beust.jcommander.internal.Lists;
+import java.io.File;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.w3c.dom.Document;
 import test.SimpleBaseTest;
 import test.TestHelper;
 
@@ -16,8 +23,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import test.junitreports.issue2124.TestClassSample;
 import test.junitreports.issue993.SampleTestClass;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
 
@@ -106,6 +115,24 @@ public class JUnitReportsTest extends SimpleBaseTest {
         Testcase testcase = suite.getTestcase().get(0);
         String actual = testcase.getName();
         assertEquals(actual, "Test_001");
+    }
+
+    @Test
+    public void ensureTestReportContainsSysOutContent() throws Exception {
+        Path outputDir = TestHelper.createRandomDirectory();
+        TestNG tng = createTests(outputDir, "suite", TestClassSample.class);
+        tng.setUseDefaultListeners(true);
+        tng.run();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        String name = "TEST-" + TestClassSample.class.getName();
+        File file = new File(outputDir.toFile().getAbsolutePath()
+            + File.separator + "junitreports" + File.separator + name + ".xml");
+        Document doc = builder.parse(file);
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String expression = "//testsuite/system-out";
+        String data = (String) xPath.compile(expression).evaluate(doc, XPathConstants.STRING);
+        assertThat(data.trim()).isEqualTo(TestClassSample.MESSAGE);
     }
 
     private static Map<String, Integer> createMapFor(int testCount, int skipped) {
