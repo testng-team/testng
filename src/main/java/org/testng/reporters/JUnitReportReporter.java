@@ -6,6 +6,7 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.SetMultiMap;
 import org.testng.collections.Lists;
@@ -141,6 +142,10 @@ public class JUnitReportReporter implements IReporter {
           }
           xsb.pop(XMLConstants.TESTCASE);
         }
+        if (putElement(xsb, XMLConstants.SYSTEM_OUT, new Properties(), testTag.sysOut != null)) {
+          xsb.addString(testTag.sysOut);
+          xsb.pop(XMLConstants.SYSTEM_OUT);
+        }
       }
       xsb.pop(XMLConstants.TESTSUITE);
 
@@ -186,6 +191,10 @@ public class JUnitReportReporter implements IReporter {
       testTag.childTag = XMLConstants.SKIPPED;
     } else if (status == ITestResult.FAILURE) {
       handleFailure(testTag, tr.getThrowable());
+    }
+    List<String> output = Reporter.getOutput(tr);
+    if (!output.isEmpty()) {
+      testTag.sysOut = String.join(" ", output);
     }
     testTag.properties = p2;
     return testTag;
@@ -268,6 +277,7 @@ public class JUnitReportReporter implements IReporter {
     String type;
     String stackTrace;
     String childTag;
+    String sysOut;
   }
 
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
