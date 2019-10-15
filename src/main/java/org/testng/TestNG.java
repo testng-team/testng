@@ -602,7 +602,7 @@ public class TestNG {
   }
 
   private void setTestRunnerFactoryClass(Class testRunnerFactoryClass) {
-    setTestRunnerFactory((ITestRunnerFactory) ClassHelper.newInstance(testRunnerFactoryClass));
+    setTestRunnerFactory((ITestRunnerFactory) InstanceCreator.newInstance(testRunnerFactoryClass));
   }
 
   protected void setTestRunnerFactory(ITestRunnerFactory itrf) {
@@ -610,7 +610,7 @@ public class TestNG {
   }
 
   public void setObjectFactory(Class c) {
-    m_objectFactory = (ITestObjectFactory) ClassHelper.newInstance(c);
+    m_objectFactory = (ITestObjectFactory) InstanceCreator.newInstance(c);
   }
 
   public void setObjectFactory(ITestObjectFactory factory) {
@@ -625,7 +625,7 @@ public class TestNG {
    */
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
     for (Class<? extends ITestNGListener> cls : classes) {
-      addListener(ClassHelper.newInstance(cls));
+      addListener(InstanceCreator.newInstance(cls));
     }
   }
 
@@ -866,7 +866,7 @@ public class TestNG {
 
   private void addReporter(Class<? extends IReporter> r) {
     if (!m_reporters.containsKey(r)) {
-      m_reporters.put(r, ClassHelper.newInstance(r));
+      m_reporters.put(r, InstanceCreator.newInstance(r));
     }
   }
 
@@ -941,7 +941,7 @@ public class TestNG {
             "Listener " + listenerName + " was not found in project's classpath");
       }
 
-      ITestNGListener listener = (ITestNGListener) ClassHelper.newInstance(listenerClass);
+      ITestNGListener listener = (ITestNGListener) InstanceCreator.newInstance(listenerClass);
       addListener(listener);
     }
 

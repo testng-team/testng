@@ -39,12 +39,6 @@ public class VerboseReporter extends TestListenerAdapter {
     }
   }
 
-  /** @deprecated Unused */
-  @Deprecated
-  public VerboseReporter() {
-    this(LISTENER_PREFIX);
-  }
-
   /**
    * Create VerboseReporter with custom prefix
    *

@@ -123,17 +123,6 @@ public class XmlTest implements Cloneable {
     return getIncludedGroups().isEmpty() && getExcludedGroups().isEmpty();
   }
 
-  /**
-   * Sets the XML Classes.
-   *
-   * @param classes The classes to set.
-   * @deprecated use setXmlClasses
-   */
-  @Deprecated
-  public void setClassNames(List<XmlClass> classes) {
-    m_xmlClasses = classes;
-  }
-
   /** @return Returns the classes. */
   public List<XmlClass> getXmlClasses() {
     return m_xmlClasses;
@@ -364,21 +353,6 @@ public class XmlTest implements Cloneable {
     return m_parameters;
   }
 
-  /** @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()} */
-  @Deprecated
-  public Map<String, String> getParameters() {
-    return getAllParameters();
-  }
-
-  /**
-   * @deprecated Use {@code getLocalParameters()} instead
-   * @return the parameters defined on this &lt;test&gt; tag only
-   */
-  @Deprecated
-  public Map<String, String> getTestParameters() {
-    return getLocalParameters();
-  }
-
   public void setParallel(XmlSuite.ParallelMode parallel) {
     m_parallel = skipDeprecatedValues(parallel);
   }
@@ -418,26 +392,6 @@ public class XmlTest implements Cloneable {
     m_timeOut = timeOut;
   }
 
-  /**
-   * @deprecated Use {@link #setScript(XmlScript)} instead.
-   */
-  @Deprecated
-  public void setExpression(String expression) {
-    setBeanShellExpression(expression);
-  }
-
-  /**
-   * @deprecated Use {@link #setScript(XmlScript)} instead.
-   */
-  @Deprecated
-  public void setBeanShellExpression(String expression) {
-    if (expression != null) {
-      XmlScript script = new XmlScript();
-      script.setExpression(expression);
-      script.setLanguage("BeanShell");
-    }
-  }
-
   public void setScript(XmlScript script) {
     List<XmlMethodSelector> selectors = getMethodSelectors();
     if (selectors.size() > 0) {
@@ -448,18 +402,6 @@ public class XmlTest implements Cloneable {
       selectors.add(xms);
       xms.setScript(script);
     }
-  }
-
-  /**
-   * @deprecated Use {@link #getScript()} instead.
-   */
-  @Deprecated
-  public String getExpression() {
-    XmlScript script = getScript();
-    if (script == null) {
-      return null;
-    }
-    return script.getExpression();
   }
 
   public XmlScript getScript() {
@@ -527,12 +469,6 @@ public class XmlTest implements Cloneable {
     } else {
       return result;
     }
-  }
-
-  /** @deprecated Use {@link #setPreserveOrder(Boolean)} instead */
-  @Deprecated
-  public void setPreserveOrder(String preserveOrder) {
-    setPreserveOrder(Boolean.valueOf(preserveOrder));
   }
 
   public void setPreserveOrder(Boolean preserveOrder) {

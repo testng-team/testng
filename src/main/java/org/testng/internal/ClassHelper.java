@@ -2,12 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Executable;
 import java.util.function.BiConsumer;
-import org.testng.IClass;
-import org.testng.IMethodSelector;
-import org.testng.IObjectFactory;
-import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.TestRunner;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
@@ -15,7 +10,6 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.reflect.ReflectionHelper;
-import org.testng.junit.IJUnitTestRunner;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -55,30 +49,6 @@ public final class ClassHelper {
   /** Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
     classLoaders.add(loader);
-  }
-
-  /**
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static <T> T newInstance(Class<T> clazz) {
-    return InstanceCreator.newInstance(clazz);
-  }
-
-  /**
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static <T> T newInstanceOrNull(Class<T> clazz) {
-    return InstanceCreator.newInstanceOrNull(clazz);
-  }
-
-  /**
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static <T> T newInstance(Constructor<T> constructor, Object... parameters) {
-    return InstanceCreator.newInstance(constructor, parameters);
   }
 
   static List<ClassLoader> appendContextualClassLoaders(List<ClassLoader> currentLoaders) {
@@ -205,14 +175,6 @@ public final class ClassHelper {
     return returnValue;
   }
 
-  /**
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static IJUnitTestRunner createTestRunner(TestRunner runner) {
-    return IJUnitTestRunner.createTestRunner(runner);
-  }
-
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
     Set<Method> declaredMethods =
         methods.computeIfAbsent(declaredMethod.getName(), k -> Sets.newHashSet());
@@ -288,44 +250,6 @@ public final class ClassHelper {
     }
 
     return false;
-  }
-
-  /**
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static IMethodSelector createSelector(org.testng.xml.XmlMethodSelector selector) {
-    return InstanceCreator.createSelector(selector);
-  }
-
-  /**
-   * Create an instance for the given class.
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static Object createInstance(
-      Class<?> declaringClass,
-      Map<Class<?>, IClass> classes,
-      XmlTest xmlTest,
-      IAnnotationFinder finder,
-      ITestObjectFactory objectFactory,
-      boolean create) {
-    return InstanceCreator.createInstance(declaringClass, classes, xmlTest, finder, objectFactory, create, "");
-  }
-
-  /**
-   * @deprecated - This method is deprecated as of TestNG 7.0.0
-   */
-  @Deprecated
-  public static Object createInstance1(
-      Class<?> declaringClass,
-      Map<Class<?>, IClass> classes,
-      XmlTest xmlTest,
-      IAnnotationFinder finder,
-      IObjectFactory factory,
-      boolean create
-  ) {
-    return InstanceCreator.createInstanceUsingObjectFactory(declaringClass, classes, xmlTest, finder, factory, create, "");
   }
 
   /** Find the best constructor given the parameters found on the annotation */

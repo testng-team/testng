@@ -1,9 +1,7 @@
 package org.testng.collections;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,11 +38,6 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return list;
   }
 
-  @Deprecated
-  public List<K> getKeys() {
-    return new ArrayList<>(keySet());
-  }
-
   public Set<K> keySet() {
     return new HashSet<>(m_objects.keySet());
   }
@@ -70,18 +63,8 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.size() == 0;
   }
 
-  @Deprecated
-  public int getSize() {
-    return size();
-  }
-
   public int size() {
     return m_objects.size();
-  }
-
-  @Deprecated
-  public C remove(K key) {
-    return removeAll(key);
   }
 
   public boolean remove(K key, V value) {
@@ -92,18 +75,8 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.remove(key);
   }
 
-  @Deprecated
-  public Set<Map.Entry<K, C>> getEntrySet() {
-    return entrySet();
-  }
-
   public Set<Map.Entry<K, C>> entrySet() {
     return m_objects.entrySet();
-  }
-
-  @Deprecated
-  public Collection<C> getValues() {
-    return values();
   }
 
   public Collection<C> values() {

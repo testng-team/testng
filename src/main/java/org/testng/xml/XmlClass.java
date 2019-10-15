@@ -249,12 +249,6 @@ public class XmlClass implements Cloneable {
     return m_parameters;
   }
 
-  /** @deprecated Use {@code getLocalParameters()} or {@code getAllParameters()} */
-  @Deprecated
-  public Map<String, String> getParameters() {
-    return getAllParameters();
-  }
-
   public void setXmlTest(XmlTest test) {
     m_xmlTest = test;
   }

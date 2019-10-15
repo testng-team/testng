@@ -11,25 +11,9 @@ public class XmlScript {
     this.language = language;
   }
 
-  /**
-   * @deprecated Use {@link #setExpression(String)} instead
-   */
-  @Deprecated
-  public void setScript(String script) {
-    expression = script;
-  }
-
   @TagContent(name = "script")
   public void setExpression(String expression) {
     this.expression = expression;
-  }
-
-  /**
-   * @deprecated User {@link #getExpression()} instead
-   */
-  @Deprecated
-  public String getScript() {
-    return expression;
   }
 
   public String getExpression() {

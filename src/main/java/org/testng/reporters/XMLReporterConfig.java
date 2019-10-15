@@ -144,12 +144,6 @@ public class XMLReporterConfig {
     this.fileFragmentationLevel = fileFragmentationLevel;
   }
 
-  /** @deprecated - Please use {@link XMLReporterConfig#getStackTraceOutput()} instead. */
-  @Deprecated
-  public int getStackTraceOutputMethod() {
-    return stackTraceOutputMethod.getLevel();
-  }
-
   public StackTraceLevels getStackTraceOutput() {
     return stackTraceOutputMethod;
   }
@@ -160,16 +154,6 @@ public class XMLReporterConfig {
 
   public StackTraceLevels getStackTraceOutputLevelForPassedTests() {
     return stackTraceOutputLevel;
-  }
-
-  /**
-   * @param stackTraceOutputMethod
-   * @deprecated - Please use {@link XMLReporterConfig#setStackTraceOutput(StackTraceLevels)}
-   *     instead.
-   */
-  @Deprecated
-  public void setStackTraceOutputMethod(int stackTraceOutputMethod) {
-    this.stackTraceOutputMethod = StackTraceLevels.parse(stackTraceOutputMethod);
   }
 
   public String getOutputDirectory() {
