@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
@@ -14,8 +17,6 @@ import org.testng.internal.collections.ArrayIterator;
 import org.testng.internal.collections.OneToTwoDimArrayIterator;
 import org.testng.internal.collections.OneToTwoDimIterator;
 import org.testng.internal.collections.Pair;
-import org.testng.internal.thread.IExecutor;
-import org.testng.internal.thread.IFutureResult;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
@@ -349,28 +350,23 @@ public class MethodInvocationHelper {
       ITestResult testResult,
       IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
-    IExecutor exec = ThreadUtil.createExecutor(1, tm.getMethodName());
+    ExecutorService exec = ThreadUtil.createExecutor(1, tm.getMethodName());
 
     InvokeMethodRunnable imr =
         new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
-    IFutureResult future = exec.submitRunnable(imr);
+    Future<Void> future = exec.submit(imr);
     exec.shutdown();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
-    boolean finished = exec.awaitTermination(realTimeOut);
+    boolean finished = exec.awaitTermination(realTimeOut, TimeUnit.MILLISECONDS);
 
     if (!finished) {
-      exec.stopNow();
+      exec.shutdownNow();
       ThreadTimeoutException exception =
           new ThreadTimeoutException(
               "Method "
                   + tm.getQualifiedName()
-                  + "()"
-                  + " didn't finish within the time-out "
+                  + "() didn't finish within the time-out "
                   + realTimeOut);
-      StackTraceElement[][] stacktraces = exec.getStackTraces();
-      if (stacktraces.length > 0) {
-        exception.setStackTrace(stacktraces[0]);
-      }
       testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
     } else {
@@ -381,11 +377,13 @@ public class MethodInvocationHelper {
 
       // We don't need the result from the future but invoking get() on it
       // will trigger the exception that was thrown, if any
-      future.get();
-      // done.await();
+      try {
+        future.get();
+      } catch (ExecutionException e) {
+        throw new ThreadExecutionException(e.getCause());
+      }
 
-      testResult.setStatus(ITestResult.SUCCESS); // if no exception till here
-      // than SUCCESS
+      testResult.setStatus(ITestResult.SUCCESS); // if no exception till here then SUCCESS.
     }
   }
 

@@ -1,5 +1,6 @@
 package org.testng.internal.thread;
 
+import java.util.concurrent.ThreadFactory;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -88,37 +89,15 @@ public class ThreadUtil {
     return thread.getName() + "@" + thread.hashCode();
   }
 
-  public static IExecutor createExecutor(int threadCount, String threadFactoryName) {
-    return new ExecutorAdapter(threadCount, createFactory(threadFactoryName));
+  public static ExecutorService createExecutor(int threadCount, String threadFactoryName) {
+    ThreadFactory tf = new TestNGThreadFactory("method=" + threadFactoryName);
+    return new ThreadPoolExecutor(
+        threadCount,
+        threadCount,
+        0L,
+        TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<>(),
+        tf);
   }
 
-  private static IThreadFactory createFactory(String name) {
-    return new ThreadFactoryImpl(name);
-  }
-
-  public static class ThreadFactoryImpl extends TestNGThreadFactory implements IThreadFactory {
-
-    private final List<Thread> threads = Lists.newArrayList();
-
-    public ThreadFactoryImpl(String name) {
-      super("method=" + name);
-    }
-
-    @Override
-    public Object getThreadFactory() {
-      return this;
-    }
-
-    @Override
-    public Thread newThread(Runnable r) {
-      Thread t = super.newThread(r);
-      threads.add(t);
-      return t;
-    }
-
-    @Override
-    public List<Thread> getThreads() {
-      return threads;
-    }
-  }
 }
