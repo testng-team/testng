@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.concurrent.Callable;
 import org.testng.IHookable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -9,7 +10,7 @@ import org.testng.ITestResult;
  *
  * @author <a href="mailto:the_mindstorm@evolva.ro>the_mindstorm</a>
  */
-public class InvokeMethodRunnable implements Runnable {
+public class InvokeMethodRunnable implements Callable<Void> {
   private ITestNGMethod m_method;
   private Object m_instance;
   private Object[] m_parameters;
@@ -29,16 +30,11 @@ public class InvokeMethodRunnable implements Runnable {
     m_testResult = testResult;
   }
 
-  @Override
   public void run() throws TestNGRuntimeException {
-    // If there is an invocation time out, all the invocations need to be done within this
-    // Runnable
-    if (m_method.getInvocationTimeOut() > 0) {
-      for (int i = 0; i < m_method.getInvocationCount(); i++) {
-        runOne();
-      }
-    } else {
-      runOne();
+    try {
+      call();
+    } catch (Exception e) {
+      throw new TestNGRuntimeException(e);
     }
   }
 
@@ -63,6 +59,18 @@ public class InvokeMethodRunnable implements Runnable {
     } finally {
       m_method.incrementCurrentInvocationCount();
     }
+  }
+
+  @Override
+  public Void call() throws Exception {
+    if (m_method.getInvocationTimeOut() > 0) {
+      for (int i = 0; i < m_method.getInvocationCount(); i++) {
+        runOne();
+      }
+    } else {
+      runOne();
+    }
+    return null;
   }
 
   public static class TestNGRuntimeException extends RuntimeException {
