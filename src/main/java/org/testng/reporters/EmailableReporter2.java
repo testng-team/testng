@@ -404,6 +404,7 @@ public class EmailableReporter2 implements IReporter {
         scenarioIndex +=
             writeScenarioDetails(testResult.getSkippedConfigurationResults(), scenarioIndex);
         scenarioIndex += writeScenarioDetails(testResult.getSkippedTestResults(), scenarioIndex);
+        scenarioIndex += writeScenarioDetails(testResult.getRetriedTestResults(), scenarioIndex);
         scenarioIndex += writeScenarioDetails(testResult.getPassedTestResults(), scenarioIndex);
       }
     }
