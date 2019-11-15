@@ -8,7 +8,7 @@ import static java.lang.annotation.ElementType.PACKAGE;
 import static java.lang.annotation.ElementType.TYPE;
 
 /**
- * Alternative of @Test(enable=false)
+ * Alternative of @Test(enabled=false)
  *
  * <p>Notice that @Ignore on a class will disable all test methods of the class.
  *
