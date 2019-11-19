@@ -113,7 +113,8 @@ public class MethodHelper {
           int lastIndex = regexp.lastIndexOf('.');
           String newMethodName;
           if (lastIndex != -1) {
-            newMethodName = m.getTestClass().getRealClass().getName() + regexp.substring(lastIndex);
+            String clazzName = (m.getTestClass() != null ? m.getTestClass().getRealClass() : m.getRealClass()).getName();
+            newMethodName = clazzName + regexp.substring(lastIndex);
             results = matchMethod(methods, newMethodName);
             foundAtLeastAMethod = results.foundAtLeastAMethod;
             vResult.addAll(results.matchedMethods);

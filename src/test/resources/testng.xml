@@ -957,5 +957,10 @@
     </classes>
   </test>
 
+  <test name="GITHUB-2195">
+    <classes>
+      <class name="org.testng.internal.MethodHelperTest"/>
+    </classes>
+  </test>
 </suite>
 
