@@ -226,6 +226,22 @@ public class MethodHelper {
     return alwaysRun;
   }
 
+  /**
+   * @return true when configurationAnnotation belongs to {@code @After...} method
+   */
+  static boolean isAfterMethod(IConfigurationAnnotation configurationAnnotation) {
+    if (null == configurationAnnotation) {
+      return false;
+    }
+
+    return ((configurationAnnotation.getAfterSuite()
+             || configurationAnnotation.getAfterTest()
+             || configurationAnnotation.getAfterTestClass()
+             || configurationAnnotation.getAfterTestMethod()
+             || configurationAnnotation.getAfterGroups().length != 0));
+  }
+
+
   /** Extracts the unique list of <code>ITestNGMethod</code>s. */
   public static List<ITestNGMethod> uniqueMethodList(Collection<List<ITestNGMethod>> methods) {
     Set<ITestNGMethod> resultSet = Sets.newHashSet();

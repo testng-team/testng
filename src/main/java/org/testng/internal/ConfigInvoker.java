@@ -239,26 +239,22 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         // - the test is enabled and
         // - the Configuration method belongs to the same class or a parent
         configurationAnnotation = AnnotationHelper.findConfiguration(annotationFinder(), method);
-        boolean alwaysRun = MethodHelper.isAlwaysRun(configurationAnnotation);
-        boolean canProcessMethod =
-            MethodHelper.isEnabled(objectClass, annotationFinder()) || alwaysRun;
-        if (!canProcessMethod) {
-          log(
-              3,
-              "Skipping "
-                  + Utils.detailedMethodName(tm, true)
-                  + " because "
-                  + objectClass.getName()
-                  + " is not enabled");
+
+        if (!MethodHelper.isEnabled(objectClass, annotationFinder())) {
+          log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because class " +
+                 objectClass.getName() + " is not enabled");
           continue;
         }
         if (MethodHelper.isDisabled(configurationAnnotation)) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
+
+        boolean forceRun = MethodHelper.isAlwaysRun(configurationAnnotation) &&
+                           MethodHelper.isAfterMethod(configurationAnnotation);
         if (hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups() ,
             arguments.getTestClass(),
-            arguments.getInstance()) && !alwaysRun) {
+            arguments.getInstance()) && !forceRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod =
               new InvokedMethod(arguments.getInstance(), tm, System.currentTimeMillis(), testResult);

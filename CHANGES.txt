@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1622: Parameter alwaysRun=true for before-methods forces execution of those methods (Oleksandr Kulychok)
 Fixed: GITHUB-2180: Write scenario details for Retried tests (Devendra Raju K)
 Fixed: GITHUB-2124: JUnit Report should contain the output of org.testng.Reporter (Krishnan Mahadevan)
 Fixed: GITHUB-2171: Ability to embed attachments and make them available on TestNG XML report (Krishnan Mahadevan)
