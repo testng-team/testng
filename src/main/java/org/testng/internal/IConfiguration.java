@@ -42,4 +42,8 @@ public interface IConfiguration {
   void setExecutorFactory(IExecutorFactory factory);
 
   IExecutorFactory getExecutorFactory();
+
+  IInjectorFactory getInjectorFactory();
+
+  void setInjectorFactory(IInjectorFactory factory);
 }

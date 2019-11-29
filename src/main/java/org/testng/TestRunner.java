@@ -75,6 +75,7 @@ public class TestRunner
   private ISuite m_suite;
   private XmlTest m_xmlTest;
   private String m_testName;
+  private IInjectorFactory m_injectorFactory;
 
   private final GuiceHelper guiceHelper = new GuiceHelper(this);
 
@@ -244,6 +245,7 @@ public class TestRunner
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml = test.getXmlClasses();
+    m_injectorFactory = m_configuration.getInjectorFactory();
     setVerbose(test.getVerbose());
 
     boolean preserveOrder = test.getPreserveOrder();
@@ -1230,7 +1232,7 @@ public class TestRunner
 
   @Override
   public Injector getInjector(IClass iClass) {
-    return guiceHelper.getInjector(iClass);
+    return guiceHelper.getInjector(iClass, this.m_injectorFactory);
   }
 
   @Override
