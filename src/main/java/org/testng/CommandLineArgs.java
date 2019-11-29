@@ -215,5 +215,11 @@ public class CommandLineArgs {
       description = "The threadpool executor factory implementation that TestNG should use.")
   public String threadPoolFactoryClass;
 
+  public static final String DEPENDENCY_INJECTOR_FACTORY = "-dependencyinjectorfactory";
+
+  @Parameter(
+      names = DEPENDENCY_INJECTOR_FACTORY,
+      description = "The dependency injector factory implementation that TestNG should use.")
+  public String dependencyInjectoryFactoryClass;
 
 }
