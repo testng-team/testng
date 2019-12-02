@@ -1351,6 +1351,12 @@ public class TestNG {
     if (cla.verbose != null) {
       setVerbose(cla.verbose);
     }
+    if (cla.dependencyInjectoryFactoryClass != null) {
+      Class<?> clazz = ClassHelper.forName(cla.dependencyInjectoryFactoryClass);
+      if (clazz != null && IInjectorFactory.class.isAssignableFrom(clazz)) {
+        m_configuration.setInjectorFactory(InstanceCreator.newInstance((Class<IInjectorFactory>) clazz));
+      }
+    }
     if (cla.threadPoolFactoryClass != null) {
       setExecutorFactoryClass(cla.threadPoolFactoryClass);
     }
@@ -1835,7 +1841,8 @@ public class TestNG {
     return Lists.newArrayList(serviceLoaderListeners.values());
   }
 
-  //
-  // ServiceLoader testing
-  /////
+  public void setInjectorFactory(IInjectorFactory factory) {
+    this.m_configuration.setInjectorFactory(factory);
+  }
+
 }

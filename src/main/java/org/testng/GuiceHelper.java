@@ -23,7 +23,15 @@ public class GuiceHelper {
     this.context = context;
   }
 
+  /**
+   * @deprecated - This method stands deprecated as of 7.0.1
+   */
+  @Deprecated
   Injector getInjector(IClass iClass) {
+    return getInjector(iClass, com.google.inject.Guice::createInjector);
+  }
+
+  Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
     Guice guice =
         AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
     if (guice == null) {
@@ -35,7 +43,7 @@ public class GuiceHelper {
     if (!(iClass instanceof ClassImpl)) {
       return null;
     }
-    Injector parentInjector = ((ClassImpl) iClass).getParentInjector();
+    Injector parentInjector = ((ClassImpl) iClass).getParentInjector(injectorFactory);
 
     List<Module> moduleInstances =
         Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
@@ -49,7 +57,7 @@ public class GuiceHelper {
     // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
     Injector injector = context.getInjector(moduleLookup);
     if (injector == null) {
-      injector = createInjector(context, moduleInstances);
+      injector = createInjector(context, injectorFactory, moduleInstances);
       context.addInjector(moduleInstances, injector);
     }
     return injector;
@@ -75,7 +83,16 @@ public class GuiceHelper {
     }
   }
 
+  /**
+   * @deprecated - This method stands deprecated as of 7.0.1
+   */
+  @Deprecated
   public static Injector createInjector(ITestContext context, List<Module> moduleInstances) {
+    return createInjector(context, com.google.inject.Guice::createInjector, moduleInstances);
+  }
+
+  public static Injector createInjector(ITestContext context,
+      IInjectorFactory injectorFactory, List<Module> moduleInstances) {
     Module parentModule = getParentModule(context);
     List<Module> fullModules = Lists.newArrayList(moduleInstances);
     if (parentModule != null) {
@@ -86,7 +103,7 @@ public class GuiceHelper {
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);
     }
-    return com.google.inject.Guice.createInjector(stage, fullModules);
+    return injectorFactory.getInjector(stage, fullModules.toArray(new Module[0]));
   }
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
