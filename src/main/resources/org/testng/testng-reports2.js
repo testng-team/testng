@@ -6,11 +6,17 @@ window.onload=function (){
     }
 
     else if(cookieValue[1]==='Switch Ultra Theme'|| localStorage.getItem('Theme')==='Switch Ultra Theme'){
+    if(cookieValue[1]==='null'){
+            document.getElementById('retro').setAttribute('disabled','false');
+    }
+
+    else if(cookieValue[1]==='Switch Ultra Theme'){
         document.getElementById('button').innerText="Switch Retro Theme";
         document.getElementById('retro').setAttribute('disabled','false');
         
     }
     else if(cookieValue[1]==='Switch Retro Theme'|| localStorage.getItem('Theme')==='Switch Retro Theme'){
+    else if(cookieValue[1]==='Switch Retro Theme'){
         document.getElementById('button').innerText="Switch Ultra Theme";
         document.getElementById('ultra').setAttribute('disabled','false');
     }
@@ -41,6 +47,7 @@ window.onload=function (){
  }
  //Function to mouse hovering affect.
  document.getElementById('button').onmouseover = function(){
+
      let hover = document.getElementById('button');
      hover.style.borderRadius="25px";
      hover.style.width="180px";
@@ -56,5 +63,19 @@ window.onload=function (){
      mouseOut.style.marginTop="8px";
  }
 
+    document.getElementById('button').style.borderRadius="25px";
+    document.getElementById('button').style.width="180px";
+    document.getElementById('button').style.height="45px";
+    document.getElementById('button').style.marginTop="1px";
+ }
+ //Function to mouse out affect
+ document.getElementById('button').onmouseout = function(){
+    document.getElementById('button').style.borderRadius="25px";
+    document.getElementById('button').style.width="150px";
+    document.getElementById('button').style.height="30px";
+    document.getElementById('button').style.marginTop="8px";
+ }
+
  //This is the file where we handle the switching of the Themes.
- /*Author:- Akhil Gullapalli 4 Dec,2019.*/
+ /*Author:- Akhil Gullapalli*/
+
