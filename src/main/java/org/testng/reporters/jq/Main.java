@@ -17,13 +17,16 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class Main implements IReporter {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES =
       new String[] {
         "jquery-3.4.1.min.js",
         "testng-reports.css",
+        "testng-reports1.css",
         "testng-reports.js",
+        "testng-reports2.js",
         "passed.png",
         "failed.png",
         "skipped.png",
@@ -78,6 +81,7 @@ public class Main implements IReporter {
     xsb.pop(D); // wrapper
 
     xsb.addString("  </body>\n");
+    xsb.addString("<script type=\"text/javascript\" src=\"testng-reports2.js\"></script>\n");
     xsb.addString("</html>\n");
 
     String all;
