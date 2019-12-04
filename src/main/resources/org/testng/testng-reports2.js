@@ -1,16 +1,16 @@
 window.onload=function (){
     let cookies = document.cookie;
     let cookieValue=cookies.split('=');
-    if(cookieValue[1]==='null'){
+    if(cookieValue[1]==='null' || localStorage.getItem('Theme')==='null'){
             document.getElementById('retro').setAttribute('disabled','false');
     }
 
-    else if(cookieValue[1]==='Switch Ultra Theme'){
+    else if(cookieValue[1]==='Switch Ultra Theme'|| localStorage.getItem('Theme')==='Switch Ultra Theme'){
         document.getElementById('button').innerText="Switch Retro Theme";
         document.getElementById('retro').setAttribute('disabled','false');
         
     }
-    else if(cookieValue[1]==='Switch Retro Theme'){
+    else if(cookieValue[1]==='Switch Retro Theme'|| localStorage.getItem('Theme')==='Switch Retro Theme'){
         document.getElementById('button').innerText="Switch Ultra Theme";
         document.getElementById('ultra').setAttribute('disabled','false');
     }
@@ -25,6 +25,7 @@ window.onload=function (){
         document.getElementById('button').innerText="Switch Ultra Theme";
         document.getElementById('retro').removeAttribute('disabled');
         document.getElementById('ultra').setAttribute('disabled','false');
+        localStorage.setItem('Theme',select);
         
     }
     else if(select ==='Switch Ultra Theme'){
@@ -35,22 +36,25 @@ window.onload=function (){
         document.getElementById('button').innerText="Switch Retro Theme";
         document.getElementById('ultra').removeAttribute('disabled');
         document.getElementById('retro').setAttribute('disabled','false');
+        localStorage.setItem('Theme',select);
     }
  }
  //Function to mouse hovering affect.
  document.getElementById('button').onmouseover = function(){
-    document.getElementById('button').style.borderRadius="25px";
-    document.getElementById('button').style.width="180px";
-    document.getElementById('button').style.height="45px";
-    document.getElementById('button').style.marginTop="1px";
+     let hover = document.getElementById('button');
+     hover.style.borderRadius="25px";
+     hover.style.width="180px";
+     hover.style.height="45px";
+     hover.style.marginTop="1px";
  }
  //Function to mouse out affect
  document.getElementById('button').onmouseout = function(){
-    document.getElementById('button').style.borderRadius="25px";
-    document.getElementById('button').style.width="150px";
-    document.getElementById('button').style.height="30px";
-    document.getElementById('button').style.marginTop="8px";
+     let mouseOut = document.getElementById('button');
+     mouseOut.style.borderRadius="25px";
+     mouseOut.style.width="150px";
+     mouseOut.style.height="30px";
+     mouseOut.style.marginTop="8px";
  }
 
  //This is the file where we handle the switching of the Themes.
- /*Author:- Akhil Gullapalli*/
+ /*Author:- Akhil Gullapalli 4 Dec,2019.*/

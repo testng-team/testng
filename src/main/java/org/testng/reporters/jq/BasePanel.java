@@ -8,6 +8,8 @@ public abstract class BasePanel implements IPanel {
   public static final String C = "class";
   public static final String D = "div";
   public static final String S = "span";
+  public static final String B = "button";
+  public static final String I = "id";
 
   private Model m_model;
 
