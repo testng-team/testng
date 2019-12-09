@@ -4,6 +4,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
+import net.bytebuddy.matcher.ElementMatchers;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -32,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Collections of helper methods to help deal with invocation of TestNG methods
@@ -142,11 +147,19 @@ public class MethodInvocationHelper {
       ITestContext testContext,
       Object fedInstance,
       IAnnotationFinder annotationFinder) {
+    List<Object[]> resultHolder = new ArrayList<>();
     List<Object> parameters =
-        getParameters(dataProvider, method, testContext, fedInstance, annotationFinder);
+        getParameters(dataProvider, method, testContext, fedInstance, resultHolder, annotationFinder);
     Object result = invokeMethodNoCheckedException(dataProvider, instance, parameters);
     if (result == null) {
+      if (!resultHolder.isEmpty()) {
+        return resultHolder.iterator();
+      }
       throw new TestNGException("Data Provider " + dataProvider + " returned a null value");
+    } else {
+      if (!resultHolder.isEmpty()) {
+        throw new TestNGException("Data Provider " + dataProvider + " must return void if using @ParameterCollector");
+      }
     }
     // If it returns an Object[][] or Object[], convert it to an Iterator<Object[]>
     if (result instanceof Object[][]) {
@@ -181,6 +194,7 @@ public class MethodInvocationHelper {
       ITestNGMethod method,
       ITestContext testContext,
       Object fedInstance,
+      List<Object[]> resultHolder,
       IAnnotationFinder annotationFinder) {
     // Go through all the parameters declared on this Data Provider and
     // make sure we have at most one Method and one ITestContext.
@@ -204,8 +218,32 @@ public class MethodInvocationHelper {
         parameters.add(com.getDeclaringClass());
       } else {
         boolean isTestInstance = annotationFinder.hasTestInstance(dataProvider, i);
+        boolean isParameterCollector = annotationFinder.hasParameterCollector(dataProvider, i);
         if (isTestInstance) {
           parameters.add(fedInstance);
+        } else if (isParameterCollector) {
+          final String expectedMethodName = method.getMethodName();
+          Class<?> proxyClass = new ByteBuddy()
+                  .subclass(fedInstance.getClass())
+                  .method(ElementMatchers.any())
+                  .intercept(InvocationHandlerAdapter.of((proxy, calledMethod, args) -> {
+                    final String actualMethodName = calledMethod.getName();
+                    if(!Objects.equals(expectedMethodName, actualMethodName)) {
+                      throw new TestNGException(
+                              String.format("Wrong method %s is called, expected %s",
+                                      actualMethodName, expectedMethodName));
+                    }
+                    resultHolder.add(args);
+                    return null;
+                  }))
+                  .make()
+                  .load(fedInstance.getClass().getClassLoader())
+                  .getLoaded();
+          try {
+            parameters.add(proxyClass.newInstance());
+          } catch (InstantiationException | IllegalAccessException e) {
+            throw new TestNGException("Failed to proxy class", e);
+          }
         } else {
           unresolved.add(new Pair<>(i, cls));
         }

@@ -68,7 +68,7 @@ dependencies {
     }
 
     listOf("com.beust:jcommander:1.72", "com.google.inject:guice:4.1.0:no_aop",
-            "org.yaml:snakeyaml:1.21").forEach {
+            "org.yaml:snakeyaml:1.21", "net.bytebuddy:byte-buddy:1.10.1").forEach {
         compile(it)
     }
 

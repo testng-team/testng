@@ -577,6 +577,7 @@
       <class name="test.dataprovider.DataProviderTest"/>
       <class name="test.dataprovider.issue1987.IssueTest"/>
       <class name="test.dataprovider.InterceptorTest"/>
+      <class name="test.dataprovider.typed.TypedDataProviderTest" />
     </classes>
   </test>
 

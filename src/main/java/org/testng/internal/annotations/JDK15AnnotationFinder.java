@@ -32,6 +32,7 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
+import org.testng.annotations.ParameterCollector;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
 import org.testng.internal.ConstructorOrMethod;
@@ -253,6 +254,20 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       final Annotation[] pa = annotations[i];
       for (Annotation a : pa) {
         if (a instanceof TestInstance) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean hasParameterCollector(Method method, int i) {
+    final Annotation[][] annotations = method.getParameterAnnotations();
+    if (annotations.length > 0 && annotations[i].length > 0) {
+      final Annotation[] pa = annotations[i];
+      for (Annotation a : pa) {
+        if (a instanceof ParameterCollector) {
           return true;
         }
       }
