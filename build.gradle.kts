@@ -21,7 +21,7 @@ allprojects {
             isFailOnError = false
             quiet()
             outputLevel = JavadocOutputLevel.QUIET
-//            jFlags = listOf("-Xdoclint:none", "-quiet")
+            jFlags = listOf("-Xdoclint:none", "-quiet")
             "-quiet"
         }
     }
