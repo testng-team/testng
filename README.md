@@ -7,6 +7,10 @@
 
 Documentation available at [TestNG's main web site](http://testng.org).
 
+### Release Notes
+
+* [7.0.0](https://groups.google.com/forum/#!topic/testng-users/HKujuefBhXA)
+
 ### Need help?
 Before opening a new issue, did you ask your question on
 * [Google group](http://groups.google.com/group/testng-users)
