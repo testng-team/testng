@@ -833,6 +833,7 @@
       <class name="test.configuration.github1625.TestRunnerIssue1625"/>
       <class name="test.configuration.issue1753.IssueTest"/>
       <class name="test.configuration.BeforeClassTest"/>
+      <class name="org.testng.TestNGConfigureTest"/>
     </classes>
   </test>
 

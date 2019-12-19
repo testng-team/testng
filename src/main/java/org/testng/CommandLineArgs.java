@@ -220,6 +220,6 @@ public class CommandLineArgs {
   @Parameter(
       names = DEPENDENCY_INJECTOR_FACTORY,
       description = "The dependency injector factory implementation that TestNG should use.")
-  public String dependencyInjectoryFactoryClass;
+  public String dependencyInjectorFactoryClass;
 
 }
