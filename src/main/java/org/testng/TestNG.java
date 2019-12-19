@@ -1351,8 +1351,8 @@ public class TestNG {
     if (cla.verbose != null) {
       setVerbose(cla.verbose);
     }
-    if (cla.dependencyInjectoryFactoryClass != null) {
-      Class<?> clazz = ClassHelper.forName(cla.dependencyInjectoryFactoryClass);
+    if (cla.dependencyInjectorFactoryClass != null) {
+      Class<?> clazz = ClassHelper.forName(cla.dependencyInjectorFactoryClass);
       if (clazz != null && IInjectorFactory.class.isAssignableFrom(clazz)) {
         m_configuration.setInjectorFactory(InstanceCreator.newInstance((Class<IInjectorFactory>) clazz));
       }
@@ -1606,6 +1606,11 @@ public class TestNG {
     value = parseInt(cmdLineArgs.get(CommandLineArgs.SUITE_THREAD_POOL_SIZE));
     if (value != -1) {
       result.suiteThreadPoolSize = value;
+    }
+
+    String dependencyInjectorFactoryClass = (String) cmdLineArgs.get(CommandLineArgs.DEPENDENCY_INJECTOR_FACTORY);
+    if (dependencyInjectorFactoryClass != null) {
+      result.dependencyInjectorFactoryClass = dependencyInjectorFactoryClass;
     }
 
     configure(result);
