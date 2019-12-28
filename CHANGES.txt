@@ -1,4 +1,6 @@
 Current
+
+7.1.0
 New  : GITHUB-2199: Allow users to provide their own Injector for Dependency Injection (Krishnan Mahadevan)
 Fixed: GITHUB-2180: Write scenario details for Retried tests (Devendra Raju K)
 Fixed: GITHUB-2124: JUnit Report should contain the output of org.testng.Reporter (Krishnan Mahadevan)
