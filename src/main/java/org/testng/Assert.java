@@ -873,7 +873,6 @@ public class Assert {
       }
       fail(formatted + "expected object to not be null");
     }
-    assertTrue(object != null, message);
   }
 
   /**
