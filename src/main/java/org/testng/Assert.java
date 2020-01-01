@@ -1315,11 +1315,17 @@ public class Assert {
     }
 
     if (actual == null || expected == null) {
-      fail("Maps not equal: expected: " + expected + " and actual: " + actual);
+      if (message == null) {
+        fail("Maps not equal: expected: " + expected + " and actual: " + actual);
+      }
+      fail(message);
     }
 
     if (actual.size() != expected.size()) {
-      fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
+      if (message == null) {
+        fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
+      }
+      fail(message);
     }
 
     Set<?> entrySet = actual.entrySet();
