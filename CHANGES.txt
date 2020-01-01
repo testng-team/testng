@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-1632: throwing SkipException sets iTestResult status to Failure instead of Skip (Krishnan Mahadevan)
 
 7.1.0
 New  : GITHUB-2199: Allow users to provide their own Injector for Dependency Injection (Krishnan Mahadevan)

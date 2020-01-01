@@ -28,6 +28,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.SkipException;
 import org.testng.SuiteRunState;
 import org.testng.SuiteRunner;
 import org.testng.TestException;
@@ -617,7 +618,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       setTestStatus(testResult, ITestResult.FAILURE);
     } catch (Throwable thr) { // covers the non-wrapper exceptions
       testResult.setThrowable(thr);
-      setTestStatus(testResult, ITestResult.FAILURE);
+      int status = ITestResult.FAILURE;
+      if (thr instanceof SkipException) {
+        status = ITestResult.SKIP;
+      }
+      setTestStatus(testResult, status);
     } finally {
       // Set end time ASAP
       testResult.setEndMillis(System.currentTimeMillis());
