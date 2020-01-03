@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import static org.testng.Assert.fail;
-
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
@@ -19,8 +17,7 @@ public class MethodHelperTest {
     ConstructorOrMethod constructorOrMethod =
         new ConstructorOrMethod(testClass.getClass().getMethod("dummyMethod"));
     IAnnotationFinder annotationFinder = new JDK15AnnotationFinder(new AnnotationTransformer());
-    ITestNGMethod method =
-        new ConfigurationMethod(
+    ITestNGMethod method = new ConfigurationMethod(
             constructorOrMethod,
             annotationFinder,
             false,
@@ -34,9 +31,9 @@ public class MethodHelperTest {
             new String[0],
             new String[0],
             testClass);
-    ITestNGMethod[] methods = new ITestNGMethod[0];
     method.addMethodDependedUpon("dummyDependsOnMethod");
+    ITestNGMethod[] methods = new ITestNGMethod[0];
+
     MethodHelper.findDependedUponMethods(method, methods);
-    fail("Should have risen a nice exception");
   }
 }
