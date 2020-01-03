@@ -2,6 +2,7 @@ Current
 Fixed: GITHUB-2211: assertEquals for Map sometimes does not use provided message (Krishnan Mahadevan)
 Fixed: GITHUB-1632: throwing SkipException sets iTestResult status to Failure instead of Skip (Krishnan Mahadevan)
 Fixed: GITHUB-2207: Allow dependency injector factory to be configured via args (dmikhievich)
+Fixed: GITHUB-2193: Ignore local url for DTD security check (Li.Zhao & Julien Herr)
 
 7.1.0
 New  : GITHUB-2199: Allow users to provide their own Injector for Dependency Injection (Krishnan Mahadevan)
