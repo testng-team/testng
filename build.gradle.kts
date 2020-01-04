@@ -53,9 +53,8 @@ plugins {
     `maven-publish`
     signing
     groovy
-    id("org.sonarqube") version "2.8"
-    id("com.jfrog.bintray") version "1.8.3" // Don't use 1.8.4, crash when publishing
-    id("com.gradle.build-scan") version "3.1.1"
+    id("org.sonarqube").version("2.8")
+    id("com.jfrog.bintray").version("1.8.3") // Don't use 1.8.4, crash when publishing
 }
 
 dependencies {
@@ -68,7 +67,7 @@ dependencies {
             "junit:junit:4.12",
             "com.google.inject:guice:4.1.0:no_aop",
             "org.yaml:snakeyaml:1.21").forEach {
-        compile(it)
+        api(it)
     }
 
     listOf("org.assertj:assertj-core:3.10.0",
@@ -78,14 +77,8 @@ dependencies {
             "org.mockito:mockito-core:2.12.0",
             "org.jboss.shrinkwrap:shrinkwrap-api:1.2.6",
             "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6").forEach {
-        testCompile(it)
+        testImplementation(it)
     }
-}
-
-buildScan {
-    setTermsOfServiceUrl("https://gradle.com/terms-of-service")
-    setTermsOfServiceAgree("yes")
-    publishAlways()
 }
 
 tasks.jar {
