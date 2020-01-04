@@ -1,5 +1,3 @@
-
-
 object This {
     val version = "7.1.1-SNAPSHOT"
     val artifactId = "testng"
@@ -55,9 +53,9 @@ plugins {
     `maven-publish`
     signing
     groovy
-    id("org.sonarqube") version "2.7.1"
+    id("org.sonarqube") version "2.8"
     id("com.jfrog.bintray") version "1.8.3" // Don't use 1.8.4, crash when publishing
-    id("com.gradle.build-scan") version "2.4.1"
+    id("com.gradle.build-scan") version "3.1.1"
 }
 
 dependencies {
