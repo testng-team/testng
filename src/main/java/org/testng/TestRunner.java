@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -1093,9 +1094,13 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
-    if (!m_testListeners.contains(listener)) {
-      m_testListeners.add(listener);
+    Optional<ITestListener> found = m_testListeners.stream()
+        .filter(iTestListener -> iTestListener.getClass().equals(listener.getClass()))
+        .findAny();
+    if (found.isPresent()) {
+      return;
     }
+    m_testListeners.add(listener);
   }
 
   public void addListener(ITestNGListener listener) {

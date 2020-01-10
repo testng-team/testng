@@ -8,9 +8,9 @@ import org.testng.collections.Lists;
 import java.util.List;
 
 public class ListenerFor956 implements ITestListener {
-    private List<String> messages = Lists.newArrayList();
+    private static final List<String> messages = Lists.newArrayList();
 
-    public List<String> getMessages() {
+    public static List<String> getMessages() {
         return messages;
     }
 
