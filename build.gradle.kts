@@ -65,7 +65,7 @@ dependencies {
     listOf("com.beust:jcommander:1.72",
             "org.apache.ant:ant:1.10.3",
             "junit:junit:4.12",
-            "com.google.inject:guice:4.2.2:no_aop",
+            "com.google.inject:guice:4.2.3:no_aop",
             "org.yaml:snakeyaml:1.21").forEach {
         api(it)
     }
