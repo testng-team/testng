@@ -3,13 +3,22 @@ package test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import org.testng.Assert;
+import org.testng.CommandLineArgs;
+import org.testng.IInjectorFactory;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
+import org.testng.internal.IConfiguration;
 import test.sample.JUnitSample1;
 import testhelper.OutputDirectoryPatch;
 
@@ -129,4 +138,34 @@ public class CommandLineTest {
         passed.get(0).getName().equals("method3")));
   }
 
+  @Test(description = "GITHUB-2207")
+  public void testInjectorFactoryCanBeConfiguredViaProperties() {
+    Map<String, String> params = new HashMap<>();
+    params.put(
+        CommandLineArgs.DEPENDENCY_INJECTOR_FACTORY, TestInjectorFactory.class.getName());
+    TestNG testNG = new TestNG();
+    testNG.configure(params);
+
+    IInjectorFactory resolvedInjectorFactory = retrieveInjectionMechanism(testNG);
+    Assert.assertEquals(resolvedInjectorFactory.getClass(), TestInjectorFactory.class);
+  }
+
+  private static IInjectorFactory retrieveInjectionMechanism(TestNG testNG) {
+    try {
+      Field field = TestNG.class.getDeclaredField("m_configuration");
+      field.setAccessible(true);
+      IConfiguration cfg = (IConfiguration) field.get(testNG);
+      return cfg.getInjectorFactory();
+    } catch (NoSuchFieldException | IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static class TestInjectorFactory implements IInjectorFactory {
+
+    @Override
+    public Injector getInjector(Stage stage, Module... modules) {
+      return null;
+    }
+  }
 }

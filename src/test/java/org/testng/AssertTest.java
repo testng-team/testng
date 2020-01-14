@@ -1,5 +1,6 @@
 package org.testng;
 
+import com.google.common.collect.ImmutableMap;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -72,6 +73,18 @@ public class AssertTest {
     actual.put(null, "a");
     actual.put("a", "a");
 
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test(description = "GITHUB-2211")
+  public void mapAssertEqualsWithMessage() {
+    String expected = "User provided message";
+    String actual = "";
+    try {
+      Assert.assertEquals(ImmutableMap.of("k", "v"), ImmutableMap.of(), expected);
+    } catch (AssertionError error) {
+      actual = error.getMessage();
+    }
     Assert.assertEquals(actual, expected);
   }
 

@@ -176,13 +176,15 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 1);
   }
 
+  public static class CustomizedTestListenerAdaptor extends TestListenerAdapter {}
+
   @Test(description = "GITHUB-2138")
   public void verifyAnnotationTransformerInvocationForAllApplicableEvents() {
     TestNG tng = create();
     FactoryTransformer transformer = new FactoryTransformer();
     tng.addListener(transformer);
     tng.setTestClasses(new Class[] {AnnotationTransformerFactorySampleTest.class});
-    TestListenerAdapter tla = new TestListenerAdapter();
+    CustomizedTestListenerAdaptor tla = new CustomizedTestListenerAdaptor();
     tng.addListener(tla);
 
     tng.run();
@@ -197,6 +199,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     };
     assertThat(transformer.getLogs()).containsExactly(expectedLogs);
   }
+
 
   @Test(description = "Test for issue #605")
   public void verifyInvocationCountTransformer() {

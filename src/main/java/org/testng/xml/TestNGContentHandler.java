@@ -15,6 +15,8 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -81,26 +83,17 @@ public class TestNGContentHandler extends DefaultHandler {
     m_loadClasses = loadClasses;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String,
-   *      java.lang.String)
-   */
   @Override
-  public InputSource resolveEntity(String systemId, String publicId)
-      throws IOException, SAXException {
+  public InputSource resolveEntity(String systemId, String publicId) throws IOException, SAXException {
+
+    if (publicId == null) {
+      return super.resolveEntity(systemId, null);
+    }
     if (Parser.isUnRecognizedPublicId(publicId)) {
-      //The Url is not TestNG recognized
-      boolean isHttps = publicId != null && publicId.trim().toLowerCase().startsWith("https");
-      if (isHttps || RuntimeBehavior.useHttpUrlForDtd()) {
-        return super.resolveEntity(systemId, publicId);
-      } else {
-        String msg = "TestNG by default disables loading DTD from unsecure Urls. " +
-            "If you need to explicitly load the DTD from a http url, please do so " +
-            "by using the JVM argument [-D" + RuntimeBehavior.TESTNG_USE_UNSECURE_URL + "=true]";
-        throw new TestNGException(msg);
+      if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(publicId)) {
+        throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
       }
+      return super.resolveEntity(systemId, publicId);
     }
     m_validate = true;
     InputStream is = loadDtdUsingClassLoader();
@@ -113,6 +106,17 @@ public class TestNGContentHandler extends DefaultHandler {
             + "\n"
             + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
     return super.resolveEntity(systemId, Parser.HTTPS_TESTNG_DTD_URL);
+  }
+
+  private static boolean isUnsecuredUrl(String str) {
+    URI uri;
+    try {
+      uri = new URI(str);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+    // scheme is null for local uri
+    return uri.getScheme() != null && uri.getScheme().equals("http");
   }
 
   private InputStream loadDtdUsingClassLoader() {
