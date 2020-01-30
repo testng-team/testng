@@ -32,7 +32,6 @@ import org.testng.SkipException;
 import org.testng.SuiteRunState;
 import org.testng.SuiteRunner;
 import org.testng.TestException;
-import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -793,15 +792,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           arguments.getInstance());
 
       if (bag.hasErrors()) {
-        ITestResult tr = bag.errorResult;
-        Throwable throwable = Objects.requireNonNull(tr).getThrowable();
-        if (throwable instanceof TestNGException) {
-          tr.setStatus(ITestResult.FAILURE);
-          m_notifier.addFailedTest(arguments.getTestMethod(), tr);
-        } else {
-          tr.setStatus(ITestResult.SKIP);
-          m_notifier.addSkippedTest(arguments.getTestMethod(), tr);
-        }
+        ITestResult tr = Objects.requireNonNull(bag.errorResult);
+        tr.setStatus(ITestResult.FAILURE);
+        m_notifier.addFailedTest(arguments.getTestMethod(), tr);
         runTestResultListener(tr);
         result.add(tr);
         return invocationCount.get();

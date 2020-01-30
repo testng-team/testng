@@ -1,12 +1,11 @@
 package test.retryAnalyzer;
 
-import org.testng.ITestNGListener;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class ExitCodeTest extends SimpleBaseTest {
   @Test
@@ -26,23 +25,23 @@ public class ExitCodeTest extends SimpleBaseTest {
   @Test
   public void exitsWithZeroAfterSuccessfulRetry() {
     TestNG tng = create(EventualSuccess.class);
-    tng.addListener((ITestNGListener) new TestResultPruner());
+    tng.addListener(new TestResultPruner());
     tng.run();
     assertEquals(tng.getStatus(), 0);
   }
 
   @Test(description = "GITHUB-217")
-  public void exitWithNonzeroOnSkips() {
+  public void exitWithNonzeroOnDataProviderFailures() {
     TestNG tng = create(Issue217TestClassSample.class);
     tng.run();
-    assertEquals(tng.getStatus(), 2);
+    assertEquals(tng.getStatus(), 1);
   }
 
   @Test(description = "GITHUB-217")
-  public void exitWithNonzeroOnSkips1() {
+  public void exitWithNonzeroOnDataProviderFailures1() {
     TestNG tng = create(Issue217TestClassSampleWithOneDataProvider.class);
     tng.run();
-    assertEquals(tng.getStatus(), 2);
+    assertEquals(tng.getStatus(), 1);
   }
 
 }

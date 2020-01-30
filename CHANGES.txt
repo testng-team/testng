@@ -11,6 +11,7 @@ Fixed: GITHUB-1632: throwing SkipException sets iTestResult status to Failure in
 Fixed: GITHUB-2207: Allow dependency injector factory to be configured via args (dmikhievich)
 Fixed: GITHUB-2193: Ignore local url for DTD security check (Li.Zhao & Julien Herr)
 Fixed: GITHUB-1968: Upgrade to Gradle 6.0
+Fixed: GITHUB-217: Exception in DataProvider doesn't fail test run (Bogdan Ilchyshyn)
 
 7.1.0
 New  : GITHUB-2199: Allow users to provide their own Injector for Dependency Injection (Krishnan Mahadevan)
@@ -498,9 +499,9 @@ Added: Allow injection of java.lang.reflect.Constructor and org.testng.ITestNGMe
 Fixed: Assertions in the Assertions class were not failing properly.
 Fixed: GITHUB-337: ConfigurationMethod#m_instance set to Boolean.FALSE due to incorrect constructor call in clone() + auto-boxing (davidely)
 Fixed: Fix NPE for dependency methods/groups (Krishnan Mahadevan)
-Fixed: preserve-order bug (found by VladSarrokhin). 
+Fixed: preserve-order bug (found by VladSarrokhin).
 Fixed: GITHUB-300: OutOfMemoryException from reporters when there are a lot of tests
-Fixed: GITHUB-137: Main parameters with a default value should be overridden if a main parameter is specified 
+Fixed: GITHUB-137: Main parameters with a default value should be overridden if a main parameter is specified
 Fixed: GITHUB-107: Allow enum values without converting them to uppercase.
 Fixed: @Guice with no modules specified is now supported
 Fixed: Reporter.log() invoked from listeners were being discarded
@@ -517,7 +518,7 @@ Added: Big performance improvement when generating the reports (Frank Pavageau)
 Added: <dependencies> allows you to specify group dependencies in testng.xml
 Added: Blow up early if trying to include/exclude an unknown method
 Added: <parameters> can now be specified under <include> (Storm Qi)
-Added: GITHUB-243: Add Reporter Output per Test in XMLReporter (dunse) 
+Added: GITHUB-243: Add Reporter Output per Test in XMLReporter (dunse)
 Fixed: Better HTML escaping of the stack traces
 Fixed: The failed assertions now use [] as delimiters instead of <> (better for the HTML reports)
 Fixed: GITHUB-237: Wrong time format in XML reporter
@@ -702,7 +703,7 @@ Eclipse:
 Added: New quick fix "Add static import org.testng.AssertJUnit.assertXXX"
 Added: New workspace wide setting: excluded stack traces, to provide shorter stack traces in the view
 Added: New "Clear results" icon in the tool bar
-Added: When the search filter is modified, don't update the tree live if it is too big 
+Added: When the search filter is modified, don't update the tree live if it is too big
 Added: Two new @Test refactorings (pull to class level, push to method level)
 Added: JUnit conversion: @Ignore
 Added: JUnit conversion: assertArrayEquals()
@@ -846,10 +847,10 @@ Added: -testnames (command line) and testnames (ant)
 Added: New ant task tag:  propertyset (Todd Wells)
 Added: ITestNGListenerFactory
 Added: Passing command line properties via the ant task and doc update (Todd Wells)
-Added: Hierarchical XmlSuites (Nalin Makar) 
+Added: Hierarchical XmlSuites (Nalin Makar)
 Added: Reporter#clear()
 Fixed: NullPointerException when a suite produces no results (Cefn Hoile)
-Fixed: Identical configuration methods were not always invoked in the correct order in superclasses (Nalin Makar) 
+Fixed: Identical configuration methods were not always invoked in the correct order in superclasses (Nalin Makar)
 Fixed: @DataProvider(parallel = true) was passing incorrect parameters with injection
 Fixed: Replaced @Test(sequential) with @Test(singleThreaded)
 Fixed: If inherited configuration methods had defined deps, they could be invoked in incorrect order (Nalin Makar)
@@ -866,9 +867,9 @@ Fixed: Issue78 NPE with non-public class. Now throws TestNG exception
 Fixed: NPE with @Optional null parameters (Yves Dessertine)
 Fixed: TESTNG-387 TestNG not rerunning test method with the right data set from Data Provider (Francois Reynaud)
 Fixed: Show correct number of pass/failed numbers for tests using @DataProvider
-Fixed: Return correct method status and exception (if any) in InvokedMethodListener.afterInvocation() 
-Fixed: Trivial fixes: TESTNG-241 (log message at Info), Issue2 (throw SAXException and not NPE for invalid testng xml) 
-Fixed: Configuration methods couldn't depend on an abstract method (Nalin Makar) 
+Fixed: Return correct method status and exception (if any) in InvokedMethodListener.afterInvocation()
+Fixed: Trivial fixes: TESTNG-241 (log message at Info), Issue2 (throw SAXException and not NPE for invalid testng xml)
+Fixed: Configuration methods couldn't depend on an abstract method (Nalin Makar)
 Fixed: TestNG#setTestClasses was not resetting m_suites
 Fixed: Exceptions thrown by IInvokedMethodListeners were not caught (Nalin Makar)
 Fixed: @Listeners now works on base classes as well
@@ -983,8 +984,8 @@ Fixed: Quick fixes no longer introduce deprecated annotations (Greg Turnquist)
 5.9
 2009/04/09
 
-Added: New ant task boolean flag: delegateCommandSystemProperties (Justin) 
-Added: skipfailedinvocations under <suite> in testng-1.0.dtd (Gael Marziou / Stevo Slavic) 
+Added: New ant task boolean flag: delegateCommandSystemProperties (Justin)
+Added: skipfailedinvocations under <suite> in testng-1.0.dtd (Gael Marziou / Stevo Slavic)
 Added: -testrunfactory on the command line and in the ant task (Vitalyi Pamajonkov)
 Added: TESTNG-298: parallel="classes", which allows entire classes to be run in the same thread
 Added: @BeforeMethod can now declare Object[] as a parameter, which will be filled by the parameters of the test method
@@ -1077,7 +1078,7 @@ Added: ISuite now gives access to the current XmlSuite
 Fixed: TESTNG-139 dependsOnMethods gets confused when dependency is "protected"
 Fixed: TESTNG-141 junit attribute set to false in testng-failed.xml when it should be true
 Fixed: TESTNG-142 Exceptions in DataProvider are not reported as failed test
-Added: Improved behavior for @Before/@AfterClass when using @Factory 
+Added: Improved behavior for @Before/@AfterClass when using @Factory
 (https://forums.opensymphony.com/thread.jspa?threadID=6594&messageID=122294#122294)
 Added: Support for concurrent execution for invocationCount=1 threadPoolSize>1 and @DataProvider
 (https://forums.opensymphony.com/thread.jspa?threadID=64738&tstart=0)
@@ -1113,7 +1114,7 @@ Added: Method selectors receive a Context and can stop the chain with setStopped
 Fixed: XmlMethodSelector was always run first regardless of its priority
 Added: @BeforeGroups/@AfterGroups can live in classes without @Test methods
 Added: DataProvider can now take an ITestContext parameter
-Fixed: Wasn't parsing <selector-class-name> correctly 
+Fixed: Wasn't parsing <selector-class-name> correctly
 Fixed: Annotation Transformers now work on class-level annotations
 Fixed: Some class-level @Test attributes were not always honored
 Added: Clean separation between @Test invocation events and @Configuration invocation events
@@ -1150,7 +1151,7 @@ Eclipse plug-in
 Fixed: groups with multi-attribute javadoc annotations
 Fixed: consistent behavior for dependsOnMethods
 Fixed: consistent behavior for tests with dependsOnGroups (a warning is emitted)
-Fixed: consistent merge of configuration arguments when an existing launch configuration exists 
+Fixed: consistent merge of configuration arguments when an existing launch configuration exists
 ===========================================================================
 5.3
 2006/10/30
@@ -1254,7 +1255,7 @@ Added: Can now specify listener classes
 5.0.1
 
 Fixed: reports generated by SuiteHTMLReporter do not work with JDK1.4
-			 
+
 ===========================================================================
 
 5.0
@@ -1340,7 +1341,7 @@ Fixed: TESTNG-18: Eclipse plugin ignores Factory annotation
 Fixed: TESTNG-21: Show differences when double clicking assertion exceptions
 Added: UI allows setting orientation (even more space)
 	   https://forums.opensymphony.com/thread.jspa?threadID=17225&messageID=33805#33805
-	   
+
 ===========================================================================
 
 4.5
@@ -1443,7 +1444,7 @@ Fixed: dependsOnGroups wasn't working on regular expressions
 Fixed: Bug in <package> when directories contain spaces in their names
 Fixed: Introduced a JDK5 dependency in the JDK1.4 build (getEnclosingClass())
 Fixed: Output directory in ant task was not honored if it didn't exist
-Fixed: Problem with timeout according to 
+Fixed: Problem with timeout according to
        https://forums.opensymphony.com/thread.jspa?threadID=6707
 
 Eclipse plug-in:
@@ -1453,7 +1454,7 @@ Fixed: Bug in QuickFix implementation
 Added: Quick Fix for JUnit conversion (Annotations and JavaDoc)
 Fixed: Methods Run as TestNG test
 Added: Package level Run as TestNG test
-Fixed: Resources from the linked directories are using a wrong path when 
+Fixed: Resources from the linked directories are using a wrong path when
        passed to command line TestNG
 
 IDEA plug-in:
@@ -1518,7 +1519,7 @@ Fixed: TestNGException thrown when TestNG conditions are not fulfilled
 
 Documentation:
 - New assert classes
-- New ways to launch 
+- New ways to launch
 - JUnitConverter documentation
 - new beforeSuite/afterSuite
 

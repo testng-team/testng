@@ -7,12 +7,12 @@ import org.testng.annotations.Test;
 public class DataProviderWithErrorSample {
 
   @Test(dataProvider = "Data", invocationCount = 2)
-  public void testShouldSkip() {
+  public void testShouldFail() {
     Assert.fail();
   }
 
   @Test(dataProvider = "Data", invocationCount = 2, successPercentage = 10)
-  public void testShouldSkipEvenIfSuccessPercentage() {
+  public void testShouldFailEvenIfSuccessPercentage() {
     Assert.fail();
   }
 
