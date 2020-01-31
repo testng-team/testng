@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -75,6 +76,7 @@ public class TestRunner
   private ISuite m_suite;
   private XmlTest m_xmlTest;
   private String m_testName;
+  private IInjectorFactory m_injectorFactory;
 
   private final GuiceHelper guiceHelper = new GuiceHelper(this);
 
@@ -244,6 +246,7 @@ public class TestRunner
     m_testName = test.getName();
     m_host = suite.getHost();
     m_testClassesFromXml = test.getXmlClasses();
+    m_injectorFactory = m_configuration.getInjectorFactory();
     setVerbose(test.getVerbose());
 
     boolean preserveOrder = test.getPreserveOrder();
@@ -1091,9 +1094,13 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
-    if (!m_testListeners.contains(listener)) {
-      m_testListeners.add(listener);
+    Optional<ITestListener> found = m_testListeners.stream()
+        .filter(iTestListener -> iTestListener.getClass().equals(listener.getClass()))
+        .findAny();
+    if (found.isPresent()) {
+      return;
     }
+    m_testListeners.add(listener);
   }
 
   public void addListener(ITestNGListener listener) {
@@ -1230,7 +1237,7 @@ public class TestRunner
 
   @Override
   public Injector getInjector(IClass iClass) {
-    return guiceHelper.getInjector(iClass);
+    return guiceHelper.getInjector(iClass, this.m_injectorFactory);
   }
 
   @Override

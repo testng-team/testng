@@ -2,18 +2,15 @@ package org.testng.internal;
 
 import static org.testng.internal.Utils.isStringNotEmpty;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Stage;
 
 import org.testng.GuiceHelper;
 import org.testng.IClass;
+import org.testng.IInjectorFactory;
 import org.testng.ISuite;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
-import org.testng.TestNGException;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
@@ -21,8 +18,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -132,12 +127,12 @@ public class ClassImpl implements IClass {
     return injector.getInstance(m_class);
   }
 
-  public Injector getParentInjector() {
+  public Injector getParentInjector(IInjectorFactory injectorFactory) {
     ISuite suite = m_testContext.getSuite();
     // Reuse the previous parent injector, if any
     Injector injector = suite.getParentInjector();
     if (injector == null) {
-      injector = GuiceHelper.createInjector(m_testContext, Collections.emptyList());
+      injector = GuiceHelper.createInjector(m_testContext, injectorFactory, Collections.emptyList());
       suite.setParentInjector(injector);
     }
     return injector;

@@ -266,7 +266,7 @@ public class ListenerTest extends SimpleBaseTest {
     ListenerFor956 listener = new ListenerFor956();
     tng.addListener(listener);
     tng.run();
-    List<String> messages = listener.getMessages();
+    List<String> messages = ListenerFor956.getMessages();
     Assert.assertEquals(messages.size(), 1);
     Assert.assertEquals(messages.get(0), "Executing test956");
   }

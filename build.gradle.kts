@@ -1,7 +1,5 @@
-
-
 object This {
-    val version = "7.0.1-SNAPSHOT"
+    val version = "7.1.1-SNAPSHOT"
     val artifactId = "testng"
     val groupId = "org.testng"
     val description = "Testing framework for Java"
@@ -21,7 +19,7 @@ allprojects {
             isFailOnError = false
             quiet()
             outputLevel = JavadocOutputLevel.QUIET
-//            jFlags = listOf("-Xdoclint:none", "-quiet")
+            jFlags = listOf("-Xdoclint:none", "-quiet")
             "-quiet"
         }
     }
@@ -55,21 +53,21 @@ plugins {
     `maven-publish`
     signing
     groovy
-    id("org.sonarqube") version "2.7.1"
-    id("com.jfrog.bintray") version "1.8.3" // Don't use 1.8.4, crash when publishing
-    id("com.gradle.build-scan") version "2.4.1"
+    id("org.sonarqube").version("2.8")
+    id("com.jfrog.bintray").version("1.8.3") // Don't use 1.8.4, crash when publishing
 }
 
 dependencies {
-    listOf("com.google.code.findbugs:jsr305:3.0.1",
-            "org.apache.ant:ant:1.10.3",
-            "junit:junit:4.12").forEach {
+    listOf("com.google.code.findbugs:jsr305:3.0.1").forEach {
         compileOnly(it)
     }
 
-    listOf("com.beust:jcommander:1.72", "com.google.inject:guice:4.1.0:no_aop",
+    listOf("com.beust:jcommander:1.72",
+            "org.apache.ant:ant:1.10.3",
+            "junit:junit:4.12",
+            "com.google.inject:guice:4.2.2:no_aop",
             "org.yaml:snakeyaml:1.21").forEach {
-        compile(it)
+        api(it)
     }
 
     listOf("org.assertj:assertj-core:3.10.0",
@@ -79,14 +77,8 @@ dependencies {
             "org.mockito:mockito-core:2.12.0",
             "org.jboss.shrinkwrap:shrinkwrap-api:1.2.6",
             "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6").forEach {
-        testCompile(it)
+        testImplementation(it)
     }
-}
-
-buildScan {
-    setTermsOfServiceUrl("https://gradle.com/terms-of-service")
-    setTermsOfServiceAgree("yes")
-    publishAlways()
 }
 
 tasks.jar {
@@ -152,7 +144,7 @@ bintray {
     user = project.findProperty("bintrayUser")?.toString()
     key = project.findProperty("bintrayApiKey")?.toString()
     dryRun = false
-    publish = false
+    publish = true
 
     setPublications("custom")
 
