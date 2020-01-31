@@ -62,6 +62,6 @@ window.onload=function (){
      mouseOut.style.marginTop="8px";
  }
 
-  
  //This is the file where we handle the switching of the Themes.
  /*Author:- Akhil Gullapalli 4 Dec,2019.*/
+
