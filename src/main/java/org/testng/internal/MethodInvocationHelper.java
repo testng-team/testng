@@ -12,6 +12,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.ArrayIterator;
 import org.testng.internal.collections.OneToTwoDimArrayIterator;
@@ -328,7 +329,11 @@ public class MethodInvocationHelper {
       }
     } catch (Exception ex) {
       if (notTimedout) {
-        testResult.setThrowable(ex.getCause());
+        Throwable e = ex.getCause();
+        if (e instanceof TestNGRuntimeException) {
+          e = e.getCause();
+        }
+        testResult.setThrowable(e);
       } else {
         ThreadTimeoutException exception =
             new ThreadTimeoutException(
