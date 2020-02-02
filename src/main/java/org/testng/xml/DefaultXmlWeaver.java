@@ -90,6 +90,25 @@ class DefaultXmlWeaver implements IWeaveXml {
         DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
 
+    List<String> included = xmlSuite.getIncludedGroups();
+    List<String> excluded = xmlSuite.getExcludedGroups();
+    if (hasElements(included) || hasElements(excluded)) {
+      xsb.push("groups");
+      xsb.push("run");
+      for (String g : included) {
+        xsb.addEmptyElement("include", "name", g);
+      }
+      for (String g : excluded) {
+        xsb.addEmptyElement("exclude", "name", g);
+      }
+      xsb.pop("run");
+      xsb.pop("groups");
+    }
+
+    if (xmlSuite.getGroups() != null) {
+      xsb.getStringBuffer().append(xmlSuite.getGroups().toXml("  "));
+    }
+
     XmlUtils.dumpParameters(xsb, xmlSuite.getParameters());
 
     if (hasElements(xmlSuite.getListeners())) {
@@ -135,25 +154,6 @@ class DefaultXmlWeaver implements IWeaveXml {
         xsb.addEmptyElement("suite-file", prop);
       }
       xsb.pop("suite-files");
-    }
-
-    List<String> included = xmlSuite.getIncludedGroups();
-    List<String> excluded = xmlSuite.getExcludedGroups();
-    if (hasElements(included) || hasElements(excluded)) {
-      xsb.push("groups");
-      xsb.push("run");
-      for (String g : included) {
-        xsb.addEmptyElement("include", "name", g);
-      }
-      for (String g : excluded) {
-        xsb.addEmptyElement("exclude", "name", g);
-      }
-      xsb.pop("run");
-      xsb.pop("groups");
-    }
-
-    if (xmlSuite.getGroups() != null) {
-      xsb.getStringBuffer().append(xmlSuite.getGroups().toXml("  "));
     }
 
     for (XmlTest test : xmlSuite.getTests()) {
