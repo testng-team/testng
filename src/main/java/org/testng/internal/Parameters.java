@@ -249,11 +249,7 @@ public class Parameters {
 
     for (int i = 0; i < parameterNames.length; i++) {
       String p = parameterNames[i];
-      String value = params.xmlParameters.get(p);
-      if (null == value) {
-        // try SysEnv entries
-        value = System.getProperty(p);
-      }
+      String value = System.getProperty(p, params.xmlParameters.get(p));
       if (null == value) {
         if (optionalValues != null) {
           value = optionalValues[i];

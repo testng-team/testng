@@ -160,6 +160,7 @@
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />
       <class name="test.parameters.ParametersPackageLevelMethodTest" />
+      <class name="test.parameters.issue2238.IssueTest"/>
       <class name="test.reports.FailedReporterTest" />
       <class name="test.reports.EmailableReporterTest"/>
       <class name="test.failedreporter.FailedReporterScenariosTest"/>
