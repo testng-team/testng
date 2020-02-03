@@ -1,6 +1,5 @@
 package test.parameters;
 
-import org.testng.ITest;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;

@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2238: Parameter values should be overridable from JVM arguments (Krishnan Mahadevan)
 Fixed: GITHUB-2231: Incorrect hierarchy in testng.xml file created programmatically and failed to run. (Krishnan Mahadevan)
 Fixed: GITHUB-2235: expectedExceptions mismatch because of wrapping (Krishnan Mahadevan)
 Fixed: GITHUB-2220: ITestListener's methods get called multiple times for one test, when @Listeners annotation is used in multiple test classes (Krishnan Mahadevan)
