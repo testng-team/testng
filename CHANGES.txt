@@ -1,5 +1,5 @@
 Current
-Fixed: GITHUB-2195: NPE Using groups and @Before/@AfterMethod with alwaysRun and dependsOnMethods
+Fixed: GITHUB-2195: NPE Using groups and @Before/@AfterMethod with alwaysRun and dependsOnMethods (Tomas & Julien Herr)
 Fixed: GITHUB-2238: Parameter values should be overridable from JVM arguments (Krishnan Mahadevan)
 Fixed: GITHUB-2231: Incorrect hierarchy in testng.xml file created programmatically and failed to run. (Krishnan Mahadevan)
 Fixed: GITHUB-2235: expectedExceptions mismatch because of wrapping (Krishnan Mahadevan)
