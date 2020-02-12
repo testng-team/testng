@@ -24,6 +24,8 @@ public class Main implements IReporter {
         "jquery-3.4.1.min.js",
         "testng-reports.css",
         "testng-reports.js",
+        "testng-reports1.css",
+        "testng-reports2.js",
         "passed.png",
         "failed.png",
         "skipped.png",
@@ -78,6 +80,7 @@ public class Main implements IReporter {
     xsb.pop(D); // wrapper
 
     xsb.addString("  </body>\n");
+    xsb.addString("<script type=\"text/javascript\" src=\"testng-reports2.js\"></script>\n");
     xsb.addString("</html>\n");
 
     String all;
