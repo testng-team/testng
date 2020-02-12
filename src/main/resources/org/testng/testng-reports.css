@@ -158,6 +158,22 @@ a:hover {
     color: #fff;
     text-align: center;
 }
+.button{
+    position: absolute;
+    margin-left:500px;
+    margin-top:8px;
+    background-color: white;
+    color:#0066ff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight:bold;
+    border-color:#0066ff ;
+    border-radius:25px;
+    cursor: pointer;
+    height:30px;
+    width:150px;
+    outline:none;
+
+}
 
 .top-banner-title-font {
     font-size: 25px;
@@ -307,3 +323,4 @@ table.google-visualization-table-table {
     padding: 5px;
     float: right;
 }
+/*retro Theme*/
