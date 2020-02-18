@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="duplicate-ok" verbose="2">
+    <suite-files>
+        <suite-file path="single/duplicate-classes.xml"/>
+        <suite-file path="single/duplicate-methods.xml"/>
+        <suite-file path="single/hello/duplicate-classes-methods.xml"/>
+        <suite-file path="single/hello/parameter/duplicate-classes-methods-parameters-all.xml"/>
+        <suite-file path="single/hello/parameter/duplicate-classes-methods-parameters-suite.xml"/>
+        <suite-file path="single/hello/parameter/duplicate-classes-methods-parameters-classes.xml"/>
+        <suite-file path="single/hello/parameter/duplicate-classes-methods-parameters-class.xml"/>
+        <suite-file path="single/hello/parameter/duplicate-classes-methods-parameters-methods.xml"/>
+        <suite-file path="single/hello/parameter/duplicate-classes-methods-parameters-methods-different.xml"/>
+
+        <suite-file path="complex.xml"/>
+    </suite-files>
+
+</suite>
+

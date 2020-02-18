@@ -304,13 +304,13 @@ public class SimpleBaseTest {
     XmlTest xmlTest = createXmlTest(xmlSuite, "tests", classes);
     IAnnotationFinder annotationFinder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
     List<ITestNGMethod> methods = Lists.newArrayList();
-    for (Class<?> clazz : classes) {
-      methods.addAll(
-          Arrays.asList(
-              AnnotationHelper.findMethodsWithAnnotation(clazz, ITestAnnotation.class, annotationFinder, xmlTest)
-          )
-      );
-    }
+//    for (Class<?> clazz : classes) {
+//      methods.addAll(
+//          Arrays.asList(
+//              AnnotationHelper.findMethodsWithAnnotation(clazz, ITestAnnotation.class, annotationFinder, xmlTest)
+//          )
+//      );
+//    }
     return methods;
   }
 

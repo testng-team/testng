@@ -5,6 +5,8 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
@@ -60,6 +62,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setDate(long date) {
+    m_date = date;
+  }
+
+  @Override
   public String getDescription() {
     return "";
   }
@@ -90,6 +97,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setId(String id) {
+    m_id = id;
+  }
+
+  @Override
   public long[] getInstanceHashCodes() {
     return m_method.getInstanceHashCodes();
   }
@@ -107,6 +119,10 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public int getInvocationCount() {
     return 1;
+  }
+
+  @Override
+  public void setInvocationCount(int count) {
   }
 
   @Override
@@ -140,12 +156,21 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setMissingGroup(String group) {
+  }
+
+  @Override
   public int getParameterInvocationCount() {
     return 1;
   }
 
   @Override
-  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {}
+  public void setParameterInvocationCount(int n) {
+  }
+
+  @Override
+  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {
+  }
 
   @Override
   public boolean hasMoreInvocation() {
@@ -163,6 +188,10 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
+  }
+
+  @Override
   public int getSuccessPercentage() {
     return 100;
   }
@@ -173,8 +202,16 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setTestClass(ITestClass cls) {
+  }
+
+  @Override
   public int getThreadPoolSize() {
     return m_method.getThreadPoolSize();
+  }
+
+  @Override
+  public void setThreadPoolSize(int threadPoolSize) {
   }
 
   @Override
@@ -258,33 +295,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setDate(long date) {
-    m_date = date;
-  }
-
-  @Override
-  public void setId(String id) {
-    m_id = id;
-  }
-
-  @Override
   public void setIgnoreMissingDependencies(boolean ignore) {
-  }
-
-  @Override
-  public void setInvocationCount(int count) {
-  }
-
-  @Override
-  public void setMissingGroup(String group) {
-  }
-
-  @Override
-  public void setParameterInvocationCount(int n) {
-  }
-
-  @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
   }
 
   @Override
@@ -292,11 +303,33 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setTestClass(ITestClass cls) {
+  public XmlClass getXmlClass() {
+    return null;
   }
 
   @Override
-  public void setThreadPoolSize(int threadPoolSize) {
+  public void setXmlClass(XmlClass m_xmlClass) {
+
+  }
+
+  @Override
+  public XmlInclude getXmlInclude() {
+    return null;
+  }
+
+  @Override
+  public void setXmlInclude(XmlInclude m_xmlInclude) {
+
+  }
+
+  @Override
+  public int getIndex() {
+    return 0;
+  }
+
+  @Override
+  public String getNameIndex() {
+    return null;
   }
 
   @Override
@@ -313,7 +346,7 @@ public class ClonedMethod implements ITestNGMethod {
   public String toString() {
     ConstructorOrMethod m = getConstructorOrMethod();
     String cls = m.getDeclaringClass().getName();
-    StringBuilder result = new StringBuilder(cls).append(".").append( m.getName()).append("(");
+    StringBuilder result = new StringBuilder(cls).append(".").append(m.getName()).append("(");
     int i = 0;
     for (Class<?> p : m.getParameterTypes()) {
       if (i++ > 0) {
@@ -370,9 +403,9 @@ public class ClonedMethod implements ITestNGMethod {
   public Map<String, String> findMethodParameters(XmlTest test) {
     return Collections.emptyMap();
   }
-  
+
   @Override
   public String getQualifiedName() {
-	return getRealClass().getName() + "." + getMethodName();
+    return getRealClass().getName() + "." + getMethodName();
   }
 }

@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="duplicate-single-hello" verbose="2">
+    <suite-files>
+        <suite-file path="hello/duplicate-classes.xml"/>
+        <suite-file path="hello/duplicate-methods.xml"/>
+        <suite-file path="hello/duplicate-classes-methods.xml"/>
+        <suite-file path="hello/single-hello-parameter.xml"/>
+    </suite-files>
+
+</suite>
+

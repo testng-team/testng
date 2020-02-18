@@ -1,4 +1,13 @@
 Current
+By EasonYi: feature/6.14.3/can-use-one-test-class-or-method-many-times-in-one-xml-test-case
+New: Allow the same method in one class for more than one time
+New: Allow the same class in one test for more than one time
+New: Upgrade to Java 8
+Fixed: Adjust the default parallel mode of SuiteRunner to TESTS
+Fixed: Wrong implementation about parameters overriding
+Notice: Since a lot of things have been changed, but only XML style was tested, that is JUnit and others are NOT tested by now, and you can find the tests in src/test/java/test/duplicate directory
+
+6.14.3
 Fixed: GITHUB-1077: TestNG cannot handle load (Aheiss)
 Fixed: GITHUB-1081: group-by-instances with test dependencies causes instantiation of tests to exponentially slow (Aheiss)
 Fixed: GITHUB-1700: Test ignored if @BeforeMethod in base class fails for another test class (Krishnan Mahadevan)

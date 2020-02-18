@@ -19,6 +19,21 @@ import java.util.List;
  */
 public class TestNGMethod extends BaseTestMethod {
 
+  /**
+   * Sorts ITestNGMethod by Class name.
+   */
+  public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
+    new Comparator<ITestNGMethod>() {
+
+      @Override
+      public int compare(ITestNGMethod o1, ITestNGMethod o2) {
+//                    String c1 = o1.getTestClass().getName();
+//                    String c2 = o2.getTestClass().getName();
+        String c1 = o1.getKey();
+        String c2 = o2.getKey();
+        return c1.compareTo(c2);
+      }
+    };
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
@@ -29,16 +44,18 @@ public class TestNGMethod extends BaseTestMethod {
    * @param method
    * @param finder
    */
-  public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
-    this(method, finder, true, xmlTest, instance);
+//  public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
+  public TestNGMethod(Method method, IAnnotationFinder finder, XmlInclude xmlInclude, XmlClass xmlClass, XmlTest xmlTest, Object instance) {
+    this(method, finder, true, xmlInclude, xmlClass, xmlTest, instance);
   }
 
   private TestNGMethod(Method method, IAnnotationFinder finder, boolean initialize,
-      XmlTest xmlTest, Object instance) {
-    super(method.getName(), method, finder, instance);
+//                         XmlTest xmlTest, Object instance) {
+                       XmlInclude xmlInclude, XmlClass xmlClass, XmlTest xmlTest, Object instance) {
+    super(xmlInclude, xmlClass, method.getName(), method, finder, instance);
     setXmlTest(xmlTest);
 
-    if(initialize) {
+    if (initialize) {
       init(xmlTest);
     }
   }
@@ -49,6 +66,14 @@ public class TestNGMethod extends BaseTestMethod {
   @Override
   public int getInvocationCount() {
     return m_invocationCount;
+  }
+
+  /**
+   * Sets the number of invocations for this method.
+   */
+  @Override
+  public void setInvocationCount(int counter) {
+    m_invocationCount = counter;
   }
 
   /**
@@ -69,11 +94,11 @@ public class TestNGMethod extends BaseTestMethod {
 
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
-    setInvocationNumbers(xmlTest.getInvocationNumbers(
-        m_method.getDeclaringClass().getName() + "." + m_method.getName()));
+//        setInvocationNumbers(xmlTest.getInvocationNumbers(m_method.getDeclaringClass().getName() + "." + m_method.getName()));
+    setInvocationNumbers(xmlTest.getInvocationNumbers(getXmlInclude()));
     {
       ITestAnnotation testAnnotation =
-          AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
+        AnnotationHelper.findTest(getAnnotationFinder(), m_method.getMethod());
 
       if (testAnnotation == null) {
         // Try on the class
@@ -140,34 +165,27 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   /**
-   * Sets the number of invocations for this method.
-   */
-  @Override
-  public void setInvocationCount(int counter) {
-    m_invocationCount= counter;
-  }
-
-  /**
    * Clones the current <code>TestNGMethod</code> and its @BeforeMethod and @AfterMethod methods.
+   *
    * @see org.testng.internal.BaseTestMethod#clone()
    */
   @Override
   public BaseTestMethod clone() {
-    TestNGMethod clone= new TestNGMethod(getConstructorOrMethod().getMethod(), getAnnotationFinder(), false, getXmlTest(),
-        getInstance());
-    ITestClass tc= getTestClass();
-    NoOpTestClass testClass= new NoOpTestClass(tc);
+    TestNGMethod clone = new TestNGMethod(getConstructorOrMethod().getMethod(), getAnnotationFinder(), false,
+      getXmlInclude(), getXmlClass(), getXmlTest(), getInstance());
+    ITestClass tc = getTestClass();
+    NoOpTestClass testClass = new NoOpTestClass(tc);
     testClass.setBeforeTestMethods(clone(tc.getBeforeTestMethods()));
     testClass.setAfterTestMethod(clone(tc.getAfterTestMethods()));
-    clone.m_testClass= testClass;
+    clone.m_testClass = testClass;
     clone.setDate(getDate());
     clone.setGroups(getGroups());
     clone.setGroupsDependedUpon(getGroupsDependedUpon(), Collections.<String>emptyList());
     clone.setMethodsDependedUpon(getMethodsDependedUpon());
     clone.setAlwaysRun(isAlwaysRun());
-    clone.m_beforeGroups= getBeforeGroups();
-    clone.m_afterGroups= getAfterGroups();
-    clone.m_currentInvocationCount= m_currentInvocationCount;
+    clone.m_beforeGroups = getBeforeGroups();
+    clone.m_afterGroups = getAfterGroups();
+    clone.m_currentInvocationCount = m_currentInvocationCount;
     clone.setMissingGroup(getMissingGroup());
     clone.setThreadPoolSize(getThreadPoolSize());
     clone.setDescription(getDescription());
@@ -185,23 +203,11 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   private ITestNGMethod[] clone(ITestNGMethod[] sources) {
-    ITestNGMethod[] clones= new ITestNGMethod[sources.length];
-    for(int i= 0; i < sources.length; i++) {
-      clones[i]= sources[i].clone();
+    ITestNGMethod[] clones = new ITestNGMethod[sources.length];
+    for (int i = 0; i < sources.length; i++) {
+      clones[i] = sources[i].clone();
     }
 
     return clones;
   }
-
-  /** Sorts ITestNGMethod by Class name. */
-  public static final Comparator<ITestNGMethod> SORT_BY_CLASS =
-    new Comparator<ITestNGMethod>() {
-
-    @Override
-    public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-      String c1 = o1.getTestClass().getName();
-      String c2 = o2.getTestClass().getName();
-      return c1.compareTo(c2);
-    }
-  };
 }

@@ -112,12 +112,12 @@ public final class TestListenerHelper {
                                                                Class<? extends ITestNGListenerFactory> factoryClass) {
         ITestNGListenerFactory listenerFactory = null;
         try {
-            if (finder != null) {
-                IClass ic = finder.getIClass(factoryClass);
-                if (ic != null) {
-                    listenerFactory = (ITestNGListenerFactory) ic.getInstances(false)[0];
-                }
-            }
+//            if (finder != null) {
+//                IClass ic = finder.getIClass(factoryClass);
+//                if (ic != null) {
+//                    listenerFactory = (ITestNGListenerFactory) ic.getInstances(false)[0];
+//                }
+//            }
             if (listenerFactory == null) {
                 listenerFactory = factoryClass != null ? factoryClass.newInstance() : null;
             }

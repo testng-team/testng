@@ -1,0 +1,34 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="suite: single-hello-duplicate-classes-methods-parameters-methods" verbose="2">
+    <test name="test: single-hello-duplicate-classes-methods-parameters-methods">
+        <classes>
+            <class name="test.duplicate.HelloTest">
+                <methods>
+                    <parameter name="request_hello1" value="request_hello1-methods"/>
+                    <parameter name="response_hello1" value="response_hello1-methods"/>
+                    <parameter name="request_hello3" value="request_hello3-methods"/>
+                    <parameter name="response_hello3" value="response_hello3-methods"/>
+                    <include name="hello1"/>
+                    <include name="hello2"/>
+                    <include name="hello3"/>
+                    <include name="hello4"/>
+                    <include name="hello1"/>
+                    <include name="hello2"/>
+                </methods>
+            </class>
+            <class name="test.duplicate.HelloTest">
+                <methods>
+                    <include name="hello1"/>
+                    <include name="hello2"/>
+                    <include name="hello3"/>
+                    <include name="hello4"/>
+                    <include name="hello3"/>
+                    <include name="hello4"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>
+

@@ -4,6 +4,8 @@ import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
@@ -38,6 +40,36 @@ public class WrappedTestNGMethod implements ITestNGMethod {
     @Override
     public void setTestClass(ITestClass cls) {
         testNGMethod.setTestClass(cls);
+    }
+
+    @Override
+    public XmlClass getXmlClass() {
+        return testNGMethod.getXmlClass();
+    }
+
+    @Override
+    public void setXmlClass(XmlClass m_xmlClass) {
+        testNGMethod.setXmlClass(m_xmlClass);
+    }
+
+    @Override
+    public void setXmlInclude(XmlInclude m_xmlInclude) {
+        testNGMethod.setXmlInclude(m_xmlInclude);
+    }
+
+    @Override
+    public XmlInclude getXmlInclude() {
+        return testNGMethod.getXmlInclude();
+    }
+
+    @Override
+    public int getIndex() {
+        return testNGMethod.getIndex();
+    }
+
+    @Override
+    public String getNameIndex() {
+        return testNGMethod.getNameIndex();
     }
 
     @Override

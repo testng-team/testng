@@ -268,6 +268,36 @@ public class MethodInstanceTest {
     }
 
     @Override
+    public XmlClass getXmlClass() {
+      return null;
+    }
+
+    @Override
+    public void setXmlClass(XmlClass m_xmlClass) {
+
+    }
+
+    @Override
+    public void setXmlInclude(XmlInclude m_xmlInclude) {
+
+    }
+
+    @Override
+    public XmlInclude getXmlInclude() {
+      return null;
+    }
+
+    @Override
+    public int getIndex() {
+      return 0;
+    }
+
+    @Override
+    public String getNameIndex() {
+      return null;
+    }
+
+    @Override
     public Method getMethod() {
       return null;
     }

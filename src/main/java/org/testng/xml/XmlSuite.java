@@ -1,10 +1,5 @@
 package org.testng.xml;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
@@ -13,6 +8,11 @@ import org.testng.internal.Utils;
 import org.testng.xml.dom.OnElement;
 import org.testng.xml.dom.OnElementList;
 import org.testng.xml.dom.Tag;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
@@ -111,7 +111,8 @@ public class XmlSuite implements Cloneable {
   public static final Integer DEFAULT_VERBOSE = 1;
   private Integer m_verbose = null;
 
-  public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.NONE;
+  //  public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.NONE;
+  public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.TESTS;
   private ParallelMode m_parallel = DEFAULT_PARALLEL;
 
   private String m_parentModule = "";

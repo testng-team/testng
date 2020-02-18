@@ -1,51 +1,48 @@
 package org.testng.internal.annotations;
 
+import org.testng.ITestNGMethod;
+import org.testng.annotations.*;
+import org.testng.collections.Maps;
+import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.TestNGMethod;
+import org.testng.internal.Utils;
+import org.testng.internal.reflect.ReflectionHelper;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlTest;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
-import org.testng.ITestNGMethod;
-import org.testng.annotations.IAnnotation;
-import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IFactoryAnnotation;
-import org.testng.annotations.IParametersAnnotation;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Maps;
-import org.testng.internal.ConstructorOrMethod;
-import org.testng.internal.TestNGMethod;
-import org.testng.internal.Utils;
-import org.testng.internal.reflect.ReflectionHelper;
-import org.testng.xml.XmlTest;
-
 /**
  * Helper methods to find @Test and @Configuration tags.  They minimize
  * the amount of casting we need to do.
- *
+ * <p>
  * Created on Dec 20, 2005
+ *
  * @author cbeust
  */
 public class AnnotationHelper {
 
-  private static final Class[] ALL_ANNOTATIONS = new Class[] {
-      ITestAnnotation.class,
-      IBeforeClass.class, IAfterClass.class,
-      IBeforeMethod.class, IAfterMethod.class,
-      IDataProviderAnnotation.class,
-      IFactoryAnnotation.class, IParametersAnnotation.class,
-      IBeforeSuite.class, IAfterSuite.class,
-      IBeforeTest.class, IAfterTest.class,
-      IBeforeGroups.class, IAfterGroups.class
+  private static final Class[] ALL_ANNOTATIONS = new Class[]{
+    ITestAnnotation.class,
+    IBeforeClass.class, IAfterClass.class,
+    IBeforeMethod.class, IAfterMethod.class,
+    IDataProviderAnnotation.class,
+    IFactoryAnnotation.class, IParametersAnnotation.class,
+    IBeforeSuite.class, IAfterSuite.class,
+    IBeforeTest.class, IAfterTest.class,
+    IBeforeGroups.class, IAfterGroups.class
   };
 
-  private static final Class<? extends IAnnotation>[] CONFIGURATION_CLASSES = new Class[] {
-      IBeforeSuite.class, IAfterSuite.class,
-      IBeforeTest.class, IAfterTest.class,
-      IBeforeGroups.class, IAfterGroups.class,
-      IBeforeClass.class, IAfterClass.class,
-      IBeforeMethod.class, IAfterMethod.class
+  private static final Class<? extends IAnnotation>[] CONFIGURATION_CLASSES = new Class[]{
+    IBeforeSuite.class, IAfterSuite.class,
+    IBeforeTest.class, IAfterTest.class,
+    IBeforeGroups.class, IAfterGroups.class,
+    IBeforeClass.class, IAfterClass.class,
+    IBeforeMethod.class, IAfterMethod.class
   };
 
   private AnnotationHelper() {
@@ -90,7 +87,7 @@ public class AnnotationHelper {
     IConfigurationAnnotation am = (IConfigurationAnnotation) finder.findAnnotation(m, IAfterMethod.class);
 
     if (bs != null || as != null || bt != null || at != null || bg != null || ag != null
-            || bc != null || ac != null || bm != null || am != null) {
+      || bc != null || ac != null || bm != null || am != null) {
       result = createConfiguration(bs, as, bt, at, bg, ag, bc, ac, bm, am);
     }
 
@@ -106,9 +103,8 @@ public class AnnotationHelper {
   }
 
   private static IConfigurationAnnotation createConfiguration(IConfigurationAnnotation bs, IConfigurationAnnotation as,
-      IConfigurationAnnotation bt, IConfigurationAnnotation at, IConfigurationAnnotation bg, IConfigurationAnnotation ag,
-      IConfigurationAnnotation bc, IConfigurationAnnotation ac, IConfigurationAnnotation bm, IConfigurationAnnotation am)
-  {
+                                                              IConfigurationAnnotation bt, IConfigurationAnnotation at, IConfigurationAnnotation bg, IConfigurationAnnotation ag,
+                                                              IConfigurationAnnotation bc, IConfigurationAnnotation ac, IConfigurationAnnotation bm, IConfigurationAnnotation am) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
 
     if (bs != null) {
@@ -170,7 +166,6 @@ public class AnnotationHelper {
   }
 
 
-
   public static Class[] getAllAnnotations() {
     return ALL_ANNOTATIONS;
   }
@@ -179,18 +174,19 @@ public class AnnotationHelper {
    * Delegation method for creating the list of <CODE>ITestMethod</CODE>s to be
    * analysed.
    */
-  public static ITestNGMethod[] findMethodsWithAnnotation(Class<?> rootClass,
-      Class<? extends IAnnotation> annotationClass, IAnnotationFinder annotationFinder,
-      XmlTest xmlTest)
-  {
+//  public static ITestNGMethod[] findMethodsWithAnnotation(Class<?> rootClass,
+  public static ITestNGMethod[] findMethodsWithAnnotation(XmlClass xmlClass,
+                                                          Class<? extends IAnnotation> annotationClass, IAnnotationFinder annotationFinder,
+                                                          XmlTest xmlTest) {
     // Keep a map of the methods we saw so that we ignore a method in a superclass if it's
     // already been seen in a child class
-    Map<String, ITestNGMethod> vResult = Maps.newHashMap();
+    final Map<String, ITestNGMethod> vResult = Maps.newHashMap();
 
     try {
-      vResult = Maps.newHashMap();
+//    vResult = Maps.newHashMap();
 //    Class[] classes = rootClass.getTestClasses();
-      Class<?> cls = rootClass;
+//      Class<?> cls = rootClass;
+      Class<?> cls = xmlClass.getSupportClass();
 
       //
       // If the annotation is on the class or superclass, it applies to all public methods
@@ -202,67 +198,77 @@ public class AnnotationHelper {
       // that have the annotation
       //
 //    for (Class<?> cls : classes) {
-        while (null != cls) {
-          boolean hasClassAnnotation = isAnnotationPresent(annotationFinder, cls, annotationClass);
-          Method[] methods = ReflectionHelper.getLocalMethods(cls);
-          for (Method m : methods) {
-            boolean hasMethodAnnotation = isAnnotationPresent(annotationFinder, m, annotationClass);
-            boolean hasTestNGAnnotation =
-              isAnnotationPresent(annotationFinder, m, IFactoryAnnotation.class) ||
+      while (null != cls) {
+        boolean hasClassAnnotation = isAnnotationPresent(annotationFinder, cls, annotationClass);
+        Method[] methods = ReflectionHelper.getLocalMethods(cls);
+        for (Method m : methods) {
+          boolean hasMethodAnnotation = isAnnotationPresent(annotationFinder, m, annotationClass);
+          boolean hasTestNGAnnotation =
+            isAnnotationPresent(annotationFinder, m, IFactoryAnnotation.class) ||
               isAnnotationPresent(annotationFinder, m, ITestAnnotation.class) ||
               isAnnotationPresent(annotationFinder, m, CONFIGURATION_CLASSES);
-            boolean isPublic = Modifier.isPublic(m.getModifiers());
-            boolean isSynthetic = m.isSynthetic();            
-            if ((isPublic && hasClassAnnotation && !isSynthetic && (! hasTestNGAnnotation)) || hasMethodAnnotation) {
+          boolean isPublic = Modifier.isPublic(m.getModifiers());
+          boolean isSynthetic = m.isSynthetic();
+          if ((isPublic && hasClassAnnotation && !isSynthetic && (!hasTestNGAnnotation)) || hasMethodAnnotation) {
 
-              // Small hack to allow users to specify @Configuration classes even though
-              // a class-level @Test annotation is present.  In this case, don't count
-              // that method as a @Test
-              if (isAnnotationPresent(annotationFinder, m, IConfigurationAnnotation.class) &&
-                  isAnnotationPresent(annotationFinder, cls, ITestAnnotation.class))
-              {
-                Utils.log("", 3, "Method " + m + " has a configuration annotation"
-                    + " and a class-level @Test. This method will only be kept as a"
-                    + " configuration method.");
+            // Small hack to allow users to specify @Configuration classes even though
+            // a class-level @Test annotation is present.  In this case, don't count
+            // that method as a @Test
+            if (isAnnotationPresent(annotationFinder, m, IConfigurationAnnotation.class) &&
+              isAnnotationPresent(annotationFinder, cls, ITestAnnotation.class)) {
+              Utils.log("", 3, "Method " + m + " has a configuration annotation"
+                + " and a class-level @Test. This method will only be kept as a"
+                + " configuration method.");
 
-                continue;
-              }
-
-              // Skip the method if it has a return type
-              if (m.getReturnType() != void.class && ! xmlTest.getAllowReturnValues()) {
-                Utils.log("", 2, "Method " + m + " has a @Test annotation"
-                    + " but also a return value:"
-                    + " ignoring it. Use <suite allow-return-values=\"true\"> to fix this");
-                continue;
-              }
-
-              String key = createMethodKey(m);
-              if (null == vResult.get(key)) {
-                ITestNGMethod tm = new TestNGMethod(/* m.getDeclaringClass(), */ m,
-                    annotationFinder, xmlTest, null); /* @@@ */
-                vResult.put(key,tm);
-              }
+              continue;
             }
-          } // for
-          // Now explore the superclass
-          cls = cls.getSuperclass();
-        } // while
 
-    }
-    catch (SecurityException e) {
+            // Skip the method if it has a return type
+            if (m.getReturnType() != void.class && !xmlTest.getAllowReturnValues()) {
+              Utils.log("", 2, "Method " + m + " has a @Test annotation"
+                + " but also a return value:"
+                + " ignoring it. Use <suite allow-return-values=\"true\"> to fix this");
+              continue;
+            }
+
+//                        String key = createMethodKey(m);
+//                        if (null == vResult.get(key)) {
+//                            ITestNGMethod tm = new TestNGMethod(/* m.getDeclaringClass(), */ m,
+//                                    annotationFinder, xmlTest, null); /* @@@ */
+//                            vResult.put(key, tm);
+//                        }
+
+            String methodName = m.getName();
+            xmlClass.getIncludedMethods().stream()
+              .filter(xmlInclude -> methodName.equals(xmlInclude.getName()))
+              .forEach(xmlInclude -> {
+                xmlInclude.setXmlClass(xmlClass);
+                String key = xmlInclude.getKey();
+                if (null == vResult.get(key)) {
+                  ITestNGMethod tm = new TestNGMethod(/* m.getDeclaringClass(), */ m,
+                    annotationFinder, xmlInclude, xmlClass, xmlTest, null); /* @@@ */
+                  vResult.put(key, tm);
+                }
+              });
+          }
+        } // for
+        // Now explore the superclass
+        cls = cls.getSuperclass();
+      } // while
+
+    } catch (SecurityException e) {
       e.printStackTrace();
     }
     return vResult.values().toArray(new ITestNGMethod[vResult.size()]);
-    }
+  }
 
-  public static <A extends Annotation> A  findAnnotationSuperClasses(Class<A> annotationClass, Class parameterClass) {
+  public static <A extends Annotation> A findAnnotationSuperClasses(Class<A> annotationClass, Class parameterClass) {
     Class c = parameterClass;
     while (c != null) {
       Annotation result = c.getAnnotation(annotationClass);
       if (result != null) {
         return (A) result;
-      }
-      else {
+      } else {
         c = c.getSuperclass();
       }
     }
@@ -270,8 +276,7 @@ public class AnnotationHelper {
   }
 
   private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder,
-      Method m, Class[] annotationClasses)
-  {
+                                             Method m, Class[] annotationClasses) {
     for (Class a : annotationClasses) {
       if (annotationFinder.findAnnotation(m, a) != null) {
         return true;
@@ -282,7 +287,7 @@ public class AnnotationHelper {
   }
 
   private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Method m,
-      Class<? extends IAnnotation> annotationClass) {
+                                             Class<? extends IAnnotation> annotationClass) {
     if (!annotationClass.equals(IConfigurationAnnotation.class)) {
       return annotationFinder.findAnnotation(m, annotationClass) != null;
     }
@@ -297,7 +302,7 @@ public class AnnotationHelper {
   }
 
   private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Class<?> cls,
-      Class<? extends IAnnotation> annotationClass) {
+                                             Class<? extends IAnnotation> annotationClass) {
     return annotationFinder.findAnnotation(cls, annotationClass) != null;
   }
 
@@ -313,5 +318,5 @@ public class AnnotationHelper {
 
     return result.toString();
   }
-  
+
 }

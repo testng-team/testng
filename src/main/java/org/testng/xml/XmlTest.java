@@ -1,17 +1,12 @@
 package org.testng.xml;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.dom.ParentSetter;
+
+import java.util.*;
 
 import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
@@ -26,7 +21,7 @@ public class XmlTest implements Cloneable {
   private String m_name;
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
   private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
-  private int m_threadCount= -1;
+  private int m_threadCount = -1;
 
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
 
@@ -50,6 +45,7 @@ public class XmlTest implements Cloneable {
   private Boolean m_allowReturnValues = null;
 
   private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+  private XmlGroups m_xmlGroups;
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
@@ -65,6 +61,10 @@ public class XmlTest implements Cloneable {
     init(suite, 0);
   }
 
+  // For YAML
+  public XmlTest() {
+  }
+
   private void init(XmlSuite suite, int index) {
     m_suite = suite;
     m_suite.getTests().add(this);
@@ -75,16 +75,12 @@ public class XmlTest implements Cloneable {
       + " " + UUID.randomUUID().toString();
   }
 
-  // For YAML
-  public XmlTest() {
+  public List<XmlPackage> getXmlPackages() {
+    return m_xmlPackages;
   }
 
   public void setXmlPackages(List<XmlPackage> packages) {
     m_xmlPackages = Lists.newArrayList(packages);
-  }
-
-  public List<XmlPackage> getXmlPackages() {
-    return m_xmlPackages;
   }
 
   // For YAML
@@ -107,10 +103,15 @@ public class XmlTest implements Cloneable {
 
   /**
    * Returns the suite this test is part of.
+   *
    * @return the suite this test is part of.
    */
   public XmlSuite getSuite() {
     return m_suite;
+  }
+
+  public void setSuite(XmlSuite result) {
+    m_suite = result;
   }
 
   /**
@@ -125,8 +126,21 @@ public class XmlTest implements Cloneable {
     return Collections.unmodifiableList(result);
   }
 
+  public void setIncludedGroups(List<String> g) {
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+    }
+    if (m_xmlGroups.getRun() == null) {
+      m_xmlGroups.setRun(new XmlRun());
+    }
+    List<String> includes = m_xmlGroups.getRun().getIncludes();
+    includes.clear();
+    includes.addAll(g);
+  }
+
   /**
    * Sets the XML Classes.
+   *
    * @param classes The classes to set.
    * @deprecated use setXmlClasses
    */
@@ -142,6 +156,15 @@ public class XmlTest implements Cloneable {
     return m_xmlClasses;
   }
 
+  /**
+   * Sets the XML Classes.
+   *
+   * @param classes The classes to set.
+   */
+  public void setXmlClasses(List<XmlClass> classes) {
+    m_xmlClasses = classes;
+  }
+
   // For YAML
   public List<XmlClass> getClasses() {
     return getXmlClasses();
@@ -150,14 +173,6 @@ public class XmlTest implements Cloneable {
   // For YAML
   public void setClasses(List<XmlClass> c) {
     setXmlClasses(c);
-  }
-
-  /**
-   * Sets the XML Classes.
-   * @param classes The classes to set.
-   */
-  public void setXmlClasses(List<XmlClass> classes) {
-    m_xmlClasses = classes;
   }
 
   /**
@@ -174,13 +189,6 @@ public class XmlTest implements Cloneable {
     m_name = name;
   }
 
-  /**
-   * @param v - Verbosity level.
-   */
-  public void setVerbose(int v) {
-    m_verbose = v;
-  }
-
   public int getThreadCount() {
     return m_threadCount > 0 ? m_threadCount : getSuite().getThreadCount();
   }
@@ -189,16 +197,13 @@ public class XmlTest implements Cloneable {
     m_threadCount = threadCount;
   }
 
-  public void setIncludedGroups(List<String> g) {
-    if (m_xmlGroups == null) {
-      m_xmlGroups = new XmlGroups();
+  public List<String> getExcludedGroups() {
+    List<String> result = new ArrayList<>();
+    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
+      result.addAll(m_xmlGroups.getRun().getExcludes());
     }
-    if (m_xmlGroups.getRun() == null) {
-        m_xmlGroups.setRun(new XmlRun());
-    }
-    List<String> includes = m_xmlGroups.getRun().getIncludes();
-    includes.clear();
-    includes.addAll(g);
+    result.addAll(m_suite.getExcludedGroups());
+    return Collections.unmodifiableList(result);
   }
 
   public void setExcludedGroups(List<String> g) {
@@ -211,15 +216,6 @@ public class XmlTest implements Cloneable {
     List<String> excludes = m_xmlGroups.getRun().getExcludes();
     excludes.clear();
     excludes.addAll(g);
-  }
-
-  public List<String> getExcludedGroups() {
-    List<String> result = new ArrayList<>();
-    if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
-      result.addAll(m_xmlGroups.getRun().getExcludes());
-    }
-    result.addAll(m_suite.getExcludedGroups());
-    return Collections.unmodifiableList(result);
   }
 
   public void addIncludedGroup(String g) {
@@ -254,6 +250,13 @@ public class XmlTest implements Cloneable {
     } else {
       return 1;
     }
+  }
+
+  /**
+   * @param v - Verbosity level.
+   */
+  public void setVerbose(int v) {
+    m_verbose = v;
   }
 
   public boolean getGroupByInstances() {
@@ -326,13 +329,6 @@ public class XmlTest implements Cloneable {
     addMetaGroup(name, Arrays.asList(metaGroup));
   }
 
-  // For YAML
-  public void setMetaGroups(Map<String, List<String>> metaGroups) {
-    for (Map.Entry<String, List<String>> entry : metaGroups.entrySet()) {
-      addMetaGroup(entry.getKey(), entry.getValue());
-    }
-  }
-
   /**
    * @return Returns the metaGroups.
    */
@@ -348,11 +344,11 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
-  /**
-   * @param parameters - A {@link Map} of parameters.
-   */
-  public void setParameters(Map<String, String> parameters) {
-    m_parameters = parameters;
+  // For YAML
+  public void setMetaGroups(Map<String, List<String>> metaGroups) {
+    for (Map.Entry<String, List<String>> entry : metaGroups.entrySet()) {
+      addMetaGroup(entry.getKey(), entry.getValue());
+    }
   }
 
   public void addParameter(String key, String value) {
@@ -395,29 +391,34 @@ public class XmlTest implements Cloneable {
   }
 
   /**
-   * @deprecated Use {@code getLocalParameters()} instead
-   *
+   * @param parameters - A {@link Map} of parameters.
+   */
+  public void setParameters(Map<String, String> parameters) {
+    m_parameters = parameters;
+  }
+
+  /**
    * @return the parameters defined on this <test> tag only
+   * @deprecated Use {@code getLocalParameters()} instead
    */
   @Deprecated
   public Map<String, String> getTestParameters() {
     return getLocalParameters();
   }
 
-  public void setParallel(XmlSuite.ParallelMode parallel) {
-    m_parallel = skipDeprecatedValues(parallel);
-  }
-
   public XmlSuite.ParallelMode getParallel() {
     XmlSuite.ParallelMode result;
     if (null != m_parallel || XmlSuite.DEFAULT_PARALLEL.equals(m_parallel)) {
       result = m_parallel;
-    }
-    else {
+    } else {
       result = m_suite.getParallel();
     }
 
     return result;
+  }
+
+  public void setParallel(XmlSuite.ParallelMode parallel) {
+    m_parallel = skipDeprecatedValues(parallel);
   }
 
   public String getTimeOut() {
@@ -429,25 +430,21 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
-  public long getTimeOut(long def) {
-    long result = def;
-    if (getTimeOut() != null) {
-        result = Long.parseLong(getTimeOut());
-    }
-
-    return result;
-  }
-
   public void setTimeOut(long timeOut) {
-      m_timeOut = Long.toString(timeOut);
+    m_timeOut = Long.toString(timeOut);
   }
 
   private void setTimeOut(String timeOut) {
-      m_timeOut = timeOut;
+    m_timeOut = timeOut;
   }
 
-  public void setExpression(String expression) {
-    setBeanShellExpression(expression);
+  public long getTimeOut(long def) {
+    long result = def;
+    if (getTimeOut() != null) {
+      result = Long.parseLong(getTimeOut());
+    }
+
+    return result;
   }
 
   public void setBeanShellExpression(String expression) {
@@ -471,17 +468,20 @@ public class XmlTest implements Cloneable {
     }
   }
 
+  public void setExpression(String expression) {
+    setBeanShellExpression(expression);
+  }
+
   public String toXml(String indent) {
     return XmlWeaver.asXml(this, indent);
   }
-
 
   /**
    * Clone the <TT>source</TT> <CODE>XmlTest</CODE> by including:
    * - test attributes
    * - groups definitions
    * - parameters
-   *
+   * <p>
    * The &lt;classes&gt; sub element is ignored for the moment.
    *
    * @return a clone of the current XmlTest
@@ -501,7 +501,7 @@ public class XmlTest implements Cloneable {
     result.setTimeOut(getTimeOut());
 
     Map<String, List<String>> metagroups = getMetaGroups();
-    for (Map.Entry<String, List<String>> group: metagroups.entrySet()) {
+    for (Map.Entry<String, List<String>> group : metagroups.entrySet()) {
       result.addMetaGroup(group.getKey(), group.getValue());
     }
 
@@ -511,15 +511,18 @@ public class XmlTest implements Cloneable {
   /**
    * Convenience method to cache the ordering numbers for methods.
    */
-  public List<Integer> getInvocationNumbers(String method) {
+//  public List<Integer> getInvocationNumbers(String method) {
+  public List<Integer> getInvocationNumbers(XmlInclude include) {
+    String method = include.getKey();
     if (m_failedInvocationNumbers == null) {
       m_failedInvocationNumbers = Maps.newHashMap();
       for (XmlClass c : getXmlClasses()) {
         for (XmlInclude xi : c.getIncludedMethods()) {
           List<Integer> invocationNumbers = xi.getInvocationNumbers();
           if (invocationNumbers.size() > 0) {
-            String methodName = c.getName() + "." + xi.getName();
-            m_failedInvocationNumbers.put(methodName, invocationNumbers);
+//                        String methodName = c.getName() + "." + xi.getName();
+//                        m_failedInvocationNumbers.put(methodName, invocationNumbers);
+            m_failedInvocationNumbers.put(xi.getKey(), invocationNumbers);
           }
         }
       }
@@ -535,6 +538,14 @@ public class XmlTest implements Cloneable {
     }
   }
 
+  public Boolean getPreserveOrder() {
+    if (m_preserveOrder == null) {
+      return m_suite.getPreserveOrder();
+    }
+
+    return m_preserveOrder;
+  }
+
   /**
    * @deprecated Use {@link #setPreserveOrder(Boolean)} instead
    */
@@ -545,18 +556,6 @@ public class XmlTest implements Cloneable {
 
   public void setPreserveOrder(Boolean preserveOrder) {
     m_preserveOrder = preserveOrder;
-  }
-
-  public Boolean getPreserveOrder() {
-    if (m_preserveOrder == null) {
-      return m_suite.getPreserveOrder();
-    }
-
-    return m_preserveOrder;
-  }
-
-  public void setSuite(XmlSuite result) {
-    m_suite = result;
   }
 
   public Boolean getAllowReturnValues() {
@@ -583,36 +582,36 @@ public class XmlTest implements Cloneable {
     final int prime = 31;
     int result = 1;
     result = prime * result
-        + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getExcludes().hashCode());
+      + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getExcludes().hashCode());
     result = prime
-        * result
-        + ((m_failedInvocationNumbers == null) ? 0 : m_failedInvocationNumbers
-            .hashCode());
+      * result
+      + ((m_failedInvocationNumbers == null) ? 0 : m_failedInvocationNumbers
+      .hashCode());
     result = prime * result
-        + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getIncludes().hashCode());
+      + ((m_xmlGroups == null || m_xmlGroups.getRun() == null) ? 0 : m_xmlGroups.getRun().getIncludes().hashCode());
     result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
     result = prime * result
-        + ((m_xmlGroups == null) ? 0 : m_xmlGroups.getDefines().hashCode());
+      + ((m_xmlGroups == null) ? 0 : m_xmlGroups.getDefines().hashCode());
     result = prime * result
-        + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
+      + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
     result = prime * result
-        + ((m_parallel == null) ? 0 : m_parallel.hashCode());
+      + ((m_parallel == null) ? 0 : m_parallel.hashCode());
     result = prime * result
-        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
+      + ((m_parameters == null) ? 0 : m_parameters.hashCode());
     result = prime * result
-        + ((m_preserveOrder == null) ? 0 : m_preserveOrder.hashCode());
+      + ((m_preserveOrder == null) ? 0 : m_preserveOrder.hashCode());
     result = prime
-        * result
-        + ((m_skipFailedInvocationCounts == null) ? 0
-            : m_skipFailedInvocationCounts.hashCode());
+      * result
+      + ((m_skipFailedInvocationCounts == null) ? 0
+      : m_skipFailedInvocationCounts.hashCode());
     result = prime * result + m_threadCount;
     result = prime * result + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
     result = prime * result + ((m_verbose == null) ? 0 : m_verbose.hashCode());
     result = prime * result
-        + ((m_xmlClasses == null) ? 0 : m_xmlClasses.hashCode());
+      + ((m_xmlClasses == null) ? 0 : m_xmlClasses.hashCode());
     result = prime * result
-        + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
+      + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
     return result;
   }
 
@@ -634,7 +633,7 @@ public class XmlTest implements Cloneable {
         return false;
       }
       if ((m_xmlGroups.getRun() == null && other.m_xmlGroups != null)
-           || m_xmlGroups.getRun() != null && other.m_xmlGroups == null) {
+        || m_xmlGroups.getRun() != null && other.m_xmlGroups == null) {
         return false;
       }
       if (!m_xmlGroups.getRun().getExcludes().equals(other.m_xmlGroups.getRun().getExcludes())) {
@@ -651,10 +650,10 @@ public class XmlTest implements Cloneable {
       if (other.m_failedInvocationNumbers != null)
         return XmlSuite.f();
     } else if (!m_failedInvocationNumbers
-        .equals(other.m_failedInvocationNumbers))
+      .equals(other.m_failedInvocationNumbers))
       return XmlSuite.f();
     if (m_isJUnit == null) {
-      if (other.m_isJUnit != null && ! other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
+      if (other.m_isJUnit != null && !other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
         return XmlSuite.f();
     } else if (!m_isJUnit.equals(other.m_isJUnit))
       return XmlSuite.f();
@@ -687,7 +686,7 @@ public class XmlTest implements Cloneable {
       if (other.m_skipFailedInvocationCounts != null)
         return XmlSuite.f();
     } else if (!m_skipFailedInvocationCounts
-        .equals(other.m_skipFailedInvocationCounts))
+      .equals(other.m_skipFailedInvocationCounts))
       return XmlSuite.f();
     if (m_threadCount != other.m_threadCount)
       return XmlSuite.f();
@@ -716,11 +715,11 @@ public class XmlTest implements Cloneable {
   }
 
   public void addXmlDependencyGroup(String group, String dependsOn) {
-    if (! m_xmlDependencyGroups.containsKey(group)) {
+    if (!m_xmlDependencyGroups.containsKey(group)) {
       m_xmlDependencyGroups.put(group, dependsOn);
     } else {
       throw new TestNGException("Duplicate group dependency found for group \"" + group + "\""
-          + ", use a space-separated list of groups in the \"depends-on\" attribute");
+        + ", use a space-separated list of groups in the \"depends-on\" attribute");
     }
   }
 
@@ -740,10 +739,8 @@ public class XmlTest implements Cloneable {
 
   @ParentSetter
   public void setXmlSuite(XmlSuite suite) {
-	  m_suite = suite;
+    m_suite = suite;
   }
-
-  private XmlGroups m_xmlGroups;
 
   public void setGroups(XmlGroups xmlGroups) {
     m_xmlGroups = xmlGroups;

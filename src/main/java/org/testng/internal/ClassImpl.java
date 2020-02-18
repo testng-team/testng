@@ -1,17 +1,9 @@
 package org.testng.internal;
 
-import static org.testng.internal.Utils.isStringNotEmpty;
-
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
-
-import org.testng.IClass;
-import org.testng.ISuite;
-import org.testng.ITest;
-import org.testng.ITestContext;
-import org.testng.ITestObjectFactory;
-import org.testng.TestNGException;
+import org.testng.*;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
@@ -23,24 +15,27 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
+import static org.testng.internal.Utils.isStringNotEmpty;
+
 /**
  * Implementation of an IClass.
  */
 public class ClassImpl implements IClass {
 
   private final Class<?> m_class;
-  private Object m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
-  private List<Object> m_instances = Lists.newArrayList();
-  private final Map<Class<?>, IClass> m_classes;
-  private int m_instanceCount;
-  private long[] m_instanceHashCodes;
+  //    private final Map<Class<?>, IClass> m_classes;
+  private final Map<XmlClass, IClass> m_classes;
   private final Object m_instance;
   private final ITestObjectFactory m_objectFactory;
-  private String m_testName = null;
   private final XmlClass m_xmlClass;
   private final ITestContext m_testContext;
   private final boolean m_hasParentModule;
+  private Object m_defaultInstance = null;
+  private List<Object> m_instances = Lists.newArrayList();
+  private int m_instanceCount;
+  private long[] m_instanceHashCodes;
+  private String m_testName = null;
 
   /**
    * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
@@ -48,13 +43,15 @@ public class ClassImpl implements IClass {
   @Deprecated
   @SuppressWarnings("unused")
   public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
-      Map<Class<?>, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
-      ITestObjectFactory objectFactory) {
+//                     Map<Class<?>, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
+                   Map<XmlClass, IClass> classes, XmlTest xmlTest, IAnnotationFinder annotationFinder,
+                   ITestObjectFactory objectFactory) {
     this(context, cls, xmlClass, instance, classes, annotationFinder, objectFactory);
   }
 
   public ClassImpl(ITestContext context, Class<?> cls, XmlClass xmlClass, Object instance,
-                   Map<Class<?>, IClass> classes, IAnnotationFinder annotationFinder,
+//                     Map<Class<?>, IClass> classes, IAnnotationFinder annotationFinder,
+                   Map<XmlClass, IClass> classes, IAnnotationFinder annotationFinder,
                    ITestObjectFactory objectFactory) {
     m_testContext = context;
     m_class = cls;
@@ -122,8 +119,9 @@ public class ClassImpl implements IClass {
           m_defaultInstance = instance;
         } else {
           m_defaultInstance =
-              ClassHelper.createInstance(m_class, m_classes, m_testContext.getCurrentXmlTest(),
-                  m_annotationFinder, m_objectFactory);
+//                            ClassHelper.createInstance(m_class, m_classes, m_testContext.getCurrentXmlTest(),
+            ClassHelper.createInstance(m_xmlClass, m_classes, m_testContext.getCurrentXmlTest(),
+              m_annotationFinder, m_objectFactory);
         }
       }
     }
@@ -183,8 +181,9 @@ public class ClassImpl implements IClass {
 
     if (m_testContext.getCurrentXmlTest().isJUnit()) {
       if (create) {
-        result = new Object[] { ClassHelper.createInstance(m_class, m_classes,
-                m_testContext.getCurrentXmlTest(), m_annotationFinder, m_objectFactory) };
+//                result = new Object[]{ClassHelper.createInstance(m_class, m_classes,
+        result = new Object[]{ClassHelper.createInstance(m_xmlClass, m_classes,
+          m_testContext.getCurrentXmlTest(), m_annotationFinder, m_objectFactory)};
       }
     } else {
       Object defaultInstance = getDefaultInstance();
@@ -207,8 +206,8 @@ public class ClassImpl implements IClass {
   @Override
   public String toString() {
     return Objects.toStringHelper(getClass())
-        .add("class", m_class.getName())
-        .toString();
+      .add("class", m_class.getName())
+      .toString();
   }
 
   @Override

@@ -1,0 +1,48 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="suite: complex-duplicate-classes-methods" verbose="2">
+    <test name="test: complex-duplicate-classes-methods">
+        <!--<parameter name="ba" value="ba"/>-->
+        <classes>
+            <class name="test.duplicate.FooTest">
+                <methods>
+                    <include name="foo1"/>
+                    <include name="foo2"/>
+                    <include name="foo3"/>
+                    <include name="foo4"/>
+                    <include name="foo1"/>
+                </methods>
+            </class>
+            <class name="test.duplicate.BarTest">
+                <parameter name="ba" value="ba"/>
+                <methods>
+                    <include name="bar1"/>
+                    <include name="bar2"/>
+                    <include name="bar3"/>
+                    <include name="bar1"/>
+                </methods>
+            </class>
+            <class name="test.duplicate.FooTest">
+                <methods>
+                    <include name="foo1"/>
+                    <include name="foo2"/>
+                    <include name="foo3"/>
+                    <include name="foo1"/>
+                    <include name="foo4"/>
+                </methods>
+            </class>
+            <class name="test.duplicate.BarTest">
+                <parameter name="ba" value="baa"/>
+                <parameter name="bb" value="bbb"/>
+                <methods>
+                    <include name="bar1"/>
+                    <include name="bar2"/>
+                    <include name="bar3"/>
+                    <include name="bar1"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>
+

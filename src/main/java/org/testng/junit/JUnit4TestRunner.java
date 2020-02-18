@@ -14,6 +14,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InvokedMethod;
 import org.testng.internal.TestResult;
+import org.testng.xml.XmlClass;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to
@@ -66,8 +67,10 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
      * @param testClass the JUnit test class
      */
     @Override
-    public void run(Class testClass, String... methods) {
-        start(testClass, methods);
+//    public void run(Class testClass, String... methods) {
+    public void run(XmlClass testClass, String... methods) {
+//        start(testClass, methods);
+        start(testClass.getSupportClass(), methods);
     }
 
     /**

@@ -169,10 +169,10 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
             //So lets not try to associate the instance. We will use the method as is.
             fixedMethods.addAll(Arrays.asList(rawMethods));
         } else {
-            for (ITestNGMethod each : rawMethods) {
-                ITestNGMethod m = new TestNGMethod(each.getConstructorOrMethod().getMethod(), finder, xmlTest, object);
-                fixedMethods.add(m);
-            }
+//            for (ITestNGMethod each : rawMethods) {
+//                ITestNGMethod m = new TestNGMethod(each.getConstructorOrMethod().getMethod(), finder, xmlTest, object);
+//                fixedMethods.add(m);
+//            }
         }
         List<ITestNGMethod> tstMethods = Lists.newArrayList();
         MethodHelper.fixMethodsWithClass(fixedMethods.toArray(new ITestNGMethod[fixedMethods.size()]), testClass, tstMethods);
@@ -189,7 +189,8 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     }
 
     private static ITestNGMethod[] methods(Class<?> clazz, XmlTest xmlTest, Class<? extends IAnnotation> annotationClass) {
-        return AnnotationHelper.findMethodsWithAnnotation(clazz, annotationClass, finder, xmlTest);
+//        return AnnotationHelper.findMethodsWithAnnotation(clazz, annotationClass, finder, xmlTest);
+        return null;
     }
 
 }

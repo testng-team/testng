@@ -1,8 +1,7 @@
 package org.testng;
 
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-
 
 
 /**
@@ -13,14 +12,19 @@ import org.testng.xml.XmlTest;
  * methods that start with "test" or have a suite() method).
  *
  * @author Cedric Beust, May 3, 2004
- *
  */
 public interface ITestMethodFinder {
 
   /**
    * @return All the applicable test methods.
    */
-  ITestNGMethod[] getTestMethods(Class<?> cls, XmlTest xmlTest);
+  default ITestNGMethod[] getTestMethods(Class<?> cls, XmlTest xmlTest) {
+    return null;
+  }
+
+  default ITestNGMethod[] getTestMethods(XmlClass xmlClass, XmlTest xmlTest) {
+    return null;
+  }
 
   /**
    * @return All the methods that should be invoked

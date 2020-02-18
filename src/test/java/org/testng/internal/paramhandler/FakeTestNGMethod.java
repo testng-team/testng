@@ -8,6 +8,7 @@ import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.MethodInstanceTest;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
@@ -53,6 +54,36 @@ public class FakeTestNGMethod implements ITestNGMethod {
     @Override
     public void setTestClass(ITestClass cls) {
 
+    }
+
+    @Override
+    public XmlClass getXmlClass() {
+        return null;
+    }
+
+    @Override
+    public void setXmlClass(XmlClass m_xmlClass) {
+
+    }
+
+    @Override
+    public void setXmlInclude(XmlInclude m_xmlInclude) {
+
+    }
+
+    @Override
+    public XmlInclude getXmlInclude() {
+        return null;
+    }
+
+    @Override
+    public int getIndex() {
+        return 0;
+    }
+
+    @Override
+    public String getNameIndex() {
+        return null;
     }
 
     @Override

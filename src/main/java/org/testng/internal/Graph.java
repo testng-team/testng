@@ -127,7 +127,7 @@ public class Graph<T> {
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    Collections.sort(nodes2, comparator);
+//    Collections.sort(nodes2, comparator);
 
     //
     // Sort
@@ -165,7 +165,7 @@ public class Graph<T> {
       List<Node<T>> list = Lists.newArrayList(m_nodes.values());
       // Ideally, we should not have to sort this. However, due to a bug where it treats all the methods as
       // dependent nodes.
-      Collections.sort(list, comparator);
+//      Collections.sort(list, comparator);
 
       m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {

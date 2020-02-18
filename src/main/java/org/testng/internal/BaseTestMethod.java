@@ -1,19 +1,5 @@
 package org.testng.internal;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
-
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -27,52 +13,70 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
+
 /**
  * Superclass to represent both &#64;Test and &#64;Configuration methods.
  */
 public abstract class BaseTestMethod implements ITestNGMethod {
 
+  /**
+   * Compares two ITestNGMethod by date.
+   */
+  public static final Comparator<?> DATE_COMPARATOR = new Comparator<Object>() {
+    @Override
+    public int compare(Object o1, Object o2) {
+      try {
+        ITestNGMethod m1 = (ITestNGMethod) o1;
+        ITestNGMethod m2 = (ITestNGMethod) o2;
+        return (int) (m1.getDate() - m2.getDate());
+      } catch (Exception ex) {
+        return 0; // TODO CQ document this logic
+      }
+    }
+  };
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
-
+  protected final Class<?> m_methodClass;
+  protected final ConstructorOrMethod m_method;
+  protected final IAnnotationFinder m_annotationFinder;
+  private final String m_methodName;
+  private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
   /**
    * The test class on which the test method was found. Note that this is not
    * necessarily the declaring class.
    */
   protected ITestClass m_testClass;
-
-  protected final Class<?> m_methodClass;
-  protected final ConstructorOrMethod m_method;
-  private String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
-  protected final IAnnotationFinder m_annotationFinder;
   protected String[] m_groups = {};
   protected String[] m_groupsDependedUpon = {};
   protected String[] m_methodsDependedUpon = {};
   protected String[] m_beforeGroups = {};
   protected String[] m_afterGroups = {};
+  protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
+  private String m_signature;
   private boolean m_isAlwaysRun;
   private boolean m_enabled;
-
-  private final String m_methodName;
   // If a depended group is not found
   private String m_missingGroup;
   private String m_description = null;
-  protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   private Callable<Boolean> m_moreInvocationChecker;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
-
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
   private long m_timeOut = 0;
-
   private boolean m_ignoreMissingDependencies;
   private int m_priority;
-
   private XmlTest m_xmlTest;
+  private XmlClass m_xmlClass;
+  private XmlInclude m_xmlInclude;
   private Object m_instance;
 
   /**
@@ -80,19 +84,47 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    *
    * @param method
    * @param annotationFinder
-   * @param instance 
+   * @param instance
    */
-  public BaseTestMethod(String methodName, Method method, IAnnotationFinder annotationFinder, Object instance) {
-    this(methodName, new ConstructorOrMethod(method), annotationFinder, instance);
+//  public BaseTestMethod(String methodName, Method method, IAnnotationFinder annotationFinder, Object instance) {
+  public BaseTestMethod(XmlInclude xmlInclude, XmlClass xmlClass, String methodName, Method method, IAnnotationFinder annotationFinder, Object instance) {
+    this(xmlInclude, xmlClass, methodName, new ConstructorOrMethod(method), annotationFinder, instance);
   }
 
-  public BaseTestMethod(String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
-      Object instance) {
+  //  public BaseTestMethod(String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
+  public BaseTestMethod(XmlInclude xmlInclude, XmlClass xmlClass, String methodName, ConstructorOrMethod com, IAnnotationFinder annotationFinder,
+                        Object instance) {
+    m_xmlInclude = xmlInclude;
+    m_xmlClass = xmlClass;
     m_methodClass = com.getDeclaringClass();
     m_method = com;
     m_methodName = methodName;
     m_annotationFinder = annotationFinder;
     m_instance = instance;
+  }
+
+  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+    Map<String, Set<String>> result = Maps.newHashMap();
+    if (xmlTest == null) {
+      return result;
+    }
+
+    for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
+      String name = e.getKey();
+      String dependsOn = e.getValue();
+      Set<String> set = result.get(name);
+      if (set == null) {
+        set = Sets.newHashSet();
+        result.put(name, set);
+      }
+      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
+    }
+
+    return result;
+  }
+
+  private static void ppp(String s) {
+    System.out.println("[BaseTestMethod] " + s);
   }
 
   /**
@@ -134,11 +166,21 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public void setTestClass(ITestClass tc) {
     assert null != tc;
-    if (! tc.getRealClass().equals(m_method.getDeclaringClass())) {
+    if (!tc.getRealClass().equals(m_method.getDeclaringClass())) {
       assert m_method.getDeclaringClass().isAssignableFrom(tc.getRealClass()) :
         "\nMISMATCH : " + tc.getRealClass() + " " + m_method.getDeclaringClass();
     }
     m_testClass = tc;
+  }
+
+  @Override
+  public int getIndex() {
+    return m_xmlInclude == null ? 0 : m_xmlInclude.getIndex();
+  }
+
+  @Override
+  public String getNameIndex() {
+    return m_xmlInclude == null ? getMethodName() + "_0" : m_xmlInclude.getNameIndex();
   }
 
   /**
@@ -162,7 +204,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
    */
   @Override
   public Object[] getInstances() {
-    return new Object[] { getInstance() };
+    return new Object[]{getInstance()};
   }
 
   @Override
@@ -180,11 +222,16 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc}
+   *
    * @return the addition of groups defined on the class and on this method.
    */
   @Override
   public String[] getGroups() {
     return m_groups;
+  }
+
+  protected void setGroups(String[] groups) {
+    m_groups = groups;
   }
 
   /**
@@ -201,6 +248,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   @Override
   public String[] getMethodsDependedUpon() {
     return m_methodsDependedUpon;
+  }
+
+  protected void setMethodsDependedUpon(String[] methods) {
+    m_methodsDependedUpon = methods;
   }
 
   /**
@@ -307,6 +358,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc}
+   *
    * @return the number of times this method needs to be invoked.
    */
   @Override
@@ -353,9 +405,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_id = id;
   }
 
-
   /**
    * {@inheritDoc}
+   *
    * @return Returns the date.
    */
   @Override
@@ -365,6 +417,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   /**
    * {@inheritDoc}
+   *
    * @param date The date to set.
    */
   @Override
@@ -399,15 +452,17 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     BaseTestMethod other = (BaseTestMethod) obj;
 
     boolean isEqual = m_testClass == null ? other.m_testClass == null
-        : other.m_testClass != null &&
-          m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-          && m_instance == other.getInstance();
+      : other.m_testClass != null &&
+      m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
+      && m_instance == other.getInstance();
 
-    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
+    return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod())
+      && getKey().equals(other.getKey());
   }
 
   /**
    * {@inheritDoc} This implementation returns the associated Java Method's hash code.
+   *
    * @return the associated Java Method's hash code.
    */
   @Override
@@ -424,7 +479,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
 
       setGroups(getStringArray(null != annotation ? annotation.getGroups() : null,
-          null != classAnnotation ? classAnnotation.getGroups() : null));
+        null != classAnnotation ? classAnnotation.getGroups() : null));
     }
 
     //
@@ -465,13 +520,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       }
     }
     setGroupsDependedUpon(
-            getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
-                    null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
-            xmlGroupDependencies);
+      getStringArray(null != annotation ? annotation.getDependsOnGroups() : null,
+        null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
+      xmlGroupDependencies);
 
     String[] methodsDependedUpon =
-            getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
-                    null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
+      getStringArray(null != annotation ? annotation.getDependsOnMethods() : null,
+        null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
     // Qualify these methods if they don't have a package
     for (int i = 0; i < methodsDependedUpon.length; i++) {
       String m = methodsDependedUpon[i];
@@ -484,26 +539,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   }
 
-  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
-    Map<String, Set<String>> result = Maps.newHashMap();
-    if (xmlTest == null) {
-      return result;
-    }
-
-    for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
-      String name = e.getKey();
-      String dependsOn = e.getValue();
-      Set<String> set = result.get(name);
-      if (set == null) {
-        set = Sets.newHashSet();
-        result.put(name, set);
-      }
-      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
-    }
-
-    return result;
-  }
-
   protected IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
   }
@@ -513,20 +548,21 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   private String computeSignature() {
-    String classLong = m_method.getDeclaringClass().getName();
-    String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
-    StringBuilder result = new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
-    int i = 0;
-    for (Class<?> p : m_method.getParameterTypes()) {
-      if (i++ > 0) {
-        result.append(", ");
-      }
-      result.append(p.getName());
-    }
-    result.append(")");
-    result.append("[pri:").append(getPriority()).append(", instance:").append(m_instance).append("]");
-
-    return result.toString();
+//        String classLong = m_method.getDeclaringClass().getName();
+//        String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
+//        StringBuilder result = new StringBuilder(cls).append(".").append(m_method.getName()).append("(");
+//        int i = 0;
+//        for (Class<?> p : m_method.getParameterTypes()) {
+//            if (i++ > 0) {
+//                result.append(", ");
+//            }
+//            result.append(p.getName());
+//        }
+//        result.append(")");
+//        result.append("[pri:").append(getPriority()).append(", instance:").append(m_instance).append("]");
+//
+//        return result.toString();
+    return getKey();
   }
 
   public String getSimpleName() {
@@ -559,19 +595,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return vResult.toArray(new String[vResult.size()]);
   }
 
-  protected void setGroups(String[] groups) {
-    m_groups = groups;
-  }
-
   protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
     List<String> l = Lists.newArrayList();
     l.addAll(Arrays.asList(groups));
     l.addAll(xmlGroupDependencies);
     m_groupsDependedUpon = l.toArray(new String[l.size()]);
-  }
-
-  protected void setMethodsDependedUpon(String[] methods) {
-    m_methodsDependedUpon = methods;
   }
 
   /**
@@ -584,25 +612,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     System.arraycopy(m_methodsDependedUpon, 0, newMethods, 1, m_methodsDependedUpon.length);
     m_methodsDependedUpon = newMethods;
   }
-
-  private static void ppp(String s) {
-    System.out.println("[BaseTestMethod] " + s);
-  }
-
-  /** Compares two ITestNGMethod by date. */
-  public static final Comparator<?> DATE_COMPARATOR = new Comparator<Object>() {
-    @Override
-    public int compare(Object o1, Object o2) {
-      try {
-        ITestNGMethod m1 = (ITestNGMethod) o1;
-        ITestNGMethod m2 = (ITestNGMethod) o2;
-        return (int) (m1.getDate() - m2.getDate());
-      }
-      catch(Exception ex) {
-        return 0; // TODO CQ document this logic
-      }
-    }
-  };
 
   /**
    * {@inheritDoc}
@@ -635,11 +644,6 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public void setThreadPoolSize(int threadPoolSize) {
   }
 
-  @Override
-  public void setDescription(String description) {
-    m_description = description;
-  }
-
   /**
    * {@inheritDoc}
    */
@@ -648,13 +652,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     return m_description;
   }
 
-  public void setEnabled(boolean enabled) {
-    m_enabled = enabled;
+  @Override
+  public void setDescription(String description) {
+    m_description = description;
   }
 
   @Override
   public boolean getEnabled() {
     return m_enabled;
+  }
+
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
   }
 
   /**
@@ -684,13 +693,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setParameterInvocationCount(int n) {
-    m_parameterInvocationCount = n;
+  public int getParameterInvocationCount() {
+    return m_parameterInvocationCount;
   }
 
   @Override
-  public int getParameterInvocationCount() {
-    return m_parameterInvocationCount;
+  public void setParameterInvocationCount(int n) {
+    m_parameterInvocationCount = n;
   }
 
   @Override
@@ -734,13 +743,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     m_skipFailedInvocations = s;
   }
 
-  public void setInvocationTimeOut(long timeOut) {
-    m_invocationTimeOut = timeOut;
-  }
-
   @Override
   public long getInvocationTimeOut() {
     return m_invocationTimeOut;
+  }
+
+  public void setInvocationTimeOut(long timeOut) {
+    m_invocationTimeOut = timeOut;
   }
 
   @Override
@@ -784,6 +793,26 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   @Override
+  public XmlClass getXmlClass() {
+    return m_xmlClass;
+  }
+
+  @Override
+  public void setXmlClass(XmlClass m_xmlClass) {
+    this.m_xmlClass = m_xmlClass;
+  }
+
+  @Override
+  public XmlInclude getXmlInclude() {
+    return m_xmlInclude;
+  }
+
+  @Override
+  public void setXmlInclude(XmlInclude m_xmlInclude) {
+    this.m_xmlInclude = m_xmlInclude;
+  }
+
+  @Override
   public XmlTest getXmlTest() {
     return m_xmlTest;
   }
@@ -799,25 +828,27 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   @Override
   public Map<String, String> findMethodParameters(XmlTest test) {
-    // Get the test+suite parameters
-    Map<String, String> result = test.getAllParameters();
-    for (XmlClass xmlClass: test.getXmlClasses()) {
-      if (xmlClass.getName().equals(getTestClass().getName())) {
-        result.putAll(xmlClass.getLocalParameters());
-        for (XmlInclude include : xmlClass.getIncludedMethods()) {
-          if (include.getName().equals(getMethodName())) {
-            result.putAll(include.getLocalParameters());
-            break;
-          }
-        }
-      }
-    }
+//        // Get the test+suite parameters
+//        Map<String, String> result = test.getAllParameters();
+//        for (XmlClass xmlClass : test.getXmlClasses()) {
+//            if (xmlClass.getName().equals(getTestClass().getName())) {
+//                result.putAll(xmlClass.getLocalParameters());
+//                for (XmlInclude include : xmlClass.getIncludedMethods()) {
+//                    if (include.getName().equals(getMethodName())) {
+//                        result.putAll(include.getLocalParameters());
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return result;
 
-    return result;
+    return m_xmlInclude.getAllParameters();
   }
 
   @Override
   public String getQualifiedName() {
-	return getRealClass().getName() + "." + getMethodName();
+    return getRealClass().getName() + "." + getMethodName();
   }
 }

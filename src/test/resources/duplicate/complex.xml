@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="duplicate-complex" verbose="2">
+    <suite-files>
+        <suite-file path="complex/duplicate-classes-methods.xml"/>
+    </suite-files>
+
+</suite>
+

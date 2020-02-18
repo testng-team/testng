@@ -12,7 +12,9 @@ public interface IClass {
    * @return this test class name.  This is the name of the
    * corresponding Java class.
    */
-  String getName();
+  default String getName() {
+    return getXmlClass().getName();
+  }
 
   /**
    * @return the &lt;test&gt; tag this class was found in.
@@ -24,15 +26,27 @@ public interface IClass {
    */
   XmlClass getXmlClass();
 
+  default String getNameIndex() {
+    return getXmlClass().getNameIndex();
+  }
+
+  default int getIndex() {
+    return getXmlClass().getIndex();
+  }
+
   /**
    * If this class implements org.testng.ITest, returns its test name, otherwise returns null.
    */
-  String getTestName();
+  default String getTestName() {
+    return getXmlTest().getName();
+  }
 
   /**
    * @return the Java class corresponding to this IClass.
    */
-  Class<?> getRealClass();
+  default Class<?> getRealClass() {
+    return getXmlClass().getSupportClass();
+  }
 
   /**
    * Returns all the instances the methods will be invoked upon.
@@ -40,17 +54,16 @@ public interface IClass {
    * of a @Factory annotation.
    *
    * @param create flag if a new set of instances must be returned
-   *  (if set to <tt>false</tt>)
+   *               (if set to <tt>false</tt>)
    * @return All the instances the methods will be invoked upon.
    */
   Object[] getInstances(boolean create);
 
   /**
-   * @deprecated Not used
-   *
    * @return The number of instances used in this class.  This method
    * is needed for serialization since we don't know ahead of time if the
    * instances of the test classes will be serializable.
+   * @deprecated Not used
    */
   @Deprecated
   int getInstanceCount();

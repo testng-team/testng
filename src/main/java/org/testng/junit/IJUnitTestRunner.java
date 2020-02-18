@@ -6,6 +6,7 @@ import java.util.List;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.xml.XmlClass;
 
 
 /**
@@ -19,7 +20,8 @@ public interface IJUnitTestRunner {
 
   void setTestResultNotifier(ITestResultNotifier notifier);
 
-  void run(Class junitTestClass, String... methods);
+//  void run(Class junitTestClass, String... methods);
+  void run(XmlClass junitTestClass, String... methods);
 
   List<ITestNGMethod> getTestMethods();
 

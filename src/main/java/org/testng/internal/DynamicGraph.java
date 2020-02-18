@@ -1,16 +1,12 @@
 package org.testng.internal;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.collections.Pair;
+
+import java.util.*;
 
 /**
  * Representation of the graph of methods.
@@ -93,9 +89,9 @@ public class DynamicGraph<T> {
   private void addEdges(List<Edge<T>> edges) {
     for (Edge<T> edge : edges) {
       Edge<T> existingEdge = getNode(m_edges, edge);
-      if (existingEdge != null && existingEdge.weight == edge.weight) {
-        throw new IllegalStateException("Circular dependency: " + edge.from + " <-> " + edge.to);
-      }
+//      if (existingEdge != null && existingEdge.weight == edge.weight) {
+//        throw new IllegalStateException("Circular dependency: " + edge.from + " <-> " + edge.to);
+//      }
       if ((existingEdge == null) || (existingEdge.weight < edge.weight)) {
         m_edges.put(edge.from, edge);
       }

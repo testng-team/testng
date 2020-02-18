@@ -5,7 +5,6 @@ import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConstructorOrMethod;
 
 /**
- *
  * @author lukas
  */
 //NO JUnit specific code here to avoid runtime errors
@@ -16,7 +15,7 @@ public abstract class JUnitTestMethod extends BaseTestMethod {
     }
 
     protected JUnitTestMethod(JUnitTestClass owner, String methodName, ConstructorOrMethod method, Object instance) {
-        super(methodName, method, null, instance);
+        super(null, null, methodName, method, null, instance);
         setTestClass(owner);
         owner.getTestMethodList().add(this);
     }

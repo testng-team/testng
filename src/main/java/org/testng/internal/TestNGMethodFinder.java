@@ -14,6 +14,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 /**
@@ -49,8 +50,9 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   }
 
   @Override
-  public ITestNGMethod[] getTestMethods(Class<?> clazz, XmlTest xmlTest) {
-    return AnnotationHelper.findMethodsWithAnnotation(clazz, ITestAnnotation.class, annotationFinder, xmlTest);
+//  public ITestNGMethod[] getTestMethods(Class<?> clazz, XmlTest xmlTest) {
+  public ITestNGMethod[] getTestMethods(XmlClass xmlClass, XmlTest xmlTest) {
+    return AnnotationHelper.findMethodsWithAnnotation(xmlClass, ITestAnnotation.class, annotationFinder, xmlTest);
   }
 
   @Override

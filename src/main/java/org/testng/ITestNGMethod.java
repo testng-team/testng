@@ -2,6 +2,8 @@ package org.testng;
 
 
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
@@ -11,7 +13,7 @@ import java.util.concurrent.Callable;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
- *
+ * <p>
  * This interface is not meant to be implemented by users.
  */
 public interface ITestNGMethod extends Cloneable {
@@ -32,6 +34,30 @@ public interface ITestNGMethod extends Cloneable {
    */
   void setTestClass(ITestClass cls);
 
+  XmlClass getXmlClass();
+
+  void setXmlClass(XmlClass m_xmlClass);
+
+  XmlInclude getXmlInclude();
+
+  void setXmlInclude(XmlInclude m_xmlInclude);
+
+  default int getClassIndex() {
+    return getTestClass().getIndex();
+  }
+
+  default String getClassNameIndex() {
+    return getXmlClass() == null ? "class_0" : getXmlClass().getNameIndex();
+  }
+
+  int getIndex();
+
+  String getNameIndex();
+
+  default String getKey() {
+    return getClassNameIndex() + "_" + getNameIndex();
+  }
+
   /**
    * @return the corresponding Java test method.
    * @deprecated This method is deprecated and can now return null. Use
@@ -43,6 +69,7 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * Returns the method name. This is needed for serialization because
    * methods are not Serializable.
+   *
    * @return the method name.
    */
   String getMethodName();
@@ -51,7 +78,6 @@ public interface ITestNGMethod extends Cloneable {
    * @return All the instances the methods will be invoked upon.
    * This will typically be an array of one object in the absence
    * of an @Factory annotation.
-   *
    * @deprecated Use getInstance().
    */
   @Deprecated
@@ -80,12 +106,14 @@ public interface ITestNGMethod extends Cloneable {
    * If a group was not found.
    */
   String getMissingGroup();
+
   void setMissingGroup(String group);
 
   /**
    * Before and After groups
    */
   String[] getBeforeGroups();
+
   String[] getAfterGroups();
 
   /**
@@ -93,6 +121,7 @@ public interface ITestNGMethod extends Cloneable {
    * declared on the class.
    */
   String[] getMethodsDependedUpon();
+
   void addMethodDependedUpon(String methodName);
 
   /**
@@ -154,17 +183,19 @@ public interface ITestNGMethod extends Cloneable {
    * @return The timeout in milliseconds.
    */
   long getTimeOut();
+
   void setTimeOut(long timeOut);
 
   /**
    * @return the number of times this method needs to be invoked.
    */
   int getInvocationCount();
+
   void setInvocationCount(int count);
 
   /**
-   * @deprecated Will always return 0
    * @return 0
+   * @deprecated Will always return 0
    */
   @Deprecated
   int getTotalInvocationCount();
@@ -205,21 +236,29 @@ public interface ITestNGMethod extends Cloneable {
   boolean getEnabled();
 
   String getDescription();
+
   void setDescription(String description);
 
   void incrementCurrentInvocationCount();
+
   int getCurrentInvocationCount();
-  void setParameterInvocationCount(int n);
+
   int getParameterInvocationCount();
+
+  void setParameterInvocationCount(int n);
+
   void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker);
+
   boolean hasMoreInvocation();
 
   ITestNGMethod clone();
 
   IRetryAnalyzer getRetryAnalyzer();
+
   void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
 
   boolean skipFailedInvocations();
+
   void setSkipFailedInvocations(boolean skip);
 
   /**
@@ -228,6 +267,7 @@ public interface ITestNGMethod extends Cloneable {
   long getInvocationTimeOut();
 
   boolean ignoreMissingDependencies();
+
   void setIgnoreMissingDependencies(boolean ignore);
 
   /**
@@ -237,6 +277,7 @@ public interface ITestNGMethod extends Cloneable {
    * the <include invocationNumbers="..."> tag.
    */
   List<Integer> getInvocationNumbers();
+
   void setInvocationNumbers(List<Integer> numbers);
 
   /**
@@ -244,12 +285,14 @@ public interface ITestNGMethod extends Cloneable {
    * methods that have a data provider.
    */
   void addFailedInvocationNumber(int number);
+
   List<Integer> getFailedInvocationNumbers();
 
   /**
    * The scheduling priority. Lower priorities get scheduled first.
    */
   int getPriority();
+
   void setPriority(int priority);
 
   /**
@@ -260,13 +303,14 @@ public interface ITestNGMethod extends Cloneable {
   ConstructorOrMethod getConstructorOrMethod();
 
   /**
-   * @return the parameters found in the include tag, if any
    * @param test
+   * @return the parameters found in the include tag, if any
    */
   Map<String, String> findMethodParameters(XmlTest test);
-  
+
   /**
    * getRealClass().getName() + "." +  getMethodName()
+   *
    * @return qualified name for this method
    */
   String getQualifiedName();

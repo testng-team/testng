@@ -26,6 +26,7 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.testng.*;
 import org.testng.internal.TestListenerHelper;
+import org.testng.xml.XmlClass;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
@@ -214,8 +215,10 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
    * @param testClass the JUnit test class
    */
   @Override
-  public void run(Class testClass, String... methods) {
-    start(testClass, methods);
+//  public void run(Class testClass, String... methods) {
+  public void run(XmlClass testClass, String... methods) {
+//    start(testClass, methods);
+    start(testClass.getSupportClass(), methods);
   }
 
   /**

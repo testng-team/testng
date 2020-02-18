@@ -13,9 +13,9 @@ public class XmlInclude {
   private final String m_name;
   private final List<Integer> m_invocationNumbers;
   private final int m_index;
-  private String m_description;
   private final Map<String, String> m_parameters = Maps.newHashMap();
-
+  private String m_name_index = null;
+  private String m_description;
   private XmlClass m_xmlClass;
 
   public XmlInclude(String n) {
@@ -30,19 +30,15 @@ public class XmlInclude {
     m_name = n;
     m_invocationNumbers = list;
     m_index = index;
+    updateNameIndex();
+  }
+
+  public String getDescription() {
+    return m_description;
   }
 
   public void setDescription(String description) {
     m_description = description;
-  }
-
-  public void setParameters(Map<String, String> parameters) {
-    m_parameters.clear();
-    m_parameters.putAll(parameters);
-  }
-  
-  public String getDescription() {
-    return m_description;
   }
 
   public String getName() {
@@ -57,6 +53,18 @@ public class XmlInclude {
     return m_index;
   }
 
+  public String getNameIndex() {
+    return m_name_index;
+  }
+
+  public String getKey() {
+    return m_xmlClass.getNameIndex() + "_" + m_name_index;
+  }
+
+  public void updateNameIndex() {
+    m_name_index = m_name + "_" + m_index;
+  }
+
   public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     Properties p = new Properties();
@@ -64,15 +72,15 @@ public class XmlInclude {
     List<Integer> invocationNumbers = getInvocationNumbers();
     if (invocationNumbers != null && invocationNumbers.size() > 0) {
       p.setProperty("invocation-numbers",
-          XmlClass.listToString(invocationNumbers).toString());
+        XmlClass.listToString(invocationNumbers).toString());
     }
 
-    if (!m_parameters.isEmpty()){
-        xsb.push("include", p);
-        XmlUtils.dumpParameters(xsb, m_parameters);
-        xsb.pop("include");
+    if (!m_parameters.isEmpty()) {
+      xsb.push("include", p);
+      XmlUtils.dumpParameters(xsb, m_parameters);
+      xsb.pop("include");
     } else {
-       xsb.addEmptyElement("include", p);
+      xsb.addEmptyElement("include", p);
     }
 
     return xsb.toXML();
@@ -84,9 +92,10 @@ public class XmlInclude {
     int result = 1;
     result = prime * result + m_index;
     result = prime * result
-        + ((m_invocationNumbers == null) ? 0 : m_invocationNumbers.hashCode());
+      + ((m_invocationNumbers == null) ? 0 : m_invocationNumbers.hashCode());
     result = prime * result + (m_parameters == null ? 0 : m_parameters.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
+    result = prime * result + ((m_name_index == null) ? 0 : m_name_index.hashCode());
     return result;
   }
 
@@ -118,7 +127,8 @@ public class XmlInclude {
     } else if (!m_parameters.equals(other.m_parameters)) {
       return XmlSuite.f();
     }
-    return true;
+//        return true;
+    return m_index == other.m_index;
   }
 
   public void addParameter(String name, String value) {
@@ -131,6 +141,11 @@ public class XmlInclude {
   @Deprecated
   public Map<String, String> getParameters() {
     return getAllParameters();
+  }
+
+  public void setParameters(Map<String, String> parameters) {
+    m_parameters.clear();
+    m_parameters.putAll(parameters);
   }
 
   /**
@@ -147,6 +162,7 @@ public class XmlInclude {
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlClass != null) {
+      result.putAll(m_xmlClass.getXmlTest().getAllParameters());
       result.putAll(m_xmlClass.getAllParameters());
     }
     result.putAll(m_parameters);

@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="duplicate-all" verbose="2">
+    <suite-files>
+        <suite-file path="single.xml"/>
+        <suite-file path="complex.xml"/>
+    </suite-files>
+
+</suite>
+

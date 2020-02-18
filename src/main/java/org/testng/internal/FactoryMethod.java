@@ -1,30 +1,16 @@
 package org.testng.internal;
 
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.testng.IDataProviderListener;
-import org.testng.IInstanceInfo;
-import org.testng.IObjectFactory;
-import org.testng.IObjectFactory2;
-import org.testng.ITestContext;
-import org.testng.ITestMethodFinder;
-import org.testng.ITestNGListener;
-import org.testng.ITestNGMethod;
-import org.testng.ITestObjectFactory;
-import org.testng.TestNGException;
+import org.testng.*;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
+
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * This class represents a method annotated with @Factory
@@ -35,7 +21,7 @@ public class FactoryMethod extends BaseTestMethod {
   private final Object m_instance;
   private final ITestContext m_testContext;
   private final ITestObjectFactory objectFactory;
-  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>  m_dataProviderListeners;
+  private final Map<Class<? extends IDataProviderListener>, IDataProviderListener> m_dataProviderListeners;
 
   /**
    * @deprecated - This constructor is un-used within TestNG and hence stands deprecated as of TestNG v6.13
@@ -44,55 +30,25 @@ public class FactoryMethod extends BaseTestMethod {
   @SuppressWarnings("unused")
   public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
                        ITestContext testContext, ITestObjectFactory objectFactory) {
-    this(com, instance, annotationFinder, testContext, objectFactory,
-            Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
+    this(null, com, instance, annotationFinder, testContext, objectFactory,
+      Collections.<Class<? extends IDataProviderListener>, IDataProviderListener>emptyMap());
   }
 
-
-  @SuppressWarnings("unchecked")
-  private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
-    IListenersAnnotation annotation = annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
-    if (annotation == null) {
-      return;
-    }
-    Class<? extends ITestNGListener>[] listeners = annotation.getValue();
-    for (Class<? extends ITestNGListener> listener : listeners) {
-      if (! IDataProviderListener.class.isAssignableFrom(listener)) {
-        continue;
-      }
-
-      Class<? extends IDataProviderListener> key = (Class<? extends IDataProviderListener>) listener;
-      if (m_dataProviderListeners.containsKey(key)){
-        continue;
-      }
-
-      if (instance != null && IDataProviderListener.class.isAssignableFrom(instance.getClass())) {
-        m_dataProviderListeners.put(key, (IDataProviderListener) instance);
-        continue;
-      }
-
-      Object object = ClassHelper.newInstanceOrNull(listener);
-      if (object != null) {
-        m_dataProviderListeners.put(key, (IDataProviderListener) object);
-      }
-    }
-
-  }
 
   //This constructor is intentionally created with package visibility because we dont have any callers of this
   //constructor outside of this package.
-  FactoryMethod(ConstructorOrMethod com, Object instance, IAnnotationFinder annotationFinder,
-                       ITestContext testContext, ITestObjectFactory objectFactory,
-                       Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
-    super(com.getName(), com, annotationFinder, instance);
+  FactoryMethod(XmlClass xmlClass, ConstructorOrMethod com, Object instance, IAnnotationFinder annotationFinder,
+                ITestContext testContext, ITestObjectFactory objectFactory,
+                Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
+    super(null, xmlClass, com.getName(), com, annotationFinder, instance);
     m_dataProviderListeners = dataProviderListeners;
     init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
-    if (instance != null && ! declaringClass.isAssignableFrom(instance.getClass())) {
+    if (instance != null && !declaringClass.isAssignableFrom(instance.getClass())) {
       throw new TestNGException("Mismatch between instance/method classes:"
-          + instance.getClass() + " " + declaringClass);
+        + instance.getClass() + " " + declaringClass);
     }
     if (instance == null && com.getMethod() != null && !Modifier.isStatic(com.getMethod().getModifiers())) {
       throw new TestNGException("An inner factory method MUST be static. But '" + com.getMethod().getName() + "' from '" + declaringClass.getName() + "' is not.");
@@ -124,11 +80,11 @@ public class FactoryMethod extends BaseTestMethod {
   public FactoryMethod(ConstructorOrMethod com, Object instance, XmlTest xmlTest, IAnnotationFinder annotationFinder,
                        ITestContext testContext, ITestObjectFactory objectFactory,
                        Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
-    this(com, instance, annotationFinder, testContext, objectFactory, dataProviderListeners);
+    this(null, com, instance, annotationFinder, testContext, objectFactory, dataProviderListeners);
   }
 
   private static String[] getAllGroups(Class<?> declaringClass, XmlTest xmlTest,
-      IAnnotationFinder annotationFinder) {
+                                       IAnnotationFinder annotationFinder) {
     // Find the groups of the factory => all groups of all test methods
     ITestMethodFinder testMethodFinder = new TestNGMethodFinder(new RunInfo(), annotationFinder);
     ITestNGMethod[] testMethods = testMethodFinder.getTestMethods(declaringClass, xmlTest);
@@ -139,23 +95,53 @@ public class FactoryMethod extends BaseTestMethod {
     return groups.toArray(new String[groups.size()]);
   }
 
+  @SuppressWarnings("unchecked")
+  private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
+    IListenersAnnotation annotation = annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
+    if (annotation == null) {
+      return;
+    }
+    Class<? extends ITestNGListener>[] listeners = annotation.getValue();
+    for (Class<? extends ITestNGListener> listener : listeners) {
+      if (!IDataProviderListener.class.isAssignableFrom(listener)) {
+        continue;
+      }
+
+      Class<? extends IDataProviderListener> key = (Class<? extends IDataProviderListener>) listener;
+      if (m_dataProviderListeners.containsKey(key)) {
+        continue;
+      }
+
+      if (instance != null && IDataProviderListener.class.isAssignableFrom(instance.getClass())) {
+        m_dataProviderListeners.put(key, (IDataProviderListener) instance);
+        continue;
+      }
+
+      Object object = ClassHelper.newInstanceOrNull(listener);
+      if (object != null) {
+        m_dataProviderListeners.put(key, (IDataProviderListener) object);
+      }
+    }
+
+  }
+
   public Object[] invoke() {
     List<Object> result = Lists.newArrayList();
 
     Map<String, String> allParameterNames = Maps.newHashMap();
     Parameters.MethodParameters methodParameters = new Parameters.MethodParameters(m_testContext.getCurrentXmlTest().getAllParameters(),
-            findMethodParameters(m_testContext.getCurrentXmlTest()),
-            null, null, m_testContext,
-            null /* testResult */);
+      findMethodParameters(m_testContext.getCurrentXmlTest()),
+      null, null, m_testContext,
+      null /* testResult */);
 
     Iterator<Object[]> parameterIterator = Parameters.handleParameters(this,
-            allParameterNames,
-            m_instance,
-            methodParameters,
-            m_testContext.getCurrentXmlTest().getSuite(),
-            m_annotationFinder,
-            null /* fedInstance */,
-            m_dataProviderListeners.values()).parameters;
+      allParameterNames,
+      m_instance,
+      methodParameters,
+      m_testContext.getCurrentXmlTest().getSuite(),
+      m_annotationFinder,
+      null /* fedInstance */,
+      m_dataProviderListeners.values()).parameters;
 
     try {
       List<Integer> indices = factoryAnnotation.getIndices();
@@ -194,8 +180,8 @@ public class FactoryMethod extends BaseTestMethod {
     } catch (Throwable t) {
       ConstructorOrMethod com = getConstructorOrMethod();
       throw new TestNGException("The factory method "
-          + com.getDeclaringClass() + "." + com.getName()
-          + "() threw an exception", t);
+        + com.getDeclaringClass() + "." + com.getName()
+        + "() threw an exception", t);
     }
 
     return result.toArray(new Object[result.size()]);

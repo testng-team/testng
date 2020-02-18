@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+
+<suite name="suite: single-hello-duplicate-classes" verbose="2" parallel="tests">
+    <test name="test: single-hello-duplicate-classes">
+        <classes>
+            <class name="test.duplicate.HelloTest">
+                <methods>
+                    <include name="hello1"/>
+                    <include name="hello2"/>
+                    <include name="hello3"/>
+                    <include name="hello4"/>
+                </methods>
+            </class>
+            <class name="test.duplicate.HelloTest">
+                <methods>
+                    <include name="hello1"/>
+                    <include name="hello2"/>
+                    <include name="hello3"/>
+                    <include name="hello4"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>
+

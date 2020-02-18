@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.xml.XmlClass;
+
 /**
  * This class is used by TestNG to locate the test classes.
  *
@@ -19,6 +21,7 @@ public interface ITestClassFinder {
   /**
    * Return the IClass for a given class
    */
-  IClass getIClass(Class<?> cls);
+//  IClass getIClass(Class<?> cls);
+  IClass getIClass(XmlClass xmlClass);
 
 }
