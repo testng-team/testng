@@ -31,8 +31,8 @@ The announcement, along with a few examples and summary of the new features, can
     http://tinyurl.com/dxlbh
 
 -- 
-Cédric
-http://testng.org
+Cï¿½dric
+https://testng.org
 
 ================
 

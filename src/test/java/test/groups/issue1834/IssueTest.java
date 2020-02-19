@@ -27,7 +27,7 @@ public class IssueTest extends SimpleBaseTest {
 
   private static String asSuite() {
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\">\n"
+        + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n"
         + "<suite name=\"1834_Suite\" parallel=\"false\" verbose=\"2\">\n"
         + "  <test name=\"1834_Test\">\n"
         + "    <groups>\n"

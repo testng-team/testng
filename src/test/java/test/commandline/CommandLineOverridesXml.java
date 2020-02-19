@@ -97,7 +97,7 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
 
   private static String buildSuiteContentThatRefersToInvalidTestClass() {
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE suite SYSTEM \"http://testng.org/testng-1.0.dtd\">\n"
+        + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n"
         + "<suite name=\"1810_Suite\">\n"
         + "    <test name=\"1810_test\">\n"
         + "        <classes>\n"

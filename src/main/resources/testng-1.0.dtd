@@ -1,7 +1,7 @@
 <!--
 
 Here is a quick overview of the main parts of this DTD.  For more information,
-refer to the <a href="http://testng.org">main web site</a>.
+refer to the <a href="https://testng.org">main web site</a>.
                                                       
 A <b>suite</b> is made of <b>tests</b> and <b>parameters</b>.
                                                       

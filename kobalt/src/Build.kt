@@ -21,13 +21,13 @@ val p = project {
     name = "testng"
     group = "org.testng"
     artifactId = name
-    url = "http://testng.org"
+    url = "https://testng.org"
     version = VERSION
 
     pom = Model().apply {
         name = project.name
         description = "A testing framework for the JVM"
-        url = "http://testng.org"
+        url = "https://testng.org"
         licenses = listOf(License().apply {
             name = "Apache 2.0"
             url = "http://www.apache.org/licenses/LICENSE-2.0"

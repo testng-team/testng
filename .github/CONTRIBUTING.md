@@ -6,7 +6,7 @@ Before opening a new issue, did you ask your question on
 If you posted on both sites, please provide the link to the other question to avoid duplicating the answer.
 
 # Are you sure it is a TestNG bug?
-Before posting the issue, try to reproduce the issue in [a shell window](http://testng.org/doc/documentation-main.html#running-testng).
+Before posting the issue, try to reproduce the issue in [a shell window](https://testng.org/doc/documentation-main.html#running-testng).
 
 If the problem does not exist with the shell, first check if the issue exists on the bugtracker of the runner, and open an issue there first:
 * Eclipse: https://github.com/cbeust/testng-eclipse/issues

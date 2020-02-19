@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 public class TestNG1 extends BaseClass {
   @Test(priority = 1)
   public void test1TestNG1() {
-    runTest("http://testng.org/doc/download.html");
+    runTest("https://testng.org/doc/download.html");
   }
 
   @Test(priority = 2)

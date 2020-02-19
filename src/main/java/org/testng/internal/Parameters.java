@@ -437,7 +437,7 @@ public class Parameters {
         throw new TestNGException(
             errPrefix
                 + ".\nFor more information on native dependency injection please refer to "
-                + "http://testng.org/doc/documentation-main.html#native-dependency-injection");
+                + "https://testng.org/doc/documentation-main.html#native-dependency-injection");
       }
     }
 
