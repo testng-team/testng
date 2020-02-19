@@ -45,7 +45,7 @@ public class InterceptorTest extends SimpleBaseTest {
 
   @Test(dataProvider = "dp1")
   public void ensureInterceptorIsInvokedViaListenersTag(Class<?> testClass) throws IOException {
-    String xml = "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\">\n"
+    String xml = "<!DOCTYPE suite SYSTEM \"https://beust.com/testng/testng-1.0.dtd\">\n"
         + "<suite name=\"2111_suite\" verbose=\"2\">\n"
         + "    <listeners>\n"
         + "        <listener class-name=\"test.dataprovider.issue2111.LocalDataProviderInterceptor\"/>\n"

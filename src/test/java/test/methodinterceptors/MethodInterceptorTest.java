@@ -23,7 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class MethodInterceptorTest extends SimpleBaseTest {
 
   private String XML =
-    "<!DOCTYPE suite SYSTEM \"http://beust.com/testng/testng-1.0.dtd\" >" +
+    "<!DOCTYPE suite SYSTEM \"https://beust.com/testng/testng-1.0.dtd\" >" +
     "" +
     "<suite name=\"Single\" verbose=\"0\">" +
     "" +

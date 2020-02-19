@@ -1,4 +1,4 @@
-<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+<!DOCTYPE suite SYSTEM "https://beust.com/testng/testng-1.0.dtd" >
   
 <suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
     data-provider-thread-count="3">

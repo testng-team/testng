@@ -1598,7 +1598,7 @@ Added: <fileset> to <testng>
 
 1.0
 2004/04/28
-http://beust.com/weblog/2004/04/28/
+https://beust.com/weblog/2004/04/28/
 
 Fixed: Updated to the new DTD
 Fixed: Suite table of contents displays failures first

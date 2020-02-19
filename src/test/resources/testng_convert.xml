@@ -1,4 +1,4 @@
-<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+<!DOCTYPE suite SYSTEM "https://beust.com/testng/testng-1.0.dtd" >
 
 <suite name="JUnit Convert suite" verbose="1" parallel="false" thread-count="2" annotations="javadoc">
    <parameter name="inputDir" value="./test/src/test/convert"/>
