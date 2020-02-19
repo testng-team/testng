@@ -309,7 +309,7 @@ public class XMLStringBuffer {
     } else if (!content.contains("]]>")) {
       m_buffer.append("<![CDATA[").append(content).append("]]>");
     } else if ("]]>".equals(content)) {
-      // Solution from http://stackoverflow.com/q/223652/4234729
+      // Solution from https://stackoverflow.com/q/223652/4234729
       m_buffer.append("<![CDATA[]]]]><![CDATA[>]]>");
     } else { // content contains "]]>"
       String[] subStrings = content.split("]]>");

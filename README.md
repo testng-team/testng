@@ -1,4 +1,4 @@
-[![Build Status](http://img.shields.io/travis/cbeust/testng.svg)](https://travis-ci.org/cbeust/testng)
+[![Build Status](https://img.shields.io/travis/cbeust/testng.svg)](https://travis-ci.org/cbeust/testng)
 [![Maven Central](https://img.shields.io/maven-central/v/org.testng/testng.svg)](https://maven-badges.herokuapp.com/maven-central/org.testng/testng)
 [![Bintray](https://api.bintray.com/packages/cbeust/maven/testng/images/download.svg)](https://bintray.com/cbeust/maven/testng/_latestVersion)
 [![License](https://img.shields.io/github/license/cbeust/testng.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
@@ -14,8 +14,8 @@ Documentation available at [TestNG's main web site](https://testng.org).
 
 ### Need help?
 Before opening a new issue, did you ask your question on
-* [Google group](http://groups.google.com/group/testng-users)
-* [StackOverflow](http://stackoverflow.com/questions/tagged/testng)
+* [Google group](https://groups.google.com/group/testng-users)
+* [StackOverflow](https://stackoverflow.com/questions/tagged/testng)
 
 If you posted on both sites, please provide the link to the other question to avoid duplicating the answer.
 

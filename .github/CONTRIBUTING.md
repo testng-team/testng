@@ -1,7 +1,7 @@
 # Need help? 
 Before opening a new issue, did you ask your question on
-* [Google group](http://groups.google.com/group/testng-users)
-* [StackOverflow](http://stackoverflow.com/questions/tagged/testng)
+* [Google group](https://groups.google.com/group/testng-users)
+* [StackOverflow](https://stackoverflow.com/questions/tagged/testng)
 
 If you posted on both sites, please provide the link to the other question to avoid duplicating the answer.
 

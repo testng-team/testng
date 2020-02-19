@@ -482,8 +482,8 @@ public class EmailableReporter implements IReporter {
   /** Starts HTML stream */
   protected void startHtml(PrintWriter out) {
     out.println(
-        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
-    out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"https://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+    out.println("<html xmlns=\"https://www.w3.org/1999/xhtml\">");
     out.println("<head>");
     out.println("<meta charset='utf-8'>");
     out.println("<title>TestNG Report</title>");

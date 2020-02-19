@@ -7,7 +7,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-// From http://stackoverflow.com/q/33404335/4234729
+// From https://stackoverflow.com/q/33404335/4234729
 public class ITestSample implements ITest {
 
   public ThreadLocal<String> testName = new ThreadLocal<>();

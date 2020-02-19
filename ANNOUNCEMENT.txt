@@ -1,7 +1,7 @@
 javalobby.org
 testdriven.com
 opensourcetesting.org
-http://saloon.javaranch.com/cgi-bin/ubb/ultimatebb.cgi?ubb=forum&f=68
+https://saloon.javaranch.com/cgi-bin/ubb/ultimatebb.cgi?ubb=forum&f=68
 java.net
 comp.lang.java.programmer
 
@@ -28,7 +28,7 @@ The TestNG team is happy to announce the immediate availability of TestNG 4.0, w
 
 The announcement, along with a few examples and summary of the new features, can be found here:
 
-    http://tinyurl.com/dxlbh
+    https://tinyurl.com/dxlbh
 
 -- 
 C�dric

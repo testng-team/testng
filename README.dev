@@ -1,6 +1,6 @@
 New installation:
 
-Install GPG at http://www.gpgtools.org/gpgmail/index.html
+Install GPG at https://www.gpgtools.org/gpgmail/index.html
 Generate new key with gpg --gen-key
 build-with-maven
 gpg --list-keys

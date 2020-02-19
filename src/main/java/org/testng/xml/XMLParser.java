@@ -59,7 +59,7 @@ public abstract class XMLParser<T> implements IFileParser<T> {
   /** Tests if the current <code>SAXParserFactory</code> supports DTD validation. */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
-      spf.getFeature("http://xml.org/sax/features/validation");
+      spf.getFeature("https://xml.org/sax/features/validation");
       return true;
     } catch (Exception ex) {
       return false;

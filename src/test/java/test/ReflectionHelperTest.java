@@ -14,7 +14,7 @@ public class ReflectionHelperTest {
 
     @Test
     public void testMethodCount() {
-        //Testing exclusion of synthetic methods Refer http://stackoverflow.com/a/5007394 to learn more
+        //Testing exclusion of synthetic methods Refer https://stackoverflow.com/a/5007394 to learn more
         Method[] methods = prune(ReflectionHelper.getLocalMethods(DuplicateCallsSample.class));
         Assert.assertEquals(methods.length, 2);
 

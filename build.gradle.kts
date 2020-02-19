@@ -84,7 +84,7 @@ dependencies {
 tasks.jar {
     manifest {
         attributes(
-            "Bundle-License" to "http://apache.org/licenses/LICENSE-2.0",
+            "Bundle-License" to "https://apache.org/licenses/LICENSE-2.0",
             "Bundle-Description" to "TestNG is a testing framework.",
             "Import-Package" to """
                 "bsh.*;version="[2.0.0,3.0.0)";resolution:=optional",
@@ -191,7 +191,7 @@ with(publishing) {
                 licenses {
                     license {
                         name.set("Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
                 }
                 issueManagement {

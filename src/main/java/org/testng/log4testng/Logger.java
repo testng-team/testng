@@ -14,7 +14,7 @@ import org.testng.collections.Maps;
 
 /**
  * TestNG support logging via a custom logging framework similar to <a
- * href="http://logging.apache.org/log4j">Log4j</a>. To control logging, add a resource named
+ * href="https://logging.apache.org/log4j">Log4j</a>. To control logging, add a resource named
  * "log4testng.properties" to your classpath. The logging levels are TRACE, DEBUG, INFO, WARN, ERROR
  * and FATAL. The Logging framework has the following characteristics:
  *

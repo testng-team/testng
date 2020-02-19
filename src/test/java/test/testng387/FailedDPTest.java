@@ -9,7 +9,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
- * test for http://jira.opensymphony.com/browse/TESTNG-387
+ * test for https://jira.opensymphony.com/browse/TESTNG-387
  * The invocation-numbers logic in failed.xml is wrong for dataprovider and parallel=true
  *
  * The test will throw exception when numbers are prime, so getFailedInvocationNumbers() should be a list of prime numbers.

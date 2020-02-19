@@ -10,7 +10,7 @@ public class TestNG1NoPriority extends BaseClass {
 
   @Test
   public void test2TestNG1() {
-    runTest("http://www3.lenovo.com/in/en/");
+    runTest("https://www3.lenovo.com/in/en/");
   }
 
   @Test

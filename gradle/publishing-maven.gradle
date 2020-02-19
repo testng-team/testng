@@ -55,7 +55,7 @@ uploadArchives {
                 project {
                     name project.name
                     description 'Testing framework for Java'
-                    url 'http://github.com/cbeust/testng'
+                    url 'https://github.com/cbeust/testng'
                     scm {
                         connection 'scm:git:https://github.com/cbeust/testng.git'
                         developerConnection 'scm:git:git@github.com:cbeust/testng.git'

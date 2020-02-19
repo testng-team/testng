@@ -30,10 +30,10 @@ val p = project {
         url = "https://testng.org"
         licenses = listOf(License().apply {
             name = "Apache 2.0"
-            url = "http://www.apache.org/licenses/LICENSE-2.0"
+            url = "https://www.apache.org/licenses/LICENSE-2.0"
         })
         scm = Scm().apply {
-            url = "http://github.com/cbeust/testng"
+            url = "https://github.com/cbeust/testng"
             connection = "scm:git:https://github.com/cbeust/testng.git"
             developerConnection = "scm:git:git@github.com:cbeust/testng.git"
         }

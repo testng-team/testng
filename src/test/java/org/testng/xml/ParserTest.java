@@ -24,7 +24,7 @@ public class ParserTest {
     return new Object[][] {
       {XML_FILE_NAME},
       {new File(XML_FILE_NAME).toURI().toString()},
-      {"http://localhost:4444/testng.xml"},
+      {"https://localhost:4444/testng.xml"},
       {"https://localhost:4444/testng.xml"}
     };
   }
