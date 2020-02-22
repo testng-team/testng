@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class DynamicGraphHelper {
 
@@ -115,7 +116,17 @@ public final class DynamicGraphHelper {
     // we don't add the same class twice
     List<XmlClass> sortedClasses = Lists.newArrayList();
 
-    for (XmlClass c : test.getXmlClasses()) {
+    ListMultiMap<String, ITestNGMethod> methodsFromClass = Maps.newListMultiMap();
+    for (ITestNGMethod m : methods) {
+      methodsFromClass.put(m.getTestClass().getName(), m);
+    }
+
+    final List<XmlClass> classesWithMethods = test.getXmlClasses()
+            .stream()
+            .filter(xmlClass -> methodsFromClass.keySet().contains(xmlClass.getName()))
+            .collect(Collectors.toList());
+
+    for (XmlClass c : classesWithMethods) {
       classes.put(c.getName(), new ArrayList<>());
       if (!sortedClasses.contains(c)) {
         sortedClasses.add(c);
@@ -132,11 +143,6 @@ public final class DynamicGraphHelper {
       indexedClasses1.put(c.getName(), i);
       indexedClasses2.put(i, c.getName());
       i++;
-    }
-
-    ListMultiMap<String, ITestNGMethod> methodsFromClass = Maps.newListMultiMap();
-    for (ITestNGMethod m : methods) {
-      methodsFromClass.put(m.getTestClass().getName(), m);
     }
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();

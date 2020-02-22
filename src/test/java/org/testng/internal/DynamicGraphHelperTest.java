@@ -22,6 +22,9 @@ import org.testng.internal.dynamicgraph.IndependentTestClassSample;
 import org.testng.internal.dynamicgraph.SequentialClassA;
 import org.testng.internal.dynamicgraph.SequentialClassB;
 import org.testng.internal.dynamicgraph.SoftDependencyTestClassSample;
+import org.testng.internal.dynamicgraph.testpackage.PackageTestClassA;
+import org.testng.internal.dynamicgraph.testpackage.PackageTestClassBAbstract;
+import org.testng.internal.dynamicgraph.testpackage.PackageTestClassBB;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
@@ -30,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -128,6 +132,16 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     }
     assertThat(actualObjectIds).containsExactly("one");
     assertThat(actualMethodNames).contains("testMethod", "anotherTestMethod");
+  }
+
+  @Test
+  public void testCreateDynamicGraphWithPackageWithAbstractClass() {
+    Class<?>[] classes =
+            new Class<?>[] {PackageTestClassA.class, PackageTestClassBAbstract.class, PackageTestClassBB.class};
+    XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
+    DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
+    assertThat(graph.getFreeNodes().stream().map(ITestNGMethod::getMethodName).collect(Collectors.toList()))
+            .containsExactly("a1", "a2");
   }
 
   private static List<String> extractDestinationInfoFromEdge(Map<ITestNGMethod, Integer> edges) {
