@@ -134,24 +134,30 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     assertThat(actualMethodNames).contains("testMethod", "anotherTestMethod");
   }
 
-  @Test
-  public void testCreateDynamicGraphWithPackageWithAbstractClass() {
-    Class<?>[] classes =
-            new Class<?>[] {PackageTestClassA.class, PackageTestClassBAbstract.class, PackageTestClassBB.class};
+  @DataProvider
+  public Object[][] classesFromPackage() {
+    return new Object[][] {
+            {new Class<?>[] {PackageTestClassA.class, PackageTestClassBAbstract.class, PackageTestClassBB.class}},
+            {new Class<?>[] {PackageTestClassA.class, PackageTestClassBB.class}}
+    };
+  }
+
+  @Test(dataProvider = "classesFromPackage")
+  public void testCreateDynamicGraphWithPackageWithAbstractClassPreserveOrderTrue(Class<?>[] classes) {
     XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
+    xmlTest.setPreserveOrder(true);
     DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
     assertThat(graph.getFreeNodes().stream().map(ITestNGMethod::getMethodName).collect(Collectors.toList()))
             .containsExactly("a1", "a2");
   }
 
-  @Test
-  public void testCreateDynamicGraphWithPackageWithoutAbstractClass() {
-    Class<?>[] classes =
-            new Class<?>[] {PackageTestClassA.class, PackageTestClassBB.class};
+  @Test(dataProvider = "classesFromPackage")
+  public void testCreateDynamicGraphWithPackageWithoutAbstractClass(Class<?>[] classes) {
     XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
+    xmlTest.setPreserveOrder(false);
     DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
     assertThat(graph.getFreeNodes().stream().map(ITestNGMethod::getMethodName).collect(Collectors.toList()))
-                .containsExactly("a1", "a2");
+                .containsExactly("a1", "a2", "b2", "b1");
   }
 
   private static List<String> extractDestinationInfoFromEdge(Map<ITestNGMethod, Integer> edges) {
