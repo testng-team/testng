@@ -144,6 +144,16 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
             .containsExactly("a1", "a2");
   }
 
+  @Test
+  public void testCreateDynamicGraphWithPackageWithoutAbstractClass() {
+    Class<?>[] classes =
+            new Class<?>[] {PackageTestClassA.class, PackageTestClassBB.class};
+    XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
+    DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
+    assertThat(graph.getFreeNodes().stream().map(ITestNGMethod::getMethodName).collect(Collectors.toList()))
+                .containsExactly("a1", "a2");
+  }
+
   private static List<String> extractDestinationInfoFromEdge(Map<ITestNGMethod, Integer> edges) {
     List<String> destinations = Lists.newLinkedList();
     for (ITestNGMethod to : edges.keySet()) {
