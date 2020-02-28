@@ -50,7 +50,11 @@ public class InvokeMethodRunnable implements Callable<Void> {
               m_instance, m_parameters, m_hookable, m.getMethod(), m_testResult);
         }
       } catch (Throwable e) {
-        t = new TestNGRuntimeException(e.getCause());
+        Throwable cause = e.getCause();
+        if (cause == null) {
+          cause = e;
+        }
+        t = new TestNGRuntimeException(cause);
       }
       if (null != t) {
         Thread.currentThread().interrupt();
