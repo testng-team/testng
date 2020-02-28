@@ -627,6 +627,7 @@
   <test name="Hookable" >
     <classes>
       <class name="test.hook.HookableTest"/>
+      <class name="test.hook.issue2251.IssueTest"/>
     </classes>
   </test>
 
