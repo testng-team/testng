@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB2255: Ensure test method parameters are visible in BeforeMethod config method (Krishnan Mahadevan)
 Fixed: GITHUB-2251: NullPointerException at test with timeOut (Krishnan Mahadevan)
 Fixed: GITHUB-2249: Not abstract super-classes mess up test run order (Sergii Kim)
 Fixed: GITHUB-2195: NPE Using groups and @Before/@AfterMethod with alwaysRun and dependsOnMethods (Tomas & Julien Herr)
