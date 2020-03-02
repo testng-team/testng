@@ -509,6 +509,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private ITestResult invokeMethod(
       TestMethodArguments arguments, XmlSuite suite, FailureContext failureContext) {
     TestResult testResult = TestResult.newEmptyTestResult();
+    testResult.setParameters(arguments.getParameterValues());
+    testResult.setParameterIndex(arguments.getParametersIndex());
+    testResult.setHost(m_testContext.getHost());
 
     GroupConfigMethodArguments cfgArgs = new GroupConfigMethodArguments.Builder()
         .forTestMethod(arguments.getTestMethod())
@@ -556,9 +559,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       invokedMethod = new InvokedMethod(arguments.getInstance(),
           arguments.getTestMethod(), invokedMethod.getDate(), testResult);
 
-      testResult.setParameters(arguments.getParameterValues());
-      testResult.setParameterIndex(arguments.getParametersIndex());
-      testResult.setHost(m_testContext.getHost());
       testResult.setStatus(ITestResult.STARTED);
 
       Reporter.setCurrentTestResult(testResult);
