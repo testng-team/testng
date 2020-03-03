@@ -222,4 +222,11 @@ public class CommandLineArgs {
       description = "The dependency injector factory implementation that TestNG should use.")
   public String dependencyInjectorFactoryClass;
 
+  public static final String FAIL_IF_ALL_TESTS_SKIPPED = "-failwheneverythingskipped";
+
+  @Parameter(
+      names = FAIL_IF_ALL_TESTS_SKIPPED,
+      description = "Should TestNG fail execution if all tests were skipped and nothing was run.")
+  public Boolean failIfAllTestsSkipped = false;
+
 }
