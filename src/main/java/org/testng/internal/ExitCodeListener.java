@@ -1,18 +1,25 @@
 package org.testng.internal;
 
+import org.testng.IExecutionListener;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.TestNGException;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
 
-public class ExitCodeListener implements ITestListener, IReporter {
+public class ExitCodeListener implements ITestListener, IReporter, IExecutionListener {
   private boolean hasTests = false;
   private final ExitCode status = new ExitCode();
+  private boolean failIfAllTestsSkipped = false;
+
+  public void failIfAllTestsSkipped() {
+    this.failIfAllTestsSkipped = true;
+  }
 
   public ExitCode getStatus() {
     return status;
@@ -63,4 +70,11 @@ public class ExitCodeListener implements ITestListener, IReporter {
 
   @Override
   public void onFinish(ITestContext context) {}
+
+  @Override
+  public void onExecutionFinish() {
+    if (failIfAllTestsSkipped && (getStatus().getExitCode() == ExitCode.SKIPPED)) {
+      throw new TestNGException("All tests were skipped. Nothing was run.");
+    }
+  }
 }

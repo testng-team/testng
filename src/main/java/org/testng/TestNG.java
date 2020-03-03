@@ -100,6 +100,7 @@ import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
  * @see #usage()
  * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
+@SuppressWarnings({"unused", "unchecked", "rawtypes"})
 public class TestNG {
 
   /** This class' log4testng Logger. */
@@ -131,6 +132,7 @@ public class TestNG {
   private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   private Boolean m_isMixed = XmlSuite.DEFAULT_MIXED;
   protected boolean m_useDefaultListeners = true;
+  private boolean m_failIfAllTestsSkipped = false;
 
   private ITestRunnerFactory m_testRunnerFactory;
 
@@ -156,7 +158,7 @@ public class TestNG {
   private int m_threadCount = -1;
   private XmlSuite.ParallelMode m_parallelMode = null;
   private XmlSuite.FailurePolicy m_configFailurePolicy;
-  private Class[] m_commandLineTestClasses;
+  private Class<?>[] m_commandLineTestClasses;
 
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
@@ -216,6 +218,15 @@ public class TestNG {
     m_configuration = new Configuration();
   }
 
+  /**
+   * @param failIfAllTestsSkipped - Whether TestNG should enable/disable failing when all the tests
+   * were skipped and nothing was run (Mostly when a test is powered by a data provider and when the
+   * data provider itself fails causing all tests to skip).
+   */
+  public void toggleFailureIfAllTestsWereSkipped(boolean failIfAllTestsSkipped) {
+    this.m_failIfAllTestsSkipped = failIfAllTestsSkipped;
+  }
+
   public int getStatus() {
     if (exitCodeListener.noTestsFound()) {
       return ExitCode.HAS_NO_TEST;
@@ -254,7 +265,7 @@ public class TestNG {
   /**
    * Sets a jar containing a testng.xml file.
    *
-   * @param jarPath
+   * @param jarPath - Path of the jar
    */
   public void setTestJar(String jarPath) {
     m_jarPath = jarPath;
@@ -501,7 +512,7 @@ public class TestNG {
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
     for (int i = 0; i < classes.length; i++) {
-      Class c = classes[i];
+      Class<?> c = classes[i];
       ITestAnnotation test = finder.findAnnotation(c, ITestAnnotation.class);
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
@@ -576,7 +587,7 @@ public class TestNG {
   /**
    * Specifies the XmlSuite objects to run.
    *
-   * @param suites
+   * @param suites - The list of {@link XmlSuite} objects.
    * @see org.testng.xml.XmlSuite
    */
   public void setXmlSuites(List<XmlSuite> suites) {
@@ -871,6 +882,9 @@ public class TestNG {
   }
 
   private void initializeDefaultListeners() {
+    if (m_failIfAllTestsSkipped) {
+      this.exitCodeListener.failIfAllTestsSkipped();
+    }
     addListener(this.exitCodeListener);
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
@@ -1365,7 +1379,7 @@ public class TestNG {
     String testClasses = cla.testClass;
     if (null != testClasses) {
       String[] strClasses = testClasses.split(",");
-      List<Class> classes = Lists.newArrayList();
+      List<Class<?>> classes = Lists.newArrayList();
       for (String c : strClasses) {
         classes.add(ClassHelper.fileToClass(c));
       }
@@ -1392,6 +1406,8 @@ public class TestNG {
     setJUnit(cla.junit);
     setMixed(cla.mixed);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
+    toggleFailureIfAllTestsWereSkipped(cla.failIfAllTestsSkipped);
+
     if (cla.parallelMode != null) {
       setParallel(cla.parallelMode);
     }
@@ -1451,8 +1467,8 @@ public class TestNG {
       setTestRunnerFactoryClass(ClassHelper.fileToClass(cla.testRunnerFactory));
     }
 
-    if (cla.reporter != null) {
-      ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);
+    ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);
+    if (reporterConfig != null) {
       addReporter(reporterConfig);
     }
 
@@ -1546,6 +1562,8 @@ public class TestNG {
     result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
     result.skipFailedInvocationCounts =
         (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
+    result.failIfAllTestsSkipped = Boolean.parseBoolean(
+        cmdLineArgs.getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, Boolean.FALSE).toString());
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
     if (parallelMode != null) {
       result.parallelMode = XmlSuite.ParallelMode.getValidParallel(parallelMode);
@@ -1637,7 +1655,7 @@ public class TestNG {
   /**
    * Specify if this run should be made in JUnit mode
    *
-   * @param isJUnit
+   * @param isJUnit - Specify if this run should be made in JUnit mode
    */
   public void setJUnit(Boolean isJUnit) {
     m_isJUnit = isJUnit;
