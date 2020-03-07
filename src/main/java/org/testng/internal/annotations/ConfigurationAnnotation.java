@@ -28,6 +28,8 @@ public class ConfigurationAnnotation extends TestOrConfiguration
   private boolean m_afterSuite = false;
   private boolean m_alwaysRun = false;
   private boolean m_inheritGroups = true;
+  private boolean m_isBeforeGroups = false;
+  private boolean m_isAfterGroups = false;
   private String[] m_beforeGroups = {};
   private String[] m_afterGroups = {};
   private String[] m_groupFilters = {};
@@ -75,6 +77,24 @@ public class ConfigurationAnnotation extends TestOrConfiguration
 
   public void setInheritGroups(boolean inheritGroups) {
     m_inheritGroups = inheritGroups;
+  }
+
+  public void setIsBeforeGroups(boolean isBeforeGroups) {
+    m_isBeforeGroups = isBeforeGroups;
+  }
+
+  public void setIsAfterGroups(boolean isAfterGroups) {
+    m_isAfterGroups = isAfterGroups;
+  }
+
+  @Override
+  public boolean isBeforeGroups() {
+    return m_isBeforeGroups;
+  }
+
+  @Override
+  public boolean isAfterGroups() {
+    return m_isAfterGroups;
   }
 
   @Override

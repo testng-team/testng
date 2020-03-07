@@ -39,6 +39,9 @@ public class ConfigurationMethod extends BaseTestMethod {
   private final boolean m_isBeforeMethodConfiguration;
   private final boolean m_isAfterMethodConfiguration;
 
+  private boolean m_isBeforeGroupsConfiguration;
+  private boolean m_isAfterGroupsConfiguration;
+
   private boolean m_inheritGroupsFromTestClass = false;
 
   private ConfigurationMethod(
@@ -321,6 +324,16 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   @Override
+  public boolean hasBeforeGroupsConfiguration() {
+    return this.m_isBeforeGroupsConfiguration;
+  }
+
+  @Override
+  public boolean hasAfterGroupsConfiguration() {
+    return this.m_isAfterGroupsConfiguration;
+  }
+
+  @Override
   public boolean isAfterGroupsConfiguration() {
     return m_afterGroups != null && m_afterGroups.length > 0;
   }
@@ -350,6 +363,9 @@ public class ConfigurationMethod extends BaseTestMethod {
       if (annotation.getAfterTest()) {
         initGroups(IAfterTest.class);
       }
+      this.m_isBeforeGroupsConfiguration = annotation.isBeforeGroups();
+      this.m_isAfterGroupsConfiguration = annotation.isAfterGroups();
+
       if (annotation.getBeforeGroups().length != 0) {
         initBeforeAfterGroups(IBeforeGroups.class, annotation.getBeforeGroups());
       }

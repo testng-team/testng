@@ -184,6 +184,8 @@ public class AnnotationHelper {
 
   private static void finishInitialize(
       ConfigurationAnnotation result, IConfigurationAnnotation bs) {
+    result.setIsBeforeGroups(bs.isBeforeGroups());
+    result.setIsAfterGroups(bs.isAfterGroups());
     result.setFakeConfiguration(true);
     result.setAlwaysRun(bs.getAlwaysRun());
     result.setDependsOnGroups(bs.getDependsOnGroups());
