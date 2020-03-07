@@ -109,7 +109,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   /**
    * Filter all the beforeGroups methods and invoke only those that apply to the current test
    * method
-   * @param arguments
+   * @param arguments - A {@link GroupConfigMethodArguments} object.
    */
   public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
     if (arguments.isGroupFilteringDisabled()) {
@@ -131,10 +131,16 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Invoke the right groups methods
     //
     if (beforeMethodsArray.length > 0) {
+      ITestNGMethod[] filteredConfigurations = Arrays.stream(beforeMethodsArray)
+          .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
+          .toArray(ITestNGMethod[]::new);
+      if (filteredConfigurations.length == 0) {
+        return;
+      }
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
       ConfigMethodArguments configMethodArguments = new Builder()
-          .usingConfigMethodsAs(beforeMethodsArray)
+          .usingConfigMethodsAs(filteredConfigurations)
           .forSuite(arguments.getSuite())
           .usingParameters(arguments.getParameters())
           .usingInstance(arguments.getInstance())
@@ -146,6 +152,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Remove them so they don't get run again
     //
     arguments.getGroupMethods().removeBeforeGroups(groups);
+  }
+
+  private static boolean isGroupLevelConfigurationMethod(ITestNGMethod itm) {
+    return itm.hasBeforeGroupsConfiguration() || itm.hasAfterGroupsConfiguration();
   }
 
   public void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments) {
@@ -192,11 +202,17 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
 
     // Got our afterMethods, invoke them
-    ITestNGMethod[] afterMethodsArray = afterMethods.keySet().toArray(new ITestNGMethod[0]);
+    ITestNGMethod[] filteredConfigurations = afterMethods.keySet()
+        .stream()
+        .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
+        .toArray(ITestNGMethod[]::new);
+    if (filteredConfigurations.length == 0) {
+      return;
+    }
     // don't pass the IClass or the instance as the method may be external
     // the invocation must be similar to @BeforeTest/@BeforeSuite
     ConfigMethodArguments configMethodArguments = new Builder()
-        .usingConfigMethodsAs(afterMethodsArray)
+        .usingConfigMethodsAs(filteredConfigurations)
         .forSuite(arguments.getSuite())
         .usingParameters(arguments.getParameters())
         .usingInstance(arguments.getInstance())

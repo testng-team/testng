@@ -104,6 +104,15 @@ public interface ITestNGMethod extends Cloneable {
 
   boolean isAfterGroupsConfiguration();
 
+  default boolean hasBeforeGroupsConfiguration() {
+    return false;
+  }
+
+  default boolean hasAfterGroupsConfiguration() {
+    return false;
+  }
+
+
   /** @return The timeout in milliseconds. */
   long getTimeOut();
 

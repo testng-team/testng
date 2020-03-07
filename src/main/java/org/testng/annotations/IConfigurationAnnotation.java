@@ -58,4 +58,12 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
    *     a @BeforeSuite or similar that is represented as a configuration annotation.
    */
   boolean isFakeConfiguration();
+
+  default boolean isBeforeGroups() {
+    return false;
+  }
+
+  default boolean isAfterGroups() {
+    return false;
+  }
 }
