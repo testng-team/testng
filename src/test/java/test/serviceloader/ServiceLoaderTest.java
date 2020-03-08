@@ -1,10 +1,15 @@
 package test.serviceloader;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.Assert;
+import org.testng.CommandLineArgs;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
@@ -14,7 +19,7 @@ import test.listeners.ListenerAssert;
 public class ServiceLoaderTest extends SimpleBaseTest {
 
   @Test
-  public void serviceLoaderShouldWork() throws MalformedURLException {
+  public void serviceLoaderShouldWork() {
     TestNG tng = create(ServiceLoaderSampleTest.class);
     URL url = getClass().getClassLoader().getResource("serviceloader.jar");
     URLClassLoader ucl = URLClassLoader.newInstance(new URL[] { url });
@@ -22,6 +27,36 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     tng.run();
 
     ListenerAssert.assertListenerType(tng.getServiceLoaderListeners(), TmpSuiteListener.class);
+  }
+
+  @Test(description = "GITHUB-2259")
+  public void ensureSpiLoadedListenersCanBeSkipped() {
+    TestNG tng = create(ServiceLoaderSampleTest.class);
+    URL url = getClass().getClassLoader().getResource("serviceloader.jar");
+    URLClassLoader ucl = URLClassLoader.newInstance(new URL[] { url });
+    tng.setServiceLoaderClassLoader(ucl);
+    String dontLoad = "test.serviceloader.TmpSuiteListener";
+    tng.setListenersToSkipFromBeingWiredInViaServiceLoaders(dontLoad);
+    tng.run();
+    List<String> loaded = tng.getServiceLoaderListeners().stream().map(l->l.getClass().getName()).collect(
+        Collectors.toList());
+    assertThat(loaded).doesNotContain(dontLoad);
+  }
+
+  @Test(description = "GITHUB-2259")
+  public void ensureSpiLoadedListenersCanBeSkipped2() {
+    TestNG tng = create(ServiceLoaderSampleTest.class);
+    URL url = getClass().getClassLoader().getResource("serviceloader.jar");
+    URLClassLoader ucl = URLClassLoader.newInstance(new URL[] { url });
+    tng.setServiceLoaderClassLoader(ucl);
+    String dontLoad = "test.serviceloader.TmpSuiteListener";
+    Map<String, String> cli = new HashMap<>();
+    cli.put(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, dontLoad);
+    tng.configure(cli);
+    tng.run();
+    List<String> loaded = tng.getServiceLoaderListeners().stream().map(l->l.getClass().getName()).collect(
+        Collectors.toList());
+    assertThat(loaded).doesNotContain(dontLoad);
   }
 
   @Test

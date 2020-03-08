@@ -133,6 +133,7 @@ public class TestNG {
   private Boolean m_isMixed = XmlSuite.DEFAULT_MIXED;
   protected boolean m_useDefaultListeners = true;
   private boolean m_failIfAllTestsSkipped = false;
+  private final List<String> m_listenersToSkipFromBeingWiredIn = new ArrayList<>();
 
   private ITestRunnerFactory m_testRunnerFactory;
 
@@ -225,6 +226,14 @@ public class TestNG {
    */
   public void toggleFailureIfAllTestsWereSkipped(boolean failIfAllTestsSkipped) {
     this.m_failIfAllTestsSkipped = failIfAllTestsSkipped;
+  }
+
+  /**
+   * @param listeners - An array of fully qualified class names that should be skipped from being
+   * wired in via service loaders.
+   */
+  public void setListenersToSkipFromBeingWiredInViaServiceLoaders(String... listeners) {
+    m_listenersToSkipFromBeingWiredIn.addAll(Arrays.asList(listeners));
   }
 
   public int getStatus() {
@@ -974,6 +983,10 @@ public class TestNG {
             : ServiceLoader.load(ITestNGListener.class);
     for (ITestNGListener l : loader) {
       Utils.log("[TestNG]", 2, "Adding ServiceLoader listener:" + l);
+      if (m_listenersToSkipFromBeingWiredIn.contains(l.getClass().getName())) {
+        Utils.log("[TestNG]", 2, "Skipping adding the listener :" + l);
+        continue;
+      }
       addListener(l);
       addServiceLoaderListener(l);
     }
@@ -1407,6 +1420,7 @@ public class TestNG {
     setMixed(cla.mixed);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
     toggleFailureIfAllTestsWereSkipped(cla.failIfAllTestsSkipped);
+    setListenersToSkipFromBeingWiredInViaServiceLoaders(cla.spiListenersToSkip.split(","));
 
     if (cla.parallelMode != null) {
       setParallel(cla.parallelMode);
@@ -1564,6 +1578,7 @@ public class TestNG {
         (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
     result.failIfAllTestsSkipped = Boolean.parseBoolean(
         cmdLineArgs.getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, Boolean.FALSE).toString());
+    result.spiListenersToSkip = (String) cmdLineArgs.getOrDefault(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, "");
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
     if (parallelMode != null) {
       result.parallelMode = XmlSuite.ParallelMode.getValidParallel(parallelMode);
