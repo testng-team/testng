@@ -407,6 +407,8 @@ public class MethodInvocationHelper {
           public void runConfigurationMethod(ITestResult tr) {
             try {
               invokeMethod(thisMethod, instance, parameters);
+              error[0] = null;
+              tr.setThrowable(null);
             } catch (Throwable t) {
               error[0] = t;
               tr.setThrowable(t); // make Throwable available to IConfigurable
