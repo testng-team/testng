@@ -1,6 +1,7 @@
 Current
+Fixed: GITHUB-2257: Facilitate retry of configuration methods via call backs (Krishnan Mahadevan)
 Fixed: GITHUB-2223: testng 7.1.0 java.lang.ClassNotFoundException: com.google.inject.Stage (Krishnan Mahadevan)
-Fixed:GITHUB-217: Configure TestNG to fail when all tests are skipped (Krishnan Mahadevan)
+Fixed: GITHUB-217: Configure TestNG to fail when all tests are skipped (Krishnan Mahadevan)
 Fixed: GITHUB-2255: Ensure test method parameters are visible in BeforeMethod config method (Krishnan Mahadevan)
 Fixed: GITHUB-2251: NullPointerException at test with timeOut (Krishnan Mahadevan)
 Fixed: GITHUB-2249: Not abstract super-classes mess up test run order (Sergii Kim)
