@@ -229,4 +229,11 @@ public class CommandLineArgs {
       description = "Should TestNG fail execution if all tests were skipped and nothing was run.")
   public Boolean failIfAllTestsSkipped = false;
 
+  public static final String LISTENERS_TO_SKIP_VIA_SPI = "-spilistenerstoskip";
+
+  @Parameter(
+      names = LISTENERS_TO_SKIP_VIA_SPI,
+      description = "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
+  public String spiListenersToSkip = "";
+
 }
