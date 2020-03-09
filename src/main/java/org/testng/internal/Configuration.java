@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import com.google.inject.Guice;
 import java.util.List;
 import java.util.Map;
 import org.testng.IConfigurable;
@@ -30,7 +29,7 @@ public class Configuration implements IConfiguration {
   private boolean alwaysRunListeners = true;
   private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
 
-  private IInjectorFactory injectorFactory = Guice::createInjector;
+  private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
