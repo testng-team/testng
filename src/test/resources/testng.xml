@@ -584,6 +584,7 @@
       <class name="test.dataprovider.InterceptorTest"/>
       <class name="test.dataprovider.issue2255.IssueTest"/>
       <class name="test.dataprovider.issue217.IssueTest"/>
+      <class name="test.dataprovider.issue2267.IssueTest"/>
     </classes>
   </test>
 
