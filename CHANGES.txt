@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2267: RetryAnalyzer is not set properly and consistent when using dataprovider
 Fixed: GITHUB-2209: @Before and @After are not executed as expected when a combination of class and method level grouping is applied (Krishnan Mahadevan)
 Fixed: GITHUB-2259: Missing configuration for ServiceLoader Listeners (Krishnan Mahadevan)
 Fixed: GITHUB-2257: Facilitate retry of configuration methods via call backs (Krishnan Mahadevan)
