@@ -1,5 +1,7 @@
 package org.testng.xml;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -8,6 +10,7 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.xml.sax.Attributes;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -52,6 +55,22 @@ public class TestNGContentHandler extends DefaultHandler {
   private List<String> m_currentMetaGroup = null;
   private String m_currentMetaGroupName;
 
+  //Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
+  private final EntityResolver m_redirectionAwareResolver = (publicId, systemId) -> {
+    URL url = new URL(systemId);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+    int status = conn.getResponseCode();
+    if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+        || status == HttpURLConnection.HTTP_MOVED_PERM
+        || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+
+      String newUrl = conn.getHeaderField("Location");
+      conn = (HttpURLConnection) new URL(newUrl).openConnection();
+    }
+    return new InputSource(conn.getInputStream());
+  };
+
   enum Location {
     SUITE,
     TEST,
@@ -84,16 +103,17 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   @Override
-  public InputSource resolveEntity(String systemId, String publicId) throws IOException, SAXException {
+  public InputSource resolveEntity(String systemId, String publicId)
+      throws SAXException, IOException {
 
     if (publicId == null) {
-      return super.resolveEntity(systemId, null);
+      return m_redirectionAwareResolver.resolveEntity(systemId, null);
     }
     if (Parser.isUnRecognizedPublicId(publicId)) {
       if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(publicId)) {
         throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
       }
-      return super.resolveEntity(systemId, publicId);
+      return m_redirectionAwareResolver.resolveEntity(systemId, publicId);
     }
     m_validate = true;
     InputStream is = loadDtdUsingClassLoader();
