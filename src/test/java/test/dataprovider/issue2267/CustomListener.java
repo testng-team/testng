@@ -9,16 +9,16 @@ import test.dataprovider.DataProviderRetryAnalyzer;
 
 public class CustomListener implements IInvokedMethodListener {
 
-    @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+  @Override
+  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
 
-        if (method.isTestMethod()) {
+    if (method.isTestMethod()) {
 
-            final IRetryAnalyzer currentRetryAnalyzer = method.getTestMethod().getRetryAnalyzer(testResult);
+      final IRetryAnalyzer currentRetryAnalyzer = method.getTestMethod().getRetryAnalyzer(testResult);
 
-            if (currentRetryAnalyzer == null || currentRetryAnalyzer instanceof DisabledRetryAnalyzer) {
-                method.getTestMethod().setRetryAnalyzerClass(DataProviderRetryAnalyzer.class);
-            }
-        }
+      if (currentRetryAnalyzer == null || currentRetryAnalyzer instanceof DisabledRetryAnalyzer) {
+        method.getTestMethod().setRetryAnalyzerClass(DataProviderRetryAnalyzer.class);
+      }
     }
+  }
 }

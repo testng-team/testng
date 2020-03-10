@@ -9,18 +9,15 @@ import test.SimpleBaseTest;
 @Listeners(CustomListener.class)
 public class SampleTestCase extends SimpleBaseTest {
 
-    @DataProvider(name = "dp")
-    public Object[][] dp() {
-        return new Object[][]{
-                {1},
-        };
-    }
+  @DataProvider(name = "dp")
+  public Object[][] dp() {
+    return new Object[][] {
+      {1},
+    };
+  }
 
-    @Test(dataProvider = "dp")
-    public void testWithRetryAndDataProvider(int testNumber) {
-        Assert.fail("This time test FAIL! with testNumber: " + testNumber);
-    }
+  @Test(dataProvider = "dp")
+  public void testWithRetryAndDataProvider(int testNumber) {
+    Assert.fail("This time test FAIL! with testNumber: " + testNumber);
+  }
 }
-
-
-

@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class IssueTest extends SimpleBaseTest {
 
-    @Test(description = "GITHUB-2267")
-    public void runTest() {
-        TestNG testng = create(SampleTestCase.class);
-        TestListenerAdapter tla = new TestListenerAdapter();
-        testng.addListener(tla);
-        testng.run();
-        assertThat(tla.getFailedTests()).size().isEqualTo(1);
-        assertThat(tla.getSkippedTests()).size().isEqualTo(1);
-    }
+  @Test(description = "GITHUB-2267")
+  public void runTest() {
+    TestNG testng = create(SampleTestCase.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+    assertThat(tla.getFailedTests()).size().isEqualTo(1);
+    assertThat(tla.getSkippedTests()).size().isEqualTo(1);
+  }
 }
