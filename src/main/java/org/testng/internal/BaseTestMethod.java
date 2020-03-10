@@ -795,4 +795,5 @@ public abstract class BaseTestMethod implements ITestNGMethod {
         .map(Object::getClass)
         .anyMatch(EXCLUSION_CLASSES::contains);
   }
+
 }
