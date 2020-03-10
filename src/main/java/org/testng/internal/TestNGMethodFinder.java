@@ -170,7 +170,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         case AFTER_GROUPS:
           afterGroups = configuration.getAfterGroups();
           create = shouldCreateBeforeAfterGroup(afterGroups, annotationFinder, clazz, configuration.getInheritGroups());
-          isBeforeTestMethod = true;
+          isAfterTestMethod = true;
           break;
         default:
           throw new AssertionError("Unexpected value: " + configurationType);
