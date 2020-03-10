@@ -239,6 +239,8 @@ public class MethodInvocationHelper {
           public void runTestMethod(ITestResult tr) {
             try {
               invokeMethod(thisMethod, testInstance, parameters);
+              error[0] = null;
+              tr.setThrowable(null);
             } catch (Throwable t) {
               error[0] = t;
               tr.setThrowable(t); // make Throwable available to IHookable
