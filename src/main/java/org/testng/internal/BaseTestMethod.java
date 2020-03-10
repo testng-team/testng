@@ -79,10 +79,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
 
   public BaseTestMethod(
-      String methodName,
-      ConstructorOrMethod com,
-      IAnnotationFinder annotationFinder,
-      Object instance) {
+          String methodName,
+          ConstructorOrMethod com,
+          IAnnotationFinder annotationFinder,
+          Object instance) {
     m_methodClass = com.getDeclaringClass();
     m_method = com;
     m_methodName = methodName;
@@ -121,10 +121,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     boolean assignable = m_method.getDeclaringClass().isAssignableFrom(tc.getRealClass());
     if (!assignable) {
       throw new IllegalArgumentException(
-          "mismatch in classes between "
-              + tc.getName()
-              + " and "
-              + m_method.getDeclaringClass().getName());
+              "mismatch in classes between "
+                      + tc.getName()
+                      + " and "
+                      + m_method.getDeclaringClass().getName());
     }
 
     m_testClass = tc;
@@ -322,11 +322,11 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     BaseTestMethod other = (BaseTestMethod) obj;
 
     boolean isEqual =
-        m_testClass == null
-            ? other.m_testClass == null
-            : other.m_testClass != null
-                && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                && getInstance() == other.getInstance();
+            m_testClass == null
+                    ? other.m_testClass == null
+                    : other.m_testClass != null
+                    && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
+                    && getInstance() == other.getInstance();
 
     return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
@@ -343,7 +343,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     ITestOrConfiguration annotation =
-        getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+            getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
     Object object = getInstance();
     Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
     if (object != null) {
@@ -352,27 +352,27 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(clazz, annotationClass);
 
     setGroups(
-        getStringArray(
-            null != annotation ? annotation.getGroups() : null,
-            null != classAnnotation ? classAnnotation.getGroups() : null));
+            getStringArray(
+                    null != annotation ? annotation.getGroups() : null,
+                    null != classAnnotation ? classAnnotation.getGroups() : null));
 
     initRestOfGroupDependencies(annotationClass);
   }
 
   protected void initBeforeAfterGroups(
-      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+          Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     String[] groupsAtMethodLevel =
-        calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
+            calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
     // @BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
     setGroups(getStringArray(groupsAtMethodLevel, null));
     initRestOfGroupDependencies(annotationClass);
   }
 
   private String[] calculateGroupsTouseConsideringValuesAndGroupValues(
-      Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
+          Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     if (groups == null || groups.length == 0) {
       ITestOrConfiguration annotation =
-          getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+              getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
       groups = null != annotation ? annotation.getGroups() : null;
     }
     return groups;
@@ -383,10 +383,10 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     // Init groups depended upon
     //
     ITestOrConfiguration annotation =
-        getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
+            getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
     ITestOrConfiguration classAnnotation =
-        getAnnotationFinder()
-            .findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
+            getAnnotationFinder()
+                    .findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
 
     Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
     List<String> xmlGroupDependencies = Lists.newArrayList();
@@ -397,15 +397,15 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       }
     }
     setGroupsDependedUpon(
-        getStringArray(
-            null != annotation ? annotation.getDependsOnGroups() : null,
-            null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
-        xmlGroupDependencies);
+            getStringArray(
+                    null != annotation ? annotation.getDependsOnGroups() : null,
+                    null != classAnnotation ? classAnnotation.getDependsOnGroups() : null),
+            xmlGroupDependencies);
 
     String[] methodsDependedUpon =
-        getStringArray(
-            null != annotation ? annotation.getDependsOnMethods() : null,
-            null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
+            getStringArray(
+                    null != annotation ? annotation.getDependsOnMethods() : null,
+                    null != classAnnotation ? classAnnotation.getDependsOnMethods() : null);
     // Qualify these methods if they don't have a package
     for (int i = 0; i < methodsDependedUpon.length; i++) {
       String m = methodsDependedUpon[i];
@@ -443,7 +443,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
 
   static StringBuilder stringify(String cls, ConstructorOrMethod method) {
     StringBuilder result =
-        new StringBuilder(cls).append(".").append(method.getName()).append("(");
+            new StringBuilder(cls).append(".").append(method.getName()).append("(");
     return result.append(method.stringifyParameterTypes()).append(")");
   }
 
@@ -452,12 +452,12 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     String cls = classLong.substring(classLong.lastIndexOf(".") + 1);
     StringBuilder result = stringify(cls, m_method);
     result
-        .append("[pri:")
-        .append(getPriority())
-        .append(", instance:")
-        .append(getInstance())
-        .append(instanceParameters())
-        .append("]");
+            .append("[pri:")
+            .append(getPriority())
+            .append(", instance:")
+            .append(getInstance())
+            .append(instanceParameters())
+            .append("]");
 
     return result.toString();
   }
@@ -777,13 +777,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   private static final List<Class<?>> EXCLUSION_CLASSES = Arrays.asList(
-      String.class,
-      Integer.class,
-      Long.class,
-      Boolean.class,
-      Double.class,
-      Float.class,
-      Character.class
+          String.class,
+          Integer.class,
+          Long.class,
+          Boolean.class,
+          Double.class,
+          Float.class,
+          Character.class
   );
 
   private static boolean relyOnParametersToBeUsedAsKeys(Object[] keys) {
@@ -791,8 +791,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       return false;
     }
     return Arrays.stream(keys)
-        .filter(Objects::nonNull)
-        .map(Object::getClass)
-        .anyMatch(EXCLUSION_CLASSES::contains);
+            .filter(Objects::nonNull)
+            .map(Object::getClass)
+            .anyMatch(EXCLUSION_CLASSES::contains);
   }
+
 }
