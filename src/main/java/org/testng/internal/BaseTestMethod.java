@@ -763,15 +763,9 @@ public abstract class BaseTestMethod implements ITestNGMethod {
     boolean relyOnParametersToBeUsedAsKeys = relyOnParametersToBeUsedAsKeys(key);
     IRetryAnalyzer retryAnalyzer = this.m_retryAnalyzer;
     if (key.length != 0 && retryAnalyzer != null && relyOnParametersToBeUsedAsKeys) {
-      final String keyAsString = getMethodName() + "_" + Arrays.toString(key);
-      final IRetryAnalyzer currentRetryAnalyzerInMap = m_testMethodToRetryAnalyzer.get(keyAsString);
-      if (currentRetryAnalyzerInMap == null || currentRetryAnalyzerInMap.getClass() != retryAnalyzer.getClass()) {
-        retryAnalyzer = m_testMethodToRetryAnalyzer.compute(
-                keyAsString,
-                (s, ra) -> InstanceCreator.newInstance(this.m_retryAnalyzer.getClass()));
-      } else {
-        retryAnalyzer = currentRetryAnalyzerInMap;
-      }
+      String keyAsString = getMethodName() + "_" + Arrays.toString(key);
+      retryAnalyzer = m_testMethodToRetryAnalyzer.computeIfAbsent(keyAsString,
+          o -> InstanceCreator.newInstance(this.m_retryAnalyzer.getClass()));
     }
     return retryAnalyzer;
   }
