@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
-import org.testng.xml.dom.Tag;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ public class XmlGroups {
     return m_defines;
   }
 
-  @Tag(name = "define")
   public void addDefine(XmlDefine define) {
     getDefines().add(define);
   }
@@ -43,7 +41,6 @@ public class XmlGroups {
   //    m_dependencies = dependencies;
   //  }
 
-  @Tag(name = "dependencies")
   public void setXmlDependencies(XmlDependencies dependencies) {
     m_dependencies.add(dependencies);
   }

@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.reporters.XMLStringBuffer;
-import org.testng.xml.dom.OnElement;
 
 import java.util.Properties;
 
@@ -27,9 +26,6 @@ public class XmlMethodSelector {
   }
 
   // For YAML
-  @OnElement(
-      tag = "selector-class",
-      attributes = {"name", "priority"})
   public void setElement(String name, String priority) {
     setName(name);
     setPriority(Integer.parseInt(priority));
