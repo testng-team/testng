@@ -4,7 +4,6 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.xml.dom.ParentSetter;
 
 import java.util.*;
 
@@ -642,7 +641,6 @@ public class XmlTest implements Cloneable {
     this.m_xmlDependencyGroups = xmlDependencyGroups;
   }
 
-  @ParentSetter
   public void setXmlSuite(XmlSuite suite) {
     m_suite = suite;
   }

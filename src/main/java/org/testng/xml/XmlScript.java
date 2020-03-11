@@ -1,7 +1,5 @@
 package org.testng.xml;
 
-import org.testng.xml.dom.TagContent;
-
 public class XmlScript {
 
   private String language;
@@ -11,7 +9,6 @@ public class XmlScript {
     this.language = language;
   }
 
-  @TagContent(name = "script")
   public void setExpression(String expression) {
     this.expression = expression;
   }

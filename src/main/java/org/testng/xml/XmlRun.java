@@ -4,7 +4,6 @@ import static org.testng.collections.CollectionUtils.hasElements;
 
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
-import org.testng.xml.dom.OnElement;
 
 import java.util.List;
 
@@ -35,7 +34,6 @@ public class XmlRun {
     return m_excludes;
   }
 
-  @OnElement(tag = "exclude", attributes = "name")
   public void onExclude(String name) {
     m_excludes.add(name);
   }
@@ -46,7 +44,6 @@ public class XmlRun {
     return m_includes;
   }
 
-  @OnElement(tag = "include", attributes = "name")
   public void onInclude(String name) {
     m_includes.add(name);
   }
