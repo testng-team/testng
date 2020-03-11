@@ -9,6 +9,9 @@ if [ $1 == "sonarqube" ] ; then
           -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
           -Dsonar.github.oauth=$SONAR_GITHUB_OAUTH \
           -Dsonar.analysis.mode=issues \
+          -Dsonar.organization=org.testng:testng \
+          -Dsonar.organization=org.testng:testng \
+          -Dsonar.projectKey=org.testng:testng \
           -Dsonar.login=${SONAR_TOKEN} \
           --stacktrace --info
       else

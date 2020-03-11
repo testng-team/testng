@@ -214,7 +214,6 @@ with(publishing) {
     }
 
     repositories {
-        mavenLocal()
         maven {
             name = "sonatype"
             url = if (This.version.contains("SNAPSHOT"))
