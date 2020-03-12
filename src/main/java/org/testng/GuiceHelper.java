@@ -12,6 +12,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
@@ -121,12 +122,12 @@ public class GuiceHelper {
     Class<? extends IModuleFactory> factory = guice.moduleFactory();
     if (factory != IModuleFactory.class) {
       IModuleFactory factoryInstance = parentInjector.getInstance(factory);
-      Module moduleClass = factoryInstance.createModule(context, testClass);
-      if (moduleClass != null) {
-        result.add(moduleClass);
+      Module module = factoryInstance.createModule(context, testClass);
+      if (module != null) {
+        result.add(module);
       }
     }
-
+    ServiceLoader.load(IModule.class).forEach(result::add);
     return result;
   }
 }
