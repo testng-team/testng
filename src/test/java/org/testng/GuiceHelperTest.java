@@ -15,16 +15,13 @@ import com.google.inject.Stage;
 
 import test.guice.FakeInjector;
 
-/**
- * @author Bartosz Popiela
- */
 @Guice
 public final class GuiceHelperTest {
 
     private final GuiceHelper guiceHelper = new GuiceHelper(new FakeTestContext());
 
     @Test(description = "GITHUB-2273")
-    public void getInjector_spiModule_moduleLoaded() {
+    public void getInjector_spiModule_injectorHasModule() {
         MockInjector injector = (MockInjector) guiceHelper.getInjector(new MockClass(), new MockInjectorFactory());
 
         assertNotNull(injector);
