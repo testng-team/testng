@@ -82,8 +82,14 @@ public class FactoryMethod extends BaseTestMethod {
     Utils.checkReturnType(com.getMethod(), Object[].class, IInstanceInfo[].class);
     Class<?> declaringClass = com.getDeclaringClass();
     if (instance != null && !declaringClass.isAssignableFrom(instance.getClass())) {
-      throw new TestNGException(
-          "Mismatch between instance/method classes:" + instance.getClass() + " " + declaringClass);
+      if (instance instanceof IParameterInfo) {
+        instance = ((IParameterInfo) instance).getInstance();
+      }
+      Class<?> cls = instance.getClass();
+      String msg = "Found a default constructor and also a Factory method when working with "
+          + declaringClass.getName() + ". Root cause: Mismatch between instance/method classes:[" + cls.getName()
+          + "] [" + declaringClass.getName() + "]";
+      throw new TestNGException(msg);
     }
     if (instance == null
         && com.getMethod() != null

@@ -192,6 +192,7 @@
       <class name="test.github1461.MemoryLeakTestNg" />
       <!-- TODO fix the random issue <class name="test.issue565.Issue565Test"/>-->
       <class name="test.factory.issue326.IssueTest"/>
+      <class name="test.factory.issue553.IssueTest"/>
       <class name="test.factory.issue1041.IssueTest"/>
       <class name="test.factory.issue1924.IssueTest"/>
       <class name="test.factory.github328.GitHub328Test" />
