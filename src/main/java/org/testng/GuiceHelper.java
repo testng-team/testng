@@ -139,7 +139,7 @@ public class GuiceHelper {
       Class<? extends IModule> moduleClass = module.getClass();
       List<Module> cachedModules = context.getGuiceModules(moduleClass);
       if (cachedModules == null) {
-        // skip
+        // skip because ITestContext does not have a setter method for Guice module list
       } else if ( cachedModules.isEmpty() ) {
         cachedModules.add(module);
         spiModules.add(module);
