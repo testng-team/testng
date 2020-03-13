@@ -20,132 +20,131 @@ import com.google.inject.Module;
 import com.google.inject.Stage;
 
 public class GuiceHelper {
-    private final ITestContext context;
+  private final ITestContext context;
 
-    GuiceHelper(ITestContext context) {
-        this.context = context;
+  GuiceHelper(ITestContext context) {
+    this.context = context;
+  }
+
+  /**
+   * @deprecated - This method stands deprecated as of 7.0.1
+   */
+  @Deprecated
+  Injector getInjector(IClass iClass) {
+    return getInjector(iClass, com.google.inject.Guice::createInjector);
+  }
+
+  Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
+    Guice guice =
+        AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
+    if (guice == null) {
+      return null;
+    }
+    if (iClass instanceof TestClass) {
+      iClass = ((TestClass) iClass).getIClass();
+    }
+    if (!(iClass instanceof ClassImpl)) {
+      return null;
+    }
+    Injector parentInjector = ((ClassImpl) iClass).getParentInjector(injectorFactory);
+
+    List<Module> moduleInstances =
+        Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
+    List<Module> moduleLookup = Lists.newArrayList(moduleInstances);
+    Module parentModule = getParentModule(context);
+    if (parentModule != null) {
+      moduleInstances.add(parentModule);
     }
 
-    private static Module getParentModule(ITestContext context) {
-        if ( isStringEmpty(context.getSuite()
-                .getParentModule()) ) {
-            return null;
-        }
-        Class<?> parentModule = ClassHelper.forName(context.getSuite()
-                .getParentModule());
-        if ( parentModule == null ) {
-            throw new TestNGException("Cannot load parent Guice module class: " + context.getSuite()
-                    .getParentModule());
-        }
-        if ( !Module.class.isAssignableFrom(parentModule) ) {
-            throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
-        }
-        try {
-            Constructor<?> moduleConstructor = parentModule.getDeclaredConstructor(ITestContext.class);
-            return (Module) InstanceCreator.newInstance(moduleConstructor, context);
-        } catch (NoSuchMethodException e) {
-            return (Module) InstanceCreator.newInstance(parentModule);
-        }
+    // Get an injector with the class's modules + any defined parent module installed
+    // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
+    Injector injector = context.getInjector(moduleLookup);
+    if (injector == null) {
+      injector = createInjector(context, injectorFactory, moduleInstances);
+      context.addInjector(moduleInstances, injector);
     }
+    return injector;
+  }
 
-    /**
-     * @deprecated - This method stands deprecated as of 7.0.1
-     */
-    @Deprecated
-    public static Injector createInjector(ITestContext context, List<Module> moduleInstances) {
-        return createInjector(context, com.google.inject.Guice::createInjector, moduleInstances);
+  private static Module getParentModule(ITestContext context) {
+    if (isStringEmpty(context.getSuite().getParentModule())) {
+      return null;
     }
-
-    public static Injector createInjector(ITestContext context, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
-        Module parentModule = getParentModule(context);
-        List<Module> fullModules = Lists.newArrayList(moduleInstances);
-        if ( parentModule != null ) {
-            fullModules.add(parentModule);
-        }
-        Stage stage = Stage.DEVELOPMENT;
-        String stageString = context.getSuite()
-                .getGuiceStage();
-        if ( isStringNotEmpty(stageString) ) {
-            stage = Stage.valueOf(stageString);
-        }
-        return injectorFactory.getInjector(stage, fullModules.toArray(new Module[0]));
+    Class<?> parentModule = ClassHelper.forName(context.getSuite().getParentModule());
+    if (parentModule == null) {
+      throw new TestNGException(
+              "Cannot load parent Guice module class: " + context.getSuite().getParentModule());
     }
-
-    /**
-     * @deprecated - This method stands deprecated as of 7.0.1
-     */
-    @Deprecated
-    Injector getInjector(IClass iClass) {
-        return getInjector(iClass, com.google.inject.Guice::createInjector);
+    if (!Module.class.isAssignableFrom(parentModule)) {
+      throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
     }
-
-    Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
-        Guice guice = AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
-        if ( guice == null ) {
-            return null;
-        }
-        if ( iClass instanceof TestClass ) {
-            iClass = ((TestClass) iClass).getIClass();
-        }
-        if ( !(iClass instanceof ClassImpl) ) {
-            return null;
-        }
-        Injector parentInjector = ((ClassImpl) iClass).getParentInjector(injectorFactory);
-
-        List<Module> moduleInstances = Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
-        List<Module> moduleLookup = Lists.newArrayList(moduleInstances);
-        Module parentModule = getParentModule(context);
-        if ( parentModule != null ) {
-            moduleInstances.add(parentModule);
-        }
-
-        // Get an injector with the class's modules + any defined parent module installed
-        // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
-        Injector injector = context.getInjector(moduleLookup);
-        if ( injector == null ) {
-            injector = createInjector(context, injectorFactory, moduleInstances);
-            context.addInjector(moduleInstances, injector);
-        }
-        return injector;
+    try {
+      Constructor<?> moduleConstructor = parentModule.getDeclaredConstructor(ITestContext.class);
+      return (Module)InstanceCreator.newInstance(moduleConstructor, context);
+    } catch (NoSuchMethodException e) {
+      return (Module)InstanceCreator.newInstance(parentModule);
     }
+  }
 
-    private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
-        List<Module> result = Lists.newArrayList();
-        for (Class<? extends Module> moduleClass : guice.modules()) {
-            List<Module> modules = context.getGuiceModules(moduleClass);
-            if ( modules != null && !modules.isEmpty() ) {
-                result.addAll(modules);
-            } else {
-                Module instance = parentInjector.getInstance(moduleClass);
-                result.add(instance);
-                context.getGuiceModules(moduleClass)
-                        .add(instance);
-            }
-        }
-        Class<? extends IModuleFactory> factory = guice.moduleFactory();
-        if ( factory != IModuleFactory.class ) {
-            IModuleFactory factoryInstance = parentInjector.getInstance(factory);
-            Module module = factoryInstance.createModule(context, testClass);
-            if ( module != null ) {
-                result.add(module);
-            }
-        }
-        result.addAll(getSpiModules());
-        return result;
-    }
+  /**
+   * @deprecated - This method stands deprecated as of 7.0.1
+   */
+  @Deprecated
+  public static Injector createInjector(ITestContext context, List<Module> moduleInstances) {
+    return createInjector(context, com.google.inject.Guice::createInjector, moduleInstances);
+  }
 
-    private List<Module> getSpiModules() {
-        List<Module> spiModules = new ArrayList<>();
-        for (IModule module : ServiceLoader.load(IModule.class)) {
-            Class<? extends IModule> moduleClass = module.getClass();
-            List<Module> cachedModules = context.getGuiceModules(moduleClass);
-            if ( cachedModules.isEmpty() ) {
-                cachedModules.add(module);
-                spiModules.add(module);
-            } else {
-                spiModules.add(cachedModules.get(0));
-            }
-        }
-        return spiModules;
+  public static Injector createInjector(ITestContext context,
+      IInjectorFactory injectorFactory, List<Module> moduleInstances) {
+    Module parentModule = getParentModule(context);
+    List<Module> fullModules = Lists.newArrayList(moduleInstances);
+    if (parentModule != null) {
+      fullModules.add(parentModule);
     }
+    Stage stage = Stage.DEVELOPMENT;
+    String stageString = context.getSuite().getGuiceStage();
+    if (isStringNotEmpty(stageString)) {
+      stage = Stage.valueOf(stageString);
+    }
+    return injectorFactory.getInjector(stage, fullModules.toArray(new Module[0]));
+  }
+
+  private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
+    List<Module> result = Lists.newArrayList();
+    for (Class<? extends Module> moduleClass : guice.modules()) {
+      List<Module> modules = context.getGuiceModules(moduleClass);
+      if (modules != null && !modules.isEmpty()) {
+        result.addAll(modules);
+      } else {
+        Module instance = parentInjector.getInstance(moduleClass);
+        result.add(instance);
+        context.getGuiceModules(moduleClass).add(instance);
+      }
+    }
+    Class<? extends IModuleFactory> factory = guice.moduleFactory();
+    if (factory != IModuleFactory.class) {
+      IModuleFactory factoryInstance = parentInjector.getInstance(factory);
+      Module module = factoryInstance.createModule(context, testClass);
+      if (module != null) {
+        result.add(module);
+      }
+    }
+    result.addAll(getSpiModules());
+    return result;
+  }
+
+  private List<Module> getSpiModules() {
+    List<Module> spiModules = new ArrayList<>();
+    for (IModule module : ServiceLoader.load(IModule.class)) {
+      Class<? extends IModule> moduleClass = module.getClass();
+      List<Module> cachedModules = context.getGuiceModules(moduleClass);
+      if ( cachedModules.isEmpty() ) {
+        cachedModules.add(module);
+        spiModules.add(module);
+      } else {
+        spiModules.add(cachedModules.get(0));
+      }
+    }
+    return spiModules;
+  }
 }
