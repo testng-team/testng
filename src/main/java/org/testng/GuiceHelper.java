@@ -138,7 +138,9 @@ public class GuiceHelper {
     for (IModule module : ServiceLoader.load(IModule.class)) {
       Class<? extends IModule> moduleClass = module.getClass();
       List<Module> cachedModules = context.getGuiceModules(moduleClass);
-      if ( cachedModules.isEmpty() ) {
+      if (cachedModules == null) {
+        // skip
+      } else if ( cachedModules.isEmpty() ) {
         cachedModules.add(module);
         spiModules.add(module);
       } else {
