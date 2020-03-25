@@ -193,13 +193,13 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     assertThat(RetryAnalyzer.logs).containsExactlyElementsOf(expected);
   }
 
-  @Test(description = "GITHUB-2163")
+  @Test(description = "GITHUB-2163 & GITHUB-2280", timeOut = 5000)
   public void ensureRetryDoesntRunEndlesslyForDataDrivenTests() {
     XmlSuite xmlsuite = createXmlSuite("2163_suite");
     createXmlTest(xmlsuite, "2163_test", TestClassPoweredByDataProviderSample.class);
     TestNG testng = create(xmlsuite);
     testng.run();
-    assertThat(test.retryAnalyzer.dataprovider.issue2163.RetryAnalyzer.logs).hasSize(3);
+    assertThat(test.retryAnalyzer.dataprovider.issue2163.RetryAnalyzer.logs).hasSize(21);
   }
 
   private ITestResult runAssertions(Set<ITestResult> results, String methodName) {
