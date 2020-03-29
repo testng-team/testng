@@ -1,10 +1,13 @@
 package org.testng;
 
+import static java.util.Collections.synchronizedList;
+import static java.util.Collections.unmodifiableList;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -20,6 +23,8 @@ import com.google.inject.Module;
 import com.google.inject.Stage;
 
 public class GuiceHelper {
+  private static volatile List<Module> spiModules;
+
   private final ITestContext context;
 
   GuiceHelper(ITestContext context) {
@@ -134,19 +139,24 @@ public class GuiceHelper {
   }
 
   private List<Module> getSpiModules() {
-    List<Module> spiModules = new ArrayList<>();
-    for (IModule module : ServiceLoader.load(IModule.class)) {
-      Class<? extends IModule> moduleClass = module.getClass();
-      List<Module> cachedModules = context.getGuiceModules(moduleClass);
-      if (cachedModules == null) {
-        // skip because ITestContext does not have a setter method for Guice module list
-      } else if ( cachedModules.isEmpty() ) {
-        cachedModules.add(module);
-        spiModules.add(module);
-      } else {
-        spiModules.add(cachedModules.get(0));
+    // double-check idiom
+    List<Module> modules = spiModules;
+    if ( modules == null ) {
+      synchronized (GuiceHelper.class) {
+        modules = spiModules;
+        if ( modules == null ) {
+          spiModules = modules = loadSpiModules();
+        }
       }
     }
-    return spiModules;
+    return modules;
+  }
+
+  private List<Module> loadSpiModules() {
+    List<Module> modules = new ArrayList<>();
+    for (IModule module : ServiceLoader.load(IModule.class)) {
+      modules.add(module);
+    }
+    return unmodifiableList(synchronizedList(modules));
   }
 }
