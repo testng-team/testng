@@ -28,7 +28,7 @@ public final class GuiceHelperTest {
         Module[] modules = injector.getModules();
         assertNotNull(modules);
         assertEquals(modules.length, 1);
-        assertTrue(modules[0] instanceof SampleModule);
+        assertEquals(modules[0], new SampleIModule().getModule());
     }
 
     private static final class MockInjectorFactory implements IInjectorFactory {

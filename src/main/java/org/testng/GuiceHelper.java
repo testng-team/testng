@@ -1,13 +1,11 @@
 package org.testng;
 
-import static java.util.Collections.synchronizedList;
 import static java.util.Collections.unmodifiableList;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -22,9 +20,9 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 
-public class GuiceHelper {
-  private static volatile List<Module> spiModules;
 
+
+public class GuiceHelper {
   private final ITestContext context;
 
   GuiceHelper(ITestContext context) {
@@ -134,29 +132,23 @@ public class GuiceHelper {
         result.add(module);
       }
     }
-    result.addAll(getSpiModules());
+    result.addAll(LazyHolder.getSpiModules());
     return result;
   }
 
-  private List<Module> getSpiModules() {
-    // double-check idiom
-    List<Module> modules = spiModules;
-    if ( modules == null ) {
-      synchronized (GuiceHelper.class) {
-        modules = spiModules;
-        if ( modules == null ) {
-          spiModules = modules = loadSpiModules();
-        }
-      }
-    }
-    return modules;
-  }
+  private static final class LazyHolder {
+    private static final List<Module> spiModules;
 
-  private List<Module> loadSpiModules() {
-    List<Module> modules = new ArrayList<>();
-    for (IModule module : ServiceLoader.load(IModule.class)) {
-      modules.add(module);
+    static {
+      List<Module> modules = new ArrayList<>();
+      for (IModule module : ServiceLoader.load(IModule.class)) {
+        modules.add(module.getModule());
+      }
+      spiModules = unmodifiableList(modules);
     }
-    return unmodifiableList(synchronizedList(modules));
+
+    public static List<Module> getSpiModules() {
+      return spiModules;
+    }
   }
 }

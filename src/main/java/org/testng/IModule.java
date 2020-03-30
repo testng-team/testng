@@ -3,7 +3,9 @@ package org.testng;
 import com.google.inject.Module;
 
 /**
- * This is a marker interface for a Guice module to be instantiated with {@link java.util.ServiceLoader}.
+ * This interface provides {@link Module} to implicitly add to the Guice context.
+ * Classes that implement this interface are instantiated with {@link java.util.ServiceLoader ServiceLoader}.
  */
-public interface IModule extends Module {
+public interface IModule {
+    Module getModule();
 }
