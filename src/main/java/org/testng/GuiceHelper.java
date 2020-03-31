@@ -1,8 +1,14 @@
 package org.testng;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Stage;
+import static java.util.Collections.unmodifiableList;
+import static org.testng.internal.Utils.isStringEmpty;
+import static org.testng.internal.Utils.isStringNotEmpty;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
+
 import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
@@ -10,11 +16,11 @@ import org.testng.internal.ClassImpl;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.annotations.AnnotationHelper;
 
-import java.lang.reflect.Constructor;
-import java.util.List;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
 
-import static org.testng.internal.Utils.isStringEmpty;
-import static org.testng.internal.Utils.isStringNotEmpty;
+
 
 public class GuiceHelper {
   private final ITestContext context;
@@ -121,12 +127,28 @@ public class GuiceHelper {
     Class<? extends IModuleFactory> factory = guice.moduleFactory();
     if (factory != IModuleFactory.class) {
       IModuleFactory factoryInstance = parentInjector.getInstance(factory);
-      Module moduleClass = factoryInstance.createModule(context, testClass);
-      if (moduleClass != null) {
-        result.add(moduleClass);
+      Module module = factoryInstance.createModule(context, testClass);
+      if (module != null) {
+        result.add(module);
       }
     }
-
+    result.addAll(LazyHolder.getSpiModules());
     return result;
+  }
+
+  private static final class LazyHolder {
+    private static final List<Module> spiModules;
+
+    static {
+      List<Module> modules = new ArrayList<>();
+      for (IModule module : ServiceLoader.load(IModule.class)) {
+        modules.add(module.getModule());
+      }
+      spiModules = unmodifiableList(modules);
+    }
+
+    public static List<Module> getSpiModules() {
+      return spiModules;
+    }
   }
 }

@@ -971,5 +971,11 @@
       <class name="org.testng.internal.MethodHelperTest"/>
     </classes>
   </test>
+
+  <test name="GITHUB-2273">
+    <classes>
+      <class name="org.testng.GuiceHelperTest"/>
+    </classes>
+  </test>
 </suite>
 

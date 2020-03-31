@@ -12,6 +12,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -132,7 +133,7 @@ public class FakeTestContext implements ITestContext {
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
-    return null;
+    return new ArrayList<>();
   }
 
   @Override
