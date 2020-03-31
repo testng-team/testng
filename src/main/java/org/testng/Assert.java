@@ -118,57 +118,86 @@ public class Assert {
     assertEqualsImpl(actual, expected, message);
   }
 
+  private static boolean areEqual(Object actual, Object expected){
+    if (expected != null && expected.getClass().isArray()) {
+      return areArraysEqual(actual, expected);
+    }
+    return areEqualImpl(actual, expected);
+  }
+
   /**
    * Differs from {@link #assertEquals(Object, Object, String)} by not taking arrays into special
    * consideration hence comparing them by reference. Intended to be called directly to test
    * equality of collections content.
    */
   private static void assertEqualsImpl(Object actual, Object expected, String message) {
-    if ((expected == null) && (actual == null)) {
-      return;
-    }
-    if (expected == null ^ actual == null) {
+    boolean equal = areEqualImpl( actual, expected );
+    if(!equal){
       failNotEquals(actual, expected, message);
     }
-    if (expected.equals(actual) && actual.equals(expected)) {
-      return;
-    }
-    fail(format(actual, expected, message, true));
   }
 
-  private static void assertArrayEquals(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      return;
+  private static void assertNotEqualsImpl(Object actual, Object expected, String message) {
+    boolean equal = areEqualImpl( actual, expected );
+    if(equal){
+      failEquals(actual, expected, message);
     }
-    if (null == expected) {
-      fail("expected a null array, but not null found. " + message);
+  }
+
+  private static boolean areEqualImpl(Object actual, Object expected){
+    if ((expected == null) && (actual == null)) {
+      return true;
     }
-    if (null == actual) {
-      fail("expected not null array, but null found. " + message);
+    if (expected == null ^ actual == null) {
+      return false;
     }
-    // is called only when expected is an array
+    if (expected.equals(actual) && actual.equals(expected)) {
+      return true;
+    }
+    return false;
+  }
+
+  /** returns not equal reason or null if equal **/
+  private static String getArrayNotEqualReason(Object actual, Object expected){
+    if(actual == expected)
+      return null;
+    if(null == expected) {
+      return "expected a null array, but not null found";
+    }
+    if(null == actual) {
+      return "expected not null array, but null found";
+    }
     if (!actual.getClass().isArray()) {
-      failNotEquals(actual, expected, message);
+      return "not an array";
     }
     int expectedLength = Array.getLength(expected);
     if (expectedLength != Array.getLength(actual)) {
-      failNotEquals(
-          Array.getLength(actual),
-          expectedLength,
-          message == null ? "" : message + " (Array lengths are not the same)");
+      return "array lengths are not the same";
     }
     for (int i = 0; i < expectedLength; i++) {
-      Object _actual = Array.get(actual, i);
-      Object _expected = Array.get(expected, i);
-      try {
-        assertEquals(_actual, _expected);
-      } catch (AssertionError ae) {
-        failNotEquals(
-            actual,
-            expected,
-            message == null ? "" : message + " (values at index " + i + " are not the same)");
+      Object _actual = Array.get( actual, i );
+      Object _expected = Array.get( expected, i );
+      if(!areEqual( _actual, _expected )){
+        return "(values at index " + i + " are not the same)";
       }
     }
+    return null;
+  }
+
+  private static boolean areArraysEqual(Object actual, Object expected){
+    return getArrayNotEqualReason( actual, expected ) == null;
+  }
+
+  private static void assertArrayEquals(Object actual, Object expected, String message) {
+    String reason = getArrayNotEqualReason( actual, expected );
+    if (null != reason)
+      failNotEquals( actual, expected, message == null ? "" : message + " ("+message+")");
+  }
+
+  private static void assertArrayNotEquals(Object actual, Object expected, String message){
+    String reason = getArrayNotEqualReason( actual, expected );
+    if (null == reason)
+      failEquals( actual, expected, message );
   }
 
   /**
@@ -585,6 +614,23 @@ public class Assert {
     assertEquals(actual, expected, null);
   }
 
+  private static boolean areEqual(double actual, double expected, double delta){
+    // handle infinity specially since subtracting to infinite values gives NaN and the
+    // the following test fails
+    if (Double.isInfinite(expected)) {
+      if (!(expected == actual)) {
+        return false;
+      }
+    } else if (Double.isNaN(expected)) {
+      if (!Double.isNaN(actual)) {
+        return false;
+      }
+    } else if (!(Math.abs(expected - actual) <= delta)) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Asserts that two doubles are equal concerning a delta. If they are not, an AssertionError, with
    * the given message, is thrown. If the expected value is infinity then the delta value is
@@ -596,17 +642,7 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(double actual, double expected, double delta, String message) {
-    // handle infinity specially since subtracting to infinite values gives NaN and the
-    // the following test fails
-    if (Double.isInfinite(expected)) {
-      if (!(expected == actual)) {
-        failNotEquals(actual, expected, message);
-      }
-    } else if (Double.isNaN(expected)) {
-      if (!Double.isNaN(actual)) {
-        failNotEquals(actual, expected, message);
-      }
-    } else if (!(Math.abs(expected - actual) <= delta)) {
+    if (!areEqual( actual, expected, delta )){
       failNotEquals(actual, expected, message);
     }
   }
@@ -651,6 +687,23 @@ public class Assert {
     assertEquals(actual, expected, null);
   }
 
+  private static boolean areEqual(float actual, float expected, float delta){
+    // handle infinity specially since subtracting to infinite values gives NaN and the
+    // the following test fails
+    if (Float.isInfinite(expected)) {
+      if (!(expected == actual)) {
+        return false;
+      }
+    } else if (Float.isNaN(expected)) {
+      if (!Float.isNaN(actual)) {
+        return false;
+      }
+    } else if (!(Math.abs(expected - actual) <= delta)) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Asserts that two floats are equal concerning a delta. If they are not, an AssertionError, with
    * the given message, is thrown. If the expected value is infinity then the delta value is
@@ -662,19 +715,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(float actual, float expected, float delta, String message) {
-    // handle infinity specially since subtracting to infinite values gives NaN and the
-    // the following test fails
-    if (Float.isInfinite(expected)) {
-      if (!(expected == actual)) {
-        failNotEquals(actual, expected, message);
-      }
-    } else if (Float.isNaN(expected)) {
-      if (!Float.isNaN(actual)) {
-        failNotEquals(actual, expected, message);
-      }
-    } else if (!(Math.abs(expected - actual) <= delta)) {
+    if(!areEqual( actual, expected, delta ))
       failNotEquals(actual, expected, message);
-    }
   }
 
   /**
@@ -968,6 +1010,10 @@ public class Assert {
     fail(format(actual, expected, message, true));
   }
 
+  private static void failEquals(Object actual, Object expected, String message) {
+    fail(format(actual, expected, message, false));
+  }
+
   static String format(Object actual, Object expected, String message, boolean isAssertEquals) {
     String formatted = "";
     if (null != message) {
@@ -1245,50 +1291,49 @@ public class Assert {
     assertEquals(actual, expected, null);
   }
 
-  /** Assert set equals */
-  public static void assertEquals(Set<?> actual, Set<?> expected, String message) {
+  /** returns not equal reason or null if equal **/
+  private static String getNotEqualReason(Set<?> actual, Set<?> expected){
     if (actual == expected) {
-      return;
+      return null;
     }
 
     if (actual == null || expected == null) {
       // Keep the back compatible
-      if (message == null) {
-        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-      } else {
-        failNotEquals(actual, expected, message);
-      }
+      return "Sets not equal: expected: " + expected + " and actual: " + actual;
     }
 
     if (!actual.equals(expected)) {
-      if (message == null) {
-        fail("Sets differ: expected " + expected + " but got " + actual);
+      return "Sets differ: expected " + expected + " but got " + actual;
+    }
+    return null;
+  }
+
+  /** Assert set equals */
+  public static void assertEquals(Set<?> actual, Set<?> expected, String message) {
+    String notEqualReason = getNotEqualReason( actual, expected );
+    if (null != notEqualReason){
+      // Keep the back compatible
+      if (message == null){
+        fail(notEqualReason);
       } else {
-        failNotEquals(actual, expected, message);
+        fail(message);
       }
     }
   }
 
-  public static void assertEqualsDeep(Set<?> actual, Set<?> expected, String message) {
+  /** returns not equal deep reason or null if equal **/
+  public static String getNotEqualDeepReason(Set<?> actual, Set<?> expected){
     if (actual == expected) {
-      return;
+      return null;
     }
 
     if (actual == null || expected == null) {
       // Keep the back compatible
-      if (message == null) {
-        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-      } else {
-        failNotEquals(actual, expected, message);
-      }
+      return "Sets not equal: expected: " + expected + " and actual: " + actual;
     }
 
     if (expected.size() != actual.size()) {
-      if (message == null) {
-        fail("Sets not equal: expected: " + expected + " and actual: " + actual);
-      } else {
-        fail(format(actual, expected, message, true));
-      }
+      return "Sets not equal: expected: " + expected + " and actual: " + actual;
     }
 
     Iterator<?> actualIterator = actual.iterator();
@@ -1297,9 +1342,24 @@ public class Assert {
       Object expectedValue = expectedIterator.next();
       Object value = actualIterator.next();
       if (expectedValue.getClass().isArray()) {
-        assertArrayEquals(value, expectedValue, message);
+        String arrayNotEqualReason = getArrayNotEqualReason( value, expectedValue );
+        if(arrayNotEqualReason != null)
+          return arrayNotEqualReason;
       } else {
-        assertEqualsImpl(value, expectedValue, message);
+        if(!areEqualImpl( value, expected ))
+          return "Sets not equal: expected: " + expectedValue + " and actual: " + value;
+      }
+    }
+    return null;
+  }
+
+  public static void assertEqualsDeep(Set<?> actual, Set<?> expected, String message) {
+    String notEqualDeepReason = getNotEqualDeepReason( actual, expected );
+    if(notEqualDeepReason != null){
+      if (message == null) {
+        fail(notEqualDeepReason);
+      } else {
+        fail(message);
       }
     }
   }
@@ -1308,24 +1368,17 @@ public class Assert {
     assertEquals(actual, expected, null);
   }
 
-  /** Asserts that two maps are equal. */
-  public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
+  private static String getNotEqualReason(Map<?, ?> actual, Map<?, ?> expected){
     if (actual == expected) {
-      return;
+      return null;
     }
 
     if (actual == null || expected == null) {
-      if (message == null) {
-        fail("Maps not equal: expected: " + expected + " and actual: " + actual);
-      }
-      fail(message);
+      return "Maps not equal: expected: " + expected + " and actual: " + actual;
     }
 
     if (actual.size() != expected.size()) {
-      if (message == null) {
-        fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
-      }
-      fail(message);
+      return "Maps do not have the same size:" + actual.size() + " != " + expected.size();
     }
 
     Set<?> entrySet = actual.entrySet();
@@ -1334,16 +1387,27 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      String assertMessage =
-          message != null
-              ? message
-              : "Maps do not match for key:"
-                  + key
-                  + " actual:"
-                  + value
-                  + " expected:"
-                  + expectedValue;
-      assertEqualsImpl(value, expectedValue, assertMessage);
+      String assertMessage = "Maps do not match for key:"
+                      + key
+                      + " actual:"
+                      + value
+                      + " expected:"
+                      + expectedValue;
+      if(!areEqualImpl( value, expectedValue ))
+        return assertMessage;
+    }
+    return null;
+  }
+
+  /** Asserts that two maps are equal. */
+  public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
+    String notEqualReason = getNotEqualReason( actual, expected );
+    if (notEqualReason != null) {
+      if (message == null) {
+        fail(notEqualReason);
+      } else {
+        fail(message);
+      }
     }
   }
 
@@ -1351,17 +1415,18 @@ public class Assert {
     assertEqualsDeep(actual, expected, null);
   }
 
-  public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
+  /** returns not equal deep reason or null if equal **/
+  private static String getNotEqualDeepReason(Map<?, ?> actual, Map<?, ?> expected){
     if (actual == expected) {
-      return;
+      return null;
     }
 
     if (actual == null || expected == null) {
-      fail("Maps not equal: expected: " + expected + " and actual: " + actual);
+      return "Maps not equal: expected: " + expected + " and actual: " + actual;
     }
 
     if (actual.size() != expected.size()) {
-      fail("Maps do not have the same size:" + actual.size() + " != " + expected.size());
+      return "Maps do not have the same size:" + actual.size() + " != " + expected.size();
     }
 
     Set<?> entrySet = actual.entrySet();
@@ -1370,39 +1435,45 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      String assertMessage =
-          message != null
-              ? message
-              : "Maps do not match for key:"
-                  + key
-                  + " actual:"
-                  + value
-                  + " expected:"
-                  + expectedValue;
+      String assertMessage = "Maps do not match for key:"
+                      + key
+                      + " actual:"
+                      + value
+                      + " expected:"
+                      + expectedValue;
       if (expectedValue.getClass().isArray()) {
-        assertArrayEquals(value, expectedValue, assertMessage);
+        if(!areArraysEqual( value, expectedValue ))
+          return assertMessage;
       } else {
-        assertEqualsImpl(value, expectedValue, assertMessage);
+        if(!areEqualImpl( value, expectedValue))
+          return assertMessage;
       }
     }
+    return null;
+  }
+
+  public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
+    String notEqualDeepReason = getNotEqualDeepReason( actual, expected );
+    if (notEqualDeepReason != null){
+      if (message == null){
+        fail(notEqualDeepReason);
+      } else {
+        fail(message);
+      }
+    }
+
   }
 
   /////
   // assertNotEquals
   //
 
-  public static void assertNotEquals(Object actual1, Object actual2, String message) {
-    boolean fail;
-    try {
-      Assert.assertEquals(actual1, actual2);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
+  public static void assertNotEquals(Object actual, Object expected, String message) {
+    if (expected != null && expected.getClass().isArray()) {
+      assertArrayNotEquals(actual, expected, message);
+      return;
     }
-
-    if (fail) {
-      fail(format(actual1, actual2, message, false));
-    }
+    assertNotEqualsImpl(actual, expected, message);
   }
 
   public static void assertNotEquals(Object actual1, Object actual2) {
@@ -1465,17 +1536,9 @@ public class Assert {
     assertNotEquals(actual1, actual2, null);
   }
 
-  public static void assertNotEquals(float actual1, float actual2, float delta, String message) {
-    boolean fail;
-    try {
-      Assert.assertEquals(actual1, actual2, delta, message);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
-    }
-
-    if (fail) {
-      Assert.fail(format(actual1, actual2, message, false));
+  public static void assertNotEquals(float actual, float expected, float delta, String message) {
+    if(areEqual( actual, expected )) {
+      Assert.fail( format( actual, expected, message, false ) );
     }
   }
 
@@ -1483,18 +1546,9 @@ public class Assert {
     assertNotEquals(actual1, actual2, delta, null);
   }
 
-  public static void assertNotEquals(double actual1, double actual2, double delta, String message) {
-    boolean fail;
-    try {
-      Assert.assertEquals(actual1, actual2, delta, message);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
-    }
-
-    if (fail) {
-      Assert.fail(format(actual1, actual2, message, false));
-    }
+  public static void assertNotEquals(double actual, double expected, double delta, String message) {
+    if(areEqual( actual, expected, delta ))
+      Assert.fail(format( actual, expected, message, false));
   }
 
   public static void assertNotEquals(Set<?> actual, Set<?> expected) {
@@ -1502,16 +1556,9 @@ public class Assert {
   }
 
   public static void assertNotEquals(Set<?> actual, Set<?> expected, String message) {
-    boolean fail;
-    try {
-      Assert.assertEquals(actual, expected, message);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
-    }
-
-    if (fail) {
-      Assert.fail(format(actual, expected, message, false));
+    String notEqualReason = getNotEqualReason( actual, expected );
+    if(notEqualReason == null){
+      Assert.fail( format( actual, expected, message, false ) );
     }
   }
 
@@ -1520,15 +1567,8 @@ public class Assert {
   }
 
   public static void assertNotEqualsDeep(Set<?> actual, Set<?> expected, String message) {
-    boolean fail;
-    try {
-      Assert.assertEqualsDeep(actual, expected, message);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
-    }
-
-    if (fail) {
+    String notEqualDeepReason = getNotEqualDeepReason( actual, expected );
+    if(notEqualDeepReason == null){
       Assert.fail(format(actual, expected, message, false));
     }
   }
@@ -1538,15 +1578,8 @@ public class Assert {
   }
 
   public static void assertNotEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
-    boolean fail;
-    try {
-      Assert.assertEquals(actual, expected, message);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
-    }
-
-    if (fail) {
+    String notEqualReason = getNotEqualReason( actual, expected );
+    if(notEqualReason == null){
       Assert.fail(format(actual, expected, message, false));
     }
   }
@@ -1556,15 +1589,8 @@ public class Assert {
   }
 
   public static void assertNotEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
-    boolean fail;
-    try {
-      Assert.assertEqualsDeep(actual, expected, message);
-      fail = true;
-    } catch (AssertionError e) {
-      fail = false;
-    }
-
-    if (fail) {
+    String notEqualDeepReason = getNotEqualDeepReason( actual, expected );
+    if(notEqualDeepReason == null){
       Assert.fail(format(actual, expected, message, false));
     }
   }
