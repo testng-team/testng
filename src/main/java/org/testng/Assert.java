@@ -159,8 +159,9 @@ public class Assert {
 
   /** returns not equal reason or null if equal **/
   private static String getArrayNotEqualReason(Object actual, Object expected){
-    if(actual == expected)
+    if(actual == expected) {
       return null;
+    }
     if(null == expected) {
       return "expected a null array, but not null found";
     }
