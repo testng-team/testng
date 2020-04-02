@@ -1323,7 +1323,7 @@ public class Assert {
   }
 
   /** returns not equal deep reason or null if equal **/
-  public static String getNotEqualDeepReason(Set<?> actual, Set<?> expected){
+  private static String getNotEqualDeepReason(Set<?> actual, Set<?> expected){
     if (actual == expected) {
       return null;
     }
