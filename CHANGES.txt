@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2301: Add support for object-based reporter configurations
 Fixed: GITHUB-2182: Removed exception catching as valid behaviour
 Fixed: GITHUB-2273: Use SPI to load Guice modules (Bartosz Popiela)
 Fixed: GITHUB-2280: Prevent Retry from happening endlessly (Paweł Nadolski)
