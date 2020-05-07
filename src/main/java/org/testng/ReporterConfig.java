@@ -1,5 +1,7 @@
 package org.testng;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
@@ -69,7 +71,7 @@ public class ReporterConfig {
       reporterConfig.setClassName(inputString);
     } else {
       reporterConfig.setClassName(inputString.substring(0, clsNameEndIndex));
-      String propString = inputString.substring(clsNameEndIndex + 1, inputString.length());
+      String propString = inputString.substring(clsNameEndIndex + 1);
       String[] props = propString.split(",");
       for (String prop : props) {
         String[] propNameAndVal = prop.split("=");
@@ -95,9 +97,24 @@ public class ReporterConfig {
       throw new TestNGException(m_className + " is not a IReporter");
     }
 
+    Object config;
     IReporter result = (IReporter) tmp;
+
+    // support reporters with object-based configurations
+    // NOTE: By convention, such reporters publish their configurations via a 'getConfig()' method.
+
+    try {
+      // get invoker for 'getConfig()' method
+      Method getConfig = reporterClass.getMethod("getConfig");
+      // get reporter configuration
+      config = getConfig.invoke(result);
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      // self-config
+      config = result;
+    }
+
     for (ReporterConfig.Property property : m_properties) {
-      PropertyUtils.setProperty(result, property.name, property.value);
+      PropertyUtils.setProperty(config, property.name, property.value);
     }
     return result;
   }
