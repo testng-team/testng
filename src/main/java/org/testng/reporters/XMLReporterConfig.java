@@ -5,7 +5,7 @@ import org.testng.ITestResult;
 import java.util.HashMap;
 import java.util.Map;
 
-public class XMLReporterConfig {
+public class XMLReporterConfig implements IReporterConfig {
 
   public static final String TAG_TEST = "test";
   public static final String TAG_TEST_METHOD = "test-method";

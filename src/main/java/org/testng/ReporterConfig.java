@@ -8,6 +8,7 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
+import org.testng.reporters.IConfiguredReporter;
 
 /**
  * Stores the information regarding the configuration of a pluggable report listener. Used also in
@@ -96,19 +97,12 @@ public class ReporterConfig {
     if (!(tmp instanceof IReporter)) {
       throw new TestNGException(m_className + " is not a IReporter");
     }
-
-    Object config;
     IReporter result = (IReporter) tmp;
 
-    // support reporters with object-based configurations
-    // NOTE: By convention, such reporters publish their configurations via a 'getConfig()' method.
-
-    try {
-      // get invoker for 'getConfig()' method
-      Method getConfig = reporterClass.getMethod("getConfig");
-      // get reporter configuration
-      config = getConfig.invoke(result);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+    Object config;
+    if (result instanceof IConfiguredReporter) {
+      config = ((IConfiguredReporter) result).getConfig();
+    } else {
       // self-config
       config = result;
     }
