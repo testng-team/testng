@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /** The main entry for the XML generation operation */
-public class XMLReporter implements IReporter, ICustomizeXmlReport {
+public class XMLReporter implements IReporter, ICustomizeXmlReport, IConfiguredReporter {
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
