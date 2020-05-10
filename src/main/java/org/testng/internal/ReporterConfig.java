@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import org.testng.IConfiguredReporter;
 import org.testng.IReporter;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -83,23 +82,15 @@ public class ReporterConfig {
         if (reporterClass == null) {
             return null;
         }
-
-        Object tmp = InstanceCreator.newInstance(reporterClass);
-        if (!(tmp instanceof IReporter)) {
+        if (!IReporter.class.isAssignableFrom(reporterClass)) {
             throw new TestNGException(className + " is not a IReporter");
         }
 
-        IReporter result = (IReporter) tmp;
+        IReporter reporter = (IReporter) InstanceCreator.newInstance(reporterClass);
 
-        Object config = result;
-        if (result instanceof IConfiguredReporter) {
-            config = ((IConfiguredReporter) result).getConfig();
-        }
+        reporter.getConfig().setProperties(properties);
 
-        for (Property property : properties) {
-            PropertyUtils.setProperty(config, property.name, property.value);
-        }
-        return result;
+        return reporter;
     }
 
     public static class Property {

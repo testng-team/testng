@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.reporters.IReporterConfig;
+import org.testng.reporters.PojoReporterConfig;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;
@@ -20,5 +22,9 @@ public interface IReporter extends ITestNGListener {
   default void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     // not implemented
+  }
+
+  default IReporterConfig getConfig() {
+    return new PojoReporterConfig(this);
   }
 }
