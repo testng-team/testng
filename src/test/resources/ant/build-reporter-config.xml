@@ -1,0 +1,17 @@
+<project name="MyProject" default="testng" basedir=".">
+
+    <taskdef name="testng" classname="org.testng.TestNGAntTask" classpath="../../../../build/classes/java/main" />
+
+    <target name="testng">
+        <testng>
+            <classpath>
+                <pathelement path="${java.class.path}"/>
+            </classpath>
+            <classfileset dir="../../../../build/classes/java/test" includes="**/ant/SimpleSample.class"/>
+            <reporter classname="test.ant.MyReporter">
+                <property name="methodFilter" value="*insert*"/>
+                <property name="enableFiltering" value="true"/>
+            </reporter>
+        </testng>
+    </target>
+</project>
