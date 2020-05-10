@@ -62,7 +62,7 @@ dependencies {
         compileOnly(it)
     }
 
-    listOf("com.beust:jcommander:1.72",
+    listOf("com.beust:jcommander:1.78",
             "org.apache.ant:ant:1.10.3",
             "junit:junit:4.12",
             "com.google.inject:guice:4.2.2:no_aop",

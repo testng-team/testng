@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2300: Vulnerable Dependency: Please upgrade JCommander to 1.75 or above (Krishnan Mahadevan)
 Fixed: GITHUB-2182: Removed exception catching as valid behaviour
 Fixed: GITHUB-2273: Use SPI to load Guice modules (Bartosz Popiela)
 Fixed: GITHUB-2280: Prevent Retry from happening endlessly (Paweł Nadolski)
