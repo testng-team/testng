@@ -70,7 +70,8 @@ dependencies {
         api(it)
     }
 
-    listOf("org.assertj:assertj-core:3.10.0",
+    listOf("org.apache.ant:ant-testutil:1.10.3",
+            "org.assertj:assertj-core:3.10.0",
             "org.codehaus.groovy:groovy-all:2.4.7",
             "org.spockframework:spock-core:1.0-groovy-2.4",
             "org.apache-extras.beanshell:bsh:2.0b6",
