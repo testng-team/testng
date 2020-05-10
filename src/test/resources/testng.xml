@@ -667,9 +667,10 @@
   </test>
 
   <!-- TestNG ant task related tests -->
-  <test name="Ant-ClassFileResolution" >
+  <test name="Ant" >
     <classes>
         <class name="test.ant.TestCommandLineArgs" />
+        <class name="test.ant.AntTest"/>
     </classes>
   </test>
 
