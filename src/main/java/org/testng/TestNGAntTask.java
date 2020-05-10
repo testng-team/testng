@@ -160,6 +160,7 @@ public class TestNGAntTask extends Task {
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
   private Mode mode = Mode.testng;
+  private boolean forkJvm = true;
 
   public enum Mode {
     // lower-case to better look in build scripts
@@ -392,6 +393,10 @@ public class TestNGAntTask extends Task {
     this.mode = mode;
   }
 
+  public void setForkJvm(boolean forkJvm) {
+    this.forkJvm = forkJvm;
+  }
+
   /**
    * Sets the test output directory
    *
@@ -488,6 +493,12 @@ public class TestNGAntTask extends Task {
       delegateCommandSystemProperties();
     }
     List<String> argv = createArguments();
+
+    if (!forkJvm) {
+      TestNG tng = TestNG.privateMain(argv.toArray(new String[0]), null);
+      actOnResult(tng.getStatus(), false);
+      return;
+    }
 
     String fileName = "";
     FileWriter fw = null;
