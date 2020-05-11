@@ -2,6 +2,7 @@ import org.testng.IReporter;
 import org.testng.ReporterConfig;
 import org.testng.annotations.Test;
 import org.testng.reporters.XMLReporter;
+import org.testng.reporters.XMLReporterConfig;
 
 import java.util.List;
 
@@ -28,8 +29,11 @@ public class ReporterConfigTest {
 
     @Test
     public void testInstantiate() {
-        ReporterConfig config = ReporterConfig.deserialize(CONFIG_STR);
-        IReporter reporter = config.newReporterInstance();
+        ReporterConfig reporterConfig = ReporterConfig.deserialize(CONFIG_STR);
+        IReporter reporter = reporterConfig.newReporterInstance();
         assertTrue(reporter instanceof XMLReporter);
+        XMLReporterConfig config = ((XMLReporter) reporter).getConfig();
+        assertTrue(config.isGenerateTestResultAttributes());
+        assertTrue(config.isGenerateGroupsAttribute());
     }
 }
