@@ -11,8 +11,8 @@ import static org.testng.Assert.assertTrue;
 public class ReporterConfigTest {
 
     private static final String CLASS_NAME = "org.testng.reporters.XMLReporter";
-    private static final String PROP_NAME_1 = "config.generateTestResultAttributes";
-    private static final String PROP_NAME_2 = "config.generateGroupsAttribute";
+    private static final String PROP_NAME_1 = "generateTestResultAttributes";
+    private static final String PROP_NAME_2 = "generateGroupsAttribute";
     private static final String CONFIG_STR = CLASS_NAME + ":" + PROP_NAME_1 + "=true," + PROP_NAME_2 + "=true";
 
     @Test

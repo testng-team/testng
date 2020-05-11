@@ -93,8 +93,17 @@ public class ReporterConfig {
       throw new TestNGException(m_className + " is not a IReporter");
     }
     IReporter result = (IReporter) tmp;
+
+    Object config;
+    if (result instanceof IConfiguredReporter) {
+      config = ((IConfiguredReporter) result).getConfig();
+    } else {
+      // self-config
+      config = result;
+    }
+
     for (ReporterConfig.Property property : m_properties) {
-      PropertyUtils.setProperty(result, property.name, property.value);
+      PropertyUtils.setProperty(config, property.name, property.value);
     }
     return result;
   }
