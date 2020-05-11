@@ -94,12 +94,9 @@ public class ReporterConfig {
     }
     IReporter result = (IReporter) tmp;
 
-    Object config;
+    Object config = result;
     if (result instanceof IConfiguredReporter) {
       config = ((IConfiguredReporter) result).getConfig();
-    } else {
-      // self-config
-      config = result;
     }
 
     for (ReporterConfig.Property property : m_properties) {
