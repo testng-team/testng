@@ -12,10 +12,12 @@ import java.util.List;
 public class ReporterConfig {
 
     /** The class name of the reporter listener */
-    private final String className;
+    // TODO make it private/final once org.testng.ReporterConfig will be removed
+    protected String className;
 
     /** The properties of the reporter listener */
-    private final List<Property> properties;
+    // TODO make it private once org.testng.ReporterConfig will be removed
+    protected final List<Property> properties;
 
     public ReporterConfig(String className, List<Property> properties) {
         this.className = className;
@@ -24,6 +26,12 @@ public class ReporterConfig {
 
     public String getClassName() {
         return className;
+    }
+
+    @Deprecated
+    // TODO remove once org.testng.ReporterConfig will be removed
+    public List<Property> getProperties() {
+        return properties;
     }
 
     public String serialize() {
@@ -88,7 +96,6 @@ public class ReporterConfig {
         }
         return result;
     }
-
 
     public static class Property {
         private final String name;
