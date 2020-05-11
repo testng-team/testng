@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  *
  * <p>NOTE: this class needs to be public. It's used by TestNG Ant task
  */
-public class ReporterConfig {
+public class AntReporterConfig {
 
     /** The class name of the reporter listener */
     protected String className;
