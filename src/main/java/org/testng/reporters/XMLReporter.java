@@ -1,12 +1,6 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.Reporter;
+import org.testng.*;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
@@ -21,7 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /** The main entry for the XML generation operation */
-public class XMLReporter implements IReporter, ICustomizeXmlReport, IConfiguredReporter {
+public class XMLReporter implements IConfiguredReporter, ICustomizeXmlReport {
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
@@ -79,6 +73,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport, IConfiguredR
     Utils.writeUtf8File(config.getOutputDirectory(), fileName(), rootBuffer, null /* no prefix */);
   }
 
+  @Override
   public void addCustomTagsFor(XMLStringBuffer xmlBuffer, ITestResult testResult) {
 
   }
@@ -217,6 +212,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport, IConfiguredR
     return new LinkedHashSet<>(methods);
   }
 
+  @Override
   public XMLReporterConfig getConfig() {
     return config;
   }

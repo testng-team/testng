@@ -8,6 +8,10 @@ import java.util.List;
  * This interface can be implemented by clients to generate a report. Its method generateReport()
  * will be invoked after all the suite have run and the parameters give all the test results that
  * happened during that run.
+ * <p>
+ * <b>NOTE</b>: Reporters that include configurable properties must adhere to JavaBean object
+ * conventions, providing getter and setter methods that conform to standard naming rules.
+ * This enables {@link ReporterConfig} to serialize, deserialize, and instantiate the reporter.
  *
  * @author cbeust Feb 17, 2006
  */

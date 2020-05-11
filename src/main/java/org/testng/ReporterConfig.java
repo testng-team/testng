@@ -1,14 +1,11 @@
 package org.testng;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.PropertyUtils;
 import org.testng.internal.Utils;
-import org.testng.reporters.IConfiguredReporter;
 
 /**
  * Stores the information regarding the configuration of a pluggable report listener. Used also in
@@ -41,8 +38,7 @@ public class ReporterConfig {
   }
 
   public String serialize() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(m_className);
+    StringBuilder sb = new StringBuilder(m_className);
     if (!m_properties.isEmpty()) {
       sb.append(":");
 
@@ -73,8 +69,7 @@ public class ReporterConfig {
     } else {
       reporterConfig.setClassName(inputString.substring(0, clsNameEndIndex));
       String propString = inputString.substring(clsNameEndIndex + 1);
-      String[] props = propString.split(",");
-      for (String prop : props) {
+      for (String prop : propString.split(",")) {
         String[] propNameAndVal = prop.split("=");
         if (propNameAndVal.length == 2) {
           reporterConfig.addProperty(new Property(propNameAndVal[0], propNameAndVal[1]));
@@ -98,17 +93,8 @@ public class ReporterConfig {
       throw new TestNGException(m_className + " is not a IReporter");
     }
     IReporter result = (IReporter) tmp;
-
-    Object config;
-    if (result instanceof IConfiguredReporter) {
-      config = ((IConfiguredReporter) result).getConfig();
-    } else {
-      // self-config
-      config = result;
-    }
-
     for (ReporterConfig.Property property : m_properties) {
-      PropertyUtils.setProperty(config, property.name, property.value);
+      PropertyUtils.setProperty(result, property.name, property.value);
     }
     return result;
   }
