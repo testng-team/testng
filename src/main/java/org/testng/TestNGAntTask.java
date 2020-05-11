@@ -37,6 +37,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.internal.Utils;
+import org.testng.internal.ant.AntReporterConfig;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
 
@@ -172,7 +173,7 @@ public class TestNGAntTask extends Task {
   private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
 
   /** The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task */
-  private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
+  private List<AntReporterConfig> reporterConfigs = Lists.newArrayList();
 
   private String m_testNames = "";
 
@@ -609,7 +610,7 @@ public class TestNGAntTask extends Task {
   }
 
   private void addReporterConfigs(List<String> argv) {
-    for (ReporterConfig reporterConfig : reporterConfigs) {
+    for (AntReporterConfig reporterConfig : reporterConfigs) {
       argv.add(CommandLineArgs.REPORTER);
       argv.add(reporterConfig.serialize());
     }
@@ -1028,7 +1029,7 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  public void addConfiguredReporter(ReporterConfig reporterConfig) {
+  public void addConfiguredReporter(AntReporterConfig reporterConfig) {
     reporterConfigs.add(reporterConfig);
   }
 
