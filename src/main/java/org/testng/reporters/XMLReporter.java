@@ -1,6 +1,6 @@
 package org.testng.reporters;
 
-import org.testng.IConfiguredReporter;
+import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /** The main entry for the XML generation operation */
-public class XMLReporter implements IConfiguredReporter, ICustomizeXmlReport {
+public class XMLReporter implements IReporter, ICustomizeXmlReport {
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
