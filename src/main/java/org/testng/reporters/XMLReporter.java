@@ -1,6 +1,12 @@
 package org.testng.reporters;
 
-import org.testng.*;
+import org.testng.IConfiguredReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
