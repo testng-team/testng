@@ -35,8 +35,7 @@ public class ReporterConfig {
     }
 
     public String serialize() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(className);
+        StringBuilder sb = new StringBuilder(className);
         if (!properties.isEmpty()) {
             sb.append(":");
 
@@ -65,8 +64,7 @@ public class ReporterConfig {
         } else {
             className = inputString.substring(0, clsNameEndIndex);
             String propString = inputString.substring(clsNameEndIndex + 1);
-            String[] props = propString.split(",");
-            for (String prop : props) {
+            for (String prop : propString.split(",")) {
                 String[] propNameAndVal = prop.split("=");
                 if (propNameAndVal.length == 2) {
                     properties.add(new Property(propNameAndVal[0], propNameAndVal[1]));
@@ -84,17 +82,15 @@ public class ReporterConfig {
         if (reporterClass == null) {
             return null;
         }
-
-        Object tmp = InstanceCreator.newInstance(reporterClass);
-        if (!(tmp instanceof IReporter)) {
+        if (!IReporter.class.isAssignableFrom(reporterClass)) {
             throw new TestNGException(className + " is not a IReporter");
         }
 
-        IReporter result = (IReporter) tmp;
-        for (Property property : properties) {
-            PropertyUtils.setProperty(result, property.name, property.value);
-        }
-        return result;
+        IReporter reporter = (IReporter) InstanceCreator.newInstance(reporterClass);
+
+        reporter.getConfig().setProperties(properties);
+
+        return reporter;
     }
 
     public static class Property {

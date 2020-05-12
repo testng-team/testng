@@ -79,6 +79,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
     Utils.writeUtf8File(config.getOutputDirectory(), fileName(), rootBuffer, null /* no prefix */);
   }
 
+  @Override
   public void addCustomTagsFor(XMLStringBuffer xmlBuffer, ITestResult testResult) {
 
   }
@@ -217,6 +218,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
     return new LinkedHashSet<>(methods);
   }
 
+  @Override
   public XMLReporterConfig getConfig() {
     return config;
   }
