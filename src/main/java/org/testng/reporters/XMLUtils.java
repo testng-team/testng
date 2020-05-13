@@ -25,9 +25,11 @@ public final class XMLUtils {
   /**
    * Generate tag. An opening and closing tag will be generated even if value is null.
    *
+   * @param indent indent
    * @param name name of the tag
    * @param content content for this tag (or null)
    * @param attributes tag attributes (or null)
+   * @return The String value of the generated tag
    */
   public static String xml(
       String indent, String name, @Nullable String content, @Nullable Properties attributes) {

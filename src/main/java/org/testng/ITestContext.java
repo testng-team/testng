@@ -18,13 +18,13 @@ import java.util.List;
  */
 public interface ITestContext extends IAttributes {
 
-  /** The name of this test. */
+  /** @return The name of this test. */
   String getName();
 
-  /** When this test started running. */
+  /** @return When this test started running. */
   Date getStartDate();
 
-  /** When this test stopped running. */
+  /** @return When this test stopped running. */
   Date getEndDate();
 
   /** @return A list of all the tests that run successfully. */
@@ -69,13 +69,13 @@ public interface ITestContext extends IAttributes {
   /** @return All the methods that were not included in this test run. */
   Collection<ITestNGMethod> getExcludedMethods();
 
-  /** Retrieves information about the successful configuration method invocations. */
+  /** @return The information about the successful configuration method invocations. */
   IResultMap getPassedConfigurations();
 
-  /** Retrieves information about the skipped configuration method invocations. */
+  /** @return The information about the skipped configuration method invocations. */
   IResultMap getSkippedConfigurations();
 
-  /** Retrieves information about the failed configuration method invocations. */
+  /** @return The information about the failed configuration method invocations. */
   IResultMap getFailedConfigurations();
 
   /** @return the current XmlTest. */

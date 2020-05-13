@@ -16,12 +16,12 @@ public abstract class RetryAnalyzerCount implements IRetryAnalyzer {
   // Default retry once.
   AtomicInteger count = new AtomicInteger(1);
 
-  /** Set the max number of time the method needs to be retried. */
+  /** @param count the max number of time the method needs to be retried. */
   protected void setCount(int count) {
     this.count.set(count);
   }
 
-  /** Return the current counter value */
+  /** @return the current counter value */
   protected int getCount() {
     return this.count.get();
   }

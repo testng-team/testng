@@ -5,7 +5,6 @@ package org.testng;
  * parameter.
  *
  * @see org.testng.IObjectFactory
- * @author Cedric Beust <cedric@beust.com>
  * @since 5.14.6
  */
 public interface IObjectFactory2 extends ITestObjectFactory {

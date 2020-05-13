@@ -249,7 +249,10 @@ public class XmlSuite implements Cloneable {
     m_objectFactory = objectFactory;
   }
 
-  /** @deprecated Use #setParallel(XmlSuite.ParallelMode) instead */
+  /**
+   * @param parallel The String value
+   * @deprecated Use #setParallel(XmlSuite.ParallelMode) instead
+   */
   @Deprecated
   public void setParallel(String parallel) {
     if (parallel == null) {
@@ -416,7 +419,7 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * Gets the parameters that apply to tests in this suite.<br>
+   * @return the parameters that apply to tests in this suite.<br>
    * The set of parameters for a suite is appended with parameters from the parent suite. Also, parameters
    * from this suite override the same named parameters from the parent suite.
    */
@@ -852,7 +855,10 @@ public class XmlSuite implements Cloneable {
     return true;
   }
 
-  /** @deprecated Use {@link #setPreserveOrder(Boolean)} instead */
+  /**
+   * @param f The String value
+   * @deprecated Use {@link #setPreserveOrder(Boolean)} instead
+   */
   @Deprecated
   public void setPreserveOrder(String f) {
     setPreserveOrder(Boolean.valueOf(f));

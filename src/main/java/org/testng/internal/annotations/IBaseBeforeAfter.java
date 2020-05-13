@@ -39,7 +39,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
   boolean getAlwaysRun();
 
   /**
-   * If true, this &#64;Configuration method will belong to groups specified in the &#64;Test
+   * @return true if this &#64;Configuration method will belong to groups specified in the &#64;Test
    * annotation on the class (if any).
    */
   boolean getInheritGroups();

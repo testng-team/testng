@@ -9,8 +9,6 @@ import java.util.Collection;
 
 /**
  * Override the groups included in the XML file with groups specified on the command line.
- *
- * @author Cedric Beust <cedric@beust.com>
  */
 public class OverrideProcessor implements IPostProcessor {
 

@@ -10,8 +10,6 @@ package org.testng;
  *   <li>{@link IExecutionListener#onExecutionFinish()} gets invoked at the very last (after report
  *       generation phase), before TestNG exits the JVM.
  * </ul>
- *
- * @author Cedric Beust <cedric@beust.com>
  */
 public interface IExecutionListener extends ITestNGListener {
 

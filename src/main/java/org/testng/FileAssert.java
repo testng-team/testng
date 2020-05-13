@@ -60,7 +60,10 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertFile(File, String) */
+  /**
+   * @param tstvalue The actual file
+   * @see #assertFile(File, String)
+   */
   public static void assertFile(File tstvalue) {
     assertFile(tstvalue, null);
   }
@@ -71,6 +74,7 @@ public class FileAssert {
    * thrown.
    *
    * @param tstvalue the file to evaluate
+   * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertLength(File tstvalue, long expected, String message) {
@@ -85,7 +89,11 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertLength(File, long, String) */
+  /**
+   * @param tstvalue The actual file
+   * @param expected The expected length
+   * @see #assertLength(File, long, String)
+   */
   public static void assertLength(File tstvalue, long expected) {
     assertLength(tstvalue, expected, null);
   }
@@ -96,6 +104,7 @@ public class FileAssert {
    * message is thrown.
    *
    * @param tstvalue the file to evaluate
+   * @param expected the expected value
    * @param message the assertion error message
    */
   public static void assertMinLength(File tstvalue, long expected, String message) {
@@ -111,7 +120,11 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertMinLength(File, long, String) */
+  /**
+   * @param tstvalue The actual file
+   * @param expected The expected min length
+   * @see #assertMinLength(File, long, String)
+   */
   public static void assertMinLength(File tstvalue, long expected) {
     assertMinLength(tstvalue, expected, null);
   }
@@ -122,6 +135,7 @@ public class FileAssert {
    * thrown.
    *
    * @param tstvalue the file to evaluate
+   * @param expected The expected max length
    * @param message the assertion error message
    */
   public static void assertMaxLength(File tstvalue, long expected, String message) {
@@ -137,7 +151,11 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertMaxLength(File, long, String) */
+  /**
+   * @param tstvalue The actual file
+   * @param expected The expected length
+   * @see #assertMaxLength(File, long, String)
+   */
   public static void assertMaxLength(File tstvalue, long expected) {
     assertMaxLength(tstvalue, expected, null);
   }
@@ -161,7 +179,10 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertReadable(File, String) */
+  /**
+   * @param tstvalue The actual file
+   * @see #assertReadable(File, String)
+   */
   public static void assertReadable(File tstvalue) {
     assertReadable(tstvalue, null);
   }
@@ -185,7 +206,10 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertWriteable(File, String) */
+  /**
+   * @param tstvalue The actual file
+   * @see #assertWriteable(File, String)
+   */
   public static void assertWriteable(File tstvalue) {
     assertReadable(tstvalue, null);
   }
@@ -209,7 +233,10 @@ public class FileAssert {
     }
   }
 
-  /** @see #assertReadWrite(File, String) */
+  /**
+   * @param tstvalue The actual file
+   * @see #assertReadWrite(File, String)
+   */
   public static void assertReadWrite(File tstvalue) {
     assertReadWrite(tstvalue, null);
   }

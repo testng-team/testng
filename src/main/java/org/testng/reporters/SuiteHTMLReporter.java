@@ -86,6 +86,7 @@ public class SuiteHTMLReporter implements IReporter {
    * Overridable by subclasses to create different directory names (e.g. with timestamps).
    *
    * @param outputDirectory the output directory specified by the user
+   * @return the name of the output directory of the report
    */
   protected String generateOutputDirectoryName(String outputDirectory) {
     return outputDirectory;

@@ -24,9 +24,6 @@ import org.testng.internal.collections.Pair;
 
 /**
  * Collections of helper methods to help deal with test methods
- *
- * @author Cedric Beust <cedric@beust.com>
- * @author nullin <nalin.makar * gmail.com>
  */
 public class MethodGroupsHelper {
 
@@ -131,7 +128,7 @@ public class MethodGroupsHelper {
     return true;
   }
 
-  /** Extracts the map of groups and their corresponding methods from the <code>classes</code>. */
+  /** @return the map of groups and their corresponding methods from the extraction of <code>classes</code>. */
   public static Map<String, List<ITestNGMethod>> findGroupsMethods(
       Collection<ITestClass> classes, boolean before) {
     Map<String, List<ITestNGMethod>> result = Maps.newHashMap();

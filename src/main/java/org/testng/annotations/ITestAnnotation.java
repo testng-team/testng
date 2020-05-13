@@ -20,12 +20,18 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
    * The size of the thread pool for this method. The method will be invoked from multiple threads
    * as specified by invocationCount. Note: this attribute is ignored if invocationCount is not
    * specified
+   *
+   * @return the value
    */
   int getThreadPoolSize();
 
   void setThreadPoolSize(int n);
 
-  /** The percentage of success expected from this method. */
+  /**
+   * The percentage of success expected from this method.
+   *
+   * @return the value
+   */
   int getSuccessPercentage();
 
   void setSuccessPercentage(int s);
@@ -33,6 +39,8 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   /**
    * If set to true, this test method will always be run even if it depends on a method that failed.
    * This attribute will be ignored if this test doesn't depend on any method or group.
+   *
+   * @return the value
    */
   boolean getAlwaysRun();
 
@@ -69,6 +77,8 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
   /**
    * @deprecated - This method stands deprecated as of TestNG 7.0.0.
    * Please use {{@link #getRetryAnalyzerClass()}} instead.
+   *
+   * @return The retry analyzer
    */
   @Deprecated
   IRetryAnalyzer getRetryAnalyzer();
@@ -91,7 +101,11 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setIgnoreMissingDependencies(boolean ignore);
 
-  /** The scheduling priority. Lower priorities get scheduled first. */
+  /**
+   * The scheduling priority. Lower priorities get scheduled first.
+   *
+   * @return the value
+   */
   int getPriority();
 
   void setPriority(int priority);

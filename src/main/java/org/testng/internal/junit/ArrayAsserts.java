@@ -159,6 +159,7 @@ public class ArrayAsserts {
    * @param message the identifying message for the {@link AssertionError} (<code>null</code> okay)
    * @param expecteds double array with expected values.
    * @param actuals double array with actual values
+   * @param delta double value of delta
    */
   public static void assertArrayEquals(
       String message, double[] expecteds, double[] actuals, double delta)
@@ -171,6 +172,7 @@ public class ArrayAsserts {
    *
    * @param expecteds double array with expected values.
    * @param actuals double array with actual values
+   * @param delta double value of delta
    */
   public static void assertArrayEquals(double[] expecteds, double[] actuals, double delta) {
     assertArrayEquals(null, expecteds, actuals, delta);
@@ -183,6 +185,7 @@ public class ArrayAsserts {
    * @param message the identifying message for the {@link AssertionError} (<code>null</code> okay)
    * @param expecteds float array with expected values.
    * @param actuals float array with actual values
+   * @param delta float value of the delta
    */
   public static void assertArrayEquals(
       String message, float[] expecteds, float[] actuals, float delta)
@@ -195,6 +198,7 @@ public class ArrayAsserts {
    *
    * @param expecteds float array with expected values.
    * @param actuals float array with actual values
+   * @param delta float value of the delta
    */
   public static void assertArrayEquals(float[] expecteds, float[] actuals, float delta) {
     assertArrayEquals(null, expecteds, actuals, delta);

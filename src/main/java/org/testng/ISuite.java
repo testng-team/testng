@@ -37,7 +37,10 @@ public interface ISuite extends IAttributes {
 
   String getGuiceStage();
 
-  /** @return The value of this parameter, or null if none was specified. */
+  /**
+   * @param parameterName The name of the parameter
+   * @return The value of this parameter, or null if none was specified.
+   */
   String getParameter(String parameterName);
 
   /**

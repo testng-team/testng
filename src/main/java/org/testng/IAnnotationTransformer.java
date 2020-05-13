@@ -57,6 +57,7 @@ public interface IAnnotationTransformer extends ITestNGListener {
   /**
    * Transform an IDataProvider annotation.
    *
+   * @param annotation The &#64;DataProvider annotation
    * @param method The method annotated with the IDataProvider annotation.
    */
   default void transform(IDataProviderAnnotation annotation, Method method) {
@@ -66,13 +67,14 @@ public interface IAnnotationTransformer extends ITestNGListener {
   /**
    * Transform an IFactory annotation.
    *
+   * @param annotation The annotation factory
    * @param method The method annotated with the IFactory annotation.
    */
   default void transform(IFactoryAnnotation annotation, Method method) {
     // not implemented
   }
 
-  default void transform(IListenersAnnotation annotation, Class testClass) {
+  default void transform(IListenersAnnotation annotation, Class<?> testClass) {
     // not implemented
   }
 }

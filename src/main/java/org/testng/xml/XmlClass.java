@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-/** This class describes the tag <class> in testng.xml. */
+/** This class describes the tag <code>&lt;class&gt;</code> in testng.xml. */
 public class XmlClass implements Cloneable {
 
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
@@ -188,6 +188,8 @@ public class XmlClass implements Cloneable {
    * Note that this attribute does not come from the XML file, it's calculated internally and
    * represents the order in which this class was found in its &lt;test&gt; tag. It's used to
    * calculate the ordering of the classes when preserve-order is true.
+   *
+   * @return the value
    */
   public int getIndex() {
     return m_index;

@@ -5,22 +5,22 @@ package org.testng.annotations;
  */
 public interface ITestOrConfiguration extends IParameterizable {
   /**
-   * Returns the maximum number of milliseconds this test should take. If it hasn't returned after
+   * @return Returns the maximum number of milliseconds this test should take. If it hasn't returned after
    * this time, it will be marked as a FAIL.
-   *
-   * @return the maximum number of milliseconds this test should take.
    */
   long getTimeOut();
 
   void setTimeOut(long l);
 
-  /** The list of groups this class/method belongs to. */
+  /**
+   * @return The list of groups this class/method belongs to.
+   */
   String[] getGroups();
 
   void setGroups(String[] groups);
 
   /**
-   * The list of groups this method depends on. Every method member of one of these groups is
+   * @return The list of groups this method depends on. Every method member of one of these groups is
    * guaranteed to have been invoked before this method. Furthermore, if any of these methods was
    * not a SUCCESS, this test method will not be run and will be flagged as a SKIP.
    */
@@ -29,7 +29,7 @@ public interface ITestOrConfiguration extends IParameterizable {
   void setDependsOnGroups(String[] groups);
 
   /**
-   * The list of methods this method depends on. There is no guarantee on the order on which the
+   * @return The list of methods this method depends on. There is no guarantee on the order on which the
    * methods depended upon will be run, but you are guaranteed that all these methods will be run
    * before the test method that contains this annotation is run. Furthermore, if any of these
    * methods was not a SUCCESS, this test method will not be run and will be flagged as a SKIP.
@@ -40,7 +40,7 @@ public interface ITestOrConfiguration extends IParameterizable {
 
   void setDependsOnMethods(String[] dependsOnMethods);
 
-  /** The description for this method, which will be shown in the reports. */
+  /** @return The description for this method, which will be shown in the reports. */
   String getDescription();
 
   void setDescription(String description);

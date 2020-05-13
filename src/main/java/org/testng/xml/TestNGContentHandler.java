@@ -33,6 +33,7 @@ import static org.testng.internal.Utils.isStringBlank;
  * @author Cedric Beust
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
+// TODO move to internal
 public class TestNGContentHandler extends DefaultHandler {
   private XmlSuite m_currentSuite = null;
   private XmlTest m_currentTest = null;
@@ -370,7 +371,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <classes> */
   public void xmlClasses(boolean start, Attributes attributes) {
     if (start) {
       m_currentClasses = Lists.newArrayList();
@@ -381,7 +381,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <listeners> */
   public void xmlListeners(boolean start, Attributes attributes) {
     if (start) {
       m_listeners = Lists.newArrayList();
@@ -393,7 +392,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <listener> */
   public void xmlListener(boolean start, Attributes attributes) {
     if (start) {
       String listener = attributes.getValue("class-name");
@@ -401,7 +399,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <packages> */
   public void xmlPackages(boolean start, Attributes attributes) {
     if (start) {
       m_currentPackages = Lists.newArrayList();
@@ -427,7 +424,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <method-selectors> */
   public void xmlMethodSelectors(boolean start, Attributes attributes) {
     if (start) {
       m_currentSelectors = new ArrayList<>();
@@ -442,7 +438,6 @@ public class TestNGContentHandler extends DefaultHandler {
     m_currentSelectors = null;
   }
 
-  /** Parse <selector-class> */
   public void xmlSelectorClass(boolean start, Attributes attributes) {
     if (start) {
       m_currentSelector.setName(attributes.getValue("name"));
@@ -454,7 +449,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <method-selector> */
   public void xmlMethodSelector(boolean start, Attributes attributes) {
     if (start) {
       m_currentSelector = new XmlMethodSelector();
@@ -477,7 +471,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <run> */
   public void xmlRun(boolean start, Attributes attributes) {
     if (start) {
       m_currentRuns = Lists.newArrayList();
@@ -493,7 +486,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <group> */
   public void xmlGroup(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest.addXmlDependencyGroup(
@@ -501,7 +493,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <groups> */
   public void xmlGroups(boolean start, Attributes attributes) {
     if (start) {
       m_currentGroups = new XmlGroups();

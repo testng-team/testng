@@ -95,7 +95,7 @@ public class Parser {
     m_postProcessor = processor;
   }
 
-  /** If false, don't try to load the classes during the parsing. */
+  /** @param loadClasses If false, don't try to load the classes during the parsing. */
   public void setLoadClasses(boolean loadClasses) {
     m_loadClasses = loadClasses;
   }
@@ -112,7 +112,7 @@ public class Parser {
 
   /**
    * Parses the TestNG test suite and returns the corresponding XmlSuite, and possibly, other
-   * XmlSuite that are pointed to by <suite-files> tags.
+   * XmlSuite that are pointed to by <code>&lt;suite-files&gt;</code> tags.
    *
    * @return the parsed TestNG test suite.
    * @throws IOException if an I/O error occurs while parsing the test suite file or if the default

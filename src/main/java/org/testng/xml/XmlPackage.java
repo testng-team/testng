@@ -9,7 +9,7 @@ import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
-/** This class describes the tag <package> in testng.xml. */
+/** This class describes the tag <code>&lt;package&gt;</code> in testng.xml. */
 public class XmlPackage {
 
   private String m_name;

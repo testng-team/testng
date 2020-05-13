@@ -19,7 +19,7 @@ public interface IMethodSelectorContext {
    * Indicate that no other Method Selectors should be invoked after the current one if stopped is
    * false.
    *
-   * @param stopped
+   * @param stopped The value
    */
   void setStopped(boolean stopped);
 

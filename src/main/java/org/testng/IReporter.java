@@ -12,7 +12,13 @@ import java.util.List;
  * happened during that run.
  */
 public interface IReporter extends ITestNGListener {
-  /** Generate a report for the given suites into the specified output directory. */
+  /**
+   * Generate a report for the given suites into the specified output directory.
+   *
+   * @param xmlSuites The list of <code>XmlSuite</code>
+   * @param suites The list of <code>ISuite</code>
+   * @param outputDirectory The output directory
+   */
   default void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     // not implemented

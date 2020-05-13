@@ -7,8 +7,6 @@ import org.testng.ITestResult;
 
 /**
  * A Runnable Method invoker.
- *
- * @author <a href="mailto:the_mindstorm@evolva.ro>the_mindstorm</a>
  */
 public class InvokeMethodRunnable implements Callable<Void> {
   private ITestNGMethod m_method;

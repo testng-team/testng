@@ -25,6 +25,8 @@ public @interface Optional {
    * <p>In this case, we use this string as a substitute for <code>null</code>; in practice, TestNG
    * will pass <code>null</code> to your code, and not the string "null", if you do not specify a
    * default value here in this parameter.
+   *
+   * @return the value (default NULL_VALUE)
    */
   String value() default Parameters.NULL_VALUE;
 }

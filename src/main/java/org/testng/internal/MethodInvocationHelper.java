@@ -36,9 +36,6 @@ import java.util.List;
 
 /**
  * Collections of helper methods to help deal with invocation of TestNG methods
- *
- * @author Cedric Beust <cedric@beust.com>
- * @author nullin <nalin.makar * gmail.com>
  */
 public class MethodInvocationHelper {
 

@@ -8,7 +8,14 @@ import java.util.Properties;
 
 public class XmlUtils {
 
-  /** Don't add this property if it's equal to its default value. */
+  /**
+   * Don't add this property if it's equal to its default value.
+   *
+   * @param p The properties
+   * @param name The property name
+   * @param value The property value
+   * @param def The default value
+   */
   public static void setProperty(Properties p, String name, String value, String def) {
     if (!def.equals(value) && value != null) {
       p.setProperty(name, value);

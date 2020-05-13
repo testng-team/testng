@@ -1315,6 +1315,9 @@ public class Assert {
 
   /**
    * Asserts that two sets are equal.
+   *
+   * @param actual The actual value
+   * @param expected The expected value
    */
   public static void assertEquals(Set<?> actual, Set<?> expected) {
     assertEquals(actual, expected, null);
@@ -1341,6 +1344,10 @@ public class Assert {
 
   /**
    * Assert set equals
+   *
+   * @param actual The actual value
+   * @param expected The expected value
+   * @param message The message
    */
   public static void assertEquals(Set<?> actual, Set<?> expected, String message) {
     String notEqualReason = getNotEqualReason(actual, expected);
@@ -1439,6 +1446,10 @@ public class Assert {
 
   /**
    * Asserts that two maps are equal.
+   *
+   * @param actual The actual value
+   * @param expected The expected value
+   * @param message The message
    */
   public static void assertEquals(Map<?, ?> actual, Map<?, ?> expected, String message) {
     String notEqualReason = getNotEqualReason(actual, expected);
@@ -1674,6 +1685,7 @@ public class Assert {
    * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
    *
    * @param throwableClass the expected type of the exception
+   * @param <T>            the expected type of the exception
    * @param runnable       A function that is expected to throw an exception when invoked
    * @since 6.9.5
    */
@@ -1691,6 +1703,7 @@ public class Assert {
    * calling {@link AssertionError#getCause}.
    *
    * @param throwableClass the expected type of the exception
+   * @param <T>            the expected type of the exception
    * @param runnable       A function that is expected to throw an exception when invoked
    * @return The exception thrown by {@code runnable}
    * @since 6.9.5

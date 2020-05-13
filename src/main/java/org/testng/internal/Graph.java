@@ -270,7 +270,10 @@ public class Graph<T> {
       return m_predecessors;
     }
 
-    /** @return true if this predecessor was found and removed */
+    /**
+     * @param o The predecessor to remove
+     * @return true if this predecessor was found and removed
+     */
     public boolean removePredecessor(T o) {
       boolean result = false;
 

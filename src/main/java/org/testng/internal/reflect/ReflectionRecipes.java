@@ -190,8 +190,8 @@ public final class ReflectionRecipes {
    * array.
    *
    * <p>Assuming upper case letters denote classes and corresponding lowercase its instances.
-   * Classes {A,B,C...}, instances {a,b,c1,c2} ==> check for {a,b,{c1,c2}} match or Classes
-   * {A,B,C[]}, instances {a,b,c1,c2} ==> check for {a,b,{c1,c2}} match both of the above cases are
+   * Classes {A,B,C...}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match or Classes
+   * {A,B,C[]}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match both of the above cases are
    * equivalent.
    *
    * @param classes array of class instances to check against.

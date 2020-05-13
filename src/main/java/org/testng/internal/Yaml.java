@@ -73,7 +73,7 @@ public final class Yaml {
     }
   }
 
-  /**
+  /*
    * The main entry point to convert an XmlSuite into YAML. This method is allowed to be used by
    * external tools (e.g. Eclipse).
    */

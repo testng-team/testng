@@ -17,12 +17,24 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DataProvider {
 
-  /** The name of this DataProvider. */
+  /**
+   * The name of this DataProvider.
+   *
+   * @return the value (default empty)
+   */
   String name() default "";
 
-  /** Whether this data provider should be run in parallel. */
+  /**
+   * Whether this data provider should be run in parallel.
+   *
+   * @return the value (default false)
+   */
   boolean parallel() default false;
 
-  /** Which indices to run from this data provider, default: all. */
+  /**
+   * Which indices to run from this data provider, default: all.
+   *
+   * @return the value
+   */
   int[] indices() default {};
 }
