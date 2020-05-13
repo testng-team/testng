@@ -58,6 +58,8 @@ public class ConfigurationGroupMethods {
   }
 
   /**
+   * @param group The group name
+   * @param method The test method
    * @return true if the passed method is the last to run for the group. This method is used to
    *     figure out when is the right time to invoke afterGroups methods.
    */

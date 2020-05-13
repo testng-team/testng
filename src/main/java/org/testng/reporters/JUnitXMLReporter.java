@@ -103,7 +103,11 @@ public class JUnitXMLReporter implements IResultListener2 {
   @Override
   public void onConfigurationSuccess(ITestResult itr) {}
 
-  /** generate the XML report given what we know from all the test results */
+  /**
+   * generate the XML report given what we know from all the test results
+   *
+   * @param context The test context
+   */
   protected void generateReport(ITestContext context) {
 
     XMLStringBuffer document = new XMLStringBuffer();

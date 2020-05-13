@@ -12,31 +12,49 @@ import org.testng.xml.XmlTest;
  */
 public interface ITestMethodFinder {
 
-  /** @return All the applicable test methods. */
+  /**
+   * @param cls The test class
+   * @param xmlTest The test node of xml
+   * @return All the applicable test methods.
+   */
   ITestNGMethod[] getTestMethods(Class<?> cls, XmlTest xmlTest);
 
-  /** @return All the methods that should be invoked before a test method is invoked. */
+  /**
+   * @param cls The test class
+   * @return All the methods that should be invoked before a test method is invoked.
+   */
   ITestNGMethod[] getBeforeTestMethods(Class<?> cls);
 
-  /** @return All the methods that should be invoked after a test method completes. */
+  /**
+   * @param cls The test class
+   * @return All the methods that should be invoked after a test method completes.
+   */
   ITestNGMethod[] getAfterTestMethods(Class<?> cls);
 
   /**
+   * @param cls The test class
    * @return All the methods that should be invoked after the test class has been created and before
    *     any of its test methods is invoked.
    */
   ITestNGMethod[] getBeforeClassMethods(Class<?> cls);
 
   /**
+   * @param cls The test class
    * @return All the methods that should be invoked after the test class has been created and after
    *     all its test methods have completed.
    */
   ITestNGMethod[] getAfterClassMethods(Class<?> cls);
 
-  /** @return All the methods that should be invoked before the suite starts running. */
+  /**
+   * @param cls The test class
+   * @return All the methods that should be invoked before the suite starts running.
+   */
   ITestNGMethod[] getBeforeSuiteMethods(Class<?> cls);
 
-  /** @return All the methods that should be invoked after the suite has run all its tests. */
+  /**
+   * @param cls The test class
+   * @return All the methods that should be invoked after the suite has run all its tests.
+   */
   ITestNGMethod[] getAfterSuiteMethods(Class<?> cls);
 
   ITestNGMethod[] getBeforeTestConfigurationMethods(Class<?> testClass);

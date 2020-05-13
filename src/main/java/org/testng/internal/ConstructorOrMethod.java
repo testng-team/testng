@@ -6,8 +6,6 @@ import java.lang.reflect.Method;
 
 /**
  * Encapsulation of either a method or a constructor.
- *
- * @author Cedric Beust <cedric@beust.com>
  */
 public class ConstructorOrMethod {
 

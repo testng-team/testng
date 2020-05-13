@@ -14,6 +14,9 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that a condition is true. If it isn't it throws an AssertionFailedError with the given
    * message.
+   *
+   * @param message The message
+   * @param condition The actual condition
    */
   public static void assertTrue(String message, boolean condition) {
     if (!condition) {
@@ -21,7 +24,11 @@ public class AssertJUnit extends ArrayAsserts {
     }
   }
 
-  /** Asserts that a condition is true. If it isn't it throws an AssertionFailedError. */
+  /**
+   * Asserts that a condition is true. If it isn't it throws an AssertionFailedError.
+   *
+   * @param condition The actual condition
+   */
   public static void assertTrue(boolean condition) {
     assertTrue(null, condition);
   }
@@ -29,17 +36,28 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that a condition is false. If it isn't it throws an AssertionFailedError with the given
    * message.
+   *
+   * @param message The message
+   * @param condition The actual condition
    */
   public static void assertFalse(String message, boolean condition) {
     assertTrue(message, !condition);
   }
 
-  /** Asserts that a condition is false. If it isn't it throws an AssertionFailedError. */
+  /**
+   * Asserts that a condition is false. If it isn't it throws an AssertionFailedError.
+   *
+   * @param condition The actual condition
+   */
   public static void assertFalse(boolean condition) {
     assertFalse(null, condition);
   }
 
-  /** Fails a test with the given message. */
+  /**
+   * Fails a test with the given message.
+   *
+   * @param message The message
+   */
   public static void fail(String message) {
     if (null == message) {
       message = "";
@@ -55,6 +73,10 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two objects are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, Object expected, Object actual) {
     if ((expected == null) && (actual == null)) {
@@ -66,12 +88,23 @@ public class AssertJUnit extends ArrayAsserts {
     failNotEquals(message, expected, actual);
   }
 
-  /** Asserts that two objects are equal. If they are not an AssertionFailedError is thrown. */
+  /**
+   * Asserts that two objects are equal. If they are not an AssertionFailedError is thrown.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(Object expected, Object actual) {
     assertEquals(null, expected, actual);
   }
 
-  /** Asserts that two Strings are equal. */
+  /**
+   * Asserts that two Strings are equal.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(String message, String expected, String actual) {
     if ((expected == null) && (actual == null)) {
       return;
@@ -82,7 +115,12 @@ public class AssertJUnit extends ArrayAsserts {
     throw new AssertionError(format(message, expected, actual));
   }
 
-  /** Asserts that two Strings are equal. */
+  /**
+   * Asserts that two Strings are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(String expected, String actual) {
     assertEquals(null, expected, actual);
   }
@@ -91,6 +129,11 @@ public class AssertJUnit extends ArrayAsserts {
    * Asserts that two doubles are equal concerning a delta. If they are not an AssertionFailedError
    * is thrown with the given message. If the expected value is infinity then the delta value is
    * ignored.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
+   * @param delta The delta value
    */
   public static void assertEquals(String message, double expected, double actual, double delta) {
 
@@ -109,6 +152,10 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two doubles are equal concerning a delta. If the expected value is infinity then
    * the delta value is ignored.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   * @param delta The delta value
    */
   public static void assertEquals(double expected, double actual, double delta) {
     assertEquals(null, expected, actual, delta);
@@ -118,6 +165,11 @@ public class AssertJUnit extends ArrayAsserts {
    * Asserts that two floats are equal concerning a delta. If they are not an AssertionFailedError
    * is thrown with the given message. If the expected value is infinity then the delta value is
    * ignored.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
+   * @param delta The delta value
    */
   public static void assertEquals(String message, float expected, float actual, float delta) {
 
@@ -135,6 +187,10 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two floats are equal concerning a delta. If the expected value is infinity then
    * the delta value is ignored.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   * @param delta The delta value
    */
   public static void assertEquals(float expected, float actual, float delta) {
     assertEquals(null, expected, actual, delta);
@@ -143,12 +199,21 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two longs are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, long expected, long actual) {
     assertEquals(message, Long.valueOf(expected), Long.valueOf(actual));
   }
 
-  /** Asserts that two longs are equal. */
+  /**
+   * Asserts that two longs are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(long expected, long actual) {
     assertEquals(null, expected, actual);
   }
@@ -156,12 +221,21 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two booleans are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, boolean expected, boolean actual) {
     assertEquals(message, Boolean.valueOf(expected), Boolean.valueOf(actual));
   }
 
-  /** Asserts that two booleans are equal. */
+  /**
+   * Asserts that two booleans are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(boolean expected, boolean actual) {
     assertEquals(null, expected, actual);
   }
@@ -169,12 +243,21 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two bytes are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, byte expected, byte actual) {
     assertEquals(message, Byte.valueOf(expected), Byte.valueOf(actual));
   }
 
-  /** Asserts that two bytes are equal. */
+  /**
+   * Asserts that two bytes are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(byte expected, byte actual) {
     assertEquals(null, expected, actual);
   }
@@ -182,12 +265,21 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two chars are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, char expected, char actual) {
     assertEquals(message, Character.valueOf(expected), Character.valueOf(actual));
   }
 
-  /** Asserts that two chars are equal. */
+  /**
+   * Asserts that two chars are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(char expected, char actual) {
     assertEquals(null, expected, actual);
   }
@@ -195,12 +287,21 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two shorts are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, short expected, short actual) {
     assertEquals(message, Short.valueOf(expected), Short.valueOf(actual));
   }
 
-  /** Asserts that two shorts are equal. */
+  /**
+   * Asserts that two shorts are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(short expected, short actual) {
     assertEquals(null, expected, actual);
   }
@@ -208,17 +309,30 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two ints are equal. If they are not an AssertionFailedError is thrown with the
    * given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertEquals(String message, int expected, int actual) {
     assertEquals(message, Integer.valueOf(expected), Integer.valueOf(actual));
   }
 
-  /** Asserts that two ints are equal. */
+  /**
+   * Asserts that two ints are equal.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
+   */
   public static void assertEquals(int expected, int actual) {
     assertEquals(null, expected, actual);
   }
 
-  /** Asserts that an object isn't null. */
+  /**
+   * Asserts that an object isn't null.
+   *
+   * @param object The actual object
+   */
   public static void assertNotNull(Object object) {
     assertNotNull(null, object);
   }
@@ -226,12 +340,19 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that an object isn't null. If it is an AssertionFailedError is thrown with the given
    * message.
+   *
+   * @param message The message
+   * @param object The actual object
    */
   public static void assertNotNull(String message, Object object) {
     assertTrue(message, object != null);
   }
 
-  /** Asserts that an object is null. */
+  /**
+   * Asserts that an object is null.
+   *
+   * @param object The actual object
+   */
   public static void assertNull(Object object) {
     assertNull(null, object);
   }
@@ -239,6 +360,9 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that an object is null. If it is not an AssertionFailedError is thrown with the given
    * message.
+   *
+   * @param message The message
+   * @param object The actual object
    */
   public static void assertNull(String message, Object object) {
     assertTrue(message, object == null);
@@ -247,6 +371,10 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two objects refer to the same object. If they are not an AssertionFailedError is
    * thrown with the given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertSame(String message, Object expected, Object actual) {
     if (expected == actual) {
@@ -258,6 +386,9 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two objects refer to the same object. If they are not the same an
    * AssertionFailedError is thrown.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertSame(Object expected, Object actual) {
     assertSame(null, expected, actual);
@@ -266,6 +397,10 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two objects refer to the same object. If they are not an AssertionFailedError is
    * thrown with the given message.
+   *
+   * @param message The message
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertNotSame(String message, Object expected, Object actual) {
     if (expected == actual) {
@@ -276,6 +411,9 @@ public class AssertJUnit extends ArrayAsserts {
   /**
    * Asserts that two objects refer to the same object. If they are not the same an
    * AssertionFailedError is thrown.
+   *
+   * @param expected The expected value
+   * @param actual The actual value
    */
   public static void assertNotSame(Object expected, Object actual) {
     assertNotSame(null, expected, actual);

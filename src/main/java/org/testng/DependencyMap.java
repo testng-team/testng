@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 
 /**
  * Helper class to keep track of dependencies.
- *
- * @author Cedric Beust <cedric@beust.com>
  */
 public class DependencyMap {
   private ListMultiMap<String, ITestNGMethod> m_dependencies = Maps.newListMultiMap();

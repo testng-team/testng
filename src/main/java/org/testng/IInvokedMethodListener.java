@@ -22,13 +22,25 @@ public interface IInvokedMethodListener extends ITestNGListener {
     // not implemented
   }
 
-  /** To be implemented if the method needs a handle to contextual information. */
+  /**
+   * To be implemented if the method needs a handle to contextual information.
+   *
+   * @param method The invoked method
+   * @param testResult The test result
+   * @param context The test context
+   */
   default void beforeInvocation(
       IInvokedMethod method, ITestResult testResult, ITestContext context) {
     // not implemented
   }
 
-  /** To be implemented if the method needs a handle to contextual information. */
+  /**
+   * To be implemented if the method needs a handle to contextual information.
+   *
+   * @param method The invoked method
+   * @param testResult The test result
+   * @param context The test context
+   */
   default void afterInvocation(
       IInvokedMethod method, ITestResult testResult, ITestContext context) {
     // not implemented

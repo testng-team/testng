@@ -55,12 +55,12 @@ public class Reporter {
     m_output.clear();
   }
 
-  /** @return If true, use HTML entities for special HTML characters (<, >, &, ...). */
+  /** @return If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...). */
   public static boolean getEscapeHtml() {
     return m_escapeHtml;
   }
 
-  /** @param escapeHtml If true, use HTML entities for special HTML characters (<, >, &, ...). */
+  /** @param escapeHtml If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...). */
   public static void setEscapeHtml(boolean escapeHtml) {
     m_escapeHtml = escapeHtml;
   }

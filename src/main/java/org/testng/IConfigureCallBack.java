@@ -12,7 +12,11 @@ package org.testng;
  */
 public interface IConfigureCallBack {
 
-  /** Invoke the test method currently being hijacked. */
+  /**
+   * Invoke the test method currently being hijacked.
+   *
+   * @param testResult The test result
+   */
   void runConfigurationMethod(ITestResult testResult);
 
   /** @return the parameters that will be used to invoke the configuration method. */

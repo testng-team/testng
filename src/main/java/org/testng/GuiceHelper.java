@@ -90,6 +90,9 @@ public class GuiceHelper {
   }
 
   /**
+   * @param context The test context
+   * @param moduleInstances The modules
+   * @return The Injector
    * @deprecated - This method stands deprecated as of 7.0.1
    */
   @Deprecated

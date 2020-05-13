@@ -426,7 +426,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-  /** Registers ISuiteListeners interested in reporting the result of the current suite. */
+  /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
   protected void addListener(ISuiteListener reporter) {
     if (!listeners.containsKey(reporter.getClass())) {
       listeners.put(reporter.getClass(), reporter);

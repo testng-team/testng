@@ -15,13 +15,7 @@ allprojects {
     version = This.version
     apply<MavenPublishPlugin>()
     tasks.withType<Javadoc> {
-        options {
-            isFailOnError = false
-            quiet()
-            outputLevel = JavadocOutputLevel.QUIET
-            jFlags = listOf("-Xdoclint:none", "-quiet")
-            "-quiet"
-        }
+        excludes.add("org/testng/internal/**")
     }
 }
 

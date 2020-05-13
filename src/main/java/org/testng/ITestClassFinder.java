@@ -14,6 +14,11 @@ public interface ITestClassFinder {
    */
   IClass[] findTestClasses();
 
-  /** Return the IClass for a given class */
+  /**
+   * Return the IClass for a given class
+   *
+   * @param cls The class
+   * @return The related <code>IClass</code>
+   */
   IClass getIClass(Class<?> cls);
 }

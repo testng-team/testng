@@ -66,7 +66,7 @@ public final class InstanceCreator {
     }
   }
 
-  /** Create an instance for the given class. */
+  /* Create an instance for the given class. */
   public static Object createInstance(
       Class<?> declaringClass,
       Map<Class<?>, IClass> classes,

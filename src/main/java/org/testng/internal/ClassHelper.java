@@ -46,7 +46,7 @@ public final class ClassHelper {
     // Hide Constructor
   }
 
-  /** Add a class loader to the searchable loaders. */
+  /* Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
     classLoaders.add(loader);
   }
@@ -141,7 +141,7 @@ public final class ClassHelper {
     return result;
   }
 
-  /**
+  /*
    * Extract all callable methods of a class and all its super (keeping in mind the Java access
    * rules).
    */

@@ -6,7 +6,7 @@ import org.testng.reporters.XMLStringBuffer;
 import java.util.Properties;
 
 /**
- * This class describes the tag <method-selector> in testng.xml.
+ * This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml.
  */
 public class XmlMethodSelector {
   // Either this:

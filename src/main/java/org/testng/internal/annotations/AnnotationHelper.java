@@ -201,7 +201,7 @@ public class AnnotationHelper {
     return ALL_ANNOTATIONS;
   }
 
-  /** Delegation method for creating the list of <CODE>ITestMethod</CODE>s to be analysed. */
+  /* Delegation method for creating the list of <CODE>ITestMethod</CODE>s to be analysed. */
   public static ITestNGMethod[] findMethodsWithAnnotation(
       Class<?> rootClass,
       Class<? extends IAnnotation> annotationClass,

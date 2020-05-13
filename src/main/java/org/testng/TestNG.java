@@ -83,10 +83,10 @@ import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
  * <p>The command line parameters are:
  *
  * <UL>
- *   <LI>-d <TT>outputdir</TT>: specify the output directory
- *   <LI>-testclass <TT>class_name</TT>: specifies one or several class names
- *   <LI>-testjar <TT>jar_name</TT>: specifies the jar containing the tests
- *   <LI>-sourcedir <TT>src1;src2</TT>: ; separated list of source directories (used only when
+ *   <LI>-d <code>outputdir</code>: specify the output directory
+ *   <LI>-testclass <code>class_name</code>: specifies one or several class names
+ *   <LI>-testjar <code>jar_name</code>: specifies the jar containing the tests
+ *   <LI>-sourcedir <code>src1;src2</code>: ; separated list of source directories (used only when
  *       javadoc annotations are used)
  *   <LI>-target
  *   <LI>-groups
@@ -256,7 +256,7 @@ public class TestNG {
   }
 
   /**
-   * If this method is passed true before run(), the default listeners will not be used.
+   * @param useDefaultListeners If true before run(), the default listeners will not be used.
    *
    * <ul>
    *   <li>org.testng.reporters.TestHTMLReporter
@@ -281,7 +281,7 @@ public class TestNG {
     m_jarPath = jarPath;
   }
 
-  /** Sets the path to the XML file in the test jar file. */
+  /** @param xmlPathInJar Sets the path to the XML file in the test jar file. */
   public void setXmlPathInJar(String xmlPathInJar) {
     m_xmlPathInJar = xmlPathInJar;
   }
@@ -403,7 +403,7 @@ public class TestNG {
     m_suites.addAll(utils.extractSuitesFrom(jarFile));
   }
 
-  /** Define the number of threads in the thread pool. */
+  /** @param threadCount Define the number of threads in the thread pool. */
   public void setThreadCount(int threadCount) {
     if (threadCount < 1) {
       exitWithError("Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
@@ -413,8 +413,7 @@ public class TestNG {
   }
 
   /**
-   * Define whether this run will be run in parallel mode.
-   *
+   * @param parallel Define whether this run will be run in parallel mode.
    * @deprecated Use #setParallel(XmlSuite.ParallelMode) instead
    */
   @Deprecated
@@ -581,9 +580,9 @@ public class TestNG {
    * the specified TestNG suite xml files. If a file is missing, it is ignored.
    *
    * @param suites A list of paths to one more XML files defining the tests. For example:
-   *     <pre>
+   * <pre>
    * TestNG tng = new TestNG();
-   * List<String> suites = Lists.newArrayList();
+   * List&lt;String&gt; suites = Lists.newArrayList();
    * suites.add("c:/tests/testng1.xml");
    * suites.add("c:/tests/testng2.xml");
    * tng.setTestSuites(suites);
@@ -650,7 +649,10 @@ public class TestNG {
     }
   }
 
-  /** @deprecated Use addListener(ITestNGListener) instead */
+  /**
+   * @param listener The listener to add
+   * @deprecated Use addListener(ITestNGListener) instead
+   */
   // TODO remove later /!\ Caution: IntelliJ is using it. Check with @akozlova before removing it
   @Deprecated
   public void addListener(Object listener) {
@@ -1108,6 +1110,7 @@ public class TestNG {
 
   /**
    * This needs to be public for maven2, for now..At least until an alternative mechanism is found.
+   * @return The locally run suites
    */
   public List<ISuite> runSuitesLocally() {
     if (m_suites.isEmpty()) {
@@ -1335,6 +1338,10 @@ public class TestNG {
 
   /**
    * <B>Note</B>: this method is not part of the public API and is meant for internal usage only.
+   *
+   * @param argv The param arguments
+   * @param listener The listener
+   * @return The TestNG instance
    */
   public static TestNG privateMain(String[] argv, ITestListener listener) {
     TestNG result = new TestNG();
@@ -1374,7 +1381,11 @@ public class TestNG {
     return result;
   }
 
-  /** Configure the TestNG instance based on the command line parameters. */
+  /**
+   * Configure the TestNG instance based on the command line parameters.
+   *
+   * @param cla The command line parameters
+   */
   protected void configure(CommandLineArgs cla) {
     if (cla.verbose != null) {
       setVerbose(cla.verbose);
@@ -1519,7 +1530,10 @@ public class TestNG {
   /**
    * This method is invoked by Maven's Surefire, only remove it once Surefire has been modified to
    * no longer call it.
+   * @param path The path
+   * @deprecated
    */
+  @Deprecated
   public void setSourcePath(String path) {
     // nop
   }
@@ -1541,6 +1555,7 @@ public class TestNG {
    * This method is invoked by Maven's Surefire to configure the runner, do not remove unless you
    * know for sure that Surefire has been updated to use the new configure(CommandLineArgs) method.
    *
+   * @param cmdLineArgs The command line
    * @deprecated use new configure(CommandLineArgs) method
    */
   @SuppressWarnings({"unchecked"})
@@ -1650,7 +1665,7 @@ public class TestNG {
     configure(result);
   }
 
-  /** Only run the specified tests from the suite. */
+  /** @param testNames Only run the specified tests from the suite. */
   public void setTestNames(List<String> testNames) {
     m_testNames = testNames;
   }
@@ -1677,7 +1692,7 @@ public class TestNG {
     m_isJUnit = isJUnit;
   }
 
-  /** Specify if this run should be made in mixed mode */
+  /** @param isMixed Specify if this run should be made in mixed mode */
   public void setMixed(Boolean isMixed) {
     if (isMixed == null) {
       return;
@@ -1685,7 +1700,11 @@ public class TestNG {
     m_isMixed = isMixed;
   }
 
-  /** Double check that the command line parameters are valid. */
+  /**
+   * Double check that the command line parameters are valid.
+   *
+   * @param args The command line to check
+   */
   protected static void validateCommandLineParameters(CommandLineArgs args) {
     String testClasses = args.testClass;
     List<String> testNgXml = args.suiteFiles;
@@ -1796,7 +1815,10 @@ public class TestNG {
   }
 
   // DEPRECATED: to be removed after a major version change
-  /** @deprecated since 5.1 */
+  /**
+   * @return The default instance
+   * @deprecated since 5.1
+   */
   @Deprecated
   public static TestNG getDefault() {
     return m_instance;
@@ -1826,7 +1848,11 @@ public class TestNG {
     m_dataProviderThreadCount = count;
   }
 
-  /** Add a class loader to the searchable loaders. */
+  /**
+   * Add a class loader to the searchable loaders.
+   *
+   * @param loader The class loader to add
+   */
   public void addClassLoader(final ClassLoader loader) {
     if (loader != null) {
       ClassHelper.addClassLoader(loader);

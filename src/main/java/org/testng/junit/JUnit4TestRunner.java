@@ -65,7 +65,13 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     start(testClass, methods);
   }
 
-  /** Starts a test run. Analyzes the command line arguments and runs the given test suite. */
+  /**
+   * Starts a test run. Analyzes the command line arguments and runs the given test suite.
+   *
+   * @param testCase The test class
+   * @param methods The test methods
+   * @return The result
+   */
   public Result start(final Class testCase, final String... methods) {
     try {
       JUnitCore core = new JUnitCore();

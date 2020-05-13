@@ -227,7 +227,7 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * Sets the flag to log the command line. When verbose is set to true the command line parameters
+   * @param verbose the flag to log the command line. When verbose is set to true the command line parameters
    * are stored in a temporary file stored in the user's default temporary file directory. The file
    * created is prefixed with "testng".
    */
@@ -238,7 +238,7 @@ public class TestNGAntTask extends Task {
   /**
    * Sets the flag to write on <code>System.out</code> the Ant Environment properties.
    *
-   * @param verbose <tt>true</tt> for printing
+   * @param verbose <code>true</code> for printing
    */
   public void setDumpEnv(boolean verbose) {
     m_dumpEnv = verbose;
@@ -247,7 +247,7 @@ public class TestNGAntTask extends Task {
   /**
    * Sets te flag to write on <code>System.out</code> the system properties.
    *
-   * @param verbose <tt>true</tt> for dumping the info
+   * @param verbose <code>true</code> for dumping the info
    */
   public void setDumpSys(boolean verbose) {
     m_dumpSys = verbose;
@@ -296,7 +296,11 @@ public class TestNGAntTask extends Task {
     getJavaCommand().addSysproperty(sysp);
   }
 
-  /** Adds an environment variable; used when forking. */
+  /**
+   * Adds an environment variable; used when forking.
+   *
+   * @param var The variable
+   */
   public void addEnv(Environment.Variable var) {
     m_environment.addVariable(var);
   }
@@ -851,7 +855,7 @@ public class TestNGAntTask extends Task {
     return retVal;
   }
 
-  /** Creates or returns the already created <CODE>CommandlineJava</CODE>. */
+  /** @return the created (or create) the  <CODE>CommandlineJava</CODE>. */
   protected CommandlineJava getJavaCommand() {
     if (null == m_javaCommand) {
       m_javaCommand = new CommandlineJava();
@@ -861,7 +865,7 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * @return <tt>null</tt> if there is no timeout value, otherwise the watchdog instance.
+   * @return <code>null</code> if there is no timeout value, otherwise the watchdog instance.
    * @throws BuildException under unspecified circumstances
    * @since Ant 1.2
    */

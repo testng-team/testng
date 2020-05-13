@@ -43,7 +43,6 @@ public final class TestNamesMatcher {
     return cloneSuites;
   }
 
-  /** Getting miss-matched testNames */
   public List<String> getMissMatchedTestNames() {
     List<String> tmpTestNames = Lists.newArrayList();
     tmpTestNames.addAll(testNames);

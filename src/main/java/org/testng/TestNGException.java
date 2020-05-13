@@ -9,7 +9,6 @@ public class TestNGException extends RuntimeException {
     super(t);
   }
 
-  /** @param string */
   public TestNGException(String string) {
     super("\n" + string);
   }

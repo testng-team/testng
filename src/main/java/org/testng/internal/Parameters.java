@@ -136,7 +136,7 @@ public class Parameters {
   }
 
   /**
-   * Creates the parameters needed for the specified <tt>@Configuration</tt> <code>Method</code>.
+   * Creates the parameters needed for the specified <code>@Configuration</code> <code>Method</code>.
    *
    * @param m the configuraton method
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available
@@ -725,7 +725,7 @@ public class Parameters {
 
   /**
    * If the method has parameters, fill them in. Either by using a @DataProvider if any was
-   * provided, or by looking up <parameters> in testng.xml
+   * provided, or by looking up <code>&lt;parameters&gt;</code> in testng.xml
    *
    * @return An Iterator over the values for each parameter of this method.
    */
@@ -751,7 +751,7 @@ public class Parameters {
 
   /**
    * If the method has parameters, fill them in. Either by using a @DataProvider if any was
-   * provided, or by looking up <parameters> in testng.xml
+   * provided, or by looking up <code>&lt;parameters&gt;</code> in testng.xml
    *
    * @return An Iterator over the values for each parameter of this method.
    */
