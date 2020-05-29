@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.TestHTMLReporter;
+import org.testng.reporters.TextReporter;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
@@ -14,7 +15,9 @@ import test.reports.issue1756.CustomTestNGReporter;
 import test.reports.issue1756.SampleTestClass;
 import test.simple.SimpleSample;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -234,5 +237,39 @@ public class ReportTest extends SimpleBaseTest {
     assertThat(testngFailedXml2).exists();
 
     return testngFailedXml2;
+  }
+
+  public static class DpArrays {
+    public enum Item {
+      ITEM1,
+      ITEM2
+    }
+
+    @DataProvider
+    public static Object[][] dpArrays() {
+      return new Object[][]{
+          {new Item[]{Item.ITEM1}},
+          {new Item[]{Item.ITEM1, Item.ITEM2}}
+      };
+    }
+
+    @Test(dataProvider = "dpArrays")
+    public void testMethod(Item[] strings) {
+    }
+  }
+
+  @Test
+  public void reportArraysToString() throws IOException {
+    TestNG tng = create(DpArrays.class);
+    tng.addListener(new TextReporter("name", 2));
+
+    PrintStream previousOut = System.out;
+    ByteArrayOutputStream systemOutCapture = new ByteArrayOutputStream();
+    System.setOut(new PrintStream(systemOutCapture));
+    tng.run();
+    System.setOut(previousOut);
+
+    Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1])"));
+    Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1, ITEM2])"));
   }
 }
