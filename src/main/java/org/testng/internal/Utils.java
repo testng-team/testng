@@ -421,7 +421,7 @@ public final class Utils {
     if (null == object) {
       return "null";
     }
-    final String toString = object.toString();
+    final String toString = toString(object);
     if (isStringEmpty(toString)) {
       return "\"\"";
     } else if (String.class.equals(objectClass)) {
