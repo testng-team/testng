@@ -42,12 +42,12 @@ import org.testng.internal.collections.Pair;
  */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
 
-  private JDK15TagFactory m_tagFactory = new JDK15TagFactory();
-  private Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
+  private final JDK15TagFactory m_tagFactory = new JDK15TagFactory();
+  private final Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
       new ConcurrentHashMap<>();
-  private Map<Pair<Annotation, ?>, IAnnotation> m_annotations = new ConcurrentHashMap<>();
+  private final Map<Pair<Annotation, ?>, IAnnotation> m_annotations = new ConcurrentHashMap<>();
 
-  private IAnnotationTransformer m_transformer;
+  private final IAnnotationTransformer m_transformer;
 
   public JDK15AnnotationFinder(IAnnotationTransformer transformer) {
     m_transformer = transformer;
@@ -219,7 +219,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   private <A extends IAnnotation> A findAnnotation(
-      Class cls,
+      Class<?> cls,
       Annotation a,
       Class<A> annotationClass,
       Class<?> testClass,
@@ -231,15 +231,12 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       return null;
     }
 
-    boolean cachedAnnotation = true;
-    IAnnotation result = m_annotations.get(p);
-    if (result == null) {
-      result = m_tagFactory.createTag(cls, testMethod, a, annotationClass);
-      m_annotations.put(p, result);
-      transform(result, testClass, testConstructor, testMethod, whichClass);
-      cachedAnnotation = false;
-    }
-    if (whichClass == null && cachedAnnotation) {
+    IAnnotation result = m_annotations.computeIfAbsent(p, key -> {
+      IAnnotation obj = m_tagFactory.createTag(cls, testMethod, a, annotationClass);
+      transform(obj, testClass, testConstructor, testMethod, whichClass);
+      return obj;
+    });
+    if (whichClass == null && testClass != null) {
       transform(result, testClass, testConstructor, testMethod, whichClass);
     }
     //noinspection unchecked
@@ -266,7 +263,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public String[] findOptionalValues(Constructor method) {
+  public String[] findOptionalValues(Constructor<?> method) {
     return optionalValues(method.getParameterAnnotations());
   }
 
