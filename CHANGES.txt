@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2232: Null Pointer Exception in ConfigInvoker.setMethodInvocationFailure (Krishnan Mahadevan)
 Fixed: GITHUB-2312: IAnnotationTransformer called multiple time Discrepancy between 6.x and 7.x (Krishnan Mahadevan)
 New:   GITHUB-2315: TextReporter console output does not nicely print native array data parameters (James Sassano)
 Fixed: GITHUB-2301: Add support for object-based reporter configurations (Scott Babcock)
