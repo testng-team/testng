@@ -156,6 +156,7 @@
       <class name="test.groups.issue1834.IssueTest"/>
       <class name="test.groups.issue182.IssueTest"/>
       <class name="test.groups.issue2152.IssueTest"/>
+      <class name="test.groups.issue2232.IssueTest"/>
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />

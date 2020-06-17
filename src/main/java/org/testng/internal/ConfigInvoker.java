@@ -144,6 +144,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           .forSuite(arguments.getSuite())
           .usingParameters(arguments.getParameters())
           .usingInstance(arguments.getInstance())
+          .forTestMethod(arguments.getTestMethod())
           .build();
       invokeConfigurations(configMethodArguments);
     }
@@ -216,6 +217,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         .forSuite(arguments.getSuite())
         .usingParameters(arguments.getParameters())
         .usingInstance(arguments.getInstance())
+        .forTestMethod(arguments.getTestMethod())
         .build();
 
     invokeConfigurations(configMethodArguments);
@@ -500,6 +502,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
+    if (method == null) {
+      return;
+    }
     Set<Object> instances =
         m_methodInvocationResults.computeIfAbsent(method, k -> Sets.newHashSet());
     instances.add(TestNgMethodUtils.getMethodInvocationToken(method, instance));
