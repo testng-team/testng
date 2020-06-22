@@ -1,8 +1,11 @@
 package test.dataprovider.issue2327;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+import org.testng.ITestResult;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
@@ -14,7 +17,7 @@ public class SampleTestCase extends SimpleBaseTest {
 
   @BeforeMethod(alwaysRun = true)
   public void setup(Method method, Object[] params) {
-    if (params[0].toString().equals("Dataset1")) {
+    if (Arrays.asList(params).contains("Dataset1")) {
       throw new RuntimeException("setup fail.");
     }
   }
