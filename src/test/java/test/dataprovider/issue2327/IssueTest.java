@@ -2,7 +2,6 @@ package test.dataprovider.issue2327;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -16,8 +15,9 @@ public class IssueTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getPassedTests()).size().isEqualTo(1);
-    assertThat(tla.getSkippedTests()).size().isEqualTo(1);
+
+    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(1);
 
     final Object[] parameterSkippedMethod = tla.getSkippedTests().get(0).getParameters();
     assertThat(parameterSkippedMethod).isNotNull();
