@@ -537,6 +537,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext,
           arguments.getInstance());
       ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception);
+      result.setParameters(testResult.getParameters());
       TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
       arguments.getTestMethod().incrementCurrentInvocationCount();
