@@ -587,7 +587,6 @@
       <class name="test.dataprovider.issue2255.IssueTest"/>
       <class name="test.dataprovider.issue217.IssueTest"/>
       <class name="test.dataprovider.issue2267.IssueTest"/>
-      <class name="test.dataprovider.issue2327.IssueTest"/>
     </classes>
   </test>
 
@@ -980,5 +979,12 @@
       <class name="org.testng.GuiceHelperTest"/>
     </classes>
   </test>
+
+  <test name="GITHUB-2327" parallel="false">
+    <classes>
+      <class name="test.dataprovider.issue2327.IssueTest"/>
+    </classes>
+  </test>
+
 </suite>
 

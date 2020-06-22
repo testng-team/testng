@@ -1,19 +1,16 @@
 package test.dataprovider.issue2327;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
-import org.testng.ITestResult;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import test.SimpleBaseTest;
 
 @Listeners(CustomListener.class)
-public class SampleTestCase extends SimpleBaseTest {
+public class SampleTestCase {
 
   @BeforeMethod(alwaysRun = true)
   public void setup(Method method, Object[] params) {

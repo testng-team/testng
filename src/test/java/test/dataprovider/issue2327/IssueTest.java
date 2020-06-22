@@ -16,6 +16,9 @@ public class IssueTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
 
+    System.out.println("2327p:" + tla.getPassedTests().size());
+    System.out.println("2327s:" + tla.getSkippedTests().size());
+
     assertThat(tla.getPassedTests().size()).isEqualTo(1);
     assertThat(tla.getSkippedTests().size()).isEqualTo(1);
 
