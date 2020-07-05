@@ -309,7 +309,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
                 arguments.getTestMethodResult());
         testResult.setParameters(parameters);
 
-        runConfigurationListeners(testResult, true /* before */);
+        runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
 
         Object newInstance = computeInstance(arguments.getInstance(), inst, tm);
         if (isConfigMethodEligibleForScrutiny(tm)) {
@@ -321,7 +321,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         }
         copyAttributesFromNativelyInjectedTestResult(parameters,
             arguments.getTestMethodResult());
-        runConfigurationListeners(testResult, false /* after */);
+        runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
       } catch (Throwable ex) {
         handleConfigurationFailure(
             ex, tm, testResult, configurationAnnotation,
@@ -395,13 +395,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         : m_configuration.getConfigurable();
   }
 
-
-  private void runConfigurationListeners(ITestResult tr, boolean before) {
+  private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     if (before) {
-      TestListenerHelper.runPreConfigurationListeners(tr, m_notifier.getConfigurationListeners());
+      TestListenerHelper.runPreConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
     } else {
-      TestListenerHelper.runPostConfigurationListeners(tr, m_notifier.getConfigurationListeners());
+      TestListenerHelper.runPostConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
     }
+
   }
 
   /**
@@ -417,7 +417,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     recordConfigurationInvocationFailed(
         tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
     testResult.setStatus(ITestResult.SKIP);
-    runConfigurationListeners(testResult, false /* after */);
+    runConfigurationListeners(testResult, currentTestMethod, false /* after */);
   }
 
   private boolean hasConfigFailure(ITestNGMethod currentTestMethod) {
@@ -449,7 +449,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             + cause.getMessage());
     handleException(cause, tm, testResult, 1);
     testResult.setStatus(ITestResult.FAILURE);
-    runConfigurationListeners(testResult, false /* after */);
+    runConfigurationListeners(testResult, currentTestMethod, false /* after */);
 
     //
     // If in TestNG mode, need to take a look at the annotation to figure out
