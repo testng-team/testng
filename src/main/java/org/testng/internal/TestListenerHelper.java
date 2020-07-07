@@ -26,7 +26,7 @@ public final class TestListenerHelper {
       try {
         icl.beforeConfiguration(tr, tm);
       } catch (Exception e) {
-        handleException(e);
+        ignoreInternalGradleException(e);
       }
     }
   }
@@ -40,7 +40,7 @@ public final class TestListenerHelper {
           try {
             icl.onConfigurationSkip(tr, tm);
           } catch (Exception e) {
-            handleException(e);
+            ignoreInternalGradleException(e);
           }
           break;
         case ITestResult.FAILURE:
@@ -48,7 +48,7 @@ public final class TestListenerHelper {
           try {
             icl.onConfigurationFailure(tr, tm);
           } catch (Exception e) {
-            handleException(e);
+            ignoreInternalGradleException(e);
           }
           break;
         case ITestResult.SUCCESS:
@@ -56,7 +56,7 @@ public final class TestListenerHelper {
           try {
           icl.onConfigurationSuccess(tr,tm);
           } catch (Exception e) {
-            handleException(e);
+            ignoreInternalGradleException(e);
           }
           break;
         default:
@@ -68,7 +68,7 @@ public final class TestListenerHelper {
   //This method is added because Gradle which builds TestNG seems to be using an older version
   //of TestNG that doesn't know about the new methods that we added and so it causes
   //the TestNG build to keep failing.
-  private static void handleException(Exception e) {
+  private static void ignoreInternalGradleException(Exception e) {
     if (!e.getClass().getPackage().getName().startsWith("org.gradle.internal")) {
       throw new ListenerInvocationException(e);
     }
