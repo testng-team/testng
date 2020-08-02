@@ -130,6 +130,7 @@
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
+      <class name="test.attributes.issue2346.IssueTest"/>
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
       <class name="test.preserveorder.PreserveOrderTest" />

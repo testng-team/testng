@@ -33,7 +33,12 @@ public interface ITestInvoker {
 
   void runTestResultListener(ITestResult tr);
 
-  ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable);
+  default ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable) {
+    return registerSkippedTestResult(testMethod, start, throwable, null);
+  }
+
+  ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable,
+      ITestResult source);
 
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
