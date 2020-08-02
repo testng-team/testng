@@ -536,7 +536,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         arguments.getInstance())) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext,
           arguments.getInstance());
-      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception);
+      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception, testResult);
       result.setParameters(testResult.getParameters());
       TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
@@ -701,15 +701,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     invoker.invokeConfigurations(cfgArgs);
   }
 
-  public ITestResult registerSkippedTestResult(
-      ITestNGMethod testMethod, long start, Throwable throwable) {
+  @Override
+  public ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start,
+      Throwable throwable, ITestResult source) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
+    if (source != null) {
+      TestResult.copyAttributes(source, result);
+    }
     result.setStatus(ITestResult.STARTED);
     runTestResultListener(result);
     result.setStatus(TestResult.SKIP);
     Reporter.setCurrentTestResult(result);
-
     return result;
   }
 

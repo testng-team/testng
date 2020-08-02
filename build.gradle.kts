@@ -200,7 +200,7 @@ with(publishing) {
                         email.set("cedric@beust.com")
                     }
                     developer {
-                        id.set("jherr")
+                        id.set("juherr")
                         name.set("Julien Herr")
                         email.set("julien@herr.fr")
                     }
