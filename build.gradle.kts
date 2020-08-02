@@ -199,6 +199,16 @@ with(publishing) {
                         name.set("Cedric Beust")
                         email.set("cedric@beust.com")
                     }
+                    developer {
+                        id.set("jherr")
+                        name.set("Julien Herr")
+                        email.set("julien@herr.fr")
+                    }
+                    developer {
+                        id.set("krmahadevan")
+                        name.set("Krishnan Mahadevan")
+                        email.set("krishnan.mahadevan1978@gmail.com")
+                    }
                 }
                 scm {
                     connection.set("scm:git:git://${This.scm}.git")
