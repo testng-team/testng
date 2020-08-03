@@ -20,21 +20,11 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 
-
-
 public class GuiceHelper {
   private final ITestContext context;
 
   GuiceHelper(ITestContext context) {
     this.context = context;
-  }
-
-  /**
-   * @deprecated - This method stands deprecated as of 7.0.1
-   */
-  @Deprecated
-  Injector getInjector(IClass iClass) {
-    return getInjector(iClass, com.google.inject.Guice::createInjector);
   }
 
   Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
@@ -53,11 +43,11 @@ public class GuiceHelper {
 
     List<Module> moduleInstances =
         Lists.newArrayList(getModules(guice, parentInjector, iClass.getRealClass()));
-    List<Module> moduleLookup = Lists.newArrayList(moduleInstances);
     Module parentModule = getParentModule(context);
     if (parentModule != null) {
       moduleInstances.add(parentModule);
     }
+    List<Module> moduleLookup = Lists.newArrayList(moduleInstances);
 
     // Get an injector with the class's modules + any defined parent module installed
     // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
