@@ -1,5 +1,7 @@
 Current
+Fixed: GITHUB-2343: Injectors are not reused when they share the same set of modules (Krishnan Mahadevan)
 Fixed: GITHUB-2346: ITestResult attributes are null when retrieved by Listener onTestStart if test fails at BeforeMethod (Krishnan Mahadevan)
+
 7.3.0
 Fixed: GITHUB-2328: Add ability to get test method for which configuration method was called (Krishnan Mahadevan)
 Fixed: GITHUB-2327: Parameters not present on skipped Test (Eric Kubenka)
