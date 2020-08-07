@@ -35,5 +35,5 @@ jobs:
 
     - name: Display next step
         run: |
-          echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it
+          echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it"
 
