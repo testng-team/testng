@@ -136,8 +136,8 @@ sonarqube {
 //
 
 bintray {
-    user = project.findProperty("bintrayUser")?.toString()
-    key = project.findProperty("bintrayApiKey")?.toString()
+    user = project.findProperty("bintrayUser")?.toString() ?: System.getenv("BINTRAY_USER")
+    key = project.findProperty("bintrayApiKey")?.toString() ?: System.getenv("BINTRAY_API_KEY")
     dryRun = false
     publish = true
 
@@ -225,8 +225,8 @@ with(publishing) {
                 uri("https://oss.sonatype.org/content/repositories/snapshots/") else
                 uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = project.findProperty("sonatypeUser") as? String
-                password = project.findProperty("sonatypePassword") as? String
+                username = project.findProperty("sonatypeUser")?.toString() ?: System.getenv("SONATYPE_USER")
+                password = project.findProperty("sonatypePassword")?.toString() ?: System.getenv("SONATYPE_PASSWORD")
             }
         }
         maven {
