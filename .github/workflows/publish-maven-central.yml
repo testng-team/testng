@@ -22,8 +22,9 @@ jobs:
     - name: Install gpg secret key
       run: |
         cat <(echo -e "${{ secrets.GPG_SECRET_KEY }}") | gpg --batch --import
-        gpg --export-secret-keys >~/.gnupg/secring.gpg
+        gpg --export-secret-keys >$HOME/.gnupg/secring.gpg
         gpg --list-secret-keys --keyid-format LONG
+        ls -l $HOME/.gnupg
 
     - name: Publish release
       env:
