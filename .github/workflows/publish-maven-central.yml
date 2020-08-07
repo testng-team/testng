@@ -34,6 +34,6 @@ jobs:
         ./gradlew -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -P signing.keyId=${{ secrets.GPG_KEY_ID }} publish
 
     - name: Display next step
-        run: |
-          echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it"
+      run: |
+        echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it"
 
