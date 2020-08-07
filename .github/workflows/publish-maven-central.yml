@@ -30,7 +30,7 @@ jobs:
         SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
         SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
       run: |
-        ./gradlew -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg -Psigning.password="" -P signing.keyId=${{ secrets.GPG_KEY_ID }} publish
+        ./gradlew -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -P signing.keyId=${{ secrets.GPG_KEY_ID }} publish
 
 # Next, go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, "Close" it and then
 # "Release" it
