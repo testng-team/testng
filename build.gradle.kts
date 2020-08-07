@@ -1,5 +1,5 @@
 object This {
-    val version = "7.3.0"
+    val version = "7.4.0-SNAPSHOT"
     val artifactId = "testng"
     val groupId = "org.testng"
     val description = "Testing framework for Java"
