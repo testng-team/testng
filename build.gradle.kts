@@ -33,6 +33,25 @@ buildscript {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    // use gradle feature
+    // in order to optionally exposed transitive dependency
+
+    registerFeature("ant") {
+        usingSourceSet(sourceSets["main"])
+    }
+
+    registerFeature("guice") {
+        usingSourceSet(sourceSets["main"])
+    }
+
+    registerFeature("junit") {
+        usingSourceSet(sourceSets["main"])
+    }
+
+    registerFeature("yaml") {
+        usingSourceSet(sourceSets["main"])
+    }
 }
 
 repositories {
@@ -52,15 +71,28 @@ plugins {
 }
 
 dependencies {
+
+    listOf("org.apache.ant:ant:1.10.3").forEach {
+        "antApi"(it)
+    }
+
+    listOf("com.google.inject:guice:4.2.2:no_aop").forEach {
+        "guiceApi"(it)
+    }
+
+    listOf("junit:junit:4.12").forEach {
+        "junitApi"(it)
+    }
+
+    listOf("org.yaml:snakeyaml:1.21").forEach {
+        "yamlApi"(it)
+    }
+
     listOf("com.google.code.findbugs:jsr305:3.0.1").forEach {
         compileOnly(it)
     }
 
-    listOf("com.beust:jcommander:1.78",
-            "org.apache.ant:ant:1.10.3",
-            "junit:junit:4.12",
-            "com.google.inject:guice:4.2.2:no_aop",
-            "org.yaml:snakeyaml:1.21").forEach {
+    listOf("com.beust:jcommander:1.78").forEach {
         api(it)
     }
 
@@ -177,6 +209,7 @@ with(publishing) {
             afterEvaluate {
                 from(components["java"])
             }
+            suppressAllPomMetadataWarnings()
             artifact(sourcesJar)
             artifact(javadocJar)
             pom {
