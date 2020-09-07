@@ -99,6 +99,7 @@
       <class name="test.mannotation.MAnnotation2SampleTest" />
       <class name="test.mannotation.issue1976.IssueTest" />
       <class name="test.thread.FactoryTest" />
+      <class name="test.thread.issue2361.IssueTest"/>
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
