@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2361: No way to enforce @Test(singleThreaded = true) when test defined in base class (Krishnan Mahadevan)
 Fixed: GITHUB-2343: Injectors are not reused when they share the same set of modules (Krishnan Mahadevan)
 Fixed: GITHUB-2346: ITestResult attributes are null when retrieved by Listener onTestStart if test fails at BeforeMethod (Krishnan Mahadevan)
 Fixed: GITHUB-2357: TestNG 7.3.0 transitive dependencies
