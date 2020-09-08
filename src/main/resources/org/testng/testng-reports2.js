@@ -10,7 +10,7 @@ window.onload=function (){
 
     }
     else if(cookieValue[1]==='Switch Retro Theme'|| localStorage.getItem('Theme')==='Switch Retro Theme'){
-     else if(cookieValue[1]==='Switch Ultra Theme'|| localStorage.getItem('Theme')==='Switch Ultra Theme'){
+     if(cookieValue[1]==='Switch Ultra Theme'|| localStorage.getItem('Theme')==='Switch Ultra Theme'){
          document.getElementById('button').innerText="Switch Retro Theme";
          document.getElementById('retro').setAttribute('disabled','false');
 
