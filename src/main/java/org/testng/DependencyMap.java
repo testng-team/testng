@@ -3,6 +3,7 @@ package org.testng;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.xml.XmlSuite;
 
 import java.util.List;
 import java.util.Set;
@@ -82,13 +83,22 @@ public class DependencyMap {
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
     Object baseInstance = baseClassMethod.getInstance();
     Object derivedInstance = derivedClassMethod.getInstance();
-    return derivedInstance != null || baseInstance != null;
+    boolean result = derivedInstance != null || baseInstance != null;
+    boolean params = null != baseClassMethod.getFactoryMethodParamsInfo() && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
+    if (result && params && System.getProperty("testng.thread.affinity", "false").equals("true")) {
+      return baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0] == derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0];
+    }
+    return result;
   }
 
   private static boolean isSameInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
     Object baseInstance = baseClassMethod.getInstance();
     Object derivedInstance = derivedClassMethod.getInstance();
+    boolean result = derivedInstance != null && baseInstance != null;
+    if (result && null != baseClassMethod.getFactoryMethodParamsInfo() && System.getProperty("testng.thread.affinity", "false").equals("true")) {
+      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) && baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0] == derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0];
+    }
     return derivedInstance != null
         && baseInstance != null
         && baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
