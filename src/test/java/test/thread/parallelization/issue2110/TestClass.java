@@ -9,6 +9,10 @@ public class TestClass {
 
   static Set<Long> threadIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+  public static Set<Long> getThreadIds() {
+    return threadIds;
+  }
+
   @Test
   public void test0() {
     threadIds.add(Thread.currentThread().getId());
