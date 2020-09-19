@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -1223,6 +1224,24 @@ public class TestRunner
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
     return m_guiceModules.get(cls);
+  }
+
+  @Override
+  public List<Module> getGuiceModules() {
+    return m_guiceModules.values().
+        stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public void addGuiceModule(Module module) {
+    Class<? extends Module> cls = module.getClass();
+    List<Module> modules = m_guiceModules.get(cls);
+    boolean found = modules.stream().anyMatch(each -> each.getClass().equals(cls));
+    if (!found) {
+      modules.add(module);
+    }
   }
 
   private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
