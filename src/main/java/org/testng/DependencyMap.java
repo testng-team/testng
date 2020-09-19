@@ -3,7 +3,7 @@ package org.testng;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.xml.XmlSuite;
+import org.testng.internal.RuntimeBehavior;
 
 import java.util.List;
 import java.util.Set;
@@ -85,10 +85,17 @@ public class DependencyMap {
     Object derivedInstance = derivedClassMethod.getInstance();
     boolean result = derivedInstance != null || baseInstance != null;
     boolean params = null != baseClassMethod.getFactoryMethodParamsInfo() && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
-    if (result && params && System.getProperty("testng.thread.affinity", "false").equals("true")) {
-      return baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0] == derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0];
+
+    if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
+      return hasSameParameters(baseClassMethod, derivedClassMethod);
     }
     return result;
+  }
+
+  private static boolean hasSameParameters(
+      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    return baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0]
+        .equals(derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0]);
   }
 
   private static boolean isSameInstance(
@@ -96,8 +103,9 @@ public class DependencyMap {
     Object baseInstance = baseClassMethod.getInstance();
     Object derivedInstance = derivedClassMethod.getInstance();
     boolean result = derivedInstance != null && baseInstance != null;
-    if (result && null != baseClassMethod.getFactoryMethodParamsInfo() && System.getProperty("testng.thread.affinity", "false").equals("true")) {
-      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) && baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0] == derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0];
+    if (result && null != baseClassMethod.getFactoryMethodParamsInfo() && RuntimeBehavior.enforceThreadAffinity()) {
+      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) &&
+          hasSameParameters(baseClassMethod, derivedClassMethod);
     }
     return derivedInstance != null
         && baseInstance != null
