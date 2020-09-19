@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2355: TestNG creates multiple Guice Module Instances (Krishnan Mahadevan)
 Fixed: GITHUB-2374: Add file name to the warning message (Krishnan Mahadevan)
 Fixed: GITHUB-2321: -Dtestng.thread.affinity=true do not work when running multiple instance of test in parallel (Nan Liang)
 Fixed: GITHUB-2363: JS error when switching theme (Krishnan Mahadevan)
