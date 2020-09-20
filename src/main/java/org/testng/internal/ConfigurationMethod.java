@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.testng.internal.annotations.IBeforeGroups;
 import org.testng.internal.annotations.IBeforeMethod;
 import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IBeforeTest;
+import org.testng.log4testng.Logger;
 
 public class ConfigurationMethod extends BaseTestMethod {
 
@@ -125,6 +127,12 @@ public class ConfigurationMethod extends BaseTestMethod {
       Object instance) {
     List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod method : methods) {
+      if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
+        String msg = "Detected a static method [" + method.getQualifiedName() + "()]. Static configuration methods can cause "
+            + " unexpected behavior.";
+        Logger.getLogger(Configuration.class).warn(msg);
+      }
+
       result.add(
           new ConfigurationMethod(
               method.getConstructorOrMethod(),
@@ -150,6 +158,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance) {
+
     return createMethods(
         methods,
         annotationFinder,
