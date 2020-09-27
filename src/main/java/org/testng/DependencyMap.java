@@ -102,14 +102,15 @@ public class DependencyMap {
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
     Object baseInstance = baseClassMethod.getInstance();
     Object derivedInstance = derivedClassMethod.getInstance();
-    boolean result = derivedInstance != null && baseInstance != null;
-    if (result && null != baseClassMethod.getFactoryMethodParamsInfo() && RuntimeBehavior.enforceThreadAffinity()) {
+    boolean nonNullInstances = derivedInstance != null && baseInstance != null;
+    if (!nonNullInstances) {
+      return false;
+    }
+    if (null != baseClassMethod.getFactoryMethodParamsInfo() && RuntimeBehavior.enforceThreadAffinity()) {
       return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) &&
           hasSameParameters(baseClassMethod, derivedClassMethod);
     }
-    return derivedInstance != null
-        && baseInstance != null
-        && baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
+    return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
   }
 
   private static String constructMethodNameUsingTestClass(
