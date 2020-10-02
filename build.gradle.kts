@@ -72,7 +72,7 @@ plugins {
 
 dependencies {
 
-    listOf("org.apache.ant:ant:1.10.3").forEach {
+    listOf("org.apache.ant:ant:1.10.9").forEach {
         "antApi"(it)
     }
 
@@ -96,7 +96,7 @@ dependencies {
         api(it)
     }
 
-    listOf("org.apache.ant:ant-testutil:1.10.3",
+    listOf("org.apache.ant:ant-testutil:1.10.9",
             "org.assertj:assertj-core:3.10.0",
             "org.codehaus.groovy:groovy-all:2.4.7",
             "org.spockframework:spock-core:1.0-groovy-2.4",
