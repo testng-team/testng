@@ -58,7 +58,7 @@ val p = project {
         compile("com.beust:jcommander:1.72"
                 )
         provided("org.yaml:snakeyaml:1.17",
-                "org.apache.ant:ant:1.9.7",
+                "org.apache.ant:ant:1.10.9",
                 "junit:junit:4.12")
     }
 
