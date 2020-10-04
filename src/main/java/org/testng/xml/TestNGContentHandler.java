@@ -45,7 +45,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private int m_currentIncludeIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
-  private List<XmlSuite> m_suites = Lists.newArrayList();
+  private final List<XmlSuite> m_suites = Lists.newArrayList();
   private XmlGroups m_currentGroups = null;
   private List<String> m_currentIncludedGroups = null;
   private List<String> m_currentExcludedGroups = null;
@@ -80,7 +80,7 @@ public class TestNGContentHandler extends DefaultHandler {
     EXCLUDE
   }
 
-  private Stack<Location> m_locations = new Stack<>();
+  private final Stack<Location> m_locations = new Stack<>();
 
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
@@ -89,12 +89,12 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
-  private List<String> m_suiteFiles = Lists.newArrayList();
+  private final List<String> m_suiteFiles = Lists.newArrayList();
   private boolean m_enabledTest;
   private List<String> m_listeners;
 
-  private String m_fileName;
-  private boolean m_loadClasses;
+  private final String m_fileName;
+  private final boolean m_loadClasses;
   private boolean m_validate = false;
   private boolean m_hasWarn = false;
 
@@ -208,11 +208,11 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances != null) {
-        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances));
+        m_currentSuite.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentSuite.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
+        m_currentSuite.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
       }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
@@ -310,15 +310,15 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentTest.setJUnit(Boolean.valueOf(jUnit));
+        m_currentTest.setJUnit(Boolean.parseBoolean(jUnit));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
+        m_currentTest.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances != null) {
-        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances));
+        m_currentTest.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
@@ -351,7 +351,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_enabledTest = true;
       String enabledTestString = attributes.getValue("enabled");
       if (null != enabledTestString) {
-        m_enabledTest = Boolean.valueOf(enabledTestString);
+        m_enabledTest = Boolean.parseBoolean(enabledTestString);
       }
     } else {
       if (null != m_currentTestParameters && m_currentTestParameters.size() > 0) {
@@ -516,8 +516,9 @@ public class TestNGContentHandler extends DefaultHandler {
     if (!m_validate && !m_hasWarn) {
       String msg = String.format(
           "It is strongly recommended to add "
-              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of your file, "
-              + "otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL
+              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of your file, ["
+              + this.m_fileName
+              + "] otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL
       );
       Logger.getLogger(TestNGContentHandler.class).warn(msg);
       m_hasWarn = true;
