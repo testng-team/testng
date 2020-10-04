@@ -1,6 +1,7 @@
 package org.testng.collections;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -51,20 +52,23 @@ public final class Lists {
 
   /**
    * Utility method that merges two lists by applying the provided condition.
-   * @param l1 - The first list
-   * @param l2 - The second list which is to be merged into the first list
-   * @param condition - The condition that is used to determine if an element is to be added or not.
    * @param <T> - The generic type
+   * @param l1 - The first list
+   * @param condition - The condition that is used to determine if an element is to be added or not.
+   * @param lists - The lists which are to be merged into the first list
    * @return - The merged list.
    */
-  public static <T> List<T> merge(List<T> l1, List<T> l2, BiPredicate<T, T> condition) {
+  @SafeVarargs
+  public static <T> List<T> merge(List<T> l1, BiPredicate<T, T> condition, List<T>... lists) {
     List<T> result = newArrayList(l1);
-    for (T eachL1 : l2) {
-      boolean exists = l1.stream().anyMatch(e -> condition.test(e, eachL1));
-      if (!exists) {
-        result.add(eachL1);
-      }
-    }
+    Arrays.stream(lists)
+        .flatMap(Collection::stream)
+        .forEach(eachItem -> {
+          boolean exists = result.stream().anyMatch(e -> condition.test(e, eachItem));
+          if (!exists) {
+            result.add(eachItem);
+          }
+        });
     return result;
   }
 }

@@ -86,7 +86,7 @@ public interface ITestContext extends IAttributes {
 
   default void addGuiceModule(Module module) {}
 
-  default List<Module> getGuiceModules() {
+  default List<Module> getAllGuiceModules() {
     return Collections.emptyList();
   }
 

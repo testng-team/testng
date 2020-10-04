@@ -1227,7 +1227,7 @@ public class TestRunner
   }
 
   @Override
-  public List<Module> getGuiceModules() {
+  public List<Module> getAllGuiceModules() {
     return m_guiceModules.values().
         stream()
         .flatMap(Collection::stream)

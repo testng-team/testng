@@ -24,6 +24,7 @@ import com.google.inject.Stage;
 
 public class GuiceHelper {
   private final ITestContext context;
+  private static final BiPredicate<Module, Module> CLASS_EQUALITY  = (m,n) -> m.getClass().equals(n.getClass());
 
   GuiceHelper(ITestContext context) {
     this.context = context;
@@ -47,8 +48,8 @@ public class GuiceHelper {
     Module parentModule = getParentModule(context);
     if (parentModule != null) {
       context.addGuiceModule(parentModule);
-      BiPredicate<Module, Module> condition = (m,n) -> m.getClass().equals(n.getClass());
-      classLevelModules = Lists.merge(classLevelModules, Collections.singletonList(parentModule), condition);
+      classLevelModules = Lists.merge(classLevelModules, CLASS_EQUALITY,
+          Collections.singletonList(parentModule));
     }
     List<Module> moduleLookup = Lists.newArrayList(classLevelModules);
 
@@ -75,8 +76,13 @@ public class GuiceHelper {
     if (!Module.class.isAssignableFrom(parentModule)) {
       throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
     }
-    if (!context.getGuiceModules((Class<? extends Module>) parentModule).isEmpty()) {
-      return context.getGuiceModules((Class<? extends Module>) parentModule).get(0);
+    List<Module> allModules = context.getGuiceModules((Class<? extends Module>) parentModule);
+    if (!allModules.isEmpty()) {
+      if (allModules.size() > 1) {
+        throw new IllegalStateException("Found more than 1 module associated with the test <"
+        + context.getName() + ">");
+      }
+      return allModules.get(0);
     }
     Module obj;
     try {
@@ -92,10 +98,9 @@ public class GuiceHelper {
   public static Injector createInjector(ITestContext context,
       IInjectorFactory injectorFactory, List<Module> moduleInstances) {
     Module parentModule = getParentModule(context);
-    BiPredicate<Module, Module> condition = (m,n) -> m.getClass().equals(n.getClass());
     List<Module> fullModules = Lists.newArrayList(moduleInstances);
     if (parentModule != null) {
-      fullModules = Lists.merge(fullModules, Collections.singletonList(parentModule), condition);
+      fullModules = Lists.merge(fullModules, CLASS_EQUALITY, Collections.singletonList(parentModule));
     }
     Stage stage = Stage.DEVELOPMENT;
     String stageString = context.getSuite().getGuiceStage();
@@ -108,15 +113,14 @@ public class GuiceHelper {
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
     List<Module> result = Lists.newArrayList();
-    BiPredicate<Module, Module> condition = (m,n) -> m.getClass().equals(n.getClass());
     for (Class<? extends Module> moduleClass : guice.modules()) {
       List<Module> modules = context.getGuiceModules(moduleClass);
       if (modules != null && !modules.isEmpty()) {
         result.addAll(modules);
-        result = Lists.merge(result, modules, condition);
+        result = Lists.merge(result, CLASS_EQUALITY, modules);
       } else {
         Module instance = parentInjector.getInstance(moduleClass);
-        result = Lists.merge(result, Collections.singletonList(instance), condition);
+        result = Lists.merge(result, CLASS_EQUALITY, Collections.singletonList(instance));
         context.addGuiceModule(instance);
       }
     }
@@ -125,11 +129,10 @@ public class GuiceHelper {
       IModuleFactory factoryInstance = parentInjector.getInstance(factory);
       Module module = factoryInstance.createModule(context, testClass);
       if (module != null) {
-        result = Lists.merge(result, Collections.singletonList(module), condition);
+        result = Lists.merge(result, CLASS_EQUALITY, Collections.singletonList(module));
       }
     }
-    result = Lists.merge(result, LazyHolder.getSpiModules(), condition);
-    result = Lists.merge(result, context.getGuiceModules(), condition);
+    result = Lists.merge(result, CLASS_EQUALITY, LazyHolder.getSpiModules(),context.getAllGuiceModules());
     return result;
   }
 
