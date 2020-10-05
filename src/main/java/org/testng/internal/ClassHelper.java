@@ -132,7 +132,7 @@ public final class ClassHelper {
       consumer.accept(f, method);
     }
 
-    for (Constructor constructor : cls.getDeclaredConstructors()) {
+    for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
       IFactoryAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
       consumer.accept(f, constructor);
     }

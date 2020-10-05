@@ -54,8 +54,8 @@ public class MethodInheritance {
 
   /** Look in map for a class that is a superclass of methodClass */
   private static List<ITestNGMethod> findMethodListSuperClass(
-      Map<Class, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
-    for (Map.Entry<Class, List<ITestNGMethod>> entry : map.entrySet()) {
+      Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
+    for (Map.Entry<Class<?>, List<ITestNGMethod>> entry : map.entrySet()) {
       if (entry.getKey().isAssignableFrom(methodClass)) {
         return entry.getValue();
       }
@@ -64,9 +64,9 @@ public class MethodInheritance {
   }
 
   /** Look in map for a class that is a subclass of methodClass */
-  private static Class findSubClass(
-      Map<Class, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
-    for (Class cls : map.keySet()) {
+  private static Class<?> findSubClass(
+      Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
+    for (Class<?> cls : map.keySet()) {
       if (methodClass.isAssignableFrom(cls)) {
         return cls;
       }
@@ -87,7 +87,7 @@ public class MethodInheritance {
    */
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
-    Map<Class, List<ITestNGMethod>> map = Maps.newHashMap();
+    Map<Class<?>, List<ITestNGMethod>> map = Maps.newHashMap();
 
     //
     // Put the list of methods in their hierarchy buckets
@@ -98,7 +98,7 @@ public class MethodInheritance {
       if (null != l) {
         l.add(method);
       } else {
-        Class subClass = findSubClass(map, methodClass);
+        Class<?> subClass = findSubClass(map, methodClass);
         if (null != subClass) {
           l = map.get(subClass);
           l.add(method);
@@ -170,8 +170,8 @@ public class MethodInheritance {
 
   private static boolean equalsEffectiveClass(ITestNGMethod m1, ITestNGMethod m2) {
     try {
-      Class c1 = m1.getRealClass();
-      Class c2 = m2.getRealClass();
+      Class<?> c1 = m1.getRealClass();
+      Class<?> c2 = m2.getRealClass();
 
       return c1 == null ? c2 == null : c1.equals(c2);
     } catch (Exception ex) {

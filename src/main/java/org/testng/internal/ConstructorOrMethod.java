@@ -10,20 +10,20 @@ import java.lang.reflect.Method;
 public class ConstructorOrMethod {
 
   private Method m_method;
-  private Constructor m_constructor;
+  private Constructor<?> m_constructor;
   private boolean m_enabled = true;
 
   public ConstructorOrMethod(Method m) {
     m_method = m;
   }
 
-  public ConstructorOrMethod(Constructor c) {
+  public ConstructorOrMethod(Constructor<?> c) {
     m_constructor = c;
   }
 
   public ConstructorOrMethod(Executable e) {
     if (e instanceof Constructor) {
-      m_constructor = (Constructor) e;
+      m_constructor = (Constructor<?>) e;
     } else {
       m_method = (Method) e;
     }
@@ -39,7 +39,7 @@ public class ConstructorOrMethod {
     return getMethod() != null ? getMethod().getName() : getConstructor().getName();
   }
 
-  public Class[] getParameterTypes() {
+  public Class<?>[] getParameterTypes() {
     return getMethod() != null
         ? getMethod().getParameterTypes()
         : getConstructor().getParameterTypes();
@@ -49,7 +49,7 @@ public class ConstructorOrMethod {
     return m_method;
   }
 
-  public Constructor getConstructor() {
+  public Constructor<?> getConstructor() {
     return m_constructor;
   }
 

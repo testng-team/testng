@@ -47,7 +47,7 @@ import org.testng.annotations.*;
 public class Parameters {
   public static final String NULL_VALUE = "null";
 
-  private static List<Class<? extends Annotation>> annotationList =
+  private static final List<Class<? extends Annotation>> annotationList =
       Arrays.asList(
           BeforeSuite.class,
           AfterSuite.class,
@@ -61,7 +61,7 @@ public class Parameters {
           AfterMethod.class,
           Factory.class);
 
-  private static Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+  private static final Map<String, List<Class<?>>> mapping = Maps.newHashMap();
   /*
            +--------------+--------------+---------+--------+----------+-------------+
            |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
@@ -118,7 +118,7 @@ public class Parameters {
 
   /** Creates the parameters needed for constructing a test class instance. */
   public static Object[] createInstantiationParameters(
-      Constructor ctor,
+      Constructor<?> ctor,
       String methodAnnotation,
       IAnnotationFinder finder,
       String[] parameterNames,
@@ -181,7 +181,7 @@ public class Parameters {
   }
 
   private static Object[] createParametersForConstructor(
-      Constructor constructor,
+      Constructor<?> constructor,
       Class<?>[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
@@ -300,8 +300,8 @@ public class Parameters {
 
   /** Store the result of parameterTypes and optionalValues after filter out injected types */
   static final class FilterOutInJectedTypesResult {
-    private Class<?>[] parameterTypes;
-    private String[] optionalValues;
+    private final Class<?>[] parameterTypes;
+    private final String[] optionalValues;
 
     private FilterOutInJectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
       this.parameterTypes = parameterTypes;
@@ -402,7 +402,7 @@ public class Parameters {
       String methodAnnotation,
       String[] parameterNames) {
     int totalLength = parameterTypes.length;
-    for (Class parameterType : parameterTypes) {
+    for (Class<?> parameterType : parameterTypes) {
       if (INJECTED_TYPES.contains(parameterType)) {
         totalLength--;
       }
@@ -455,7 +455,7 @@ public class Parameters {
     }
   }
 
-  private static boolean validParameters(String methodAnnotation, Class[] parameterTypes) {
+  private static boolean validParameters(String methodAnnotation, Class<?>[] parameterTypes) {
     List<Class<?>> localMapping = mapping.get(methodAnnotation.replace("@", ""));
     if (localMapping == null) {
       return false;
@@ -544,7 +544,7 @@ public class Parameters {
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
     if (dp != null) {
       String dataProviderName = dp.getDataProvider();
-      Class dataProviderClass = dp.getDataProviderClass();
+      Class<?> dataProviderClass = dp.getDataProviderClass();
 
       if (!Utils.isStringEmpty(dataProviderName)) {
         result =
@@ -922,7 +922,7 @@ public class Parameters {
     private final Map<String, String> xmlParameters;
     private final Method currentTestMethod;
     private final ITestContext context;
-    private Object[] parameterValues;
+    private final Object[] parameterValues;
     private final ITestResult testResult;
 
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
