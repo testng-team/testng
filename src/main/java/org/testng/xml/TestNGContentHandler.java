@@ -371,7 +371,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlClasses(boolean start, Attributes attributes) {
+  public void xmlClasses(boolean start) {
     if (start) {
       m_currentClasses = Lists.newArrayList();
       m_currentClassIndex = 0;
@@ -381,7 +381,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlListeners(boolean start, Attributes attributes) {
+  public void xmlListeners(boolean start) {
     if (start) {
       m_listeners = Lists.newArrayList();
     } else {
@@ -399,7 +399,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlPackages(boolean start, Attributes attributes) {
+  public void xmlPackages(boolean start) {
     if (start) {
       m_currentPackages = Lists.newArrayList();
     } else {
@@ -424,7 +424,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlMethodSelectors(boolean start, Attributes attributes) {
+  public void xmlMethodSelectors(boolean start) {
     if (start) {
       m_currentSelectors = new ArrayList<>();
       return;
@@ -449,7 +449,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlMethodSelector(boolean start, Attributes attributes) {
+  public void xmlMethodSelector(boolean start) {
     if (start) {
       m_currentSelector = new XmlMethodSelector();
     } else {
@@ -471,7 +471,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlRun(boolean start, Attributes attributes) {
+  public void xmlRun(boolean start) {
     if (start) {
       m_currentRuns = Lists.newArrayList();
     } else {
@@ -493,7 +493,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlGroups(boolean start, Attributes attributes) {
+  public void xmlGroups(boolean start) {
     if (start) {
       m_currentGroups = new XmlGroups();
       m_currentIncludedGroups = Lists.newArrayList();
@@ -536,17 +536,17 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("script".equals(qName)) {
       xmlScript(true, attributes);
     } else if ("method-selector".equals(qName)) {
-      xmlMethodSelector(true, attributes);
+      xmlMethodSelector(true);
     } else if ("method-selectors".equals(qName)) {
-      xmlMethodSelectors(true, attributes);
+      xmlMethodSelectors(true);
     } else if ("selector-class".equals(qName)) {
       xmlSelectorClass(true, attributes);
     } else if ("classes".equals(qName)) {
-      xmlClasses(true, attributes);
+      xmlClasses(true);
     } else if ("packages".equals(qName)) {
-      xmlPackages(true, attributes);
+      xmlPackages(true);
     } else if ("listeners".equals(qName)) {
-      xmlListeners(true, attributes);
+      xmlListeners(true);
     } else if ("listener".equals(qName)) {
       xmlListener(true, attributes);
     } else if ("class".equals(qName)) {
@@ -569,11 +569,11 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("define".equals(qName)) {
       xmlDefine(true, attributes);
     } else if ("run".equals(qName)) {
-      xmlRun(true, attributes);
+      xmlRun(true);
     } else if ("group".equals(qName)) {
       xmlGroup(true, attributes);
     } else if ("groups".equals(qName)) {
-      xmlGroups(true, attributes);
+      xmlGroups(true);
     } else if ("methods".equals(qName)) {
       xmlMethod(true);
     } else if ("include".equals(qName)) {
@@ -693,25 +693,25 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("define".equals(qName)) {
       xmlDefine(false, null);
     } else if ("run".equals(qName)) {
-      xmlRun(false, null);
+      xmlRun(false);
     } else if ("groups".equals(qName)) {
-      xmlGroups(false, null);
+      xmlGroups(false);
     } else if ("methods".equals(qName)) {
       xmlMethod(false);
     } else if ("classes".equals(qName)) {
-      xmlClasses(false, null);
+      xmlClasses(false);
     } else if ("packages".equals(qName)) {
-      xmlPackages(false, null);
+      xmlPackages(false);
     } else if ("class".equals(qName)) {
       m_currentClass.setParameters(m_currentClassParameters);
       m_currentClassParameters = null;
       popLocation();
     } else if ("listeners".equals(qName)) {
-      xmlListeners(false, null);
+      xmlListeners(false);
     } else if ("method-selector".equals(qName)) {
-      xmlMethodSelector(false, null);
+      xmlMethodSelector(false);
     } else if ("method-selectors".equals(qName)) {
-      xmlMethodSelectors(false, null);
+      xmlMethodSelectors(false);
     } else if ("selector-class".equals(qName)) {
       xmlSelectorClass(false, null);
     } else if ("script".equals(qName)) {
