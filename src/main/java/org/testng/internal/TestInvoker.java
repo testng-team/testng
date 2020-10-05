@@ -330,7 +330,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       }
     }
 
-    ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut, true);
+    ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut);
 
     //
     // Collect all the TestResults

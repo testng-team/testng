@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.util.Objects;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
@@ -109,7 +110,7 @@ class JarFileUtils {
   
   private void delete(File f) throws IOException {
     if (f.isDirectory()) {
-      for (File c : f.listFiles())
+      for (File c : Objects.requireNonNull(f.listFiles()))
         delete(c);
     }
     if (!f.delete())
