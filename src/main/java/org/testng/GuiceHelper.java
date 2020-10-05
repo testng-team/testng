@@ -1,16 +1,17 @@
 package org.testng;
 
-import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ServiceLoader;
 
 import java.util.function.BiPredicate;
+import java.util.stream.StreamSupport;
 import org.testng.annotations.Guice;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
@@ -137,14 +138,13 @@ public class GuiceHelper {
   }
 
   private static final class LazyHolder {
-    private static final List<Module> spiModules;
+    private static final List<Module> spiModules = loadModules();
 
-    static {
-      List<Module> modules = new ArrayList<>();
-      for (IModule module : ServiceLoader.load(IModule.class)) {
-        modules.add(module.getModule());
-      }
-      spiModules = unmodifiableList(modules);
+    private static List<Module> loadModules() {
+      return StreamSupport
+          .stream(ServiceLoader.load(IModule.class).spliterator(), false)
+          .map(IModule::getModule)
+          .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
     public static List<Module> getSpiModules() {
