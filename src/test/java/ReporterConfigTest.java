@@ -1,10 +1,9 @@
+import java.util.Objects;
 import org.testng.IReporter;
-import org.testng.ReporterConfig;
+import org.testng.internal.ReporterConfig;
 import org.testng.annotations.Test;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.XMLReporterConfig;
-
-import java.util.List;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -19,9 +18,7 @@ public class ReporterConfigTest {
     @Test
     public void testDeserialize() {
         ReporterConfig config = ReporterConfig.deserialize(CONFIG_STR);
-        assertEquals(config.getClassName(), CLASS_NAME);
-        List<ReporterConfig.Property> properties = config.getProperties();
-        assertEquals(properties.size(), 2);
+        assertEquals(Objects.requireNonNull(config).getClassName(), CLASS_NAME);
         String serial = config.serialize();
         assertTrue(serial.contains(PROP_NAME_1 + "=true"));
         assertTrue(serial.contains(PROP_NAME_2 + "=true"));
@@ -30,7 +27,7 @@ public class ReporterConfigTest {
     @Test
     public void testInstantiate() {
         ReporterConfig reporterConfig = ReporterConfig.deserialize(CONFIG_STR);
-        IReporter reporter = reporterConfig.newReporterInstance();
+        IReporter reporter = Objects.requireNonNull(reporterConfig).newReporterInstance();
         assertTrue(reporter instanceof XMLReporter);
         XMLReporterConfig config = ((XMLReporter) reporter).getConfig();
         assertTrue(config.isGenerateTestResultAttributes());
