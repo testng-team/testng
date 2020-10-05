@@ -165,9 +165,9 @@ public class TestNG {
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
 
-  private Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
+  private final Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
 
-  private Set<XmlMethodSelector> m_selectors = Sets.newLinkedHashSet();
+  private final Set<XmlMethodSelector> m_selectors = Sets.newLinkedHashSet();
 
   private ITestObjectFactory m_objectFactory;
 
@@ -672,12 +672,8 @@ public class TestNG {
 
   private static <E> void maybeAddListener(
       Map<Class<? extends E>, E> map, Class<? extends E> type, E value, boolean quiet) {
-    if (map.containsKey(type)) {
-      if (!quiet) {
-        LOGGER.warn("Ignoring duplicate listener : " + type.getName());
-      }
-    } else {
-      map.put(type, value);
+    if (map.putIfAbsent(type, value) != null && !quiet) {
+      LOGGER.warn("Ignoring duplicate listener : " + type.getName());
     }
   }
 
@@ -765,7 +761,7 @@ public class TestNG {
 
   private Boolean m_skipFailedInvocationCounts = false;
 
-  private List<IMethodInterceptor> m_methodInterceptors = Lists.newArrayList();
+  private final List<IMethodInterceptor> m_methodInterceptors = Lists.newArrayList();
 
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
@@ -1880,7 +1876,7 @@ public class TestNG {
   //
 
   private URLClassLoader m_serviceLoaderClassLoader;
-  private Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners =
+  private final Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners =
       Maps.newHashMap();
 
   /*
