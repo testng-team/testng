@@ -121,7 +121,7 @@ public class PackageUtils {
         }
       } else if ("bundleresource".equals(protocol)) {
         try {
-          Class[] params = {};
+          Class<?>[] params = {};
           // BundleURLConnection
           URLConnection connection = url.openConnection();
           Method thisMethod =

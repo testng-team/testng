@@ -294,7 +294,7 @@ public class TestNGClassFinder extends BaseClassFinder {
           }
 
           // Try on the constructors
-          for (Constructor ctor : cls.getConstructors()) {
+          for (Constructor<?> ctor : cls.getConstructors()) {
             IAnnotation ca = annotationFinder.findAnnotation(ctor, annotation);
             if (null != ca) {
               //Don't short circuit. Lets run for all methods across all classes.

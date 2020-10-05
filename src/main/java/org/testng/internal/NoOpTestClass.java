@@ -141,7 +141,7 @@ public class NoOpTestClass implements ITestClass {
   }
 
   @Override
-  public Class getRealClass() {
+  public Class<?> getRealClass() {
     return m_testClass;
   }
 

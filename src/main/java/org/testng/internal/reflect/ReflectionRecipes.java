@@ -19,8 +19,8 @@ import java.util.*;
  */
 public final class ReflectionRecipes {
 
-  private static final Map<Class, Class> PRIMITIVE_MAPPING = new HashMap<>();
-  private static final Map<Class, List<Class>> ASSIGNABLE_MAPPING = new HashMap<>();
+  private static final Map<Class<?>, Class<?>> PRIMITIVE_MAPPING = new HashMap<>();
+  private static final Map<Class<?>, List<Class<?>>> ASSIGNABLE_MAPPING = new HashMap<>();
 
   static {
     initPrimitiveMapping();
@@ -64,7 +64,7 @@ public final class ReflectionRecipes {
    * @param object instance to be tested.
    * @return is an instance-of or not
    */
-  public static boolean isInstanceOf(final Class reference, final Object object) {
+  public static boolean isInstanceOf(final Class<?> reference, final Object object) {
     if (object == null) {
       return !reference.isPrimitive();
     }
@@ -161,7 +161,7 @@ public final class ReflectionRecipes {
    * @param constructor any valid constructor.
    * @return extracted constructor parameters.
    */
-  public static Parameter[] getConstructorParameters(final Constructor constructor) {
+  public static Parameter[] getConstructorParameters(final Constructor<?> constructor) {
     if (constructor == null) {
       return new Parameter[] {};
     }
@@ -419,7 +419,7 @@ public final class ReflectionRecipes {
         msg =
             MethodMatcherException.generateMessage(
                 prefix + "constructor.",
-                (Constructor) injectionMethod,
+                (Constructor<?>) injectionMethod,
                 queue.backingList.toArray());
       }
 
@@ -449,7 +449,7 @@ public final class ReflectionRecipes {
       final Parameter[] parameters,
       final Set<InjectableParameter> filters,
       final Object[] args,
-      final Constructor constructor,
+      final Constructor<?> constructor,
       final ITestContext context,
       final ITestResult testResult) {
     return nativelyInject(parameters, filters, args, constructor, context, testResult);
