@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 /** This class logs the result of an entire Test Suite (defined by a property file). */
 class SuiteResult implements ISuiteResult, Comparable {
   // FIXME: Is m_propertyFileName needed?
-  private String m_propertyFileName = null;
+  private final String m_propertyFileName = null;
   private final XmlSuite m_suite;
   private final ITestContext m_testContext;
 

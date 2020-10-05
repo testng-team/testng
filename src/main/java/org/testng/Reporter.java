@@ -28,18 +28,18 @@ public class Reporter {
   // When tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
-  private static ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<>();
+  private static final ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<>();
 
   /** All output logged in a sequential order. */
-  private static List<String> m_output = new Vector<>();
+  private static final List<String> m_output = new Vector<>();
 
   /** The key is the hashCode of the ITestResult. */
-  private static Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
+  private static final Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
 
   private static boolean m_escapeHtml = false;
   // This variable is responsible for persisting all output that is yet to be associated with any
   // valid TestResult objects.
-  private static ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
+  private static final ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
 
   public static void setCurrentTestResult(ITestResult m) {
     m_currentTestResult.set(m);

@@ -23,7 +23,7 @@ public class ClonedMethod implements ITestNGMethod {
   private long m_date;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
+  private final List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
 
   public ClonedMethod(ITestNGMethod method, Method javaMethod) {
     m_method = method;
@@ -139,7 +139,7 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public Class getRealClass() {
+  public Class<?> getRealClass() {
     return m_javaMethod.getClass();
   }
 

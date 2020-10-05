@@ -24,11 +24,11 @@ public class TestListenerAdapter implements IResultListener2 {
   private Collection<ITestResult> m_failedTests = new ConcurrentLinkedQueue<>();
   private Collection<ITestResult> m_skippedTests = new ConcurrentLinkedQueue<>();
   private Collection<ITestResult> m_failedButWSPerTests = new ConcurrentLinkedQueue<>();
-  private Collection<ITestContext> m_testContexts = new ConcurrentLinkedQueue<>();
-  private Collection<ITestResult> m_failedConfs = new ConcurrentLinkedQueue<>();
-  private Collection<ITestResult> m_skippedConfs = new ConcurrentLinkedQueue<>();
-  private Collection<ITestResult> m_passedConfs = new ConcurrentLinkedQueue<>();
-  private Collection<ITestResult> m_timedOutTests = new ConcurrentLinkedQueue<>();
+  private final Collection<ITestContext> m_testContexts = new ConcurrentLinkedQueue<>();
+  private final Collection<ITestResult> m_failedConfs = new ConcurrentLinkedQueue<>();
+  private final Collection<ITestResult> m_skippedConfs = new ConcurrentLinkedQueue<>();
+  private final Collection<ITestResult> m_passedConfs = new ConcurrentLinkedQueue<>();
+  private final Collection<ITestResult> m_timedOutTests = new ConcurrentLinkedQueue<>();
 
   @Override
   public void onTestSuccess(ITestResult tr) {

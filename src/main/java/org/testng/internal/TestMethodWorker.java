@@ -32,9 +32,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
-  private List<IMethodInstance> m_methodInstances;
+  private final List<IMethodInstance> m_methodInstances;
   private final Map<String, String> m_parameters;
-  private List<ITestResult> m_testResults = Lists.newArrayList();
+  private final List<ITestResult> m_testResults = Lists.newArrayList();
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;

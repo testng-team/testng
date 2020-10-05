@@ -66,7 +66,7 @@ public abstract class AbstractParallelWorker {
     }
 
     public static class Builder {
-      private Arguments instance;
+      private final Arguments instance;
 
       public Builder() {
         instance = new Arguments();

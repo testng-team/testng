@@ -1,6 +1,7 @@
 package org.testng;
 
 import com.google.inject.Injector;
+import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -405,12 +406,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         "tests",
         tasks,
         xmlSuite.getThreadCount(),
-        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS),
-        false);
+        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS)
+    );
   }
 
   private class SuiteWorker implements Runnable {
-    private TestRunner testRunner;
+    private final TestRunner testRunner;
 
     public SuiteWorker(TestRunner tr) {
       testRunner = tr;
@@ -515,19 +516,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   /** @see org.testng.ISuite#getExcludedMethods() */
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
-    return getIncludedOrExcludedMethods(false /* included */);
-  }
-
-  private Collection<ITestNGMethod> getIncludedOrExcludedMethods(boolean included) {
-    List<ITestNGMethod> result = Lists.newArrayList();
-
-    for (TestRunner tr : testRunners) {
-      Collection<ITestNGMethod> methods =
-          included ? tr.getInvokedMethods() : tr.getExcludedMethods();
-      result.addAll(methods);
-    }
-
-    return result;
+    return testRunners.stream()
+        .flatMap(tr -> tr.getExcludedMethods().stream())
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -556,10 +547,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   /** The default implementation of {@link ITestRunnerFactory}. */
   private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
-    private ITestListener[] failureGenerators;
-    private boolean useDefaultListeners;
-    private boolean skipFailedInvocationCounts;
-    private IConfiguration configuration;
+    private final ITestListener[] failureGenerators;
+    private final boolean useDefaultListeners;
+    private final boolean skipFailedInvocationCounts;
+    private final IConfiguration configuration;
     private final Comparator<ITestNGMethod> comparator;
 
     public DefaultTestRunnerFactory(
@@ -569,7 +560,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         boolean skipFailedInvocationCounts,
         Comparator<ITestNGMethod> comparator) {
       this.configuration = configuration;
-      failureGenerators = failureListeners;
+      this.failureGenerators = failureListeners;
       this.useDefaultListeners = useDefaultListeners;
       this.skipFailedInvocationCounts = skipFailedInvocationCounts;
       this.comparator = comparator;
@@ -640,8 +631,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
-    private ITestListener[] failureGenerators;
-    private ITestRunnerFactory target;
+    private final ITestListener[] failureGenerators;
+    private final ITestRunnerFactory target;
 
     public ProxyTestRunnerFactory(ITestListener[] failureListeners, ITestRunnerFactory target) {
       failureGenerators = failureListeners;
