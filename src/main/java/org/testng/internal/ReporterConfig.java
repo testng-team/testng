@@ -28,12 +28,6 @@ public class ReporterConfig {
         return className;
     }
 
-    @Deprecated
-    // TODO remove once org.testng.ReporterConfig will be removed
-    public List<Property> getProperties() {
-        return properties;
-    }
-
     public String serialize() {
         StringBuilder sb = new StringBuilder(className);
         if (!properties.isEmpty()) {
