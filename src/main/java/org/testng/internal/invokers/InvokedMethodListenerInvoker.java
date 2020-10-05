@@ -15,9 +15,9 @@ import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_IN
  */
 public class InvokedMethodListenerInvoker {
 
-  private InvokedMethodListenerMethod m_listenerMethod;
-  private ITestContext m_testContext;
-  private ITestResult m_testResult;
+  private final InvokedMethodListenerMethod m_listenerMethod;
+  private final ITestContext m_testContext;
+  private final ITestResult m_testResult;
 
 
   /**

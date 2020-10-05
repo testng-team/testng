@@ -72,7 +72,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private int m_interceptedPriority;
 
   private XmlTest m_xmlTest;
-  private Object m_instance;
+  private final Object m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
 

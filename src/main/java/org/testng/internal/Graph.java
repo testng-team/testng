@@ -18,8 +18,8 @@ import java.util.Set;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
-  private static boolean m_verbose = false;
-  private Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
+  private static final boolean m_verbose = false;
+  private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
 
@@ -240,14 +240,14 @@ public class Graph<T> {
   // class Node
   //
   public static class Node<T> {
-    private T m_object;
-    private Map<T, T> m_predecessors = Maps.newHashMap();
+    private final T m_object;
+    private final Map<T, T> m_predecessors = Maps.newHashMap();
 
     public Node(T tm) {
       m_object = tm;
     }
 
-    private Set<Node<T>> m_neighbors = new HashSet<>();
+    private final Set<Node<T>> m_neighbors = new HashSet<>();
 
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);

@@ -24,7 +24,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
   private String testName;
   private XmlTest xmlTest;
   private XmlClass xmlClass;
-  private String m_errorMsgPrefix;
+  private final String m_errorMsgPrefix;
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
 

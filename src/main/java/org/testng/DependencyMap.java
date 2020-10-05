@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
  * Helper class to keep track of dependencies.
  */
 public class DependencyMap {
-  private ListMultiMap<String, ITestNGMethod> m_dependencies = Maps.newListMultiMap();
-  private ListMultiMap<String, ITestNGMethod> m_groups = Maps.newListMultiMap();
+  private final ListMultiMap<String, ITestNGMethod> m_dependencies = Maps.newListMultiMap();
+  private final ListMultiMap<String, ITestNGMethod> m_groups = Maps.newListMultiMap();
 
   public DependencyMap(ITestNGMethod[] methods) {
     for (ITestNGMethod m : methods) {

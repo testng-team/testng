@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class MethodInstance implements IMethodInstance {
-  private ITestNGMethod m_method;
+  private final ITestNGMethod m_method;
 
   public MethodInstance(ITestNGMethod method) {
     m_method = method;

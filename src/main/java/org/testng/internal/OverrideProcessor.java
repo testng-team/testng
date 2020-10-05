@@ -12,8 +12,8 @@ import java.util.Collection;
  */
 public class OverrideProcessor implements IPostProcessor {
 
-  private String[] m_groups;
-  private String[] m_excludedGroups;
+  private final String[] m_groups;
+  private final String[] m_excludedGroups;
 
   public OverrideProcessor(String[] groups, String[] excludedGroups) {
     m_groups = groups;

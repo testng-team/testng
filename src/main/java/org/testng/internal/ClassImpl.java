@@ -28,7 +28,7 @@ public class ClassImpl implements IClass {
   private final Class<?> m_class;
   private Object m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
-  private List<Object> m_instances = Lists.newArrayList();
+  private final List<Object> m_instances = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
   private long[] m_instanceHashCodes;
   private final Object m_instance;
@@ -76,7 +76,7 @@ public class ClassImpl implements IClass {
   }
 
   @Override
-  public Class getRealClass() {
+  public Class<?> getRealClass() {
     return m_class;
   }
 

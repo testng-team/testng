@@ -87,12 +87,12 @@ public class TestRunner
   private IAnnotationFinder m_annotationFinder = null;
 
   /** ITestListeners support. */
-  private List<ITestListener> m_testListeners = Lists.newArrayList();
+  private final List<ITestListener> m_testListeners = Lists.newArrayList();
 
-  private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private final Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
-  private IConfigurationListener m_confListener = new ConfigurationListener();
+  private final IConfigurationListener m_confListener = new ConfigurationListener();
 
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
@@ -111,13 +111,13 @@ public class TestRunner
   private Date m_endDate = null;
 
   /** A map to keep track of Class <-> IClass. */
-  private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
+  private final Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory = DEFAULT_PROP_OUTPUT_DIR;
 
   // The XML method selector (groups/methods included/excluded in XML)
-  private XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
+  private final XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
 
   private static int m_verbose = 1;
 
@@ -134,19 +134,19 @@ public class TestRunner
   private ITestNGMethod[] m_afterSuiteMethods = {};
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
-  private List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
+  private final List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
   private ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
-  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
 
   // All the tests that were run along with their result
-  private IResultMap m_passedTests = new ResultMap();
-  private IResultMap m_failedTests = new ResultMap();
-  private IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
-  private IResultMap m_skippedTests = new ResultMap();
+  private final IResultMap m_passedTests = new ResultMap();
+  private final IResultMap m_failedTests = new ResultMap();
+  private final IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
+  private final IResultMap m_skippedTests = new ResultMap();
 
-  private RunInfo m_runInfo = new RunInfo();
+  private final RunInfo m_runInfo = new RunInfo();
 
   // The host where this test was run, or null if run locally
   private String m_host;
@@ -1161,9 +1161,9 @@ public class TestRunner
     return MethodHelper.invokedMethodsToMethods(m_invokedMethods);
   }
 
-  private IResultMap m_passedConfigurations = new ResultMap();
-  private IResultMap m_skippedConfigurations = new ResultMap();
-  private IResultMap m_failedConfigurations = new ResultMap();
+  private final IResultMap m_passedConfigurations = new ResultMap();
+  private final IResultMap m_skippedConfigurations = new ResultMap();
+  private final IResultMap m_failedConfigurations = new ResultMap();
 
   private class ConfigurationListener implements IConfigurationListener {
     @Override
@@ -1197,7 +1197,7 @@ public class TestRunner
     return m_xmlTest;
   }
 
-  private IAttributes m_attributes = new Attributes();
+  private final IAttributes m_attributes = new Attributes();
 
   @Override
   public Object getAttribute(String name) {
@@ -1219,7 +1219,7 @@ public class TestRunner
     return m_attributes.removeAttribute(name);
   }
 
-  private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
+  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
@@ -1244,7 +1244,7 @@ public class TestRunner
     }
   }
 
-  private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
+  private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
 
   @Override
   public Injector getInjector(List<Module> moduleInstances) {

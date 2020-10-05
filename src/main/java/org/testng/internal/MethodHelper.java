@@ -490,7 +490,7 @@ public class MethodHelper {
   }
 
   private static class MatchResults {
-    private List<ITestNGMethod> matchedMethods = Lists.newArrayList();
+    private final List<ITestNGMethod> matchedMethods = Lists.newArrayList();
     private boolean foundAtLeastAMethod = false;
   }
 }
