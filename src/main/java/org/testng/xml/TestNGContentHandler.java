@@ -516,9 +516,9 @@ public class TestNGContentHandler extends DefaultHandler {
     if (!m_validate && !m_hasWarn) {
       String msg = String.format(
           "It is strongly recommended to add "
-              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of your file, ["
-              + this.m_fileName
-              + "] otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL
+              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of the suite file [%s]"
+              + " otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL,
+          this.m_fileName
       );
       Logger.getLogger(TestNGContentHandler.class).warn(msg);
       m_hasWarn = true;
