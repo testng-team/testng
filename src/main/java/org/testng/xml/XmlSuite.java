@@ -855,15 +855,6 @@ public class XmlSuite implements Cloneable {
     return true;
   }
 
-  /**
-   * @param f The String value
-   * @deprecated Use {@link #setPreserveOrder(Boolean)} instead
-   */
-  @Deprecated
-  public void setPreserveOrder(String f) {
-    setPreserveOrder(Boolean.valueOf(f));
-  }
-
   public void setPreserveOrder(Boolean f) {
     m_preserveOrder = f;
   }

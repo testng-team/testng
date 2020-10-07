@@ -1,10 +1,8 @@
 package org.testng;
 
 import org.testng.annotations.CustomAttribute;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
-import org.testng.internal.InstanceCreator;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -172,34 +170,15 @@ public interface ITestNGMethod extends Cloneable {
 
   ITestNGMethod clone();
 
-  /**
-   * @deprecated - This method stands deprecated as of TestNG 7.0.0.
-   * Please use {@link #getRetryAnalyzer(ITestResult)} instead.
-   *
-   * @return The retry analyzer
-   */
-  @Deprecated
-  IRetryAnalyzer getRetryAnalyzer();
-
-  /**
-   * @deprecated - This method stands deprecated as of TestNG 7.0.0.
-   * Please use {@link #setRetryAnalyzerClass(Class)} instead.
-   *
-   * @param retryAnalyzer The retry analyzer
-   */
-  @Deprecated
-  void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
-
   default IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
-    return getRetryAnalyzer();
+    return null;
   }
 
   default void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-    setRetryAnalyzer(InstanceCreator.newInstance(clazz));
   }
 
   default Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return getRetryAnalyzer().getClass();
+    return null;
   }
 
   boolean skipFailedInvocations();

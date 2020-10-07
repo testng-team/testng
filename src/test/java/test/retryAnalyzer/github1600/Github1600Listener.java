@@ -9,6 +9,7 @@ import org.testng.annotations.ITestAnnotation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import org.testng.internal.annotations.DisabledRetryAnalyzer;
 
 public class Github1600Listener implements IInvokedMethodListener, IAnnotationTransformer {
     @Override
@@ -30,8 +31,9 @@ public class Github1600Listener implements IInvokedMethodListener, IAnnotationTr
 
     @Override
     public void transform(ITestAnnotation iTestAnnotation, Class aClass, Constructor constructor, Method method) {
-        IRetryAnalyzer retry = iTestAnnotation.getRetryAnalyzer();
-        if (retry == null)
+        Class<? extends IRetryAnalyzer> retry = iTestAnnotation.getRetryAnalyzerClass();
+        if (retry.equals(DisabledRetryAnalyzer.class)) {
             iTestAnnotation.setRetryAnalyzer(Github1600Analyzer.class);
+        }
     }
 }

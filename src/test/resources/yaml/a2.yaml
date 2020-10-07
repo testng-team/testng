@@ -26,8 +26,7 @@ tests:
     methodSelectors:
       - className: org.testng.internal.XmlMethodSelector
         priority: 1
-      - expression: groups.containsKey("test1")
-        language: beanshell
+      - script: { expression: groups.containsKey("test1"), language: beanshell }
 
   - name: Test1
     preserveOrder: false
@@ -45,5 +44,4 @@ tests:
 methodSelectors:
   - className: org.testng.internal.XmlMethodSelector
     priority: 1
-  - expression: groups.containsKey("test1")
-    language: beanshell
+  - script: { expression: groups.containsKey("test1"), language: beanshell }

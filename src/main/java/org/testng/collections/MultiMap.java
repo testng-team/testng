@@ -28,7 +28,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   }
 
   public C get(K key) {
-    return m_objects.computeIfAbsent(key, k-> createValue());
+    return m_objects.computeIfAbsent(key, k -> createValue());
   }
 
   public Set<K> keySet() {
