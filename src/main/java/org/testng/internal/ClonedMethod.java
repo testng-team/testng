@@ -144,11 +144,6 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer() {
-    return m_method.getRetryAnalyzer();
-  }
-
-  @Override
   public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return m_method.getRetryAnalyzer(result);
   }
@@ -279,9 +274,6 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setParameterInvocationCount(int n) {}
-
-  @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {}
 
   @Override
   public void setSkipFailedInvocations(boolean skip) {}

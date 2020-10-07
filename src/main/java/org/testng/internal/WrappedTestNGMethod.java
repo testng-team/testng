@@ -266,16 +266,6 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer() {
-    return testNGMethod.getRetryAnalyzer();
-  }
-
-  @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
-    testNGMethod.setRetryAnalyzer(retryAnalyzer);
-  }
-
-  @Override
   public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return testNGMethod.getRetryAnalyzer(result);
   }

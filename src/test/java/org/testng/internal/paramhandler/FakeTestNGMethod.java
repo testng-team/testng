@@ -257,17 +257,9 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer() {
-    return null;
-  }
-
-  @Override
   public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return null;
   }
-
-  @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {}
 
   @Override
   public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {

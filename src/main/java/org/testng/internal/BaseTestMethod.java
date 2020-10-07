@@ -617,18 +617,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   public abstract ITestNGMethod clone();
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer() {
-    return m_retryAnalyzer;
-  }
-
-  @Override
   public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return getRetryAnalyzerConsideringMethodParameters(result);
-  }
-
-  @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
-    m_retryAnalyzer = retryAnalyzer;
   }
 
   @Override

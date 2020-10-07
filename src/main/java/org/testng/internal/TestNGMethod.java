@@ -93,7 +93,6 @@ public class TestNGMethod extends BaseTestMethod {
       setAlwaysRun(testAnnotation.getAlwaysRun());
       setDescription(findDescription(testAnnotation, xmlTest));
       setEnabled(testAnnotation.getEnabled());
-      setRetryAnalyzer(cloneInstance(testAnnotation.getRetryAnalyzer()));
       setRetryAnalyzerClass(testAnnotation.getRetryAnalyzerClass());
       setSkipFailedInvocations(testAnnotation.skipFailedInvocations());
       setInvocationTimeOut(testAnnotation.invocationTimeOut());
@@ -187,7 +186,6 @@ public class TestNGMethod extends BaseTestMethod {
     clone.setInvocationCount(getInvocationCount());
     clone.m_successPercentage = getSuccessPercentage();
     clone.setTimeOut(getTimeOut());
-    clone.setRetryAnalyzer(getRetryAnalyzer());
     clone.setRetryAnalyzerClass(getRetryAnalyzerClass());
     clone.setSkipFailedInvocations(skipFailedInvocations());
     clone.setInvocationNumbers(getInvocationNumbers());
