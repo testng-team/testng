@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -59,17 +60,24 @@ public class TestNGContentHandler extends DefaultHandler {
   //Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
   private final EntityResolver m_redirectionAwareResolver = (publicId, systemId) -> {
     URL url = new URL(systemId);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    InputStream stream = getClass().getResourceAsStream(url.getPath());
+    if (stream == null) {
+      String msg = String.format("Failed to read [%s] from CLASSPATH. "
+          + "Attempting to read from [%s].", url.getPath(), systemId);
+      Logger.getLogger(getClass()).warn(msg);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-    int status = conn.getResponseCode();
-    if ((status == HttpURLConnection.HTTP_MOVED_TEMP
-        || status == HttpURLConnection.HTTP_MOVED_PERM
-        || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+      int status = conn.getResponseCode();
+      if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+          || status == HttpURLConnection.HTTP_MOVED_PERM
+          || status == HttpURLConnection.HTTP_SEE_OTHER)) {
 
-      String newUrl = conn.getHeaderField("Location");
-      conn = (HttpURLConnection) new URL(newUrl).openConnection();
+        String newUrl = conn.getHeaderField("Location");
+        conn = (HttpURLConnection) new URL(newUrl).openConnection();
+      }
+      stream = conn.getInputStream();
     }
-    return new InputSource(conn.getInputStream());
+    return new InputSource(Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));
   };
 
   enum Location {
