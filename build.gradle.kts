@@ -113,6 +113,7 @@ tasks.jar {
         attributes(
             "Bundle-License" to "https://apache.org/licenses/LICENSE-2.0",
             "Bundle-Description" to "TestNG is a testing framework.",
+            "Bundle-Version" to This.version,
             "Import-Package" to """
                 "bsh.*;version="[2.0.0,3.0.0)";resolution:=optional",
                 "com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional",
