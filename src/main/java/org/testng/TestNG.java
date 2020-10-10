@@ -66,7 +66,6 @@ import org.testng.xml.internal.XmlSuiteUtils;
 import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
-import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework. Users can create
@@ -419,15 +418,11 @@ public class TestNG {
   @Deprecated
   // TODO: krmahadevan: This method is being used by Gradle. Removal causes build failures.
   public void setParallel(String parallel) {
-    if (parallel == null) {
-      setParallel(XmlSuite.ParallelMode.NONE);
-    } else {
-      setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
-    }
+    setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
   }
 
   public void setParallel(XmlSuite.ParallelMode parallel) {
-    m_parallelMode = skipDeprecatedValues(parallel);
+    m_parallelMode = parallel;
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
