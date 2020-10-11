@@ -102,8 +102,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           registerSkippedTestResult(
               testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
       m_notifier.addSkippedTest(testMethod, result);
-      InvokedMethod invokedMethod = new InvokedMethod(result.getInstance(), testMethod,
-          System.currentTimeMillis(), result);
+      InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       testMethod.incrementCurrentInvocationCount();
       GroupConfigMethodArguments args = new Builder()
@@ -528,8 +527,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     runConfigMethods(arguments, suite, testResult, setupConfigMethods);
 
     long startTime = System.currentTimeMillis();
-    InvokedMethod invokedMethod = new InvokedMethod(arguments.getInstance(),
-        arguments.getTestMethod(), startTime, testResult);
+    InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
 
     if (!failureContext.representsRetriedMethod && invoker.hasConfigurationFailureFor(
         arguments.getTestMethod(), arguments.getTestMethod().getGroups() ,
@@ -543,8 +541,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
       arguments.getTestMethod().incrementCurrentInvocationCount();
       testResult.setMethod(arguments.getTestMethod());
-      invokedMethod = new InvokedMethod(arguments.getInstance(),
-          arguments.getTestMethod(), startTime, result);
+      invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       runAfterGroupsConfigurations(arguments, suite, testResult);
 
@@ -558,8 +555,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult = TestResult
           .newTestResultFrom(testResult, arguments.getTestMethod(), m_testContext, System.currentTimeMillis());
       //Recreate the invoked method object again, because we now have a new test result object
-      invokedMethod = new InvokedMethod(arguments.getInstance(),
-          arguments.getTestMethod(), invokedMethod.getDate(), testResult);
+      invokedMethod = new InvokedMethod(invokedMethod.getDate(), testResult);
 
       testResult.setStatus(ITestResult.STARTED);
 

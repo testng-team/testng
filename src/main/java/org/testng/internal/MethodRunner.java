@@ -70,8 +70,7 @@ class MethodRunner implements IMethodRunner {
                     null);
             result.add(r);
             InvokedMethod invokedMethod =
-                new InvokedMethod(r.getInstance(), tmArguments.getTestMethod(),
-                    System.currentTimeMillis(), r);
+                new InvokedMethod(System.currentTimeMillis(), r);
             testInvoker.invokeListenersForSkippedTestResult(r, invokedMethod);
           }
         }
