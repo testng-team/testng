@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -1024,8 +1023,8 @@ public class TestRunner
   }
 
   @Override
-  public void addInvokedMethod(InvokedMethod im) {
-    m_invokedMethods.add(im);
+  public void recordInvocationStatus(IInvocationStatus im) {
+    im.markAsInvoked();
   }
 
   @Override
@@ -1151,14 +1150,8 @@ public class TestRunner
     m_configurationListeners.add(icl);
   }
 
-  private final Collection<IInvokedMethod> m_invokedMethods = new ConcurrentLinkedQueue<>();
-
   private void dumpInvokedMethods() {
-    MethodHelper.dumpInvokedMethodsInfoToConsole(m_invokedMethods, getVerbose());
-  }
-
-  public List<ITestNGMethod> getInvokedMethods() {
-    return MethodHelper.invokedMethodsToMethods(m_invokedMethods);
+    MethodHelper.dumpInvokedMethodInfoToConsole(m_allTestMethods, getVerbose());
   }
 
   private final IResultMap m_passedConfigurations = new ResultMap();

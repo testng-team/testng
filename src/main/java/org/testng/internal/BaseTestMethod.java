@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import org.testng.IClass;
+import org.testng.IInvocationStatus;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -27,7 +28,7 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
-public abstract class BaseTestMethod implements ITestNGMethod {
+public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
@@ -754,6 +755,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       return (IParameterInfo) m_instance;
     }
     return null;
+  }
+
+  private boolean invoked = false;
+
+  @Override
+  public void markAsInvoked() {
+    invoked = true;
+  }
+
+  @Override
+  public boolean isInvoked() {
+    return invoked;
   }
 
   private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {

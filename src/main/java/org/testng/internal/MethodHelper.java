@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
+import org.testng.IInvocationStatus;
 import org.testng.IInvokedMethod;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
@@ -433,6 +434,35 @@ public class MethodHelper {
   public static List<ITestNGMethod> methodInstancesToMethods(
       List<IMethodInstance> methodInstances) {
     return methodInstances.stream().map(IMethodInstance::getMethod).collect(Collectors.toList());
+  }
+
+  public static void dumpInvokedMethodInfoToConsole(
+      ITestNGMethod[] methods, int currentVerbosity) {
+    if (currentVerbosity < 3) {
+      return;
+    }
+    System.out.println("===== Invoked methods");
+    Arrays.stream(methods).filter(m -> m instanceof IInvocationStatus)
+        .filter(m -> ((IInvocationStatus) m).isInvoked())
+        .forEach(im -> {
+          if (im.isTest()) {
+            System.out.print("    ");
+          } else if (isConfigurationMethod(im)) {
+            System.out.print("  ");
+          } else {
+            return;
+          }
+          System.out.println("" + im);
+        });
+    System.out.println("=====");
+  }
+
+  private static boolean isConfigurationMethod(ITestNGMethod tm) {
+    return tm.isBeforeSuiteConfiguration() || tm.isAfterSuiteConfiguration() ||
+        tm.isBeforeTestConfiguration() || tm.isAfterTestConfiguration() ||
+        tm.isBeforeClassConfiguration() || tm.isAfterClassConfiguration() ||
+        tm.isBeforeGroupsConfiguration() || tm.isAfterGroupsConfiguration() ||
+        tm.isBeforeMethodConfiguration() || tm.isAfterMethodConfiguration();
   }
 
   public static void dumpInvokedMethodsInfoToConsole(

@@ -19,6 +19,7 @@ import org.testng.DataProviderInvocationException;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IHookable;
+import org.testng.IInvocationStatus;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.IRetryAnalyzer;
@@ -575,7 +576,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       log(3, "Invoking " + arguments.getTestMethod().getQualifiedName());
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
 
-      m_notifier.addInvokedMethod(invokedMethod);
+      if (arguments.getTestMethod() instanceof IInvocationStatus) {
+        m_notifier.recordInvocationStatus((IInvocationStatus) arguments.getTestMethod());
+      }
 
       Method thisMethod = arguments.getTestMethod().getConstructorOrMethod().getMethod();
 

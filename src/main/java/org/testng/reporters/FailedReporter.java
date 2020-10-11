@@ -7,7 +7,6 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -31,7 +30,7 @@ import java.util.Set;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class FailedReporter extends TestListenerAdapter implements IReporter {
+public class FailedReporter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
   private XmlSuite m_xmlSuite;

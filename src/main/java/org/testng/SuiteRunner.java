@@ -34,7 +34,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collections.synchronizedMap(Maps.newLinkedHashMap());
   private final List<TestRunner> testRunners = Lists.newArrayList();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newConcurrentMap();
-  private final TestListenerAdapter textReporter = new TestListenerAdapter();
 
   private String outputDir;
   private XmlSuite xmlSuite;
@@ -64,7 +63,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   /** The list of all the methods invoked during this run */
   private final Collection<IInvokedMethod> invokedMethods = new ConcurrentLinkedQueue<>();
 
-  private final List<ITestNGMethod> allTestMethods = Lists.newArrayList();
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
@@ -190,13 +188,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         tr.addMethodInterceptor(methodInterceptor);
       }
 
-      // Reuse the same text reporter so we can accumulate all the results
-      // (this is used to display the final suite report at the end)
-      tr.addListener(textReporter);
       testRunners.add(tr);
 
-      // Add the methods found in this test to our global count
-      allTestMethods.addAll(Arrays.asList(tr.getAllTestMethods()));
     }
   }
 
@@ -743,6 +736,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   @Override
   public List<ITestNGMethod> getAllMethods() {
-    return allTestMethods;
+    return this.testRunners.stream()
+        .flatMap(tr -> Arrays.stream(tr.getAllTestMethods()))
+        .collect(Collectors.toList());
   }
 }
