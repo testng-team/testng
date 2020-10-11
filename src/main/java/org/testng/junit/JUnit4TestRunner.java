@@ -220,7 +220,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     private void runAfterInvocationListeners(ITestResult tr) {
       InvokedMethod im =
-          new InvokedMethod(tr.getTestClass(), tr.getMethod(), tr.getEndMillis(), tr);
+          new InvokedMethod(tr.getEndMillis(), tr);
       for (IInvokedMethodListener l : m_invokeListeners) {
         l.afterInvocation(im, tr);
       }
@@ -244,8 +244,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     TestResult tr = TestResult.newTestResultFor(tm);
 
-    InvokedMethod im =
-        new InvokedMethod(tr.getTestClass(), tr.getMethod(), tr.getStartMillis(), tr);
+    InvokedMethod im = new InvokedMethod(tr.getStartMillis(), tr);
     if (tr.getMethod() instanceof IInvocationStatus) {
       m_parentRunner.recordInvocationStatus((IInvocationStatus) tr.getMethod());
     }
