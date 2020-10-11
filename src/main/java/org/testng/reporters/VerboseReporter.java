@@ -1,13 +1,14 @@
 package org.testng.reporters;
 
+import java.util.Arrays;
+import java.util.Collection;
+import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
-
-import java.util.List;
 
 /**
  * Reporter printing out detailed messages about what TestNG is going to run and what is the status
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @since 6.4
  */
-public class VerboseReporter extends TestListenerAdapter {
+public class VerboseReporter implements IConfigurationListener, ITestListener {
 
   /** Default prefix for messages printed out by this reporter */
   public static final String LISTENER_PREFIX = "[VerboseTestNG] ";
@@ -50,25 +51,21 @@ public class VerboseReporter extends TestListenerAdapter {
 
   @Override
   public void beforeConfiguration(ITestResult tr) {
-    super.beforeConfiguration(tr);
     logTestResult(Status.STARTED, tr, true);
   }
 
   @Override
   public void onConfigurationFailure(ITestResult tr) {
-    super.onConfigurationFailure(tr);
     logTestResult(Status.FAILURE, tr, true);
   }
 
   @Override
   public void onConfigurationSkip(ITestResult tr) {
-    super.onConfigurationSkip(tr);
     logTestResult(Status.SKIP, tr, true);
   }
 
   @Override
   public void onConfigurationSuccess(ITestResult tr) {
-    super.onConfigurationSuccess(tr);
     logTestResult(Status.SUCCESS, tr, true);
   }
 
@@ -79,25 +76,21 @@ public class VerboseReporter extends TestListenerAdapter {
 
   @Override
   public void onTestFailure(ITestResult tr) {
-    super.onTestFailure(tr);
     logTestResult(Status.FAILURE, tr, false);
   }
 
   @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult tr) {
-    super.onTestFailedButWithinSuccessPercentage(tr);
     logTestResult(Status.SUCCESS_PERCENTAGE_FAILURE, tr, false);
   }
 
   @Override
   public void onTestSkipped(ITestResult tr) {
-    super.onTestSkipped(tr);
     logTestResult(Status.SKIP, tr, false);
   }
 
   @Override
   public void onTestSuccess(ITestResult tr) {
-    super.onTestSuccess(tr);
     logTestResult(Status.SUCCESS, tr, false);
   }
 
@@ -116,33 +109,30 @@ public class VerboseReporter extends TestListenerAdapter {
 
   @Override
   public void onFinish(ITestContext context) {
-    logResults();
+    logResults(context);
     suiteName = null;
   }
 
-  private ITestNGMethod[] resultsToMethods(List<ITestResult> results) {
-    ITestNGMethod[] result = new ITestNGMethod[results.size()];
-    int i = 0;
-    for (ITestResult tr : results) {
-      result[i++] = tr.getMethod();
-    }
-    return result;
+  private ITestNGMethod[] resultsToMethods(Collection<ITestResult> results) {
+    return results.stream()
+        .map(ITestResult::getMethod)
+        .toArray(ITestNGMethod[]::new);
   }
 
   /** Print out test summary */
-  private void logResults() {
+  private void logResults(ITestContext context) {
     //
     // Log test summary
     //
-    ITestNGMethod[] ft = resultsToMethods(getFailedTests());
+    ITestNGMethod[] ft = resultsToMethods(context.getFailedTests().getAllResults());
     StringBuilder sb = new StringBuilder("\n===============================================\n");
     sb.append("    ").append(suiteName).append("\n");
-    sb.append("    Tests run: ").append(getAllTestMethods().length);
+    sb.append("    Tests run: ").append(context.getAllTestMethods().length);
     sb.append(", Failures: ").append(ft.length);
     sb.append(", Skips: ")
-        .append(resultsToMethods(getSkippedTests()).length);
-    int confFailures = getConfigurationFailures().size();
-    int confSkips = getConfigurationSkips().size();
+        .append(Arrays.toString(resultsToMethods(context.getSkippedTests().getAllResults())));
+    int confFailures = context.getFailedConfigurations().size();
+    int confSkips = context.getSkippedConfigurations().size();
     if (confFailures > 0 || confSkips > 0) {
       sb.append("\n").append("    Configuration Failures: ").append(confFailures);
       sb.append(", Skips: ").append(confSkips);
@@ -195,7 +185,7 @@ public class VerboseReporter extends TestListenerAdapter {
     int identLevel = sb.length();
     sb.append(getMethodDeclaration(tm));
     Object[] params = itr.getParameters();
-    Class[] paramTypes = tm.getConstructorOrMethod().getParameterTypes();
+    Class<?>[] paramTypes = tm.getConstructorOrMethod().getParameterTypes();
     if (null != params && params.length > 0) {
       // The error might be a data provider parameter mismatch, so make
       // a special case here

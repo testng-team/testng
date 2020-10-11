@@ -2,10 +2,13 @@ package org.testng.reporters;
 
 import static org.testng.internal.Utils.isStringNotBlank;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
@@ -13,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A simple reporter that collects the results and prints them on standard out. */
-public class TextReporter extends TestListenerAdapter {
+public class TextReporter implements ITestListener {
 
   private static final String LINE = "\n===============================================\n";
 
@@ -28,22 +31,18 @@ public class TextReporter extends TestListenerAdapter {
   @Override
   public void onFinish(ITestContext context) {
     if (m_verbose >= 2) {
-      logResults();
+      logResults(context);
     }
   }
 
-  private static List<ITestNGMethod> resultsToMethods(List<ITestResult> results) {
-    List<ITestNGMethod> result = new ArrayList<>(results.size());
-    for (ITestResult tr : results) {
-      result.add(tr.getMethod());
-    }
-
-    return result;
+  private static List<ITestNGMethod> resultsToMethods(Collection<ITestResult> results) {
+    return results.stream().map(ITestResult::getMethod).collect(Collectors.toList());
   }
 
-  private void logResults() {
+  private void logResults(ITestContext context) {
     // Log Text
-    for (ITestResult tr : getConfigurationFailures()) {
+    Set<ITestResult> results = context.getFailedConfigurations().getAllResults();
+    for (ITestResult tr : results) {
       Throwable ex = tr.getThrowable();
       String stackTrace = "";
       if (ex != null && m_verbose >= 2) {
@@ -59,7 +58,8 @@ public class TextReporter extends TestListenerAdapter {
           tr.getMethod().getConstructorOrMethod().getParameterTypes());
     }
 
-    for (ITestResult tr : getConfigurationSkips()) {
+    results = context.getSkippedConfigurations().getAllResults();
+    for (ITestResult tr : results) {
       logResult(
           "SKIPPED CONFIGURATION",
           Utils.detailedMethodName(tr.getMethod(), false),
@@ -69,11 +69,13 @@ public class TextReporter extends TestListenerAdapter {
           tr.getMethod().getConstructorOrMethod().getParameterTypes());
     }
 
-    for (ITestResult tr : getPassedTests()) {
+    results = context.getPassedTests().getAllResults();
+    for (ITestResult tr : results) {
       logResult("PASSED", tr, null);
     }
 
-    for (ITestResult tr : getFailedTests()) {
+    results = context.getFailedTests().getAllResults();
+    for (ITestResult tr : results) {
       Throwable ex = tr.getThrowable();
       String stackTrace = "";
       if (ex != null && m_verbose >= 2) {
@@ -83,7 +85,8 @@ public class TextReporter extends TestListenerAdapter {
       logResult("FAILED", tr, stackTrace);
     }
 
-    List<ITestResult> rawskipped = getSkippedTests();
+    results = context.getSkippedTests().getAllResults();
+    List<ITestResult> rawskipped = new ArrayList<>(results);
     List<ITestResult> skippedTests = Lists.newArrayList();
     List<ITestResult> retriedTests = Lists.newArrayList();
     for (ITestResult result : rawskipped) {
@@ -97,12 +100,13 @@ public class TextReporter extends TestListenerAdapter {
     logExceptions("SKIPPED", skippedTests);
     logExceptions("RETRIED", retriedTests);
 
-    List<ITestNGMethod> ft = resultsToMethods(getFailedTests());
+
+    List<ITestNGMethod> ft = resultsToMethods(context.getFailedTests().getAllResults());
     StringBuilder logBuf = new StringBuilder(LINE);
     logBuf.append("    ").append(m_testName).append("\n");
     logBuf
         .append("    Tests run: ")
-        .append(getAllTestMethods().length)
+        .append(context.getAllTestMethods().length)
         .append(", Failures: ")
         .append(ft.size())
         .append(", Skips: ")
@@ -112,8 +116,8 @@ public class TextReporter extends TestListenerAdapter {
           .append(", Retries: ")
           .append(resultsToMethods(retriedTests).size());
     }
-    int confFailures = getConfigurationFailures().size();
-    int confSkips = getConfigurationSkips().size();
+    int confFailures = context.getFailedConfigurations().size();
+    int confSkips = context.getSkippedConfigurations().size();
     if (confFailures > 0 || confSkips > 0) {
       logBuf
           .append("\n")

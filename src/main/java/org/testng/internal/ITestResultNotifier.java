@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.testng.IConfigurationListener;
+import org.testng.IInvocationStatus;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -31,7 +32,13 @@ public interface ITestResultNotifier {
 
   void addFailedButWithinSuccessPercentageTest(ITestNGMethod tm, ITestResult tr);
 
-  void addInvokedMethod(InvokedMethod im);
+  /**
+   * @deprecated - Deprecated as of 7.4.0
+   */
+  @Deprecated
+  default void addInvokedMethod(InvokedMethod im) {}
+
+  default void recordInvocationStatus(IInvocationStatus im) {}
 
   XmlTest getTest();
 
