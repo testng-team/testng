@@ -999,7 +999,7 @@ public class TestRunner
 
   @Override
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
-    m_passedTests.addResult(tr, tm);
+    m_passedTests.addResult(tr);
   }
 
   @Override
@@ -1019,7 +1019,7 @@ public class TestRunner
 
   @Override
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
-    m_skippedTests.addResult(tr, tm);
+    m_skippedTests.addResult(tr);
   }
 
   @Override
@@ -1070,9 +1070,9 @@ public class TestRunner
       ITestNGMethod method, ITestResult tr, boolean withinSuccessPercentage) {
 
     if (withinSuccessPercentage) {
-      m_failedButWithinSuccessPercentageTests.addResult(tr, method);
+      m_failedButWithinSuccessPercentageTests.addResult(tr);
     } else {
-      m_failedTests.addResult(tr, method);
+      m_failedTests.addResult(tr);
     }
   }
 
@@ -1164,17 +1164,17 @@ public class TestRunner
 
     @Override
     public void onConfigurationFailure(ITestResult itr) {
-      m_failedConfigurations.addResult(itr, itr.getMethod());
+      m_failedConfigurations.addResult(itr);
     }
 
     @Override
     public void onConfigurationSkip(ITestResult itr) {
-      m_skippedConfigurations.addResult(itr, itr.getMethod());
+      m_skippedConfigurations.addResult(itr);
     }
 
     @Override
     public void onConfigurationSuccess(ITestResult itr) {
-      m_passedConfigurations.addResult(itr, itr.getMethod());
+      m_passedConfigurations.addResult(itr);
     }
   }
 
