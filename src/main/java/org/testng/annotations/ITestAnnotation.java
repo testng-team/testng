@@ -77,9 +77,7 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c);
 
-  default Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return DisabledRetryAnalyzer.class;
-  }
+  Class<? extends IRetryAnalyzer> getRetryAnalyzerClass();
 
   boolean skipFailedInvocations();
 
