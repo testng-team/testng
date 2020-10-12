@@ -170,16 +170,11 @@ public interface ITestNGMethod extends Cloneable {
 
   ITestNGMethod clone();
 
-  default IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
-    return null;
-  }
+  IRetryAnalyzer getRetryAnalyzer(ITestResult result);
 
-  default void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-  }
+  void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz);
 
-  default Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return null;
-  }
+  Class<? extends IRetryAnalyzer> getRetryAnalyzerClass();
 
   boolean skipFailedInvocations();
 
