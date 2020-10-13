@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import org.testng.IClass;
-import org.testng.IInvocationStatus;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -747,16 +746,16 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return null;
   }
 
-  private boolean invoked = false;
+  private long invocationTime;
 
   @Override
-  public void markAsInvoked() {
-    invoked = true;
+  public void setInvokedAt(long date) {
+    this.invocationTime = date;
   }
 
   @Override
-  public boolean isInvoked() {
-    return invoked;
+  public long getInvocationTime() {
+    return invocationTime;
   }
 
   private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {
