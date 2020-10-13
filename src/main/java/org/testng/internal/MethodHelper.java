@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
-import org.testng.IInvocationStatus;
 import org.testng.IInvokedMethod;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
@@ -443,7 +442,7 @@ public class MethodHelper {
     }
     System.out.println("===== Invoked methods");
     Arrays.stream(methods).filter(m -> m instanceof IInvocationStatus)
-        .filter(m -> ((IInvocationStatus) m).isInvoked())
+        .filter(m -> ((IInvocationStatus) m).getInvocationTime() > 0)
         .forEach(im -> {
           if (im.isTest()) {
             System.out.print("    ");
@@ -463,25 +462,6 @@ public class MethodHelper {
         tm.isBeforeClassConfiguration() || tm.isAfterClassConfiguration() ||
         tm.isBeforeGroupsConfiguration() || tm.isAfterGroupsConfiguration() ||
         tm.isBeforeMethodConfiguration() || tm.isAfterMethodConfiguration();
-  }
-
-  public static void dumpInvokedMethodsInfoToConsole(
-      Collection<IInvokedMethod> iInvokedMethods, int currentVerbosity) {
-    if (currentVerbosity < 3) {
-      return;
-    }
-    System.out.println("===== Invoked methods");
-    for (IInvokedMethod im : iInvokedMethods) {
-      if (im.isTestMethod()) {
-        System.out.print("    ");
-      } else if (im.isConfigurationMethod()) {
-        System.out.print("  ");
-      } else {
-        continue;
-      }
-      System.out.println("" + im);
-    }
-    System.out.println("=====");
   }
 
   protected static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {

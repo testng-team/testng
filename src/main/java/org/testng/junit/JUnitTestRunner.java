@@ -122,9 +122,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     }
 
     InvokedMethod im = new InvokedMethod(tri.m_start, tr);
-    if (tm instanceof IInvocationStatus) {
-      m_parentRunner.recordInvocationStatus(tm);
-    }
+    tm.setInvokedAt(im.getDate());
     m_methods.add(tm);
     for (IInvokedMethodListener l : m_invokedMethodListeners) {
       l.beforeInvocation(im, tr);

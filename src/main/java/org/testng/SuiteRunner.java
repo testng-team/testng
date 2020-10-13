@@ -18,7 +18,6 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.testng.internal.Utils.isStringBlank;
 
@@ -59,9 +58,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       invokedMethodListeners;
-
-  /** The list of all the methods invoked during this run */
-  private final Collection<IInvokedMethod> invokedMethods = new ConcurrentLinkedQueue<>();
 
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
@@ -722,7 +718,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (method == null) {
       throw new NullPointerException("Method should not be null");
     }
-    invokedMethods.add(method);
+    if (method.getTestMethod() instanceof IInvocationStatus) {
+      ((IInvocationStatus) method.getTestMethod()).setInvokedAt(method.getDate());
+    }
   }
 
   //
@@ -731,7 +729,23 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   @Override
   public List<IInvokedMethod> getAllInvokedMethods() {
-    return new ArrayList<>(invokedMethods);
+    return testRunners.stream()
+        .flatMap(tr -> {
+          Set<ITestResult> results = new HashSet<>();
+          results.addAll(tr.getConfigurationsScheduledForInvocation().getAllResults());
+          results.addAll(tr.getPassedConfigurations().getAllResults());
+          results.addAll(tr.getFailedConfigurations().getAllResults());
+          results.addAll(tr.getSkippedConfigurations().getAllResults());
+          results.addAll(tr.getPassedTests().getAllResults());
+          results.addAll(tr.getFailedTests().getAllResults());
+          results.addAll(tr.getFailedButWithinSuccessPercentageTests().getAllResults());
+          results.addAll(tr.getSkippedTests().getAllResults());
+          return results.stream();
+        })
+        .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
+        .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
+        .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))
+        .collect(Collectors.toList());
   }
 
   @Override

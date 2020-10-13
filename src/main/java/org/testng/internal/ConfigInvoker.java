@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IClass;
 import org.testng.IConfigurable;
-import org.testng.IInvocationStatus;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -351,7 +350,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
     runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
     if (tm instanceof IInvocationStatus) {
-      m_notifier.recordInvocationStatus((IInvocationStatus) tm);
+      ((IInvocationStatus) tm).setInvokedAt(invokedMethod.getDate());
     }
     try {
       Reporter.setCurrentTestResult(testResult);

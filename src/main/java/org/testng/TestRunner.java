@@ -28,11 +28,11 @@ import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraphHelper;
 import org.testng.internal.GroupsHelper;
+import org.testng.internal.IConfigEavesdropper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InstanceCreator;
-import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
@@ -67,7 +67,8 @@ import static org.testng.internal.MethodHelper.fixMethodsWithClass;
 
 /** This class takes care of running one Test. */
 public class TestRunner
-    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
+    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>,
+    IConfigEavesdropper {
 
   private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
   private static final Logger LOGGER = Logger.getLogger(TestRunner.class);
@@ -985,6 +986,11 @@ public class TestRunner
     return m_failedConfigurations;
   }
 
+  @Override
+  public IResultMap getConfigurationsScheduledForInvocation() {
+    return m_configsToBeInvoked;
+  }
+
   /** @see org.testng.ITestContext#getPassedConfigurations() */
   @Override
   public IResultMap getPassedConfigurations() {
@@ -1022,10 +1028,6 @@ public class TestRunner
     m_skippedTests.addResult(tr);
   }
 
-  @Override
-  public void recordInvocationStatus(IInvocationStatus im) {
-    im.markAsInvoked();
-  }
 
   @Override
   public void addFailedTest(ITestNGMethod testMethod, ITestResult result) {
@@ -1157,24 +1159,36 @@ public class TestRunner
   private final IResultMap m_passedConfigurations = new ResultMap();
   private final IResultMap m_skippedConfigurations = new ResultMap();
   private final IResultMap m_failedConfigurations = new ResultMap();
+  private final IResultMap m_configsToBeInvoked = new ResultMap();
 
   private class ConfigurationListener implements IConfigurationListener {
     @Override
-    public void beforeConfiguration(ITestResult tr) {}
+    public void beforeConfiguration(ITestResult tr) {
+      m_configsToBeInvoked.addResult(tr);
+    }
 
     @Override
     public void onConfigurationFailure(ITestResult itr) {
       m_failedConfigurations.addResult(itr);
+      removeConfigurationResultAfterExecution(itr);
     }
 
     @Override
     public void onConfigurationSkip(ITestResult itr) {
       m_skippedConfigurations.addResult(itr);
+      removeConfigurationResultAfterExecution(itr);
     }
 
     @Override
     public void onConfigurationSuccess(ITestResult itr) {
       m_passedConfigurations.addResult(itr);
+      removeConfigurationResultAfterExecution(itr);
+    }
+
+    private void removeConfigurationResultAfterExecution(ITestResult itr) {
+      //The remove method of ResultMap removes based on hashCode
+      //So lets find the result based on the method and remove it off.
+      m_configsToBeInvoked.getAllResults().removeIf(tr -> tr.getMethod().equals(itr.getMethod()));
     }
   }
 
