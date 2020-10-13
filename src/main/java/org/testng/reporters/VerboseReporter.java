@@ -7,7 +7,6 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
 /**
@@ -183,9 +182,9 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     }
     ITestNGMethod tm = itr.getMethod();
     int identLevel = sb.length();
-    sb.append(getMethodDeclaration(tm));
+    sb.append(getMethodDeclaration(tm, itr));
     Object[] params = itr.getParameters();
-    Class<?>[] paramTypes = tm.getConstructorOrMethod().getParameterTypes();
+    Class<?>[] paramTypes = Utils.extractParameterTypes(itr.getParameters());
     if (null != params && params.length > 0) {
       // The error might be a data provider parameter mismatch, so make
       // a special case here
@@ -248,10 +247,10 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
    * @return FQN of a class + method declaration for a method passed in ie.
    *     test.triangle.CheckCount.testCheckCount(java.lang.String)
    */
-  private String getMethodDeclaration(ITestNGMethod method) {
+  private String getMethodDeclaration(ITestNGMethod method, ITestResult tr) {
+
     // see Utils.detailedMethodName
     // perhaps should rather adopt the original method instead
-    ConstructorOrMethod m = method.getConstructorOrMethod();
     StringBuilder buf = new StringBuilder();
     buf.append("\"");
     if (suiteName != null) {
@@ -265,10 +264,9 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     if (!tempName.isEmpty()) {
       buf.append(Utils.annotationFormFor(method)).append(" ");
     }
-    buf.append(m.getDeclaringClass().getName());
-    buf.append(".");
-    buf.append(m.getName());
-    buf.append("(").append(m.stringifyParameterTypes()).append(")");
+    buf.append(method.getQualifiedName());
+    Class<?>[] objects = Utils.extractParameterTypes(tr.getParameters());
+    buf.append("(").append(Utils.stringifyTypes(objects)).append(")");
     return buf.toString();
   }
 

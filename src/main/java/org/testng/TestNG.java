@@ -201,6 +201,9 @@ public class TestNG {
   /** Default constructor. Setting also usage of default listeners/reporters. */
   public TestNG() {
     init(true);
+    if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      Logger.getLogger(TestNG.class).warn("TestNG is running in memory friendly mode.");
+    }
   }
 
   /**

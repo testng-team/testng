@@ -93,7 +93,11 @@ public class TestResult implements ITestResult {
     }
     m_startMillis = start;
     m_endMillis = end;
-    m_method = method;
+    if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      m_method = new LiteWeightTestNGMethod(method);
+    } else {
+      m_method = method;
+    }
     m_context = ctx;
 
     Object instance = method.getInstance();

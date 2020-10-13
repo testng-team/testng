@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -600,4 +601,17 @@ public final class Utils {
     }
     return result;
   }
+
+  public static Class<?>[] extractParameterTypes(Object[] objects) {
+    return Arrays.stream(objects)
+        .map(Object::getClass)
+        .toArray(Class<?>[]::new);
+  }
+
+  public static String stringifyTypes(Class<?>[] parameterTypes) {
+    return Arrays.stream(parameterTypes)
+        .map(Class::getName)
+        .collect(Collectors.joining(","));
+  }
+
 }

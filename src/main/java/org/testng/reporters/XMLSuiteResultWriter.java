@@ -1,15 +1,14 @@
 package org.testng.reporters;
 
+import org.testng.IDataProviderMethod;
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
@@ -231,15 +230,11 @@ public class XMLSuiteResultWriter {
       }
     }
 
-    ConstructorOrMethod cm = testResult.getMethod().getConstructorOrMethod();
-    Test testAnnotation;
-    if (cm.getMethod() != null) {
-      testAnnotation = cm.getMethod().getAnnotation(Test.class);
-      if (testAnnotation != null) {
-        String dataProvider = testAnnotation.dataProvider();
-        if (!Strings.isNullOrEmpty(dataProvider)) {
-          attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, dataProvider);
-        }
+    IDataProviderMethod dp = testResult.getMethod().getDataProviderMethod();
+    if (dp != null) {
+      String dataProvider = dp.getName();
+      if (!Strings.isNullOrEmpty(dataProvider)) {
+        attributes.setProperty(XMLReporterConfig.ATTR_DATA_PROVIDER, dataProvider);
       }
     }
 

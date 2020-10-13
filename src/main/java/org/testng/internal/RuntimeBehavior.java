@@ -11,6 +11,7 @@ public final class RuntimeBehavior {
   private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
   public static final String TESTNG_USE_UNSECURED_URL = "testng.dtd.http";
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
+  private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
 
   private RuntimeBehavior() {}
 
@@ -20,6 +21,10 @@ public final class RuntimeBehavior {
 
   public static boolean useSecuredUrlForDtd() {
     return !Boolean.getBoolean(TESTNG_USE_UNSECURED_URL);
+  }
+
+  public static boolean isMemoryFriendlyMode() {
+    return Boolean.parseBoolean(System.getProperty(MEMORY_FRIENDLY_MODE, "false"));
   }
 
   public static String unsecuredUrlDocumentation() {

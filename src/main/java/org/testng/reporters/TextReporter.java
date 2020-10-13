@@ -55,7 +55,7 @@ public class TextReporter implements ITestListener {
           tr.getMethod().getDescription(),
           stackTrace,
           tr.getParameters(),
-          tr.getMethod().getConstructorOrMethod().getParameterTypes());
+          Utils.extractParameterTypes(tr.getParameters()));
     }
 
     results = context.getSkippedConfigurations().getAllResults();
@@ -66,7 +66,7 @@ public class TextReporter implements ITestListener {
           tr.getMethod().getDescription(),
           null,
           tr.getParameters(),
-          tr.getMethod().getConstructorOrMethod().getParameterTypes());
+          Utils.extractParameterTypes(tr.getParameters()));
     }
 
     results = context.getPassedTests().getAllResults();
@@ -137,7 +137,7 @@ public class TextReporter implements ITestListener {
         tr.getMethod().getDescription(),
         stackTrace,
         tr.getParameters(),
-        tr.getMethod().getConstructorOrMethod().getParameterTypes());
+        Utils.extractParameterTypes(tr.getParameters()));
   }
 
   private void logExceptions(String status, List<ITestResult> results) {

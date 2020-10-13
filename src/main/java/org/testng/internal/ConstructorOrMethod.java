@@ -92,14 +92,7 @@ public class ConstructorOrMethod {
   }
 
   public String stringifyParameterTypes() {
-    StringBuilder result = new StringBuilder();
-    int i = 0;
-    for (Class<?> p : getParameterTypes()) {
-      if (i++ > 0) {
-        result.append(", ");
-      }
-      result.append(p.getName());
-    }
-    return result.toString();
+    return Utils.stringifyTypes(getParameterTypes());
   }
+
 }

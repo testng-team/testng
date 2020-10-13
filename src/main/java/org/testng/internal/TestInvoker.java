@@ -91,7 +91,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // By the time this testMethod to be invoked,
     // all dependencies should be already run or we need to skip this method,
     // so invocation count should not affect dependencies check
-    String okToProceed = checkDependencies(testMethod, context.getAllTestMethods());
+    String okToProceed = checkDependencies(testMethod);
 
     if (okToProceed != null) {
       //
@@ -244,7 +244,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    * @param testMethod test method being checked for
    * @return error message or null if dependencies have been run successfully
    */
-  private String checkDependencies(ITestNGMethod testMethod, ITestNGMethod[] allTestMethods) {
+  private String checkDependencies(ITestNGMethod testMethod) {
     // If this method is marked alwaysRun, no need to check for its dependencies
     if (testMethod.isAlwaysRun()) {
       return null;
@@ -262,12 +262,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // If this method depends on groups, collect all the methods that
     // belong to these groups and make sure they have been run successfully
     String[] groups = testMethod.getGroupsDependedUpon();
+    ITestNGMethod[] allTestMethods = m_testContext.getAllTestMethods();
     if (null != groups && groups.length > 0) {
       // Get all the methods that belong to the group depended upon
       for (String element : groups) {
         ITestNGMethod[] methods =
             MethodGroupsHelper.findMethodsThatBelongToGroup(
-                testMethod, m_testContext.getAllTestMethods(), element);
+                testMethod, allTestMethods, element);
         if (methods.length == 0 && !testMethod.ignoreMissingDependencies()) {
           // Group is missing
           return "Method " + testMethod + " depends on nonexistent group \"" + element + "\"";
