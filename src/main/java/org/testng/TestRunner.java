@@ -34,6 +34,7 @@ import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.Invoker;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
@@ -98,14 +99,6 @@ public class TestRunner
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       Maps.newHashMap();
   private final DataProviderHolder holder = new DataProviderHolder();
-
-  /**
-   * All the test methods we found, associated with their respective classes. Note that these test
-   * methods might belong to different classes. We pick which ones to run at runtime.
-   */
-  private ITestNGMethod[] m_allTestMethods = new ITestNGMethod[0];
-
-  // Information about this test run
 
   private Date m_startDate = new Date();
   private Date m_endDate = null;
@@ -514,16 +507,10 @@ public class TestRunner
             m_excludedMethods,
             comparator);
 
-    m_allTestMethods =
-        MethodHelper.collectAndOrderMethods(
-            testMethods,
-            true /* forTest? */,
-            m_runInfo,
-            m_annotationFinder,
-            false /* unique */,
-            m_excludedMethods,
-            comparator);
-    m_classMethodMap = new ClassMethodMap(Arrays.asList(m_allTestMethods), m_xmlMethodSelector);
+    ITestNGMethod[] allTestMethods = getAllTestMethods();
+    m_classMethodMap = new ClassMethodMap(Arrays.asList(allTestMethods), m_xmlMethodSelector);
+    m_groupMethods =
+        new ConfigurationGroupMethods(allTestMethods, beforeGroupMethods, afterGroupMethods);
 
     m_afterXmlTestMethods =
         MethodHelper.collectAndOrderMethods(
@@ -544,9 +531,22 @@ public class TestRunner
             true /* unique */,
             m_excludedMethods,
             comparator);
-    // shared group methods
-    m_groupMethods =
-        new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
+  }
+
+  private ITestNGMethod[] computeAndGetAllTestMethods() {
+    List<ITestNGMethod> testMethods = Lists.newArrayList();
+    for (ITestClass tc : m_classMap.values()) {
+      fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
+    }
+
+    return MethodHelper.collectAndOrderMethods(
+        testMethods,
+        true /* forTest? */,
+        m_runInfo,
+        m_annotationFinder,
+        false /* unique */,
+        m_excludedMethods,
+        comparator);
   }
 
   public Collection<ITestClass> getTestClasses() {
@@ -587,6 +587,13 @@ public class TestRunner
       }
     } finally {
       afterRun();
+      forgetHeavyReferencesIfNeeded();
+    }
+  }
+
+  private void forgetHeavyReferencesIfNeeded() {
+    if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      m_groupMethods = null;
     }
   }
 
@@ -618,6 +625,8 @@ public class TestRunner
       m_invoker.getConfigInvoker().invokeConfigurations(arguments);
     }
   }
+
+  private ITestNGMethod[] m_allJunitTestMethods = null;
 
   private void privateRunJUnit() {
     final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
@@ -664,8 +673,8 @@ public class TestRunner
 
           @Override
           public int getPriority() {
-            if (m_allTestMethods.length == 1) {
-              return m_allTestMethods[0].getPriority();
+            if (m_allJunitTestMethods.length == 1) {
+              return m_allJunitTestMethods[0].getPriority();
             } else {
               return 0;
             }
@@ -678,7 +687,7 @@ public class TestRunner
         });
 
     runJUnitWorkers(workers);
-    m_allTestMethods = runMethods.toArray(new ITestNGMethod[0]);
+    m_allJunitTestMethods = runMethods.toArray(new ITestNGMethod[0]);
   }
 
   private static Comparator<ITestNGMethod> newComparator(boolean needPrioritySort) {
@@ -706,7 +715,7 @@ public class TestRunner
     // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
-    ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
+    ITestNGMethod[] interceptedOrder = intercept(getAllTestMethods());
     IDynamicGraph<ITestNGMethod> graph =
         DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
     graph.setVisualisers(this.visualisers);
@@ -961,7 +970,18 @@ public class TestRunner
 
   @Override
   public ITestNGMethod[] getAllTestMethods() {
-    return m_allTestMethods;
+    if (m_allJunitTestMethods != null) {
+      //This is true only when we are running JUnit mode
+      return m_allJunitTestMethods;
+    }
+    if (m_groupMethods != null) {
+      //Be it memory friendly mode or normal mode, we still have a
+      // configuration object that remembers all the test methods. So we always query it
+      return m_groupMethods.getAllTestMethods();
+    }
+    //If we are here, then it means that its ok to compute the methods every time
+    // Since we aren't being invoked from the core test execution code path.
+    return computeAndGetAllTestMethods();
   }
 
   @Override
@@ -1031,13 +1051,13 @@ public class TestRunner
 
   @Override
   public void addFailedTest(ITestNGMethod testMethod, ITestResult result) {
-    logFailedTest(testMethod, result, false /* withinSuccessPercentage */);
+    logFailedTest(result, false /* withinSuccessPercentage */);
   }
 
   @Override
   public void addFailedButWithinSuccessPercentageTest(
       ITestNGMethod testMethod, ITestResult result) {
-    logFailedTest(testMethod, result, true /* withinSuccessPercentage */);
+    logFailedTest(result, true /* withinSuccessPercentage */);
   }
 
   @Override
@@ -1068,9 +1088,7 @@ public class TestRunner
     return Lists.newArrayList(listeners);
   }
 
-  private void logFailedTest(
-      ITestNGMethod method, ITestResult tr, boolean withinSuccessPercentage) {
-
+  private void logFailedTest(ITestResult tr, boolean withinSuccessPercentage) {
     if (withinSuccessPercentage) {
       m_failedButWithinSuccessPercentageTests.addResult(tr);
     } else {
@@ -1153,7 +1171,7 @@ public class TestRunner
   }
 
   private void dumpInvokedMethods() {
-    MethodHelper.dumpInvokedMethodInfoToConsole(m_allTestMethods, getVerbose());
+    MethodHelper.dumpInvokedMethodInfoToConsole(getAllTestMethods(), getVerbose());
   }
 
   private final IResultMap m_passedConfigurations = new ResultMap();

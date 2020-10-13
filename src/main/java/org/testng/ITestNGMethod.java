@@ -266,4 +266,8 @@ public interface ITestNGMethod extends Cloneable {
   default IDataProviderMethod getDataProviderMethod() {
     return null;
   }
+
+  default Class<?>[] getParameterTypes() {
+    return new Class<?>[] {};
+  }
 }

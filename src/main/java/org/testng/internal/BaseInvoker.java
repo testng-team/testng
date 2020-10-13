@@ -50,7 +50,7 @@ class BaseInvoker {
     }
 
     InvokedMethodListenerInvoker invoker =
-        new InvokedMethodListenerInvoker(listenerMethod, testResult, m_testContext);
+        new InvokedMethodListenerInvoker(listenerMethod, testResult, testResult.getTestContext());
     for (IInvokedMethodListener currentListener : m_invokedMethodListeners) {
       invoker.invokeListener(currentListener, invokedMethod);
     }

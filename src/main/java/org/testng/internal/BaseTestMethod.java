@@ -22,8 +22,6 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
@@ -715,22 +713,13 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   @Override
-  public Map<String, String> findMethodParameters(XmlTest test) {
-    // Get the test+suite parameters
-    Map<String, String> result = test.getAllParameters();
-    for (XmlClass xmlClass : test.getXmlClasses()) {
-      if (xmlClass.getName().equals(getTestClass().getName())) {
-        result.putAll(xmlClass.getLocalParameters());
-        for (XmlInclude include : xmlClass.getIncludedMethods()) {
-          if (include.getName().equals(getMethodName())) {
-            result.putAll(include.getLocalParameters());
-            break;
-          }
-        }
-      }
-    }
+  public Class<?>[] getParameterTypes() {
+    return m_method.getParameterTypes();
+  }
 
-    return result;
+  @Override
+  public Map<String, String> findMethodParameters(XmlTest test) {
+    return XmlTestUtils.findMethodParameters(test, getTestClass().getName(), getMethodName());
   }
 
   @Override
