@@ -14,6 +14,7 @@ import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IIgnoreAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Maps;
@@ -267,6 +268,13 @@ public class AnnotationHelper {
                       + " has a @Test annotation"
                       + " but also a return value:"
                       + " ignoring it. Use <suite allow-return-values=\"true\"> to fix this");
+              continue;
+            }
+
+            boolean shouldIgnore = isAnnotationPresent(annotationFinder, m, IIgnoreAnnotation.class);
+            if (shouldIgnore) {
+              Utils.log("", 2, "Method " + m + ""
+                  + " is being skipped since its been marked to be ignored");
               continue;
             }
 

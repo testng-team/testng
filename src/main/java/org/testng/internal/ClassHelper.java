@@ -146,6 +146,9 @@ public final class ClassHelper {
    * rules).
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
+    if (clazz == null || clazz.equals(Object.class)) {
+      return Sets.newHashSet();
+    }
     Map<String, Set<Method>> methods = Maps.newHashMap();
     for (final Method declaredMethod : ReflectionHelper.getLocalMethods(clazz)) {
       appendMethod(methods, declaredMethod);

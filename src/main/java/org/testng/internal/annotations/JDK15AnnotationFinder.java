@@ -24,10 +24,12 @@ import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IIgnoreAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Optional;
@@ -57,6 +59,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     m_annotationMap.put(IObjectFactoryAnnotation.class, ObjectFactory.class);
     m_annotationMap.put(IParametersAnnotation.class, Parameters.class);
     m_annotationMap.put(ITestAnnotation.class, Test.class);
+    m_annotationMap.put(IIgnoreAnnotation.class, Ignore.class);
     // internal
     m_annotationMap.put(IBeforeSuite.class, BeforeSuite.class);
     m_annotationMap.put(IAfterSuite.class, AfterSuite.class);

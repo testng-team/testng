@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2396: @Ignore on method level doesn't work as expected (Krishnan Mahadevan)
 Fixed: GITHUB-2382: TestNG version should be specified in MANIFEST.MF (Krishnan Mahadevan)
 Fixed: GITHUB-2096: 7.0.0-beta6 memory issues (regression) (Krishnan Mahadevan)
 Fixed: GITHUB-2355: TestNG creates multiple Guice Module Instances (Krishnan Mahadevan)
