@@ -8,6 +8,7 @@ import test.InvokedMethodListener;
 import test.SimpleBaseTest;
 import test.ignore.ignorePackage.IgnorePackageSample;
 import test.ignore.ignorePackage.subPackage.SubPackageSample;
+import test.ignore.issue2396.FirstTest;
 
 public class IgnoreTest extends SimpleBaseTest {
 
@@ -39,6 +40,12 @@ public class IgnoreTest extends SimpleBaseTest {
   public void test_parent_class_tests_ignored_when_ignored_at_child() {
     InvokedMethodListener listener = runTest(ChildClassTestSample.class);
     assertThat(listener.getInvokedMethods()).isEmpty();
+  }
+
+  @Test(description = "GITHUB-2396")
+  public void test_ignore_happens_for_class_level_methods() {
+    InvokedMethodListener listener = runTest(FirstTest.class);
+    assertThat(listener.getInvokedMethods()).containsExactly("testShouldBeInvoked");
   }
 
   private static InvokedMethodListener runTest(Class<?>... classes) {
