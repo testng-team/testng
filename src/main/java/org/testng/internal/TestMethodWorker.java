@@ -277,7 +277,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 /** Extends {@code TestMethodWorker} and is used to work on only a single method instance */
 class SingleTestMethodWorker extends TestMethodWorker {
   private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS =
-      new ConfigurationGroupMethods(new ITestNGMethod[0], new HashMap<>(), new HashMap<>());
+      new ConfigurationGroupMethods(new TestMethodContainer(new ITestNGMethod[0]), new HashMap<>(), new HashMap<>());
 
   public SingleTestMethodWorker(
       TestInvoker testInvoker,
