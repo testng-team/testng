@@ -37,16 +37,12 @@ public class ConfigurationGroupMethods {
   private volatile Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
 
   public ConfigurationGroupMethods(
-      ITestNGMethod[] allMethods,
+      IContainer<ITestNGMethod> container,
       Map<String, List<ITestNGMethod>> beforeGroupsMethods,
       Map<String, List<ITestNGMethod>> afterGroupsMethods) {
-    m_allMethods = allMethods;
+    m_allMethods = container.getItems();
     m_beforeGroupsMethods = new ConcurrentHashMap<>(beforeGroupsMethods);
     m_afterGroupsMethods = new ConcurrentHashMap<>(afterGroupsMethods);
-  }
-
-  public ITestNGMethod[] getAllTestMethods() {
-    return this.m_allMethods;
   }
 
   public Map<String, List<ITestNGMethod>> getBeforeGroupsMethods() {

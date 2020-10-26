@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -30,11 +31,13 @@ import org.testng.internal.DynamicGraphHelper;
 import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfigEavesdropper;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.IContainer;
 import org.testng.internal.IInvoker;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.Invoker;
 import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.TestMethodContainer;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
@@ -102,6 +105,7 @@ public class TestRunner
 
   private Date m_startDate = new Date();
   private Date m_endDate = null;
+  private IContainer<ITestNGMethod> testMethodsContainer;
 
   /** A map to keep track of Class <-> IClass. */
   private final Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
@@ -507,10 +511,9 @@ public class TestRunner
             m_excludedMethods,
             comparator);
 
-    ITestNGMethod[] allTestMethods = getAllTestMethods();
-    m_classMethodMap = new ClassMethodMap(Arrays.asList(allTestMethods), m_xmlMethodSelector);
-    m_groupMethods =
-        new ConfigurationGroupMethods(allTestMethods, beforeGroupMethods, afterGroupMethods);
+    testMethodsContainer = new TestMethodContainer(getAllTestMethods());
+    m_classMethodMap = new ClassMethodMap(Arrays.asList(testMethodsContainer.getItems()), m_xmlMethodSelector);
+    m_groupMethods = new ConfigurationGroupMethods(testMethodsContainer, beforeGroupMethods, afterGroupMethods);
 
     m_afterXmlTestMethods =
         MethodHelper.collectAndOrderMethods(
@@ -593,7 +596,9 @@ public class TestRunner
 
   private void forgetHeavyReferencesIfNeeded() {
     if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      testMethodsContainer.clearItems();
       m_groupMethods = null;
+      m_classMethodMap = null;
     }
   }
 
@@ -626,7 +631,7 @@ public class TestRunner
     }
   }
 
-  private ITestNGMethod[] m_allJunitTestMethods = null;
+  private ITestNGMethod[] m_allJunitTestMethods = new ITestNGMethod[] {};
 
   private void privateRunJUnit() {
     final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
@@ -801,10 +806,10 @@ public class TestRunner
 
     // Check if an interceptor had altered the effective test method count. If yes, then we need to
     // update our configurationGroupMethod object with that information.
-    if (resultArray.length != m_groupMethods.getAllTestMethods().length) {
+    if (resultArray.length != testMethodsContainer.getItems().length) {
       m_groupMethods =
           new ConfigurationGroupMethods(
-              resultArray,
+              new TestMethodContainer(resultArray),
               m_groupMethods.getBeforeGroupsMethods(),
               m_groupMethods.getAfterGroupsMethods());
     }
@@ -970,14 +975,12 @@ public class TestRunner
 
   @Override
   public ITestNGMethod[] getAllTestMethods() {
-    if (m_allJunitTestMethods != null) {
+    if (getTest().isJUnit()) {
       //This is true only when we are running JUnit mode
       return m_allJunitTestMethods;
     }
-    if (m_groupMethods != null) {
-      //Be it memory friendly mode or normal mode, we still have a
-      // configuration object that remembers all the test methods. So we always query it
-      return m_groupMethods.getAllTestMethods();
+    if (Objects.nonNull(testMethodsContainer) && testMethodsContainer.hasItems()) {
+      return testMethodsContainer.getItems();
     }
     //If we are here, then it means that its ok to compute the methods every time
     // Since we aren't being invoked from the core test execution code path.
