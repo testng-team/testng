@@ -11,12 +11,12 @@ public interface IContainer<M> {
   M[] getItems();
 
   /**
-   * @return - <code>true</code> if there are elements in the container.
-   */
-  boolean hasItems();
-
-  /**
    * Clears the container
    */
   void clearItems();
+
+  /**
+   * @return - <code>true</code> if the container items were cleared.
+   */
+  boolean isCleared();
 }

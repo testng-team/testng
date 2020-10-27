@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -105,7 +104,8 @@ public class TestRunner
 
   private Date m_startDate = new Date();
   private Date m_endDate = null;
-  private IContainer<ITestNGMethod> testMethodsContainer;
+  private final IContainer<ITestNGMethod> testMethodsContainer =
+      new TestMethodContainer(this::computeAndGetAllTestMethods);
 
   /** A map to keep track of Class <-> IClass. */
   private final Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
@@ -511,7 +511,6 @@ public class TestRunner
             m_excludedMethods,
             comparator);
 
-    testMethodsContainer = new TestMethodContainer(getAllTestMethods());
     m_classMethodMap = new ClassMethodMap(Arrays.asList(testMethodsContainer.getItems()), m_xmlMethodSelector);
     m_groupMethods = new ConfigurationGroupMethods(testMethodsContainer, beforeGroupMethods, afterGroupMethods);
 
@@ -809,7 +808,7 @@ public class TestRunner
     if (resultArray.length != testMethodsContainer.getItems().length) {
       m_groupMethods =
           new ConfigurationGroupMethods(
-              new TestMethodContainer(resultArray),
+              new TestMethodContainer(() -> resultArray),
               m_groupMethods.getBeforeGroupsMethods(),
               m_groupMethods.getAfterGroupsMethods());
     }
@@ -979,12 +978,7 @@ public class TestRunner
       //This is true only when we are running JUnit mode
       return m_allJunitTestMethods;
     }
-    if (Objects.nonNull(testMethodsContainer) && testMethodsContainer.hasItems()) {
-      return testMethodsContainer.getItems();
-    }
-    //If we are here, then it means that its ok to compute the methods every time
-    // Since we aren't being invoked from the core test execution code path.
-    return computeAndGetAllTestMethods();
+    return testMethodsContainer.getItems();
   }
 
   @Override
