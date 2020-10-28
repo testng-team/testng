@@ -9,11 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.issue1339.BabyPanda;
 import org.testng.internal.issue1339.LittlePanda;
 import org.testng.internal.issue1456.TestClassSample;
+import org.testng.internal.misamples.AbstractMoves;
+import org.testng.internal.misamples.Batman;
+import org.testng.internal.misamples.MickJagger;
+import org.testng.internal.misamples.JohnTravoltaMoves;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -52,6 +58,32 @@ public class ClassHelperTest {
       ClassHelper.addClassLoader(urlClassLoader);
       String fakeClassName = UUID.randomUUID().toString();
       Assert.assertNull(ClassHelper.forName(fakeClassName), "The result should be null; no exception should be thrown.");
+  }
+
+  @Test(dataProvider = "data")
+  public void testWithDefaultMethodsBeingOverridden(Class<?>cls, int expectedCount, String...expected) {
+    Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(cls);
+    Assertions.assertThat(methods).hasSize(expectedCount);
+    for (Method m : methods) {
+      String actual = m.getDeclaringClass().getName() + "." + m.getName();
+      Assertions.assertThat(expected).contains(actual);
+    }
+  }
+
+  @DataProvider(name = "data")
+  public Object[][] getTestData() {
+    return new Object[][]{
+        {MickJagger.class, 1, MickJagger.class.getName() + ".dance"},
+        {JohnTravoltaMoves.class, 2, new String[]{
+            JohnTravoltaMoves.class.getName() + ".walk",
+            AbstractMoves.class.getName() + ".dance"}
+        },
+        {Batman.class, 3, new String[] {
+            Batman.class.getName() + ".fly",
+            Batman.class.getName() + ".liftWeights",
+            Batman.class.getName() + ".yellSlogan"
+        }}
+    };
   }
 
   private static void runTest(Class<?> classToBeFound, int expectedCount, Class<?>... classes) {
