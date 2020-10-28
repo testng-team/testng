@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Executable;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
@@ -139,6 +140,26 @@ public final class ClassHelper {
 
 
     return result;
+  }
+
+  /**
+   * @param clazz - The {@link Class} in which the search is to be done.
+   * @return - A {@link Set} of {@link Method} excluding default methods from base class interfaces.
+   */
+  public static Set<Method> getAvailableMethodsExcludingDefaults(Class<?> clazz) {
+    //First group the methods based on names
+    Map<String, List<Method>> groups = getAvailableMethods(clazz).stream()
+        .collect(Collectors.groupingBy(Method::getName));
+    //Remove any methods that are default methods (which is usually true only with methods in
+    //interfaces that are classified as "default" methods
+    groups.values()
+        .stream()
+        .filter(group -> group.size() > 1)
+        .forEach(group -> group.removeIf(Method::isDefault));
+    //Wrap them back into a set and return to the caller.
+    return groups.values().stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
   }
 
   /*
