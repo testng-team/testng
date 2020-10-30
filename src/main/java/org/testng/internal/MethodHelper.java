@@ -1,15 +1,15 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
+import org.testng.util.TimeUtils;
 
 /**
  * Collection of helper methods to help sort and arrange methods.
@@ -58,17 +59,23 @@ public class MethodHelper {
       boolean unique,
       List<ITestNGMethod> outExcludedMethods,
       Comparator<ITestNGMethod> comparator) {
+    AtomicReference<ITestNGMethod[]> results = new AtomicReference<>();
     List<ITestNGMethod> includedMethods = Lists.newArrayList();
-    MethodGroupsHelper.collectMethodsByGroup(
-        methods.toArray(new ITestNGMethod[0]),
-        forTests,
-        includedMethods,
-        outExcludedMethods,
-        runInfo,
-        finder,
-        unique);
-
-    return sortMethods(forTests, includedMethods, comparator).toArray(new ITestNGMethod[] {});
+    TimeUtils.computeAndShowTime("MethodGroupsHelper.collectMethodsByGroup()",
+        () -> MethodGroupsHelper.collectMethodsByGroup(
+            methods.toArray(new ITestNGMethod[0]),
+            forTests,
+            includedMethods,
+            outExcludedMethods,
+            runInfo,
+            finder,
+            unique)
+    );
+    TimeUtils.computeAndShowTime("MethodGroupsHelper.sortMethods()",
+        () -> results.set(sortMethods(forTests, includedMethods, comparator)
+            .toArray(new ITestNGMethod[]{}))
+    );
+    return results.get();
   }
 
   /**
@@ -262,7 +269,6 @@ public class MethodHelper {
       List<ITestNGMethod> predecessors = Lists.newArrayList();
 
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
-      String[] groupsDependedUpon = m.getGroupsDependedUpon();
       if (methodsDependedUpon.length > 0) {
         ITestNGMethod[] methodsNamed;
         // Method has instance
@@ -283,6 +289,7 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
+      String[] groupsDependedUpon = m.getGroupsDependedUpon();
       if (groupsDependedUpon.length > 0) {
         for (String group : groupsDependedUpon) {
           ITestNGMethod[] methodsThatBelongToGroup =
@@ -311,22 +318,10 @@ public class MethodHelper {
    * @return Map of Instances as the keys and the methods associated with the instance as the values
    */
   private static Map<Object, List<ITestNGMethod>> sortMethodsByInstance(ITestNGMethod[] methods) {
-    LinkedHashMap<Object, List<ITestNGMethod>> result = new LinkedHashMap<>();
-    for (ITestNGMethod method : methods) {
-      // Get method instance
-      Object methodInstance = method.getInstance();
-      if (methodInstance == null) {
-        continue;
-      }
-      // Look for method instance in list and update associated methods
-      List<ITestNGMethod> methodList = result.get(methodInstance);
-      if (methodList == null) {
-        methodList = new ArrayList<>();
-      }
-      methodList.add(method);
-      result.put(methodInstance, methodList);
-    }
-    return result;
+    return Arrays.stream(methods)
+        .parallel()
+        .filter(m -> Objects.nonNull(m.getInstance()))
+        .collect(Collectors.groupingBy(ITestNGMethod::getInstance, Collectors.toList()));
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {

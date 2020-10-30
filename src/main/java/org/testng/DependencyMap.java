@@ -1,7 +1,8 @@
 package org.testng;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 
@@ -27,8 +28,14 @@ public class DependencyMap {
 
   public List<ITestNGMethod> getMethodsThatBelongTo(String group, ITestNGMethod fromMethod) {
     Set<String> uniqueKeys = m_groups.keySet();
+    Pattern pattern = Pattern.compile(group);
 
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = m_groups.keySet()
+        .stream()
+        .parallel()
+        .filter(k -> pattern.matcher(k).matches())
+        .flatMap(k -> m_groups.get(k).stream())
+        .collect(Collectors.toList());
 
     for (String k : uniqueKeys) {
       if (Pattern.matches(group, k)) {
@@ -60,16 +67,16 @@ public class DependencyMap {
     if (l.isEmpty() && fromMethod.ignoreMissingDependencies()) {
       return fromMethod;
     }
-    for (ITestNGMethod m : l) {
-      // If they are in the same class hierarchy, they must belong to the same instance,
-      // otherwise, it's a method depending on a method in a different class so we
-      // don't bother checking the instance.
-      if (isSameInstance(fromMethod, m)
-          || belongToDifferentClassHierarchy(fromMethod, m)
-          || hasInstance(fromMethod, m)) {
-        return m;
-      }
+    Optional<ITestNGMethod> found = l.stream()
+        .parallel()
+        .filter(m -> isSameInstance(fromMethod, m)
+            || belongToDifferentClassHierarchy(fromMethod, m)
+            || hasInstance(fromMethod, m))
+        .findFirst();
+    if (found.isPresent()) {
+      return found.get();
     }
+
     throw new TestNGException(
         "Method \"" + fromMethod + "\" depends on nonexistent method \"" + methodName + "\"");
   }

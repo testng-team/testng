@@ -112,20 +112,12 @@ public class MethodGroupsHelper {
   }
 
   private static boolean isMethodAlreadyNotPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
-    for (ITestNGMethod m : result) {
-      ConstructorOrMethod jm1 = m.getConstructorOrMethod();
-      ConstructorOrMethod jm2 = tm.getConstructorOrMethod();
-      if (jm1.getName().equals(jm2.getName())) {
-        // Same names, see if they are in the same hierarchy
-        Class<?> c1 = jm1.getDeclaringClass();
-        Class<?> c2 = jm2.getDeclaringClass();
-        if (c1.isAssignableFrom(c2) || c2.isAssignableFrom(c1)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
+    Class<?> cls = tm.getConstructorOrMethod().getDeclaringClass();
+    return result.parallelStream()
+        .map(ITestNGMethod::getConstructorOrMethod)
+        .filter(m -> m.getName().equals(tm.getConstructorOrMethod().getName()))
+        .map(ConstructorOrMethod::getDeclaringClass)
+        .noneMatch(eachCls -> eachCls.isAssignableFrom(cls) || cls.isAssignableFrom(eachCls));
   }
 
   /** @return the map of groups and their corresponding methods from the extraction of <code>classes</code>. */
