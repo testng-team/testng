@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * Encapsulation of either a method or a constructor.
@@ -53,28 +54,28 @@ public class ConstructorOrMethod {
     return m_constructor;
   }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((getConstructor() == null) ? 0 : getConstructor().hashCode());
-    result = prime * result + ((getMethod() == null) ? 0 : getMethod().hashCode());
-    return result;
+  private Executable getInternalConstructorOrMethod() {
+    if (m_method != null) {
+      return m_method;
+    }
+    return m_constructor;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return false;
-    if (getClass() != obj.getClass()) return false;
-    ConstructorOrMethod other = (ConstructorOrMethod) obj;
-    if (getConstructor() == null) {
-      if (other.getConstructor() != null) return false;
-    } else if (!getConstructor().equals(other.getConstructor())) return false;
-    if (getMethod() == null) {
-      if (other.getMethod() != null) return false;
-    } else if (!getMethod().equals(other.getMethod())) return false;
-    return true;
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ConstructorOrMethod that = (ConstructorOrMethod) o;
+    return getInternalConstructorOrMethod().equals(that.getInternalConstructorOrMethod());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getInternalConstructorOrMethod());
   }
 
   public void setEnabled(boolean enabled) {

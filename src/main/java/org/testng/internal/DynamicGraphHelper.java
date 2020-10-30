@@ -1,8 +1,9 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 import org.testng.DependencyMap;
 import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -33,46 +34,51 @@ public final class DynamicGraphHelper {
     // Keep track of whether we have group dependencies. If we do, preserve-order needs
     // to be ignored since group dependencies create inter-class dependencies which can
     // end up creating cycles when combined with preserve-order.
-    boolean hasDependencies = false;
-    for (ITestNGMethod m : methods) {
-      // Attempt at adding the method instance to our dynamic graph
-      // Addition to the graph will fail only when the method is already present.
-      // Presence of a method in the graph is determined by its hashCode.
-      // Since addition of the method was a failure lets now try to add it once again by wrapping it
-      // in a wrapper object which is capable of fudging the original hashCode.
-      boolean added = result.addNode(m);
-      if (!added) {
-        result.addNode(new WrappedTestNGMethod(m));
-      }
+    final AtomicReference<Boolean> hasDependencies = new AtomicReference<>(false);
+    Arrays.stream(methods)
+        .forEach(m -> {
+              // Attempt at adding the method instance to our dynamic graph
+              // Addition to the graph will fail only when the method is already present.
+              // Presence of a method in the graph is determined by its hashCode.
+              // Since addition of the method was a failure lets now try to add it once again by wrapping it
+              // in a wrapper object which is capable of fudging the original hashCode.
+              boolean added = result.addNode(m);
+              if (!added) {
+                result.addNode(new WrappedTestNGMethod(m));
+              }
 
-      String[] dependentMethods = m.getMethodsDependedUpon();
-      for (String d : dependentMethods) {
-        ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
-        if (m != dm) {
-          result.addEdge(TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
-        }
-      }
+              String[] dependentMethods = m.getMethodsDependedUpon();
+              Arrays.stream(dependentMethods)
+                  .parallel()
+                  .forEach(d -> {
+                    ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
+                    if (m != dm) {
+                      result.addEdge(TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
+                    }
+                  });
 
-      String[] dependentGroups = m.getGroupsDependedUpon();
-      for (String d : dependentGroups) {
-        hasDependencies = true;
-        List<ITestNGMethod> dg = dependencyMap.getMethodsThatBelongTo(d, m);
-        if (dg == null) {
-          throw new TestNGException(
-              "Method \"" + m + "\" depends on nonexistent group \"" + d + "\"");
-        }
-        for (ITestNGMethod ddm : dg) {
-          result.addEdge(TestRunner.PriorityWeight.dependsOnGroups.ordinal(), m, ddm);
-        }
-      }
-    }
+              String[] dependentGroups = m.getGroupsDependedUpon();
+              if (dependentGroups.length != 0) {
+                hasDependencies.set(true);
+              }
+              Arrays.stream(dependentGroups)
+                  .parallel()
+                  .forEach(d -> {
+                    List<ITestNGMethod> dg = dependencyMap.getMethodsThatBelongTo(d, m);
+                    dg.parallelStream()
+                        .forEach(ddm ->
+                            result.addEdge(TestRunner.PriorityWeight.dependsOnGroups.ordinal(), m, ddm)
+                        );
+                  });
+            }
+        );
 
     // Preserve order
     // Don't preserve the ordering if we're running in parallel, otherwise the suite will
     // create multiple threads but these threads will be created one after the other,
     // giving the impression of parallelism (multiple thread id's) while still running
     // sequentially.
-    if (!hasDependencies
+    if (!hasDependencies.get()
         && xmlTest.getParallel() == XmlSuite.ParallelMode.NONE
         && xmlTest.getPreserveOrder()) {
       // If preserve-order was specified and the class order is A, B

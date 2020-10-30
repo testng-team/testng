@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -92,21 +93,16 @@ public class Graph<T> {
     // Clone the list of nodes but only keep those that are
     // not independent.
     //
-    List<Node<T>> nodes2 = Lists.newArrayList();
-    for (Node<T> n : getNodes()) {
-      if (!isIndependent(n.getObject())) {
-        ppp("ADDING FOR SORT: " + n.getObject());
-        nodes2.add(n.clone());
-      } else {
-        ppp("SKIPPING INDEPENDENT NODE " + n);
-      }
-    }
+    List<Node<T>> nodes2 = getNodes().parallelStream()
+        .filter(n -> !isIndependent(n.getObject()))
+        .map(Node::clone)
+        .sorted(comparator)
+        .collect(Collectors.toList());
 
     //
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    nodes2.sort(comparator);
 
     //
     // Sort

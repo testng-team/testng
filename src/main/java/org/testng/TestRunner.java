@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
@@ -56,6 +57,7 @@ import org.testng.thread.IWorker;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
+import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
@@ -720,8 +722,16 @@ public class TestRunner
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
     ITestNGMethod[] interceptedOrder = intercept(getAllTestMethods());
-    IDynamicGraph<ITestNGMethod> graph =
-        DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+    AtomicReference<IDynamicGraph<ITestNGMethod>> reference = new AtomicReference<>();
+    TimeUtils.computeAndShowTime("DynamicGraphHelper.createDynamicGraph()",
+        () -> {
+          IDynamicGraph<ITestNGMethod> ref = DynamicGraphHelper
+              .createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+          reference.set(ref);
+        }
+    );
+    IDynamicGraph<ITestNGMethod> graph = reference.get();
+
     graph.setVisualisers(this.visualisers);
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
