@@ -1,7 +1,8 @@
 package org.testng.xml;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
@@ -18,6 +19,7 @@ import java.util.Queue;
 import java.util.ArrayDeque;
 
 /** <code>Parser</code> is a parser for a TestNG XML test suite file. */
+@SuppressWarnings("unused")
 public class Parser {
 
   /** The name of the TestNG DTD. */
@@ -26,18 +28,13 @@ public class Parser {
   /** The URL to the deprecated TestNG DTD. */
   //It has to be public because its being used by TestNG eclipse plugin
   public static final String OLD_TESTNG_DTD_URL = "https://beust.com/testng/" + TESTNG_DTD;
-  private static final String HTTPS_OLD_TESTNG_DTD_URL = "https://beust.com/testng/" + TESTNG_DTD;
 
   /** The URL to the TestNG DTD. */
   //It has to be public because its being used by TestNG eclipse plugin
   public static final String TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
   public static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
-  private static final List<String> URLS = Collections.unmodifiableList(Arrays.asList(
-      OLD_TESTNG_DTD_URL,
-      HTTPS_OLD_TESTNG_DTD_URL,
-      TESTNG_DTD_URL,
-      HTTPS_TESTNG_DTD_URL));
+  private static final List<String> DOMAINS = Arrays.asList("beust.com", "testng.org");
 
   /** The default file name for the TestNG test suite if none is specified (testng.xml). */
   public static final String DEFAULT_FILENAME = "testng.xml";
@@ -52,8 +49,13 @@ public class Parser {
     }
   }
 
-  static boolean isUnRecognizedPublicId(String publicId) {
-    return !URLS.contains(publicId);
+  static boolean isDTDDomainInternallyKnownToTestNG(String publicId) {
+    try {
+      URL url = new URL(publicId.toLowerCase().trim());
+      return DOMAINS.contains(url.getHost());
+    } catch (MalformedURLException e) {
+      return false;
+    }
   }
 
   /**
