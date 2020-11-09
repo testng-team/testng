@@ -108,16 +108,20 @@ public final class TestListenerHelper {
     }
   }
 
-  /** @return all the @Listeners annotations found in the current class and its superclasses. */
+  /** @return all the @Listeners annotations found in the current class and its superclasses and inherited interfaces.  */
   @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
     result.listenerClasses = Lists.newArrayList();
 
     while (cls != Object.class) {
+      List<IListenersAnnotation> annotations = finder.findInheritedAnnotations(cls, IListenersAnnotation.class);
       IListenersAnnotation l = finder.findAnnotation(cls, IListenersAnnotation.class);
       if (l != null) {
-        Class<? extends ITestNGListener>[] classes = l.getValue();
+        annotations.add(l);
+      }
+      annotations.forEach(anno -> {
+        Class<? extends ITestNGListener>[] classes = anno.getValue();
         for (Class<? extends ITestNGListener> c : classes) {
           result.listenerClasses.add(c);
 
@@ -134,7 +138,7 @@ public final class TestListenerHelper {
             }
           }
         }
-      }
+      });
       cls = cls.getSuperclass();
     }
     return result;

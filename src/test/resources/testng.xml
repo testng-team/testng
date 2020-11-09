@@ -237,6 +237,7 @@
       <class name="test.listeners.github1130.GitHub1130Test"/>
       <class name="test.listeners.github1296.GitHub1296Test"/>
       <class name="test.listeners.github1465.IssueTest"/>
+      <class name="test.listeners.github2385.IssueTest"/>
     </classes>
   </test>
 
