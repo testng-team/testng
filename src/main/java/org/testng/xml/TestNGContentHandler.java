@@ -118,23 +118,27 @@ public class TestNGContentHandler extends DefaultHandler {
     if (publicId == null) {
       return m_redirectionAwareResolver.resolveEntity(systemId, null);
     }
-    if (Parser.isUnRecognizedPublicId(publicId)) {
-      if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(publicId)) {
-        throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
+    if (Parser.isDTDDomainInternallyKnownToTestNG(publicId)) {
+      //If the hostname is known internally to TestNG then ignore the "http" (or) "https" protocol
+      // and always first try to load the DTD from the classpath.
+      m_validate = true;
+      InputStream is = loadDtdUsingClassLoader();
+      if (is != null) {
+        return new InputSource(is);
       }
-      return m_redirectionAwareResolver.resolveEntity(systemId, publicId);
+      //If the classpath loading of DTD fails, then we try to load it from "https" TestNG site.
+      System.out.println(
+          "WARNING: couldn't find in classpath "
+              + publicId
+              + "\n"
+              + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
+      return super.resolveEntity(systemId, Parser.HTTPS_TESTNG_DTD_URL);
     }
-    m_validate = true;
-    InputStream is = loadDtdUsingClassLoader();
-    if (is != null) {
-      return new InputSource(is);
+    //If we are here, then we don't know the host from which user is trying to load the dtd
+    if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(publicId)) {
+      throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
     }
-    System.out.println(
-        "WARNING: couldn't find in classpath "
-            + publicId
-            + "\n"
-            + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
-    return super.resolveEntity(systemId, Parser.HTTPS_TESTNG_DTD_URL);
+    return m_redirectionAwareResolver.resolveEntity(systemId, publicId);
   }
 
   private static boolean isUnsecuredUrl(String str) {
