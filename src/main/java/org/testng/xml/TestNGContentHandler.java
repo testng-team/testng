@@ -1,7 +1,12 @@
 package org.testng.xml;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -10,6 +15,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
+import org.testng.util.Strings;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -112,15 +118,10 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   @Override
-  public InputSource resolveEntity(String systemId, String publicId)
+  public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException, IOException {
 
-    if (publicId == null) {
-      return m_redirectionAwareResolver.resolveEntity(systemId, null);
-    }
-    if (Parser.isDTDDomainInternallyKnownToTestNG(publicId)) {
-      //If the hostname is known internally to TestNG then ignore the "http" (or) "https" protocol
-      // and always first try to load the DTD from the classpath.
+    if (skipConsideringSystemId(systemId)) {
       m_validate = true;
       InputStream is = loadDtdUsingClassLoader();
       if (is != null) {
@@ -129,16 +130,38 @@ public class TestNGContentHandler extends DefaultHandler {
       //If the classpath loading of DTD fails, then we try to load it from "https" TestNG site.
       System.out.println(
           "WARNING: couldn't find in classpath "
-              + publicId
+              + systemId
               + "\n"
               + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
-      return super.resolveEntity(systemId, Parser.HTTPS_TESTNG_DTD_URL);
+      return m_redirectionAwareResolver.resolveEntity(publicId, Parser.HTTPS_TESTNG_DTD_URL);
     }
     //If we are here, then we don't know the host from which user is trying to load the dtd
-    if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(publicId)) {
+    if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(systemId)) {
       throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
     }
-    return m_redirectionAwareResolver.resolveEntity(systemId, publicId);
+    return m_redirectionAwareResolver.resolveEntity(publicId, systemId);
+  }
+
+  private static boolean skipConsideringSystemId(String systemId) {
+    return Strings.isNullOrEmpty(systemId)
+        || Parser.isDTDDomainInternallyKnownToTestNG(systemId)
+        || isMalformedFileSystemBasedSystemId(systemId);
+  }
+
+  private static boolean isMalformedFileSystemBasedSystemId(String systemId) {
+    try {
+
+      URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8.name()).trim());
+      if (url.getProtocol().equals("file")) {
+        File file = new File(url.getFile());
+        boolean isDirectory =  file.isDirectory();
+        boolean fileExists = file.exists();
+        return isDirectory || !fileExists;
+      }
+      return false;
+    } catch (MalformedURLException | UnsupportedEncodingException e) {
+      return true;
+    }
   }
 
   private static boolean isUnsecuredUrl(String str) {
