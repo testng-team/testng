@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -243,26 +244,22 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance) {
-    ITestNGMethod[] result = new ITestNGMethod[methods.length];
-    for (int i = 0; i < methods.length; i++) {
-      result[i] =
-          new ConfigurationMethod(
-              methods[i].getConstructorOrMethod(),
-              annotationFinder,
-              false,
-              false,
-              false,
-              false,
-              false,
-              false,
-              false,
-              false,
-              new String[0],
-              isBefore ? new String[0] : methods[i].getAfterGroups(),
-              instance);
-    }
-
-    return result;
+    return Arrays.stream(methods)
+        .parallel()
+        .map(m -> new ConfigurationMethod(
+            m.getConstructorOrMethod(),
+            annotationFinder,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            new String[0],
+            isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
+            instance)).toArray(ITestNGMethod[]::new);
   }
 
   public static ITestNGMethod[] createTestMethodConfigurationMethods(

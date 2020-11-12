@@ -1,15 +1,19 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
@@ -89,7 +93,12 @@ public class XmlMethodSelector implements IMethodSelector {
       // Only add this method if it belongs to an included group and not
       // to an excluded group
       boolean noGroupsSpecified = false; /* Explicitly disable logic to consider size for groups */
-      String[] groups = tm.getGroups();
+      String[] groups = Stream.of(
+          Optional.ofNullable(tm.getBeforeGroups()).orElse(new String[]{}),
+          Optional.ofNullable(tm.getGroups()).orElse(new String[]{}),
+          Optional.ofNullable(tm.getAfterGroups()).orElse(new String[]{})
+      )
+          .flatMap(Arrays::stream).distinct().toArray(String[]::new);
       boolean isIncludedInGroups = isIncluded(m_includedGroups.values(), noGroupsSpecified, groups);
       boolean isExcludedInGroups = isExcluded(m_excludedGroups.values(), groups);
 
