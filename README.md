@@ -25,7 +25,7 @@ Before posting the issue, try to reproduce the issue in [a shell window](https:/
 
 If the problem does not exist with the shell, first check if the issue exists on the bugtracker of the runner, and open an issue there first:
 * Eclipse: https://github.com/cbeust/testng-eclipse/issues
-* IntelliJ: [https://youtrack.jetbrains.com/issues](https://youtrack.jetbrains.com/issues?q=%23%7BUnit%20Testing.%20TestNG%7D%20)
+* IntelliJ: [https://youtrack.jetbrains.com/issues](https://youtrack.jetbrains.com/issues?q=Subsystem:%20%7BJava.%20Tests.%20TestNG%7D)
 * Maven: https://issues.apache.org/jira/browse/SUREFIRE
 * Gradle: https://issues.gradle.org/projects/GRADLE
 
