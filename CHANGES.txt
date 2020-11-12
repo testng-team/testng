@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-346: When a method is annotated with both BeforeGroups and AfterGroups only AfterGroup is executed (Krishnan Mahadevan)
 Fixed: GITHUB-2403: Suite.xml files attempt to make web request when suite references standard TestNG DTD using HTTP (Krishnan Mahadevan)
 New:   GITHUB-2385: Make @Listeners can work for implemented interfaces and Inherited class (Nan Liang)
 Fixed: GITHUB-2053: MethodHelper.collectAndOrderMethods() Hangs when Parallel Instance and dependsOnGroups (Krishnan Mahadevan)
