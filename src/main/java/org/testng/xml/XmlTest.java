@@ -355,12 +355,7 @@ public class XmlTest implements Cloneable {
   }
 
   public XmlSuite.ParallelMode getParallel() {
-    XmlSuite.ParallelMode result = getSuite().getParallel();
-    if (null != m_parallel) {
-      result = m_parallel;
-    }
-
-    return result;
+    return Optional.ofNullable(m_parallel).orElse(getSuite().getParallel());
   }
 
   public String getTimeOut() {
