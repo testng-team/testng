@@ -12,8 +12,13 @@ public final class RuntimeBehavior {
   public static final String TESTNG_USE_UNSECURED_URL = "testng.dtd.http";
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
   private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
+  public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
 
   private RuntimeBehavior() {}
+
+  public static boolean strictParallelism() {
+    return Boolean.getBoolean(STRICTLY_HONOUR_PARALLEL_MODE);
+  }
 
   public static boolean showTestNGStackFrames() {
     return Boolean.getBoolean(SHOW_TESTNG_STACK_FRAMES);

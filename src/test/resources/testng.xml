@@ -6,6 +6,7 @@
   <suite-files>
     <suite-file path="./junit-suite.xml" />
     <suite-file path="./parent-module-suite.xml" />
+    <suite-file path="./188.xml"/>
   </suite-files>
 
   <listeners>

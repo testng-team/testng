@@ -323,10 +323,13 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // Run all the test runners
       //
       boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(xmlSuite.getParallel());
-      if (!testsInParallel) {
-        runSequentially();
-      } else {
+      if (RuntimeBehavior.strictParallelism()) {
+        testsInParallel = !XmlSuite.ParallelMode.NONE.equals(xmlSuite.getParallel());
+      }
+      if (testsInParallel) {
         runInParallelTestMode();
+      } else {
+        runSequentially();
       }
 
       //
