@@ -1,12 +1,6 @@
 package test.junitreports;
 
 import com.beust.jcommander.internal.Lists;
-import java.io.File;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -14,18 +8,31 @@ import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 import test.SimpleBaseTest;
 import test.TestHelper;
+import test.junitreports.issue2124.TestClassSample;
+import test.junitreports.issue993.SampleTestClass;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import test.junitreports.issue2124.TestClassSample;
-import test.junitreports.issue993.SampleTestClass;
 
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
@@ -37,13 +44,14 @@ public class JUnitReportsTest extends SimpleBaseTest {
     private static final String FAILURES = "failures";
     private static final String IGNORED = "ignored";
     private static final String SKIPPED = "skipped";
+    private static final String JUNIT_XSD = "jenkins-junit.xsd";
     private static String clazz = SimpleTestSample.class.getName();
     private static List<Testcase> testcaseList = Arrays.asList(
-        Testcase.newInstance("childTest", clazz, SKIPPED),
-        Testcase.newInstance("masterTest", clazz, "error"),
-        Testcase.newInstance("masterTest", clazz, "failure"),
-        Testcase.newInstance("iShouldNeverBeExecuted", clazz, SKIPPED),
-        Testcase.newInstance("iShouldNeverBeExecuted", clazz, IGNORED)
+            Testcase.newInstance("childTest", clazz, SKIPPED),
+            Testcase.newInstance("masterTest", clazz, "error"),
+            Testcase.newInstance("masterTest", clazz, "failure"),
+            Testcase.newInstance("iShouldNeverBeExecuted", clazz, SKIPPED),
+            Testcase.newInstance("iShouldNeverBeExecuted", clazz, IGNORED)
     );
 
     @Test
@@ -59,7 +67,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     @Test
     public void testJUnitReportReporterWithMultipleClasses() throws IOException {
         Path outputDir = TestHelper.createRandomDirectory();
-        Class<?>[] classes = new Class<?>[] {FirstTest.class, SecondTest.class, ThirdTest.class};
+        Class<?>[] classes = new Class<?>[]{FirstTest.class, SecondTest.class, ThirdTest.class};
         Map<Class<?>, Map<String, Integer>> mapping = Maps.newHashMap();
         mapping.put(FirstTest.class, createMapFor(2, 1));
         mapping.put(SecondTest.class, createMapFor(1, 0));
@@ -72,7 +80,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
         for (Class<?> clazz : classes) {
             Testsuite suite = reportReporter.getTestsuite(clazz.getName());
             Map<String, Integer> attributes = mapping.get(clazz);
-            assertEquals(suite.getName(), clazz.getName(),"Suite Name validation.");
+            assertEquals(suite.getName(), clazz.getName(), "Suite Name validation.");
             assertEquals(suite.getTests(), attributes.get(TESTS).intValue(), "<test> count validation.");
             assertEquals(suite.getErrors(), attributes.get(ERRORS).intValue(), "errored count validation.");
             assertEquals(suite.getIgnored(), attributes.get(IGNORED).intValue(), "ignored count validation.");
@@ -101,7 +109,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
         for (Testcase testcase : suite.getTestcase()) {
             actual.add(testcase.getName().trim());
         }
-        assertEquals(actual,expected);
+        assertEquals(actual, expected);
     }
 
     @Test
@@ -118,21 +126,35 @@ public class JUnitReportsTest extends SimpleBaseTest {
     }
 
     @Test
-    public void ensureTestReportContainsSysOutContent() throws Exception {
+    public void ensureTestReportContainsValidSysOutContent() throws Exception {
         Path outputDir = TestHelper.createRandomDirectory();
         TestNG tng = createTests(outputDir, "suite", TestClassSample.class);
         tng.setUseDefaultListeners(true);
         tng.run();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
+        DocumentBuilder builder = getJUnitDocumentBuilder();
         String name = "TEST-" + TestClassSample.class.getName();
         File file = new File(outputDir.toFile().getAbsolutePath()
-            + File.separator + "junitreports" + File.separator + name + ".xml");
+                + File.separator + "junitreports" + File.separator + name + ".xml");
         Document doc = builder.parse(file);
         XPath xPath = XPathFactory.newInstance().newXPath();
         String expression = "//testsuite/system-out";
         String data = (String) xPath.compile(expression).evaluate(doc, XPathConstants.STRING);
-        assertThat(data.trim()).isEqualTo(TestClassSample.MESSAGE);
+        assertThat(data.trim()).isEqualTo(TestClassSample.MESSAGE_1 + "\n" + TestClassSample.MESSAGE_2);
+    }
+
+    private DocumentBuilder getJUnitDocumentBuilder() throws SAXException, ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        SchemaFactory xsdFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
+        Schema schema = xsdFactory.newSchema(new File(getPathToResource(JUNIT_XSD)));
+        factory.setSchema(schema);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        builder.setErrorHandler(new DefaultHandler() {
+            @Override
+            public void error(SAXParseException e) {
+                fail("Test Report Parse Error", e);
+            }
+        });
+        return builder;
     }
 
     private static Map<String, Integer> createMapFor(int testCount, int skipped) {
@@ -146,8 +168,8 @@ public class JUnitReportsTest extends SimpleBaseTest {
     }
 
     private void runTest(int tests,
-        int errors, int ignored, int failures, int skipped, ITestNGListener reporter, boolean useClazzAsSuiteName)
-        throws IOException {
+                         int errors, int ignored, int failures, int skipped, ITestNGListener reporter, boolean useClazzAsSuiteName)
+            throws IOException {
         Path outputDir = TestHelper.createRandomDirectory();
         XmlSuite xmlSuite = createXmlSuite("suite");
         XmlTest xmlTest = createXmlTest(xmlSuite, "test");
@@ -157,11 +179,11 @@ public class JUnitReportsTest extends SimpleBaseTest {
         tng.addListener(reporter);
         tng.run();
         String suitename = SimpleTestSample.class.getName();
-        if (! useClazzAsSuiteName) {
+        if (!useClazzAsSuiteName) {
             suitename = xmlTest.getName();
         }
         Testsuite suite = reportReporter.getTestsuite(suitename);
-        assertEquals(suite.getName(), suitename,"Suite Name validation.");
+        assertEquals(suite.getName(), suitename, "Suite Name validation.");
         assertEquals(suite.getTests(), tests, "<test> count validation.");
         assertEquals(suite.getErrors(), errors, "errored count validation.");
         assertEquals(suite.getIgnored(), ignored, "ignored count validation.");

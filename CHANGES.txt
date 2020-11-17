@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2419: TestNG JUnit reports are not valid if system output contains XML tags (Lorenzo Orsatti)
 Fixed: GITHUB-188: suite parallel="methods" does not work when there are multiple <test> tags in the testng.xml (Krishnan Mahadevan)
 Fixed: GITHUB-346: When a method is annotated with both BeforeGroups and AfterGroups only AfterGroup is executed (Krishnan Mahadevan)
 Fixed: GITHUB-2403: Suite.xml files attempt to make web request when suite references standard TestNG DTD using HTTP (Krishnan Mahadevan)

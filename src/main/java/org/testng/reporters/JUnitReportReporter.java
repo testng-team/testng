@@ -143,7 +143,7 @@ public class JUnitReportReporter implements IReporter {
           xsb.pop(XMLConstants.TESTCASE);
         }
         if (putElement(xsb, XMLConstants.SYSTEM_OUT, new Properties(), testTag.sysOut != null)) {
-          xsb.addString(testTag.sysOut);
+          xsb.addCDATA(testTag.sysOut);
           xsb.pop(XMLConstants.SYSTEM_OUT);
         }
       }
@@ -194,7 +194,7 @@ public class JUnitReportReporter implements IReporter {
     }
     List<String> output = Reporter.getOutput(tr);
     if (!output.isEmpty()) {
-      testTag.sysOut = String.join(" ", output);
+      testTag.sysOut = String.join("\n", output);
     }
     testTag.properties = p2;
     return testTag;
