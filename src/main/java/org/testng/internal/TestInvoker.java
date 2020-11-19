@@ -41,10 +41,13 @@ import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.ParameterHandler.ParameterBag;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
+import org.testng.log4testng.Logger;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
 class TestInvoker extends BaseInvoker implements ITestInvoker {
+
+  private static Logger logger = Logger.getLogger(TestInvoker.class);
 
   private final ConfigInvoker invoker;
   private final DataProviderHolder holder;
@@ -102,7 +105,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
       m_notifier.addSkippedTest(testMethod, result);
       InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), result);
-      invokeListenersForSkippedTestResult(result, invokedMethod);
+      try {
+        invokeListenersForSkippedTestResult(result, invokedMethod);
+      } catch (SkipException e) {
+        logger.warn("invoke listeners for skipped test result failed: " + e.getMessage(), e);
+      }
       testMethod.incrementCurrentInvocationCount();
       GroupConfigMethodArguments args = new Builder()
           .forTestMethod(testMethod)
