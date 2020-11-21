@@ -16,6 +16,7 @@ import java.util.concurrent.BlockingQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import org.testng.annotations.Guice;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -50,6 +51,7 @@ import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
@@ -84,7 +86,7 @@ public class TestRunner
   private String m_testName;
   private IInjectorFactory m_injectorFactory;
 
-  private final GuiceHelper guiceHelper = new GuiceHelper(this);
+  private GuiceHelper guiceHelper;
 
   private List<XmlClass> m_testClassesFromXml = null;
 
@@ -1285,6 +1287,12 @@ public class TestRunner
 
   @Override
   public Injector getInjector(IClass iClass) {
+    if (hasNoGuiceAnnotations(iClass)) {
+      return null;
+    }
+    if (guiceHelper == null) {
+      guiceHelper = new GuiceHelper(this);
+    }
     return guiceHelper.getInjector(iClass, this.m_injectorFactory);
   }
 
@@ -1292,4 +1300,9 @@ public class TestRunner
   public void addInjector(List<Module> moduleInstances, Injector injector) {
     m_injectors.put(moduleInstances, injector);
   }
+
+  private static boolean hasNoGuiceAnnotations(IClass iClass) {
+    return AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass()) == null;
+  }
+
 }
