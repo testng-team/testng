@@ -1,11 +1,17 @@
 package test.guice;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.testng.Assert.assertEquals;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.guice.config.Test1;
+import test.guice.config.Test2;
+import test.guice.config.modules.TestModuleOne;
+import test.guice.config.modules.TestModuleTwo;
+import test.guice.config.modules.TestParentConfigModule;
 import test.guice.issue2343.Person;
 import test.guice.issue2343.SampleA;
 import test.guice.issue2343.SampleB;
@@ -58,5 +64,16 @@ public class GuiceTest extends SimpleBaseTest {
     testng.run();
     assertThat(AnotherParentModule.getCounter()).isEqualTo(1);
     assertThat(Person.counter).isEqualTo(1);
+  }
+
+  @Test(description = "Module configuration should be called only once") 
+  public void ensureConfigureMethodCalledOnceForModule() {
+    XmlSuite suite = createXmlSuite("sample_suite", "sample_test", Test1.class, Test2.class);
+    suite.setParentModule(TestParentConfigModule.class.getCanonicalName());
+    TestNG testng = create(suite);
+    testng.run();
+    assertEquals(TestParentConfigModule.counter.get(), 1, "TestParentModule configuration called times");
+    assertEquals(TestModuleOne.counter.get(), 1, "TestModuleOne configuration called times");
+    assertEquals(TestModuleTwo.counter.get(), 1, "TestModuleTwo configuration called times");
   }
 }
