@@ -57,20 +57,13 @@ public class GuiceHelper {
     return injector;
   }
 
-  @SuppressWarnings("unchecked")
   public static Module getParentModule(ITestContext context) {
-    if (isStringEmpty(context.getSuite().getParentModule())) {
+    Class<? extends Module> parentModule = getParentModuleClass(context);
+    if (parentModule == null) {
       return null;
     }
-    Class<?> parentModule = ClassHelper.forName(context.getSuite().getParentModule());
-    if (parentModule == null) {
-      throw new TestNGException(
-              "Cannot load parent Guice module class: " + context.getSuite().getParentModule());
-    }
-    if (!Module.class.isAssignableFrom(parentModule)) {
-      throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
-    }
-    List<Module> allModules = context.getGuiceModules((Class<? extends Module>) parentModule);
+
+    List<Module> allModules = context.getGuiceModules(parentModule);
     if (!allModules.isEmpty()) {
       if (allModules.size() > 1) {
         throw new IllegalStateException("Found more than 1 module associated with the test <"
@@ -89,6 +82,22 @@ public class GuiceHelper {
     return obj;
   }
 
+  @SuppressWarnings("unchecked")
+  private static Class<? extends Module> getParentModuleClass(ITestContext context) {
+    if (isStringEmpty(context.getSuite().getParentModule())) {
+      return null;
+    }
+    Class<?> parentModule = ClassHelper.forName(context.getSuite().getParentModule());
+    if (parentModule == null) {
+      throw new TestNGException(
+              "Cannot load parent Guice module class: " + context.getSuite().getParentModule());
+    }
+    if (!Module.class.isAssignableFrom(parentModule)) {
+      throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
+    }
+    return (Class<? extends Module>)parentModule;
+  }
+
   public static Injector createInjector(Injector parent, ITestContext context,
       IInjectorFactory injectorFactory, List<Module> moduleInstances) {
     Stage stage = Stage.DEVELOPMENT;
@@ -97,7 +106,15 @@ public class GuiceHelper {
       stage = Stage.valueOf(stageString);
     }
     moduleInstances.forEach(context::addGuiceModule);
-    return injectorFactory.getInjector(parent, stage, moduleInstances.toArray(new Module[0]));
+    Module[] modules = moduleInstances.toArray(new Module[0]);
+
+    if (parent == null || getParentModuleClass(context) == null) {
+      // there is no parent module in this suite defined therefore tree of injectors shouldn't
+      // be created letting individual test modules to redefine bindings between each other
+      return injectorFactory.getInjector(null, stage, modules);
+    }
+
+    return injectorFactory.getInjector(parent, stage, modules);
   }
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
