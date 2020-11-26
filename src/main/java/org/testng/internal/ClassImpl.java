@@ -3,7 +3,7 @@ package org.testng.internal;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import com.google.inject.Injector;
-
+import com.google.inject.Module;
 import org.testng.GuiceHelper;
 import org.testng.IClass;
 import org.testng.IInjectorFactory;
@@ -132,7 +132,9 @@ public class ClassImpl implements IClass {
     // Reuse the previous parent injector, if any
     Injector injector = suite.getParentInjector();
     if (injector == null) {
-      injector = GuiceHelper.createInjector(m_testContext, injectorFactory, Collections.emptyList());
+      Module parentModule = GuiceHelper.getParentModule(m_testContext);
+      injector = GuiceHelper.createInjector(null, m_testContext, injectorFactory,
+          parentModule == null ? Collections.emptyList() : Collections.singletonList(parentModule));
       suite.setParentInjector(injector);
     }
     return injector;

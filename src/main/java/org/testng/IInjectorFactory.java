@@ -1,5 +1,6 @@
 package org.testng;
 
+import javax.annotation.Nullable;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
@@ -11,11 +12,12 @@ import com.google.inject.Stage;
 public interface IInjectorFactory {
 
   /**
+   * @param parent - Parent {@link com.google.inject.Injector} instance that was built with parent injector
    * @param stage - A {@link Stage} object that defines the appropriate stage
    * @param modules - An array of {@link Module}
-   * @return - An {@link com.google.inject.Inject} instance that can be used to perform dependency
+   * @return - An {@link com.google.inject.Injector} instance that can be used to perform dependency
    * injection.
    */
-  Injector getInjector(Stage stage, Module... modules);
+  Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules);
 
 }

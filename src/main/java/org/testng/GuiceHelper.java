@@ -46,26 +46,19 @@ public class GuiceHelper {
     Injector parentInjector = ((ClassImpl) iClass).getParentInjector(injectorFactory);
 
     List<Module> classLevelModules = getModules(guice, parentInjector, iClass.getRealClass());
-    Module parentModule = getParentModule(context);
-    if (parentModule != null) {
-      context.addGuiceModule(parentModule);
-      classLevelModules = Lists.merge(classLevelModules, CLASS_EQUALITY,
-          Collections.singletonList(parentModule));
-    }
-    List<Module> moduleLookup = Lists.newArrayList(classLevelModules);
 
     // Get an injector with the class's modules + any defined parent module installed
     // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
-    Injector injector = context.getInjector(moduleLookup);
+    Injector injector = context.getInjector(classLevelModules);
     if (injector == null) {
-      injector = createInjector(context, injectorFactory, classLevelModules);
+      injector = createInjector(parentInjector, context, injectorFactory, classLevelModules);
       context.addInjector(classLevelModules, injector);
     }
     return injector;
   }
 
   @SuppressWarnings("unchecked")
-  private static Module getParentModule(ITestContext context) {
+  public static Module getParentModule(ITestContext context) {
     if (isStringEmpty(context.getSuite().getParentModule())) {
       return null;
     }
@@ -96,20 +89,15 @@ public class GuiceHelper {
     return obj;
   }
 
-  public static Injector createInjector(ITestContext context,
+  public static Injector createInjector(Injector parent, ITestContext context,
       IInjectorFactory injectorFactory, List<Module> moduleInstances) {
-    Module parentModule = getParentModule(context);
-    List<Module> fullModules = Lists.newArrayList(moduleInstances);
-    if (parentModule != null) {
-      fullModules = Lists.merge(fullModules, CLASS_EQUALITY, Collections.singletonList(parentModule));
-    }
     Stage stage = Stage.DEVELOPMENT;
     String stageString = context.getSuite().getGuiceStage();
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);
     }
-    fullModules.forEach(context::addGuiceModule);
-    return injectorFactory.getInjector(stage, fullModules.toArray(new Module[0]));
+    moduleInstances.forEach(context::addGuiceModule);
+    return injectorFactory.getInjector(parent, stage, moduleInstances.toArray(new Module[0]));
   }
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
@@ -133,7 +121,7 @@ public class GuiceHelper {
         result = Lists.merge(result, CLASS_EQUALITY, Collections.singletonList(module));
       }
     }
-    result = Lists.merge(result, CLASS_EQUALITY, LazyHolder.getSpiModules(),context.getAllGuiceModules());
+    result = Lists.merge(result, CLASS_EQUALITY, LazyHolder.getSpiModules());
     return result;
   }
 

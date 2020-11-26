@@ -1,4 +1,4 @@
-package test.guice.config.modules;
+package test.guice.issue2427.modules;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;

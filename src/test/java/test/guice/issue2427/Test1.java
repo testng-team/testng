@@ -1,8 +1,8 @@
-package test.guice.config;
+package test.guice.issue2427;
 
-import test.guice.config.modules.TestModuleOne;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
+import test.guice.issue2427.modules.TestModuleOne;
 
 @Guice(modules = {TestModuleOne.class})
 @Test()

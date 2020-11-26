@@ -1,11 +1,11 @@
-package test.guice.config.modules;
+package test.guice.issue2427.modules;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class TestModuleOne extends TestAbstractModule {
+public class TestModuleTwo extends TestAbstractModule {
   public static AtomicInteger counter = new AtomicInteger(0);
 
-  public TestModuleOne() {
+  public TestModuleTwo() {
     super(counter);
   }
 }

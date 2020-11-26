@@ -3,7 +3,7 @@ package org.testng;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
-
+import javax.annotation.Nullable;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import org.testng.internal.ClassImpl;
@@ -33,7 +33,7 @@ public final class GuiceHelperTest {
 
     private static final class MockInjectorFactory implements IInjectorFactory {
         @Override
-        public Injector getInjector(Stage stage, Module... modules) {
+        public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
             return new MockInjector(modules);
         }
     }
