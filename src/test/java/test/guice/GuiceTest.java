@@ -41,7 +41,7 @@ public class GuiceTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2199")
   public void guiceWithExternalDependencyInjector() {
     TestNG testng = create(Guice1Test.class);
-    testng.setInjectorFactory((parent, stage, modules) -> new FakeInjector());
+    testng.setInjectorFactory((stage, modules) -> new FakeInjector());
     testng.run();
     assertThat(FakeInjector.getInstance()).isNotNull();
   }

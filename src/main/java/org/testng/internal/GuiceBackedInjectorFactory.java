@@ -8,6 +8,11 @@ import javax.annotation.Nullable;
 import org.testng.IInjectorFactory;
 
 class GuiceBackedInjectorFactory implements IInjectorFactory {
+  @Deprecated
+  @Override
+  public Injector getInjector(Stage stage, Module... modules) {
+    return getInjector(null, stage, modules);
+  }
 
   @Override
   public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {

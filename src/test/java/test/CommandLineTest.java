@@ -9,7 +9,6 @@ import com.google.inject.Stage;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.testng.Assert;
 import org.testng.CommandLineArgs;
 import org.testng.IInjectorFactory;
@@ -165,7 +164,7 @@ public class CommandLineTest {
   public static class TestInjectorFactory implements IInjectorFactory {
 
     @Override
-    public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
+    public Injector getInjector(Stage stage, Module... modules) {
       return null;
     }
   }
