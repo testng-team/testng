@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2427: Guice module (suite parent-module and test module) configure() method is called multiple times (Jacek Centkowski)
 Fixed: GITHUB-2419: TestNG JUnit reports are not valid if system output contains XML tags (Lorenzo Orsatti)
 Fixed: GITHUB-188: suite parallel="methods" does not work when there are multiple <test> tags in the testng.xml (Krishnan Mahadevan)
 Fixed: GITHUB-346: When a method is annotated with both BeforeGroups and AfterGroups only AfterGroup is executed (Krishnan Mahadevan)
