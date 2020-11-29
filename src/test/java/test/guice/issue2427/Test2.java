@@ -8,6 +8,6 @@ import test.guice.issue2427.modules.TestModuleTwo;
 @Test()
 public class Test2 {
   public void shouldInstatiateModulesOnlyOnce() {
-    System.out.println(String.format("Test %s called", getClass().getSimpleName()));
+    // do nothing as test is about configuration part
   }
 }

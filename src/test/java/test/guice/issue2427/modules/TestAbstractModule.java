@@ -13,7 +13,6 @@ abstract class TestAbstractModule extends AbstractModule {
 
   @Override
   protected void configure() {
-    System.out.println(String.format("Configuring %s module", this.getClass().getSimpleName()));
     counter.incrementAndGet();
   }
 
