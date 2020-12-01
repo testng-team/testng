@@ -2,8 +2,6 @@ package org.testng;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import org.testng.internal.ClassImpl;
