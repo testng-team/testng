@@ -3,6 +3,7 @@ package test.methodselectors;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import org.testng.xml.XmlGroups;
 import test.BaseTest;
 import test.methodselectors.issue1985.FilteringMethodSelector;
 import test.methodselectors.issue1985.TestClassSample;
@@ -104,5 +105,27 @@ public class MethodSelectorTest extends BaseTest {
     run();
     String[] passed = {"batTest"};
     verifyTests("Passed", passed, getPassedTests());
+  }
+
+  @Test(description = "GITHUB-2407")
+  public void testGroupInclusionOverride() {
+    // set the groups to override included methods
+    XmlGroups groups = new XmlGroups();
+    groups.setOverrideIncludedMethods(true);
+
+    getTest().setGroups(groups);
+
+    // add the group exclusion
+    addExcludedGroup("test1");
+
+    // add class and method inclusion
+    String className = SampleTest.class.getName();
+    addClass(className);
+    addIncludedMethod(className, "test1");
+
+    run();
+    Assert.assertTrue(getPassedTests().isEmpty());
+    Assert.assertTrue(getFailedTests().isEmpty());
+    Assert.assertTrue(getSkippedTests().isEmpty());
   }
 }

@@ -1,4 +1,5 @@
 Current
+New:   GITHUB-2407: Adds "overrideIncludedMethods" to the global config as a command-line argument, which excludes explicitly included test methods if they belong to any excluded groups (Nikhil Suri)
 Fixed: GITHUB-2432: Rework MethodInheritance.fixMethodInheritance to "soft" dependencies (Krishnan Mahadevan)
 Fixed: GITHUB-2429: Seggregate Dependency Injection out as a clear implementation (Krishnan Mahadevan)
 Fixed: GITHUB-2435: getParameterIndex() always return 0 in test listener

@@ -4,14 +4,22 @@ import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
+import java.util.Properties;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
 public class XmlGroups {
 
+  private boolean m_overrideIncludedMethods;
   private List<XmlDefine> m_defines = Lists.newArrayList();
   private XmlRun m_run;
   private List<XmlDependencies> m_dependencies = Lists.newArrayList();
+
+  public boolean getOverrideIncludedMethods() { return m_overrideIncludedMethods; }
+
+  public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
+    m_overrideIncludedMethods = overrideIncludedMethods;
+  }
 
   public List<XmlDefine> getDefines() {
     return m_defines;
@@ -49,10 +57,13 @@ public class XmlGroups {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     String indent2 = indent + "  ";
 
+    Properties p = new Properties();
+    p.setProperty("override-included-methods", String.valueOf(m_overrideIncludedMethods));
+
     boolean hasGroups = hasElements(m_defines) || m_run != null || hasElements(m_dependencies);
 
     if (hasGroups) {
-      xsb.push("groups");
+      xsb.push("groups", p);
     }
 
     for (XmlDefine d : m_defines) {

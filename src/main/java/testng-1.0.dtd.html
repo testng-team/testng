@@ -159,6 +159,9 @@ A test contains parameters and classes.  Additionally, you can define additional
 Defines additional groups ("groups of groups") and also which groups to include in this test run
 --&gt;</span>
 &lt;!ELEMENT groups (define*,run?) &gt;
+<!ATTLIST groups
+    override-included-methods (true | false) "false"
+>
 
 &lt;!ELEMENT define (include*)&gt;
 

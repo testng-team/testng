@@ -44,8 +44,8 @@ import static org.testng.internal.Utils.isStringBlank;
 public class TestNGContentHandler extends DefaultHandler {
   private XmlSuite m_currentSuite = null;
   private XmlTest m_currentTest = null;
-  private List<String> m_currentDefines = null;
-  private List<String> m_currentRuns = null;
+  private XmlDefine m_currentDefine = null;
+  private XmlRun m_currentRun = null;
   private List<XmlClass> m_currentClasses = null;
   private int m_currentTestIndex = 0;
   private int m_currentClassIndex = 0;
@@ -54,14 +54,10 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlPackage m_currentPackage = null;
   private final List<XmlSuite> m_suites = Lists.newArrayList();
   private XmlGroups m_currentGroups = null;
-  private List<String> m_currentIncludedGroups = null;
-  private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
   private Map<String, String> m_currentClassParameters = null;
   private Include m_currentInclude;
-  private List<String> m_currentMetaGroup = null;
-  private String m_currentMetaGroupName;
 
   //Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
   private final EntityResolver m_redirectionAwareResolver = (publicId, systemId) -> {
@@ -293,20 +289,12 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlDefine(boolean start, Attributes attributes) {
     if (start) {
       String name = attributes.getValue("name");
-      m_currentDefines = Lists.newArrayList();
-      m_currentMetaGroup = Lists.newArrayList();
-      m_currentMetaGroupName = name;
+      m_currentDefine = new XmlDefine();
+      m_currentDefine.setName(name);
     } else {
-      if (m_currentTest != null) {
-        m_currentTest.addMetaGroup(m_currentMetaGroupName, m_currentMetaGroup);
-      } else {
-        XmlDefine define = new XmlDefine();
-        define.setName(m_currentMetaGroupName);
-        define.getIncludes().addAll(m_currentMetaGroup);
-
-        m_currentGroups.addDefine(define);
-      }
-      m_currentDefines = null;
+      // define is only defined within the context of XmlGroups
+      m_currentGroups.addDefine(m_currentDefine);
+      m_currentDefine = null;
     }
   }
 
@@ -508,16 +496,11 @@ public class TestNGContentHandler extends DefaultHandler {
 
   public void xmlRun(boolean start) {
     if (start) {
-      m_currentRuns = Lists.newArrayList();
+      m_currentRun = new XmlRun();
     } else {
-      if (m_currentTest != null) {
-        m_currentTest.setIncludedGroups(m_currentIncludedGroups);
-        m_currentTest.setExcludedGroups(m_currentExcludedGroups);
-      } else {
-        m_currentSuite.setIncludedGroups(m_currentIncludedGroups);
-        m_currentSuite.setExcludedGroups(m_currentExcludedGroups);
-      }
-      m_currentRuns = null;
+      // Xml run is only defined in the context of groups
+      m_currentGroups.setRun(m_currentRun);
+      m_currentRun = null;
     }
   }
 
@@ -528,15 +511,21 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlGroups(boolean start) {
+  public void xmlGroups(boolean start, Attributes attributes) {
     if (start) {
       m_currentGroups = new XmlGroups();
-      m_currentIncludedGroups = Lists.newArrayList();
-      m_currentExcludedGroups = Lists.newArrayList();
+
+      String overrideIncludedMethods = attributes.getValue("override-included-methods");
+      if (overrideIncludedMethods != null) {
+        m_currentGroups.setOverrideIncludedMethods(Boolean.parseBoolean(overrideIncludedMethods));
+      }
     } else {
       if (m_currentTest == null) {
         m_currentSuite.setGroups(m_currentGroups);
+      } else {
+        m_currentTest.setGroups(m_currentGroups);
       }
+
       m_currentGroups = null;
     }
   }
@@ -608,7 +597,7 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("group".equals(qName)) {
       xmlGroup(true, attributes);
     } else if ("groups".equals(qName)) {
-      xmlGroups(true);
+      xmlGroups(true, attributes);
     } else if ("methods".equals(qName)) {
       xmlMethod(true);
     } else if ("include".equals(qName)) {
@@ -671,10 +660,10 @@ public class TestNGContentHandler extends DefaultHandler {
 
         include.setDescription(m_currentInclude.description);
         m_currentIncludedMethods.add(include);
-      } else if (null != m_currentDefines) {
-        m_currentMetaGroup.add(name);
-      } else if (null != m_currentRuns) {
-        m_currentIncludedGroups.add(name);
+      } else if (null != m_currentDefine) {
+        m_currentDefine.onElement(name);
+      } else if (null != m_currentRun) {
+        m_currentRun.onInclude(name);
       } else if (null != m_currentPackage) {
         m_currentPackage.getInclude().add(name);
       }
@@ -690,8 +679,8 @@ public class TestNGContentHandler extends DefaultHandler {
       String name = attributes.getValue("name");
       if (null != m_currentExcludedMethods) {
         m_currentExcludedMethods.add(name);
-      } else if (null != m_currentRuns) {
-        m_currentExcludedGroups.add(name);
+      } else if (null != m_currentRun) {
+        m_currentRun.onExclude(name);
       } else if (null != m_currentPackage) {
         m_currentPackage.getExclude().add(name);
       }
@@ -730,7 +719,7 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("run".equals(qName)) {
       xmlRun(false);
     } else if ("groups".equals(qName)) {
-      xmlGroups(false);
+      xmlGroups(false, null);
     } else if ("methods".equals(qName)) {
       xmlMethod(false);
     } else if ("classes".equals(qName)) {
