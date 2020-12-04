@@ -48,6 +48,9 @@ public class XmlMethodSelector implements IMethodSelector {
   private boolean m_isInitialized = false;
   private List<ITestNGMethod> m_testMethods = Collections.emptyList();
 
+  // Group inclusions override
+  private boolean m_overrideIncludedMethods = false;
+
   @Override
   public boolean includeMethod(
       IMethodSelectorContext context, ITestNGMethod tm, boolean isTestMethod) {
@@ -87,7 +90,8 @@ public class XmlMethodSelector implements IMethodSelector {
     } else if (includedGroups.isEmpty() && excludedGroups.isEmpty() && !isTestMethod) {
       // If it's a configuration method and no groups were requested, we want it in
       result = true;
-    } else if (!includeList.isEmpty()) { // Is this method included implicitly?
+    } else if (!includeList.isEmpty() && !m_overrideIncludedMethods) {
+      // Is this method included implicitly and are we not overriding inclusions by group exclusions?
       result = true;
     } else { // Include or Exclude groups were specified:
       // Only add this method if it belongs to an included group and not
@@ -319,6 +323,14 @@ public class XmlMethodSelector implements IMethodSelector {
     // Caution: this variable is initialized with an empty list first and then modified
     // externally by the caller (TestRunner#fixMethodWithClass). Ugly.
     m_testMethods = testMethods;
+  }
+
+  public boolean getOverrideIncludedMethods() {
+    return m_overrideIncludedMethods;
+  }
+
+  public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
+    m_overrideIncludedMethods = overrideIncludedMethods;
   }
 
   private void init(IMethodSelectorContext context) {

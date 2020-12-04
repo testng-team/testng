@@ -160,6 +160,9 @@ found in the XML file.
 Defines additional groups ("groups of groups") and also which groups to include in this test run
 -->
 <!ELEMENT groups (define*,run?,dependencies?) >
+<!ATTLIST groups
+        override-included-methods (true | false) "false"
+>
 
 <!ELEMENT define (include*)>
 <!ATTLIST define

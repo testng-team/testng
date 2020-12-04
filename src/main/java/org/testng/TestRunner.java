@@ -402,6 +402,11 @@ public class TestRunner
     m_xmlMethodSelector.setExcludedGroups(createGroups(m_xmlTest.getExcludedGroups()));
     m_xmlMethodSelector.setScript(m_xmlTest.getScript());
 
+    // Groups override
+    if (m_xmlTest.getXmlGroups() != null) {
+      m_xmlMethodSelector.setOverrideIncludedMethods(m_xmlTest.getXmlGroups().getOverrideIncludedMethods());
+    }
+
     // Methods
     m_xmlMethodSelector.setXmlClasses(m_xmlTest.getXmlClasses());
 
