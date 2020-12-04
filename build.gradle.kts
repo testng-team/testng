@@ -96,6 +96,10 @@ dependencies {
         api(it)
     }
 
+    listOf("org.webjars:jquery:3.5.1").forEach {
+        api(it)
+    }
+
     listOf("org.apache.ant:ant-testutil:1.10.9",
             "org.assertj:assertj-core:3.10.0",
             "org.codehaus.groovy:groovy-all:2.4.7",

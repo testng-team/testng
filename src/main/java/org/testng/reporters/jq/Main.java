@@ -21,7 +21,7 @@ public class Main implements IReporter {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES =
       new String[] {
-        "jquery-3.4.1.min.js",
+        "jquery.min.js",
         "testng-reports.css",
         "testng-reports.js",
         "testng-reports1.css",
@@ -35,14 +35,10 @@ public class Main implements IReporter {
       };
   public static final String REPORT_HEADER_FILE = "header";
 
-  private Model m_model;
-  private String m_outputDirectory;
-
   @Override
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    m_model = new Model(suites);
-    m_outputDirectory = outputDirectory;
+    Model m_model = new Model(suites);
 
     XMLStringBuffer xsb = new XMLStringBuffer("    ");
 
@@ -91,18 +87,28 @@ public class Main implements IReporter {
           throw new RuntimeException("Couldn't find resource header");
         }
         for (String fileName : RESOURCES) {
-          try (InputStream is = getClass().getResourceAsStream(TESTNG_RESOURCE_PREFIX + fileName)) {
+          try (InputStream is = load(fileName)) {
             if (is == null) {
               throw new AssertionError("Couldn't find resource: " + fileName);
             }
-            Files.copyFile(is, new File(m_outputDirectory, fileName));
+            Files.copyFile(is, new File(outputDirectory, fileName));
           }
         }
         all = Files.readFile(header);
-        Utils.writeUtf8File(m_outputDirectory, "index.html", xsb, all);
+        Utils.writeUtf8File(outputDirectory, "index.html", xsb, all);
       }
     } catch (IOException e) {
       Logger.getLogger(Main.class).error(e.getMessage(), e);
     }
+  }
+
+  private InputStream load(String fileName) {
+    String path;
+    if (fileName.equals("jquery.min.js")) {
+      path = "/META-INF/resources/webjars/jquery/3.5.1/jquery.min.js";
+    } else {
+      path = Main.TESTNG_RESOURCE_PREFIX + fileName;
+    }
+    return getClass().getResourceAsStream(path);
   }
 }
