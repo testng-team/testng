@@ -1,7 +1,12 @@
-package org.testng;
+package org.testng.internal.objects;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+
+import org.testng.Assert;
+import org.testng.IInjectorFactory;
+import org.testng.ITest;
+import org.testng.SampleIModule;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import org.testng.internal.ClassImpl;
@@ -26,7 +31,7 @@ public final class GuiceHelperTest {
         Module[] modules = injector.getModules();
         assertNotNull(modules);
         assertEquals(modules.length, 1);
-        assertEquals(modules[0], new SampleIModule().getModule());
+        Assert.assertEquals(modules[0], new SampleIModule().getModule());
     }
 
     private static final class MockInjectorFactory implements IInjectorFactory {

@@ -1,4 +1,4 @@
-package org.testng;
+package org.testng.internal.objects;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -8,14 +8,23 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import java.util.function.BiPredicate;
 import java.util.stream.StreamSupport;
+import org.testng.IClass;
+import org.testng.IInjectorFactory;
+import org.testng.IModule;
+import org.testng.IModuleFactory;
+import org.testng.ISuite;
+import org.testng.ITestContext;
+import org.testng.TestNGException;
 import org.testng.annotations.Guice;
+import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
-import org.testng.internal.ClassImpl;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.annotations.AnnotationHelper;
 
@@ -23,15 +32,20 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 
-@Deprecated
-/**
- * @deprecated - This implementation is deprecated as of TestNG <code>7.3.0</code>
- */
-public class GuiceHelper {
+class GuiceHelper {
+  private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
+  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
+  private final String parentModule;
+  private final String stageString;
+  private final String testName;
   private final ITestContext context;
+
   private static final BiPredicate<Module, Module> CLASS_EQUALITY  = (m,n) -> m.getClass().equals(n.getClass());
 
   GuiceHelper(ITestContext context) {
+    parentModule = context.getSuite().getParentModule();
+    stageString = context.getSuite().getGuiceStage();
+    testName = context.getName();
     this.context = context;
   }
 
@@ -41,37 +55,65 @@ public class GuiceHelper {
     if (guice == null) {
       return null;
     }
-    if (iClass instanceof TestClass) {
-      iClass = ((TestClass) iClass).getIClass();
-    }
-    if (!(iClass instanceof ClassImpl)) {
-      return null;
-    }
-    Injector parentInjector = ((ClassImpl) iClass).getParentInjector(injectorFactory);
+    Injector parentInjector = getParentInjector(injectorFactory);
 
     List<Module> classLevelModules = getModules(guice, parentInjector, iClass.getRealClass());
 
     // Get an injector with the class's modules + any defined parent module installed
     // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
-    Injector injector = context.getInjector(classLevelModules);
+    Injector injector = getInjector(classLevelModules);
     if (injector == null) {
-      injector = createInjector(parentInjector, context, injectorFactory, classLevelModules);
-      context.addInjector(classLevelModules, injector);
+      injector = createInjector(parentInjector, injectorFactory, classLevelModules);
+      addInjector(classLevelModules, injector);
     }
     return injector;
   }
 
-  public static Module getParentModule(ITestContext context) {
-    Class<? extends Module> parentModule = getParentModuleClass(context);
+  private Injector getParentInjector(IInjectorFactory factory) {
+    // Reuse the previous parent injector, if any
+    ISuite suite = context.getSuite();
+    Injector injector = suite.getParentInjector();
+    if (injector == null) {
+      Module parentModule = getParentModule();
+      injector = createInjector(null, factory,
+          parentModule == null ? Collections.emptyList() : Collections.singletonList(parentModule));
+      suite.setParentInjector(injector);
+    }
+    return injector;
+  }
+
+  private void addInjector(List<Module> moduleInstances, Injector injector) {
+    m_injectors.put(moduleInstances, injector);
+  }
+
+  Injector getInjector(List<Module> moduleInstances) {
+    return m_injectors.get(moduleInstances);
+  }
+
+  public void addGuiceModule(Module module) {
+    Class<? extends Module> cls = module.getClass();
+    List<Module> modules = m_guiceModules.get(cls);
+    boolean found = modules.stream().anyMatch(each -> each.getClass().equals(cls));
+    if (!found) {
+      modules.add(module);
+    }
+  }
+
+  private List<Module> getGuiceModules(Class<? extends Module> cls) {
+    return m_guiceModules.get(cls);
+  }
+
+  private Module getParentModule() {
+    Class<? extends Module> parentModule = getParentModuleClass();
     if (parentModule == null) {
       return null;
     }
 
-    List<Module> allModules = context.getGuiceModules(parentModule);
+    List<Module> allModules = getGuiceModules(parentModule);
     if (!allModules.isEmpty()) {
       if (allModules.size() > 1) {
         throw new IllegalStateException("Found more than 1 module associated with the test <"
-        + context.getName() + ">");
+            + testName + ">");
       }
       return allModules.get(0);
     }
@@ -80,21 +122,21 @@ public class GuiceHelper {
       Constructor<?> moduleConstructor = parentModule.getDeclaredConstructor(ITestContext.class);
       obj = (Module) InstanceCreator.newInstance(moduleConstructor, context);
     } catch (NoSuchMethodException e) {
-      obj = (Module) InstanceCreator.newInstance(parentModule);
+      obj = InstanceCreator.newInstance(parentModule);
     }
-      context.addGuiceModule(obj);
+    addGuiceModule(obj);
     return obj;
   }
 
   @SuppressWarnings("unchecked")
-  private static Class<? extends Module> getParentModuleClass(ITestContext context) {
-    if (isStringEmpty(context.getSuite().getParentModule())) {
+  private Class<? extends Module> getParentModuleClass() {
+    if (isStringEmpty(this.parentModule)) {
       return null;
     }
-    Class<?> parentModule = ClassHelper.forName(context.getSuite().getParentModule());
+    Class<?> parentModule = ClassHelper.forName(this.parentModule);
     if (parentModule == null) {
       throw new TestNGException(
-              "Cannot load parent Guice module class: " + context.getSuite().getParentModule());
+          "Cannot load parent Guice module class: " + this.parentModule);
     }
     if (!Module.class.isAssignableFrom(parentModule)) {
       throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
@@ -102,17 +144,15 @@ public class GuiceHelper {
     return (Class<? extends Module>)parentModule;
   }
 
-  public static Injector createInjector(Injector parent, ITestContext context,
-      IInjectorFactory injectorFactory, List<Module> moduleInstances) {
+  private Injector createInjector(Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
     Stage stage = Stage.DEVELOPMENT;
-    String stageString = context.getSuite().getGuiceStage();
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);
     }
-    moduleInstances.forEach(context::addGuiceModule);
+    moduleInstances.forEach(this::addGuiceModule);
     Module[] modules = moduleInstances.toArray(new Module[0]);
 
-    if (parent == null || getParentModuleClass(context) == null) {
+    if (parent == null || getParentModuleClass() == null) {
       // there is no parent module in this suite defined therefore tree of injectors shouldn't
       // be created letting individual test modules to redefine bindings between each other
       return injectorFactory.getInjector(null, stage, modules);
@@ -124,14 +164,14 @@ public class GuiceHelper {
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
     List<Module> result = Lists.newArrayList();
     for (Class<? extends Module> moduleClass : guice.modules()) {
-      List<Module> modules = context.getGuiceModules(moduleClass);
+      List<Module> modules = getGuiceModules(moduleClass);
       if (modules != null && !modules.isEmpty()) {
         result.addAll(modules);
         result = Lists.merge(result, CLASS_EQUALITY, modules);
       } else {
         Module instance = parentInjector.getInstance(moduleClass);
         result = Lists.merge(result, CLASS_EQUALITY, Collections.singletonList(instance));
-        context.addGuiceModule(instance);
+        addGuiceModule(instance);
       }
     }
     Class<? extends IModuleFactory> factory = guice.moduleFactory();
