@@ -82,17 +82,45 @@ public interface ITestContext extends IAttributes {
   /** @return the current XmlTest. */
   XmlTest getCurrentXmlTest();
 
+  /**
+   * This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   List<Module> getGuiceModules(Class<? extends Module> cls);
 
+  /**
+   * This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   default void addGuiceModule(Module module) {}
 
+  /**
+   * This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   default List<Module> getAllGuiceModules() {
     return Collections.emptyList();
   }
 
+  /**
+   * This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   Injector getInjector(List<Module> moduleInstances);
 
+  /**
+   * This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   Injector getInjector(IClass iClass);
 
+  /**
+   * This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   void addInjector(List<Module> moduleInstances, Injector injector);
+
+  default IInjectorFactory getInjectorFactory() {
+    return null;
+  }
 }

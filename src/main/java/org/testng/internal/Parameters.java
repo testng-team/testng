@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import com.google.inject.Injector;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -34,6 +32,10 @@ import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.Parameter;
 import org.testng.internal.reflect.ReflectionRecipes;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.CreationAttributes;
+import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -643,12 +645,10 @@ public class Parameters {
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
         Object instanceToUse;
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          Injector injector = context.getInjector(clazz);
-          if (injector != null) {
-            instanceToUse = injector.getInstance(dataProviderClass);
-          } else {
-            instanceToUse = InstanceCreator.newInstance(dataProviderClass);
-          }
+          IObjectDispenser dispenser = Dispenser.newInstance();
+          BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
+          CreationAttributes attributes = new CreationAttributes(context, basic, null);
+          instanceToUse = dispenser.dispense(attributes);
         } else {
           instanceToUse = instance;
         }

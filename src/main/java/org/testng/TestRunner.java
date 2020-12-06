@@ -1305,4 +1305,9 @@ public class TestRunner
     return AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass()) == null;
   }
 
+  @Override
+  public IInjectorFactory getInjectorFactory() {
+    return this.m_injectorFactory;
+  }
+
 }

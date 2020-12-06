@@ -977,7 +977,7 @@
 
   <test name="GITHUB-2273">
     <classes>
-      <class name="org.testng.GuiceHelperTest"/>
+      <class name="org.testng.internal.objects.GuiceHelperTest"/>
     </classes>
   </test>
 
