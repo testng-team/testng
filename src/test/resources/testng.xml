@@ -859,12 +859,6 @@
     </classes>
   </test>
 
-  <test name="Mustache">
-    <classes>
-      <class name="test.mustache.MustacheTest" />
-    </classes>
-  </test>
-
   <test name="Mixed">
     <classes>
       <class name="test.mixed.MixedTest" />
