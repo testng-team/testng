@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2435: getParameterIndex() always return 0 in test listener
 Fixed: GITHUB-2406: TestNG 7.3.0 transitive vulnerability CVE-2020-11022 and CVE-2020-11023 due to JQuery 3.4.1  (Krishnan Mahadevan)
 Fixed: GITHUB-2405: Regression: Using TestNG via Maven breaks when optional Guice dependency is unavailable (Krishnan Mahadevan)
 Fixed: GITHUB-2427: Guice module (suite parent-module and test module) configure() method is called multiple times (Jacek Centkowski)

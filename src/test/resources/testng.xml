@@ -207,6 +207,7 @@
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>
+      <class name="org.testng.internal.listeners.parameterindex.ParameterIndexListenerTest"/>
     </classes>
   </test>
 

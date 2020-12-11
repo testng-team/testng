@@ -80,6 +80,7 @@ public class TestResult implements ITestResult {
     TestResult testResult = newEmptyTestResult();
     testResult.setHost(result.getHost());
     testResult.setParameters(result.getParameters());
+    testResult.setParameterIndex(result.getParameterIndex());
     testResult.init(method, ctx, null, start, 0L);
     TestResult.copyAttributes(result, testResult);
     return testResult;
