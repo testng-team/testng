@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2432: Rework MethodInheritance.fixMethodInheritance to "soft" dependencies (Krishnan Mahadevan)
 Fixed: GITHUB-2429: Seggregate Dependency Injection out as a clear implementation (Krishnan Mahadevan)
 Fixed: GITHUB-2435: getParameterIndex() always return 0 in test listener
 Fixed: GITHUB-2406: TestNG 7.3.0 transitive vulnerability CVE-2020-11022 and CVE-2020-11023 due to JQuery 3.4.1  (Krishnan Mahadevan)

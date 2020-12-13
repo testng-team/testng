@@ -128,6 +128,7 @@
       <class name="test.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.configuration.github1700.RunTest"/>
+      <class name="test.configuration.issue2432.IssueTest"/>
       <class name="test.aftergroups.AfterGroupsBehaviorTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
