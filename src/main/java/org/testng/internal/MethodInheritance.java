@@ -8,6 +8,7 @@ import java.util.Map;
 
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -119,10 +120,8 @@ public class MethodInheritance {
     // Each bucket that has a list bigger than one element gets sorted
     //
     map.values().parallelStream()
+        .filter(l -> l.size() > 1)
         .forEach(l -> {
-          if (l.isEmpty() || l.size() == 1) {
-            return;
-          }
           // Sort them
           sortMethodsByInheritance(l, before);
 
@@ -136,6 +135,11 @@ public class MethodInheritance {
             ITestNGMethod m1 = l.get(i);
             for (int j = i + 1; j < l.size(); j++) {
               ITestNGMethod m2 = l.get(j);
+              String[] groups = Optional.ofNullable(m2.getGroups()).orElse(new String[] {});
+              if (groups.length != 0) {
+                //Do not resort to adding implicit depends-on if there are groups
+                continue;
+              }
               if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
                 Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
                 m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
