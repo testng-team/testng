@@ -108,7 +108,7 @@ public class ClassImpl implements IClass {
         IObjectDispenser dispenser = Dispenser.newInstance();
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
-        CreationAttributes attributes = new CreationAttributes(m_testContext,basic, detailed);
+        CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
         m_defaultInstance = dispenser.dispense(attributes);
       }
     }
