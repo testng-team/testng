@@ -1428,6 +1428,8 @@ public class TestNG {
     toggleFailureIfAllTestsWereSkipped(cla.failIfAllTestsSkipped);
     setListenersToSkipFromBeingWiredInViaServiceLoaders(cla.spiListenersToSkip.split(","));
 
+    m_configuration.setOverrideIncludedMethods(cla.overrideIncludedMethods);
+
     if (cla.parallelMode != null) {
       setParallel(cla.parallelMode);
     }

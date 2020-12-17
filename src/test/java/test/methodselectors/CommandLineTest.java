@@ -164,6 +164,43 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Failed", failed, tla.getFailedTests());
   }
 
+  @Test(description = "GITHUB-2407")
+  public void testOverrideExcludedMethodsCommandLineExclusions() {
+    ppp("testOverrideExcludedMethodsCommandLineExclusions");
+    String[] args = new String[]{
+            "src/test/java/test/methodselectors/sampleTest.xml",
+            "-log", "0",
+            "-d", OutputDirectoryPatch.getOutputDirectory(),
+            "-excludegroups", "test1",
+            "-overrideincludedmethods"
+    };
+
+    TestNG.privateMain(args, tla);
+
+    String[] passed = {};
+    String[] failed = {};
+    verifyTests("Passed", passed, tla.getPassedTests());
+    verifyTests("Failed", failed, tla.getFailedTests());
+  }
+
+  @Test(description = "GITHUB-2407")
+  public void testOverrideExcludedMethodsSuiteExclusions() {
+    ppp("testOverrideExcludedMethodsSuiteExclusions");
+    String[] args = new String[]{
+            "src/test/java/test/methodselectors/sampleTestExclusions.xml",
+            "-log", "0",
+            "-d", OutputDirectoryPatch.getOutputDirectory(),
+            "-overrideincludedmethods"
+    };
+
+    TestNG.privateMain(args, tla);
+
+    String[] passed = {};
+    String[] failed = {};
+    verifyTests("Passed", passed, tla.getPassedTests());
+    verifyTests("Failed", failed, tla.getFailedTests());
+  }
+
   private void verifyTests(String title, String[] expected, List<ITestResult> found) {
     List<String> resultMethods = new ArrayList<>();
     for( ITestResult result : found ) {
