@@ -236,4 +236,10 @@ public class CommandLineArgs {
       description = "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
   public String spiListenersToSkip = "";
 
+  public static final String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
+
+  @Parameter(
+          names = OVERRIDE_INCLUDED_METHODS,
+          description = "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
+  public Boolean overrideIncludedMethods = false;
 }

@@ -46,4 +46,8 @@ public interface IConfiguration {
   IInjectorFactory getInjectorFactory();
 
   void setInjectorFactory(IInjectorFactory factory);
+
+  boolean getOverrideIncludedMethods();
+
+  void setOverrideIncludedMethods(boolean overrideIncludedMethods);
 }

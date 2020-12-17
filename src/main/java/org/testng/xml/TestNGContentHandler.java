@@ -511,14 +511,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  public void xmlGroups(boolean start, Attributes attributes) {
+  public void xmlGroups(boolean start) {
     if (start) {
       m_currentGroups = new XmlGroups();
-
-      String overrideIncludedMethods = attributes.getValue("override-included-methods");
-      if (overrideIncludedMethods != null) {
-        m_currentGroups.setOverrideIncludedMethods(Boolean.parseBoolean(overrideIncludedMethods));
-      }
     } else {
       if (m_currentTest == null) {
         m_currentSuite.setGroups(m_currentGroups);
@@ -597,7 +592,7 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("group".equals(qName)) {
       xmlGroup(true, attributes);
     } else if ("groups".equals(qName)) {
-      xmlGroups(true, attributes);
+      xmlGroups(true);
     } else if ("methods".equals(qName)) {
       xmlMethod(true);
     } else if ("include".equals(qName)) {
@@ -719,7 +714,7 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("run".equals(qName)) {
       xmlRun(false);
     } else if ("groups".equals(qName)) {
-      xmlGroups(false, null);
+      xmlGroups(false);
     } else if ("methods".equals(qName)) {
       xmlMethod(false);
     } else if ("classes".equals(qName)) {
