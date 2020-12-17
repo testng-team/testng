@@ -8,13 +8,17 @@ import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This class represents a test class: - The test methods - The configuration methods (test and
  * method) - The class file
  */
-class TestClass extends NoOpTestClass implements ITestClass {
+class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo {
 
   private IAnnotationFinder annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
@@ -25,6 +29,22 @@ class TestClass extends NoOpTestClass implements ITestClass {
   private XmlTest xmlTest;
   private XmlClass xmlClass;
   private final String m_errorMsgPrefix;
+
+  private Map<String, List<ITestNGMethod>> beforeClassConfig = new HashMap<>();
+
+  @Override
+  public List<ITestNGMethod> getAllBeforeClassMethods() {
+    return beforeClassConfig.values().parallelStream().reduce((a, b) -> {
+      List<ITestNGMethod> methodList = new ArrayList<>(a);
+      methodList.addAll(b);
+      return methodList;
+    }).orElse(Lists.newArrayList());
+  }
+
+  @Override
+  public List<ITestNGMethod> getInstanceBeforeClassMethods(String instance) {
+    return beforeClassConfig.get(instance);
+  }
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
 
@@ -148,6 +168,7 @@ class TestClass extends NoOpTestClass implements ITestClass {
               annotationFinder,
               true,
               instance);
+      beforeClassConfig.put(instance.toString(), Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               testMethodFinder.getAfterClassMethods(m_testClass),

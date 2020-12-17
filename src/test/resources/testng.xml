@@ -427,6 +427,12 @@
 
       <class name="test.factory.github1131.GitHub1131Test" />
       <class name="test.factory.nested.GitHub1307Test"/>
+
+    </classes>
+  </test>
+  <test name="factory test" parallel = "instances" thread-count="3" group-by-instances="true">
+    <classes>
+      <class name="test.factory.github2428.IssueTest" />
     </classes>
   </test>
 
