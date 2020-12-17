@@ -3,7 +3,6 @@ package test.methodselectors;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import org.testng.xml.XmlGroups;
 import test.BaseTest;
 import test.methodselectors.issue1985.FilteringMethodSelector;
 import test.methodselectors.issue1985.TestClassSample;

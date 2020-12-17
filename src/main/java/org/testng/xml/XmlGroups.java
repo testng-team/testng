@@ -4,7 +4,6 @@ import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
-import java.util.Properties;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
