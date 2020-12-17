@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2428: Configuration methods have the same test class instance when @Factory is being used (Nan Liang)
 Fixed: GITHUB-2440: Fixed an issue when case timeout returned an incorrect exception and effect the next other test case (Yao Ma)
 New:   GITHUB-2407: Adds "overrideIncludedMethods" to the global config as a command-line argument, which excludes explicitly included test methods if they belong to any excluded groups (Nikhil Suri)
 Fixed: GITHUB-2432: Rework MethodInheritance.fixMethodInheritance to "soft" dependencies (Krishnan Mahadevan)

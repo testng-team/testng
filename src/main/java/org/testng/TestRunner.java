@@ -34,6 +34,7 @@ import org.testng.internal.IConfigEavesdropper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IContainer;
 import org.testng.internal.IInvoker;
+import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.Invoker;
@@ -477,7 +478,7 @@ public class TestRunner
     //
     for (ITestClass tc : m_classMap.values()) {
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
-      fixMethodsWithClass(tc.getBeforeClassMethods(), tc, beforeClassMethods);
+      fixMethodsWithClass(((ITestClassConfigInfo) tc).getAllBeforeClassMethods().toArray(new ITestNGMethod[0]), tc, beforeClassMethods);
       fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterClassMethods(), tc, afterClassMethods);
