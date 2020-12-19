@@ -2,9 +2,12 @@
 
 name: Publish to Maven Central
 
-# Triggers the workflow on manually
+# Trigger this workflow whenever code is pushed to "master" branch.defaults:
+# We would like to publish to maven central for both snapshot and release versions.
 on:
-  workflow_dispatch:
+  push:
+    branches: [ master ]
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
