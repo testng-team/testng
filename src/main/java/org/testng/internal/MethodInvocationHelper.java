@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Collections of helper methods to help deal with invocation of TestNG methods
@@ -301,6 +302,8 @@ public class MethodInvocationHelper {
     long startTime = System.currentTimeMillis();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
     boolean notTimedout = true;
+    AtomicBoolean finished = new AtomicBoolean(false);
+    AtomicBoolean interruptByThread = new AtomicBoolean(false);
     try {
       Thread currentThread = Thread.currentThread();
       new Thread(() -> {
@@ -309,7 +312,10 @@ public class MethodInvocationHelper {
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }
-        currentThread.interrupt();
+        if (!finished.get()) {
+          interruptByThread.set(true);
+          currentThread.interrupt();
+        }
       }).start();
       imr.run();
       notTimedout = System.currentTimeMillis() <= startTime + realTimeOut;
@@ -327,7 +333,7 @@ public class MethodInvocationHelper {
         testResult.setStatus(ITestResult.FAILURE);
       }
     } catch (Exception ex) {
-      if (notTimedout) {
+      if (notTimedout && !interruptByThread.get()) {
         Throwable e = ex.getCause();
         if (e instanceof TestNGRuntimeException) {
           e = e.getCause();
@@ -344,6 +350,8 @@ public class MethodInvocationHelper {
         testResult.setThrowable(exception);
       }
       testResult.setStatus(ITestResult.FAILURE);
+    } finally {
+      finished.set(true);
     }
   }
 
