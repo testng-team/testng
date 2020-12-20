@@ -304,9 +304,10 @@ public class MethodInvocationHelper {
     boolean notTimedout = true;
     AtomicBoolean finished = new AtomicBoolean(false);
     AtomicBoolean interruptByThread = new AtomicBoolean(false);
+    Thread newThread = null;
     try {
       Thread currentThread = Thread.currentThread();
-      new Thread(() -> {
+      newThread = new Thread(() -> {
         try {
           TimeUnit.MILLISECONDS.sleep(realTimeOut);
         } catch (InterruptedException e) {
@@ -316,7 +317,8 @@ public class MethodInvocationHelper {
           interruptByThread.set(true);
           currentThread.interrupt();
         }
-      }).start();
+      });
+      newThread.start();
       imr.run();
       notTimedout = System.currentTimeMillis() <= startTime + realTimeOut;
       if (notTimedout) {
@@ -352,6 +354,9 @@ public class MethodInvocationHelper {
       testResult.setStatus(ITestResult.FAILURE);
     } finally {
       finished.set(true);
+      if (newThread != null){
+        newThread.interrupt();
+      }
     }
   }
 
