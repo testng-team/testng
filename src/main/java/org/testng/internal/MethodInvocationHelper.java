@@ -303,7 +303,7 @@ public class MethodInvocationHelper {
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
     boolean notTimedout = true;
     AtomicBoolean finished = new AtomicBoolean(false);
-    AtomicBoolean interruptByThread = new AtomicBoolean(false);
+    AtomicBoolean interruptByMonitor = new AtomicBoolean(false);
     Thread monitorThread = null;
     try {
       Thread currentThread = Thread.currentThread();
@@ -314,7 +314,7 @@ public class MethodInvocationHelper {
           Thread.currentThread().interrupt();
         }
         if (!finished.get()) {
-          interruptByThread.set(true);
+          interruptByMonitor.set(true);
           currentThread.interrupt();
         }
       });
@@ -335,7 +335,7 @@ public class MethodInvocationHelper {
         testResult.setStatus(ITestResult.FAILURE);
       }
     } catch (Exception ex) {
-      if (notTimedout && !interruptByThread.get()) {
+      if (notTimedout && !interruptByMonitor.get()) {
         Throwable e = ex.getCause();
         if (e instanceof TestNGRuntimeException) {
           e = e.getCause();
