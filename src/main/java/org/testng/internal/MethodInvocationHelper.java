@@ -354,7 +354,7 @@ public class MethodInvocationHelper {
       testResult.setStatus(ITestResult.FAILURE);
     } finally {
       finished.set(true);
-      if (monitorThread != null){
+      if (monitorThread != null && monitorThread.isAlive()){
         monitorThread.interrupt();
       }
     }
