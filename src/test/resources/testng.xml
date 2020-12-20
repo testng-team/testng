@@ -982,5 +982,10 @@
     </classes>
   </test>
 
+  <test name="GITHUB-2440">
+    <classes>
+      <class name="test.timeout.github2440.TimeoutWithNoExecutorTest"/>
+    </classes>
+  </test>
 </suite>
 
