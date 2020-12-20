@@ -1,5 +1,7 @@
-package test.github2440;
+package test.timeout.github2440;
 
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.internal.thread.ThreadTimeoutException;
 
