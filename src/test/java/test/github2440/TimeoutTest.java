@@ -14,7 +14,7 @@ public class TimeoutTest {
         Thread.sleep(1000);
     }
 
-    @Test(description = "Thread",expectedExceptions = ThreadTimeoutException.class, timeOut = 100)
+    @Test(description = "Thread", expectedExceptions = ThreadTimeoutException.class, timeOut = 100)
     public void test3() throws InterruptedException {
         Thread.sleep(1000);
     }
