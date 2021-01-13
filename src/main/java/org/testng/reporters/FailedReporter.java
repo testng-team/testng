@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This reporter is responsible for creating testng-failed.xml
@@ -199,7 +200,11 @@ public class FailedReporter implements IReporter {
         methodNames.add(methodName);
       }
       xmlClass.setIncludedMethods(methodNames);
-      xmlClass.setParameters(classParameters.get(xmlClass.getName()));
+      xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
+              .values()
+              .stream()
+              .flatMap(map -> map.entrySet().stream())
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
       result.add(xmlClass);
     }
 
