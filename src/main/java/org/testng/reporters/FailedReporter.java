@@ -204,7 +204,7 @@ public class FailedReporter implements IReporter {
               .values()
               .stream()
               .flatMap(map -> map.entrySet().stream())
-              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)-> v2))));
       result.add(xmlClass);
     }
 
