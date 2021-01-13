@@ -76,7 +76,7 @@ dependencies {
         "antApi"(it)
     }
 
-    listOf("com.google.inject:guice:4.2.2:no_aop").forEach {
+    listOf("com.google.inject:guice:4.2.3:no_aop").forEach {
         "guiceApi"(it)
     }
 
