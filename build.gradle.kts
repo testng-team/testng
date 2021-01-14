@@ -107,7 +107,8 @@ dependencies {
             "org.apache-extras.beanshell:bsh:2.0b6",
             "org.mockito:mockito-core:2.12.0",
             "org.jboss.shrinkwrap:shrinkwrap-api:1.2.6",
-            "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6").forEach {
+            "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6",
+            "org.xmlunit:xmlunit-assertj:2.8.2").forEach {
         testImplementation(it)
     }
 }

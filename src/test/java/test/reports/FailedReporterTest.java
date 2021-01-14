@@ -11,6 +11,9 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.builder.Input;
+import org.xmlunit.diff.Diff;
 import test.SimpleBaseTest;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
@@ -54,18 +57,20 @@ public class FailedReporterTest extends SimpleBaseTest {
   @Test(description = "ISSUE-2445")
   public void testParameterPreservationWithFactory() throws IOException {
     final SuiteXmlParser parser = new SuiteXmlParser();
-    final String file = "src/test/resources/xml/issue2445.xml";
-    final XmlSuite xmlSuite = parser.parse(file, new FileInputStream(file), true);
+    final String testSuite = "src/test/resources/xml/github2445/test-suite.xml";
+    final String expectedResult = "src/test/resources/xml/github2445/expected-failed-report.xml";
+    final XmlSuite xmlSuite = parser.parse(testSuite, new FileInputStream(testSuite), true);
     final TestNG tng = create(xmlSuite);
 
     final Path temp = Files.createTempDirectory("tmp");
     tng.setOutputDirectory(temp.toAbsolutePath().toString());
     tng.addListener(new FailedReporter());
     tng.run();
-
-    final Collection<XmlSuite> failedSuites =
-            new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()).parse();
-    final XmlSuite failedSuite = failedSuites.iterator().next();
-    Assert.assertEquals("value", failedSuite.getAllParameters().get("key"));
+    final Diff myDiff = DiffBuilder.compare(Input.fromFile(expectedResult))
+                             .withTest(Input.fromFile(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()))
+                             .checkForSimilar()
+                             .ignoreWhitespace()
+                             .build();
+    Assert.assertFalse(myDiff.hasDifferences());
   }
 }
