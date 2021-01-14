@@ -66,11 +66,14 @@ public class FailedReporterTest extends SimpleBaseTest {
     tng.setOutputDirectory(temp.toAbsolutePath().toString());
     tng.addListener(new FailedReporter());
     tng.run();
+
     final Diff myDiff = DiffBuilder.compare(Input.fromFile(expectedResult))
-                             .withTest(Input.fromFile(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()))
-                             .checkForSimilar()
-                             .ignoreWhitespace()
-                             .build();
+                                   .withTest(Input.fromFile(temp.resolve(FailedReporter.TESTNG_FAILED_XML)
+                                                                .toAbsolutePath()
+                                                                .toString()))
+                                   .checkForSimilar()
+                                   .ignoreWhitespace()
+                                   .build();
     Assert.assertFalse(myDiff.hasDifferences());
   }
 }
