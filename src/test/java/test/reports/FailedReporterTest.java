@@ -1,6 +1,5 @@
 package test.reports;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -13,16 +12,12 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
 import test.SimpleBaseTest;
-import test.failedreporter.FailedReporterParametersTest;
-import test.thread.Github1636Sample;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 
 public class FailedReporterTest extends SimpleBaseTest {
 
