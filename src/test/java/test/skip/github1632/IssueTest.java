@@ -1,4 +1,4 @@
-package test.listeners.issue1632;
+package test.skip.github1632;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
