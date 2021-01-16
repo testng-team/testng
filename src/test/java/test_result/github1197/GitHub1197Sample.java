@@ -1,4 +1,4 @@
-package test_result;
+package test_result.github1197;
 
 import org.testng.Assert;
 import org.testng.ITestResult;
