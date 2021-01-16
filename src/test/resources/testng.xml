@@ -189,7 +189,7 @@
       <class name="test.skip.github1632.IssueTest"/>
       <class name="test.listeners.issue2220.IssueTest"/>
       <class name="test.listeners.issue2328.IssueTest"/>
-      <class name="test_result.github1197.GitHub1197Test"/>
+      <class name="test_result.ResultStatusTest"/>
       <class name="test_result.issue1590.IssueTest"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>

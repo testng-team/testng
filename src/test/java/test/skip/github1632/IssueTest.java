@@ -23,14 +23,26 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   @Test
-  public void runSpringSample() {
-    InvokedMethodNameListener listener = run(SpringSample.class);
+  public void runBeforeListenerSkipSample() {
+    InvokedMethodNameListener listener = run(BeforeListenerSkipSample.class);
     assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
   }
 
   @Test
-  public void runNoConfigSpringSample() {
-    InvokedMethodNameListener listener = run(NoConfigSpringSample.class);
+  public void runNoConfigBeforeListenerSample() {
+    InvokedMethodNameListener listener = run(NoConfigBeforeListenerSample.class);
+    assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
+  }
+
+  @Test
+  public void runAfterListenerSkipSample() {
+    InvokedMethodNameListener listener = run(AfterListenerSkipSample.class);
+    assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
+  }
+
+  @Test
+  public void runNoConfigAfterListenerSample() {
+    InvokedMethodNameListener listener = run(NoConfigAfterListenerSample.class);
     assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
   }
 }
