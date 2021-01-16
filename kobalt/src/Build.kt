@@ -100,12 +100,11 @@ val p = project {
 
 @Task(name = "createVersion", reverseDependsOn = arrayOf("compile"), runAfter = arrayOf("clean"), description = "")
 fun taskCreateVersion(project: Project): TaskResult {
-    val path = "org/testng/internal"
     with(arrayListOf<String>()) {
-        File("src/main/resources/$path/VersionTemplateJava").forEachLine {
-            add(it.replace("@version@", VERSION))
+        File("src/main/resources/Version.java").forEachLine {
+            add(it.replace("\$VERSION", VERSION))
         }
-        File("src/generated/java/$path").apply {
+        File("src/generated/java/org/testng/internal").apply {
             mkdirs()
             File(this, "Version.java").apply {
                 writeText(joinToString("\n"))
