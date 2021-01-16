@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
@@ -21,4 +22,15 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(listener.getStatus().get("anotherFailingMethod")).isEqualTo(ITestResult.FAILURE);
   }
 
+  @Test
+  public void runSpringSample() {
+    InvokedMethodNameListener listener = run(SpringSample.class);
+    assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
+  }
+
+  @Test
+  public void runNoConfigSpringSample() {
+    InvokedMethodNameListener listener = run(NoConfigSpringSample.class);
+    assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
+  }
 }
