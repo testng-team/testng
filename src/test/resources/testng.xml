@@ -204,7 +204,8 @@
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
       <class name="test.objectfactory.github1827.GitHub1827Test"/>
-      <class name="test.github1490.VerifyDataProviderListener"/>      
+      <class name="test.github1490.VerifyDataProviderListener"/>
+      <class name="test.listeners.issue2456.IssueTest"/>
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>

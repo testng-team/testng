@@ -1,4 +1,5 @@
 Current
+New  : GITHUB-2456: Add onDataProviderFailure listener (Krishnan Mahadevan)
 Fixed: GITHUB-2445: NPE in FailedReporter.java With Tests Created in Factory (Arham Jain)
 Fixed: GITHUB-2428: Configuration methods have the same test class instance when @Factory is being used (Nan Liang)
 Fixed: GITHUB-2440: Fixed an issue when case timeout returned an incorrect exception and effect the next other test case (Yao Ma)

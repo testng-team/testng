@@ -793,15 +793,24 @@ public class Parameters {
             dataProviderMethod, testMethod, methodParams.context);
       }
 
-      final Iterator<Object[]> parameters =
-          MethodInvocationHelper.invokeDataProvider(
-              dataProviderMethod
-                  .getInstance(), /* a test instance or null if the dataprovider is static*/
-              dataProviderMethod.getMethod(),
-              testMethod,
-              methodParams.context,
-              fedInstance,
-              annotationFinder);
+      Iterator<Object[]> initParams;
+      try {
+        initParams = MethodInvocationHelper.invokeDataProvider(
+            dataProviderMethod
+                .getInstance(), /* a test instance or null if the dataprovider is static*/
+            dataProviderMethod.getMethod(),
+            testMethod,
+            methodParams.context,
+            fedInstance,
+            annotationFinder);
+      } catch (RuntimeException e) {
+        for (IDataProviderListener each : holder.getListeners()) {
+          each.onDataProviderFailure(testMethod, methodParams.context, e);
+        }
+        throw e;
+      }
+
+      final Iterator<Object[]> parameters = initParams;
 
       for (IDataProviderListener dataProviderListener : holder.getListeners()) {
         dataProviderListener.afterDataProviderExecution(
