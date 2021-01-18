@@ -7,7 +7,7 @@ import org.testng.ITestResult;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-@Listeners(AfterListenerSample.MySkipTestListener.class)
+
 public class AfterListenerSample {
 
     @Test
