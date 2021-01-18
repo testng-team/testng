@@ -156,8 +156,6 @@ tasks.jar {
     }
 }
 
-tasks["compileJava"].dependsOn("filter")
-
 tasks.test {
     useTestNG() {
         suiteXmlFiles.add(File("src/test/resources/testng.xml"))
