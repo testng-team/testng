@@ -1,8 +1,13 @@
 package org.testng.internal;
 
-public class Version {
+public final class Version {
 
-    public static final String VERSION = "7.4.0-SNAPSHOT";
+    public static final String VERSION = initVersion();
+
+    private static String initVersion() {
+        final String version = Version.class.getPackage().getImplementationVersion();
+        return version != null ? version : "[WORKING]";
+    }
 
     public static String getVersionString() {
         return VERSION;
