@@ -283,6 +283,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setStatus(ITestResult.SKIP);
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+
           handleConfigurationSkip(
               tm, testResult, configurationAnnotation,
               arguments.getTestMethod(),
@@ -322,6 +323,12 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         copyAttributesFromNativelyInjectedTestResult(parameters,
             arguments.getTestMethodResult());
         runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
+        if (testResult.getStatus() == ITestResult.SKIP) {
+          Throwable t = testResult.getThrowable();
+          if (t != null) {
+            throw t;
+          }
+        }
       } catch (Throwable ex) {
         handleConfigurationFailure(
             ex, tm, testResult, configurationAnnotation,
@@ -349,8 +356,18 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         new InvokedMethod(System.currentTimeMillis(), testResult);
 
     runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
+
     if (tm instanceof IInvocationStatus) {
       ((IInvocationStatus) tm).setInvokedAt(invokedMethod.getDate());
+    }
+    if (testResult.getStatus() == ITestResult.SKIP) {
+      //There was a skip marked by the listener invocation.
+      testResult.setEndMillis(System.currentTimeMillis());
+      Reporter.setCurrentTestResult(testResult);
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+
+      Reporter.setCurrentTestResult(null);
+      return ;
     }
     try {
       Reporter.setCurrentTestResult(testResult);

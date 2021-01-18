@@ -45,4 +45,10 @@ public class IssueTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(NoConfigAfterListenerSample.class);
     assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
   }
+
+  @Test
+  public void runBeforeListenerSkipSample2() {
+    InvokedMethodNameListener listener = run(ListenerMarksMethodAsSkippedSample.class);
+    assertThat(listener.getResult("shouldNotBeExecuted").getStatus()).isEqualTo(ITestResult.SKIP);
+  }
 }

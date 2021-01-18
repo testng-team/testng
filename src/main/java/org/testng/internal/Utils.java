@@ -228,6 +228,10 @@ public final class Utils {
     LOG.error("[Error] " + errorMessage);
   }
 
+  public static void warn(String warnMsg) {
+    LOG.warn("[Warning] " + warnMsg);
+  }
+
   /* Tokenize the string using the separator. */
   public static String[] split(String string, String sep) {
     if ((string == null) || (string.length() == 0)) {

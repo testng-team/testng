@@ -4,6 +4,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
+import test_result.AfterListenerSample.MySkipTestListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,10 +47,12 @@ public class ResultStatusTest extends SimpleBaseTest {
     @Test
     public void testAfterListener() {
         TestNG tng = create(AfterListenerSample.class);
+        AfterListenerSample.MySkipTestListener testCaseListener = new MySkipTestListener();
 
         // A skipped method is not supposed to be run but, here, it's the goal of the feature
         InvokedMethodNameListener listener = new InvokedMethodNameListener(true, true);
-        tng.addListener(listener);
+        OrderAbidingListener orderAbidingListener = new OrderAbidingListener(testCaseListener, listener);
+        tng.addListener(orderAbidingListener);
 
         tng.run();
 
