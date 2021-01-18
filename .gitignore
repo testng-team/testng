@@ -12,7 +12,6 @@ eclipse-build
 gradle.properties
 ivy*
 javadocs
-kobaltBuild
 lib
 maven-testng-plugin-1.2.jar
 nb-configuration.xml
@@ -23,7 +22,6 @@ test-output
 test-output-tests
 testng.iml
 z_build
-.kobalt
 .DS_Store
 
 **/Version.java
