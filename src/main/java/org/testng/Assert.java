@@ -1210,7 +1210,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Object[] actual, Object[] expected, String message) {
-    if (Objects.equals(actual, expected)) {
+    if (Arrays.equals(actual, expected)) {
       return;
     }
 
