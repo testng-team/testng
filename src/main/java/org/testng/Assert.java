@@ -5,7 +5,6 @@ import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
-
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -166,7 +165,7 @@ public class Assert {
    * returns not equal reason or null if equal
    **/
   private static String getArrayNotEqualReason(Object actual, Object expected) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return null;
     }
     if (null == expected) {
@@ -976,7 +975,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
+    if (Objects.equals(actual, expected)) {
       return;
     }
     failNotSame(actual, expected, message);
@@ -1002,7 +1001,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertNotSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
+    if (Objects.equals(actual, expected)) {
       failSame(actual, expected, message);
     }
   }
@@ -1127,7 +1126,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return;
     }
     if (actual == null || expected == null) {
@@ -1184,7 +1183,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Iterable<?> actual, Iterable<?> expected, String message) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return;
     }
 
@@ -1211,7 +1210,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Object[] actual, Object[] expected, String message) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return;
     }
 
@@ -1257,7 +1256,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
-    if (actual == expected) {
+    if (Arrays.equals(actual, expected)) {
       return;
     }
 
@@ -1328,7 +1327,7 @@ public class Assert {
    * returns not equal reason or null if equal
    **/
   private static String getNotEqualReason(Set<?> actual, Set<?> expected) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return null;
     }
 
@@ -1337,7 +1336,7 @@ public class Assert {
       return "Sets not equal: expected: " + expected + " and actual: " + actual;
     }
 
-    if (!actual.equals(expected)) {
+    if (!Objects.equals(actual, expected)) {
       return "Sets differ: expected " + expected + " but got " + actual;
     }
     return null;
@@ -1366,7 +1365,7 @@ public class Assert {
    * returns not equal deep reason or null if equal
    **/
   private static String getNotEqualDeepReason(Set<?> actual, Set<?> expected) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return null;
     }
 
@@ -1414,7 +1413,7 @@ public class Assert {
   }
 
   private static String getNotEqualReason(Map<?, ?> actual, Map<?, ?> expected) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return null;
     }
 
@@ -1471,7 +1470,7 @@ public class Assert {
    * returns not equal deep reason or null if equal
    **/
   private static String getNotEqualDeepReason(Map<?, ?> actual, Map<?, ?> expected) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return null;
     }
 
