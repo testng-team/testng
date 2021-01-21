@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.testng.collections.Lists;
 
@@ -1074,7 +1075,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Collection<?> actual, Collection<?> expected, String message) {
-    if (actual == expected) {
+    if (Objects.equals(actual, expected)) {
       return;
     }
 

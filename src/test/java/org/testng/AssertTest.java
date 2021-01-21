@@ -42,6 +42,13 @@ public class AssertTest {
   }
 
   @Test
+  public void testSetAssertEquals() {
+    final Collection expected = Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Collection actual = Sets.newHashSet(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
   public void nullMapAssertEquals() {
     Map expected = null;
     Map actual = null;
