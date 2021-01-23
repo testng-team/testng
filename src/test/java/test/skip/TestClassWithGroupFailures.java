@@ -10,5 +10,6 @@ public class TestClassWithGroupFailures {
   }
 
   @Test(groups = "integration", dependsOnGroups = "unit")
-  public void integrationTests() {}
+  public void integrationTests() {
+  }
 }

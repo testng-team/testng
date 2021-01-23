@@ -7,7 +7,7 @@ public class SampleTestClass {
 
   @Test
   public void testMethod() {
-    Assert.assertEquals(1,1);
+    Assert.assertEquals(1, 1);
   }
 
 }

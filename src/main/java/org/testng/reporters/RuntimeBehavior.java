@@ -1,10 +1,14 @@
 package org.testng.reporters;
 
-/** This class houses handling all JVM arguments related to TestNG's default reports. */
+/**
+ * This class houses handling all JVM arguments related to TestNG's default reports.
+ */
 public class RuntimeBehavior {
+
   public static final String FILE_NAME = "testng-results.xml";
 
-  private RuntimeBehavior() {}
+  private RuntimeBehavior() {
+  }
 
   public static boolean verboseMode() {
     return System.getProperty("fileStringBuffer") != null;

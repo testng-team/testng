@@ -7,30 +7,29 @@ import org.testng.annotations.Test;
 
 public class TestMultipleInstance {
 
-    private long threadId;
+  private long threadId;
 
-    @Factory(dataProvider = "dp")
-    public TestMultipleInstance(int part) {
-    }
+  @Factory(dataProvider = "dp")
+  public TestMultipleInstance(int part) {
+  }
 
-    @Test
-    public void independent() {
-        threadId = Thread.currentThread().getId();
-    }
+  @DataProvider(name = "dp")
+  public static Object[][] getData() {
+    return new Object[][]{
+        {1},
+        {2}
+    };
+  }
 
-    @Test(dependsOnMethods = "independent")
-    public void dependent() {
-        long currentThreadId = Thread.currentThread().getId();
-        Assert.assertEquals(currentThreadId, threadId, "Thread Ids didn't match");
-    }
+  @Test
+  public void independent() {
+    threadId = Thread.currentThread().getId();
+  }
 
-
-    @DataProvider(name = "dp")
-    public static Object[][] getData() {
-        return new Object[][]{
-                {1},
-                {2}
-        };
-    }
+  @Test(dependsOnMethods = "independent")
+  public void dependent() {
+    long currentThreadId = Thread.currentThread().getId();
+    Assert.assertEquals(currentThreadId, threadId, "Thread Ids didn't match");
+  }
 
 }

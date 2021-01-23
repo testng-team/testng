@@ -1,14 +1,16 @@
 package org.testng.internal;
 
+import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 
-import java.util.Set;
-
-/** A utility class that houses mechanisms to retrieve exception information. */
+/**
+ * A utility class that houses mechanisms to retrieve exception information.
+ */
 final class ExceptionUtils {
+
   private ExceptionUtils() {
     // Utility class. Defeat instantiation.
   }

@@ -11,6 +11,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class MethodCallOrderTest {
+
   public static boolean s_beforeSuite;
   public static boolean s_beforeTest;
   public static boolean s_beforeClass;

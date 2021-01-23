@@ -1,5 +1,7 @@
 package org.testng.xml.internal;
 
+import java.util.List;
+import java.util.Set;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
@@ -7,10 +9,9 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.List;
-import java.util.Set;
-
-/** A utility class to work with {@link XmlSuite} */
+/**
+ * A utility class to work with {@link XmlSuite}
+ */
 public final class XmlSuiteUtils {
 
   private XmlSuiteUtils() {
@@ -34,7 +35,7 @@ public final class XmlSuiteUtils {
    * Ensure that two XmlSuite don't have the same name
    *
    * @param suites - The List of {@link XmlSuite} that are to be tested and names updated if
-   *     duplicate names found.
+   * duplicate names found.
    */
   public static void adjustSuiteNamesToEnsureUniqueness(List<XmlSuite> suites) {
     adjustSuiteNamesToEnsureUniqueness(suites, Sets.newHashSet());

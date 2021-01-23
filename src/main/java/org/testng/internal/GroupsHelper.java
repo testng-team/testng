@@ -1,11 +1,10 @@
 package org.testng.internal;
 
 import java.util.HashSet;
-import java.util.stream.Collectors;
-import org.testng.collections.Lists;
-
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.testng.collections.Lists;
 
 public final class GroupsHelper {
 
@@ -19,15 +18,14 @@ public final class GroupsHelper {
    * have created via their suite xml file.
    *
    * @param metaGroups Represents a Key/Value pair of dynamically defined groups by the user. For
-   *     e.g.,
-   *     <pre>
+   * e.g.,
+   * <pre>
    *                                     &lt;groups&gt; <br>
    *                                     &lt;define name="dynamicGroup"&gt; <br>
    *                                     &lt;include name="regressionMethod"/&gt; <br>
    *                                     &lt;/define&gt; <br>
    *                                     &lt;/groups&gt; <br>
    *                                     </pre>
-   *
    * @param groups A {@link List} of groups that are included/excluded in a given &lt;test&gt;
    * @return a map that represents the computed group names.
    */

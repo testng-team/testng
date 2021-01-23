@@ -1,5 +1,9 @@
 package org.testng.junit;
 
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
@@ -9,10 +13,12 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+interface INameFilter {
+
+  boolean accept(ConstructorOrMethod method);
+}
+
+/////////////
 
 /**
  * This class locates all test and configuration methods according to JUnit. It is used to change
@@ -21,6 +27,7 @@ import java.util.Set;
  * @author Cedric Beust, May 3, 2004
  */
 public class JUnitMethodFinder implements ITestMethodFinder {
+
   private final String m_testName;
   private final IAnnotationFinder m_annotationFinder;
 
@@ -121,10 +128,4 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   public ITestNGMethod[] getAfterGroupsConfigurationMethods(Class testClass) {
     return new ITestNGMethod[0];
   }
-}
-
-/////////////
-
-interface INameFilter {
-  boolean accept(ConstructorOrMethod method);
 }

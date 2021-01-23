@@ -15,6 +15,7 @@ public class TestClassWithMultipleGroupFailures {
   }
 
   @Test(groups = "all", dependsOnGroups = {"p1", "p2"})
-  public void child() {}
+  public void child() {
+  }
 
 }

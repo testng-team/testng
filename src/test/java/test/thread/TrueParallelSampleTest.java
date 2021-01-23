@@ -1,11 +1,11 @@
 package test.thread;
 
-import org.testng.annotations.Test;
-
 import java.util.Random;
+import org.testng.annotations.Test;
 
 @Test
 public class TrueParallelSampleTest extends BaseThreadTest {
+
   static Random random = new Random(System.currentTimeMillis());
 
   private void log(String s) {

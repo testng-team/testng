@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.testng.Assert;
 import org.testng.IDynamicGraph;
 import org.testng.IDynamicGraph.Status;
@@ -25,19 +24,6 @@ import test.TestClassContainerForGitHubIssue1360;
 
 public class DynamicGraphTest extends SimpleBaseTest {
 
-  private static class Node {
-    private final String name;
-
-    private Node(String name) {
-      this.name = name;
-    }
-
-    @Override
-    public String toString() {
-      return name;
-    }
-  }
-
   @SafeVarargs
   private static <T> void assertFreeNodesEquals(IDynamicGraph<T> graph, T... expected) {
     assertFreeNodesEquals(graph, Arrays.asList(expected));
@@ -46,6 +32,21 @@ public class DynamicGraphTest extends SimpleBaseTest {
   private static <T> void assertFreeNodesEquals(IDynamicGraph<T> graph, List<T> expected) {
     // Compare free nodes using isEqualTo instead of containsOnly as we care about ordering too.
     assertThat(graph.getFreeNodes()).isEqualTo(expected);
+  }
+
+  private static void runAssertion(IDynamicGraph<ITestNGMethod> graph, List<String> expected) {
+    List<ITestNGMethod> p1Methods = graph.getFreeNodes();
+    Assert.assertEquals(p1Methods.size(), 3);
+    graph.setStatus(p1Methods, Status.FINISHED);
+    for (ITestNGMethod p1Method : p1Methods) {
+      Assert.assertTrue(expected.contains(constructName(p1Method)));
+    }
+  }
+
+  private static String constructName(ITestNGMethod method) {
+    return method.getConstructorOrMethod().getDeclaringClass().getSimpleName()
+        + "."
+        + method.getMethodName();
   }
 
   @Test
@@ -219,10 +220,10 @@ public class DynamicGraphTest extends SimpleBaseTest {
   @Test
   public void testOrderingOfEdgesWithSameWeight() {
     Class<?>[] classes =
-        new Class[] {
-          TestClassContainerForGitHubIssue1360.TestNG1.class,
-          TestClassContainerForGitHubIssue1360.TestNG2.class,
-          TestClassContainerForGitHubIssue1360.TestNG3.class
+        new Class[]{
+            TestClassContainerForGitHubIssue1360.TestNG1.class,
+            TestClassContainerForGitHubIssue1360.TestNG2.class,
+            TestClassContainerForGitHubIssue1360.TestNG3.class
         };
     List<ITestNGMethod> methods = extractTestNGMethods(classes);
     DynamicGraph<ITestNGMethod> graph = new DynamicGraph<>();
@@ -274,21 +275,6 @@ public class DynamicGraphTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
     Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
-  }
-
-  private static void runAssertion(IDynamicGraph<ITestNGMethod> graph, List<String> expected) {
-    List<ITestNGMethod> p1Methods = graph.getFreeNodes();
-    Assert.assertEquals(p1Methods.size(), 3);
-    graph.setStatus(p1Methods, Status.FINISHED);
-    for (ITestNGMethod p1Method : p1Methods) {
-      Assert.assertTrue(expected.contains(constructName(p1Method)));
-    }
-  }
-
-  private static String constructName(ITestNGMethod method) {
-    return method.getConstructorOrMethod().getDeclaringClass().getSimpleName()
-        + "."
-        + method.getMethodName();
   }
 
   @Test
@@ -425,5 +411,19 @@ public class DynamicGraphTest extends SimpleBaseTest {
     assertThat(dg.getFreeNodes()).isEmpty();
     assertThat(dg.getNodeCountWithStatus(Status.READY)).isEqualTo(0);
     assertThat(dg.getNodeCountWithStatus(Status.FINISHED)).isEqualTo(100);
+  }
+
+  private static class Node {
+
+    private final String name;
+
+    private Node(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
   }
 }

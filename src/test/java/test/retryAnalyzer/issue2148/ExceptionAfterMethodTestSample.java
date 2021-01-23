@@ -11,12 +11,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ExceptionAfterMethodTestSample {
+
   static final AtomicInteger counter = new AtomicInteger(0);
   static final List<String> logs = new ArrayList<>();
 
   @BeforeMethod(alwaysRun = true)
   public void beforeMethod(ITestResult method) {
-    logs.add("Before Method [" + method.getMethod().getMethodName() + "] #" + counter.incrementAndGet());
+    logs.add(
+        "Before Method [" + method.getMethod().getMethodName() + "] #" + counter.incrementAndGet());
   }
 
   @Test(alwaysRun = true, retryAnalyzer = RetryAnalyzer.class)

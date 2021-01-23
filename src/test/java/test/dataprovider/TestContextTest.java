@@ -1,14 +1,19 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class TestContextTest extends SimpleBaseTest {
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{{10, "verifyTen"}, {5, "verifyFive"}};
+  }
 
   @Test
   public void verifySix() {
@@ -21,11 +26,6 @@ public class TestContextTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getFailedMethodNames()).hasSize(2);
-  }
-
-  @DataProvider
-  public static Object[][] dp() {
-    return new Object[][] {{10, "verifyTen"}, {5, "verifyFive"}};
   }
 
   @Test(dataProvider = "dp")

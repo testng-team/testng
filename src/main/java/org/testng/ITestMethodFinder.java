@@ -34,14 +34,14 @@ public interface ITestMethodFinder {
   /**
    * @param cls The test class
    * @return All the methods that should be invoked after the test class has been created and before
-   *     any of its test methods is invoked.
+   * any of its test methods is invoked.
    */
   ITestNGMethod[] getBeforeClassMethods(Class<?> cls);
 
   /**
    * @param cls The test class
    * @return All the methods that should be invoked after the test class has been created and after
-   *     all its test methods have completed.
+   * all its test methods have completed.
    */
   ITestNGMethod[] getAfterClassMethods(Class<?> cls);
 

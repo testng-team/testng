@@ -8,26 +8,27 @@ import org.testng.annotations.Test;
 
 @Test(groups = {"sub"})
 public class Sub extends Base {
+
   boolean m_beforeTest;
   boolean m_afterTest;
 
-    @BeforeClass
-    public void subSetup() {
-        System.out.println("sub before class");
-    }
+  @BeforeClass
+  public void subSetup() {
+    System.out.println("sub before class");
+  }
 
-    @AfterClass
-    public void subTeardown() {
-        System.out.println("sub after class");
-    }
+  @AfterClass
+  public void subTeardown() {
+    System.out.println("sub after class");
+  }
 
-    public void subTest() {
-        System.out.println ("sub test");
-    }
+  public void subTest() {
+    System.out.println("sub test");
+  }
 
-    @AfterSuite
-    public void verify() {
-      Assert.assertTrue(m_beforeTest);
-      Assert.assertTrue(m_afterTest);
-    }
+  @AfterSuite
+  public void verify() {
+    Assert.assertTrue(m_beforeTest);
+    Assert.assertTrue(m_afterTest);
+  }
 }

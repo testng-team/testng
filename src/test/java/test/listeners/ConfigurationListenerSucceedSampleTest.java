@@ -6,7 +6,8 @@ import org.testng.annotations.Test;
 public class ConfigurationListenerSucceedSampleTest {
 
   @BeforeMethod
-  public void bmShouldSucceed() {}
+  public void bmShouldSucceed() {
+  }
 
   @Test
   public void f() {

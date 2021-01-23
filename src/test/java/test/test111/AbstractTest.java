@@ -6,14 +6,14 @@ import org.testng.annotations.Test;
 
 public abstract class AbstractTest {
 
-	public static int R=0;
-	
-    @Test
-    public void testAbstract() {
-    }
+  public static int R = 0;
 
-    @AfterClass
-    public void afterClass() {
-        R++;
-    }
+  @Test
+  public void testAbstract() {
+  }
+
+  @AfterClass
+  public void afterClass() {
+    R++;
+  }
 }

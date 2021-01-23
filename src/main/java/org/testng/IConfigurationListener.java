@@ -1,6 +1,8 @@
 package org.testng;
 
-/** Listener interface for events related to configuration methods. */
+/**
+ * Listener interface for events related to configuration methods.
+ */
 public interface IConfigurationListener extends ITestNGListener {
 
   /**

@@ -1,13 +1,13 @@
 package test.configuration.issue1753;
 
+import java.lang.reflect.Method;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Method;
-
 public class ChildClassSample extends ParentClassSample {
+
   @BeforeMethod(alwaysRun = true)
   public void childClassBeforeMethod(Method method, ITestResult result) {
     result.setAttribute(
@@ -17,7 +17,8 @@ public class ChildClassSample extends ParentClassSample {
   }
 
   @Test
-  public void testMethod() {}
+  public void testMethod() {
+  }
 
   @AfterMethod(alwaysRun = true)
   public void childClassAfterMethod(Method method, ITestResult result) {

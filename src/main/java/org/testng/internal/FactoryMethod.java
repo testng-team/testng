@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
@@ -28,43 +27,17 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-/** This class represents a method annotated with @Factory */
+/**
+ * This class represents a method annotated with @Factory
+ */
 public class FactoryMethod extends BaseTestMethod {
 
   private final IFactoryAnnotation factoryAnnotation;
   private final Object m_instance;
   private final ITestContext m_testContext;
   private final ITestObjectFactory objectFactory;
-  private String m_factoryCreationFailedMessage = null;
   private final DataProviderHolder holder;
-
-  public String getFactoryCreationFailedMessage() {
-    return m_factoryCreationFailedMessage;
-  }
-
-  private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
-    IListenersAnnotation annotation =
-        annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
-    if (annotation == null) {
-      return;
-    }
-    Class<? extends ITestNGListener>[] listeners = annotation.getValue();
-    for (Class<? extends ITestNGListener> listener : listeners) {
-      Object obj = instance;
-      if (obj == null) {
-        obj = InstanceCreator.newInstanceOrNull(listener);
-      }
-
-      if (obj != null) {
-        if (IDataProviderListener.class.isAssignableFrom(obj.getClass())) {
-          holder.addListener((IDataProviderListener) obj);
-        }
-        if (IDataProviderInterceptor.class.isAssignableFrom(obj.getClass())) {
-          holder.addInterceptor((IDataProviderInterceptor) obj);
-        }
-      }
-    }
-  }
+  private String m_factoryCreationFailedMessage = null;
 
   // This constructor is intentionally created with package visibility because we dont have any
   // callers of this
@@ -87,7 +60,8 @@ public class FactoryMethod extends BaseTestMethod {
       }
       Class<?> cls = instance.getClass();
       String msg = "Found a default constructor and also a Factory method when working with "
-          + declaringClass.getName() + ". Root cause: Mismatch between instance/method classes:[" + cls.getName()
+          + declaringClass.getName() + ". Root cause: Mismatch between instance/method classes:["
+          + cls.getName()
           + "] [" + declaringClass.getName() + "]";
       throw new TestNGException(msg);
     }
@@ -132,6 +106,34 @@ public class FactoryMethod extends BaseTestMethod {
     return groups.toArray(new String[0]);
   }
 
+  public String getFactoryCreationFailedMessage() {
+    return m_factoryCreationFailedMessage;
+  }
+
+  private void init(Object instance, IAnnotationFinder annotationFinder, ConstructorOrMethod com) {
+    IListenersAnnotation annotation =
+        annotationFinder.findAnnotation(com.getDeclaringClass(), IListenersAnnotation.class);
+    if (annotation == null) {
+      return;
+    }
+    Class<? extends ITestNGListener>[] listeners = annotation.getValue();
+    for (Class<? extends ITestNGListener> listener : listeners) {
+      Object obj = instance;
+      if (obj == null) {
+        obj = InstanceCreator.newInstanceOrNull(listener);
+      }
+
+      if (obj != null) {
+        if (IDataProviderListener.class.isAssignableFrom(obj.getClass())) {
+          holder.addListener((IDataProviderListener) obj);
+        }
+        if (IDataProviderInterceptor.class.isAssignableFrom(obj.getClass())) {
+          holder.addInterceptor((IDataProviderInterceptor) obj);
+        }
+      }
+    }
+  }
+
   public IParameterInfo[] invoke() {
     List<IParameterInfo> result = Lists.newArrayList();
 
@@ -147,15 +149,15 @@ public class FactoryMethod extends BaseTestMethod {
 
     Iterator<Object[]> parameterIterator =
         Parameters.handleParameters(
-                this,
-                allParameterNames,
-                m_instance,
-                methodParameters,
-                m_testContext.getCurrentXmlTest().getSuite(),
-                m_annotationFinder,
-                null /* fedInstance */,
-                this.holder,
-                "@Factory")
+            this,
+            allParameterNames,
+            m_instance,
+            methodParameters,
+            m_testContext.getCurrentXmlTest().getSuite(),
+            m_annotationFinder,
+            null /* fedInstance */,
+            this.holder,
+            "@Factory")
             .parameters;
 
     try {
@@ -171,7 +173,7 @@ public class FactoryMethod extends BaseTestMethod {
         if (com.getMethod() != null) {
           Object[] testInstances = (Object[]) com.getMethod().invoke(m_instance, parameters);
           if (testInstances == null) {
-            testInstances = new Object[] {};
+            testInstances = new Object[]{};
           }
           if (testInstances.length == 0) {
             this.m_factoryCreationFailedMessage = String
@@ -180,7 +182,7 @@ public class FactoryMethod extends BaseTestMethod {
           }
           if (indices == null || indices.isEmpty()) {
             result.addAll(Arrays.stream(testInstances).map(instance ->
-              new ParameterInfo(instance, parameters)
+                new ParameterInfo(instance, parameters)
             ).collect(Collectors.toList()));
           } else {
             for (Integer index : indices) {
@@ -203,7 +205,7 @@ public class FactoryMethod extends BaseTestMethod {
               throw new IllegalStateException(
                   "Unsupported ITestObjectFactory " + objectFactory.getClass());
             }
-            result.add(new ParameterInfo(instance,  parameters));
+            result.add(new ParameterInfo(instance, parameters));
           }
           position++;
         }

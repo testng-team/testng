@@ -6,13 +6,13 @@ import org.testng.annotations.Test;
 
 public class EnumParameterSample {
 
-    public enum MyEnum {
-        VALUE_1, VALUE_2
-    }
+  @Test
+  @Parameters("parameter")
+  public void testMethod(MyEnum parameter) {
+    Assert.assertNotNull(parameter);
+  }
 
-    @Test
-    @Parameters("parameter")
-    public void testMethod(MyEnum parameter) {
-        Assert.assertNotNull(parameter);
-    }
+  public enum MyEnum {
+    VALUE_1, VALUE_2
+  }
 }

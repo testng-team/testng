@@ -8,4 +8,6 @@ import org.testng.ITestListener;
  *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
-public interface IResultListener extends ITestListener, IConfigurationListener {}
+public interface IResultListener extends ITestListener, IConfigurationListener {
+
+}

@@ -1,12 +1,12 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.*;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import java.util.List;
 import org.testng.thread.IExecutorFactory;
 
 public interface IConfiguration {
+
   IAnnotationFinder getAnnotationFinder();
 
   void setAnnotationFinder(IAnnotationFinder finder);
@@ -25,7 +25,8 @@ public interface IConfiguration {
 
   List<IExecutionListener> getExecutionListeners();
 
-  default void addExecutionListener(IExecutionListener l) {}
+  default void addExecutionListener(IExecutionListener l) {
+  }
 
   default boolean addExecutionListenerIfAbsent(IExecutionListener l) {
     return false;
@@ -39,9 +40,9 @@ public interface IConfiguration {
 
   void setAlwaysRunListeners(boolean alwaysRun);
 
-  void setExecutorFactory(IExecutorFactory factory);
-
   IExecutorFactory getExecutorFactory();
+
+  void setExecutorFactory(IExecutorFactory factory);
 
   IInjectorFactory getInjectorFactory();
 

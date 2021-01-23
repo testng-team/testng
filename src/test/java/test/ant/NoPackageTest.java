@@ -3,8 +3,11 @@ package test.ant;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-/** @author Filippo Diotalevi */
+/**
+ * @author Filippo Diotalevi
+ */
 public class NoPackageTest {
+
   private boolean m_run = false;
 
   @Test(groups = {"nopackage"})

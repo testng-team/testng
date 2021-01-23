@@ -1,5 +1,7 @@
 package test.thread.parallelization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.AfterClass;
@@ -18,9 +20,8 @@ import test.thread.parallelization.issue1773.PriorityTestSample2;
 import test.thread.parallelization.issue2110.TestClass;
 import test.thread.parallelization.issue2321.TestMultipleInstance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ThreadAffinityTest extends SimpleBaseTest {
+
   @BeforeClass
   public void setup() {
     System.setProperty(RuntimeBehavior.TESTNG_THREAD_AFFINITY, "true");
@@ -45,8 +46,10 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     XmlSuite xmlsuite = createXmlSuite("test_suite");
     xmlsuite.setParallel(XmlSuite.ParallelMode.TESTS);
     xmlsuite.setThreadCount(6);
-    createXmlTest(xmlsuite, "Test_1", PriorityTestSample1.class, PriorityTestSample2.class).setParallel(mode);
-    createXmlTest(xmlsuite, "Test_2", PriorityTestSample1.class,PriorityTestSample2.class).setParallel(mode);
+    createXmlTest(xmlsuite, "Test_1", PriorityTestSample1.class, PriorityTestSample2.class)
+        .setParallel(mode);
+    createXmlTest(xmlsuite, "Test_2", PriorityTestSample1.class, PriorityTestSample2.class)
+        .setParallel(mode);
     TestNG testng = create(xmlsuite);
     testng.setVerbose(2);
     LogGatheringListener listener = new LogGatheringListener();
@@ -57,17 +60,17 @@ public class ThreadAffinityTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp2")
   public Object[][] createTestData() {
-    return new Object[][] {
-            {XmlSuite.ParallelMode.NONE, 2},
-            {XmlSuite.ParallelMode.CLASSES, 4}
+    return new Object[][]{
+        {XmlSuite.ParallelMode.NONE, 2},
+        {XmlSuite.ParallelMode.CLASSES, 4}
     };
   }
 
   @DataProvider(name = "dp1")
   public Object[][] getData() {
-    return new Object[][] {
-      {PriorityTestSample1.class, PriorityTestSample2.class},
-      {MethodDependenciesSample1.class, MethodDependenciesSample2.class}
+    return new Object[][]{
+        {PriorityTestSample1.class, PriorityTestSample2.class},
+        {MethodDependenciesSample1.class, MethodDependenciesSample2.class}
     };
   }
 

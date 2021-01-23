@@ -1,18 +1,16 @@
 package test.parameters;
 
-import org.testng.Assert;
-import org.testng.ITestNGListener;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
-import org.testng.annotations.Test;
-
-import test.SimpleBaseTest;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import org.testng.Assert;
+import org.testng.ITestNGListener;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import test.SimpleBaseTest;
 
 public class ParamInheritanceTest extends SimpleBaseTest {
 
@@ -39,13 +37,12 @@ public class ParamInheritanceTest extends SimpleBaseTest {
       System.setErr(new PrintStream(os));
 
       tng.run();
-      
+
       Assert.assertEquals(tla.getPassedTests().size(), 1);
     } finally {
       try {
         os.close();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         //no need to handle this
       }
       System.setOut(out);

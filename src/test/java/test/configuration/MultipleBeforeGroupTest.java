@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 @Test(groups = "foo")
 public class MultipleBeforeGroupTest {
+
   private int m_count = 0;
 
   @BeforeGroups("foo")
@@ -14,7 +15,8 @@ public class MultipleBeforeGroupTest {
   }
 
   @Test()
-  public void test() {}
+  public void test() {
+  }
 
   @Test(dependsOnMethods = "test")
   public void verify() {

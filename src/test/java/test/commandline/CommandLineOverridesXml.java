@@ -1,15 +1,6 @@
 package test.commandline;
 
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
-import org.testng.annotations.Test;
-import org.testng.jarfileutils.JarCreator;
-import org.testng.xml.XmlSuite;
-
-import test.SimpleBaseTest;
-import test.commandline.issue341.LocalLogAggregator;
-import test.commandline.issue341.TestSampleA;
-import test.commandline.issue341.TestSampleB;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +10,37 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.jarfileutils.JarCreator;
+import org.testng.xml.XmlSuite;
+import test.SimpleBaseTest;
+import test.commandline.issue341.LocalLogAggregator;
+import test.commandline.issue341.TestSampleA;
+import test.commandline.issue341.TestSampleB;
 
 public class CommandLineOverridesXml extends SimpleBaseTest {
+
+  private static String createTemporarySuiteAndGetItsPath() throws IOException {
+    Path file = Files.createTempFile("testng", ".xml");
+    org.testng.reporters.Files.writeFile(
+        buildSuiteContentThatRefersToInvalidTestClass(), file.toFile());
+    return file.toFile().getAbsolutePath();
+  }
+
+  private static String buildSuiteContentThatRefersToInvalidTestClass() {
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n"
+        + "<suite name=\"1810_Suite\">\n"
+        + "    <test name=\"1810_test\">\n"
+        + "        <classes>\n"
+        + "            <class name=\"com.foo.bar.issue1810.ClassDoesnotExist\">\n"
+        + "            </class>\n"
+        + "        </classes>\n"
+        + "    </test>\n"
+        + "</suite>\n";
+  }
 
   @Test(description = "Specifying -groups on the command line should override testng.xml")
   public void commandLineGroupsShouldOverrideXml() {
@@ -43,8 +61,12 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     XmlSuite s = createXmlSuite(getClass().getName());
     createXmlTest(s, "Test", OverrideSampleTest.class.getName());
     TestNG tng = create();
-    if (group != null) tng.setGroups(group);
-    if (excludedGroups != null) tng.setExcludedGroups(excludedGroups);
+    if (group != null) {
+      tng.setGroups(group);
+    }
+    if (excludedGroups != null) {
+      tng.setExcludedGroups(excludedGroups);
+    }
     tng.setXmlSuites(Collections.singletonList(s));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
@@ -66,16 +88,16 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
 
   @Test(description = "GITHUB-341")
   public void ensureParallelismIsHonoredWhenOnlyClassesSpecifiedInJar() throws IOException {
-    Class<?>[] classes = new Class<?>[] {TestSampleA.class, TestSampleB.class};
+    Class<?>[] classes = new Class<?>[]{TestSampleA.class, TestSampleB.class};
     File jarfile = JarCreator.generateJar(classes);
     String[] args =
-        new String[] {
-          "-parallel",
-          "classes",
-          "-testjar",
-          jarfile.getAbsolutePath(),
-          "-listener",
-          LocalLogAggregator.class.getCanonicalName()
+        new String[]{
+            "-parallel",
+            "classes",
+            "-testjar",
+            jarfile.getAbsolutePath(),
+            "-listener",
+            LocalLogAggregator.class.getCanonicalName()
         };
     TestNG.privateMain(args, null);
     Set<String> logs = LocalLogAggregator.getLogs();
@@ -84,27 +106,7 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1810")
   public void ensureNoNullPointerExceptionIsThrown() throws IOException {
-    TestNG testng = TestNG.privateMain(new String[] {createTemporarySuiteAndGetItsPath()}, null);
+    TestNG testng = TestNG.privateMain(new String[]{createTemporarySuiteAndGetItsPath()}, null);
     assertThat(testng.getStatus()).isEqualTo(8);
-  }
-
-  private static String createTemporarySuiteAndGetItsPath() throws IOException {
-    Path file = Files.createTempFile("testng", ".xml");
-    org.testng.reporters.Files.writeFile(
-        buildSuiteContentThatRefersToInvalidTestClass(), file.toFile());
-    return file.toFile().getAbsolutePath();
-  }
-
-  private static String buildSuiteContentThatRefersToInvalidTestClass() {
-    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n"
-        + "<suite name=\"1810_Suite\">\n"
-        + "    <test name=\"1810_test\">\n"
-        + "        <classes>\n"
-        + "            <class name=\"com.foo.bar.issue1810.ClassDoesnotExist\">\n"
-        + "            </class>\n"
-        + "        </classes>\n"
-        + "    </test>\n"
-        + "</suite>\n";
   }
 }

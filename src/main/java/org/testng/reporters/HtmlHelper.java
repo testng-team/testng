@@ -1,11 +1,11 @@
 package org.testng.reporters;
 
-import org.testng.internal.Utils;
-
 import java.io.File;
 import java.io.IOException;
+import org.testng.internal.Utils;
 
 public class HtmlHelper {
+
   private static final String CSS_FILE_NAME = "testng.css";
   private static final String MY_CSS_FILE_NAME = "my-testng.css";
 

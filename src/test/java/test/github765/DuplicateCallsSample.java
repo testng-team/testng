@@ -15,6 +15,6 @@ public class DuplicateCallsSample extends TestTemplate<Integer> {
 
   @DataProvider(name = "testParameters")
   public Object[][] getOnboardingTestParameters() {
-    return new Object[][] {{4}};
+    return new Object[][]{{4}};
   }
 }

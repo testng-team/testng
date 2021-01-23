@@ -1,13 +1,12 @@
 package org.testng;
 
-import org.testng.collections.Maps;
-import org.testng.internal.XmlMethodSelector;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.testng.collections.Maps;
+import org.testng.internal.XmlMethodSelector;
 
 /**
  * This class maintains a map of {@code <Class, List<ITestNGMethod>>}. It is used by TestWorkers to
@@ -17,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
+
   private final Map<Object, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked

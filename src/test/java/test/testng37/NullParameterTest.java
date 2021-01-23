@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class NullParameterTest {
+
   @Test
   @Parameters({"notnull", "nullvalue"})
   public void nullParameter(String notNull, int mustBeNull) {

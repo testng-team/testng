@@ -6,13 +6,16 @@ import org.testng.annotations.*;
 public class Class1 extends SuperClass1 {
 
   @BeforeClass
-  public void beforeClass1() {}
+  public void beforeClass1() {
+  }
 
   @AfterClass
-  public void afterClass1() {}
+  public void afterClass1() {
+  }
 
   @BeforeMethod
-  public void beforeMethodClass1() {}
+  public void beforeMethodClass1() {
+  }
 
   @AfterMethod
   public void afterMethodClass1() {
@@ -20,8 +23,10 @@ public class Class1 extends SuperClass1 {
   }
 
   @Test
-  public void test1_1() {}
+  public void test1_1() {
+  }
 
   @Test
-  public void test1_2() {}
+  public void test1_2() {
+  }
 }

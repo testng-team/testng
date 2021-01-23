@@ -8,8 +8,8 @@ public class AnnotationTransformerDataProviderSampleTest {
 
   @DataProvider
   public Object[][] dp() {
-    return new Integer[][] {
-      new Integer[] {42},
+    return new Integer[][]{
+        new Integer[]{42},
     };
   }
 

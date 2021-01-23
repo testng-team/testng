@@ -5,7 +5,6 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class DependsOnGroupsTest extends SimpleBaseTest {
@@ -18,10 +17,10 @@ public class DependsOnGroupsTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
     String[] expected =
-        new String[] {
-          "zeroA", "zeroB",
-          "firstA", "firstB",
-          "secondA", "secondB"
+        new String[]{
+            "zeroA", "zeroB",
+            "firstA", "firstB",
+            "secondA", "secondB"
         };
     for (int i = 0; i < expected.length; i++) {
       ITestResult testResult = tla.getPassedTests().get(i);

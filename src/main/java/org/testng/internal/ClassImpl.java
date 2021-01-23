@@ -5,6 +5,8 @@ import static org.testng.internal.Utils.isStringNotEmpty;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.testng.GuiceHelper;
 import org.testng.IClass;
 import org.testng.IInjectorFactory;
@@ -18,30 +20,29 @@ import org.testng.collections.Objects;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.objects.pojo.DetailedAttributes;
-import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.util.List;
-import java.util.Map;
-
-/** Implementation of an IClass. */
+/**
+ * Implementation of an IClass.
+ */
 public class ClassImpl implements IClass {
 
   private final Class<?> m_class;
-  private Object m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
   private final List<Object> m_instances = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
-  private long[] m_instanceHashCodes;
   private final Object m_instance;
   private final ITestObjectFactory m_objectFactory;
-  private String m_testName = null;
   private final XmlClass m_xmlClass;
   private final ITestContext m_testContext;
   private final boolean m_hasParentModule;
+  private Object m_defaultInstance = null;
+  private long[] m_instanceHashCodes;
+  private String m_testName = null;
 
   public ClassImpl(
       ITestContext context,
@@ -68,6 +69,10 @@ public class ClassImpl implements IClass {
       }
     }
     m_hasParentModule = isStringNotEmpty(m_testContext.getSuite().getParentModule());
+  }
+
+  private static int computeHashCode(Object instance) {
+    return IParameterInfo.embeddedInstance(instance).hashCode();
   }
 
   @Override
@@ -116,10 +121,14 @@ public class ClassImpl implements IClass {
     return m_defaultInstance;
   }
 
-  /** @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise */
+  /**
+   * @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise
+   */
   private Object getInstanceFromGuice() {
     Injector injector = m_testContext.getInjector(this);
-    if (injector == null) return null;
+    if (injector == null) {
+      return null;
+    }
     return injector.getInstance(m_class);
   }
 
@@ -154,7 +163,7 @@ public class ClassImpl implements IClass {
         DetailedAttributes ea = newDetailedAttributes(create, errorMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, null, ea);
         result =
-            new Object[] {
+            new Object[]{
                 Dispenser.newInstance().dispense(attributes)
             };
       }
@@ -164,7 +173,7 @@ public class ClassImpl implements IClass {
     } else {
       Object defaultInstance = getDefaultInstance(create, errorMsgPrefix);
       if (defaultInstance != null) {
-        result = new Object[] {defaultInstance};
+        result = new Object[]{defaultInstance};
       }
     }
 
@@ -184,10 +193,6 @@ public class ClassImpl implements IClass {
   @Override
   public void addInstance(Object instance) {
     m_instances.add(instance);
-  }
-
-  private static int computeHashCode(Object instance) {
-    return IParameterInfo.embeddedInstance(instance).hashCode();
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {

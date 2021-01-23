@@ -7,6 +7,10 @@ public class AlwaysRunAfter2 {
 
   private static boolean m_success = true;
 
+  public static boolean success() {
+    return m_success;
+  }
+
   @BeforeClass
   public void setUpShouldFail() {
     throw new RuntimeException("Failing in setUp");
@@ -16,9 +20,5 @@ public class AlwaysRunAfter2 {
   @AfterClass
   public void tearDown() {
     m_success = false;
-  }
-
-  public static boolean success() {
-    return m_success;
   }
 }

@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 
 public final class Ints {
 
-  private Ints() {}
+  private Ints() {
+  }
 
   public static List<Integer> asList(int... ints) {
     return Arrays.stream(ints).boxed().collect(Collectors.toList());

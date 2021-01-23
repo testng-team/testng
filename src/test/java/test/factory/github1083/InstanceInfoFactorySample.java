@@ -1,12 +1,11 @@
 package test.factory.github1083;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IInstanceInfo;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.internal.InstanceInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InstanceInfoFactorySample {
 
@@ -18,16 +17,16 @@ public class InstanceInfoFactorySample {
     this.parameter = parameter;
   }
 
+  @Factory(indices = 1)
+  public static IInstanceInfo[] arrayFactory() {
+    return new IInstanceInfo[]{
+        new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("foo")),
+        new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("bar"))
+    };
+  }
+
   @Test
   public void test() {
     parameters.add(parameter);
-  }
-
-  @Factory(indices = 1)
-  public static IInstanceInfo[] arrayFactory() {
-    return new IInstanceInfo[] {
-      new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("foo")),
-      new InstanceInfo<>(InstanceInfoFactorySample.class, new InstanceInfoFactorySample("bar"))
-    };
   }
 }

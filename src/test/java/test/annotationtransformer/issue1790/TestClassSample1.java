@@ -4,6 +4,8 @@ import org.testng.annotations.Test;
 
 @Test
 public class TestClassSample1 {
+
   @Test
-  public void test11() {}
+  public void test11() {
+  }
 }

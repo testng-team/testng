@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class InterleavingSample {
+
   public final int n;
 
   public InterleavingSample(int n) {

@@ -6,6 +6,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class FactoryPoweredDataProviderWithoutListenerAnnotationSample {
+
   private int i;
 
   @Factory(dataProvider = "dp")
@@ -13,13 +14,13 @@ public class FactoryPoweredDataProviderWithoutListenerAnnotationSample {
     this.i = i;
   }
 
+  @DataProvider(name = "dp")
+  public static Object[][] getData() {
+    return new Object[][]{{1}, {2}};
+  }
+
   @Test
   public void testMethod() {
     Assert.assertTrue(i > 0);
-  }
-
-  @DataProvider(name = "dp")
-  public static Object[][] getData() {
-    return new Object[][] {{1}, {2}};
   }
 }

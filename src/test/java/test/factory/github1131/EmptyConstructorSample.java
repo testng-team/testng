@@ -13,11 +13,12 @@ public class EmptyConstructorSample {
     count++;
   }
 
-  @Test
-  public void test() {}
-
   @DataProvider
   public static Object[][] dataProvider() {
-    return new Object[][] {new Object[] {}, new Object[] {}};
+    return new Object[][]{new Object[]{}, new Object[]{}};
+  }
+
+  @Test
+  public void test() {
   }
 }

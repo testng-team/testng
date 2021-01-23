@@ -1,13 +1,12 @@
 package org.testng.internal;
 
-import java.util.List;
-
-import org.testng.annotations.Test;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.internal.Utils.join;
+
+import java.util.List;
+import org.testng.annotations.Test;
 
 /**
  * Unit tests for {@link Utils}.
@@ -15,6 +14,7 @@ import static org.testng.internal.Utils.join;
  * @author Tomas Pollak
  */
 public class UtilsTest {
+
   private static final char INVALID_CHAR = 0xFFFE;
   private static final char REPLACEMENT_CHAR = 0xFFFD;
 

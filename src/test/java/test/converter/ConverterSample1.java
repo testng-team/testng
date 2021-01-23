@@ -3,6 +3,7 @@ package test.converter;
 import junit.framework.TestCase;
 
 public class ConverterSample1 extends TestCase {
+
   @Override
   protected void setUp() throws Exception {
     super.setUp();
@@ -13,9 +14,12 @@ public class ConverterSample1 extends TestCase {
     super.tearDown();
   }
 
-  public final void testClassJunit() {}
+  public final void testClassJunit() {
+  }
 
-  public final void testSetClassId() {}
+  public final void testSetClassId() {
+  }
 
-  public final void testSetClassName() {}
+  public final void testSetClassName() {
+  }
 }

@@ -4,6 +4,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 public class RetryForDataDrivenTest implements IRetryAnalyzer {
+
   private int counter = 0;
 
   @Override

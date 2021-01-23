@@ -9,13 +9,6 @@ import org.testng.annotations.Test;
 
 public class TestClassWithDataProviderThatThrowsExceptions {
 
-  @Test(dataProvider = "dp", retryAnalyzer = SimplyRetry.class)
-  public void testMethod(String i) {
-    if ("First".equalsIgnoreCase(i) || "Second".equalsIgnoreCase(i)) {
-      Assert.fail();
-    }
-  }
-
   private static AtomicInteger counter = new AtomicInteger();
 
   @DataProvider(name = "dp")
@@ -25,16 +18,23 @@ public class TestClassWithDataProviderThatThrowsExceptions {
     };
   }
 
-  private static String foo(){
+  private static String foo() {
     counter.getAndIncrement();
 
-    if(counter.get() == 1){
+    if (counter.get() == 1) {
       return "First";
     }
-    if(counter.get() == 2){
+    if (counter.get() == 2) {
       return "Second";
     }
     throw new RuntimeException("TestNG doesn't handle an exception");
+  }
+
+  @Test(dataProvider = "dp", retryAnalyzer = SimplyRetry.class)
+  public void testMethod(String i) {
+    if ("First".equalsIgnoreCase(i) || "Second".equalsIgnoreCase(i)) {
+      Assert.fail();
+    }
   }
 
   public static class SimplyRetry implements IRetryAnalyzer {

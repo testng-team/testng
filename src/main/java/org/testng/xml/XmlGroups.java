@@ -1,11 +1,10 @@
 package org.testng.xml;
 
-import org.testng.collections.Lists;
-import org.testng.reporters.XMLStringBuffer;
+import static org.testng.collections.CollectionUtils.hasElements;
 
 import java.util.List;
-
-import static org.testng.collections.CollectionUtils.hasElements;
+import org.testng.collections.Lists;
+import org.testng.reporters.XMLStringBuffer;
 
 public class XmlGroups {
 
@@ -17,12 +16,12 @@ public class XmlGroups {
     return m_defines;
   }
 
-  public void addDefine(XmlDefine define) {
-    getDefines().add(define);
-  }
-
   public void setDefines(List<XmlDefine> defines) {
     m_defines = defines;
+  }
+
+  public void addDefine(XmlDefine define) {
+    getDefines().add(define);
   }
 
   public XmlRun getRun() {

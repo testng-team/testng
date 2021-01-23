@@ -14,14 +14,18 @@ public class ClassWithFailedBeforeClassMethodAndBeforeMethodAfterMethodAfterClas
   }
 
   @BeforeMethod
-  public void setupMethod() {}
+  public void setupMethod() {
+  }
 
   @Test
-  public void test1() {}
+  public void test1() {
+  }
 
   @AfterMethod
-  public void tearDownMethod() {}
+  public void tearDownMethod() {
+  }
 
   @AfterClass
-  public void tearDownClass() {}
+  public void tearDownClass() {
+  }
 }

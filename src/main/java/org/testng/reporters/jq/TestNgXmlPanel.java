@@ -32,7 +32,9 @@ public class TestNgXmlPanel extends BaseMultiSuitePanel {
   @Override
   public String getNavigatorLink(ISuite suite) {
     String fqName = suite.getXmlSuite().getFileName();
-    if (fqName == null) fqName = "/[unset file name]";
+    if (fqName == null) {
+      fqName = "/[unset file name]";
+    }
     return fqName.substring(fqName.lastIndexOf("/") + 1);
   }
 }

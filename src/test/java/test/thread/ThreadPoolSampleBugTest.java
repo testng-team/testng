@@ -3,6 +3,7 @@ package test.thread;
 import org.testng.annotations.Test;
 
 public class ThreadPoolSampleBugTest {
+
   private static final long TIMEOUT = 500;
 
   @Test(invocationCount = 1, threadPoolSize = 5)

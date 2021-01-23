@@ -6,7 +6,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.conffailure.github990.AbstractBaseSample;
@@ -22,6 +21,15 @@ import testhelper.OutputDirectoryPatch;
  */
 public class ConfigurationFailure extends SimpleBaseTest {
 
+  private static void runTest(Class<?>... classes) {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = create(classes);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.addListener(tla);
+    testng.setVerbose(0);
+    testng.run();
+  }
+
   @Test
   public void beforeTestClassFails() {
     runTest(ClassWithFailedBeforeTestClass.class, ClassWithFailedBeforeTestClassVerification.class);
@@ -36,15 +44,6 @@ public class ConfigurationFailure extends SimpleBaseTest {
     assertTrue(
         ClassWithFailedBeforeSuiteVerification.success(),
         "No @Configuration methods should have run");
-  }
-
-  private static void runTest(Class<?>... classes) {
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG testng = create(classes);
-    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.addListener(tla);
-    testng.setVerbose(0);
-    testng.run();
   }
 
   @Test(description = "GITHUB-990")

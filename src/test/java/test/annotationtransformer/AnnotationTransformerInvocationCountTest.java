@@ -1,13 +1,16 @@
 package test.annotationtransformer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-
 public class AnnotationTransformerInvocationCountTest {
+
+  @Test(invocationCount = 3)
+  public void concurrencyTest() {
+  }
 
   public static class InvocationCountTransformer implements IAnnotationTransformer {
 
@@ -28,7 +31,4 @@ public class AnnotationTransformerInvocationCountTest {
       }
     }
   }
-
-  @Test(invocationCount = 3)
-  public void concurrencyTest() {}
 }

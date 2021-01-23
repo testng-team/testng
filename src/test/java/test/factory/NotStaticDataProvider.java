@@ -6,8 +6,8 @@ public class NotStaticDataProvider {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-      new Object[] {43}, new Object[] {44},
+    return new Object[][]{
+        new Object[]{43}, new Object[]{44},
     };
   }
 }

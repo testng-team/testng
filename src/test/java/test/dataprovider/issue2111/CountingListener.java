@@ -7,6 +7,7 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 
 public class CountingListener implements IInvokedMethodListener {
+
   private List<ITestResult> results = Lists.newArrayList();
 
   @Override

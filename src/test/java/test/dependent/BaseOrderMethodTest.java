@@ -8,9 +8,14 @@ import org.testng.annotations.Test;
  * @author Cedric Beust, Aug 20, 2004
  */
 public class BaseOrderMethodTest {
+
   protected boolean[] m_group1 = {false, false};
   protected boolean[] m_group2 = {false, false};
   protected boolean[] m_group3 = {false};
+
+  public static void ppp(String s) {
+    System.out.println("[BaseOrderMethodTest] " + s);
+  }
 
   @Test(
       groups = {"2.0"},
@@ -28,19 +33,15 @@ public class BaseOrderMethodTest {
     m_group3[0] = true;
   }
 
-  public static void ppp(String s) {
-    System.out.println("[BaseOrderMethodTest] " + s);
-  }
-
   protected void verifyGroup(int groupNumber, boolean[] group) {
     for (int i = 0; i < group.length; i++) {
       assert group[i]
           : "Error while running group "
-              + groupNumber
-              + ": "
-              + " index "
-              + i
-              + " of previous group should have been run before.";
+          + groupNumber
+          + ": "
+          + " index "
+          + i
+          + " of previous group should have been run before.";
     }
   }
 }

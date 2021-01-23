@@ -11,8 +11,8 @@ public class SampleTestCase extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] dp() {
-    return new Object[][] {
-      {1},
+    return new Object[][]{
+        {1},
     };
   }
 

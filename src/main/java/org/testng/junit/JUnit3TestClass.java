@@ -2,7 +2,9 @@ package org.testng.junit;
 
 import junit.framework.Test;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 public class JUnit3TestClass extends JUnitTestClass {
 
   public JUnit3TestClass(Test test) {

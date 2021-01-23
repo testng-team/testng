@@ -5,6 +5,7 @@ import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 public class MethodsTestSample {
+
   @Test
   public void angry() {
     String methodName = Reporter.getCurrentTestResult().getMethod().getMethodName();

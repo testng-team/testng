@@ -1,10 +1,18 @@
 package org.testng.util;
 
+import java.util.Map;
 import org.testng.collections.Maps;
 
-import java.util.Map;
-
 public final class Strings {
+
+  private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();
+
+  static {
+    ESCAPE_HTML_MAP.put("&", "&amp;");
+    ESCAPE_HTML_MAP.put("<", "&lt;");
+    ESCAPE_HTML_MAP.put(">", "&gt;");
+  }
+
   private Strings() {
     // Utility class. Defeat instantiation.
   }
@@ -31,18 +39,10 @@ public final class Strings {
   /**
    * @param string - The input String.
    * @return - Returns an empty string if the input String is <code>null</code> (or) empty, else it
-   *     returns back the input string.
+   * returns back the input string.
    */
   public static String getValueOrEmpty(String string) {
     return isNotNullAndNotEmpty(string) ? string : "";
-  }
-
-  private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();
-
-  static {
-    ESCAPE_HTML_MAP.put("&", "&amp;");
-    ESCAPE_HTML_MAP.put("<", "&lt;");
-    ESCAPE_HTML_MAP.put(">", "&gt;");
   }
 
   public static String escapeHtml(String text) {

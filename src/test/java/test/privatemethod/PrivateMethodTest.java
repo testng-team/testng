@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 
 
 public class PrivateMethodTest {
+
   public PrivateMethodTest(String name, int value) {
   }
 
@@ -13,6 +14,7 @@ public class PrivateMethodTest {
   }
 
   public static class PrivateMethodInnerTest {
+
     @Test
     public void testPrivateMethod() {
       PrivateMethodTest pmt = new PrivateMethodTest("aname", 1);

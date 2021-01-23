@@ -10,16 +10,17 @@ import org.testng.xml.XmlTest;
 
 public class ParameterInjectAndOptionSample {
 
-    @BeforeSuite
-    @Parameters({ "beforesuitedata" })
-    public void beforeSuite(ITestContext context, @Optional("optionalbeforesuitedata") String beforesuitedata) {
-        Assert.assertEquals(beforesuitedata, "optionalbeforesuitedata");
-    }
+  @BeforeSuite
+  @Parameters({"beforesuitedata"})
+  public void beforeSuite(ITestContext context,
+      @Optional("optionalbeforesuitedata") String beforesuitedata) {
+    Assert.assertEquals(beforesuitedata, "optionalbeforesuitedata");
+  }
 
-    @Test
-    @Parameters({ "testdata" })
-    public void test(XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
-        Assert.assertEquals(testdata, "optionaltestdata");
-    }
+  @Test
+  @Parameters({"testdata"})
+  public void test(XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
+    Assert.assertEquals(testdata, "optionaltestdata");
+  }
 
 }

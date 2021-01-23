@@ -6,6 +6,7 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 
 public class LocalConfigListener implements IConfigurationListener {
+
   private List<String> messages = Lists.newLinkedList();
 
   @Override

@@ -4,7 +4,9 @@ import org.junit.runner.Description;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 public class JUnit4TestMethod extends JUnitTestMethod {
 
   public JUnit4TestMethod(JUnitTestClass owner, Description desc) {

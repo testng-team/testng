@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import java.util.Collection;
 import java.util.List;
-
 import java.util.function.BiPredicate;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
@@ -21,9 +20,13 @@ import org.testng.SuiteRunState;
  */
 public class Invoker implements IInvoker {
 
-  /** Predicate to filter methods */
+  /**
+   * Predicate to filter methods
+   */
   static final BiPredicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS = ITestNGMethod::canRunFromClass;
-  /** Predicate to filter methods */
+  /**
+   * Predicate to filter methods
+   */
   static final BiPredicate<ITestNGMethod, IClass> SAME_CLASS =
       (m, c) -> c == null || m.getTestClass().getName().equals(c.getName());
 
@@ -38,7 +41,8 @@ public class Invoker implements IInvoker {
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners, DataProviderHolder holder) {
-    m_configInvoker = new ConfigInvoker(notifier, invokedMethodListeners, testContext, state, configuration);
+    m_configInvoker = new ConfigInvoker(notifier, invokedMethodListeners, testContext, state,
+        configuration);
     m_testInvoker = new TestInvoker(notifier, testContext, state, configuration,
         invokedMethodListeners, holder,
         classListeners, skipFailedInvocationCounts, m_configInvoker);

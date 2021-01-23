@@ -5,8 +5,8 @@ import org.testng.annotations.Test;
 
 public class B extends Base {
 
-  @Test(groups= "a")
+  @Test(groups = "a")
   public void testB() throws Exception {
-    Base.s_childBWasRun= true;
+    Base.s_childBWasRun = true;
   }
 }

@@ -1,13 +1,13 @@
 package org.testng.annotations;
 
 import org.testng.IRetryAnalyzer;
-import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IDataProvidable;
 
 /**
  * Encapsulate the &#64;Test / &#64;testng.test annotation.
  */
 public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
+
   /**
    * Returns the number of times this method should be invoked.
    *

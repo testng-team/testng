@@ -1,40 +1,14 @@
 package org.testng.internal.annotations;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Ignore;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.util.Strings;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 public class IgnoreListener implements IAnnotationTransformer {
-
-  @Override
-  public void transform(
-      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
-    transform(annotation, testClass, testConstructor, testMethod, null);
-  }
-
-  @Override
-  public void transform(
-      ITestAnnotation annotation,
-      Class testClass,
-      Constructor tc,
-      Method testMethod,
-      Class<?> clazz) {
-    if (!annotation.getEnabled()) {
-      return;
-    }
-    Class<?> typedTestClass = testClass;
-    if (testMethod != null) {
-      ignoreTest(annotation, testMethod.getAnnotation(Ignore.class));
-      typedTestClass = testMethod.getDeclaringClass();
-    }
-    ignoreTestAtClass(typedTestClass, annotation);
-    ignoreTestAtClass(clazz, annotation);
-  }
 
   private static void ignoreTestAtClass(Class<?> clazz, ITestAnnotation annotation) {
     if (clazz != null) {
@@ -82,5 +56,30 @@ public class IgnoreListener implements IAnnotationTransformer {
       return null;
     }
     return findAnnotation(Package.getPackage(parentPackageName));
+  }
+
+  @Override
+  public void transform(
+      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+    transform(annotation, testClass, testConstructor, testMethod, null);
+  }
+
+  @Override
+  public void transform(
+      ITestAnnotation annotation,
+      Class testClass,
+      Constructor tc,
+      Method testMethod,
+      Class<?> clazz) {
+    if (!annotation.getEnabled()) {
+      return;
+    }
+    Class<?> typedTestClass = testClass;
+    if (testMethod != null) {
+      ignoreTest(annotation, testMethod.getAnnotation(Ignore.class));
+      typedTestClass = testMethod.getDeclaringClass();
+    }
+    ignoreTestAtClass(typedTestClass, annotation);
+    ignoreTestAtClass(clazz, annotation);
   }
 }

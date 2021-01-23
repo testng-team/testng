@@ -3,6 +3,7 @@ package org.testng.internal.junit;
 import org.testng.AssertJUnit;
 
 public class InexactComparisonCriteria extends ComparisonCriteria {
+
   public final double fDelta;
 
   public InexactComparisonCriteria(double delta) {
@@ -11,8 +12,10 @@ public class InexactComparisonCriteria extends ComparisonCriteria {
 
   @Override
   protected void assertElementsEqual(Object expected, Object actual) {
-    if (expected instanceof Double)
+    if (expected instanceof Double) {
       AssertJUnit.assertEquals((Double) expected, (Double) actual, fDelta);
-    else AssertJUnit.assertEquals((Float) expected, (Float) actual, fDelta);
+    } else {
+      AssertJUnit.assertEquals((Float) expected, (Float) actual, fDelta);
+    }
   }
 }

@@ -7,7 +7,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Objects;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
@@ -30,6 +29,7 @@ import org.testng.xml.XmlTest;
  * to do.
  */
 public class AnnotationHelper {
+
   private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
   private static final String SUFFIX = "Please check if all classes being referred to, in the annotation are available in the classpath.";
 
@@ -271,7 +271,8 @@ public class AnnotationHelper {
               continue;
             }
 
-            boolean shouldIgnore = isAnnotationPresent(annotationFinder, m, IIgnoreAnnotation.class);
+            boolean shouldIgnore = isAnnotationPresent(annotationFinder, m,
+                IIgnoreAnnotation.class);
             if (shouldIgnore) {
               Utils.log("", 2, "Method " + m + ""
                   + " is being skipped since its been marked to be ignored");
@@ -347,7 +348,7 @@ public class AnnotationHelper {
 
   /**
    * @return A hashcode representing the name of this method and its parameters, but without its
-   *     class
+   * class
    */
   private static String createMethodKey(Method m) {
     StringBuilder result = new StringBuilder(m.getName());
@@ -364,7 +365,9 @@ public class AnnotationHelper {
     try {
       return clazz.getAnnotation(a);
     } catch (Throwable t) {
-      String msg = "Encountered problems when parsing the annotation on class " + clazz.getCanonicalName() + ". ";
+      String msg =
+          "Encountered problems when parsing the annotation on class " + clazz.getCanonicalName()
+              + ". ";
       msg += SUFFIX;
       throw new TypeNotPresentException(msg, t);
     }
@@ -389,9 +392,10 @@ public class AnnotationHelper {
     try {
       return c.getAnnotation(a);
     } catch (Throwable t) {
-      String msg = "Encountered problems when parsing the annotation on constructor " + c.getName() + ". ";
+      String msg =
+          "Encountered problems when parsing the annotation on constructor " + c.getName() + ". ";
       msg += SUFFIX;
       throw new TypeNotPresentException(msg, t);
     }
   }
- }
+}

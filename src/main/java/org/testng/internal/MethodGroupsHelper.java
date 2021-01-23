@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.ITestClass;
@@ -120,7 +119,10 @@ public class MethodGroupsHelper {
         .noneMatch(eachCls -> eachCls.isAssignableFrom(cls) || cls.isAssignableFrom(eachCls));
   }
 
-  /** @return the map of groups and their corresponding methods from the extraction of <code>classes</code>. */
+  /**
+   * @return the map of groups and their corresponding methods from the extraction of
+   * <code>classes</code>.
+   */
   public static Map<String, List<ITestNGMethod>> findGroupsMethods(
       Collection<ITestClass> classes, boolean before) {
     Map<String, List<ITestNGMethod>> result = Maps.newHashMap();
@@ -152,7 +154,8 @@ public class MethodGroupsHelper {
       String[] includedGroups,
       Set<String> outGroups,
       Set<ITestNGMethod> outMethods) {
-    Map<ITestNGMethod, ITestNGMethod> runningMethods = includedMethods.stream().collect(Collectors.toMap(m -> m, m -> m));
+    Map<ITestNGMethod, ITestNGMethod> runningMethods = includedMethods.stream()
+        .collect(Collectors.toMap(m -> m, m -> m));
 
     Map<String, String> runningGroups = Arrays.stream(includedGroups)
         .collect(Collectors.toMap(g -> g, g -> g));
@@ -226,9 +229,9 @@ public class MethodGroupsHelper {
    * @param methods list of methods to search
    * @param groupRegexp regex representing the group
    * @return all the methods that belong to the group specified by the regular expression
-   *     groupRegExp. methods[] is the list of all the methods we are choosing from and method is
-   *     the method that owns the dependsOnGroups statement (only used if a group is missing to flag
-   *     an error on that method).
+   * groupRegExp. methods[] is the list of all the methods we are choosing from and method is the
+   * method that owns the dependsOnGroups statement (only used if a group is missing to flag an
+   * error on that method).
    */
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(
       ITestNGMethod method, ITestNGMethod[] methods, String groupRegexp) {
@@ -245,7 +248,7 @@ public class MethodGroupsHelper {
    * @param methods list of methods to search
    * @param groupRegexp regex representing the group
    * @return all the methods that belong to the group specified by the regular expression
-   *     groupRegExp. methods[] is the list of all the methods we are choosing from.
+   * groupRegExp. methods[] is the list of all the methods we are choosing from.
    */
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(
       ITestNGMethod[] methods, String groupRegexp) {

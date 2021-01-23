@@ -10,6 +10,7 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
 public class InvokerTest extends SimpleBaseTest {
+
   private static final String SMOKE = "smoketests";
   private static final String FUNCTIONAL_TESTS = "functionaltests";
 
@@ -37,19 +38,24 @@ public class InvokerTest extends SimpleBaseTest {
   }
 
   public static class UniqueGroupNamesSample {
+
     @BeforeGroups(groups = {InvokerTest.SMOKE})
-    public void before() {}
+    public void before() {
+    }
 
     @Test(groups = {InvokerTest.SMOKE})
-    public void test() {}
+    public void test() {
+    }
   }
 
   public static class RedundantGroupNamesSample {
 
     @BeforeGroups(groups = {InvokerTest.SMOKE, InvokerTest.FUNCTIONAL_TESTS})
-    public void before() {}
+    public void before() {
+    }
 
     @Test(groups = {InvokerTest.SMOKE, InvokerTest.FUNCTIONAL_TESTS})
-    public void test() {}
+    public void test() {
+    }
   }
 }

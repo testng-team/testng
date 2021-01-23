@@ -1,10 +1,10 @@
 package test.junit;
 
+import junit.framework.TestCase;
 import org.testng.Assert;
 
-import junit.framework.TestCase;
-
 public class SetNameTest extends TestCase {
+
   public static int m_ctorCount = 0;
 
   public SetNameTest() {

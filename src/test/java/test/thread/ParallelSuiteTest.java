@@ -1,17 +1,15 @@
 package test.thread;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class ParallelSuiteTest extends SimpleBaseTest {
 
@@ -25,7 +23,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
   @Test
   public void suitesShouldRunInParallel2() {
     runTest(5, 3, 3, null,
-            Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
+        Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
   }
 
   @Test(description = "Number of threads (2) is less than number of suites (3)")
@@ -43,7 +41,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
   }
 
   private void runTest(int suiteThreadPoolSize, int expectedThreadCount,
-        int expectedSuiteCount, Boolean randomizeSuites, List<String> paths) {
+      int expectedSuiteCount, Boolean randomizeSuites, List<String> paths) {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     tng.setSuiteThreadPoolSize(suiteThreadPoolSize);
@@ -58,7 +56,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
 
     Assert.assertEquals(BaseThreadTest.getThreadCount(), expectedThreadCount,
         "Thread count expected:" + expectedThreadCount
-        + " actual:" + BaseThreadTest.getThreadCount());
+            + " actual:" + BaseThreadTest.getThreadCount());
     Assert.assertEquals(BaseThreadTest.getSuitesMap().keySet().size(), expectedSuiteCount);
   }
 
@@ -74,17 +72,17 @@ public class ParallelSuiteTest extends SimpleBaseTest {
   @Test
   public void suitesShouldRunInParallel5() {
     runTest(5, 5, 7, null,
-            Collections.singletonList(getPathToResource("parallel-suites/suite-parallel-0.xml")));
+        Collections.singletonList(getPathToResource("parallel-suites/suite-parallel-0.xml")));
   }
 
   @Test(description = "Number of threads (2) is less than level of suites (3)")
   public void suitesShouldRunInParallel6() {
     runTest(2, 2, 7, null,
-            Collections.singletonList(getPathToResource("parallel-suites/suite-parallel-0.xml")));
+        Collections.singletonList(getPathToResource("parallel-suites/suite-parallel-0.xml")));
   }
 
   @Test(description = "If suiteThreadPoolSize and randomizeSuites are not specified" +
-  		" suites should run in order specified in XML")
+      " suites should run in order specified in XML")
   public void suitesShouldRunInOrder() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
@@ -103,14 +101,14 @@ public class ParallelSuiteTest extends SimpleBaseTest {
           + (SUITE_NAME_PREFIX + 2));
     }
     Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 2)
-          <= suitesMap.get(SUITE_NAME_PREFIX + 0));
+        <= suitesMap.get(SUITE_NAME_PREFIX + 0));
 
   }
 
   @Test(description = "Number of threads (1) is less than number of levels of suites (2)")
   public void suitesShouldRun1() {
     runTest(1, 1, 3, true,
-            Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
+        Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
   }
 
 }

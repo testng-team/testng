@@ -12,8 +12,10 @@ public class ClassWithFailedBeforeClassMethodAndAfterClass {
   }
 
   @Test
-  public void test1() {}
+  public void test1() {
+  }
 
   @AfterClass
-  public void tearDownClass() {}
+  public void tearDownClass() {
+  }
 }

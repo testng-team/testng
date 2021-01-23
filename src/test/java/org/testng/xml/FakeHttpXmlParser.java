@@ -1,10 +1,10 @@
 package org.testng.xml;
 
+import java.io.InputStream;
 import org.testng.TestNGException;
 
-import java.io.InputStream;
-
 public class FakeHttpXmlParser implements ISuiteParser {
+
   @Override
   public boolean accept(String fileName) {
     return fileName.startsWith("https") || fileName.startsWith("http");

@@ -7,9 +7,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -21,15 +19,28 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import org.xml.sax.SAXException;
 import test.SimpleBaseTest;
 import test.reports.SimpleFailedSample;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 public class FailedReporterParametersTest extends SimpleBaseTest {
+
   private File mTempDirectory;
+
+  private static Map<String, String> create(String prefix) {
+    Map<String, String> params = Maps.newHashMap();
+    params.put(prefix + "Param", prefix + "ParamValue");
+    return params;
+  }
+
+  private static void runAssertions(File outputDir, String expectedFormat, String[] expectedKeys) {
+    File failed = new File(outputDir, "testng-failed.xml");
+    for (String expectedKey : expectedKeys) {
+      List<String> resultLines = Lists.newArrayList();
+      grep(failed, String.format(expectedFormat, expectedKey, expectedKey + "Value"), resultLines);
+      int expectedSize = 1;
+      Assert.assertEquals(resultLines.size(), expectedSize, "Mismatch param:" + expectedKey);
+    }
+  }
 
   @BeforeMethod
   public void setUp() {
@@ -62,7 +73,7 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
     runAssertions(
         mTempDirectory,
         "<parameter name=\"%s\" value=\"%s\"/>",
-        new String[] {"suiteParam", "testParam", "classParam", "methodParam"});
+        new String[]{"suiteParam", "testParam", "classParam", "methodParam"});
   }
 
   @Test(description = "github-2008")
@@ -87,15 +98,17 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
     tng.run();
 
     Collection<XmlSuite> failedSuites =
-            new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()).parse();
+        new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
+            .parse();
     XmlSuite failedSuite = failedSuites.iterator().next();
     XmlTest failedTest = failedSuite.getTests().get(0);
     XmlClass failedClass1 = failedTest.getClasses().stream()
-            .filter( failedClass -> failedClass.getName().equals("test.reports.SimpleFailedSample"))
-            .findFirst().get();
+        .filter(failedClass -> failedClass.getName().equals("test.reports.SimpleFailedSample"))
+        .findFirst().get();
     XmlClass failedClass2 = failedTest.getClasses().stream()
-            .filter( failedClass -> failedClass.getName().equals("test.failedreporter.FailedReporterParametersTest$AnotherSimpleFailedSample"))
-            .findFirst().get();
+        .filter(failedClass -> failedClass.getName()
+            .equals("test.failedreporter.FailedReporterParametersTest$AnotherSimpleFailedSample"))
+        .findFirst().get();
 
     // Cheeck class1 Parameters
     Assert.assertEquals("44", failedClass1.getAllParameters().get("sharedParameter"));
@@ -107,22 +120,6 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
     Assert.assertEquals("56", failedClass2.getAllParameters().get("class2Parameter"));
     Assert.assertNull(failedClass2.getAllParameters().get("class1Parameter"));
 
-  }
-
-  private static Map<String, String> create(String prefix) {
-    Map<String, String> params = Maps.newHashMap();
-    params.put(prefix + "Param", prefix + "ParamValue");
-    return params;
-  }
-
-  private static void runAssertions(File outputDir, String expectedFormat, String[] expectedKeys) {
-    File failed = new File(outputDir, "testng-failed.xml");
-    for (String expectedKey : expectedKeys) {
-      List<String> resultLines = Lists.newArrayList();
-      grep(failed, String.format(expectedFormat, expectedKey, expectedKey + "Value"), resultLines);
-      int expectedSize = 1;
-      Assert.assertEquals(resultLines.size(), expectedSize, "Mismatch param:" + expectedKey);
-    }
   }
 
   class AnotherSimpleFailedSample {

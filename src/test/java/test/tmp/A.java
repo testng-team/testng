@@ -5,7 +5,8 @@ import org.testng.asserts.SoftAssert;
 
 @Test
 public class A {
-//  private FlexibleAssert m_assert = new FlexibleAssert();
+
+  //  private FlexibleAssert m_assert = new FlexibleAssert();
   private SoftAssert m_assert = new SoftAssert();
 //  private LoggingAssert m_assert = new LoggingAssert();
 

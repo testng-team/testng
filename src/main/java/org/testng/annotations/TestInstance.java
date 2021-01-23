@@ -13,4 +13,6 @@ import java.lang.annotation.Target;
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({PARAMETER})
-public @interface TestInstance {}
+public @interface TestInstance {
+
+}

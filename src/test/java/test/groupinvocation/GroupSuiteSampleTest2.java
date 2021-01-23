@@ -5,11 +5,14 @@ import org.testng.annotations.Test;
 public class GroupSuiteSampleTest2 {
 
   @Test(groups = "a")
-  public void a2() {}
+  public void a2() {
+  }
 
   @Test(groups = "b")
-  public void b2() {}
+  public void b2() {
+  }
 
   @Test
-  public void c2() {}
+  public void c2() {
+  }
 }

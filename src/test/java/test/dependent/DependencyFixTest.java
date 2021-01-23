@@ -5,6 +5,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 public class DependencyFixTest {
+
   @Test(dependsOnMethods = "helloWorld", ignoreMissingDependencies = true)
   public void dependentOnNonExistingMethod() {
     assertTrue(true);

@@ -1,5 +1,10 @@
 package org.testng.internal.paramhandler;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -11,13 +16,8 @@ import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 public class FakeTestNGMethod implements ITestNGMethod {
+
   private final ConstructorOrMethod consMethod;
   private Class<?> clazz;
   private XmlTest xmlTest;
@@ -51,7 +51,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setTestClass(ITestClass cls) {}
+  public void setTestClass(ITestClass cls) {
+  }
 
   @Override
   public String getMethodName() {
@@ -84,7 +85,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setMissingGroup(String group) {}
+  public void setMissingGroup(String group) {
+  }
 
   @Override
   public String[] getBeforeGroups() {
@@ -102,7 +104,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void addMethodDependedUpon(String methodName) {}
+  public void addMethodDependedUpon(String methodName) {
+  }
 
   @Override
   public boolean isTest() {
@@ -165,7 +168,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setTimeOut(long timeOut) {}
+  public void setTimeOut(long timeOut) {
+  }
 
   @Override
   public int getInvocationCount() {
@@ -173,7 +177,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setInvocationCount(int count) {}
+  public void setInvocationCount(int count) {
+  }
 
   @Override
   public int getSuccessPercentage() {
@@ -186,7 +191,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setId(String id) {}
+  public void setId(String id) {
+  }
 
   @Override
   public long getDate() {
@@ -194,7 +200,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setDate(long date) {}
+  public void setDate(long date) {
+  }
 
   @Override
   public boolean canRunFromClass(IClass testClass) {
@@ -212,7 +219,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setThreadPoolSize(int threadPoolSize) {}
+  public void setThreadPoolSize(int threadPoolSize) {
+  }
 
   @Override
   public boolean getEnabled() {
@@ -225,10 +233,12 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setDescription(String description) {}
+  public void setDescription(String description) {
+  }
 
   @Override
-  public void incrementCurrentInvocationCount() {}
+  public void incrementCurrentInvocationCount() {
+  }
 
   @Override
   public int getCurrentInvocationCount() {
@@ -236,15 +246,17 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setParameterInvocationCount(int n) {}
-
-  @Override
   public int getParameterInvocationCount() {
     return 0;
   }
 
   @Override
-  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {}
+  public void setParameterInvocationCount(int n) {
+  }
+
+  @Override
+  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {
+  }
 
   @Override
   public boolean hasMoreInvocation() {
@@ -267,7 +279,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {}
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+  }
 
   @Override
   public boolean skipFailedInvocations() {
@@ -275,7 +288,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setSkipFailedInvocations(boolean skip) {}
+  public void setSkipFailedInvocations(boolean skip) {
+  }
 
   @Override
   public long getInvocationTimeOut() {
@@ -288,7 +302,8 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setIgnoreMissingDependencies(boolean ignore) {}
+  public void setIgnoreMissingDependencies(boolean ignore) {
+  }
 
   @Override
   public List<Integer> getInvocationNumbers() {
@@ -296,10 +311,12 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setInvocationNumbers(List<Integer> numbers) {}
+  public void setInvocationNumbers(List<Integer> numbers) {
+  }
 
   @Override
-  public void addFailedInvocationNumber(int number) {}
+  public void addFailedInvocationNumber(int number) {
+  }
 
   @Override
   public List<Integer> getFailedInvocationNumbers() {
@@ -312,15 +329,17 @@ public class FakeTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setPriority(int priority) {}
-  
+  public void setPriority(int priority) {
+  }
+
   @Override
   public int getInterceptedPriority() {
     return 0;
   }
-  
+
   @Override
-  public void setInterceptedPriority(int priority) {}
+  public void setInterceptedPriority(int priority) {
+  }
 
   @Override
   public XmlTest getXmlTest() {

@@ -1,38 +1,42 @@
 package test.groupinvocation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.common.base.Joiner;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-/** Test that <suite> tags can have g. */
+/**
+ * Test that <suite> tags can have g.
+ */
 public class GroupSuiteTest extends SimpleBaseTest {
 
   private static final File PARENT = new File(getPathToResource("groupinvocation"));
 
   @DataProvider
   private static Object[][] dp() {
-    return new Object[][] {
-      {new String[] {"suiteA.xml", "suiteB.xml"}, /* Group in xml */ true},
-      {new String[] {"suiteA.xml", "suiteB.xml"}, /* Group in TestNG */ false},
-      {new String[] {"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in xml */ true},
-      {new String[] {"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in TestNG */ false},
-      {new String[0], /* Group in xml */ true},
-      {new String[0], /* Group in TestNG */ false}
+    return new Object[][]{
+        {new String[]{"suiteA.xml", "suiteB.xml"}, /* Group in xml */ true},
+        {new String[]{"suiteA.xml", "suiteB.xml"}, /* Group in TestNG */ false},
+        {new String[]{"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in xml */ true},
+        {new String[]{"parent-suiteA.xml", "parent-suiteB.xml"}, /* Group in TestNG */ false},
+        {new String[0], /* Group in xml */ true},
+        {new String[0], /* Group in TestNG */ false}
     };
+  }
+
+  private static List<String> g(String... groups) {
+    return Arrays.asList(groups);
   }
 
   @Test(dataProvider = "dp")
@@ -152,9 +156,5 @@ public class GroupSuiteTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getInvokedMethodNames()).containsExactly(methods);
-  }
-
-  private static List<String> g(String... groups) {
-    return Arrays.asList(groups);
   }
 }

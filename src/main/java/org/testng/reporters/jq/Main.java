@@ -3,6 +3,11 @@ package org.testng.reporters.jq;
 import static org.testng.reporters.jq.BasePanel.C;
 import static org.testng.reporters.jq.BasePanel.D;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
@@ -11,29 +16,24 @@ import org.testng.reporters.Files;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
 public class Main implements IReporter {
+
+  public static final String REPORT_HEADER_FILE = "header";
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES =
-      new String[] {
-        "jquery.min.js",
-        "testng-reports.css",
-        "testng-reports.js",
-        "testng-reports1.css",
-        "testng-reports2.js",
-        "passed.png",
-        "failed.png",
-        "skipped.png",
-        "navigator-bullet.png",
-        "bullet_point.png",
-        "collapseall.gif"
+      new String[]{
+          "jquery.min.js",
+          "testng-reports.css",
+          "testng-reports.js",
+          "testng-reports1.css",
+          "testng-reports2.js",
+          "passed.png",
+          "failed.png",
+          "skipped.png",
+          "navigator-bullet.png",
+          "bullet_point.png",
+          "collapseall.gif"
       };
-  public static final String REPORT_HEADER_FILE = "header";
 
   @Override
   public void generateReport(

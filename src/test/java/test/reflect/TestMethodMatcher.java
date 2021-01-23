@@ -1,5 +1,6 @@
 package test.reflect;
 
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -11,14 +12,13 @@ import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
-
 /**
  * Created on 12/24/15
  *
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class TestMethodMatcher {
+
   private static Method getMethod(final String methodName) {
     Method method = null;
     for (final Method m : TestMethodMatcher.class.getMethods()) {
@@ -32,55 +32,56 @@ public class TestMethodMatcher {
   @DataProvider
   public Object[][] methodParamPairs() {
     return new Object[][]{
-      new Object[]{"goodTestIssue122", new Object[]{"3", new String[]{"three", "four"}}},
-      new Object[]{"badTestIssue122", new Object[]{"3", new String[]{"three", "four"}}},
-      new Object[]{"goodTestIssue122", new Object[]{"3", "three", "four"}},
-      new Object[]{"badTestIssue122", new Object[]{"3", "three", "four"}},
-      new Object[]{"mixedArgs", new Object[]{3, true, new String[]{"three"}, "four"}},
-      new Object[]{"mixedArgs", new Object[]{3, true, new String[]{"three"}, new String[]{"four"}}},
-      new Object[]{"potpourri0",
-        new Object[]{
-          getMethod("mixedArgs"),
-          new XmlTestJustForTesting(),
-          3,
-          getMethod("badTestIssue122"),
-          new TestContextJustForTesting(),
-          true,
-          new TestResultJustForTesting(),
-          new String[]{"three"},
-          new String[]{"four"}}
-      },
-      new Object[]{"potpourri1",
-        new Object[]{
-          getMethod("mixedArgs"),
-          new XmlTestJustForTesting(),
-          3,
-          getMethod("badTestIssue122"),
-          new TestContextJustForTesting(),
-          true,
-          new TestResultJustForTesting(),
-          new String[]{"three"},
-          new String[]{"four"}}
-      },
+        new Object[]{"goodTestIssue122", new Object[]{"3", new String[]{"three", "four"}}},
+        new Object[]{"badTestIssue122", new Object[]{"3", new String[]{"three", "four"}}},
+        new Object[]{"goodTestIssue122", new Object[]{"3", "three", "four"}},
+        new Object[]{"badTestIssue122", new Object[]{"3", "three", "four"}},
+        new Object[]{"mixedArgs", new Object[]{3, true, new String[]{"three"}, "four"}},
+        new Object[]{"mixedArgs",
+            new Object[]{3, true, new String[]{"three"}, new String[]{"four"}}},
+        new Object[]{"potpourri0",
+            new Object[]{
+                getMethod("mixedArgs"),
+                new XmlTestJustForTesting(),
+                3,
+                getMethod("badTestIssue122"),
+                new TestContextJustForTesting(),
+                true,
+                new TestResultJustForTesting(),
+                new String[]{"three"},
+                new String[]{"four"}}
+        },
+        new Object[]{"potpourri1",
+            new Object[]{
+                getMethod("mixedArgs"),
+                new XmlTestJustForTesting(),
+                3,
+                getMethod("badTestIssue122"),
+                new TestContextJustForTesting(),
+                true,
+                new TestResultJustForTesting(),
+                new String[]{"three"},
+                new String[]{"four"}}
+        },
     };
   }
 
   @DataProvider
   public Object[][] methodParamFailingPairs() {
     return new Object[][]{
-      new Object[]{"goodTestIssue122", new Object[]{3, "three", "four"}},
-      new Object[]{"badTestIssue122", new Object[]{3, "three", "four"}},
-      new Object[]{"mixedArgs", new Object[]{3, true, "three", "four"}},
+        new Object[]{"goodTestIssue122", new Object[]{3, "three", "four"}},
+        new Object[]{"badTestIssue122", new Object[]{3, "three", "four"}},
+        new Object[]{"mixedArgs", new Object[]{3, true, "three", "four"}},
     };
   }
 
 
   @Test(dataProvider = "methodParamPairs")
   public void testMatcher(final String methodName, final Object[] params,
-                          final ITestContext iTestContext, final ITestResult iTestResult) {
+      final ITestContext iTestContext, final ITestResult iTestResult) {
     final Method method = getMethod(methodName);
     final MethodMatcher matcher = new DataProviderMethodMatcher(
-      new MethodMatcherContext(method, params, iTestContext, iTestResult));
+        new MethodMatcherContext(method, params, iTestContext, iTestResult));
     try {
       method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
     } catch (final Throwable throwable) {
@@ -92,10 +93,10 @@ public class TestMethodMatcher {
 
   @Test(dataProvider = "methodParamFailingPairs")
   public void testNegativeCaseMatcher(final String methodName, final Object[] params,
-                                      final ITestContext iTestContext, final ITestResult iTestResult) {
+      final ITestContext iTestContext, final ITestResult iTestResult) {
     final Method method = getMethod(methodName);
     final MethodMatcher matcher = new DataProviderMethodMatcher(
-      new MethodMatcherContext(method, params, iTestContext, iTestResult));
+        new MethodMatcherContext(method, params, iTestContext, iTestResult));
     Assert.assertFalse(matcher.conforms());
     try {
       method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
@@ -121,8 +122,8 @@ public class TestMethodMatcher {
   }
 
   public void mixedArgs(
-    final int i, final Boolean b,
-    final String[] s1, final String... strings
+      final int i, final Boolean b,
+      final String[] s1, final String... strings
   ) {
     for (String item : strings) {
       System.out.println("An item is \"" + item + "\"");
@@ -139,19 +140,19 @@ public class TestMethodMatcher {
   }
 
   public void potpourri0(
-    @NoInjection final Method myMethod1,
-    @NoInjection final XmlTest myXmlTest,
-    final Method currentTestMethod,
-    final int i,
-    final Method myMethod2,
-    final ITestContext iTestContext,
-    @NoInjection final ITestContext myTestContext,
-    final Boolean b,
-    @NoInjection final ITestResult myTestResult,
-    final ITestResult iTestResult,
-    final String[] s1,
-    final XmlTest xmlTest,
-    final String... strings
+      @NoInjection final Method myMethod1,
+      @NoInjection final XmlTest myXmlTest,
+      final Method currentTestMethod,
+      final int i,
+      final Method myMethod2,
+      final ITestContext iTestContext,
+      @NoInjection final ITestContext myTestContext,
+      final Boolean b,
+      @NoInjection final ITestResult myTestResult,
+      final ITestResult iTestResult,
+      final String[] s1,
+      final XmlTest xmlTest,
+      final String... strings
   ) {
     System.out.println("MyMethod1 is \"" + myMethod1 + "\"");
     System.out.println("MyMethod2 is \"" + myMethod2 + "\"");
@@ -189,19 +190,19 @@ public class TestMethodMatcher {
   }
 
   public void potpourri1(
-    @NoInjection final Method myMethod1,
-    @NoInjection final XmlTest myXmlTest,
-    final Method currentTestMethod,
-    final int i,
-    final Method myMethod2,
-    final ITestContext iTestContext,
-    @NoInjection final ITestContext myTestContext,
-    final Boolean b,
-    @NoInjection final ITestResult myTestResult,
-    final ITestResult iTestResult,
-    final String[] s1,
-    final XmlTest xmlTest,
-    final String[] strings
+      @NoInjection final Method myMethod1,
+      @NoInjection final XmlTest myXmlTest,
+      final Method currentTestMethod,
+      final int i,
+      final Method myMethod2,
+      final ITestContext iTestContext,
+      @NoInjection final ITestContext myTestContext,
+      final Boolean b,
+      @NoInjection final ITestResult myTestResult,
+      final ITestResult iTestResult,
+      final String[] s1,
+      final XmlTest xmlTest,
+      final String[] strings
   ) {
     System.out.println("MyMethod1 is \"" + myMethod1 + "\"");
     System.out.println("MyMethod2 is \"" + myMethod2 + "\"");

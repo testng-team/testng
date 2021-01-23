@@ -48,7 +48,8 @@ public class TestClassSample implements IConfigurable {
   }
 
   @Test
-  public void runTest() {}
+  public void runTest() {
+  }
 
   private void runConfiguration() {
     if (counter++ == 2) {

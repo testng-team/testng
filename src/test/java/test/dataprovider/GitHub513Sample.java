@@ -8,7 +8,7 @@ public class GitHub513Sample {
 
   @DataProvider
   public static Object[][] testData() {
-    return new Object[][] {new Object[] {"a", "b", "c", "d"}};
+    return new Object[][]{new Object[]{"a", "b", "c", "d"}};
   }
 
   @Test(dataProvider = "testData")

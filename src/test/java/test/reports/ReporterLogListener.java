@@ -20,7 +20,7 @@ public class ReporterLogListener extends TestListenerAdapter {
     Reporter.log("Listener: onTestFailure");
     super.onTestFailure(result);
   }
-  
+
   @Override
   public void onTestSkipped(ITestResult result) {
     Reporter.log("Listener: onTestSkipped");

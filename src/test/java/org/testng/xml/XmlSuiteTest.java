@@ -1,10 +1,6 @@
 package org.testng.xml;
 
-import org.testng.TestNG;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import test.SimpleBaseTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,8 +8,11 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.collections.Lists;
+import test.SimpleBaseTest;
 
 public class XmlSuiteTest extends SimpleBaseTest {
 
@@ -55,9 +54,9 @@ public class XmlSuiteTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {
-      {"1000", 1, 2},
-      {"", 0, 0}
+    return new Object[][]{
+        {"1000", 1, 2},
+        {"", 0, 0}
     };
   }
 
@@ -110,6 +109,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
   }
 
   static class StringOutputStream extends OutputStream {
+
     private StringBuilder string = new StringBuilder();
 
     @Override

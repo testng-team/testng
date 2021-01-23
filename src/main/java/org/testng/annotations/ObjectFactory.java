@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)
-public @interface ObjectFactory {}
+public @interface ObjectFactory {
+
+}

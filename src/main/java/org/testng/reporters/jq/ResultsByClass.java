@@ -1,15 +1,15 @@
 package org.testng.reporters.jq;
 
-import org.testng.ITestResult;
-import org.testng.collections.ListMultiMap;
-import org.testng.collections.Maps;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import org.testng.ITestResult;
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Maps;
 
 public class ResultsByClass {
+
   public static final Comparator<ITestResult> METHOD_NAME_COMPARATOR =
       new Comparator<ITestResult>() {
 

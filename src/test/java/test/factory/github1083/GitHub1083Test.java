@@ -1,17 +1,33 @@
 package test.factory.github1083;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Field;
+import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class GitHub1083Test extends SimpleBaseTest {
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        new Object[]{ArrayFactorySample.class},
+        new Object[]{ConstructorFactorySample.class},
+        new Object[]{DataProviderArrayFactorySample.class},
+        new Object[]{DataProviderInstanceInfoFactorySample.class},
+        new Object[]{InstanceInfoFactorySample.class}
+    };
+  }
+
+  public static List<String> getParameters(Class<?> clazz)
+      throws NoSuchFieldException, IllegalAccessException {
+    Field parameters = clazz.getField("parameters");
+    return (List<String>) parameters.get(null);
+  }
 
   @Test(dataProvider = "dp")
   public void testArrayFactorySample(Class<?> sampleClass)
@@ -27,22 +43,5 @@ public class GitHub1083Test extends SimpleBaseTest {
 
     assertThat(parameters).containsExactly("bar");
     assertThat(listener.getSucceedMethodNames()).containsExactly("test");
-  }
-
-  @DataProvider
-  public static Object[][] dp() {
-    return new Object[][] {
-      new Object[] {ArrayFactorySample.class},
-      new Object[] {ConstructorFactorySample.class},
-      new Object[] {DataProviderArrayFactorySample.class},
-      new Object[] {DataProviderInstanceInfoFactorySample.class},
-      new Object[] {InstanceInfoFactorySample.class}
-    };
-  }
-
-  public static List<String> getParameters(Class<?> clazz)
-      throws NoSuchFieldException, IllegalAccessException {
-    Field parameters = clazz.getField("parameters");
-    return (List<String>) parameters.get(null);
   }
 }

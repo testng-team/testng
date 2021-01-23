@@ -1,44 +1,50 @@
 package org.testng.xml;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Queue;
-import java.util.ArrayDeque;
+import java.util.ServiceLoader;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
-/** <code>Parser</code> is a parser for a TestNG XML test suite file. */
+/**
+ * <code>Parser</code> is a parser for a TestNG XML test suite file.
+ */
 @SuppressWarnings("unused")
 public class Parser {
 
-  /** The name of the TestNG DTD. */
+  /**
+   * The name of the TestNG DTD.
+   */
   public static final String TESTNG_DTD = "testng-1.0.dtd";
 
-  /** The URL to the deprecated TestNG DTD. */
+  /**
+   * The URL to the deprecated TestNG DTD.
+   */
   //It has to be public because its being used by TestNG eclipse plugin
   public static final String OLD_TESTNG_DTD_URL = "https://beust.com/testng/" + TESTNG_DTD;
 
-  /** The URL to the TestNG DTD. */
+  /**
+   * The URL to the TestNG DTD.
+   */
   //It has to be public because its being used by TestNG eclipse plugin
   public static final String TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
   public static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
-
-  private static final List<String> DOMAINS = Arrays.asList("beust.com", "testng.org");
-
-  /** The default file name for the TestNG test suite if none is specified (testng.xml). */
+  /**
+   * The default file name for the TestNG test suite if none is specified (testng.xml).
+   */
   public static final String DEFAULT_FILENAME = "testng.xml";
-
+  private static final List<String> DOMAINS = Arrays.asList("beust.com", "testng.org");
   private static final ISuiteParser DEFAULT_FILE_PARSER = new SuiteXmlParser();
   private static final List<ISuiteParser> PARSERS = Lists.newArrayList();
 
@@ -49,24 +55,13 @@ public class Parser {
     }
   }
 
-  static boolean isDTDDomainInternallyKnownToTestNG(String publicId) {
-    try {
-      URL url = new URL(publicId.toLowerCase().trim());
-      return DOMAINS.contains(url.getHost());
-    } catch (MalformedURLException e) {
-      return false;
-    }
-  }
-
   /**
    * The file name of the xml suite being parsed. This may be null if the Parser has not been
    * initialized with a file name. TODO CQ This member is never used.
    */
   private String m_fileName;
-
   private InputStream m_inputStream;
   private IPostProcessor m_postProcessor;
-
   private boolean m_loadClasses = true;
 
   /**
@@ -79,7 +74,9 @@ public class Parser {
     init(fileName, null);
   }
 
-  /** Creates a parser that will try to find the DEFAULT_FILENAME from the jar. */
+  /**
+   * Creates a parser that will try to find the DEFAULT_FILENAME from the jar.
+   */
   public Parser() {
     init(null, null);
   }
@@ -88,18 +85,13 @@ public class Parser {
     init(null, is);
   }
 
-  private void init(String fileName, InputStream is) {
-    m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
-    m_inputStream = is;
-  }
-
-  public void setPostProcessor(IPostProcessor processor) {
-    m_postProcessor = processor;
-  }
-
-  /** @param loadClasses If false, don't try to load the classes during the parsing. */
-  public void setLoadClasses(boolean loadClasses) {
-    m_loadClasses = loadClasses;
+  static boolean isDTDDomainInternallyKnownToTestNG(String publicId) {
+    try {
+      URL url = new URL(publicId.toLowerCase().trim());
+      return DOMAINS.contains(url.getHost());
+    } catch (MalformedURLException e) {
+      return false;
+    }
   }
 
   private static IFileParser getParser(String fileName) {
@@ -113,12 +105,85 @@ public class Parser {
   }
 
   /**
+   * @param uri - The uri to be verified.
+   * @return - <code>true</code> if the uri has "file:" as its scheme.
+   */
+  public static boolean hasFileScheme(String uri) {
+    URI constructedURI = constructURI(uri);
+    if (constructedURI == null) {
+      // There were difficulties in constructing the URI. Falling back to considering the URI as a
+      // file.
+      return true;
+    }
+    String scheme = constructedURI.getScheme();
+    // A URI is regarded as having a file scheme if it either has its scheme as "file"
+    // (or) if the scheme is null (which is true when uri's represent local file system path.)
+    return scheme == null || "file".equalsIgnoreCase(scheme);
+  }
+
+  public static Collection<XmlSuite> parse(String suite, IPostProcessor processor)
+      throws IOException {
+    return newParser(suite, processor).parse();
+  }
+
+  public static Collection<XmlSuite> parse(InputStream is, IPostProcessor processor)
+      throws IOException {
+    return newParser(is, processor).parse();
+  }
+
+  public static boolean canParse(String fileName) {
+    for (ISuiteParser parser : PARSERS) {
+      if (parser.accept(fileName)) {
+        return true;
+      }
+    }
+
+    return DEFAULT_FILE_PARSER.accept(fileName);
+  }
+
+  private static Parser newParser(String path, IPostProcessor processor) {
+    Parser result = new Parser(path);
+    result.setPostProcessor(processor);
+    return result;
+  }
+
+  private static Parser newParser(InputStream is, IPostProcessor processor) {
+    Parser result = new Parser(is);
+    result.setPostProcessor(processor);
+    return result;
+  }
+
+  private static URI constructURI(String text) {
+    try {
+      return URI.create(text);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  private void init(String fileName, InputStream is) {
+    m_fileName = fileName != null ? fileName : DEFAULT_FILENAME;
+    m_inputStream = is;
+  }
+
+  public void setPostProcessor(IPostProcessor processor) {
+    m_postProcessor = processor;
+  }
+
+  /**
+   * @param loadClasses If false, don't try to load the classes during the parsing.
+   */
+  public void setLoadClasses(boolean loadClasses) {
+    m_loadClasses = loadClasses;
+  }
+
+  /**
    * Parses the TestNG test suite and returns the corresponding XmlSuite, and possibly, other
    * XmlSuite that are pointed to by <code>&lt;suite-files&gt;</code> tags.
    *
    * @return the parsed TestNG test suite.
    * @throws IOException if an I/O error occurs while parsing the test suite file or if the default
-   *     testng.xml file is not found.
+   * testng.xml file is not found.
    */
   public Collection<XmlSuite> parse() throws IOException {
     // Each suite found is put in this list, using their canonical
@@ -224,64 +289,7 @@ public class Parser {
     }
   }
 
-  /**
-   * @param uri - The uri to be verified.
-   * @return - <code>true</code> if the uri has "file:" as its scheme.
-   */
-  public static boolean hasFileScheme(String uri) {
-    URI constructedURI = constructURI(uri);
-    if (constructedURI == null) {
-      // There were difficulties in constructing the URI. Falling back to considering the URI as a
-      // file.
-      return true;
-    }
-    String scheme = constructedURI.getScheme();
-    // A URI is regarded as having a file scheme if it either has its scheme as "file"
-    // (or) if the scheme is null (which is true when uri's represent local file system path.)
-    return scheme == null || "file".equalsIgnoreCase(scheme);
-  }
-
   public List<XmlSuite> parseToList() throws IOException {
     return Lists.newArrayList(parse());
-  }
-
-  public static Collection<XmlSuite> parse(String suite, IPostProcessor processor)
-      throws IOException {
-    return newParser(suite, processor).parse();
-  }
-
-  public static Collection<XmlSuite> parse(InputStream is, IPostProcessor processor)
-      throws IOException {
-    return newParser(is, processor).parse();
-  }
-
-  public static boolean canParse(String fileName) {
-    for (ISuiteParser parser : PARSERS) {
-      if (parser.accept(fileName)) {
-        return true;
-      }
-    }
-
-    return DEFAULT_FILE_PARSER.accept(fileName);
-  }
-
-  private static Parser newParser(String path, IPostProcessor processor) {
-    Parser result = new Parser(path);
-    result.setPostProcessor(processor);
-    return result;
-  }
-
-  private static Parser newParser(InputStream is, IPostProcessor processor) {
-    Parser result = new Parser(is);
-    result.setPostProcessor(processor);
-    return result;
-  }
-
-  private static URI constructURI(String text) {
-    try {
-      return URI.create(text);
-    } catch (Exception e) {
-      return null;
-    }
   }
 }

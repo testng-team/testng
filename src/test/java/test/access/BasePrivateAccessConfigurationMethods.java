@@ -3,6 +3,7 @@ package test.access;
 import org.testng.annotations.BeforeMethod;
 
 public class BasePrivateAccessConfigurationMethods {
+
   protected boolean m_baseProtected = false;
   protected boolean m_baseDefault = false;
   protected boolean m_basePrivate = true;

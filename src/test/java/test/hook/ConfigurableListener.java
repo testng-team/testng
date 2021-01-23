@@ -1,12 +1,12 @@
 package test.hook;
 
+import java.lang.reflect.Method;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.ITestResult;
 
-import java.lang.reflect.Method;
-
 public class ConfigurableListener implements IConfigurable {
+
   static int m_hookCount = 0;
   static String m_methodName;
 

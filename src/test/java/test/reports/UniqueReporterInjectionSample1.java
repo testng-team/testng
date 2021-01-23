@@ -6,8 +6,9 @@ import org.testng.annotations.Test;
 
 @Listeners(UniqueReporterInjectionTest.ReporterListenerForIssue1227.class)
 public class UniqueReporterInjectionSample1 {
-    @Test
-    public void testMethod() {
-        Assert.assertTrue(true);
-    }
+
+  @Test
+  public void testMethod() {
+    Assert.assertTrue(true);
+  }
 }

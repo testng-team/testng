@@ -13,11 +13,12 @@ public class FactoryDataProviderSample extends BaseFactorySample {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][] {
-      new Object[] {41}, new Object[] {42},
+    return new Object[][]{
+        new Object[]{41}, new Object[]{42},
     };
   }
 
   @Test
-  public void f() {}
+  public void f() {
+  }
 }

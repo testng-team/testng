@@ -5,6 +5,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 public class DummyTest2 {
+
   private boolean m_invoked = false;
 
   @Test(groups = {"A"})

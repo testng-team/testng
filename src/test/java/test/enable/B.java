@@ -7,68 +7,90 @@ import org.testng.annotations.Test;
 @Test(enabled = false)
 public class B {
 
-  public void testB() {}
+  public void testB() {
+  }
 
   @Test
-  public void testB2() {}
+  public void testB2() {
+  }
 
   @Test(enabled = true)
-  public void testB3() {}
+  public void testB3() {
+  }
 
   @Test(enabled = false)
-  public void disabledB() {}
+  public void disabledB() {
+  }
 
   @BeforeSuite(enabled = true)
-  public void disabledBeforeSuiteB() {}
+  public void disabledBeforeSuiteB() {
+  }
 
   @BeforeSuite
-  public void disabledBeforeSuiteB2() {}
+  public void disabledBeforeSuiteB2() {
+  }
 
   @BeforeSuite(enabled = false)
-  public void disabledBeforeSuiteB3() {}
+  public void disabledBeforeSuiteB3() {
+  }
 
   @BeforeSuite(alwaysRun = false)
-  public void beforeSuiteNoRunB() {}
+  public void beforeSuiteNoRunB() {
+  }
 
   @BeforeSuite(enabled = true, alwaysRun = false)
-  public void beforeSuiteNoRunB2() {}
+  public void beforeSuiteNoRunB2() {
+  }
 
   @BeforeSuite(enabled = false, alwaysRun = false)
-  public void disabledBeforeSuiteNoRunB() {}
+  public void disabledBeforeSuiteNoRunB() {
+  }
 
   @BeforeSuite(alwaysRun = true)
-  public void beforeSuiteRunB() {}
+  public void beforeSuiteRunB() {
+  }
 
   @BeforeSuite(enabled = true, alwaysRun = true)
-  public void beforeSuiteRunB2() {}
+  public void beforeSuiteRunB2() {
+  }
 
   @BeforeSuite(enabled = false, alwaysRun = true)
-  public void disabledBeforeSuiteRunB() {}
+  public void disabledBeforeSuiteRunB() {
+  }
 
   @AfterSuite
-  public void afterSuiteB() {}
+  public void afterSuiteB() {
+  }
 
   @AfterSuite(enabled = true)
-  public void afterSuiteB2() {}
+  public void afterSuiteB2() {
+  }
 
   @AfterSuite(enabled = false)
-  public void disabledAfterSuiteB() {}
+  public void disabledAfterSuiteB() {
+  }
 
   @AfterSuite(alwaysRun = false)
-  public void afterSuiteNoRunB() {}
+  public void afterSuiteNoRunB() {
+  }
 
   @AfterSuite(enabled = true, alwaysRun = false)
-  public void afterSuiteNoRunB2() {}
+  public void afterSuiteNoRunB2() {
+  }
 
   @AfterSuite(enabled = false, alwaysRun = false)
-  public void disabledAfterSuiteNoRunB() {}
+  public void disabledAfterSuiteNoRunB() {
+  }
 
   @AfterSuite(alwaysRun = true)
-  public void afterSuiteRunB() {}
+  public void afterSuiteRunB() {
+  }
 
   @AfterSuite(enabled = true, alwaysRun = true)
-  public void afterSuiteRunB2() {}
+  public void afterSuiteRunB2() {
+  }
 
   @AfterSuite(enabled = false, alwaysRun = true)
-  public void disabledAfterSuiteRunB() {}
+  public void disabledAfterSuiteRunB() {
+  }
 }

@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -16,27 +15,15 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-/** The default strategy for finding test methods: look up annotations @Test in front of methods. */
+/**
+ * The default strategy for finding test methods: look up annotations @Test in front of methods.
+ */
 public class TestNGMethodFinder implements ITestMethodFinder {
-  enum MethodType {
-    BEFORE_SUITE,
-    AFTER_SUITE,
-    BEFORE_TEST,
-    AFTER_TEST,
-    BEFORE_CLASS,
-    AFTER_CLASS,
-    BEFORE_TEST_METHOD,
-    AFTER_TEST_METHOD,
-    BEFORE_GROUPS,
-    AFTER_GROUPS
-  }
 
   private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
-
   private final RunInfo runInfo;
   private final IAnnotationFinder annotationFinder;
   private final Comparator<ITestNGMethod> comparator;
-
   public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
     this(runInfo, annotationFinder, NO_COMPARISON);
   }
@@ -46,6 +33,18 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     this.runInfo = runInfo;
     this.annotationFinder = annotationFinder;
     this.comparator = comparator;
+  }
+
+  private static boolean shouldCreateBeforeAfterGroup(String[] groups, IAnnotationFinder finder,
+      Class<?> clazz, boolean isInheritGroups) {
+    if (!isInheritGroups) {
+      return groups.length > 0;
+    }
+    ITestAnnotation test = AnnotationHelper.findTest(finder, clazz);
+    if (test == null) {
+      return groups.length > 0;
+    }
+    return groups.length > 0 || test.getGroups().length > 0;
   }
 
   @Override
@@ -104,7 +103,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     return findConfiguration(clazz, AFTER_GROUPS);
   }
 
-  private ITestNGMethod[] findConfiguration(final Class<?> clazz, final MethodType configurationType) {
+  private ITestNGMethod[] findConfiguration(final Class<?> clazz,
+      final MethodType configurationType) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
 
     Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(clazz);
@@ -164,12 +164,14 @@ public class TestNGMethodFinder implements ITestMethodFinder {
           break;
         case BEFORE_GROUPS:
           beforeGroups = configuration.getBeforeGroups();
-          create = shouldCreateBeforeAfterGroup(beforeGroups, annotationFinder, clazz, configuration.getInheritGroups());
+          create = shouldCreateBeforeAfterGroup(beforeGroups, annotationFinder, clazz,
+              configuration.getInheritGroups());
           isBeforeTestMethod = true;
           break;
         case AFTER_GROUPS:
           afterGroups = configuration.getAfterGroups();
-          create = shouldCreateBeforeAfterGroup(afterGroups, annotationFinder, clazz, configuration.getInheritGroups());
+          create = shouldCreateBeforeAfterGroup(afterGroups, annotationFinder, clazz,
+              configuration.getInheritGroups());
           isAfterTestMethod = true;
           break;
         default:
@@ -207,18 +209,6 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         comparator);
   }
 
-  private static boolean shouldCreateBeforeAfterGroup(String[] groups, IAnnotationFinder finder,
-      Class<?> clazz, boolean isInheritGroups) {
-    if (!isInheritGroups) {
-      return groups.length > 0;
-    }
-    ITestAnnotation test = AnnotationHelper.findTest(finder, clazz);
-    if (test == null) {
-      return groups.length > 0;
-    }
-    return groups.length > 0 || test.getGroups().length > 0;
-  }
-
   private void addConfigurationMethod(
       Class<?> clazz,
       List<ITestNGMethod> results,
@@ -252,5 +242,18 @@ public class TestNGMethodFinder implements ITestMethodFinder {
               instance);
       results.add(confMethod);
     }
+  }
+
+  enum MethodType {
+    BEFORE_SUITE,
+    AFTER_SUITE,
+    BEFORE_TEST,
+    AFTER_TEST,
+    BEFORE_CLASS,
+    AFTER_CLASS,
+    BEFORE_TEST_METHOD,
+    AFTER_TEST_METHOD,
+    BEFORE_GROUPS,
+    AFTER_GROUPS
   }
 }

@@ -4,8 +4,8 @@ import org.testng.annotations.Test;
 
 public class TestMultiLevelInheritSample implements ITestInheritedInterface {
 
-    @Test
-    public void testMultiLevel() {
+  @Test
+  public void testMultiLevel() {
 
-    }
+  }
 }

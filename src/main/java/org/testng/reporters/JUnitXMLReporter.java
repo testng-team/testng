@@ -1,5 +1,14 @@
 package org.testng.reporters;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.regex.Pattern;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -9,16 +18,6 @@ import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Queue;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.regex.Pattern;
-
 /**
  * A JUnit XML report generator (replacing the original JUnitXMLReporter that was based on XML
  * APIs).
@@ -26,6 +25,7 @@ import java.util.regex.Pattern;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class JUnitXMLReporter implements IResultListener2 {
+
   private static final Pattern ENTITY = Pattern.compile("&[a-zA-Z]+;.*");
   private static final Pattern LESS = Pattern.compile("<");
   private static final Pattern GREATER = Pattern.compile(">");
@@ -46,13 +46,22 @@ public class JUnitXMLReporter implements IResultListener2 {
   private Map<String, String> m_fileNameMap = Maps.newHashMap();
   private int m_fileNameIncrementer = 0;
 
-  @Override
-  public void onTestStart(ITestResult result) {}
+  static String formattedTime() {
+    return TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+        System.currentTimeMillis(), XMLReporterConfig.FMT_DEFAULT);
+  }
 
   @Override
-  public void beforeConfiguration(ITestResult tr) {}
+  public void onTestStart(ITestResult result) {
+  }
 
-  /** Invoked each time a test succeeds. */
+  @Override
+  public void beforeConfiguration(ITestResult tr) {
+  }
+
+  /**
+   * Invoked each time a test succeeds.
+   */
   @Override
   public void onTestSuccess(ITestResult tr) {
     m_allTests.add(tr);
@@ -63,45 +72,61 @@ public class JUnitXMLReporter implements IResultListener2 {
     m_allTests.add(tr);
   }
 
-  /** Invoked each time a test fails. */
+  /**
+   * Invoked each time a test fails.
+   */
   @Override
   public void onTestFailure(ITestResult tr) {
     m_allTests.add(tr);
     m_numFailed++;
   }
 
-  /** Invoked each time a test is skipped. */
+  /**
+   * Invoked each time a test is skipped.
+   */
   @Override
   public void onTestSkipped(ITestResult tr) {
     m_allTests.add(tr);
   }
 
-  /** Invoked after the test class is instantiated and before any configuration method is called. */
+  /**
+   * Invoked after the test class is instantiated and before any configuration method is called.
+   */
   @Override
-  public void onStart(ITestContext context) {}
+  public void onStart(ITestContext context) {
+  }
 
-  /** Invoked after all the tests have run and all their Configuration methods have been called. */
+  /**
+   * Invoked after all the tests have run and all their Configuration methods have been called.
+   */
   @Override
   public void onFinish(ITestContext context) {
     generateReport(context);
     resetAll();
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_configIssues.add(itr);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_configIssues.add(itr);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
   @Override
-  public void onConfigurationSuccess(ITestResult itr) {}
+  public void onConfigurationSuccess(ITestResult itr) {
+  }
 
   /**
    * generate the XML report given what we know from all the test results
@@ -146,11 +171,6 @@ public class JUnitXMLReporter implements IResultListener2 {
     document.pop();
     Utils.writeUtf8File(
         context.getOutputDirectory(), generateFileName(context) + ".xml", document.toXML());
-  }
-
-  static String formattedTime() {
-    return TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
-        System.currentTimeMillis(), XMLReporterConfig.FMT_DEFAULT);
   }
 
   private synchronized void createElementFromTestResults(
@@ -267,7 +287,9 @@ public class JUnitXMLReporter implements IResultListener2 {
     return result.toString();
   }
 
-  /** Reset all member variables for next test. */
+  /**
+   * Reset all member variables for next test.
+   */
   private void resetAll() {
     m_allTests = new ConcurrentLinkedDeque<>();
     m_configIssues = new ConcurrentLinkedDeque<>();
@@ -275,8 +297,8 @@ public class JUnitXMLReporter implements IResultListener2 {
   }
 
   /**
-   * This method guarantees unique file names for reports.<br>
-   * Also, this will guarantee that the old reports are overwritten when tests are run again.
+   * This method guarantees unique file names for reports.<br> Also, this will guarantee that the
+   * old reports are overwritten when tests are run again.
    *
    * @param context test context
    * @return unique name for the file associated with this test context.

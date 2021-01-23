@@ -2,12 +2,14 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
+import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.List;
-
 public class XmlRun {
+
+  private List<String> m_excludes = Lists.newArrayList();
+  private List<String> m_includes = Lists.newArrayList();
 
   public String toXml(String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
@@ -28,8 +30,6 @@ public class XmlRun {
     return xsb.toXML();
   }
 
-  private List<String> m_excludes = Lists.newArrayList();
-
   public List<String> getExcludes() {
     return m_excludes;
   }
@@ -37,8 +37,6 @@ public class XmlRun {
   public void onExclude(String name) {
     m_excludes.add(name);
   }
-
-  private List<String> m_includes = Lists.newArrayList();
 
   public List<String> getIncludes() {
     return m_includes;

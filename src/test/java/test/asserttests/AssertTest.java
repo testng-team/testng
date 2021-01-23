@@ -1,32 +1,42 @@
 package test.asserttests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.testng.Assert.expectThrows;
+
+import java.io.IOException;
+import java.util.Set;
 import org.testng.Assert;
 import org.testng.Assert.ThrowingRunnable;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Sets;
 
-import java.io.IOException;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.testng.Assert.expectThrows;
-
 public class AssertTest {
+
+  private static ThrowingRunnable nonThrowingRunnable() {
+    return () -> {
+    };
+  }
+
+  private static ThrowingRunnable throwingRunnable(final Throwable t) {
+    return () -> {
+      throw t;
+    };
+  }
 
   @Test
   public void noOrderSuccess() {
-    String[] rto1 = { "boolean", "BigInteger", "List",};
-    String[] rto2 = {  "List", "BigInteger", "boolean",};
+    String[] rto1 = {"boolean", "BigInteger", "List",};
+    String[] rto2 = {"List", "BigInteger", "boolean",};
     Assert.assertEqualsNoOrder(rto1, rto2);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void noOrderFailure() {
-    String[] rto1 = { "a", "a", "b",};
-    String[] rto2 = {  "a", "b", "b",};
+    String[] rto1 = {"a", "a", "b",};
+    String[] rto2 = {"a", "b", "b",};
     Assert.assertEqualsNoOrder(rto1, rto2);
   }
 
@@ -128,22 +138,11 @@ public class AssertTest {
       expectThrows(IOException.class, throwingRunnable(npe));
     } catch (AssertionError error) {
       assertEquals("Expected IOException to be thrown, but NullPointerException was thrown",
-              error.getMessage());
+          error.getMessage());
       assertSame(npe, error.getCause());
       return;
     }
     fail();
-  }
-
-  private static ThrowingRunnable nonThrowingRunnable() {
-    return () -> {
-    };
-  }
-
-  private static ThrowingRunnable throwingRunnable(final Throwable t) {
-    return () -> {
-      throw t;
-    };
   }
 
   @Test
@@ -154,27 +153,27 @@ public class AssertTest {
   @DataProvider
   public Object[][] identicalArraysWithNull() {
     return new Object[][]{
-            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", null}},
-            { new String[] { "foo", null, "bar"}, new String[] { "foo", null, "bar"}},
-            { new String[] { null, "foo", "bar"}, new String[] { null, "foo", "bar"}}
+        {new String[]{"foo", "bar", null}, new String[]{"foo", "bar", null}},
+        {new String[]{"foo", null, "bar"}, new String[]{"foo", null, "bar"}},
+        {new String[]{null, "foo", "bar"}, new String[]{null, "foo", "bar"}}
     };
   }
 
-  @Test(dataProvider="identicalArraysWithNull")
+  @Test(dataProvider = "identicalArraysWithNull")
   public void identicalArraysWithNullValues(String[] actual, String[] expected) {
     Assert.assertEquals(actual, expected);
   }
 
   @DataProvider
   public Object[][] nonIdenticalArraysWithNull() {
-    return new Object[][] {
-            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", "not-null"}},
-            { new String[] { "foo", "not-null", "bar"}, new String[] { "foo", null, "bar"}},
-            { new String[] { null, "foo", "bar"}, new String[] {" not-null", "foo", "bar"}}
+    return new Object[][]{
+        {new String[]{"foo", "bar", null}, new String[]{"foo", "bar", "not-null"}},
+        {new String[]{"foo", "not-null", "bar"}, new String[]{"foo", null, "bar"}},
+        {new String[]{null, "foo", "bar"}, new String[]{" not-null", "foo", "bar"}}
     };
   }
 
-  @Test(dataProvider="nonIdenticalArraysWithNull")
+  @Test(dataProvider = "nonIdenticalArraysWithNull")
   public void nonIdenticalarrayWithNullValue(String[] actual, String[] expected) {
     Assert.assertNotEquals(actual, expected);
   }

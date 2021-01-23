@@ -16,7 +16,8 @@ public class FactoryBaseSample implements ITest {
   }
 
   @Test
-  public void f() {}
+  public void f() {
+  }
 
   @Override
   public String getTestName() {

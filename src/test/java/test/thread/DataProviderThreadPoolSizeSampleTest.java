@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DataProviderThreadPoolSizeSampleTest extends BaseThreadTest {
+
   @BeforeClass(alwaysRun = true)
   public void setUp() {
     log(getClass().getName(), "Init log ids");
@@ -23,27 +24,27 @@ public class DataProviderThreadPoolSizeSampleTest extends BaseThreadTest {
 
   private Object[][] createArray() {
     int i = 0;
-    return new Object[][] {
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
-        new Object[] { i++ },
+    return new Object[][]{
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
+        new Object[]{i++},
     };
   }
 

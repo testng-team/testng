@@ -1,11 +1,10 @@
 package test.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * beforeGroups test: make sure that if before methods are scattered on more than one class, they
@@ -14,8 +13,14 @@ import java.util.List;
  * @author cbeust
  */
 public class ConfigurationGroups3SampleTest extends Base3 {
-  private boolean m_before = false;
+
   private static boolean m_f1 = false;
+  private boolean m_before = false;
+  private List<String> m_list = new ArrayList<>();
+
+  public static boolean getF1() {
+    return m_f1;
+  }
 
   @BeforeGroups("cg34-1")
   public void before1() {
@@ -38,8 +43,6 @@ public class ConfigurationGroups3SampleTest extends Base3 {
     log("f1");
   }
 
-  private List<String> m_list = new ArrayList<>();
-
   @Test(dependsOnGroups = {"cg34-a", "cg34-1"})
   public void verify() {
     Assert.assertTrue(m_before);
@@ -56,9 +59,5 @@ public class ConfigurationGroups3SampleTest extends Base3 {
     if (false) {
       System.out.println("[ConfigurationGroups3SampleTest] " + s);
     }
-  }
-
-  public static boolean getF1() {
-    return m_f1;
   }
 }

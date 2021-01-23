@@ -1,16 +1,14 @@
 package org.testng.internal.reflect;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.NoInjection;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlTest;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * Utility class to handle reflection.
@@ -25,6 +23,10 @@ public final class ReflectionRecipes {
   static {
     initPrimitiveMapping();
     initAssignableMapping();
+  }
+
+  private ReflectionRecipes() {
+    throw new TestNGException("Service is not meant to have instances");
   }
 
   private static void initPrimitiveMapping() {
@@ -51,10 +53,6 @@ public final class ReflectionRecipes {
         long.class, Arrays.asList(Integer.class, Short.class, Character.class, Byte.class));
     ASSIGNABLE_MAPPING.put(int.class, Arrays.asList(Short.class, Character.class, Byte.class));
     ASSIGNABLE_MAPPING.put(short.class, Arrays.asList(Character.class, Byte.class));
-  }
-
-  private ReflectionRecipes() {
-    throw new TestNGException("Service is not meant to have instances");
   }
 
   /**
@@ -98,7 +96,9 @@ public final class ReflectionRecipes {
         final Class<?>[] interfaces = clazz.getInterfaces();
         for (final Class<?> interfaceClazz : interfaces) {
           implementsInterface = interfaceClazz.equals(reference);
-          if (implementsInterface) break;
+          if (implementsInterface) {
+            break;
+          }
         }
       }
     }
@@ -150,7 +150,7 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] getMethodParameters(final Method method) {
     if (method == null) {
-      return new Parameter[] {};
+      return new Parameter[]{};
     }
     return getParameters(method.getParameterTypes(), method.getParameterAnnotations());
   }
@@ -163,7 +163,7 @@ public final class ReflectionRecipes {
    */
   public static Parameter[] getConstructorParameters(final Constructor<?> constructor) {
     if (constructor == null) {
-      return new Parameter[] {};
+      return new Parameter[]{};
     }
     return getParameters(constructor.getParameterTypes(), constructor.getParameterAnnotations());
   }
@@ -191,8 +191,8 @@ public final class ReflectionRecipes {
    *
    * <p>Assuming upper case letters denote classes and corresponding lowercase its instances.
    * Classes {A,B,C...}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match or Classes
-   * {A,B,C[]}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match both of the above cases are
-   * equivalent.
+   * {A,B,C[]}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match both of the above cases
+   * are equivalent.
    *
    * @param classes array of class instances to check against.
    * @param args instances to be verified.
@@ -214,7 +214,9 @@ public final class ReflectionRecipes {
         }
         matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
         i++;
-        if (!matching) break;
+        if (!matching) {
+          break;
+        }
       }
     } else {
       matching = false;
@@ -224,7 +226,9 @@ public final class ReflectionRecipes {
       final Class<?> componentType = classes[classes.length - 1].getComponentType();
       for (; i < args.length; i++) {
         matching = ReflectionRecipes.isInstanceOf(componentType, args[i]);
-        if (!matching) break;
+        if (!matching) {
+          break;
+        }
       }
     }
 
@@ -255,7 +259,9 @@ public final class ReflectionRecipes {
       for (final Class<?> clazz : classes) {
         matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
         i++;
-        if (!matching) break;
+        if (!matching) {
+          break;
+        }
       }
     } else {
       matching = false;
@@ -287,7 +293,9 @@ public final class ReflectionRecipes {
     for (final Class<?> clazz : classes) {
       matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
       i++;
-      if (!matching) break;
+      if (!matching) {
+        break;
+      }
     }
     return matching;
   }
@@ -297,7 +305,8 @@ public final class ReflectionRecipes {
    * org.testng.ITestResult or its implementations from input array 3. org.testng.xml.XmlTest or its
    * implementations from input array 4. First method depending on filters.
    *
-   * <p>An example would be Input: {ITestContext.class, int.class, Boolean.class, TestContext.class}
+   * <p>An example would be Input: {ITestContext.class, int.class, Boolean.class,
+   * TestContext.class}
    * Output: {int.class, Boolean.class}
    *
    * @param parameters array of parameter instances under question.
@@ -483,6 +492,7 @@ public final class ReflectionRecipes {
   }
 
   private static class ListBackedImmutableQueue<T> {
+
     private final List<T> backingList;
 
     ListBackedImmutableQueue(final T[] elements) {

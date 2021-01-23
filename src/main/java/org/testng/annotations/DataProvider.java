@@ -14,16 +14,16 @@ import java.lang.annotation.Target;
  * <p>The annotated method must return any of the following:</p>
  *
  * <ul>
- *   <li>
- *     {@code Object[][]} or {@code Iterator<Object[]>}, where each {@code Object[]} is assigned to
- *     the parameter list of the test method.
- *   </li>
- *   <li>
- *     {@code Object[]} or {@code Iterator<Object>}, where each {@code Object} is assigned to the
- *     single parameter of the test method.
- *   </li>
+ * <li>
+ * {@code Object[][]} or {@code Iterator<Object[]>}, where each {@code Object[]} is assigned to the
+ * parameter list of the test method.
+ * </li>
+ * <li>
+ * {@code Object[]} or {@code Iterator<Object>}, where each {@code Object} is assigned to the single
+ * parameter of the test method.
+ * </li>
  * </ul>
- * 
+ *
  * <p>The {@link Test @Test} method that wants to receive data from this {@link DataProvider} needs
  * to use a {@link Test#dataProvider()} name equal to the name of this annotation.</p>
  */

@@ -1,14 +1,14 @@
 package test.dependent;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Test
 public class DepBugSampleTest {
+
   private static List<String> m_log = new ArrayList<>();
 
   private static void log(String s) {

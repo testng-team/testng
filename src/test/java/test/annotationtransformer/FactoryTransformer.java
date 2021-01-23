@@ -1,5 +1,7 @@
 package test.annotationtransformer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Set;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -7,12 +9,10 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.ITestAnnotation;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import org.testng.collections.Sets;
 
 public class FactoryTransformer implements IAnnotationTransformer {
+
   private final Set<String> logs = Sets.newLinkedHashSet();
 
   public Set<String> getLogs() {

@@ -4,4 +4,5 @@ import org.testng.annotations.Listeners;
 
 @Listeners(TestPackageListener.class)
 public interface ITestInterfaceWithoutImpl {
+
 }

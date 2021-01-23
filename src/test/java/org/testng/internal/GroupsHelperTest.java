@@ -1,17 +1,24 @@
 package org.testng.internal;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.testng.collections.Maps;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.collections.Maps;
 
 public class GroupsHelperTest {
+
+  private static Map<String, String> constructExpectedMap(String... keys) {
+    Map<String, String> map = Maps.newHashMap();
+    for (String key : keys) {
+      map.put(key, key);
+    }
+    return map;
+  }
 
   @Test
   public void testCreateGroupsWithoutMetaGroups() {
@@ -33,17 +40,9 @@ public class GroupsHelperTest {
 
   @DataProvider(name = "getTestData")
   public Object[][] getTestData() {
-    return new Object[][] {
-      {"bar", Collections.singletonList("foo"), constructExpectedMap("foo")},
-      {"bar", Arrays.asList("foo", "bar"), constructExpectedMap("foo", "bar")}
+    return new Object[][]{
+        {"bar", Collections.singletonList("foo"), constructExpectedMap("foo")},
+        {"bar", Arrays.asList("foo", "bar"), constructExpectedMap("foo", "bar")}
     };
-  }
-
-  private static Map<String, String> constructExpectedMap(String... keys) {
-    Map<String, String> map = Maps.newHashMap();
-    for (String key : keys) {
-      map.put(key, key);
-    }
-    return map;
   }
 }

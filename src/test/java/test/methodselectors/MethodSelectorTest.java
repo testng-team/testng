@@ -2,7 +2,6 @@ package test.methodselectors;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 import test.methodselectors.issue1985.FilteringMethodSelector;
 import test.methodselectors.issue1985.TestClassSample;

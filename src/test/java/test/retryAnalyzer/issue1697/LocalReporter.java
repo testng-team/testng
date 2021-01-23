@@ -1,5 +1,10 @@
 package test.retryAnalyzer.issue1697;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -8,13 +13,8 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class LocalReporter implements IReporter {
+
   private Set<ITestResult> skipped = Collections.newSetFromMap(Maps.newConcurrentMap());
   private Set<ITestResult> retried = Collections.newSetFromMap(Maps.newConcurrentMap());
 
@@ -45,11 +45,11 @@ public class LocalReporter implements IReporter {
             });
   }
 
-    public Set<ITestResult> getRetried() {
-        return retried;
-    }
+  public Set<ITestResult> getRetried() {
+    return retried;
+  }
 
-    public Set<ITestResult> getSkipped() {
-        return skipped;
-    }
+  public Set<ITestResult> getSkipped() {
+    return skipped;
+  }
 }

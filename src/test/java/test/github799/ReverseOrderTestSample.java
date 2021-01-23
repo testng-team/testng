@@ -7,6 +7,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class ReverseOrderTestSample {
+
   int num;
 
   @Factory(dataProvider = "data")
@@ -16,7 +17,7 @@ public class ReverseOrderTestSample {
 
   @DataProvider
   public static Object[][] data() {
-    return new Object[][] {{4}, {1}, {3}, {2}};
+    return new Object[][]{{4}, {1}, {3}, {2}};
   }
 
   @Test

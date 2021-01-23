@@ -1,12 +1,11 @@
 package org.testng.internal;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import org.testng.TestNGException;
 import org.testng.xml.ISuiteParser;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 public class YamlParser implements ISuiteParser {
 

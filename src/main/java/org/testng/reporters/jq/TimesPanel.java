@@ -1,6 +1,8 @@
 package org.testng.reporters.jq;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -9,16 +11,22 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
-import java.util.Map;
 import org.testng.xml.XmlSuite;
 
 public class TimesPanel extends BaseMultiSuitePanel {
+
   private Map<String, Long> m_totalTime = Maps.newHashMap();
 
   public TimesPanel(Model model) {
     super(model);
+  }
+
+  private static long time(ITestResult o1) {
+    return o1.getEndMillis() - o1.getStartMillis();
+  }
+
+  private static Long time(ITestContext ctx) {
+    return ctx.getEndDate().getTime() - ctx.getStartDate().getTime();
   }
 
   @Override
@@ -114,10 +122,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
     return "Times";
   }
 
-  private static long time(ITestResult o1) {
-    return o1.getEndMillis() - o1.getStartMillis();
-  }
-
   private long maxTime(ISuite suite) {
     boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(suite.getXmlSuite().getParallel());
     Long result = m_totalTime.get(suite.getName());
@@ -125,7 +129,7 @@ public class TimesPanel extends BaseMultiSuitePanel {
     if (result == null) {
       return 0L;
     }
-    if (! testsInParallel) {
+    if (!testsInParallel) {
       return result;
     }
     Optional<ITestContext> maxValue = suite.getResults().values().stream()
@@ -135,10 +139,6 @@ public class TimesPanel extends BaseMultiSuitePanel {
       return time(maxValue.get());
     }
     return result;
-  }
-
-  private static Long time(ITestContext ctx) {
-    return ctx.getEndDate().getTime() - ctx.getStartDate().getTime();
   }
 
 }

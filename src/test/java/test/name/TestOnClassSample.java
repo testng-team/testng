@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 @Test
 public class TestOnClassSample {
 
-    @Test
-    public void test() {}
+  @Test
+  public void test() {
+  }
 }

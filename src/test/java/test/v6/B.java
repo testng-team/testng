@@ -14,22 +14,30 @@ public class B {
   }
 
   @Test(groups = "1")
-  public void fb1() {}
+  public void fb1() {
+  }
 
-  @Test public void fb3() {}
+  @Test
+  public void fb3() {
+  }
 
   @BeforeMethod
-  public void beforeMethod() {}
+  public void beforeMethod() {
+  }
 
   @AfterMethod(groups = "1")
-  public void afterMethod() {}
+  public void afterMethod() {
+  }
 
   @BeforeSuite
-  public void beforeSuite() {}
+  public void beforeSuite() {
+  }
 
   @BeforeClass
-  public void beforeClass() {}
+  public void beforeClass() {
+  }
 
   @AfterClass
-  public void afterClass() {}
+  public void afterClass() {
+  }
 }

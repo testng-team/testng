@@ -6,18 +6,18 @@ import org.testng.annotations.Test;
 
 public class GitHub876Sample {
 
-  @Factory
-  public Object[] createInstances() {
-    return new Object[] {
-      new GitHub876Sample(new DataTest("foo", true)),
-      new GitHub876Sample(new DataTest("FOO", false))
-    };
-  }
-
   private final DataTest dataTest;
 
   public GitHub876Sample(DataTest dataTest) {
     this.dataTest = dataTest;
+  }
+
+  @Factory
+  public Object[] createInstances() {
+    return new Object[]{
+        new GitHub876Sample(new DataTest("foo", true)),
+        new GitHub876Sample(new DataTest("FOO", false))
+    };
   }
 
   @Test

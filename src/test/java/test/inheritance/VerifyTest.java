@@ -1,22 +1,21 @@
 package test.inheritance;
 
+import java.util.List;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 public class VerifyTest {
 
   @Test(dependsOnGroups = {"before"})
   public void verify() {
     String[] expected = {
-      "initApplication",
-      "initDialog",
-      "initDialog2",
-      "test",
-      "tearDownDialog2",
-      "tearDownDialog",
-      "tearDownApplication"
+        "initApplication",
+        "initDialog",
+        "initDialog2",
+        "test",
+        "tearDownDialog2",
+        "tearDownDialog",
+        "tearDownApplication"
     };
 
     int i = 0;

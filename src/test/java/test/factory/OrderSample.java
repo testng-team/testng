@@ -13,13 +13,16 @@ public class OrderSample {
   }
 
   @BeforeClass(groups = {"s1ds"})
-  public void setup() {}
+  public void setup() {
+  }
 
   @Test(groups = {"s1ds"})
-  public void methodC1() {}
+  public void methodC1() {
+  }
 
   @AfterClass(groups = {"s1ds"})
-  public void cleanup() {}
+  public void cleanup() {
+  }
 
   @Override
   public String toString() {

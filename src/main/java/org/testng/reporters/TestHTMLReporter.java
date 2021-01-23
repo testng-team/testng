@@ -1,5 +1,12 @@
 package org.testng.reporters;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -9,50 +16,71 @@ import org.testng.TestRunner;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-/** This class implements an HTML reporter for individual tests. */
+/**
+ * This class implements an HTML reporter for individual tests.
+ */
 public class TestHTMLReporter implements ITestListener {
+
   private static final Comparator<ITestResult> NAME_COMPARATOR = new NameComparator();
   private static final Comparator<ITestResult> CONFIGURATION_COMPARATOR =
       new ConfigurationComparator();
-
+  private static final String HEAD =
+      "\n<style type=\"text/css\">\n"
+          + ".log { display: none;} \n"
+          + ".stack-trace { display: none;} \n"
+          + "</style>\n"
+          + "<script type=\"text/javascript\">\n"
+          + "<!--\n"
+          + "function flip(e) {\n"
+          + "  current = e.style.display;\n"
+          + "  if (current == 'block') {\n"
+          + "    e.style.display = 'none';\n"
+          + "    return 0;\n"
+          + "  }\n"
+          + "  else {\n"
+          + "    e.style.display = 'block';\n"
+          + "    return 1;\n"
+          + "  }\n"
+          + "}\n"
+          + "\n"
+          + "function toggleBox(szDivId, elem, msg1, msg2)\n"
+          + "{\n"
+          + "  var res = -1;"
+          + "  if (document.getElementById) {\n"
+          + "    res = flip(document.getElementById(szDivId));\n"
+          + "  }\n"
+          + "  else if (document.all) {\n"
+          + "    // this is the way old msie versions work\n"
+          + "    res = flip(document.all[szDivId]);\n"
+          + "  }\n"
+          + "  if(elem) {\n"
+          + "    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;\n"
+          + "  }\n"
+          + "\n"
+          + "}\n"
+          + "\n"
+          + "function toggleAllBoxes() {\n"
+          + "  if (document.getElementsByTagName) {\n"
+          + "    d = document.getElementsByTagName('div');\n"
+          + "    for (i = 0; i < d.length; i++) {\n"
+          + "      if (d[i].className == 'log') {\n"
+          + "        flip(d[i]);\n"
+          + "      }\n"
+          + "    }\n"
+          + "  }\n"
+          + "}\n"
+          + "\n"
+          + "// -->\n"
+          + "</script>\n"
+          + "\n";
   private ITestContext m_testContext = null;
-
-  /////
-  // implements ITestListener
-  //
-  @Override
-  public void onStart(ITestContext context) {
-    m_testContext = context;
-  }
-
-  @Override
-  public void onFinish(ITestContext context) {
-    generateLog(
-        m_testContext,
-        null /* host */,
-        m_testContext.getOutputDirectory(),
-        context.getFailedConfigurations().getAllResults(),
-        context.getSkippedConfigurations().getAllResults(),
-        context.getPassedTests().getAllResults(),
-        context.getFailedTests().getAllResults(),
-        context.getSkippedTests().getAllResults(),
-        context.getFailedButWithinSuccessPercentageTests().getAllResults());
-  }
-  //
-  // implements ITestListener
-  /////
 
   private static String getOutputFile(ITestContext context) {
     return context.getName() + ".html";
   }
+  //
+  // implements ITestListener
+  /////
 
   public static void generateTable(
       PrintWriter pw,
@@ -212,56 +240,6 @@ public class TestHTMLReporter implements ITestListener {
     return result.toString();
   }
 
-  private static final String HEAD =
-      "\n<style type=\"text/css\">\n"
-          + ".log { display: none;} \n"
-          + ".stack-trace { display: none;} \n"
-          + "</style>\n"
-          + "<script type=\"text/javascript\">\n"
-          + "<!--\n"
-          + "function flip(e) {\n"
-          + "  current = e.style.display;\n"
-          + "  if (current == 'block') {\n"
-          + "    e.style.display = 'none';\n"
-          + "    return 0;\n"
-          + "  }\n"
-          + "  else {\n"
-          + "    e.style.display = 'block';\n"
-          + "    return 1;\n"
-          + "  }\n"
-          + "}\n"
-          + "\n"
-          + "function toggleBox(szDivId, elem, msg1, msg2)\n"
-          + "{\n"
-          + "  var res = -1;"
-          + "  if (document.getElementById) {\n"
-          + "    res = flip(document.getElementById(szDivId));\n"
-          + "  }\n"
-          + "  else if (document.all) {\n"
-          + "    // this is the way old msie versions work\n"
-          + "    res = flip(document.all[szDivId]);\n"
-          + "  }\n"
-          + "  if(elem) {\n"
-          + "    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;\n"
-          + "  }\n"
-          + "\n"
-          + "}\n"
-          + "\n"
-          + "function toggleAllBoxes() {\n"
-          + "  if (document.getElementsByTagName) {\n"
-          + "    d = document.getElementsByTagName('div');\n"
-          + "    for (i = 0; i < d.length; i++) {\n"
-          + "      if (d[i].className == 'log') {\n"
-          + "        flip(d[i]);\n"
-          + "      }\n"
-          + "    }\n"
-          + "  }\n"
-          + "}\n"
-          + "\n"
-          + "// -->\n"
-          + "</script>\n"
-          + "\n";
-
   public static void generateLog(
       ITestContext testContext,
       String host,
@@ -376,6 +354,28 @@ public class TestHTMLReporter implements ITestListener {
     System.out.println("[TestHTMLReporter] " + s);
   }
 
+  /////
+  // implements ITestListener
+  //
+  @Override
+  public void onStart(ITestContext context) {
+    m_testContext = context;
+  }
+
+  @Override
+  public void onFinish(ITestContext context) {
+    generateLog(
+        m_testContext,
+        null /* host */,
+        m_testContext.getOutputDirectory(),
+        context.getFailedConfigurations().getAllResults(),
+        context.getSkippedConfigurations().getAllResults(),
+        context.getPassedTests().getAllResults(),
+        context.getFailedTests().getAllResults(),
+        context.getSkippedTests().getAllResults(),
+        context.getFailedButWithinSuccessPercentageTests().getAllResults());
+  }
+
   private static class NameComparator implements Comparator<ITestResult> {
 
     @Override
@@ -387,13 +387,6 @@ public class TestHTMLReporter implements ITestListener {
   }
 
   private static class ConfigurationComparator implements Comparator<ITestResult> {
-
-    @Override
-    public int compare(ITestResult o1, ITestResult o2) {
-      ITestNGMethod tm1 = o1.getMethod();
-      ITestNGMethod tm2 = o2.getMethod();
-      return annotationValue(tm2) - annotationValue(tm1);
-    }
 
     private static int annotationValue(ITestNGMethod method) {
       if (method.isBeforeSuiteConfiguration()) {
@@ -428,6 +421,13 @@ public class TestHTMLReporter implements ITestListener {
       }
 
       return 0;
+    }
+
+    @Override
+    public int compare(ITestResult o1, ITestResult o2) {
+      ITestNGMethod tm1 = o1.getMethod();
+      ITestNGMethod tm2 = o2.getMethod();
+      return annotationValue(tm2) - annotationValue(tm1);
     }
   }
 }

@@ -5,4 +5,6 @@ package org.testng;
  *
  * @author cbeust
  */
-public interface ITestNGListener {}
+public interface ITestNGListener {
+
+}

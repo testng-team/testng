@@ -6,12 +6,15 @@ import org.testng.annotations.Test;
 public class Issue521 {
 
   @BeforeClass
-  public void beforeClass() {}
+  public void beforeClass() {
+  }
 
   @Test
-  public void test1() {}
+  public void test1() {
+  }
 
   @Test
-  public void test2() {}
+  public void test2() {
+  }
 
 }

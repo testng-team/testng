@@ -1,18 +1,17 @@
 package test.factory;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Factory;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Factory;
 
 public class FactoryWithDataProvider {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-      new Object[] {new int[] {3, 5}},
-      new Object[] {new int[] {7, 9}},
+    return new Object[][]{
+        new Object[]{new int[]{3, 5}},
+        new Object[]{new int[]{7, 9}},
     };
   }
 

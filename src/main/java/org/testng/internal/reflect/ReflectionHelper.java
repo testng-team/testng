@@ -1,5 +1,8 @@
 package org.testng.internal.reflect;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,14 +11,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
 public class ReflectionHelper {
+
   /**
    * @return An array of all locally declared methods or equivalent thereof (such as default methods
-   *     on Java 8 based interfaces that the given class implements).
+   * on Java 8 based interfaces that the given class implements).
    */
   public static Method[] getLocalMethods(Class<?> clazz) {
     Method[] declaredMethods = excludingMain(clazz);
@@ -41,8 +41,8 @@ public class ReflectionHelper {
 
   /**
    * @return An array of all locally declared methods or equivalent thereof (such as default methods
-   *     on Java 8 based interfaces that the given class implements) but excludes the <code>main()
-   *     </code> method alone.
+   * on Java 8 based interfaces that the given class implements) but excludes the <code>main()
+   * </code> method alone.
    */
   public static Method[] excludingMain(Class<?> clazz) {
     Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -107,7 +107,7 @@ public class ReflectionHelper {
 
   private static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
     Set<Class<?>> result = new HashSet<>();
-    while(clazz != null && clazz != Object.class) {
+    while (clazz != null && clazz != Object.class) {
       result.addAll(Arrays.asList(clazz.getInterfaces()));
       clazz = clazz.getSuperclass();
     }

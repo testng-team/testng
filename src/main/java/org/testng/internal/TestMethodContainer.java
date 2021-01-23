@@ -13,8 +13,8 @@ import org.testng.ITestNGMethod;
  */
 public final class TestMethodContainer implements IContainer<ITestNGMethod> {
 
-  private ITestNGMethod[] methods;
   private final Supplier<ITestNGMethod[]> supplier;
+  private ITestNGMethod[] methods;
   private boolean isCleared = false;
 
   public TestMethodContainer(Supplier<ITestNGMethod[]> supplier) {

@@ -1,12 +1,11 @@
 package org.testng.reporters;
 
-import org.testng.util.Strings;
-
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 import javax.annotation.Nullable;
+import org.testng.util.Strings;
 
 /**
  * Static helpers for XML.
@@ -15,7 +14,9 @@ import javax.annotation.Nullable;
  */
 public final class XMLUtils {
 
-  /** Platform specific end of line */
+  /**
+   * Platform specific end of line
+   */
   private static final String EOL = RuntimeBehavior.getDefaultLineSeparator();
 
   private XMLUtils() {
@@ -44,9 +45,11 @@ public final class XMLUtils {
   }
 
   public static String extractComment(String tag, Properties properties) {
-    if (properties == null || "span".equals(tag)) return null;
+    if (properties == null || "span".equals(tag)) {
+      return null;
+    }
 
-    String[] attributes = new String[] {"id", "name", "class"};
+    String[] attributes = new String[]{"id", "name", "class"};
     for (String a : attributes) {
       String comment = properties.getProperty(a);
       if (comment != null) {

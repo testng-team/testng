@@ -8,7 +8,8 @@ import org.testng.annotations.Test;
 public class TestSample {
 
   @BeforeGroups(groups = {"exTests"})
-  public void setup() {}
+  public void setup() {
+  }
 
   @Test(groups = {"exTests"})
   public void test1() {
@@ -26,5 +27,6 @@ public class TestSample {
   }
 
   @AfterGroups(groups = {"exTests"})
-  public void clear() {}
+  public void clear() {
+  }
 }

@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 @Test(groups = {"Group1", "Group2", "Group3", "Group4"})
 public class TestClassSample {
+
   static List<String> logs = new ArrayList<>();
 
   @BeforeMethod

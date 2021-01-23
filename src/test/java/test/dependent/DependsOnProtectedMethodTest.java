@@ -4,8 +4,11 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/** This class/interface */
+/**
+ * This class/interface
+ */
 public class DependsOnProtectedMethodTest {
+
   private boolean m_before1 = false;
   private boolean m_before2 = false;
 

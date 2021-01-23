@@ -17,7 +17,7 @@ public class TestClassAnnotationTest {
   @Factory
   public Object[] createFixture() {
     count++;
-    return new Object[] {new Object[] {new Object()}};
+    return new Object[]{new Object[]{new Object()}};
   }
 
   public void testOne() {

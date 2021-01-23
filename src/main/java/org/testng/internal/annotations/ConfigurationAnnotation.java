@@ -7,16 +7,16 @@ import org.testng.annotations.IConfigurationAnnotation;
  */
 public class ConfigurationAnnotation extends TestOrConfiguration
     implements IConfigurationAnnotation,
-        IBeforeSuite,
-        IAfterSuite,
-        IBeforeTest,
-        IAfterTest,
-        IBeforeGroups,
-        IAfterGroups,
-        IBeforeClass,
-        IAfterClass,
-        IBeforeMethod,
-        IAfterMethod {
+    IBeforeSuite,
+    IAfterSuite,
+    IBeforeTest,
+    IAfterTest,
+    IBeforeGroups,
+    IAfterGroups,
+    IBeforeClass,
+    IAfterClass,
+    IBeforeMethod,
+    IAfterMethod {
 
   private boolean m_beforeTestClass = false;
   private boolean m_afterTestClass = false;
@@ -37,46 +37,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration
   private boolean m_firstTimeOnly = false;
   private boolean m_lastTimeOnly = false;
 
-  public ConfigurationAnnotation() {}
-
-  public void setAfterSuite(boolean afterSuite) {
-    m_afterSuite = afterSuite;
-  }
-
-  public void setAfterTest(boolean afterTest) {
-    m_afterTest = afterTest;
-  }
-
-  public void setAfterTestClass(boolean afterTestClass) {
-    m_afterTestClass = afterTestClass;
-  }
-
-  public void setAfterTestMethod(boolean afterTestMethod) {
-    m_afterTestMethod = afterTestMethod;
-  }
-
-  public void setAlwaysRun(boolean alwaysRun) {
-    m_alwaysRun = alwaysRun;
-  }
-
-  public void setBeforeSuite(boolean beforeSuite) {
-    m_beforeSuite = beforeSuite;
-  }
-
-  public void setBeforeTest(boolean beforeTest) {
-    m_beforeTest = beforeTest;
-  }
-
-  public void setBeforeTestClass(boolean beforeTestClass) {
-    m_beforeTestClass = beforeTestClass;
-  }
-
-  public void setBeforeTestMethod(boolean beforeTestMethod) {
-    m_beforeTestMethod = beforeTestMethod;
-  }
-
-  public void setInheritGroups(boolean inheritGroups) {
-    m_inheritGroups = inheritGroups;
+  public ConfigurationAnnotation() {
   }
 
   public void setIsBeforeGroups(boolean isBeforeGroups) {
@@ -102,9 +63,17 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     return m_beforeTestClass;
   }
 
+  public void setBeforeTestClass(boolean beforeTestClass) {
+    m_beforeTestClass = beforeTestClass;
+  }
+
   @Override
   public boolean getAfterTestClass() {
     return m_afterTestClass;
+  }
+
+  public void setAfterTestClass(boolean afterTestClass) {
+    m_afterTestClass = afterTestClass;
   }
 
   @Override
@@ -112,9 +81,17 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     return m_beforeTestMethod;
   }
 
+  public void setBeforeTestMethod(boolean beforeTestMethod) {
+    m_beforeTestMethod = beforeTestMethod;
+  }
+
   @Override
   public boolean getAfterTestMethod() {
     return m_afterTestMethod;
+  }
+
+  public void setAfterTestMethod(boolean afterTestMethod) {
+    m_afterTestMethod = afterTestMethod;
   }
 
   @Override
@@ -122,9 +99,17 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     return m_beforeSuite;
   }
 
+  public void setBeforeSuite(boolean beforeSuite) {
+    m_beforeSuite = beforeSuite;
+  }
+
   @Override
   public boolean getAfterSuite() {
     return m_afterSuite;
+  }
+
+  public void setAfterSuite(boolean afterSuite) {
+    m_afterSuite = afterSuite;
   }
 
   @Override
@@ -132,9 +117,17 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     return m_beforeTest;
   }
 
+  public void setBeforeTest(boolean beforeTest) {
+    m_beforeTest = beforeTest;
+  }
+
   @Override
   public boolean getAfterTest() {
     return m_afterTest;
+  }
+
+  public void setAfterTest(boolean afterTest) {
+    m_afterTest = afterTest;
   }
 
   @Override
@@ -142,9 +135,17 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     return m_alwaysRun;
   }
 
+  public void setAlwaysRun(boolean alwaysRun) {
+    m_alwaysRun = alwaysRun;
+  }
+
   @Override
   public boolean getInheritGroups() {
     return m_inheritGroups;
+  }
+
+  public void setInheritGroups(boolean inheritGroups) {
+    m_inheritGroups = inheritGroups;
   }
 
   @Override
@@ -174,28 +175,28 @@ public class ConfigurationAnnotation extends TestOrConfiguration
     m_groupFilters = groupFilters;
   }
 
-  public void setFakeConfiguration(boolean b) {
-    m_isFakeConfiguration = b;
-  }
-
   @Override
   public boolean isFakeConfiguration() {
     return m_isFakeConfiguration;
   }
 
-  public void setFirstTimeOnly(boolean f) {
-    m_firstTimeOnly = f;
+  public void setFakeConfiguration(boolean b) {
+    m_isFakeConfiguration = b;
   }
 
   public boolean isFirstTimeOnly() {
     return m_firstTimeOnly;
   }
 
-  public void setLastTimeOnly(boolean f) {
-    m_lastTimeOnly = f;
+  public void setFirstTimeOnly(boolean f) {
+    m_firstTimeOnly = f;
   }
 
   public boolean isLastTimeOnly() {
     return m_lastTimeOnly;
+  }
+
+  public void setLastTimeOnly(boolean f) {
+    m_lastTimeOnly = f;
   }
 }

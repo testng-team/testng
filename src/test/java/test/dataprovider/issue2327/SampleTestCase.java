@@ -23,5 +23,6 @@ public class SampleTestCase {
   }
 
   @Test(dataProvider = "dp")
-  public void test(String dataset) {}
+  public void test(String dataset) {
+  }
 }

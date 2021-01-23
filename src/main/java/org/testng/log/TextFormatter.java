@@ -10,6 +10,7 @@ import java.util.logging.SimpleFormatter;
  * @author Cedric Beust, May 2, 2004
  */
 public class TextFormatter extends SimpleFormatter {
+
   @Override
   public synchronized String format(LogRecord record) {
     return record.getMessage() + "\n";

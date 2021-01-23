@@ -3,7 +3,6 @@ package org.testng.internal.annotations;
 import org.testng.IRetryAnalyzer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.internal.InstanceCreator;
 
 /**
  * An implementation of ITest
@@ -27,13 +26,21 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private boolean m_ignoreMissingDependencies = false;
   private CustomAttribute[] m_attributes = {};
 
-  /** @return the expectedExceptions */
+  private static boolean isRetryAnalyzerNotTestNGInjected(Class<? extends IRetryAnalyzer> c) {
+    return !DisabledRetryAnalyzer.class.equals(c);
+  }
+
+  /**
+   * @return the expectedExceptions
+   */
   @Override
   public Class<?>[] getExpectedExceptions() {
     return m_expectedExceptions;
   }
 
-  /** @param expectedExceptions the expectedExceptions to set */
+  /**
+   * @param expectedExceptions the expectedExceptions to set
+   */
   @Override
   public void setExpectedExceptions(Class<?>[] expectedExceptions) {
     m_expectedExceptions = expectedExceptions;
@@ -50,16 +57,6 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public void setAlwaysRun(boolean alwaysRun) {
-    m_alwaysRun = alwaysRun;
-  }
-
-  @Override
-  public void setDataProvider(String dataProvider) {
-    m_dataProvider = dataProvider;
-  }
-
-  @Override
   public Class<?> getDataProviderClass() {
     return m_dataProviderClass;
   }
@@ -70,18 +67,13 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
-  public void setInvocationCount(int invocationCount) {
-    m_invocationCount = invocationCount;
-  }
-
-  @Override
-  public void setSuccessPercentage(int successPercentage) {
-    m_successPercentage = successPercentage;
-  }
-
-  @Override
   public int getInvocationCount() {
     return m_invocationCount;
+  }
+
+  @Override
+  public void setInvocationCount(int invocationCount) {
+    m_invocationCount = invocationCount;
   }
 
   @Override
@@ -100,13 +92,28 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   }
 
   @Override
+  public void setSuccessPercentage(int successPercentage) {
+    m_successPercentage = successPercentage;
+  }
+
+  @Override
   public String getDataProvider() {
     return m_dataProvider;
   }
 
   @Override
+  public void setDataProvider(String dataProvider) {
+    m_dataProvider = dataProvider;
+  }
+
+  @Override
   public boolean getAlwaysRun() {
     return m_alwaysRun;
+  }
+
+  @Override
+  public void setAlwaysRun(boolean alwaysRun) {
+    m_alwaysRun = alwaysRun;
   }
 
   @Override
@@ -187,9 +194,5 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   @Override
   public void setAttributes(CustomAttribute[] attributes) {
     m_attributes = attributes;
-  }
-
-  private static boolean isRetryAnalyzerNotTestNGInjected(Class<? extends IRetryAnalyzer> c) {
-    return !DisabledRetryAnalyzer.class.equals(c);
   }
 }

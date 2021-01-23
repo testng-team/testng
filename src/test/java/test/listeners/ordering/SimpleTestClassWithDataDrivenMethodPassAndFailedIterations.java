@@ -15,7 +15,7 @@ public class SimpleTestClassWithDataDrivenMethodPassAndFailedIterations {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {
+    return new Object[][]{
         {1},
         {2}
     };

@@ -1,9 +1,10 @@
 package test.dataprovider.issue2255;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
@@ -35,6 +36,6 @@ public class SampleTestCase extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {{100}, {200}};
+    return new Object[][]{{100}, {200}};
   }
 }

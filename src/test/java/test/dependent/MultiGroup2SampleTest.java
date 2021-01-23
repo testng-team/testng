@@ -7,5 +7,6 @@ import org.testng.annotations.Test;
     dependsOnGroups = {"checkin", "a"})
 public class MultiGroup2SampleTest {
 
-  public void test2() {}
+  public void test2() {
+  }
 }

@@ -1,10 +1,9 @@
 package test.factory.github1083;
 
-import org.testng.annotations.Factory;
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 
 public class ArrayFactorySample {
 
@@ -16,13 +15,13 @@ public class ArrayFactorySample {
     this.parameter = parameter;
   }
 
+  @Factory(indices = 1)
+  public static Object[] arrayFactory() {
+    return new Object[]{new ArrayFactorySample("foo"), new ArrayFactorySample("bar")};
+  }
+
   @Test
   public void test() {
     parameters.add(parameter);
-  }
-
-  @Factory(indices = 1)
-  public static Object[] arrayFactory() {
-    return new Object[] {new ArrayFactorySample("foo"), new ArrayFactorySample("bar")};
   }
 }

@@ -8,11 +8,14 @@ public class BaseClass {
   @BeforeMethod(
       alwaysRun = true,
       dependsOnMethods = {"dummyDependsOnMethod"})
-  public void dummyMethod() {}
+  public void dummyMethod() {
+  }
 
   @BeforeMethod
-  public void dummyDependsOnMethod() {}
+  public void dummyDependsOnMethod() {
+  }
 
   @Test
-  public void dummyTest() {}
+  public void dummyTest() {
+  }
 }

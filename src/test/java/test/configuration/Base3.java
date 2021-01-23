@@ -7,7 +7,9 @@ public class Base3 {
 
   private static boolean m_before = false;
 
-  /** @return the m_before */
+  /**
+   * @return the m_before
+   */
   public static boolean getBefore() {
     return m_before;
   }

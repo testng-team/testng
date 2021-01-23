@@ -1,16 +1,16 @@
 package test.configuration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 public class ConfigurationGroupIteratorDataProviderSampleTest {
+
   static List<Integer> m_list = new ArrayList<>();
 
   @BeforeGroups(
@@ -39,7 +39,7 @@ public class ConfigurationGroupIteratorDataProviderSampleTest {
 
   @DataProvider(name = "MyData")
   public Iterator<Object[]> input() {
-    return Arrays.asList(new Object[] {1, 1}, new Object[] {2, 2}, new Object[] {3, 3}).iterator();
+    return Arrays.asList(new Object[]{1, 1}, new Object[]{2, 2}, new Object[]{3, 3}).iterator();
   }
 
   private void ppp(String string) {

@@ -1,29 +1,16 @@
 package test.groups.issue1834;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.Files;
 import test.SimpleBaseTest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class IssueTest extends SimpleBaseTest {
-
-  @Test(description = "GITHUB-1834")
-  public void ensureDependenciesDefinedInSuiteAreHonored() throws IOException {
-    File file = File.createTempFile("1834", ".xml");
-    Files.writeFile(asSuite(), file);
-    TestNG testng = create();
-    testng.setTestSuites(Collections.singletonList(file.getAbsolutePath()));
-    OutputGatheringListener listener = new OutputGatheringListener();
-    testng.addListener(listener);
-    testng.run();
-    assertThat(listener.getConsoleLogs()).containsExactly("Uncached", "Cached");
-  }
 
   private static String asSuite() {
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -46,5 +33,17 @@ public class IssueTest extends SimpleBaseTest {
         + "    </classes>\n"
         + "  </test>\n"
         + "</suite>";
+  }
+
+  @Test(description = "GITHUB-1834")
+  public void ensureDependenciesDefinedInSuiteAreHonored() throws IOException {
+    File file = File.createTempFile("1834", ".xml");
+    Files.writeFile(asSuite(), file);
+    TestNG testng = create();
+    testng.setTestSuites(Collections.singletonList(file.getAbsolutePath()));
+    OutputGatheringListener listener = new OutputGatheringListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getConsoleLogs()).containsExactly("Uncached", "Cached");
   }
 }

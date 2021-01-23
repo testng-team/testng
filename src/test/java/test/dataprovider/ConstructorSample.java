@@ -1,13 +1,12 @@
 package test.dataprovider;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConstructorSample {
 
@@ -27,7 +26,7 @@ public class ConstructorSample {
     Assert.assertEquals(c.getParameterTypes().length, 1);
     Assert.assertEquals(c.getParameterTypes()[0], String.class);
 
-    return new Object[][] {{"Cedric"}, {"Alois"}};
+    return new Object[][]{{"Cedric"}, {"Alois"}};
   }
 
   @Test

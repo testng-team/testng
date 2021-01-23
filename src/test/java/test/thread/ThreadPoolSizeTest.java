@@ -3,6 +3,7 @@ package test.thread;
 import org.testng.annotations.Test;
 
 public class ThreadPoolSizeTest extends ThreadPoolSizeBase {
+
   @Test(invocationCount = 5, threadPoolSize = 3)
   public void f1() {
     logThread();

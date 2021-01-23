@@ -4,10 +4,13 @@ import org.testng.annotations.Test;
 
 
 public class WithPrioritySample2Test {
+
   @Test(priority = -2)
-  public void first() {}
+  public void first() {
+  }
 
   @Test(priority = -3)
-  public void second() {}
+  public void second() {
+  }
 
 }

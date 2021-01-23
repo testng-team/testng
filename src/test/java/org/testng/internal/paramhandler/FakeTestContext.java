@@ -2,6 +2,13 @@ package org.testng.internal.paramhandler;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.testng.IClass;
 import org.testng.IResultMap;
 import org.testng.ISuite;
@@ -12,20 +19,13 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 public class FakeTestContext implements ITestContext {
+
   private XmlTest xmlTest;
   private ISuite suite;
 
   public FakeTestContext(Class<?> clazz) {
-    this(new Class<?>[] {clazz});
+    this(new Class<?>[]{clazz});
   }
 
   public FakeTestContext(Class<?>... classes) {
@@ -147,7 +147,8 @@ public class FakeTestContext implements ITestContext {
   }
 
   @Override
-  public void addInjector(List<Module> moduleInstances, Injector injector) {}
+  public void addInjector(List<Module> moduleInstances, Injector injector) {
+  }
 
   @Override
   public Object getAttribute(String name) {
@@ -155,7 +156,8 @@ public class FakeTestContext implements ITestContext {
   }
 
   @Override
-  public void setAttribute(String name, Object value) {}
+  public void setAttribute(String name, Object value) {
+  }
 
   @Override
   public Set<String> getAttributeNames() {

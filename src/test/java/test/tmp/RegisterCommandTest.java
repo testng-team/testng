@@ -4,7 +4,7 @@ import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-@Test(groups = { "NewUser" })
+@Test(groups = {"NewUser"})
 public class RegisterCommandTest {
 
 //  Logger l = LoggerFactory.getLogger(this.getClass());

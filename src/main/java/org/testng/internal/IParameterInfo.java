@@ -5,6 +5,13 @@ package org.testng.internal;
  */
 public interface IParameterInfo {
 
+  static Object embeddedInstance(Object original) {
+    if (original instanceof IParameterInfo) {
+      return ((IParameterInfo) original).getInstance();
+    }
+    return original;
+  }
+
   /**
    * @return - The actual instance associated with a factory method
    */
@@ -14,12 +21,5 @@ public interface IParameterInfo {
    * @return - The parameters associated with the factory method as an array.
    */
   Object[] getParameters();
-
-  static Object embeddedInstance(Object original) {
-    if (original instanceof IParameterInfo) {
-      return ((IParameterInfo) original).getInstance();
-    }
-    return original;
-  }
 
 }

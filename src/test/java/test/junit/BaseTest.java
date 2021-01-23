@@ -3,8 +3,7 @@ package test.junit;
 import junit.framework.TestCase;
 
 /**
- * Base JUnit test case to verify TestNG handles
- * TestCase hierarchies properly.
+ * Base JUnit test case to verify TestNG handles TestCase hierarchies properly.
  *
  * @author mperham
  */
@@ -15,6 +14,14 @@ public abstract class BaseTest extends TestCase {
 
   public BaseTest(String name) {
     super(name);
+  }
+
+  public static int getSetUpInvokeCount() {
+    return setUpInvokeCount;
+  }
+
+  public static int getTearDownInvokeCount() {
+    return tearDownInvokeCount;
   }
 
   @Override
@@ -28,14 +35,7 @@ public abstract class BaseTest extends TestCase {
   }
 
   public abstract void testA();
+
   public abstract void testB();
-
-  public static int getSetUpInvokeCount() {
-    return setUpInvokeCount;
-  }
-
-  public static int getTearDownInvokeCount() {
-    return tearDownInvokeCount;
-  }
 
 }

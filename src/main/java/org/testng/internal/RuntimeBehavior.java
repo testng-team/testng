@@ -2,19 +2,22 @@ package org.testng.internal;
 
 import java.util.TimeZone;
 
-/** This class houses handling all JVM arguments by TestNG */
+/**
+ * This class houses handling all JVM arguments by TestNG
+ */
 public final class RuntimeBehavior {
 
   public static final String TESTNG_THREAD_AFFINITY = "testng.thread.affinity";
   public static final String TESTNG_MODE_DRYRUN = "testng.mode.dryrun";
-  private static final String TEST_CLASSPATH = "testng.test.classpath";
-  private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
   public static final String TESTNG_USE_UNSECURED_URL = "testng.dtd.http";
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
-  private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
   public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
+  private static final String TEST_CLASSPATH = "testng.test.classpath";
+  private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
+  private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
 
-  private RuntimeBehavior() {}
+  private RuntimeBehavior() {
+  }
 
   public static boolean strictParallelism() {
     return Boolean.getBoolean(STRICTLY_HONOUR_PARALLEL_MODE);
@@ -34,8 +37,8 @@ public final class RuntimeBehavior {
 
   public static String unsecuredUrlDocumentation() {
     return "TestNG by default disables loading DTD from unsecured Urls. " +
-            "If you need to explicitly load the DTD from a http url, please do so " +
-            "by using the JVM argument [-D" + TESTNG_USE_UNSECURED_URL + "=true]";
+        "If you need to explicitly load the DTD from a http url, please do so " +
+        "by using the JVM argument [-D" + TESTNG_USE_UNSECURED_URL + "=true]";
   }
 
   public static String getDefaultLineSeparator() {
@@ -84,7 +87,7 @@ public final class RuntimeBehavior {
 
   /**
    * @return - returns <code>true</code> if we would like to run in the Dry mode and <code>false
-   *     </code> otherwise.
+   * </code> otherwise.
    */
   public static boolean isDryRun() {
     String value = System.getProperty(TESTNG_MODE_DRYRUN, "false");
@@ -93,8 +96,8 @@ public final class RuntimeBehavior {
 
   /**
    * @return - returns the {@link TimeZone} corresponding to the JVM argument <code>
-   *     -Dtestng.timezone</code> if it was set. If not set, it returns the default timezone
-   *     pertaining to the user property <code>user.timezone</code>
+   * -Dtestng.timezone</code> if it was set. If not set, it returns the default timezone pertaining
+   * to the user property <code>user.timezone</code>
    */
   public static TimeZone getTimeZone() {
     String timeZone = System.getProperty("testng.timezone", "");
@@ -106,11 +109,11 @@ public final class RuntimeBehavior {
 
   /**
    * @return - <code>true</code> if we would like to enforce Thread affinity when dealing with the
-   *     below two variants of execution models:
-   *     <ul>
-   *       <li>Ordering priority
-   *       <li>Ordering by dependsOnMethods (will not work with dependency on multiple methods)
-   *     </ul>
+   * below two variants of execution models:
+   * <ul>
+   * <li>Ordering priority
+   * <li>Ordering by dependsOnMethods (will not work with dependency on multiple methods)
+   * </ul>
    */
   public static boolean enforceThreadAffinity() {
     return Boolean.parseBoolean(System.getProperty(TESTNG_THREAD_AFFINITY, "false"));

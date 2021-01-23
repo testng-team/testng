@@ -1,17 +1,23 @@
 package org.testng.xml;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import test.SimpleBaseTest;
 
-import java.util.Collections;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class XmlTestTest extends SimpleBaseTest {
+
+  private static Map<String, String> newSetOfParameters(String key, String value) {
+    Map<String, String> map = Maps.newHashMap();
+    map.put(key, value);
+    return map;
+  }
+
   @Test
   public void testNameMatchesAny() {
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1");
@@ -30,12 +36,6 @@ public class XmlTestTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {{newSetOfParameters(null, "value")}, {newSetOfParameters("foo", null)}};
-  }
-
-  private static Map<String, String> newSetOfParameters(String key, String value) {
-    Map<String, String> map = Maps.newHashMap();
-    map.put(key, value);
-    return map;
+    return new Object[][]{{newSetOfParameters(null, "value")}, {newSetOfParameters("foo", null)}};
   }
 }

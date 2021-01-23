@@ -15,7 +15,8 @@ public class BaseFactorySample {
   }
 
   @Test
-  public void f() {}
+  public void f() {
+  }
 
   /**
    * @@@ for some reason, the test results get added in the wrong order if I don't define a

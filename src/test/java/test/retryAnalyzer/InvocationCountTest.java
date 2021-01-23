@@ -3,23 +3,22 @@ package test.retryAnalyzer;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
+import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.common.collect.Multiset;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ConcurrentHashMultiset;
-import com.google.common.collect.Multiset;
-
 /**
  * retryAnalyzer parameter unit tests.
- * @author tocman@gmail.com (Jeremie Lenfant-Engelmann)
  *
+ * @author tocman@gmail.com (Jeremie Lenfant-Engelmann)
  */
 public final class InvocationCountTest implements IRetryAnalyzer {
+
   static final Multiset<String> invocations = ConcurrentHashMultiset.create();
   private static final AtomicInteger retriesRemaining = new AtomicInteger(100);
   private static final int MAX_RETRY = 2;
@@ -27,12 +26,11 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   static int tcid1 = 0;
   static int tcid2 = 0;
   static int tcid3 = 0;
-
+  private static int value = 42;
   private int r1 = 0;
   private int r2 = 1;
   private int r3 = 0;
   private int r7 = 0;
-  private static int value = 42;
   private int executionNumber = 0;
 
   @Test(retryAnalyzer = InvocationCountTest.class)
@@ -71,68 +69,67 @@ public final class InvocationCountTest implements IRetryAnalyzer {
     assertEquals(invocations.count("failAfterThreeRetries"), 4);
   }
 
-  @Test (retryAnalyzer = InvocationCountTest.class,
-		dataProvider = "dataProvider3")
+  @Test(retryAnalyzer = InvocationCountTest.class,
+      dataProvider = "dataProvider3")
   public void retryWithDataProvider(String tc) {
-		if ("tc1".equals(tc)) {
+    if ("tc1".equals(tc)) {
 
-			if (tcid1++ < MAX_RETRY) {
-				fail();
-			}
-		}
-		if ("tc2".equals(tc)) {
-			if (tcid2++ < MAX_RETRY) {
-				fail();
-			}
-		}
-		if ("tc3".equals(tc)) {
-			if (tcid3++ < MAX_RETRY) {
-				fail();
-			}
-		}
-	}
-
-
-	@Test (
-			dependsOnMethods = { "retryWithDataProvider" }, alwaysRun = true)
-	public void checkRetryCounts() {
-		assertEquals(tcid1, 3);
-		assertEquals(tcid2, 3);
-		assertEquals(tcid3, 3);
-	}
-
-  
-  
-  @DataProvider(name="dataProvider")
-  private Object[][] dataProvider() {
-    return new Object[][] { { 1, true }, { 2, false }, { 3, true },
-        { 4, false } };
+      if (tcid1++ < MAX_RETRY) {
+        fail();
+      }
+    }
+    if ("tc2".equals(tc)) {
+      if (tcid2++ < MAX_RETRY) {
+        fail();
+      }
+    }
+    if ("tc3".equals(tc)) {
+      if (tcid3++ < MAX_RETRY) {
+        fail();
+      }
+    }
   }
 
-  @DataProvider(name="dataProvider2")
+
+  @Test(
+      dependsOnMethods = {"retryWithDataProvider"}, alwaysRun = true)
+  public void checkRetryCounts() {
+    assertEquals(tcid1, 3);
+    assertEquals(tcid2, 3);
+    assertEquals(tcid3, 3);
+  }
+
+
+  @DataProvider(name = "dataProvider")
+  private Object[][] dataProvider() {
+    return new Object[][]{{1, true}, {2, false}, {3, true},
+        {4, false}};
+  }
+
+  @DataProvider(name = "dataProvider2")
   private Object[][] dataProvider2() {
     value = 42;
 
-    return new Object[][] { { true }, { true } };
+    return new Object[][]{{true}, {true}};
   }
-  
-  @DataProvider (
-			name = "dataProvider3")
-	private Object[][] dataProvider3() {
-		return new Object[][] { {"tc1"}, {"tc2"}, {"tc3"} };
-	}
+
+  @DataProvider(
+      name = "dataProvider3")
+  private Object[][] dataProvider3() {
+    return new Object[][]{{"tc1"}, {"tc2"}, {"tc3"}};
+  }
 
   @Test(retryAnalyzer = InvocationCountTest.class, dataProvider = "dataProvider")
   public void testAnnotationWithDataProvider(int paf, boolean test) {
-	executionNumber++;
+    executionNumber++;
     if (paf == 2 && test == false) {
       if (r2 >= 1) {
         r2--;
         fail();
       }
     }
-    if (paf == 4){
-      assertEquals(executionNumber,5);
+    if (paf == 4) {
+      assertEquals(executionNumber, 5);
     }
   }
 
@@ -151,7 +148,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   public void withFactory() {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { MyFactory.class});
+    tng.setTestClasses(new Class[]{MyFactory.class});
     FactoryTest.m_count = 0;
 
     tng.run();
@@ -166,6 +163,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   }
 
   public static class ThreeRetries implements IRetryAnalyzer {
+
     private final AtomicInteger remainingRetries = new AtomicInteger(3);
 
     @Override
@@ -174,13 +172,14 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       return remainingRetries.getAndDecrement() > 0;
     }
   }
-  
-  public static class RetryCountTest implements IRetryAnalyzer {
-	    private final AtomicInteger remainingRetries = new AtomicInteger(12);
 
-	    @Override
-	    public boolean retry(ITestResult result) {
-	      return remainingRetries.getAndDecrement() > 0;
-	    }
-	  }
+  public static class RetryCountTest implements IRetryAnalyzer {
+
+    private final AtomicInteger remainingRetries = new AtomicInteger(12);
+
+    @Override
+    public boolean retry(ITestResult result) {
+      return remainingRetries.getAndDecrement() > 0;
+    }
+  }
 }

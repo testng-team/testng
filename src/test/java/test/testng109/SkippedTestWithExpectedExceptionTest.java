@@ -8,20 +8,19 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class SkippedTestWithExpectedExceptionTest {
+
   @BeforeClass
   public void setup() {
     throw new RuntimeException("test-exception");
   }
 
   @Test
-  public void test1()
-  {
+  public void test1() {
 //   empty
   }
 
-  @Test(expectedExceptions={OutOfMemoryError.class})
-  public void test2()
-  {
+  @Test(expectedExceptions = {OutOfMemoryError.class})
+  public void test2() {
 //  empty
   }
 }

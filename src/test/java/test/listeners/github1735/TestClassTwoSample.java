@@ -5,6 +5,8 @@ import org.testng.annotations.Test;
 
 @Listeners(LocalExecutionListener.class)
 public class TestClassTwoSample {
-    @Test
-    public void testMethod(){}
+
+  @Test
+  public void testMethod() {
+  }
 }

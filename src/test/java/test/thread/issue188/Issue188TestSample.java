@@ -11,13 +11,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class Issue188TestSample {
+
   public static final Map<Long, Set<String>> timestamps = new ConcurrentHashMap<>();
   private static final Random random = new Random();
 
   @BeforeMethod
   public void logTime(ITestResult itr) {
-    String txt = Reporter.getCurrentTestResult().getTestContext().getName() + "_" + itr.getMethod().getQualifiedName();
-    timestamps.computeIfAbsent(System.currentTimeMillis(), k-> ConcurrentHashMap.newKeySet()).add(txt);
+    String txt = Reporter.getCurrentTestResult().getTestContext().getName() + "_" + itr.getMethod()
+        .getQualifiedName();
+    timestamps.computeIfAbsent(System.currentTimeMillis(), k -> ConcurrentHashMap.newKeySet())
+        .add(txt);
   }
 
   @Test

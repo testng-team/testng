@@ -2,20 +2,23 @@ package testhelper;
 
 /**
  * <code>OutputDirectoryPatch</code> is a helper class to provide an output directory
- * for TestNG tests that explicitly create an instance of TestNG and do not know the
- * output directory specified for the test.
+ * for TestNG tests that explicitly create an instance of TestNG and do not know the output
+ * directory specified for the test.
  *
  * @author cquezel
  * @since 4.8
  */
 public final class OutputDirectoryPatch {
 
-  /** The default output directory name if none was specified. We should use something
-   * different than "test-output" to make it clear that the output directory
-   * has not been set. */
+  /**
+   * The default output directory name if none was specified. We should use something different than
+   * "test-output" to make it clear that the output directory has not been set.
+   */
   private static final String DEFAULT_OUTPUT_DIRECTORY = "test-output";
 
-  /** The name of the System property used to store the output directory. */
+  /**
+   * The name of the System property used to store the output directory.
+   */
   private static final String OUTPUT_DIRECTORY_PROPERTY_NAME = "testng.outputDir";
 
   /**

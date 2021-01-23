@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -129,7 +128,8 @@ public class ConfigurationMethod extends BaseTestMethod {
     List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod method : methods) {
       if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
-        String msg = "Detected a static method [" + method.getQualifiedName() + "()]. Static configuration methods can cause "
+        String msg = "Detected a static method [" + method.getQualifiedName()
+            + "()]. Static configuration methods can cause "
             + " unexpected behavior.";
         Logger.getLogger(Configuration.class).warn(msg);
       }
@@ -281,34 +281,49 @@ public class ConfigurationMethod extends BaseTestMethod {
         instance);
   }
 
-  /** @return Returns the isAfterClassConfiguration. */
+  /**
+   * @return Returns the isAfterClassConfiguration.
+   */
   @Override
   public boolean isAfterClassConfiguration() {
     return m_isAfterClassConfiguration;
   }
-  /** @return Returns the isAfterMethodConfiguration. */
+
+  /**
+   * @return Returns the isAfterMethodConfiguration.
+   */
   @Override
   public boolean isAfterMethodConfiguration() {
     return m_isAfterMethodConfiguration;
   }
-  /** @return Returns the isBeforeClassConfiguration. */
+
+  /**
+   * @return Returns the isBeforeClassConfiguration.
+   */
   @Override
   public boolean isBeforeClassConfiguration() {
     return m_isBeforeClassConfiguration;
   }
-  /** @return Returns the isBeforeMethodConfiguration. */
+
+  /**
+   * @return Returns the isBeforeMethodConfiguration.
+   */
   @Override
   public boolean isBeforeMethodConfiguration() {
     return m_isBeforeMethodConfiguration;
   }
 
-  /** @return Returns the isAfterSuiteConfiguration. */
+  /**
+   * @return Returns the isAfterSuiteConfiguration.
+   */
   @Override
   public boolean isAfterSuiteConfiguration() {
     return m_isAfterSuiteConfiguration;
   }
 
-  /** @return Returns the isBeforeSuiteConfiguration. */
+  /**
+   * @return Returns the isBeforeSuiteConfiguration.
+   */
   @Override
   public boolean isBeforeSuiteConfiguration() {
     return m_isBeforeSuiteConfiguration;
@@ -349,7 +364,8 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   private void init() {
-    IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(m_annotationFinder, m_method.getMethod());
+    IConfigurationAnnotation annotation = AnnotationHelper
+        .findConfiguration(m_annotationFinder, m_method.getMethod());
     if (annotation != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
       setEnabled(annotation.getEnabled());

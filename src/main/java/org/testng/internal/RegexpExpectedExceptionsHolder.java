@@ -1,11 +1,10 @@
 package org.testng.internal;
 
+import java.util.regex.Pattern;
 import org.testng.IExpectedExceptionsHolder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import java.util.regex.Pattern;
 
 /**
  * A class that contains the expected exceptions and the message regular expression.
@@ -13,6 +12,7 @@ import java.util.regex.Pattern;
  * @author cbeust
  */
 public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder {
+
   public static final String DEFAULT_REGEXP = ".*";
 
   private final IAnnotationFinder finder;
@@ -23,7 +23,9 @@ public class RegexpExpectedExceptionsHolder implements IExpectedExceptionsHolder
     this.method = method;
   }
 
-  /** message / regEx .* other null true false non-null true match */
+  /**
+   * message / regEx .* other null true false non-null true match
+   */
   @Override
   public boolean isThrowableMatching(Throwable ite) {
     String messageRegExp = getRegExp();

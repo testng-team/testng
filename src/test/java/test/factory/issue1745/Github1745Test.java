@@ -1,14 +1,13 @@
 package test.factory.issue1745;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class Github1745Test extends SimpleBaseTest {
 

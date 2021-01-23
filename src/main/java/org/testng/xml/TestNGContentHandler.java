@@ -1,13 +1,23 @@
 package org.testng.xml;
 
+import static org.testng.internal.Utils.isStringBlank;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Stack;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -23,17 +33,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import static org.testng.internal.Utils.isStringBlank;
-
 /**
  * Suite definition parser utility.
  *
@@ -42,23 +41,8 @@ import static org.testng.internal.Utils.isStringBlank;
  */
 // TODO move to internal
 public class TestNGContentHandler extends DefaultHandler {
-  private XmlSuite m_currentSuite = null;
-  private XmlTest m_currentTest = null;
-  private XmlDefine m_currentDefine = null;
-  private XmlRun m_currentRun = null;
-  private List<XmlClass> m_currentClasses = null;
-  private int m_currentTestIndex = 0;
-  private int m_currentClassIndex = 0;
-  private int m_currentIncludeIndex = 0;
-  private List<XmlPackage> m_currentPackages = null;
-  private XmlPackage m_currentPackage = null;
-  private final List<XmlSuite> m_suites = Lists.newArrayList();
-  private XmlGroups m_currentGroups = null;
-  private Map<String, String> m_currentTestParameters = null;
-  private Map<String, String> m_currentSuiteParameters = null;
-  private Map<String, String> m_currentClassParameters = null;
-  private Include m_currentInclude;
 
+  private final List<XmlSuite> m_suites = Lists.newArrayList();
   //Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
   private final EntityResolver m_redirectionAwareResolver = (publicId, systemId) -> {
     URL url = new URL(systemId);
@@ -81,17 +65,25 @@ public class TestNGContentHandler extends DefaultHandler {
     }
     return new InputSource(Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));
   };
-
-  enum Location {
-    SUITE,
-    TEST,
-    CLASS,
-    INCLUDE,
-    EXCLUDE
-  }
-
   private final Stack<Location> m_locations = new Stack<>();
-
+  private final List<String> m_suiteFiles = Lists.newArrayList();
+  private final String m_fileName;
+  private final boolean m_loadClasses;
+  private XmlSuite m_currentSuite = null;
+  private XmlTest m_currentTest = null;
+  private XmlDefine m_currentDefine = null;
+  private XmlRun m_currentRun = null;
+  private List<XmlClass> m_currentClasses = null;
+  private int m_currentTestIndex = 0;
+  private int m_currentClassIndex = 0;
+  private int m_currentIncludeIndex = 0;
+  private List<XmlPackage> m_currentPackages = null;
+  private XmlPackage m_currentPackage = null;
+  private XmlGroups m_currentGroups = null;
+  private Map<String, String> m_currentTestParameters = null;
+  private Map<String, String> m_currentSuiteParameters = null;
+  private Map<String, String> m_currentClassParameters = null;
+  private Include m_currentInclude;
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
   private List<String> m_currentExcludedMethods = null;
@@ -99,18 +91,81 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
-  private final List<String> m_suiteFiles = Lists.newArrayList();
   private boolean m_enabledTest;
   private List<String> m_listeners;
-
-  private final String m_fileName;
-  private final boolean m_loadClasses;
   private boolean m_validate = false;
   private boolean m_hasWarn = false;
-
   public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
     m_loadClasses = loadClasses;
+  }
+
+  private static boolean skipConsideringSystemId(String systemId) {
+    return Strings.isNullOrEmpty(systemId)
+        || Parser.isDTDDomainInternallyKnownToTestNG(systemId)
+        || isMalformedFileSystemBasedSystemId(systemId);
+  }
+
+  private static boolean isMalformedFileSystemBasedSystemId(String systemId) {
+    try {
+
+      URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8.name()).trim());
+      if (url.getProtocol().equals("file")) {
+        File file = new File(url.getFile());
+        boolean isDirectory = file.isDirectory();
+        boolean fileExists = file.exists();
+        return isDirectory || !fileExists;
+      }
+      return false;
+    } catch (MalformedURLException | UnsupportedEncodingException e) {
+      return true;
+    }
+  }
+
+  private static boolean isUnsecuredUrl(String str) {
+    URI uri;
+    try {
+      uri = new URI(str);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+    // scheme is null for local uri
+    return uri.getScheme() != null && uri.getScheme().equals("http");
+  }
+
+  private static String expandValue(String value) {
+    StringBuilder result = null;
+    int startIndex;
+    int endIndex;
+    int startPosition = 0;
+    String property;
+    while ((startIndex = value.indexOf("${", startPosition)) > -1
+        && (endIndex = value.indexOf("}", startIndex + 3)) > -1) {
+      property = value.substring(startIndex + 2, endIndex);
+      if (result == null) {
+        result = new StringBuilder(value.substring(startPosition, startIndex));
+      } else {
+        result.append(value, startPosition, startIndex);
+      }
+      String propertyValue = System.getProperty(property);
+      if (propertyValue == null) {
+        propertyValue = System.getenv(property);
+      }
+      if (propertyValue != null) {
+        result.append(propertyValue);
+      } else {
+        result.append("${");
+        result.append(property);
+        result.append("}");
+      }
+      startPosition = startIndex + 3 + property.length();
+    }
+    if (result != null) {
+      result.append(value.substring(startPosition));
+      return result.toString();
+    } else {
+      return value;
+    }
   }
 
   @Override
@@ -138,39 +193,6 @@ public class TestNGContentHandler extends DefaultHandler {
     return m_redirectionAwareResolver.resolveEntity(publicId, systemId);
   }
 
-  private static boolean skipConsideringSystemId(String systemId) {
-    return Strings.isNullOrEmpty(systemId)
-        || Parser.isDTDDomainInternallyKnownToTestNG(systemId)
-        || isMalformedFileSystemBasedSystemId(systemId);
-  }
-
-  private static boolean isMalformedFileSystemBasedSystemId(String systemId) {
-    try {
-
-      URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8.name()).trim());
-      if (url.getProtocol().equals("file")) {
-        File file = new File(url.getFile());
-        boolean isDirectory =  file.isDirectory();
-        boolean fileExists = file.exists();
-        return isDirectory || !fileExists;
-      }
-      return false;
-    } catch (MalformedURLException | UnsupportedEncodingException e) {
-      return true;
-    }
-  }
-
-  private static boolean isUnsecuredUrl(String str) {
-    URI uri;
-    try {
-      uri = new URI(str);
-    } catch (URISyntaxException e) {
-      throw new RuntimeException(e);
-    }
-    // scheme is null for local uri
-    return uri.getScheme() != null && uri.getScheme().equals("http");
-  }
-
   private InputStream loadDtdUsingClassLoader() {
     InputStream is = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
     if (is != null) {
@@ -179,7 +201,9 @@ public class TestNGContentHandler extends DefaultHandler {
     return Thread.currentThread().getContextClassLoader().getResourceAsStream(Parser.TESTNG_DTD);
   }
 
-  /** Parse <suite-file> */
+  /**
+   * Parse <suite-file>
+   */
   private void xmlSuiteFile(boolean start, Attributes attributes) {
     if (start) {
       String path = attributes.getValue("path");
@@ -191,7 +215,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <suite> */
+  /**
+   * Parse <suite>
+   */
   private void xmlSuite(boolean start, Attributes attributes) {
     if (start) {
       pushLocation(Location.SUITE);
@@ -285,7 +311,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <define> */
+  /**
+   * Parse <define>
+   */
   private void xmlDefine(boolean start, Attributes attributes) {
     if (start) {
       String name = attributes.getValue("name");
@@ -298,7 +326,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <script> */
+  /**
+   * Parse <script>
+   */
   private void xmlScript(boolean start, Attributes attributes) {
     if (start) {
       m_currentLanguage = attributes.getValue("language");
@@ -316,7 +346,9 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse &lt;test&gt; */
+  /**
+   * Parse &lt;test&gt;
+   */
   private void xmlTest(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
@@ -621,18 +653,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  private static class Include {
-    String name;
-    String invocationNumbers;
-    String description;
-    Map<String, String> parameters = Maps.newHashMap();
-
-    Include(String name, String numbers) {
-      this.name = name;
-      this.invocationNumbers = numbers;
-    }
-  }
-
   private void xmlInclude(boolean start, Attributes attributes) {
     if (start) {
       m_locations.push(Location.INCLUDE);
@@ -771,38 +791,24 @@ public class TestNGContentHandler extends DefaultHandler {
     return m_currentSuite;
   }
 
-  private static String expandValue(String value) {
-    StringBuilder result = null;
-    int startIndex;
-    int endIndex;
-    int startPosition = 0;
-    String property;
-    while ((startIndex = value.indexOf("${", startPosition)) > -1
-        && (endIndex = value.indexOf("}", startIndex + 3)) > -1) {
-      property = value.substring(startIndex + 2, endIndex);
-      if (result == null) {
-        result = new StringBuilder(value.substring(startPosition, startIndex));
-      } else {
-        result.append(value, startPosition, startIndex);
-      }
-      String propertyValue = System.getProperty(property);
-      if (propertyValue == null) {
-        propertyValue = System.getenv(property);
-      }
-      if (propertyValue != null) {
-        result.append(propertyValue);
-      } else {
-        result.append("${");
-        result.append(property);
-        result.append("}");
-      }
-      startPosition = startIndex + 3 + property.length();
-    }
-    if (result != null) {
-      result.append(value.substring(startPosition));
-      return result.toString();
-    } else {
-      return value;
+  enum Location {
+    SUITE,
+    TEST,
+    CLASS,
+    INCLUDE,
+    EXCLUDE
+  }
+
+  private static class Include {
+
+    String name;
+    String invocationNumbers;
+    String description;
+    Map<String, String> parameters = Maps.newHashMap();
+
+    Include(String name, String numbers) {
+      this.name = name;
+      this.invocationNumbers = numbers;
     }
   }
 }

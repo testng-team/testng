@@ -20,6 +20,7 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 public class Github1649Test extends SimpleBaseTest {
+
   @Test
   public void testHappyFlowForNativeInjectionOnTestMethods() {
     Map<String, List<String>> mapping = Maps.newHashMap();
@@ -80,11 +81,13 @@ public class Github1649Test extends SimpleBaseTest {
 
   public static class Github1649TestListener extends TestListenerAdapter
       implements IInvokedMethodListener {
+
     Map<String, List<String>> mapping = Maps.newHashMap();
     Map<String, String> failures = Maps.newHashMap();
 
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
+    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    }
 
     @Override
     public void onTestFailure(ITestResult testResult) {

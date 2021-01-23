@@ -1,13 +1,15 @@
 package org.testng;
 
+import javax.annotation.Nonnull;
 import org.testng.collections.Objects;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
-import javax.annotation.Nonnull;
-
-/** This class logs the result of an entire Test Suite (defined by a property file). */
+/**
+ * This class logs the result of an entire Test Suite (defined by a property file).
+ */
 class SuiteResult implements ISuiteResult, Comparable<ISuiteResult> {
+
   private final XmlSuite m_suite;
   private final ITestContext m_testContext;
 
@@ -16,12 +18,17 @@ class SuiteResult implements ISuiteResult, Comparable<ISuiteResult> {
     m_testContext = tr;
   }
 
-  /** @return Returns the singleTestRunner. */
+  /**
+   * @return Returns the singleTestRunner.
+   */
   @Override
   public ITestContext getTestContext() {
     return m_testContext;
   }
-  /** @return Returns the suite. */
+
+  /**
+   * @return Returns the suite.
+   */
   public XmlSuite getSuite() {
     return m_suite;
   }
@@ -40,7 +47,9 @@ class SuiteResult implements ISuiteResult, Comparable<ISuiteResult> {
     return result;
   }
 
-  /** Returns the test context name. {@inheritDoc} */
+  /**
+   * Returns the test context name. {@inheritDoc}
+   */
   @Override
   public String toString() {
     return Objects.toStringHelper(getClass()).add("context", getTestContext().getName()).toString();

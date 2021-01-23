@@ -1,7 +1,6 @@
 package test.dependent;
 
 import java.util.List;
-
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -15,8 +14,8 @@ import org.testng.collections.Lists;
  */
 public class InstanceSkipSampleTest {
 
-  private int m_n;
   public static List<String> m_list = Lists.newArrayList();
+  private int m_n;
 
   @Factory(dataProvider = "dp")
   public InstanceSkipSampleTest(int n) {
@@ -25,14 +24,16 @@ public class InstanceSkipSampleTest {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][] {
-      new Object[] {1}, new Object[] {2}, new Object[] {3},
+    return new Object[][]{
+        new Object[]{1}, new Object[]{2}, new Object[]{3},
     };
   }
 
   @Test
   public void f() {
-    if (m_n == 2) throw new RuntimeException();
+    if (m_n == 2) {
+      throw new RuntimeException();
+    }
     log("f");
   }
 

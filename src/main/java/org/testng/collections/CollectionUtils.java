@@ -6,7 +6,8 @@ import java.util.Map;
 
 public final class CollectionUtils {
 
-  private CollectionUtils() {}
+  private CollectionUtils() {
+  }
 
   public static boolean hasElements(Collection<?> c) {
     return c != null && !c.isEmpty();

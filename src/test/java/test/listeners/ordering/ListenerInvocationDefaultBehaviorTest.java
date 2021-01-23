@@ -14,6 +14,20 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
 
   //Test methods along with configurations
 
+  private static void runTest(List<String> expected, Class<?> clazz) {
+    runTest(expected, clazz, false);
+  }
+
+  private static void runTest(List<String> expected, Class<?> clazz, boolean skipInvocationCount) {
+    TestNG testng = create(clazz);
+    testng.setSkipFailedInvocationCounts(skipInvocationCount);
+    UniversalListener listener = new UniversalListener();
+    testng.addListener(listener);
+    testng.alwaysRunListeners(true);
+    testng.run();
+    Assertions.assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
+  }
+
   @Test(description = "Test class has only 1 passed config and test method")
   public void testOrderHasOnlyPassedConfigAndTestMethod() {
     List<String> expected = Arrays.asList(
@@ -82,6 +96,8 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
     runTest(expected, SimpleTestClassWithFailedConfigAndSkippedTestMethod.class);
   }
 
+  //All Data driven scenarios
+
   @Test(description = "Test class has only 1 failed test method due to a timeout")
   public void testOrderHasTimedoutTestMethod() {
     List<String> expected = Arrays.asList(
@@ -148,7 +164,7 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
     runTest(expected, SimpleTestClassWithFailedAndSkippedConfigAndSkippedTestMethod.class);
   }
 
-  //All Data driven scenarios
+  //Regular test methods without any configuration methods.
 
   @Test(description = "Test class has only 1 passed test method powered by a data provider")
   public void testOrderHasOnlyDataDrivenPassedMethod() {
@@ -221,8 +237,6 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
     );
     runTest(expected, SimpleTestClassWithDataDrivenMethodPassAndFailedIterations.class);
   }
-
-  //Regular test methods without any configuration methods.
 
   @Test(description = "Test class has only 1 passed test method")
   public void testOrderHasOnlyPassedMethod() {
@@ -311,8 +325,9 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
     runTest(expected, SimpleTestClassWithFailedMethodMultipleInvocations.class);
   }
 
-  @Test(description = "Test class has only 1 failed test method and uses invocation counts but configured"
-      + "to skip failed invocations")
+  @Test(description =
+      "Test class has only 1 failed test method and uses invocation counts but configured"
+          + "to skip failed invocations")
   public void testOrderHasOnlyFailedMethodMultipleInvocationsAndSkipFailedInvocations() {
     List<String> expected = Arrays.asList(
         IEXECUTIONLISTENER_ON_EXECUTION_START,
@@ -454,20 +469,6 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
         IEXECUTIONLISTENER_ON_EXECUTION_FINISH
     );
     runTest(expected, SimpleTestClassWithFailedMethodHasRetryAnalyzer.class, true);
-  }
-
-  private static void runTest(List<String> expected, Class<?> clazz) {
-    runTest(expected, clazz, false);
-  }
-
-  private static void runTest(List<String> expected, Class<?> clazz, boolean skipInvocationCount) {
-    TestNG testng = create(clazz);
-    testng.setSkipFailedInvocationCounts(skipInvocationCount);
-    UniversalListener listener = new UniversalListener();
-    testng.addListener(listener);
-    testng.alwaysRunListeners(true);
-    testng.run();
-    Assertions.assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
   }
 
 }

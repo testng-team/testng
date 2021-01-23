@@ -8,7 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import org.testng.Reporter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -18,10 +21,6 @@ import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
-
-import java.util.Collections;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class IssueTest extends SimpleBaseTest {
 

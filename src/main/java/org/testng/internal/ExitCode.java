@@ -1,9 +1,8 @@
 package org.testng.internal;
 
+import java.util.BitSet;
 import org.testng.IResultMap;
 import org.testng.ITestContext;
-
-import java.util.BitSet;
 
 /**
  * |--------------------|---------|-------|------------|------------------------------------------|
@@ -22,8 +21,8 @@ import java.util.BitSet;
 public class ExitCode {
 
   public static final int HAS_NO_TEST = 8;
-  private static final int FAILED_WITHIN_SUCCESS = 4;
   public static final int SKIPPED = 2;
+  private static final int FAILED_WITHIN_SUCCESS = 4;
   private static final int FAILED = 1;
   private static final int SIZE = 3;
 
@@ -31,6 +30,10 @@ public class ExitCode {
 
   ExitCode() {
     this(new BitSet(SIZE));
+  }
+
+  private ExitCode(BitSet exitCodeBits) {
+    this.exitCodeBits = exitCodeBits;
   }
 
   public static boolean hasFailureWithinSuccessPercentage(int returnCode) {
@@ -52,10 +55,6 @@ public class ExitCode {
     bitSet.set(2, false);
 
     return new ExitCode(bitSet);
-  }
-
-  private ExitCode(BitSet exitCodeBits) {
-    this.exitCodeBits = exitCodeBits;
   }
 
   void computeAndUpdate(ITestContext context) {

@@ -1,5 +1,6 @@
 package test.github799;
 
+import java.util.List;
 import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -9,8 +10,6 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import test.SimpleBaseTest;
-
-import java.util.List;
 
 public class EnsureInstancesAreOrderedViaFactories extends SimpleBaseTest {
 
@@ -51,10 +50,12 @@ public class EnsureInstancesAreOrderedViaFactories extends SimpleBaseTest {
   }
 
   public static class OrderEavesdropper implements IInvokedMethodListener {
+
     List<String> messages = Lists.newArrayList();
 
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
+    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    }
 
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class ExceptionThrowingDataDrivenSampleTestClass {
+
   @Test(dataProvider = "dp")
   public void testMethod(String i) {
     Assertions.assertThat(i).isNotEmpty();

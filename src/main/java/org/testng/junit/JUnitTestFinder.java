@@ -3,7 +3,9 @@ package org.testng.junit;
 import java.lang.reflect.Modifier;
 import org.testng.internal.Utils;
 
-/** @author ljungman */
+/**
+ * @author ljungman
+ */
 public final class JUnitTestFinder {
 
   private static final String JUNIT3_TEST = "junit.framework.Test";

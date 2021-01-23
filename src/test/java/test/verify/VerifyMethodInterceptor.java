@@ -1,13 +1,13 @@
 package test.verify;
 
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
 import org.testng.collections.Lists;
 
-import java.util.List;
-
 public class VerifyMethodInterceptor implements IMethodInterceptor {
+
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods,
       ITestContext context) {
@@ -18,7 +18,8 @@ public class VerifyMethodInterceptor implements IMethodInterceptor {
     // twice, once to find the verifier and once more to actually create
     // the result. Obviously, this can be done with just one loop
     for (IMethodInstance m : methods) {
-      if (m.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Verifier.class) != null) {
+      if (m.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Verifier.class)
+          != null) {
         verifier = m;
         break;
       }

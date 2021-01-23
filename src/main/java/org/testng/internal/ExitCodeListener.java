@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.IExecutionListener;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -10,11 +11,10 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.xml.XmlSuite;
 
-import java.util.List;
-
 public class ExitCodeListener implements ITestListener, IReporter, IExecutionListener {
-  private boolean hasTests = false;
+
   private final ExitCode status = new ExitCode();
+  private boolean hasTests = false;
   private boolean failIfAllTestsSkipped = false;
 
   public void failIfAllTestsSkipped() {
@@ -66,10 +66,12 @@ public class ExitCodeListener implements ITestListener, IReporter, IExecutionLis
   }
 
   @Override
-  public void onStart(ITestContext context) {}
+  public void onStart(ITestContext context) {
+  }
 
   @Override
-  public void onFinish(ITestContext context) {}
+  public void onFinish(ITestContext context) {
+  }
 
   @Override
   public void onExecutionFinish() {

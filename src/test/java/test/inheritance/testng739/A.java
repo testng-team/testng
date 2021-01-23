@@ -12,5 +12,6 @@ public class A extends BaseClass {
   }
 
   @Test
-  public void testA() {}
+  public void testA() {
+  }
 }

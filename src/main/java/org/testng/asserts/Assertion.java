@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-/** An assert class with various hooks allowing its behavior to be modified by subclasses. */
+/**
+ * An assert class with various hooks allowing its behavior to be modified by subclasses.
+ */
 public class Assertion implements IAssertLifecycle {
+
   protected void doAssert(IAssert<?> assertCommand) {
     onBeforeAssert(assertCommand);
     try {
@@ -19,63 +22,37 @@ public class Assertion implements IAssertLifecycle {
     }
   }
 
-  /** Run the assert command in parameter. Meant to be overridden by subclasses. */
+  /**
+   * Run the assert command in parameter. Meant to be overridden by subclasses.
+   */
   @Override
   public void executeAssert(IAssert<?> assertCommand) {
     assertCommand.doAssert();
   }
 
-  /** Invoked when an assert succeeds. Meant to be overridden by subclasses. */
+  /**
+   * Invoked when an assert succeeds. Meant to be overridden by subclasses.
+   */
   @Override
-  public void onAssertSuccess(IAssert<?> assertCommand) {}
+  public void onAssertSuccess(IAssert<?> assertCommand) {
+  }
 
   @Override
-  public void onAssertFailure(IAssert<?> assertCommand, AssertionError ex) {}
+  public void onAssertFailure(IAssert<?> assertCommand, AssertionError ex) {
+  }
 
-  /** Invoked before an assert is run. Meant to be overridden by subclasses. */
+  /**
+   * Invoked before an assert is run. Meant to be overridden by subclasses.
+   */
   @Override
-  public void onBeforeAssert(IAssert<?> assertCommand) {}
+  public void onBeforeAssert(IAssert<?> assertCommand) {
+  }
 
-  /** Invoked after an assert is run. Meant to be overridden by subclasses. */
+  /**
+   * Invoked after an assert is run. Meant to be overridden by subclasses.
+   */
   @Override
-  public void onAfterAssert(IAssert<?> assertCommand) {}
-
-  private abstract static class SimpleAssert<T> implements IAssert<T> {
-    private final T actual;
-    private final T expected;
-    private final String m_message;
-
-    public SimpleAssert(String message) {
-      this(null, null, message);
-    }
-
-    public SimpleAssert(T actual, T expected) {
-      this(actual, expected, null);
-    }
-
-    public SimpleAssert(T actual, T expected, String message) {
-      this.actual = actual;
-      this.expected = expected;
-      m_message = message;
-    }
-
-    @Override
-    public String getMessage() {
-      return m_message;
-    }
-
-    @Override
-    public T getActual() {
-      return actual;
-    }
-
-    @Override
-    public T getExpected() {
-      return expected;
-    }
-
-    @Override
-    public abstract void doAssert();
+  public void onAfterAssert(IAssert<?> assertCommand) {
   }
 
   public void assertTrue(final boolean condition, final String message) {
@@ -759,5 +736,44 @@ public class Assertion implements IAssertLifecycle {
       cause = cause.getCause();
     }
     return sb.toString();
+  }
+
+  private abstract static class SimpleAssert<T> implements IAssert<T> {
+
+    private final T actual;
+    private final T expected;
+    private final String m_message;
+
+    public SimpleAssert(String message) {
+      this(null, null, message);
+    }
+
+    public SimpleAssert(T actual, T expected) {
+      this(actual, expected, null);
+    }
+
+    public SimpleAssert(T actual, T expected, String message) {
+      this.actual = actual;
+      this.expected = expected;
+      m_message = message;
+    }
+
+    @Override
+    public String getMessage() {
+      return m_message;
+    }
+
+    @Override
+    public T getActual() {
+      return actual;
+    }
+
+    @Override
+    public T getExpected() {
+      return expected;
+    }
+
+    @Override
+    public abstract void doAssert();
   }
 }

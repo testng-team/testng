@@ -8,8 +8,8 @@ import org.testng.ITestNGMethod;
 
 public class FilteringMethodSelector implements IMethodSelector {
 
-  private static final String ALL = "all";
   public static final String GROUP = "group";
+  private static final String ALL = "all";
   private String whichGroup;
 
   public FilteringMethodSelector() {

@@ -1,15 +1,14 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /**
  * This class wraps access to beforeGroups and afterGroups methods, since they are passed around the
@@ -19,7 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConfigurationGroupMethods {
 
-  /** The list of beforeGroups methods keyed by the name of the group */
+  /**
+   * The list of beforeGroups methods keyed by the name of the group
+   */
   private final Map<String, List<ITestNGMethod>> m_beforeGroupsMethods;
 
   private final Set<String> beforeGroupsThatHaveAlreadyRun =
@@ -27,13 +28,19 @@ public class ConfigurationGroupMethods {
   private final Set<String> afterGroupsThatHaveAlreadyRun =
       Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-  /** The list of afterGroups methods keyed by the name of the group */
+  /**
+   * The list of afterGroups methods keyed by the name of the group
+   */
   private final Map<String, List<ITestNGMethod>> m_afterGroupsMethods;
 
-  /** The list of all test methods */
+  /**
+   * The list of all test methods
+   */
   private final ITestNGMethod[] m_allMethods;
 
-  /** A map that returns the last method belonging to the given group */
+  /**
+   * A map that returns the last method belonging to the given group
+   */
   private volatile Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
 
   public ConfigurationGroupMethods(
@@ -43,6 +50,15 @@ public class ConfigurationGroupMethods {
     m_allMethods = container.getItems();
     m_beforeGroupsMethods = new ConcurrentHashMap<>(beforeGroupsMethods);
     m_afterGroupsMethods = new ConcurrentHashMap<>(afterGroupsMethods);
+  }
+
+  private static List<ITestNGMethod> retrieve(
+      Set<String> tracker, Map<String, List<ITestNGMethod>> map, String group) {
+    if (tracker.contains(group)) {
+      return Collections.emptyList();
+    }
+    tracker.add(group);
+    return map.get(group);
   }
 
   public Map<String, List<ITestNGMethod>> getBeforeGroupsMethods() {
@@ -57,7 +73,7 @@ public class ConfigurationGroupMethods {
    * @param group The group name
    * @param method The test method
    * @return true if the passed method is the last to run for the group. This method is used to
-   *     figure out when is the right time to invoke afterGroups methods.
+   * figure out when is the right time to invoke afterGroups methods.
    */
   public boolean isLastMethodForGroup(String group, ITestNGMethod method) {
 
@@ -125,14 +141,5 @@ public class ConfigurationGroupMethods {
     for (String group : groups) {
       m_afterGroupsMethods.remove(group);
     }
-  }
-
-  private static List<ITestNGMethod> retrieve(
-      Set<String> tracker, Map<String, List<ITestNGMethod>> map, String group) {
-    if (tracker.contains(group)) {
-      return Collections.emptyList();
-    }
-    tracker.add(group);
-    return map.get(group);
   }
 }

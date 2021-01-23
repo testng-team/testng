@@ -13,21 +13,31 @@ import javax.annotation.Nullable;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a> Jul 21, 2003
  */
 public class XMLStringBuffer {
-  /** End of line, value of 'line.separator' system property or '\n' */
+
+  /**
+   * End of line, value of 'line.separator' system property or '\n'
+   */
   public static final String EOL = RuntimeBehavior.getLineSeparatorOrNewLine();
 
-  /** Tab space indent for XML document */
+  /**
+   * Tab space indent for XML document
+   */
   private static final String DEFAULT_INDENT_INCREMENT = "  ";
-
-  /** The buffer to hold the xml document */
-  private IBuffer m_buffer;
-
-  /** The stack of tags to make sure XML document is well formed. */
+  private static final Pattern INVALID_XML_CHARS =
+      Pattern.compile(
+          "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+  /**
+   * The stack of tags to make sure XML document is well formed.
+   */
   private final Stack<Tag> m_tagStack = new Stack<>();
-
-  /** A string of space character representing the current indentation. */
+  /**
+   * The buffer to hold the xml document
+   */
+  private IBuffer m_buffer;
+  /**
+   * A string of space character representing the current indentation.
+   */
   private String m_currentIndent = "";
-
   private String defaultComment = null;
 
   public XMLStringBuffer() {
@@ -36,7 +46,7 @@ public class XMLStringBuffer {
 
   /**
    * @param start A string of spaces indicating the indentation at which to start the generation.
-   *     This constructor will not insert an <code>&lt;?xml</code> prologue.
+   * This constructor will not insert an <code>&lt;?xml</code> prologue.
    */
   public XMLStringBuffer(String start) {
     init(Buffer.create(), start);
@@ -89,7 +99,8 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to
+   * pop().
    *
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
@@ -102,7 +113,8 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to
+   * pop().
    *
    * @param tagName The name of the tag.
    * @param schema The schema to use (can be null or an empty string).
@@ -112,7 +124,8 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to
+   * pop().
    *
    * @param tagName The name of the tag.
    * @param attributes A Properties file representing the attributes (or null)
@@ -141,7 +154,8 @@ public class XMLStringBuffer {
   }
 
   /**
-   * Push a new tag. Its value is stored and will be compared against the parameter passed to pop().
+   * Push a new tag. Its value is stored and will be compared against the parameter passed to
+   * pop().
    *
    * @param tagName The name of the tag.
    */
@@ -149,7 +163,9 @@ public class XMLStringBuffer {
     push(tagName, "");
   }
 
-  /** Pop the last pushed element without verifying it if matches the previously pushed tag. */
+  /**
+   * Pop the last pushed element without verifying it if matches the previously pushed tag.
+   */
   public void pop() {
     pop(null);
   }
@@ -324,16 +340,16 @@ public class XMLStringBuffer {
     m_buffer.append(EOL);
   }
 
-  /** @return The StringBuffer used to create the document. */
+  /**
+   * @return The StringBuffer used to create the document.
+   */
   public IBuffer getStringBuffer() {
     return m_buffer;
   }
 
-  private static final Pattern INVALID_XML_CHARS =
-      Pattern.compile(
-          "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
-
-  /** @return The String representation of the XML for this XMLStringBuffer. */
+  /**
+   * @return The String representation of the XML for this XMLStringBuffer.
+   */
   public String toXML() {
     return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
   }
@@ -350,6 +366,7 @@ public class XMLStringBuffer {
 ////////////////////////
 
 class Tag {
+
   public final String tagName;
   public final String indent;
   public final Properties properties;

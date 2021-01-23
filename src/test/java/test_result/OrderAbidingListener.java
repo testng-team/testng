@@ -13,105 +13,105 @@ public class OrderAbidingListener implements IInvokedMethodListener, ITestListen
 
   private final List<ITestNGListener> listeners;
 
-  public OrderAbidingListener(ITestNGListener ...listeners) {
+  public OrderAbidingListener(ITestNGListener... listeners) {
     this.listeners = Arrays.asList(listeners);
   }
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
     listeners.stream()
-        .filter(l-> l instanceof IInvokedMethodListener)
-        .map( l -> (IInvokedMethodListener) l )
-        .forEach(l-> l.beforeInvocation(method, testResult));
+        .filter(l -> l instanceof IInvokedMethodListener)
+        .map(l -> (IInvokedMethodListener) l)
+        .forEach(l -> l.beforeInvocation(method, testResult));
   }
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult,
       ITestContext context) {
     listeners.stream()
-        .filter(l-> l instanceof IInvokedMethodListener)
-        .map( l -> (IInvokedMethodListener) l )
-        .forEach(l-> l.beforeInvocation(method, testResult, context));
+        .filter(l -> l instanceof IInvokedMethodListener)
+        .map(l -> (IInvokedMethodListener) l)
+        .forEach(l -> l.beforeInvocation(method, testResult, context));
 
   }
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
     listeners.stream()
-        .filter(l-> l instanceof IInvokedMethodListener)
-        .map( l -> (IInvokedMethodListener) l )
-        .forEach(l-> l.afterInvocation(method, testResult));
+        .filter(l -> l instanceof IInvokedMethodListener)
+        .map(l -> (IInvokedMethodListener) l)
+        .forEach(l -> l.afterInvocation(method, testResult));
   }
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context) {
     listeners.stream()
-        .filter(l-> l instanceof IInvokedMethodListener)
-        .map( l -> (IInvokedMethodListener) l )
-        .forEach(l-> l.afterInvocation(method, testResult, context));
+        .filter(l -> l instanceof IInvokedMethodListener)
+        .map(l -> (IInvokedMethodListener) l)
+        .forEach(l -> l.afterInvocation(method, testResult, context));
   }
 
   @Override
   public void onStart(ITestContext context) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onStart(context));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onStart(context));
   }
 
   @Override
   public void onTestStart(ITestResult result) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onTestStart(result));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onTestStart(result));
   }
 
   @Override
   public void onTestSuccess(ITestResult result) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onTestSuccess(result));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onTestSuccess(result));
   }
 
   @Override
   public void onTestFailure(ITestResult result) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onTestFailure(result));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onTestFailure(result));
   }
 
   @Override
   public void onTestSkipped(ITestResult result) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onTestSkipped(result));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onTestSkipped(result));
   }
 
   @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onTestFailedButWithinSuccessPercentage(result));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onTestFailedButWithinSuccessPercentage(result));
   }
 
   @Override
   public void onTestFailedWithTimeout(ITestResult result) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onTestFailedWithTimeout(result));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onTestFailedWithTimeout(result));
   }
 
   @Override
   public void onFinish(ITestContext context) {
     listeners.stream()
-        .filter(l-> l instanceof ITestListener)
-        .map( l -> (ITestListener) l )
-        .forEach(l-> l.onFinish(context));
+        .filter(l -> l instanceof ITestListener)
+        .map(l -> (ITestListener) l)
+        .forEach(l -> l.onFinish(context));
   }
 }

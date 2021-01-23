@@ -2,7 +2,7 @@ package test.methodinterceptors.multipleinterceptors;
 
 public class SecondInterceptor extends MethodNameFilterInterceptor {
 
-    public SecondInterceptor() {
-        super("b");
-    }
+  public SecondInterceptor() {
+    super("b");
+  }
 }

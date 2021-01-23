@@ -16,12 +16,13 @@ public class SingleConfigurationTest {
   private static int m_before;
 
   @Factory(dataProvider = "dp")
-  public SingleConfigurationTest(int n) {}
+  public SingleConfigurationTest(int n) {
+  }
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][] {
-      new Object[] {42}, new Object[] {43},
+    return new Object[][]{
+        new Object[]{42}, new Object[]{43},
     };
   }
 

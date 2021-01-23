@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
@@ -50,6 +48,99 @@ public class XmlMethodSelector implements IMethodSelector {
 
   // Group inclusions override
   private boolean m_overrideIncludedMethods = false;
+
+  private static boolean assignable(Class<?> sourceClass, Class<?> targetClass) {
+    return sourceClass.isAssignableFrom(targetClass) || targetClass.isAssignableFrom(sourceClass);
+  }
+
+  private static List<String> toStringList(List<XmlInclude> methods) {
+    List<String> result = Lists.newArrayList();
+    for (XmlInclude m : methods) {
+      result.add(m.getName());
+    }
+    return result;
+  }
+
+  private static List<String> createQualifiedMethodNames(XmlClass xmlClass, List<String> methods) {
+    List<String> vResult = Lists.newArrayList();
+    Class<?> cls = xmlClass.getSupportClass();
+
+    while (cls != null) {
+      for (String im : methods) {
+        Pattern pattern = Pattern.compile(methodName(im));
+        Method[] allMethods = ReflectionHelper.getLocalMethods(cls);
+        for (Method m : allMethods) {
+          if (pattern.matcher(m.getName()).matches()) {
+            vResult.add(makeMethodName(m.getDeclaringClass().getName(), m.getName()));
+          }
+        }
+      }
+      cls = cls.getSuperclass();
+    }
+
+    return vResult;
+  }
+
+  private static String methodName(String methodName) {
+    if (methodName.contains("\\$")) {
+      return methodName;
+    }
+    return methodName.replaceAll("\\Q$\\E", QUOTED_DOLLAR);
+  }
+
+  private static String makeMethodName(String className, String methodName) {
+    return className + "." + methodName;
+  }
+
+  private static void checkMethod(Class<?> c, String methodName) {
+    Pattern p = Pattern.compile(methodName);
+    for (Method m : c.getMethods()) {
+      if (p.matcher(m.getName()).matches()) {
+        return;
+      }
+    }
+    Utils.log(
+        "Warning",
+        2,
+        "The regular expression \""
+            + methodName
+            + "\" didn't match any"
+            + " method in class "
+            + c.getName());
+  }
+
+  private static boolean isIncluded(
+      Collection<String> includedGroups, boolean noGroupsSpecified, String... groups) {
+    if (noGroupsSpecified) {
+      return isMemberOf(includedGroups, groups);
+    }
+    return includedGroups.isEmpty() || isMemberOf(includedGroups, groups);
+  }
+
+  private static boolean isExcluded(Collection<String> excludedGroups, String... groups) {
+    return isMemberOf(excludedGroups, groups);
+  }
+
+  /**
+   * @param groups Array of groups on the method
+   * @param list Map of regexps of groups to be run
+   */
+  private static boolean isMemberOf(Collection<String> list, String... groups) {
+    for (String group : groups) {
+      for (String o : list) {
+        String regexpStr = methodName(o);
+        if (Pattern.matches(regexpStr, group)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private static void log(String s) {
+    Utils.log("XmlMethodSelector", 4, s);
+  }
 
   @Override
   public boolean includeMethod(
@@ -163,10 +254,6 @@ public class XmlMethodSelector implements IMethodSelector {
     return result;
   }
 
-  private static boolean assignable(Class<?> sourceClass, Class<?> targetClass) {
-    return sourceClass.isAssignableFrom(targetClass) || targetClass.isAssignableFrom(sourceClass);
-  }
-
   private void logInclusion(String including, String type, String name) {
     if (!m_logged.containsKey(name)) {
       log(including + " " + type + " " + name);
@@ -194,62 +281,6 @@ public class XmlMethodSelector implements IMethodSelector {
     return false;
   }
 
-  private static List<String> toStringList(List<XmlInclude> methods) {
-    List<String> result = Lists.newArrayList();
-    for (XmlInclude m : methods) {
-      result.add(m.getName());
-    }
-    return result;
-  }
-
-  private static List<String> createQualifiedMethodNames(XmlClass xmlClass, List<String> methods) {
-    List<String> vResult = Lists.newArrayList();
-    Class<?> cls = xmlClass.getSupportClass();
-
-    while (cls != null) {
-      for (String im : methods) {
-        Pattern pattern = Pattern.compile(methodName(im));
-        Method[] allMethods = ReflectionHelper.getLocalMethods(cls);
-        for (Method m : allMethods) {
-          if (pattern.matcher(m.getName()).matches()) {
-            vResult.add(makeMethodName(m.getDeclaringClass().getName(), m.getName()));
-          }
-        }
-      }
-      cls = cls.getSuperclass();
-    }
-
-    return vResult;
-  }
-
-  private static String methodName(String methodName) {
-    if (methodName.contains("\\$")) {
-      return methodName;
-    }
-    return methodName.replaceAll("\\Q$\\E", QUOTED_DOLLAR);
-  }
-
-  private static String makeMethodName(String className, String methodName) {
-    return className + "." + methodName;
-  }
-
-  private static void checkMethod(Class<?> c, String methodName) {
-    Pattern p = Pattern.compile(methodName);
-    for (Method m : c.getMethods()) {
-      if (p.matcher(m.getName()).matches()) {
-        return;
-      }
-    }
-    Utils.log(
-        "Warning",
-        2,
-        "The regular expression \""
-            + methodName
-            + "\" didn't match any"
-            + " method in class "
-            + c.getName());
-  }
-
   public void setXmlClasses(List<XmlClass> classes) {
     m_classes = classes;
     for (XmlClass c : classes) {
@@ -261,57 +292,32 @@ public class XmlMethodSelector implements IMethodSelector {
     }
   }
 
-  /** @return Returns the excludedGroups. */
+  /**
+   * @return Returns the excludedGroups.
+   */
   public Map<String, String> getExcludedGroups() {
     return m_excludedGroups;
   }
 
-  /** @return Returns the includedGroups. */
-  public Map<String, String> getIncludedGroups() {
-    return m_includedGroups;
-  }
-
-  /** @param excludedGroups The excludedGroups to set. */
+  /**
+   * @param excludedGroups The excludedGroups to set.
+   */
   public void setExcludedGroups(Map<String, String> excludedGroups) {
     m_excludedGroups = excludedGroups;
   }
 
-  /** @param includedGroups The includedGroups to set. */
-  public void setIncludedGroups(Map<String, String> includedGroups) {
-    m_includedGroups = includedGroups;
-  }
-
-  private static boolean isIncluded(
-      Collection<String> includedGroups, boolean noGroupsSpecified, String... groups) {
-    if (noGroupsSpecified) {
-      return isMemberOf(includedGroups, groups);
-    }
-    return includedGroups.isEmpty() || isMemberOf(includedGroups, groups);
-  }
-
-  private static boolean isExcluded(Collection<String> excludedGroups, String... groups) {
-    return isMemberOf(excludedGroups, groups);
+  /**
+   * @return Returns the includedGroups.
+   */
+  public Map<String, String> getIncludedGroups() {
+    return m_includedGroups;
   }
 
   /**
-   * @param groups Array of groups on the method
-   * @param list Map of regexps of groups to be run
+   * @param includedGroups The includedGroups to set.
    */
-  private static boolean isMemberOf(Collection<String> list, String... groups) {
-    for (String group : groups) {
-      for (String o : list) {
-        String regexpStr = methodName(o);
-        if (Pattern.matches(regexpStr, group)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  private static void log(String s) {
-    Utils.log("XmlMethodSelector", 4, s);
+  public void setIncludedGroups(Map<String, String> includedGroups) {
+    m_includedGroups = includedGroups;
   }
 
   public void setScript(XmlScript script) {

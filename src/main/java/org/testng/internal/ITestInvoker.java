@@ -10,13 +10,6 @@ import org.testng.xml.XmlSuite;
 
 public interface ITestInvoker {
 
-  class FailureContext {
-
-    int count = 0;
-    List<Object> instances = Lists.newArrayList();
-    boolean representsRetriedMethod = false;
-  }
-
   List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
       Object instance,
@@ -33,7 +26,8 @@ public interface ITestInvoker {
 
   void runTestResultListener(ITestResult tr);
 
-  default ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable) {
+  default ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start,
+      Throwable throwable) {
     return registerSkippedTestResult(testMethod, start, throwable, null);
   }
 
@@ -46,6 +40,13 @@ public interface ITestInvoker {
 
   default IMethodRunner getRunner() {
     return new MethodRunner();
+  }
+
+  class FailureContext {
+
+    int count = 0;
+    List<Object> instances = Lists.newArrayList();
+    boolean representsRetriedMethod = false;
   }
 
 }

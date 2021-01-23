@@ -8,24 +8,20 @@ public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeA
   private String[] m_afterGroups = {};
   private String m_description;
 
-  /** @return the description */
+  /**
+   * @return the description
+   */
   @Override
   public String getDescription() {
     return m_description;
   }
 
-  /** @param description the description to set */
+  /**
+   * @param description the description to set
+   */
   @Override
   public void setDescription(String description) {
     m_description = description;
-  }
-
-  public void setAlwaysRun(boolean alwaysRun) {
-    m_alwaysRun = alwaysRun;
-  }
-
-  public void setInheritGroups(boolean inheritGroups) {
-    m_inheritGroups = inheritGroups;
   }
 
   @Override
@@ -33,9 +29,17 @@ public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeA
     return m_alwaysRun;
   }
 
+  public void setAlwaysRun(boolean alwaysRun) {
+    m_alwaysRun = alwaysRun;
+  }
+
   @Override
   public boolean getInheritGroups() {
     return m_inheritGroups;
+  }
+
+  public void setInheritGroups(boolean inheritGroups) {
+    m_inheritGroups = inheritGroups;
   }
 
   public String[] getAfterGroups() {

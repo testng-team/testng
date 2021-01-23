@@ -8,17 +8,17 @@ import org.testng.annotations.Test;
  */
 public class Scope {
 
-  @Parameters({ "parameter" })
-  @Test(groups = { "outer-group" })
+  @Parameters({"parameter"})
+  @Test(groups = {"outer-group"})
   public void outerDeprecated(String s) {
     assert "out".equals(s)
-      : "Expected out got " + s;
+        : "Expected out got " + s;
   }
 
-  @Parameters({ "parameter" })
-  @Test(groups = { "inner-group" })
+  @Parameters({"parameter"})
+  @Test(groups = {"inner-group"})
   public void innerDeprecated(String s) {
     assert "in".equals(s)
-      : "Expected in got " + s;
+        : "Expected in got " + s;
   }
 }

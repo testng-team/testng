@@ -1,17 +1,16 @@
 package test.dataprovider;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 public class RawIteratorDataProviderSample {
 
   @DataProvider
   public static Iterator staticIterator() {
-    return Arrays.<Object>asList(new Object[] {"foo"}, new Object[] {"bar"}).iterator();
+    return Arrays.<Object>asList(new Object[]{"foo"}, new Object[]{"bar"}).iterator();
   }
 
   @Test(dataProvider = "staticIterator")
@@ -21,7 +20,7 @@ public class RawIteratorDataProviderSample {
 
   @DataProvider
   public Iterator iterator() {
-    return Arrays.<Object>asList(new Object[] {"foo"}, new Object[] {"bar"}).iterator();
+    return Arrays.<Object>asList(new Object[]{"foo"}, new Object[]{"bar"}).iterator();
   }
 
   @Test(dataProvider = "iterator")

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.util.Strings;
@@ -25,42 +24,49 @@ import org.testng.util.Strings;
  * @author cbeust
  */
 public class Reporter {
+
   // When tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
   private static final ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<>();
 
-  /** All output logged in a sequential order. */
+  /**
+   * All output logged in a sequential order.
+   */
   private static final List<String> m_output = new Vector<>();
 
-  /** The key is the hashCode of the ITestResult. */
+  /**
+   * The key is the hashCode of the ITestResult.
+   */
   private static final Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
-
-  private static boolean m_escapeHtml = false;
   // This variable is responsible for persisting all output that is yet to be associated with any
   // valid TestResult objects.
   private static final ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();
-
-  public static void setCurrentTestResult(ITestResult m) {
-    m_currentTestResult.set(m);
-  }
+  private static boolean m_escapeHtml = false;
 
   public static List<String> getOutput() {
     return m_output;
   }
 
-  /** Erase the content of all the output generated so far. */
+  /**
+   * Erase the content of all the output generated so far.
+   */
   public static void clear() {
     m_methodOutputMap.clear();
     m_output.clear();
   }
 
-  /** @return If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...). */
+  /**
+   * @return If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...).
+   */
   public static boolean getEscapeHtml() {
     return m_escapeHtml;
   }
 
-  /** @param escapeHtml If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...). */
+  /**
+   * @param escapeHtml If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;,
+   * ...).
+   */
   public static void setEscapeHtml(boolean escapeHtml) {
     m_escapeHtml = escapeHtml;
   }
@@ -108,8 +114,8 @@ public class Reporter {
   }
 
   /**
-   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than the
-   * one passed as a parameter. If logToStandardOut is true, the string will also be printed on
+   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than
+   * the one passed as a parameter. If logToStandardOut is true, the string will also be printed on
    * standard out.
    *
    * @param s The message to log
@@ -138,9 +144,10 @@ public class Reporter {
       System.out.println(s);
     }
   }
+
   /**
-   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than the
-   * one passed as a parameter.
+   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than
+   * the one passed as a parameter.
    *
    * @param s The message to log
    * @param level The verbosity of this message
@@ -151,9 +158,15 @@ public class Reporter {
     }
   }
 
-  /** @return the current test result. */
+  /**
+   * @return the current test result.
+   */
   public static ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
+  }
+
+  public static void setCurrentTestResult(ITestResult m) {
+    m_currentTestResult.set(m);
   }
 
   public static synchronized List<String> getOutput(ITestResult tr) {

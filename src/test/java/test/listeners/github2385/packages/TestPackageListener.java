@@ -5,15 +5,16 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 public class TestPackageListener implements IInvokedMethodListener {
-    public static boolean listenerExecuted = false;
-    public static boolean listenerMethodInvoked = false;
 
-    public TestPackageListener() {
-        listenerExecuted = true;
-    }
+  public static boolean listenerExecuted = false;
+  public static boolean listenerMethodInvoked = false;
 
-    @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-        listenerMethodInvoked = true;
-    }
+  public TestPackageListener() {
+    listenerExecuted = true;
+  }
+
+  @Override
+  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    listenerMethodInvoked = true;
+  }
 }

@@ -6,6 +6,13 @@ import org.testng.annotations.Test;
 
 @Test
 public class Base2 {
+
+  private static void ppp(String s) {
+    if (false) {
+      System.out.println("[Base] " + s);
+    }
+  }
+
   @BeforeClass
   public void bc() {
     ppp("BEFORE_CLASS");
@@ -18,11 +25,5 @@ public class Base2 {
 
   public void tbase() {
     ppp("TEST IN BASE");
-  }
-
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[Base] " + s);
-    }
   }
 }

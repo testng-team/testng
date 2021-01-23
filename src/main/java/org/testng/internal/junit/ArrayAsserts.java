@@ -1,6 +1,7 @@
 package org.testng.internal.junit;
 
 public class ArrayAsserts {
+
   /**
    * Asserts that two object arrays are equal. If they are not, an {@link AssertionError} is thrown
    * with the given message. If <code>expecteds</code> and <code>actuals</code> are <code>null
@@ -8,7 +9,7 @@ public class ArrayAsserts {
    *
    * @param message the identifying message for the {@link AssertionError} (<code>null</code> okay)
    * @param expecteds Object array or array of arrays (multi-dimensional array) with expected
-   *     values.
+   * values.
    * @param actuals Object array or array of arrays (multi-dimensional array) with actual values
    */
   public static void assertArrayEquals(String message, Object[] expecteds, Object[] actuals)
@@ -21,7 +22,8 @@ public class ArrayAsserts {
    * If <code>expected</code> and <code>actual</code> are <code>null</code>, they are considered
    * equal.
    *
-   * @param expecteds Object array or array of arrays (multi-dimensional array) with expected values
+   * @param expecteds Object array or array of arrays (multi-dimensional array) with expected
+   * values
    * @param actuals Object array or array of arrays (multi-dimensional array) with actual values
    */
   public static void assertArrayEquals(Object[] expecteds, Object[] actuals) {
@@ -168,7 +170,8 @@ public class ArrayAsserts {
   }
 
   /**
-   * Asserts that two double arrays are equal. If they are not, an {@link AssertionError} is thrown.
+   * Asserts that two double arrays are equal. If they are not, an {@link AssertionError} is
+   * thrown.
    *
    * @param expecteds double array with expected values.
    * @param actuals double array with actual values
@@ -211,7 +214,7 @@ public class ArrayAsserts {
    *
    * @param message the identifying message for the {@link AssertionError} (<code>null</code> okay)
    * @param expecteds Object array or array of arrays (multi-dimensional array) with expected
-   *     values.
+   * values.
    * @param actuals Object array or array of arrays (multi-dimensional array) with actual values
    */
   private static void internalArrayEquals(String message, Object expecteds, Object actuals)

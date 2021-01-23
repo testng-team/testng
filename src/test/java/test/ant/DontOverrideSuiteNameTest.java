@@ -4,6 +4,7 @@ import org.testng.annotations.Test;
 
 @Test
 public class DontOverrideSuiteNameTest {
+
   private boolean m_run = false;
 
   @Test(groups = {"nopackage"})

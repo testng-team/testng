@@ -20,6 +20,6 @@ public class TimeOutSampleTest {
 
   @Test(timeOut = 1_000 /* 1 second */)
   public void timeoutShouldFailByTimeOut() throws InterruptedException {
-      Thread.sleep(10_000 /* 10 seconds */);
+    Thread.sleep(10_000 /* 10 seconds */);
   }
 }

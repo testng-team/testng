@@ -1,6 +1,8 @@
 package org.testng.internal.reflect;
 
-/** Checks the conformance as per data-provide specifications. */
+/**
+ * Checks the conformance as per data-provide specifications.
+ */
 public class DataProviderMethodMatcher extends AbstractMethodMatcher {
 
   private final DirectMethodMatcher directMethodMatcher;
@@ -13,7 +15,9 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
     this.arrayEndingMethodMatcher = new ArrayEndingMethodMatcher(context);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected boolean hasConformance() {
     boolean matching = false;
@@ -27,7 +31,9 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
     return matching;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Object[] getConformingArguments() {
     if (getConforms() == null) {

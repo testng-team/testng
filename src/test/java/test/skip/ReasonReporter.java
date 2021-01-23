@@ -13,12 +13,11 @@ import org.testng.xml.XmlSuite;
 public class ReasonReporter implements IReporter {
 
   private Map<String, Integer> results = Maps.newHashMap();
+  private Map<String, String> skippedInfo = Maps.newHashMap();
 
   public Map<String, Integer> getResults() {
     return results;
   }
-
-  private Map<String, String> skippedInfo = Maps.newHashMap();
 
   public Map<String, String> getSkippedInfo() {
     return skippedInfo;
@@ -28,7 +27,8 @@ public class ReasonReporter implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outDir) {
     suites.stream()
         .flatMap(suite -> suite.getResults().values().stream())
-        .flatMap(suiteResult -> suiteResult.getTestContext().getSkippedTests().getAllResults().stream())
+        .flatMap(
+            suiteResult -> suiteResult.getTestContext().getSkippedTests().getAllResults().stream())
         .forEach(this::generateReport);
 
     suites.stream()
@@ -36,7 +36,7 @@ public class ReasonReporter implements IReporter {
         .collect(Collectors.toList())
         .forEach(im -> {
           results.put(im.getTestMethod().getMethodName(), im.getTestResult().getStatus());
-    });
+        });
   }
 
   public void generateReport(ITestResult result) {

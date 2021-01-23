@@ -1,17 +1,26 @@
 package test.assertion;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.IAssert;
 import org.testng.asserts.SoftAssert;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class SoftAssertTest {
+
+  private static final String hiddenMsg = "hidden msg";
+
+  private static void assertThrowableContainsText(Throwable hard, String text) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    hard.printStackTrace(pw);
+    String stackTrace = sw.toString();
+    Assert.assertTrue(stackTrace.contains(text));
+  }
 
   @Test
   public void testOnSucceedAndFailureCalled() {
@@ -38,7 +47,7 @@ public class SoftAssertTest {
   @DataProvider(name = "messages")
   public Object[][] getMessages() {
     String hasMessage = "msg";
-    return new Object[][] {{hasMessage, hasMessage}, {null, "The following asserts failed:"}};
+    return new Object[][]{{hasMessage, hasMessage}, {null, "The following asserts failed:"}};
   }
 
   @Test(dataProvider = "messages")
@@ -71,8 +80,6 @@ public class SoftAssertTest {
     }
   }
 
-  private static final String hiddenMsg = "hidden msg";
-
   @Test(description = "GITHUB-1778", dataProvider = "dp")
   public void testRootCauseInSoftFail(Exception hiddenExc) {
     try {
@@ -86,14 +93,6 @@ public class SoftAssertTest {
 
   @DataProvider(name = "dp")
   public Object[][] getExceptions() {
-    return new Object[][] {{new Exception(hiddenMsg)}, {new Exception(new Exception(hiddenMsg))}};
-  }
-
-  private static void assertThrowableContainsText(Throwable hard, String text) {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    hard.printStackTrace(pw);
-    String stackTrace = sw.toString();
-    Assert.assertTrue(stackTrace.contains(text));
+    return new Object[][]{{new Exception(hiddenMsg)}, {new Exception(new Exception(hiddenMsg))}};
   }
 }

@@ -5,5 +5,6 @@ import org.testng.annotations.Test;
 public class InnexistentDataProviderSample {
 
   @Test(dataProvider = "doesnotexist")
-  public void testMethod(String s) {}
+  public void testMethod(String s) {
+  }
 }

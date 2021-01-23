@@ -6,12 +6,16 @@ import org.testng.internal.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.reflect.ReflectionRecipes;
 
-/** A Utility class that helps represent a {@link XmlSuite} and {@link XmlTest} as String. */
+/**
+ * A Utility class that helps represent a {@link XmlSuite} and {@link XmlTest} as String.
+ */
 final class XmlWeaver {
-  private static IWeaveXml instance = null;
-  private static final boolean testMode = RuntimeBehavior.isTestMode();
 
-  private XmlWeaver() {}
+  private static final boolean testMode = RuntimeBehavior.isTestMode();
+  private static IWeaveXml instance = null;
+
+  private XmlWeaver() {
+  }
 
   private static IWeaveXml getInstance() {
     if (testMode) {

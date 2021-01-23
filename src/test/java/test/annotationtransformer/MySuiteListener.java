@@ -13,5 +13,6 @@ public class MySuiteListener implements ISuiteListener {
   }
 
   @Override
-  public void onFinish(ISuite suite) {}
+  public void onFinish(ISuite suite) {
+  }
 }

@@ -14,7 +14,7 @@ public class InjectTestContextTest extends SimpleBaseTest {
   @Test(enabled = false)
   public void verifyTestContextInjection(ITestContext tc, XmlTest xmlTest) {
     TestNG tng = create();
-    tng.setTestClasses(new Class[] { Sample.class });
+    tng.setTestClasses(new Class[]{Sample.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();

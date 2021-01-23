@@ -1,19 +1,19 @@
 package test.inject;
 
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Method;
-
 public class InjectBeforeMethodTest {
+
+  private static final Object[][] DATA = {
+      new Object[]{"a"}, new Object[]{"b"},
+  };
   private int m_beforeIndex = 0;
   private int m_afterIndex = 0;
-  private static final Object[][] DATA = {
-    new Object[] {"a"}, new Object[] {"b"},
-  };
 
   @BeforeMethod
   public void before(Object[] parameters) {
@@ -22,10 +22,12 @@ public class InjectBeforeMethodTest {
   }
 
   @BeforeMethod
-  public void before2(Object[] parameters, Method m) {}
+  public void before2(Object[] parameters, Method m) {
+  }
 
   @BeforeMethod
-  public void before3(Method m, Object[] parameters) {}
+  public void before3(Method m, Object[] parameters) {
+  }
 
   @DataProvider
   public Object[][] dp() {
@@ -39,5 +41,6 @@ public class InjectBeforeMethodTest {
   }
 
   @Test(dataProvider = "dp")
-  public void f(String a) {}
+  public void f(String a) {
+  }
 }

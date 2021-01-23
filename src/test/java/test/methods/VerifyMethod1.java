@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
  *
  * @author cbeust
  */
-@Test(dependsOnGroups = { "sample1" })
+@Test(dependsOnGroups = {"sample1"})
 public class VerifyMethod1 {
 
   @BeforeSuite

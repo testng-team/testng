@@ -7,8 +7,11 @@ import org.testng.xml.XmlTest;
 
 public class NoOpTestClass implements ITestClass {
 
+  private final Object[] m_instances;
+  private final long[] m_instanceHashes;
+  private final XmlTest m_xmlTest;
+  private final XmlClass m_xmlClass;
   protected Class<?> m_testClass = null;
-
   // Test methods
   protected ITestNGMethod[] m_beforeClassMethods = new ITestNGMethod[0];
   protected ITestNGMethod[] m_beforeTestMethods = new ITestNGMethod[0];
@@ -21,12 +24,6 @@ public class NoOpTestClass implements ITestClass {
   protected ITestNGMethod[] m_afterTestConfMethods = new ITestNGMethod[0];
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected ITestNGMethod[] m_afterGroupsMethods = new ITestNGMethod[0];
-
-  private final Object[] m_instances;
-  private final long[] m_instanceHashes;
-
-  private final XmlTest m_xmlTest;
-  private final XmlClass m_xmlClass;
 
   protected NoOpTestClass() {
     m_instances = null;
@@ -53,39 +50,49 @@ public class NoOpTestClass implements ITestClass {
     m_xmlClass = testClass.getXmlClass();
   }
 
-  public void setBeforeTestMethods(ITestNGMethod[] beforeTestMethods) {
-    m_beforeTestMethods = beforeTestMethods;
-  }
-
   public void setAfterTestMethod(ITestNGMethod[] afterTestMethods) {
     m_afterTestMethods = afterTestMethods;
   }
 
-  /** @return Returns the afterClassMethods. */
+  /**
+   * @return Returns the afterClassMethods.
+   */
   @Override
   public ITestNGMethod[] getAfterClassMethods() {
     return m_afterClassMethods;
   }
 
-  /** @return Returns the afterTestMethods. */
+  /**
+   * @return Returns the afterTestMethods.
+   */
   @Override
   public ITestNGMethod[] getAfterTestMethods() {
     return m_afterTestMethods;
   }
 
-  /** @return Returns the beforeClassMethods. */
+  /**
+   * @return Returns the beforeClassMethods.
+   */
   @Override
   public ITestNGMethod[] getBeforeClassMethods() {
     return m_beforeClassMethods;
   }
 
-  /** @return Returns the beforeTestMethods. */
+  /**
+   * @return Returns the beforeTestMethods.
+   */
   @Override
   public ITestNGMethod[] getBeforeTestMethods() {
     return m_beforeTestMethods;
   }
 
-  /** @return Returns the testMethods. */
+  public void setBeforeTestMethods(ITestNGMethod[] beforeTestMethods) {
+    m_beforeTestMethods = beforeTestMethods;
+  }
+
+  /**
+   * @return Returns the testMethods.
+   */
   @Override
   public ITestNGMethod[] getTestMethods() {
     return m_testMethods;
@@ -111,25 +118,33 @@ public class NoOpTestClass implements ITestClass {
     return m_afterTestConfMethods;
   }
 
-  /** @return all @Configuration methods that should be invoked before certain groups */
+  /**
+   * @return all @Configuration methods that should be invoked before certain groups
+   */
   @Override
   public ITestNGMethod[] getBeforeGroupsMethods() {
     return m_beforeGroupsMethods;
   }
 
-  /** @return all @Configuration methods that should be invoked after certain groups */
+  /**
+   * @return all @Configuration methods that should be invoked after certain groups
+   */
   @Override
   public ITestNGMethod[] getAfterGroupsMethods() {
     return m_afterGroupsMethods;
   }
 
-  /** @see org.testng.ITestClass#getInstanceHashCodes() */
+  /**
+   * @see org.testng.ITestClass#getInstanceHashCodes()
+   */
   @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashes;
   }
 
-  /** @see org.testng.ITestClass#getInstances(boolean) */
+  /**
+   * @see org.testng.ITestClass#getInstances(boolean)
+   */
   @Override
   public Object[] getInstances(boolean reuse) {
     return m_instances;
@@ -145,9 +160,12 @@ public class NoOpTestClass implements ITestClass {
     return m_testClass;
   }
 
-  /** @see org.testng.IClass#addInstance(java.lang.Object) */
+  /**
+   * @see org.testng.IClass#addInstance(java.lang.Object)
+   */
   @Override
-  public void addInstance(Object instance) {}
+  public void addInstance(Object instance) {
+  }
 
   public void setTestClass(Class<?> declaringClass) {
     m_testClass = declaringClass;

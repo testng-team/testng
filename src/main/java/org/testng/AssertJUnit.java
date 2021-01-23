@@ -8,8 +8,11 @@ import org.testng.internal.junit.ArrayAsserts;
  */
 public class AssertJUnit extends ArrayAsserts {
 
-  /** Protect constructor since it is a static only class */
-  protected AssertJUnit() {}
+  /**
+   * Protect constructor since it is a static only class
+   */
+  protected AssertJUnit() {
+  }
 
   /**
    * Asserts that a condition is true. If it isn't it throws an AssertionFailedError with the given
@@ -65,7 +68,9 @@ public class AssertJUnit extends ArrayAsserts {
     throw new AssertionError(message);
   }
 
-  /** Fails a test with no message. */
+  /**
+   * Fails a test with no message.
+   */
   public static void fail() {
     fail(null);
   }

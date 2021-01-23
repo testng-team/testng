@@ -9,6 +9,7 @@ public class NestedStaticSampleTest {
   }
 
   public class Nested {
+
     @Test
     public void nested() {
     }

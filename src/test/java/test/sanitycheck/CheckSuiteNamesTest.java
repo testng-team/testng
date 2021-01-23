@@ -1,5 +1,8 @@
 package test.sanitycheck;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -10,9 +13,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class CheckSuiteNamesTest extends SimpleBaseTest {
 
@@ -43,8 +43,10 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(tla.getTestContexts().get(0).getSuite().getName(), "SanityCheck suites");
     Assert.assertEquals(tla.getTestContexts().get(1).getSuite().getName(), "SanityCheck suites");
-    Assert.assertEquals(tla.getTestContexts().get(2).getSuite().getName(), "SanityCheck suites (0)");
-    Assert.assertEquals(tla.getTestContexts().get(3).getSuite().getName(), "SanityCheck suites (0)");
+    Assert
+        .assertEquals(tla.getTestContexts().get(2).getSuite().getName(), "SanityCheck suites (0)");
+    Assert
+        .assertEquals(tla.getTestContexts().get(3).getSuite().getName(), "SanityCheck suites (0)");
   }
 
   /**
@@ -72,13 +74,13 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     Assert.assertEquals(xmlSuite1.getName(), "SanityCheckSuite");
     Assert.assertEquals(xmlSuite2.getName(), "SanityCheckSuite (0)");
   }
-  
+
   @Test
   public void checkXmlSuiteAddition() throws IOException {
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
-    Parser parser = new Parser(testngXmlPath);	
+    Parser parser = new Parser(testngXmlPath);
     tng.setXmlSuites(parser.parseToList());
-    tng.initializeSuitesAndJarFile();		
+    tng.initializeSuitesAndJarFile();
   }
 }

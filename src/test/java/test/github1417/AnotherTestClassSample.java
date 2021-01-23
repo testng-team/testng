@@ -15,12 +15,12 @@ public class AnotherTestClassSample {
     setInstance(this);
   }
 
-  private void setInstance(AnotherTestClassSample obj) {
-    instance = obj;
-  }
-
   public static AnotherTestClassSample getInstance() {
     return instance;
+  }
+
+  private void setInstance(AnotherTestClassSample obj) {
+    instance = obj;
   }
 
   String getBrowsername() {

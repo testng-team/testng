@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class ParallelTest {
+
   @BeforeClass
   public void setup() {
     System.out.println(Thread.currentThread().getId() + ":setup");

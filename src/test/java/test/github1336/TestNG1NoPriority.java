@@ -3,6 +3,7 @@ package test.github1336;
 import org.testng.annotations.Test;
 
 public class TestNG1NoPriority extends BaseClass {
+
   @Test
   public void test1TestNG1() {
     runTest("https://testng.org/doc/download.html");

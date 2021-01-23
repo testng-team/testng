@@ -1,6 +1,15 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
@@ -15,20 +24,14 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-/** Utility class for different class manipulations. */
+/**
+ * Utility class for different class manipulations.
+ */
 public final class ClassHelper {
 
-  /** The additional class loaders to find classes in. */
+  /**
+   * The additional class loaders to find classes in.
+   */
   private static final List<ClassLoader> classLoaders = new Vector<>();
 
   private static final String CLASS_HELPER = ClassHelper.class.getSimpleName();
@@ -38,11 +41,14 @@ public final class ClassHelper {
    * For example, "c:/java/classes/com/foo/A.class" would be divided into 6 segments {"C:" "java",
    * "classes", "com", "foo", "A"}. The first segment actually making up the class name is [3]. This
    * value is saved in lastGoodRootIndex so that when we parse the next file name, we will try 3
-   * right away. If 3 fails we will take the long approach. This is just a optimization cache value.
+   * right away. If 3 fails we will take the long approach. This is just a optimization cache
+   * value.
    */
   private static int lastGoodRootIndex = -1;
 
-  /** Hide constructor. */
+  /**
+   * Hide constructor.
+   */
   private ClassHelper() {
     // Hide Constructor
   }
@@ -137,7 +143,6 @@ public final class ClassHelper {
       IFactoryAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
       consumer.accept(f, constructor);
     }
-
 
     return result;
   }
@@ -276,7 +281,9 @@ public final class ClassHelper {
     return false;
   }
 
-  /** Find the best constructor given the parameters found on the annotation */
+  /**
+   * Find the best constructor given the parameters found on the annotation
+   */
   static Constructor<?> findAnnotatedConstructor(
       IAnnotationFinder finder, Class<?> declaringClass) {
     Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
@@ -340,9 +347,9 @@ public final class ClassHelper {
    * form:
    *
    * <ul>
-   *   <li>A class name: "org.testng.TestNG"
-   *   <li>A class file name: "/testng/src/org/testng/TestNG.class"
-   *   <li>A class source name: "d:\testng\src\org\testng\TestNG.java"
+   * <li>A class name: "org.testng.TestNG"
+   * <li>A class file name: "/testng/src/org/testng/TestNG.class"
+   * <li>A class source name: "d:\testng\src\org\testng\TestNG.java"
    * </ul>
    *
    * @param file the class name.

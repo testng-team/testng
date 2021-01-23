@@ -11,8 +11,10 @@ public class ClassWithFailedBeforeMethodAndMultipleTests {
   }
 
   @Test
-  public void test1() {}
+  public void test1() {
+  }
 
   @Test
-  public void test2() {}
+  public void test2() {
+  }
 }

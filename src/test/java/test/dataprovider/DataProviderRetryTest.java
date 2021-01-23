@@ -6,6 +6,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DataProviderRetryTest {
+
   @Test(dataProvider = "getVerdic", retryAnalyzer = DataProviderRetryAnalyzer.class)
   public void test(String verdict) {
     switch (verdict) {
@@ -21,6 +22,6 @@ public class DataProviderRetryTest {
 
   @DataProvider(name = "getVerdic")
   public Object[][] getVerdicNames() {
-    return new Object[][] {{"FAIL"}, {"SKIP"}};
+    return new Object[][]{{"FAIL"}, {"SKIP"}};
   }
 }

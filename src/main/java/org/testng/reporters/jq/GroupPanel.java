@@ -1,12 +1,12 @@
 package org.testng.reporters.jq;
 
+import java.util.Collections;
+import java.util.List;
 import org.testng.ISuite;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.Collections;
-import java.util.List;
-
 public class GroupPanel extends BaseMultiSuitePanel {
+
   public GroupPanel(Model model) {
     super(model);
   }

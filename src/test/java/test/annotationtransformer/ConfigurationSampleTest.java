@@ -5,7 +5,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class ConfigurationSampleTest {
+
   private static String m_before = "uninitialized";
+
+  public static String getBefore() {
+    return m_before;
+  }
 
   @BeforeClass
   public void beforeClass() {
@@ -24,9 +29,6 @@ public class ConfigurationSampleTest {
   }
 
   @Test
-  public void f() {}
-
-  public static String getBefore() {
-    return m_before;
+  public void f() {
   }
 }

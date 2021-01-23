@@ -1,11 +1,10 @@
 package test.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * beforeGroups test: make sure that the beforeGroups method is invoked only once even if two test
@@ -14,9 +13,11 @@ import java.util.List;
  * @author cbeust
  */
 public class ConfigurationGroups2SampleTest {
+
   private boolean m_before = false;
   private boolean m_f1 = false;
   private boolean m_g1 = false;
+  private List<String> m_list = new ArrayList<>();
 
   @BeforeGroups("cg2-1")
   public void before1() {
@@ -45,8 +46,6 @@ public class ConfigurationGroups2SampleTest {
     m_g1 = true;
     log("g1");
   }
-
-  private List<String> m_list = new ArrayList<>();
 
   @Test(dependsOnGroups = {"cg2-a", "cg2-1"})
   public void verify() {

@@ -10,6 +10,7 @@ import org.testng.annotations.Parameters;
 import org.testng.internal.InstanceInfo;
 
 public class FactoryWithInstanceInfoTest {
+
   static boolean isInvoked = false;
 
   @Parameters({"factory-param"})
@@ -19,11 +20,11 @@ public class FactoryWithInstanceInfoTest {
     assertFalse(isInvoked, "Should only be invoked once");
     isInvoked = true;
 
-    return new IInstanceInfo[] {
-      new InstanceInfo<>(
-          FactoryWithInstanceInfo2Sample.class, new FactoryWithInstanceInfo2Sample(42)),
-      new InstanceInfo<>(
-          FactoryWithInstanceInfo2Sample.class, new FactoryWithInstanceInfo2Sample(43)),
+    return new IInstanceInfo[]{
+        new InstanceInfo<>(
+            FactoryWithInstanceInfo2Sample.class, new FactoryWithInstanceInfo2Sample(42)),
+        new InstanceInfo<>(
+            FactoryWithInstanceInfo2Sample.class, new FactoryWithInstanceInfo2Sample(43)),
     };
   }
 

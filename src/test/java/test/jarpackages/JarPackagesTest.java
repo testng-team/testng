@@ -1,16 +1,15 @@
 package test.jarpackages;
 
+import java.io.File;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
-import java.io.File;
-
 public class JarPackagesTest extends SimpleBaseTest {
+
   private TestListenerAdapter init(String jarFile) {
     TestNG tng = create();
     File currentDir = new File(".");

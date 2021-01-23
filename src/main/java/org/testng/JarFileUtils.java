@@ -1,6 +1,15 @@
 package org.testng;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
@@ -11,18 +20,11 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-
-/** A Utility for extracting {@link XmlSuite} from a jar. */
+/**
+ * A Utility for extracting {@link XmlSuite} from a jar.
+ */
 class JarFileUtils {
+
   private final IPostProcessor processor;
   private final String xmlPathInJar;
   private final List<String> testNames;
@@ -42,6 +44,15 @@ class JarFileUtils {
     this.xmlPathInJar = xmlPathInJar;
     this.testNames = testNames;
     this.mode = mode == null ? XmlSuite.ParallelMode.NONE : mode;
+  }
+
+  private static boolean isJavaClass(JarEntry je) {
+    return je.getName().endsWith(".class");
+  }
+
+  private static String constructClassName(JarEntry je) {
+    int n = je.getName().length() - ".class".length();
+    return je.getName().replace("/", ".").substring(0, n);
   }
 
   List<XmlSuite> extractSuitesFrom(File jarFile) {
@@ -107,26 +118,19 @@ class JarFileUtils {
     }
     return false;
   }
-  
+
   private void delete(File f) throws IOException {
     if (f.isDirectory()) {
-      for (File c : Objects.requireNonNull(f.listFiles()))
+      for (File c : Objects.requireNonNull(f.listFiles())) {
         delete(c);
+      }
     }
-    if (!f.delete())
+    if (!f.delete()) {
       throw new FileNotFoundException("Failed to delete file: " + f);
+    }
   }
 
   private boolean matchesXmlPathInJar(JarEntry je) {
     return je.getName().equals(xmlPathInJar);
-  }
-
-  private static boolean isJavaClass(JarEntry je) {
-    return je.getName().endsWith(".class");
-  }
-
-  private static String constructClassName(JarEntry je) {
-    int n = je.getName().length() - ".class".length();
-    return je.getName().replace("/", ".").substring(0, n);
   }
 }

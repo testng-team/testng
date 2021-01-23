@@ -1,9 +1,8 @@
 package test.multiple;
 
-import org.testng.annotations.Factory;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Factory;
 
 /**
  * This class

@@ -1,20 +1,22 @@
 package test.interleavedorder;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 import testhelper.OutputDirectoryPatch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class InterleavedInvocationTest extends BaseTest {
+
   public static List<String> LOG = new ArrayList<>();
+
+  public static void ppp(String s) {
+    System.out.println("[InterleavedTest] " + s);
+  }
 
   @BeforeTest
   public void beforeTest() {
@@ -35,7 +37,7 @@ public class InterleavedInvocationTest extends BaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] {TestChild1.class, TestChild2.class});
+    testng.setTestClasses(new Class[]{TestChild1.class, TestChild2.class});
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.run();
@@ -45,9 +47,5 @@ public class InterleavedInvocationTest extends BaseTest {
     int number2 = number1 == 1 ? 2 : 1;
     verifyInvocation(number1, LOG, 0);
     verifyInvocation(number2, LOG, 4);
-  }
-
-  public static void ppp(String s) {
-    System.out.println("[InterleavedTest] " + s);
   }
 }

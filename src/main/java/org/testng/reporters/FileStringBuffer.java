@@ -1,7 +1,5 @@
 package org.testng.reporters;
 
-import org.testng.log4testng.Logger;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -10,6 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import org.testng.log4testng.Logger;
 
 /**
  * A string buffer that flushes its content to a temporary file whenever the internal string buffer
@@ -24,13 +23,13 @@ import java.io.Writer;
  * @since Nov 9, 2012
  */
 public class FileStringBuffer implements IBuffer {
-  private static int MAX = 100000;
+
   private static final boolean VERBOSE = RuntimeBehavior.verboseMode();
   private static final Logger LOGGER = Logger.getLogger(FileStringBuffer.class);
-
+  private static int MAX = 100000;
+  private final int m_maxCharacters;
   private File m_file;
   private StringBuilder m_sb = new StringBuilder();
-  private final int m_maxCharacters;
 
   public FileStringBuffer() {
     this(MAX);
@@ -38,6 +37,23 @@ public class FileStringBuffer implements IBuffer {
 
   public FileStringBuffer(int maxCharacters) {
     m_maxCharacters = maxCharacters;
+  }
+
+  private static void copy(Reader input, Writer output) throws IOException {
+    char[] buf = new char[MAX];
+    while (true) {
+      int length = input.read(buf);
+      if (length < 0) {
+        break;
+      }
+      output.write(buf, 0, length);
+    }
+  }
+
+  private static void p(String s) {
+    if (VERBOSE) {
+      LOGGER.info("[FileStringBuffer] " + s);
+    }
   }
 
   @Override
@@ -88,17 +104,10 @@ public class FileStringBuffer implements IBuffer {
     }
   }
 
-  private static void copy(Reader input, Writer output) throws IOException {
-    char[] buf = new char[MAX];
-    while (true) {
-      int length = input.read(buf);
-      if (length < 0) break;
-      output.write(buf, 0, length);
-    }
-  }
-
   private void flushToFile() {
-    if (m_sb.length() == 0) return;
+    if (m_sb.length() == 0) {
+      return;
+    }
 
     if (m_file == null) {
       try {
@@ -117,12 +126,6 @@ public class FileStringBuffer implements IBuffer {
       e.printStackTrace();
     }
     m_sb = new StringBuilder();
-  }
-
-  private static void p(String s) {
-    if (VERBOSE) {
-      LOGGER.info("[FileStringBuffer] " + s);
-    }
   }
 
   @Override

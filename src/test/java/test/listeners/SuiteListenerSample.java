@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 @Listeners(SuiteListener.class)
 public class SuiteListenerSample {
 
-    @Test
-    public void foo(){}
+  @Test
+  public void foo() {
+  }
 }

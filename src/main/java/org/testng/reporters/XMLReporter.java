@@ -1,5 +1,13 @@
 package org.testng.reporters;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -11,20 +19,37 @@ import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-/** The main entry for the XML generation operation */
+/**
+ * The main entry for the XML generation operation
+ */
 public class XMLReporter implements IReporter, ICustomizeXmlReport {
 
   private final XMLReporterConfig config = new XMLReporterConfig();
   private XMLStringBuffer rootBuffer;
+
+  /**
+   * Add started-at, finished-at and duration-ms attributes to the <code>&lt;suite&gt;</code> tag
+   *
+   * @param config The reporter config
+   * @param attributes The properties
+   * @param minStartDate The minimum start date
+   * @param maxEndDate The maximum end date
+   */
+  public static void addDurationAttributes(
+      XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
+
+    String startTime =
+        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+            minStartDate.getTime(), config.getTimestampFormat());
+    String endTime =
+        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
+            maxEndDate.getTime(), config.getTimestampFormat());
+    long duration = maxEndDate.getTime() - minStartDate.getTime();
+
+    attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
+    attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);
+    attributes.setProperty(XMLReporterConfig.ATTR_DURATION_MS, Long.toString(duration));
+  }
 
   @Override
   public void generateReport(
@@ -195,30 +220,6 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
     }
     addDurationAttributes(config, props, minStartDate, maxEndDate);
     return props;
-  }
-
-  /**
-   * Add started-at, finished-at and duration-ms attributes to the <code>&lt;suite&gt;</code> tag
-   *
-   * @param config The reporter config
-   * @param attributes The properties
-   * @param minStartDate The minimum start date
-   * @param maxEndDate The maximum end date
-   */
-  public static void addDurationAttributes(
-      XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
-
-    String startTime =
-        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
-            minStartDate.getTime(), config.getTimestampFormat());
-    String endTime =
-        TimeUtils.formatTimeInLocalOrSpecifiedTimeZone(
-            maxEndDate.getTime(), config.getTimestampFormat());
-    long duration = maxEndDate.getTime() - minStartDate.getTime();
-
-    attributes.setProperty(XMLReporterConfig.ATTR_STARTED_AT, startTime);
-    attributes.setProperty(XMLReporterConfig.ATTR_FINISHED_AT, endTime);
-    attributes.setProperty(XMLReporterConfig.ATTR_DURATION_MS, Long.toString(duration));
   }
 
   private Set<ITestNGMethod> getUniqueMethodSet(Collection<ITestNGMethod> methods) {

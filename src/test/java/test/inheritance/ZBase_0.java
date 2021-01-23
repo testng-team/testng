@@ -1,15 +1,25 @@
 package test.inheritance;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ZBase_0 {
+
   protected static boolean m_verbose = false;
   protected static List<String> m_methodList = new ArrayList<>();
+
+  private static void ppp(String s) {
+    if (m_verbose) {
+      System.out.println("[Z0] " + s);
+    }
+  }
+
+  public static List<String> getMethodList() {
+    return m_methodList;
+  }
 
   @BeforeTest
   public void beforeTest() {
@@ -26,15 +36,5 @@ public class ZBase_0 {
   public void tearDownApplication() {
     m_methodList.add("tearDownApplication");
     ppp("TEAR DOWN 0");
-  }
-
-  private static void ppp(String s) {
-    if (m_verbose) {
-      System.out.println("[Z0] " + s);
-    }
-  }
-
-  public static List<String> getMethodList() {
-    return m_methodList;
   }
 }

@@ -7,6 +7,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class TestSample {
+
   int num;
 
   @Factory(dataProvider = "data")
@@ -16,7 +17,7 @@ public class TestSample {
 
   @DataProvider
   public static Object[][] data() {
-    return new Object[][] {{1}, {2}, {3}, {4}};
+    return new Object[][]{{1}, {2}, {3}, {4}};
   }
 
   @Test

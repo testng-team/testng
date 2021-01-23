@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
@@ -13,7 +12,9 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
-/** Representation of the graph of methods. */
+/**
+ * Representation of the graph of methods.
+ */
 public class DynamicGraph<T> implements IDynamicGraph<T> {
 
   private final Set<T> m_nodesReady = Sets.newLinkedHashSet();
@@ -22,14 +23,22 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
   private final Edges<T> m_edges = new Edges<>();
   private Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
-  /** Add a node to the graph. */
+  private static <T> String dotShortName(T t) {
+    String s = t.toString();
+    int n2 = s.indexOf('(');
+    return s.substring(0, n2).replaceAll("\\Q.\\E", "_");
+  }
+
+  /**
+   * Add a node to the graph.
+   */
   public boolean addNode(T node) {
     return m_nodesReady.add(node);
   }
 
   /**
    * @param weight - Represents one of {@link org.testng.TestRunner.PriorityWeight} ordinals
-   *     indicating the weightage of a particular node in the graph
+   * indicating the weightage of a particular node in the graph
    * @param from - Represents the edge that depends on another edge.
    * @param to - Represents the edge on which another edge depends upon.
    */
@@ -41,14 +50,18 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     visualisers = listener;
   }
 
-  /** Add an edge between two nodes. */
+  /**
+   * Add an edge between two nodes.
+   */
   public void addEdges(int weight, T from, Iterable<T> tos) {
     for (T to : tos) {
       addEdge(weight, from, to);
     }
   }
 
-  /** @return a set of all the nodes that don't depend on any other nodes. */
+  /**
+   * @return a set of all the nodes that don't depend on any other nodes.
+   */
   public List<T> getFreeNodes() {
     // Get a list of nodes that are ready and have no outgoing edges.
     Set<T> free = Sets.newLinkedHashSet(m_nodesReady);
@@ -85,14 +98,18 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     return Lists.newArrayList(data.keySet());
   }
 
-  /** Set the status for a set of nodes. */
+  /**
+   * Set the status for a set of nodes.
+   */
   public void setStatus(Collection<T> nodes, Status status) {
     for (T n : nodes) {
       setStatus(n, status);
     }
   }
 
-  /** Set the status for a node. */
+  /**
+   * Set the status for a node.
+   */
   public void setStatus(T node, Status status) {
     switch (status) {
       case RUNNING:
@@ -138,7 +155,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     this.visualisers.forEach(visualiser -> visualiser.consumeDotDefinition(toDot()));
   }
 
-  /** @return the number of nodes in this graph. */
+  /**
+   * @return the number of nodes in this graph.
+   */
   public int getNodeCount() {
     return m_nodesReady.size() + m_nodesRunning.size() + m_nodesFinished.size();
   }
@@ -174,13 +193,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
         + "]";
   }
 
-  private static <T> String dotShortName(T t) {
-    String s = t.toString();
-    int n2 = s.indexOf('(');
-    return s.substring(0, n2).replaceAll("\\Q.\\E", "_");
-  }
-
-  /** @return a .dot file (GraphViz) version of this graph. */
+  /**
+   * @return a .dot file (GraphViz) version of this graph.
+   */
   public String toDot() {
     String FREE = "[style=filled color=yellow]";
     String RUNNING = "[style=filled color=green]";
@@ -206,13 +221,18 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     return result.toString();
   }
 
-  /** For tests only */
+  /**
+   * For tests only
+   */
   Map<T, Map<T, Integer>> getEdges() {
     return m_edges.getEdges();
   }
 
-  /** Manage edges and weights between nodes. */
+  /**
+   * Manage edges and weights between nodes.
+   */
   private static class Edges<T> {
+
     // Maps of edges in the graph organized by incoming or outgoing edges. The integer is the weight
     // of the edge. It's
     // important that these maps always stay consistent with each other. All modifications should go
@@ -220,6 +240,47 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     // and removeNode.
     private final Map<T, Map<T, Integer>> m_incomingEdges = new ConcurrentHashMap<>();
     private final Map<T, Map<T, Integer>> m_outgoingEdges = new ConcurrentHashMap<>();
+
+    /**
+     * Remove edges from a map given a node and a list of destination nodes. Given:
+     *
+     * <pre>{@code
+     * m_outgoingEdges:
+     *    a -> b
+     *         c
+     *         d
+     * m_incomingEdges:
+     *    b -> a
+     *    c -> a
+     *    d -> a
+     *
+     * }</pre>
+     *
+     * Then, calling this method to remove node c on both maps as done in removeNode(), would result
+     * in a -> c and c -> a edges being removed.
+     */
+    private static <T> void removeEdgesFromMap(
+        Map<T, Map<T, Integer>> map, Collection<T> nodes, T node) {
+      for (T k : nodes) {
+        Map<T, Integer> edges = map.get(k);
+
+        if (edges == null) {
+          throw new IllegalStateException("Edge not found in map.");
+        }
+
+        edges.remove(node);
+        if (edges.isEmpty()) {
+          map.remove(k);
+        }
+      }
+    }
+
+    private static <T> void addEdgeToMap(Map<T, Map<T, Integer>> map, T n1, T n2, int weight) {
+      Map<T, Integer> edges = map.computeIfAbsent(n1, k -> new ConcurrentHashMap<>());
+
+      Integer existingWeight = edges.get(n2);
+      edges.put(n2, Math.max(weight, existingWeight != null ? existingWeight : Integer.MIN_VALUE));
+    }
 
     public void addEdge(int weight, T from, T to, boolean ignoreCycles) {
       if (from.equals(to)) {
@@ -239,7 +300,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
       addEdgeToMap(m_outgoingEdges, from, to, weight);
     }
 
-    /** @return the set of nodes that have outgoing edges. */
+    /**
+     * @return the set of nodes that have outgoing edges.
+     */
     Set<T> fromNodes() {
       return m_outgoingEdges.keySet();
     }
@@ -318,47 +381,6 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
         }
       }
       return true;
-    }
-
-    /**
-     * Remove edges from a map given a node and a list of destination nodes. Given:
-     *
-     * <pre>{@code
-     * m_outgoingEdges:
-     *    a -> b
-     *         c
-     *         d
-     * m_incomingEdges:
-     *    b -> a
-     *    c -> a
-     *    d -> a
-     *
-     * }</pre>
-     *
-     * Then, calling this method to remove node c on both maps as done in removeNode(), would result
-     * in a -> c and c -> a edges being removed.
-     */
-    private static <T> void removeEdgesFromMap(
-        Map<T, Map<T, Integer>> map, Collection<T> nodes, T node) {
-      for (T k : nodes) {
-        Map<T, Integer> edges = map.get(k);
-
-        if (edges == null) {
-          throw new IllegalStateException("Edge not found in map.");
-        }
-
-        edges.remove(node);
-        if (edges.isEmpty()) {
-          map.remove(k);
-        }
-      }
-    }
-
-    private static <T> void addEdgeToMap(Map<T, Map<T, Integer>> map, T n1, T n2, int weight) {
-      Map<T, Integer> edges = map.computeIfAbsent(n1, k -> new ConcurrentHashMap<>());
-
-      Integer existingWeight = edges.get(n2);
-      edges.put(n2, Math.max(weight, existingWeight != null ? existingWeight : Integer.MIN_VALUE));
     }
 
     /**

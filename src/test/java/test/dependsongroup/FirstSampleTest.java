@@ -8,8 +8,10 @@ import org.testng.annotations.Test;
 public class FirstSampleTest {
 
   @Test
-  public void firstA() {}
+  public void firstA() {
+  }
 
   @Test
-  public void firstB() {}
+  public void firstB() {
+  }
 }

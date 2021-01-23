@@ -12,7 +12,9 @@ import java.util.Map;
  */
 public interface IMethodSelectorContext {
 
-  /** @return true if no more Method Selectors should be invoked after the current one. */
+  /**
+   * @return true if no more Method Selectors should be invoked after the current one.
+   */
   boolean isStopped();
 
   /**
@@ -25,7 +27,7 @@ public interface IMethodSelectorContext {
 
   /**
    * @return a Map that can be freely manipulated by the Method Selector. This can be used to share
-   *     information among several Method Selectors.
+   * information among several Method Selectors.
    */
   Map<Object, Object> getUserData();
 }

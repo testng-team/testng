@@ -1,5 +1,11 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderListener;
 import org.testng.ITestContext;
@@ -18,14 +24,8 @@ import org.testng.internal.paramhandler.ParameterizedSampleTestClass;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ParameterHandlerTest extends SimpleBaseTest {
+
   private ParameterHandler handler;
 
   @BeforeClass
@@ -67,7 +67,7 @@ public class ParameterHandlerTest extends SimpleBaseTest {
     assertThat(params.parameterHolder).isNotNull();
     assertThat(params.parameterHolder.origin).isEqualByComparingTo(origin);
     Iterator<Object[]> iterators = params.parameterHolder.parameters;
-    assertThat(iterators).containsAll(Collections.singletonList(new Object[] {"bar"}));
+    assertThat(iterators).containsAll(Collections.singletonList(new Object[]{"bar"}));
   }
 
   private ParameterHandler.ParameterBag invokeParameterCreation(ITestNGMethod method) {

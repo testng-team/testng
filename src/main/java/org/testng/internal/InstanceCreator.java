@@ -16,7 +16,9 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
 import org.testng.xml.XmlTest;
 
-/** Utility class for object instantiations. */
+/**
+ * Utility class for object instantiations.
+ */
 public final class InstanceCreator {
 
   private static final String CANNOT_INSTANTIATE_CLASS = "Cannot instantiate class ";
@@ -77,7 +79,8 @@ public final class InstanceCreator {
       String errorMsgPrefix) {
     if (objectFactory instanceof IObjectFactory) {
       return createInstanceUsingObjectFactory(
-          declaringClass, classes, xmlTest, finder, (IObjectFactory) objectFactory, create, errorMsgPrefix);
+          declaringClass, classes, xmlTest, finder, (IObjectFactory) objectFactory, create,
+          errorMsgPrefix);
     } else if (objectFactory instanceof IObjectFactory2) {
       return createInstanceUsingObjectFactory(declaringClass, (IObjectFactory2) objectFactory);
     } else {
@@ -85,7 +88,8 @@ public final class InstanceCreator {
     }
   }
 
-  private static Object createInstanceUsingObjectFactory(Class<?> declaringClass, IObjectFactory2 objectFactory) {
+  private static Object createInstanceUsingObjectFactory(Class<?> declaringClass,
+      IObjectFactory2 objectFactory) {
     return objectFactory.newInstance(declaringClass);
   }
 
@@ -102,10 +106,10 @@ public final class InstanceCreator {
     try {
       Constructor<?> constructor = ClassHelper.findAnnotatedConstructor(finder, declaringClass);
       if (null != constructor) {
-      // Any annotated constructor?
+        // Any annotated constructor?
         try {
           result = instantiateUsingParameterizedConstructor(finder, constructor, xmlTest, factory);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
           return null;
         }
       } else {
@@ -131,7 +135,8 @@ public final class InstanceCreator {
       if (Strings.isNotNullAndNotEmpty(errorMsgPrefix)) {
         suffix = suffix + ". Root cause: " + errorMsgPrefix;
       }
-      throw new TestNGException("An error occurred while instantiating class " + declaringClass.getName() + ". "
+      throw new TestNGException(
+          "An error occurred while instantiating class " + declaringClass.getName() + ". "
               + "Check to make sure it can be " + suffix);
     }
 
@@ -177,7 +182,7 @@ public final class InstanceCreator {
 
     // Only add the extra parameter if the nested class is not static
     if ((null != ec) && !isStatic) {
-      parameterTypes = new Class[] {ec};
+      parameterTypes = new Class[]{ec};
       parameters = new Object[]{computeParameters(classes, ec, factory)};
     } // isStatic
 

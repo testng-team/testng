@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import static org.testng.internal.ClassHelper.getAvailableMethods;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -7,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
@@ -21,8 +22,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
-
-import static org.testng.internal.ClassHelper.getAvailableMethods;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -39,10 +38,6 @@ public class TestNGClassFinder extends BaseClassFinder {
   private final IAnnotationFinder annotationFinder;
 
   private String m_factoryCreationFailedMessage = null;
-
-  public String getFactoryCreationFailedMessage() {
-    return m_factoryCreationFailedMessage;
-  }
 
   public TestNGClassFinder(
       ClassInfoMap cim,
@@ -83,6 +78,73 @@ public class TestNGClassFinder extends BaseClassFinder {
         }
       }
     }
+  }
+
+  private static boolean excludeFactory(FactoryMethod fm, ITestContext ctx) {
+    return fm.getGroups().length != 0
+        && ctx.getCurrentXmlTest().getExcludedGroups().containsAll(Arrays.asList(fm.getGroups()));
+  }
+
+  private static boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+    return (!isTestNGClass(c, annotationFinder));
+  }
+
+  /**
+   * @return true if this class contains TestNG annotations (either on itself or on a superclass).
+   */
+  private static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
+    Class<?> cls = c;
+    boolean result = false;
+
+    try {
+      for (Class<? extends IAnnotation> annotation : AnnotationHelper.getAllAnnotations()) {
+        for (cls = c; cls != null; cls = cls.getSuperclass()) {
+          // Try on the methods
+          for (Method m : getAvailableMethods(cls)) {
+            IAnnotation ma = annotationFinder.findAnnotation(cls, m, annotation);
+            if (null != ma) {
+              //Don't short circuit. Lets run for all methods across all classes.
+              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+              result = true;
+            }
+          }
+
+          // Try on the class
+          IAnnotation a = annotationFinder.findAnnotation(cls, annotation);
+          if (null != a) {
+            //Don't short circuit. Lets run for all methods across all classes.
+            //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+            result = true;
+          }
+
+          // Try on the constructors
+          for (Constructor<?> ctor : cls.getConstructors()) {
+            IAnnotation ca = annotationFinder.findAnnotation(ctor, annotation);
+            if (null != ca) {
+              //Don't short circuit. Lets run for all methods across all classes.
+              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+              result = true;
+            }
+          }
+        }
+      }
+
+      return result;
+
+    } catch (NoClassDefFoundError e) {
+      Utils.log(
+          PREFIX,
+          1,
+          "Unable to read methods on class "
+              + cls.getName()
+              + " - unable to resolve class reference "
+              + e.getMessage());
+      return false;
+    }
+  }
+
+  public String getFactoryCreationFailedMessage() {
+    return m_factoryCreationFailedMessage;
   }
 
   private void processClass(
@@ -152,11 +214,6 @@ public class TestNGClassFinder extends BaseClassFinder {
     for (IClass ic2 : finder.findTestClasses()) {
       putIClass(ic2.getRealClass(), ic2);
     }
-  }
-
-  private static boolean excludeFactory(FactoryMethod fm, ITestContext ctx) {
-    return fm.getGroups().length != 0
-        && ctx.getCurrentXmlTest().getExcludedGroups().containsAll(Arrays.asList(fm.getGroups()));
   }
 
   private ClassInfoMap processFactory(IClass ic, ConstructorOrMethod factoryMethod) {
@@ -259,64 +316,6 @@ public class TestNGClassFinder extends BaseClassFinder {
       }
     }
     return objectFactory;
-  }
-
-  private static boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
-    return (!isTestNGClass(c, annotationFinder));
-  }
-
-  /**
-   * @return true if this class contains TestNG annotations (either on itself or on a superclass).
-   */
-  private static boolean isTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
-    Class<?> cls = c;
-    boolean result = false;
-
-    try {
-      for (Class<? extends IAnnotation> annotation : AnnotationHelper.getAllAnnotations()) {
-        for (cls = c; cls != null; cls = cls.getSuperclass()) {
-          // Try on the methods
-          for (Method m : getAvailableMethods(cls)) {
-            IAnnotation ma = annotationFinder.findAnnotation(cls, m, annotation);
-            if (null != ma) {
-              //Don't short circuit. Lets run for all methods across all classes.
-              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
-              result = true;
-            }
-          }
-
-          // Try on the class
-          IAnnotation a = annotationFinder.findAnnotation(cls, annotation);
-          if (null != a) {
-            //Don't short circuit. Lets run for all methods across all classes.
-            //This will in turn ensure that "IgnoreListener" will get called for all the combo.
-            result = true;
-          }
-
-          // Try on the constructors
-          for (Constructor<?> ctor : cls.getConstructors()) {
-            IAnnotation ca = annotationFinder.findAnnotation(ctor, annotation);
-            if (null != ca) {
-              //Don't short circuit. Lets run for all methods across all classes.
-              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
-              result = true;
-            }
-          }
-        }
-      }
-
-      return result;
-
-    } catch (NoClassDefFoundError e) {
-      Utils.log(
-          PREFIX,
-          1,
-          "Unable to read methods on class "
-              + cls.getName()
-              + " - unable to resolve class reference "
-              + e.getMessage());
-      return false;
-    }
   }
 
   // IInstanceInfo<T> should be replaced by IInstanceInfo<?> but eclipse complains against it.

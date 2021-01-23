@@ -1,6 +1,5 @@
 package org.testng.junit;
 
-import java.util.*;
 import java.util.regex.Pattern;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
@@ -29,11 +28,23 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
   private Collection<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
   private Map<Description, ITestResult> m_findedMethods = new WeakHashMap<>();
 
-  public JUnit4TestRunner() {}
+  public JUnit4TestRunner() {
+  }
 
   public JUnit4TestRunner(ITestResultNotifier tr) {
     m_parentRunner = tr;
     m_listeners = m_parentRunner.getTestListeners();
+  }
+
+  private static boolean isAssumptionFailed(Failure failure) {
+    //noinspection ThrowableResultOfMethodCallIgnored
+    final Throwable exception = failure.getException();
+    //noinspection SimplifiableIfStatement
+    if (exception == null) {
+      return false;
+    }
+    return "org.junit.internal.AssumptionViolatedException"
+        .equals(exception.getClass().getCanonicalName());
   }
 
   /**
@@ -114,6 +125,22 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     } catch (Throwable t) {
       throw new TestNGException("Failure in JUnit mode for class " + testCase.getName(), t);
     }
+  }
+
+  private ITestResult createTestResult(Description test) {
+    JUnit4TestClass tc = new JUnit4TestClass(test);
+    JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
+
+    TestResult tr = TestResult.newTestResultFor(tm);
+
+    InvokedMethod im = new InvokedMethod(tr.getStartMillis(), tr);
+    if (tr.getMethod() instanceof IInvocationStatus) {
+      ((IInvocationStatus) tr.getMethod()).setInvokedAt(im.getDate());
+    }
+    for (IInvokedMethodListener l : m_invokeListeners) {
+      l.beforeInvocation(im, tr);
+    }
+    return tr;
   }
 
   private class RL extends RunListener {
@@ -205,10 +232,12 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     }
 
     @Override
-    public void testRunFinished(Result result) throws Exception {}
+    public void testRunFinished(Result result) throws Exception {
+    }
 
     @Override
-    public void testRunStarted(Description description) throws Exception {}
+    public void testRunStarted(Description description) throws Exception {
+    }
 
     @Override
     public void testStarted(Description description) throws Exception {
@@ -236,33 +265,5 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     private String stringify(Description description) {
       return description.getClassName() + "." + description.getMethodName() + "()";
     }
-  }
-
-  private ITestResult createTestResult(Description test) {
-    JUnit4TestClass tc = new JUnit4TestClass(test);
-    JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
-
-
-    TestResult tr = TestResult.newTestResultFor(tm);
-
-    InvokedMethod im = new InvokedMethod(tr.getStartMillis(), tr);
-    if (tr.getMethod() instanceof IInvocationStatus) {
-      ((IInvocationStatus) tr.getMethod()).setInvokedAt(im.getDate());
-    }
-    for (IInvokedMethodListener l : m_invokeListeners) {
-      l.beforeInvocation(im, tr);
-    }
-    return tr;
-  }
-
-  private static boolean isAssumptionFailed(Failure failure) {
-    //noinspection ThrowableResultOfMethodCallIgnored
-    final Throwable exception = failure.getException();
-    //noinspection SimplifiableIfStatement
-    if (exception == null) {
-      return false;
-    }
-    return "org.junit.internal.AssumptionViolatedException"
-        .equals(exception.getClass().getCanonicalName());
   }
 }

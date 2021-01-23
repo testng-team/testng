@@ -1,13 +1,11 @@
 package test.factory;
 
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-
 import test.SimpleBaseTest;
-
-import java.util.List;
 
 public class FactoryInterleavingTest extends SimpleBaseTest {
 
@@ -19,13 +17,13 @@ public class FactoryInterleavingTest extends SimpleBaseTest {
     tng.setPreserveOrder(false);
     tng.run();
     Integer[] valid1 = {
-      10, 11, 12, 13,
-      20, 21, 22, 23,
+        10, 11, 12, 13,
+        20, 21, 22, 23,
     };
 
     Integer[] valid2 = {
-      20, 21, 22, 23,
-      10, 11, 12, 13,
+        20, 21, 22, 23,
+        10, 11, 12, 13,
     };
     Integer[] logArray = LOG.toArray(new Integer[0]);
     if (!logArray.equals(valid1)) {

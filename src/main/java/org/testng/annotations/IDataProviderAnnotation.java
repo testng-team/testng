@@ -6,6 +6,7 @@ import java.util.List;
  * Encapsulate the @DataProvider / @testng.data-provider annotation
  */
 public interface IDataProviderAnnotation extends IAnnotation {
+
   /**
    * @return The name of this DataProvider.
    */

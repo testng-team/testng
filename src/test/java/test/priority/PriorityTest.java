@@ -1,18 +1,16 @@
 package test.priority;
 
-import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
-import java.util.List;
 import test.priority.issue2075.InterruptTest;
 import test.priority.issue2137.IssueTest;
 import test.priority.issue2137.OrderListener;
@@ -57,12 +55,14 @@ public class PriorityTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB #793: Test suite with tests using dependency and priority has wrong behavior")
   public void priorityWithDependsOnMethods() {
-    runTest(WithPriorityAndDependsMethodsSample.class, false /* sequential */, "first", "second", "third");
+    runTest(WithPriorityAndDependsMethodsSample.class, false /* sequential */, "first", "second",
+        "third");
   }
 
   @Test(description = "Test suite with tests using dependency, priority, and parallel has wrong behavior")
   public void priorityWithDependsOnMethodsParallel() {
-    runTest(WithPriorityAndDependsMethodsSample.class, true /* parallel */, "first", "third", "second");
+    runTest(WithPriorityAndDependsMethodsSample.class, true /* parallel */, "first", "third",
+        "second");
   }
 
   @Test(description = "GITHUB #1334: Order by priority gets messed up when there are failures and dependsOnMethods")

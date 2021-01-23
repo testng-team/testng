@@ -4,6 +4,7 @@ import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 public class FailedReporterSampleTest {
+
   @Test
   public void f2() {
     throw new RuntimeException();
@@ -15,5 +16,6 @@ public class FailedReporterSampleTest {
   }
 
   @Test
-  public void f3() {}
+  public void f3() {
+  }
 }

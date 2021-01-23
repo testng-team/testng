@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
@@ -21,6 +20,39 @@ import test.dependent.github1380.GitHub1380Sample3;
 import test.dependent.github1380.GitHub1380Sample4;
 
 public class DependentTest extends BaseTest {
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        {new Class[]{ASample.class, BSample.class}, true},
+        {new Class[]{ASample.class, BSample.class}, false},
+        {new Class[]{BSample.class, ASample.class}, true},
+        {new Class[]{BSample.class, ASample.class}, false}
+    };
+  }
+
+  @DataProvider
+  public static Object[][] dp1380() {
+    return new Object[][]{
+        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
+        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"}},
+        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
+        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodA", "testMethodC"}},
+    };
+  }
+
+  @DataProvider
+  public static Object[][] dp1380Parallel() {
+    return new Object[][]{
+        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
+        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"},
+            new String[]{"testMethodB", "testMethodC", "testMethodA"}},
+        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
+        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodC", "testMethodA"},
+            new String[]{"testMethodC", "testMethodB", "testMethodA"}
+        }
+    };
+  }
 
   @Test
   public void simpleSkip() {
@@ -51,10 +83,10 @@ public class DependentTest extends BaseTest {
     addClass(SampleDependentMethods4.class.getName());
     run();
     String[] passed = {
-      "step1",
+        "step1",
     };
     String[] failed = {
-      "step2",
+        "step2",
     };
     String[] skipped = {"step3"};
     verifyTests("Passed", passed, getPassedTests());
@@ -91,10 +123,10 @@ public class DependentTest extends BaseTest {
     addClass(MultipleDependentSampleTest.class.getName());
     run();
     String[] passed = {
-      "init",
+        "init",
     };
     String[] failed = {
-      "fail",
+        "fail",
     };
     String[] skipped = {"skip1", "skip2"};
     verifyTests("Passed", passed, getPassedTests());
@@ -106,9 +138,9 @@ public class DependentTest extends BaseTest {
   public void instanceDependencies() {
     addClass(InstanceSkipSampleTest.class.getName());
     run();
-    verifyInstanceNames(getPassedTests(), new String[] {"f#1", "f#3", "g#1", "g#3"});
-    verifyInstanceNames(getFailedTests(), new String[] {"f#2"});
-    verifyInstanceNames(getSkippedTests(), new String[] {"g#2"});
+    verifyInstanceNames(getPassedTests(), new String[]{"f#1", "f#3", "g#1", "g#3"});
+    verifyInstanceNames(getFailedTests(), new String[]{"f#2"});
+    verifyInstanceNames(getSkippedTests(), new String[]{"g#2"});
   }
 
   @Test
@@ -128,16 +160,6 @@ public class DependentTest extends BaseTest {
     }
   }
 
-  @DataProvider
-  public static Object[][] dp() {
-    return new Object[][] {
-      {new Class[] {ASample.class, BSample.class}, true},
-      {new Class[] {ASample.class, BSample.class}, false},
-      {new Class[] {BSample.class, ASample.class}, true},
-      {new Class[] {BSample.class, ASample.class}, false}
-    };
-  }
-
   @Test(dataProvider = "dp", description = "GITHUB-1156")
   public void methodDependencyBetweenClassesShouldWork(Class[] classes, boolean preserveOrder) {
     TestNG tng = SimpleBaseTest.create(classes);
@@ -151,16 +173,6 @@ public class DependentTest extends BaseTest {
     assertThat(listener.getSucceedMethodNames()).containsExactly("testB", "testA");
   }
 
-  @DataProvider
-  public static Object[][] dp1380() {
-    return new Object[][] {
-      {GitHub1380Sample.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
-      {GitHub1380Sample2.class, new String[] {"testMethodC", "testMethodB", "testMethodA"}},
-      {GitHub1380Sample3.class, new String[] {"testMethodA", "testMethodB", "testMethodC"}},
-      {GitHub1380Sample4.class, new String[] {"testMethodB", "testMethodA", "testMethodC"}},
-    };
-  }
-
   @Test(dataProvider = "dp1380", description = "GITHUB-1380")
   public void simpleCyclingDependencyShouldWorkWithoutParallelism(
       Class<?> testClass, String[] runMethods) {
@@ -170,29 +182,15 @@ public class DependentTest extends BaseTest {
     tng.addListener(listener);
 
     tng.run();
-    
-        // When not running parallel, invoke order and succeed order are the same.
-        assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
-        assertThat(listener.getSucceedMethodNames()).containsExactly(runMethods);
-  }
 
-  @DataProvider
-  public static Object[][] dp1380Parallel() {
-    return new Object[][]{
-        {GitHub1380Sample.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
-        {GitHub1380Sample2.class, new String[]{"testMethodC", "testMethodB", "testMethodA"},
-            new String[]{"testMethodB", "testMethodC", "testMethodA"}},
-        {GitHub1380Sample3.class, new String[]{"testMethodA", "testMethodB", "testMethodC"}},
-        {GitHub1380Sample4.class, new String[]{"testMethodB", "testMethodC", "testMethodA"},
-            new String[]{"testMethodC", "testMethodB", "testMethodA"}
-        }
-    };
+    // When not running parallel, invoke order and succeed order are the same.
+    assertThat(listener.getInvokedMethodNames()).containsExactly(runMethods);
+    assertThat(listener.getSucceedMethodNames()).containsExactly(runMethods);
   }
-
 
   @Test(dataProvider = "dp1380Parallel", description = "GITHUB-1380")
   public void simpleCyclingDependencyShouldWorkWitParallelism(
-      Class<?> testClass, String[] ...runMethods) {
+      Class<?> testClass, String[]... runMethods) {
     TestNG tng = SimpleBaseTest.create(testClass);
     tng.setParallel(ParallelMode.METHODS);
 

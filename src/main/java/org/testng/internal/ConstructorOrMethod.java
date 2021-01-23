@@ -78,18 +78,21 @@ public class ConstructorOrMethod {
     return Objects.hash(getInternalConstructorOrMethod());
   }
 
-  public void setEnabled(boolean enabled) {
-    m_enabled = enabled;
-  }
-
   public boolean getEnabled() {
     return m_enabled;
   }
 
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
+  }
+
   @Override
   public String toString() {
-    if (m_method != null) return m_method.toString();
-    else return m_constructor.toString();
+    if (m_method != null) {
+      return m_method.toString();
+    } else {
+      return m_constructor.toString();
+    }
   }
 
   public String stringifyParameterTypes() {

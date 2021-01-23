@@ -1,7 +1,6 @@
 package testhelper;
 
 import com.sun.management.ThreadMXBean;
-
 import java.lang.management.ManagementFactory;
 
 public class PerformanceUtils {

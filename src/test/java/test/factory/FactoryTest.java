@@ -1,11 +1,11 @@
 package test.factory;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Parameters;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 
 public class FactoryTest {
 
@@ -18,7 +18,7 @@ public class FactoryTest {
     assertFalse(isInvoked, "Should only be invoked once");
     isInvoked = true;
 
-    return new Object[] {new FactoryTest2(42), new FactoryTest2(43)};
+    return new Object[]{new FactoryTest2(42), new FactoryTest2(43)};
   }
 
   @AfterSuite

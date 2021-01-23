@@ -1,20 +1,11 @@
 package test.dependent;
 
+import java.io.ByteArrayInputStream;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 
-import java.io.ByteArrayInputStream;
-
 public class MissingGroupSampleTest {
-
-  @Test(dependsOnGroups = {"missing-group"})
-  public void shouldBeSkipped() {}
-
-  @Test(
-      dependsOnGroups = {"missing-group"},
-      ignoreMissingDependencies = true)
-  public void shouldNotBeSkipped() {}
 
   public static void main(String[] args) throws Exception {
     TestNG tng = new TestNG();
@@ -28,5 +19,15 @@ public class MissingGroupSampleTest {
     ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
     tng.setXmlSuites(new Parser(is).parseToList());
     tng.run();
+  }
+
+  @Test(dependsOnGroups = {"missing-group"})
+  public void shouldBeSkipped() {
+  }
+
+  @Test(
+      dependsOnGroups = {"missing-group"},
+      ignoreMissingDependencies = true)
+  public void shouldNotBeSkipped() {
   }
 }

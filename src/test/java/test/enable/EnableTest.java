@@ -1,12 +1,11 @@
 package test.enable;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.InvokedMethodListener;
 import test.SimpleBaseTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableTest extends SimpleBaseTest {
 

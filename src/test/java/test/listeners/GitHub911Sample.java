@@ -13,8 +13,10 @@ public class GitHub911Sample {
   // TODO check before invocation
 
   @Test
-  public void myTest1() {}
+  public void myTest1() {
+  }
 
   @Test
-  public void myTest2() {}
+  public void myTest2() {
+  }
 }

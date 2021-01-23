@@ -7,6 +7,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class InstanceTestSample {
+
   private String name;
   private int age;
 
@@ -18,9 +19,9 @@ public class InstanceTestSample {
 
   @DataProvider(name = "dp")
   public static Object[][] getData() {
-    return new Object[][] {
-      {"Master Shifu", 50},
-      {"Master Oogway", 90}
+    return new Object[][]{
+        {"Master Shifu", 50},
+        {"Master Oogway", 90}
     };
   }
 

@@ -1,14 +1,13 @@
 package test.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IClassListener;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestClass;
 import org.testng.ITestResult;
 import org.testng.internal.BaseTestMethod;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MyClassListener implements IClassListener, IInvokedMethodListener {
 

@@ -1,5 +1,11 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
@@ -7,13 +13,6 @@ import org.testng.collections.Sets;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 class ClassBasedParallelWorker extends AbstractParallelWorker {
 
@@ -30,6 +29,47 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
       }
     }
     return sequentialClasses;
+  }
+
+  private static boolean shouldRunSequentially(Class<?> c, Set<Class<?>> sequentialClasses) {
+    return sequentialClasses.contains(c) ||
+        sequentialClasses.stream().anyMatch(each -> each.isAssignableFrom(c));
+  }
+
+  private static List<IMethodInstance> findClasses(
+      List<IMethodInstance> methodInstances, Class<?> c) {
+    return methodInstances
+        .stream()
+        .filter(mi -> mi.getMethod().getTestClass().getRealClass() == c)
+        .collect(Collectors.toList());
+  }
+
+  private static TestMethodWorker createTestMethodWorker(
+      Arguments attributes,
+      List<IMethodInstance> methodInstances,
+      Map<String, String> params,
+      Class<?> c) {
+    IInvoker invoker = attributes.getInvoker();
+    ITestInvoker testInvoker = invoker.getTestInvoker();
+    IConfigInvoker configInvoker = invoker.getConfigInvoker();
+    return new TestMethodWorker(
+        testInvoker, configInvoker, findClasses(methodInstances, c),
+        params,
+        attributes.getConfigMethods(),
+        attributes.getClassMethodMap(),
+        attributes.getTestContext(),
+        attributes.getListeners());
+  }
+
+  private static boolean isSequential(
+      org.testng.annotations.ITestAnnotation test, XmlTest xmlTest) {
+    return test != null && test.getSingleThreaded()
+        || XmlSuite.ParallelMode.CLASSES.equals(xmlTest.getParallel());
+  }
+
+  private static Map<String, String> getParameters(IMethodInstance im) {
+    XmlTest xmlTest = im.getMethod().getXmlTest();
+    return im.getMethod().findMethodParameters(xmlTest);
   }
 
   @Override
@@ -72,48 +112,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
     return result;
   }
 
-  private static boolean shouldRunSequentially(Class<?> c, Set<Class<?>> sequentialClasses) {
-    return sequentialClasses.contains(c) ||
-        sequentialClasses.stream().anyMatch(each -> each.isAssignableFrom(c));
-  }
-
-  private static List<IMethodInstance> findClasses(
-      List<IMethodInstance> methodInstances, Class<?> c) {
-    return methodInstances
-        .stream()
-        .filter(mi -> mi.getMethod().getTestClass().getRealClass() == c)
-        .collect(Collectors.toList());
-  }
-
-  private static TestMethodWorker createTestMethodWorker(
-      Arguments attributes,
-      List<IMethodInstance> methodInstances,
-      Map<String, String> params,
-      Class<?> c) {
-    IInvoker invoker = attributes.getInvoker();
-    ITestInvoker testInvoker = invoker.getTestInvoker();
-    IConfigInvoker configInvoker = invoker.getConfigInvoker();
-    return new TestMethodWorker(
-        testInvoker, configInvoker, findClasses(methodInstances, c),
-        params,
-        attributes.getConfigMethods(),
-        attributes.getClassMethodMap(),
-        attributes.getTestContext(),
-        attributes.getListeners());
-  }
-
   private List<MethodInstance> methodsToMultipleMethodInstances(ITestNGMethod... methods) {
     return Arrays.stream(methods).map(MethodInstance::new).collect(Collectors.toList());
-  }
-
-  private static boolean isSequential(
-      org.testng.annotations.ITestAnnotation test, XmlTest xmlTest) {
-    return test != null && test.getSingleThreaded()
-        || XmlSuite.ParallelMode.CLASSES.equals(xmlTest.getParallel());
-  }
-
-  private static Map<String, String> getParameters(IMethodInstance im) {
-    XmlTest xmlTest = im.getMethod().getXmlTest();
-    return im.getMethod().findMethodParameters(xmlTest);
   }
 }

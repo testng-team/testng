@@ -11,6 +11,7 @@ import java.util.Map;
  * @author Hani Suleiman Date: Jul 25, 2005 Time: 1:12:18 PM
  */
 public class SuiteGenerator {
+
   private static final Collection<String> EMPTY_CLASS_LIST = Collections.emptyList();
 
   public static LaunchSuite createProxiedXmlSuite(final File xmlSuitePath) {

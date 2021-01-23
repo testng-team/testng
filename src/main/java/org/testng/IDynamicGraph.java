@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Represents the graphical representative capabilities of an entity.
- * The entities could be either a {@link ISuite} or an {@link ITestNGMethod} object which are
- * usually the logical units of work that TestNG deals with.
+ * Represents the graphical representative capabilities of an entity. The entities could be either a
+ * {@link ISuite} or an {@link ITestNGMethod} object which are usually the logical units of work
+ * that TestNG deals with.
  */
 public interface IDynamicGraph<T> {
 

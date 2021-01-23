@@ -8,20 +8,9 @@ import org.testng.annotations.Test;
 
 public class NestedStaticFactorySample {
 
+  private static int m_instanceCount = 0;
   private final int m_capacity;
   private final float m_loadFactor;
-
-  public static class NestedStaticFactory {
-
-    @Factory
-    public Object[] createInstances() {
-      return new NestedStaticFactorySample[] {
-        new NestedStaticFactorySample(1, 0.1f), new NestedStaticFactorySample(10, 0.5f),
-      };
-    }
-  }
-
-  private static int m_instanceCount = 0;
 
   public NestedStaticFactorySample() {
     this(2, 0.4f);
@@ -40,5 +29,15 @@ public class NestedStaticFactorySample {
     assertEquals(m_instanceCount, 2);
     assertTrue(
         (m_capacity == 1 && m_loadFactor == 0.1f) || m_capacity == 10 && m_loadFactor == 0.5f);
+  }
+
+  public static class NestedStaticFactory {
+
+    @Factory
+    public Object[] createInstances() {
+      return new NestedStaticFactorySample[]{
+          new NestedStaticFactorySample(1, 0.1f), new NestedStaticFactorySample(10, 0.5f),
+      };
+    }
   }
 }

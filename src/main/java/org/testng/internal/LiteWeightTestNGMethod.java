@@ -18,18 +18,14 @@ import org.testng.xml.XmlTest;
 public class LiteWeightTestNGMethod implements ITestNGMethod {
 
   private final Class<?> realClass;
-  private ITestClass testClass;
   private final String methodName;
   private final Object instance;
   private final long[] instanceHashCodes;
   private final String[] groups;
   private final String[] groupsDependedUpon;
-  private String missingGroup;
   private final String[] beforeGroups;
   private final String[] afterGroups;
   private final List<String> methodsDependedUpon = new LinkedList<>();
-  private int priority;
-  private int interceptedPriority;
   private final XmlTest xmlTest;
   private final String qualifiedName;
   private final boolean isBeforeTestConfiguration;
@@ -43,29 +39,32 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final boolean isAfterClassConfiguration;
   private final boolean isBeforeSuiteConfiguration;
   private final boolean isAfterSuiteConfiguration;
-  private List<Integer> invocationNumbers;
   private final List<Integer> failedInvocationNumbers;
-  private boolean ignoreMissingDependencies;
   private final long invocationTimeout;
-  private boolean skipFailedInvocations;
-
-  private long timeout;
-  private int invocationCount;
   private final int successPercentage;
-  private String id;
-  private long date;
   private final boolean isAlwaysRun;
-  private int threadPoolSize;
   private final boolean enabled;
-  private String description;
   private final int currentInvocationCount;
-  private int parameterInvocationCount;
   private final boolean hasMoreInvocation;
   private final Class<? extends IRetryAnalyzer> retryAnalyzerClass;
   private final String toString;
   private final IDataProviderMethod dataProviderMethod;
   private final int hashCode;
   private final Class<?>[] parameterTypes;
+  private ITestClass testClass;
+  private String missingGroup;
+  private int priority;
+  private int interceptedPriority;
+  private List<Integer> invocationNumbers;
+  private boolean ignoreMissingDependencies;
+  private boolean skipFailedInvocations;
+  private long timeout;
+  private int invocationCount;
+  private String id;
+  private long date;
+  private int threadPoolSize;
+  private String description;
+  private int parameterInvocationCount;
 
 
   public LiteWeightTestNGMethod(ITestNGMethod iTestNGMethod) {
@@ -378,14 +377,14 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setParameterInvocationCount(int n) {
-    this.parameterInvocationCount = n;
-
+  public int getParameterInvocationCount() {
+    return parameterInvocationCount;
   }
 
   @Override
-  public int getParameterInvocationCount() {
-    return parameterInvocationCount;
+  public void setParameterInvocationCount(int n) {
+    this.parameterInvocationCount = n;
+
   }
 
   @Override
@@ -409,14 +408,13 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-
-  }
-
-
-  @Override
   public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
     return retryAnalyzerClass;
+  }
+
+  @Override
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+
   }
 
   @Override
@@ -539,8 +537,9 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   boolean equalParamTypes(Class<?>[] params1, Class<?>[] params2) {
     if (params1.length == params2.length) {
       for (int i = 0; i < params1.length; i++) {
-        if (params1[i] != params2[i])
+        if (params1[i] != params2[i]) {
           return false;
+        }
       }
       return true;
     }

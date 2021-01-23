@@ -4,7 +4,12 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class ClassWide1Test {
+
   private static boolean m_ok = false;
+
+  public static boolean m1WasRun() {
+    return m_ok;
+  }
 
   @BeforeTest
   public void init() {
@@ -14,9 +19,5 @@ public class ClassWide1Test {
   @Test
   public void m1() {
     m_ok = true;
-  }
-
-  public static boolean m1WasRun() {
-    return m_ok;
   }
 }

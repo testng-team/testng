@@ -13,9 +13,10 @@ public class ITestNGMethodSample {
     Assert.assertEquals(m.getConstructorOrMethod().getMethod().getName(), "test1");
     Assert.assertEquals(m.getRealClass(), ITestNGMethodSample.class);
 
-    return new Object[][] {{"Cedric"}, {"Alois"}};
+    return new Object[][]{{"Cedric"}, {"Alois"}};
   }
 
   @Test(dataProvider = "dp1")
-  public void test1(String s) {}
+  public void test1(String s) {
+  }
 }

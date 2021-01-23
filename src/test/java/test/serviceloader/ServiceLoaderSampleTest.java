@@ -10,5 +10,6 @@ import org.testng.annotations.Test;
 public class ServiceLoaderSampleTest {
 
   @Test
-  public void f() {}
+  public void f() {
+  }
 }

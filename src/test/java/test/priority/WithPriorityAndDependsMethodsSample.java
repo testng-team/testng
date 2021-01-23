@@ -5,11 +5,14 @@ import org.testng.annotations.Test;
 public class WithPriorityAndDependsMethodsSample {
 
   @Test
-  public void first() {}
+  public void first() {
+  }
 
   @Test(dependsOnMethods = {"first"})
-  public void second() {}
+  public void second() {
+  }
 
   @Test(priority = 1)
-  public void third() {}
+  public void third() {
+  }
 }

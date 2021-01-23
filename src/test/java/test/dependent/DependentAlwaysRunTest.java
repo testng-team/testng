@@ -1,10 +1,10 @@
 package test.dependent;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class DependentAlwaysRunTest extends BaseTest {
+
   @Test
   public void verifyDependsOnMethodsAlwaysRun() {
     addClass("test.dependent.DependentOnMethod1AlwaysRunSampleTest");

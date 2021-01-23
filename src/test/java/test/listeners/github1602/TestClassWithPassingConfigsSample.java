@@ -5,15 +5,16 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class TestClassWithPassingConfigsSample {
-    @BeforeMethod
-    public void beforeMethod() {
-    }
 
-    @Test
-    public void testMethod() {
-    }
+  @BeforeMethod
+  public void beforeMethod() {
+  }
 
-    @AfterMethod
-    public void afterMethod() {
-    }
+  @Test
+  public void testMethod() {
+  }
+
+  @AfterMethod
+  public void afterMethod() {
+  }
 }

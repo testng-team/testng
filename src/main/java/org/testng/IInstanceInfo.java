@@ -10,9 +10,13 @@ package org.testng;
  */
 public interface IInstanceInfo<T> {
 
-  /** @return The instance on which the tests will be invoked. */
+  /**
+   * @return The instance on which the tests will be invoked.
+   */
   T getInstance();
 
-  /** @return The class on which the TestNG annotations should be looked for. */
+  /**
+   * @return The class on which the TestNG annotations should be looked for.
+   */
   Class<T> getInstanceClass();
 }

@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 public class Github949Test extends SimpleBaseTest {
+
   @Test(dataProvider = "getdata")
   public void runTest(Class<?> child) {
     TestNG testng = create(child);
@@ -25,6 +26,6 @@ public class Github949Test extends SimpleBaseTest {
 
   @DataProvider
   public Object[][] getdata() {
-    return new Object[][] {{ChildClassSample.class}, {ChildClassWithAlwasyRunEnabledSample.class}};
+    return new Object[][]{{ChildClassSample.class}, {ChildClassWithAlwasyRunEnabledSample.class}};
   }
 }

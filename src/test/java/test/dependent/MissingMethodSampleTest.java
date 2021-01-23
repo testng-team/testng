@@ -1,18 +1,11 @@
 package test.dependent;
 
+import java.io.ByteArrayInputStream;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 
-import java.io.ByteArrayInputStream;
-
 public class MissingMethodSampleTest {
-
-  @Test(dependsOnMethods = "missingMethod", ignoreMissingDependencies = true)
-  public void explicitlyIgnoreMissingMethod() {}
-
-  @Test(dependsOnMethods = "missingMethod", alwaysRun = true)
-  public void alwaysRunDespiteMissingMethod() {}
 
   public static void main(String[] args) throws Exception {
     TestNG tng = new TestNG();
@@ -24,5 +17,13 @@ public class MissingMethodSampleTest {
     ByteArrayInputStream is = new ByteArrayInputStream(xml.getBytes());
     tng.setXmlSuites(new Parser(is).parseToList());
     tng.run();
+  }
+
+  @Test(dependsOnMethods = "missingMethod", ignoreMissingDependencies = true)
+  public void explicitlyIgnoreMissingMethod() {
+  }
+
+  @Test(dependsOnMethods = "missingMethod", alwaysRun = true)
+  public void alwaysRunDespiteMissingMethod() {
   }
 }

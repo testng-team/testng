@@ -1,16 +1,16 @@
 package test.graph;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class GraphVisualiserTest extends SimpleBaseTest {
+
   @Test(dataProvider = "dp")
   public void testVisualiserInvocation(Class<?> testClass, boolean injectListener) {
     TestNG testng = create();
@@ -31,9 +31,9 @@ public class GraphVisualiserTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {
-      {TestSampleWithListener.class, true},
-      {TestSampleWithoutListener.class, false}
+    return new Object[][]{
+        {TestSampleWithListener.class, true},
+        {TestSampleWithoutListener.class, false}
     };
   }
 }

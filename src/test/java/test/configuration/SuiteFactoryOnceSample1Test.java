@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 public class SuiteFactoryOnceSample1Test {
+
   public static int m_before = 0;
   public static int m_after = 0;
 
@@ -19,5 +20,6 @@ public class SuiteFactoryOnceSample1Test {
   }
 
   @Test
-  public void g1() {}
+  public void g1() {
+  }
 }

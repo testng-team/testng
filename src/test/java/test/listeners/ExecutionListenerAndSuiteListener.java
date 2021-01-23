@@ -6,28 +6,29 @@ import org.testng.ISuiteListener;
 
 public class ExecutionListenerAndSuiteListener implements ISuiteListener, IExecutionListener {
 
-    private String testString;
-    private static String tmp;
-    @Override
-    public void onExecutionStart() {
-        testString = "initialized";
-    }
+  private static String tmp;
+  private String testString;
 
-    @Override
-    public void onExecutionFinish() {
-    }
+  public static String getTmpString() {
+    return tmp;
+  }
 
-    @Override
-    public void onStart(ISuite suite) {
-        tmp = testString.toUpperCase();
-    }
+  @Override
+  public void onExecutionStart() {
+    testString = "initialized";
+  }
 
-    @Override
-    public void onFinish(ISuite suite) {
-    }
+  @Override
+  public void onExecutionFinish() {
+  }
 
-    public static String getTmpString() {
-        return tmp;
-    }
+  @Override
+  public void onStart(ISuite suite) {
+    tmp = testString.toUpperCase();
+  }
+
+  @Override
+  public void onFinish(ISuite suite) {
+  }
 
 }

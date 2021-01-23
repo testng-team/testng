@@ -1,9 +1,8 @@
 package org.testng.reporters;
 
-import org.testng.ITestResult;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.testng.ITestResult;
 
 public class XMLReporterConfig implements IReporterConfig {
 
@@ -50,19 +49,6 @@ public class XMLReporterConfig implements IReporterConfig {
   public static final String TEST_PASSED = "PASS";
   public static final String TEST_FAILED = "FAIL";
   public static final String TEST_SKIPPED = "SKIP";
-
-  private static final Map<String, Integer> STATUSES = new HashMap<>();
-
-  static {
-    STATUSES.put(TEST_PASSED, ITestResult.SUCCESS);
-    STATUSES.put(TEST_FAILED, ITestResult.FAILURE);
-    STATUSES.put(TEST_SKIPPED, ITestResult.SKIP);
-  }
-
-  public static Integer getStatus(String status) {
-    return STATUSES.get(status);
-  }
-
   /**
    * Indicates that no file fragmentation should be performed. This value indicates the XML
    * generator to write all the results in one big file. Not recommended for large test suites.
@@ -80,61 +66,68 @@ public class XMLReporterConfig implements IReporterConfig {
    * <code>ISuiteResult</code>
    */
   public static final int FF_LEVEL_SUITE_RESULT = 3;
-
   static final String FMT_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss z";
+  private static final Map<String, Integer> STATUSES = new HashMap<>();
+
+  static {
+    STATUSES.put(TEST_PASSED, ITestResult.SUCCESS);
+    STATUSES.put(TEST_FAILED, ITestResult.FAILURE);
+    STATUSES.put(TEST_SKIPPED, ITestResult.SKIP);
+  }
 
   /**
    * Indicates the way that the file fragmentation should be performed. Set this property to one of
    * the FF_LEVEL_* values for the desired output structure
    */
   private int fileFragmentationLevel = FF_LEVEL_NONE;
-
-  /** Stack trace output method for the failed tests using one of the STACKTRACE_* constants. */
+  /**
+   * Stack trace output method for the failed tests using one of the STACKTRACE_* constants.
+   */
   private StackTraceLevels stackTraceOutputMethod = StackTraceLevels.FULL;
-
   private StackTraceLevels stackTraceOutputLevel =
       StackTraceLevels.parse(RuntimeBehavior.getDefaultStacktraceLevels());
-
   /**
    * The root output directory where the XMLs will be written. This will default for now to the
    * default TestNG output directory
    */
   private String outputDirectory;
-
   /**
-   * Indicates whether the <code>groups</code> attribute should be generated for a <code>test-method
+   * Indicates whether the <code>groups</code> attribute should be generated for a
+   * <code>test-method
    * </code> element. Defaults to false due to the fact that this might be considered redundant
    * because of the group generation in the suite file.
    */
   private boolean generateGroupsAttribute = false;
-
   /**
    * When <code>true</code> it will generate the &lt;class&lt; element with a <code>name</code> and
    * a <code>package</code> attribute. Otherwise, the fully qualified name will be used for the
    * <code>name</code> attribute.
    */
   private boolean splitClassAndPackageNames = false;
-
   /**
    * Indicates whether the <code>depends-on-methods</code> attribute should be generated for a
    * <code>test-method</code> element
    */
   private boolean generateDependsOnMethods = true;
-
   /**
    * Indicates whether the <code>depends-on-groups</code> attribute should be generated for a <code>
    * test-method</code> element
    */
   private boolean generateDependsOnGroups = true;
-
   /**
-   * Indicates whether {@link ITestResult} attributes should be generated for each <code>test-method
+   * Indicates whether {@link ITestResult} attributes should be generated for each
+   * <code>test-method
    * </code> element
    */
   private boolean generateTestResultAttributes = false;
-
-  /** The output format for timestamps */
+  /**
+   * The output format for timestamps
+   */
   private String timestampFormat = FMT_DEFAULT;
+
+  public static Integer getStatus(String status) {
+    return STATUSES.get(status);
+  }
 
   public int getFileFragmentationLevel() {
     return fileFragmentationLevel;
@@ -204,37 +197,36 @@ public class XMLReporterConfig implements IReporterConfig {
     this.generateDependsOnGroups = generateDependsOnGroups;
   }
 
-  public void setGenerateTestResultAttributes(boolean generateTestResultAttributes) {
-    this.generateTestResultAttributes = generateTestResultAttributes;
-  }
-
   public boolean isGenerateTestResultAttributes() {
     return generateTestResultAttributes;
   }
 
-  public enum StackTraceLevels {
-    /** No stacktrace will be written in the output file */
-    NONE(0),
-    /** Write only a short version of the stacktrace */
-    SHORT(1),
-    /** Write only the full version of the stacktrace */
-    FULL(2),
-    /** Write both types of stacktrace */
-    BOTH(3);
+  public void setGenerateTestResultAttributes(boolean generateTestResultAttributes) {
+    this.generateTestResultAttributes = generateTestResultAttributes;
+  }
 
-    StackTraceLevels(int level) {
-      this.level = level;
-    }
+  public enum StackTraceLevels {
+    /**
+     * No stacktrace will be written in the output file
+     */
+    NONE(0),
+    /**
+     * Write only a short version of the stacktrace
+     */
+    SHORT(1),
+    /**
+     * Write only the full version of the stacktrace
+     */
+    FULL(2),
+    /**
+     * Write both types of stacktrace
+     */
+    BOTH(3);
 
     private int level;
 
-    public int getLevel() {
-      return level;
-    }
-
-    @Override
-    public String toString() {
-      return Integer.toString(level);
+    StackTraceLevels(int level) {
+      this.level = level;
     }
 
     public static StackTraceLevels parse(int level) {
@@ -248,6 +240,15 @@ public class XMLReporterConfig implements IReporterConfig {
 
     public static StackTraceLevels parse(String raw) {
       return parse(Integer.parseInt(raw));
+    }
+
+    public int getLevel() {
+      return level;
+    }
+
+    @Override
+    public String toString() {
+      return Integer.toString(level);
     }
   }
 }

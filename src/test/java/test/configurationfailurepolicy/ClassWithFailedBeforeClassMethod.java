@@ -12,8 +12,10 @@ public class ClassWithFailedBeforeClassMethod {
   }
 
   @BeforeMethod
-  public void setupMethod() {}
+  public void setupMethod() {
+  }
 
   @Test
-  public void test1() {}
+  public void test1() {
+  }
 }

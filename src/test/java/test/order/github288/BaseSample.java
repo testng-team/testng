@@ -6,9 +6,11 @@ import org.testng.annotations.BeforeClass;
 public class BaseSample {
 
   @BeforeClass
-  protected void beforeClass() { }
+  protected void beforeClass() {
+  }
 
   @AfterClass(alwaysRun = true)
-  protected void afterClass() { }
+  protected void afterClass() {
+  }
 
 }

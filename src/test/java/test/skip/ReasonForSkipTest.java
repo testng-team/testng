@@ -15,6 +15,14 @@ import test.skip.github1967.TestClassSample;
 
 public class ReasonForSkipTest extends SimpleBaseTest {
 
+  private static void runTest(Map<String, String> expected, Class<?>... clazz) {
+    TestNG testng = create(clazz);
+    ReasonReporter reporter = new ReasonReporter();
+    testng.addListener(reporter);
+    testng.run();
+    assertThat(reporter.getSkippedInfo()).containsAllEntriesOf(expected);
+  }
+
   @Test(description = "GITHUB-1878")
   public void ensureSkipInfoHasFailedConfigDetails() {
     Map<String, String> expected = Maps.newHashMap();
@@ -101,14 +109,6 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     expected.put("test2min", ITestResult.SKIP);
     expected.put("setup", ITestResult.FAILURE);
     assertThat(actual).containsAllEntriesOf(expected);
-  }
-
-  private static void runTest(Map<String, String> expected, Class<?>... clazz) {
-    TestNG testng = create(clazz);
-    ReasonReporter reporter = new ReasonReporter();
-    testng.addListener(reporter);
-    testng.run();
-    assertThat(reporter.getSkippedInfo()).containsAllEntriesOf(expected);
   }
 
 }

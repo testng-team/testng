@@ -4,6 +4,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 public class SuiteTest extends BaseSuiteTest {
+
   @BeforeSuite(dependsOnMethods = {"beforeSuiteParent"})
   public void beforeSuiteChild() {
     m_order.add(2);

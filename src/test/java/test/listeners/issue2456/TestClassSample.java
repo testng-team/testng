@@ -6,7 +6,8 @@ import org.testng.annotations.Test;
 public class TestClassSample {
 
   @Test(dataProvider = "dp")
-  public void sampleTest(int i) {}
+  public void sampleTest(int i) {
+  }
 
   @DataProvider(name = "dp")
   public Object[][] getData() {

@@ -8,6 +8,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class HookSuccessTest implements IHookable {
+
   static boolean m_hook = false;
   static boolean m_testWasRun = false;
   static String m_parameter = null;
@@ -24,7 +25,7 @@ public class HookSuccessTest implements IHookable {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {new Object[] {"foo"}};
+    return new Object[][]{new Object[]{"foo"}};
   }
 
   @Test(dataProvider = "dp")

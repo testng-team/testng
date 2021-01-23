@@ -18,19 +18,19 @@ public class MethodHelperTest {
         new ConstructorOrMethod(testClass.getClass().getMethod("dummyMethod"));
     IAnnotationFinder annotationFinder = new JDK15AnnotationFinder(new AnnotationTransformer());
     ITestNGMethod method = new ConfigurationMethod(
-            constructorOrMethod,
-            annotationFinder,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            true,
-            false,
-            new String[0],
-            new String[0],
-            testClass);
+        constructorOrMethod,
+        annotationFinder,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        new String[0],
+        new String[0],
+        testClass);
     method.addMethodDependedUpon("dummyDependsOnMethod");
     ITestNGMethod[] methods = new ITestNGMethod[0];
 

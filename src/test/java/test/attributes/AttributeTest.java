@@ -1,11 +1,11 @@
 package test.attributes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Set;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.util.Set;
 
 public class AttributeTest {
 

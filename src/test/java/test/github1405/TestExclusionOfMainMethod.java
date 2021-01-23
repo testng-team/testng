@@ -7,6 +7,7 @@ import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
 public class TestExclusionOfMainMethod extends SimpleBaseTest {
+
   @Test
   public void testMainMethodExclusion() {
     TestNG tng = create(TestClassSample.class);

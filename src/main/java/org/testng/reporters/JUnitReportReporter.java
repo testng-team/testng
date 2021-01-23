@@ -1,20 +1,5 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.Reporter;
-import org.testng.collections.ListMultiMap;
-import org.testng.collections.SetMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
-import org.testng.internal.Utils;
-import org.testng.xml.XmlSuite;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,8 +15,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.collections.SetMultiMap;
+import org.testng.collections.Sets;
+import org.testng.internal.Utils;
+import org.testng.xml.XmlSuite;
 
 public class JUnitReportReporter implements IReporter {
+
+  private static Collection<ITestResult> sort(Set<ITestResult> results) {
+    List<ITestResult> sortedResults = new ArrayList<>(results);
+    sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
+    return Collections.unmodifiableList(sortedResults);
+  }
+
+  private static int getDisabledTestCount(Set<ITestNGMethod> methods) {
+    int count = 0;
+    for (ITestNGMethod method : methods) {
+      if (!method.getEnabled()) {
+        count = count + 1;
+      }
+    }
+    return count;
+  }
+
+  private static void handleFailure(TestTag testTag, Throwable t) {
+    testTag.childTag = t instanceof AssertionError ? XMLConstants.FAILURE : XMLConstants.ERROR;
+    if (t != null) {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      t.printStackTrace(pw);
+      testTag.message = t.getMessage();
+      testTag.type = t.getClass().getName();
+      testTag.stackTrace = sw.toString();
+    }
+  }
 
   @Override
   public void generateReport(
@@ -154,22 +181,6 @@ public class JUnitReportReporter implements IReporter {
     }
   }
 
-  private static Collection<ITestResult> sort(Set<ITestResult> results) {
-    List<ITestResult> sortedResults = new ArrayList<>(results);
-    sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
-    return Collections.unmodifiableList(sortedResults);
-  }
-
-  private static int getDisabledTestCount(Set<ITestNGMethod> methods) {
-    int count = 0;
-    for (ITestNGMethod method : methods) {
-      if (!method.getEnabled()) {
-        count = count + 1;
-      }
-    }
-    return count;
-  }
-
   private TestTag createIgnoredTestTagFor(ITestNGMethod method) {
     TestTag testTag = new TestTag();
     Properties p2 = new Properties();
@@ -200,19 +211,9 @@ public class JUnitReportReporter implements IReporter {
     return testTag;
   }
 
-  private static void handleFailure(TestTag testTag, Throwable t) {
-    testTag.childTag = t instanceof AssertionError ? XMLConstants.FAILURE : XMLConstants.ERROR;
-    if (t != null) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      t.printStackTrace(pw);
-      testTag.message = t.getMessage();
-      testTag.type = t.getClass().getName();
-      testTag.stackTrace = sw.toString();
-    }
-  }
-
-  /** Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter */
+  /**
+   * Put a XML start or empty tag to the XMLStringBuffer depending on hasChildElements parameter
+   */
   private boolean putElement(
       XMLStringBuffer xsb, String tagName, Properties attributes, boolean hasChildElements) {
     if (hasChildElements) {
@@ -223,7 +224,9 @@ public class JUnitReportReporter implements IReporter {
     return hasChildElements;
   }
 
-  /** Set property if value is non-null */
+  /**
+   * Set property if value is non-null
+   */
   private void safeSetProperty(Properties p, String key, String value) {
     if (value != null) {
       p.setProperty(key, value);
@@ -271,15 +274,6 @@ public class JUnitReportReporter implements IReporter {
     return format.format(time / 1000.0f);
   }
 
-  private static class TestTag {
-    Properties properties;
-    String message;
-    String type;
-    String stackTrace;
-    String childTag;
-    String sysOut;
-  }
-
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
     for (ITestResult tr : allResults) {
       Class<?> cls = tr.getMethod().getTestClass().getRealClass();
@@ -295,5 +289,15 @@ public class JUnitReportReporter implements IReporter {
         mapping.put(method.getRealClass(), method);
       }
     }
+  }
+
+  private static class TestTag {
+
+    Properties properties;
+    String message;
+    String type;
+    String stackTrace;
+    String childTag;
+    String sysOut;
   }
 }

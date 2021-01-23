@@ -13,7 +13,17 @@ public class FactoryAndTestMethodTest {
     return makeNullArgTests(s);
   }
 
+  private Object[] makeNullArgTests(String s) {
+    return new Object[0];
+  }
+
+  @DataProvider(name = "data")
+  public Object[][] makeData() {
+    return new Object[][]{{"foo"}};
+  }
+
   public static class NullArgsTest {
+
     public final String s;
 
     public NullArgsTest(String s) {
@@ -24,14 +34,5 @@ public class FactoryAndTestMethodTest {
     public void test() {
       Assert.assertNotNull(s);
     }
-  }
-
-  private Object[] makeNullArgTests(String s) {
-    return new Object[0];
-  }
-
-  @DataProvider(name = "data")
-  public Object[][] makeData() {
-    return new Object[][] {{"foo"}};
   }
 }

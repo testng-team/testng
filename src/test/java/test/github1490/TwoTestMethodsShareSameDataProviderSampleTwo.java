@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class TwoTestMethodsShareSameDataProviderSampleTwo {
+
   @TestInfo(name = "glutton")
   @Test(dataProvider = "cookie-master", dataProviderClass = DataProviderHouse.class)
   public void testHowMuchPoAte(String cookieName, int count) {

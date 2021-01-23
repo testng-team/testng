@@ -4,10 +4,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import org.junit.runner.RunWith;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 public final class JUnit4TestRecognizer implements JUnitTestRecognizer {
 
-  public JUnit4TestRecognizer() {}
+  public JUnit4TestRecognizer() {
+  }
 
   public boolean isTest(Class c) {
     for (Annotation an : c.getAnnotations()) {

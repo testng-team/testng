@@ -7,7 +7,8 @@ import org.testng.annotations.Test;
 public class TestClassSample {
 
   @Test
-  public void passingMethod() {}
+  public void passingMethod() {
+  }
 
   @Test
   @SkipTest

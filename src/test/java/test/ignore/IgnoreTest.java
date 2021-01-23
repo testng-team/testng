@@ -12,10 +12,18 @@ import test.ignore.issue2396.FirstTest;
 
 public class IgnoreTest extends SimpleBaseTest {
 
+  private static InvokedMethodListener runTest(Class<?>... classes) {
+    TestNG tng = create(classes);
+    InvokedMethodListener listener = new InvokedMethodListener();
+    tng.addListener(listener);
+    tng.run();
+    return listener;
+  }
+
   @Test
   public void ignore_class_should_not_run_tests() {
     InvokedMethodListener listener = runTest(IgnoreClassSample.class);
-     assertThat(listener.getInvokedMethods()).isEmpty();
+    assertThat(listener.getInvokedMethods()).isEmpty();
   }
 
   @Test
@@ -46,13 +54,5 @@ public class IgnoreTest extends SimpleBaseTest {
   public void test_ignore_happens_for_class_level_methods() {
     InvokedMethodListener listener = runTest(FirstTest.class);
     assertThat(listener.getInvokedMethods()).containsExactly("testShouldBeInvoked");
-  }
-
-  private static InvokedMethodListener runTest(Class<?>... classes) {
-    TestNG tng = create(classes);
-    InvokedMethodListener listener = new InvokedMethodListener();
-    tng.addListener(listener);
-    tng.run();
-    return listener;
   }
 }

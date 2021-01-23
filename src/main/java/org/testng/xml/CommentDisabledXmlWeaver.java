@@ -5,6 +5,7 @@ package org.testng.xml;
  * adding an XML comment as the test name and suite name at the end of the corresponding tags.
  */
 final class CommentDisabledXmlWeaver extends DefaultXmlWeaver {
+
   CommentDisabledXmlWeaver() {
     super("");
   }

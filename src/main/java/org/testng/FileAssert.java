@@ -13,7 +13,9 @@ import java.io.IOException;
  */
 public class FileAssert {
 
-  /** Protect this constructor since it is a static only class. */
+  /**
+   * Protect this constructor since it is a static only class.
+   */
   private FileAssert() {
     // Hide this constructor.
   }
@@ -42,8 +44,8 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is a proper file. If it isn't, an AssertionError with the
-   * given message is thrown.
+   * Asserts that a {@code tstvalue} is a proper file. If it isn't, an AssertionError with the given
+   * message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -263,12 +265,16 @@ public class FileAssert {
     throw new AssertionError(message);
   }
 
-  /** Fails a test with no message. */
+  /**
+   * Fails a test with no message.
+   */
   public static void fail() {
     fail(null);
   }
 
-  /** Formats failure for file assertions. */
+  /**
+   * Formats failure for file assertions.
+   */
   private static void failFile(File path, String actual, String expected, String message) {
     String formatted = "";
     if (message != null) {
@@ -285,10 +291,7 @@ public class FileAssert {
   }
 
   /**
-   * @param tstvalue
-   * @param string
-   * @param string2
-   * @param message
+   *
    */
   private static void failSecurity(
       Exception e, File path, String actual, String expected, String message) {
@@ -305,21 +308,23 @@ public class FileAssert {
             + ">"
             + "<"
             + (e != null && e.getMessage() != null && e.getMessage().length() > 0
-                ? e.getMessage()
-                : "not authorized by JVM")
+            ? e.getMessage()
+            : "not authorized by JVM")
             + ">");
   }
 
-  /** String representation of what sort of file {@code path} is. */
+  /**
+   * String representation of what sort of file {@code path} is.
+   */
   private static String fileType(File path) {
     try {
       if (!path.exists()) {
         return "Nonexistent";
       }
-	  if (path.isDirectory()) {
+      if (path.isDirectory()) {
         return "Directory";
       }
-	  if (path.isFile()) {
+      if (path.isFile()) {
         return "File";
       }
       return "Special File";
@@ -328,23 +333,25 @@ public class FileAssert {
     }
   }
 
-  /** String representation of read and write permissions of {@code path}. */
+  /**
+   * String representation of read and write permissions of {@code path}.
+   */
   private static String fileAccess(File path) {
     try {
       if (!path.exists()) {
         return "Nonexistent";
-	  }
+      }
       if (path.canRead() && path.canWrite()) {
         return "Read and Write Access";
-      } 
-	  if (path.canRead()) {
+      }
+      if (path.canRead()) {
         return "Read but not Write Access";
       }
-	  if (path.canWrite()) {
+      if (path.canWrite()) {
         return "Write but not Read Access";
       }
       return "Neither Read nor Write Access";
-	} catch (SecurityException e) {
+    } catch (SecurityException e) {
       return "Unauthorized";
     }
   }

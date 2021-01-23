@@ -1,6 +1,13 @@
 package test.retryAnalyzer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -24,115 +31,121 @@ import test.retryAnalyzer.issue1538.TestClassSampleWithTestMethodDependencies;
 import test.retryAnalyzer.issue1697.DatadrivenSample;
 import test.retryAnalyzer.issue1697.LocalReporter;
 import test.retryAnalyzer.issue1697.SampleTestclass;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import test.retryAnalyzer.issue1946.RetryAnalyzer;
 import test.retryAnalyzer.issue1946.TestclassSample1;
 import test.retryAnalyzer.issue1946.TestclassSample2;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class RetryAnalyzerTest extends SimpleBaseTest {
-    @Test
-    public void testInvocationCounts() {
-        TestNG tng = create(InvocationCountTest.class);
-        TestListenerAdapter tla = new TestListenerAdapter();
-        tng.addListener(new TestResultPruner());
-        tng.addListener(tla);
 
-        tng.run();
+  private static String methodName(ITestResult result) {
+    return result.getMethod().getMethodName();
+  }
 
-        assertThat(tla.getFailedTests()).isEmpty();
+  private static Map<String, String> constructParameterMap() {
+    Map<String, String> map = Maps.newHashMap();
+    map.put("counter", "3");
+    return map;
+  }
 
-        List<ITestResult> fsp = tla.getFailedButWithinSuccessPercentageTests();
-        assertThat(fsp).hasSize(1);
-        assertThat(fsp.get(0).getName()).isEqualTo("failAfterThreeRetries");
+  @Test
+  public void testInvocationCounts() {
+    TestNG tng = create(InvocationCountTest.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(new TestResultPruner());
+    tng.addListener(tla);
 
-        List<ITestResult> skipped = tla.getSkippedTests();
-        assertThat(skipped).hasSize(InvocationCountTest.invocations.size() - fsp.size());
+    tng.run();
+
+    assertThat(tla.getFailedTests()).isEmpty();
+
+    List<ITestResult> fsp = tla.getFailedButWithinSuccessPercentageTests();
+    assertThat(fsp).hasSize(1);
+    assertThat(fsp.get(0).getName()).isEqualTo("failAfterThreeRetries");
+
+    List<ITestResult> skipped = tla.getSkippedTests();
+    assertThat(skipped).hasSize(InvocationCountTest.invocations.size() - fsp.size());
+  }
+
+  @Test
+  public void testIfRetryIsInvokedBeforeListener() {
+    TestNG tng = create(TestClassSample.class);
+    tng.addListener(new MyListener());
+    tng.run();
+    assertThat(TestClassSample.messages)
+        .containsExactly("afterInvocation", "retry", "afterInvocation");
+  }
+
+  @Test(description = "GITHUB-1600")
+  public void testIfRetryIsInvokedBeforeListenerButHasToConsiderFailures() {
+    TestNG tng = create(Github1600TestSample.class);
+    Github1600Listener listener = new Github1600Listener();
+    TestListenerAdapter tla = new TestListenerAdapter();
+    tng.addListener(tla);
+    tng.addListener(listener);
+    tng.run();
+    assertThat(tla.getFailedTests()).hasSize(1);
+    assertThat(tla.getSkippedTests()).hasSize(1);
+  }
+
+  @Test(description = "GITHUB-1706", dataProvider = "1706")
+  public void testIfRetryIsInvokedWhenTestMethodHas(Class<?> clazz, int size,
+      Map<String, String> parameters) {
+    XmlSuite xmlsuite = createXmlSuite("suite");
+    XmlTest xmlTest = createXmlTest(xmlsuite, "test", clazz);
+    if (!parameters.isEmpty()) {
+      xmlTest.setParameters(parameters);
     }
+    TestNG tng = create();
+    tng.setXmlSuites(Collections.singletonList(xmlsuite));
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getSkippedMethodNames().size()).isEqualTo(size);
+  }
 
-    @Test
-    public void testIfRetryIsInvokedBeforeListener() {
-        TestNG tng = create(TestClassSample.class);
-        tng.addListener(new MyListener());
-        tng.run();
-        assertThat(TestClassSample.messages).containsExactly("afterInvocation", "retry", "afterInvocation");
-    }
+  @DataProvider(name = "1706")
+  public Object[][] getData() {
+    return new Object[][]{
+        {NativeInjectionSample.class, 2, Maps.newHashMap()},
+        {DataDrivenSample.class, 4, Maps.newHashMap()},
+        {ParameterInjectionSample.class, 2, constructParameterMap()}
+    };
+  }
 
-    @Test(description = "GITHUB-1600")
-    public void testIfRetryIsInvokedBeforeListenerButHasToConsiderFailures() {
-        TestNG tng = create(Github1600TestSample.class);
-        Github1600Listener listener = new Github1600Listener();
-        TestListenerAdapter tla = new TestListenerAdapter();
-        tng.addListener(tla);
-        tng.addListener(listener);
-        tng.run();
-        assertThat(tla.getFailedTests()).hasSize(1);
-        assertThat(tla.getSkippedTests()).hasSize(1);
-    }
+  @Test(description = "GITHUB-1538")
+  public void testIfDependentMethodsAreInvokedWhenRetrySucceeds() {
+    TestNG testng = create(TestClassSampleWithTestMethodDependencies.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+    assertThat(tla.getPassedTests()
+        .stream()
+        .map(RetryAnalyzerTest::methodName)
+        .collect(Collectors.toList())
+    ).containsExactly("a", "b");
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()
+        .stream()
+        .map(RetryAnalyzerTest::methodName)
+        .collect(Collectors.toList())
+    ).containsExactly("a");
+  }
 
-    @Test(description = "GITHUB-1706", dataProvider = "1706")
-    public void testIfRetryIsInvokedWhenTestMethodHas(Class<?> clazz, int size, Map<String, String> parameters) {
-        XmlSuite xmlsuite = createXmlSuite("suite");
-        XmlTest xmlTest = createXmlTest(xmlsuite, "test", clazz);
-        if (!parameters.isEmpty()) {
-            xmlTest.setParameters(parameters);
-        }
-        TestNG tng = create();
-        tng.setXmlSuites(Collections.singletonList(xmlsuite));
-        InvokedMethodNameListener listener = new InvokedMethodNameListener();
-        tng.addListener(listener);
-        tng.run();
-        assertThat(listener.getSkippedMethodNames().size()).isEqualTo(size);
-    }
+  @Test(description = "GITHUB-1241")
+  public void testToEnsureNewRetryAnalyzerInstanceUsedPerTest() {
+    XmlSuite suite = createXmlSuite("Test Suite", "Test One", GitHub1241Sample.class);
+    createXmlTest(suite, "Test Two", GitHub1241Sample.class);
 
-    @DataProvider(name = "1706")
-    public Object[][] getData() {
-        return new Object[][]{
-                {NativeInjectionSample.class, 2, Maps.newHashMap()},
-                {DataDrivenSample.class, 4, Maps.newHashMap()},
-                {ParameterInjectionSample.class, 2, constructParameterMap()}
-        };
-    }
+    TestNG tng = create(suite);
 
-    @Test(description = "GITHUB-1538")
-    public void testIfDependentMethodsAreInvokedWhenRetrySucceeds() {
-        TestNG testng = create(TestClassSampleWithTestMethodDependencies.class);
-        TestListenerAdapter tla = new TestListenerAdapter();
-        testng.addListener(tla);
-        testng.run();
-        assertThat(tla.getPassedTests()
-                .stream()
-                .map(RetryAnalyzerTest::methodName)
-                .collect(Collectors.toList())
-        ).containsExactly("a", "b");
-        assertThat(tla.getFailedTests()).isEmpty();
-        assertThat(tla.getSkippedTests()
-                .stream()
-                .map(RetryAnalyzerTest::methodName)
-                .collect(Collectors.toList())
-        ).containsExactly("a");
-    }
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
 
-    @Test(description = "GITHUB-1241")
-    public void testToEnsureNewRetryAnalyzerInstanceUsedPerTest() {
-        XmlSuite suite = createXmlSuite("Test Suite", "Test One", GitHub1241Sample.class);
-        createXmlTest(suite, "Test Two", GitHub1241Sample.class);
+    tng.run();
 
-        TestNG tng = create(suite);
-
-        InvokedMethodNameListener listener = new InvokedMethodNameListener();
-        tng.addListener(listener);
-
-        tng.run();
-
-        assertThat(listener.getInvokedMethodNames()).containsExactly("test1", "test2", "test2", "test1", "test2", "test2");
-    }
+    assertThat(listener.getInvokedMethodNames())
+        .containsExactly("test1", "test2", "test2", "test1", "test2", "test2");
+  }
 
   @Test(description = "GITHUB-1697")
   public void ensureRetriedMethodsAreDistinguishable() {
@@ -161,30 +174,50 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1946")
   public void ensureRetriesHappenForDataDrivenTests() {
     List<String> expected = Arrays.asList(
-        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param1, value1]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param1, value1]",
-        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param2, value2]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test1(), Parameters : [param2, value2]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName()
+            + ".test1(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName()
+            + ".test1(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName()
+            + ".test1(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName()
+            + ".test1(), Parameters : [param2, value2]",
 
-        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param1, value1]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param1, value1]",
-        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param2, value2]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName() + ".test2(), Parameters : [param2, value2]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName()
+            + ".test2(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName()
+            + ".test2(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample1.class.getName()
+            + ".test2(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample1.class.getName()
+            + ".test2(), Parameters : [param2, value2]",
 
-        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param1, value1]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param1, value1]",
-        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param2, value2]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test1(), Parameters : [param2, value2]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName()
+            + ".test1(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName()
+            + ".test1(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName()
+            + ".test1(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName()
+            + ".test1(), Parameters : [param2, value2]",
 
-        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param1, value1]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param1, value1]",
-        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param2, value2]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test3(), Parameters : [param2, value2]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName()
+            + ".test3(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName()
+            + ".test3(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName()
+            + ".test3(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName()
+            + ".test3(), Parameters : [param2, value2]",
 
-        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param1, value1]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param1, value1]",
-        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param2, value2]",
-        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName() + ".test4(), Parameters : [param2, value2]"
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName()
+            + ".test4(), Parameters : [param1, value1]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName()
+            + ".test4(), Parameters : [param1, value1]",
+        "Attempt #0. Retry :true  Test method : " + TestclassSample2.class.getName()
+            + ".test4(), Parameters : [param2, value2]",
+        "Attempt #1. Retry :false Test method : " + TestclassSample2.class.getName()
+            + ".test4(), Parameters : [param2, value2]"
     );
     XmlSuite xmlsuite = createXmlSuite("1946_suite");
     createXmlTest(xmlsuite, "1946_test", TestclassSample1.class, TestclassSample2.class);
@@ -208,15 +241,5 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     assertThat(firstResult.getMethod().getMethodName()).isEqualToIgnoringCase(methodName);
     return firstResult;
   }
-
-    private static String methodName(ITestResult result) {
-        return result.getMethod().getMethodName();
-    }
-
-    private static Map<String, String> constructParameterMap() {
-        Map<String, String> map = Maps.newHashMap();
-        map.put("counter", "3");
-        return map;
-    }
 
 }

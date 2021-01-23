@@ -2,7 +2,9 @@ package test.configurationfailurepolicy;
 
 import org.testng.annotations.Factory;
 
-public class FactoryClassWithFailedBeforeMethodAndMultipleInvocations extends ClassWithFailedBeforeMethodAndMultipleInvocations {
+public class FactoryClassWithFailedBeforeMethodAndMultipleInvocations extends
+    ClassWithFailedBeforeMethodAndMultipleInvocations {
+
   @Factory
   public Object[] createTests() {
     Object[] instances = new Object[2];

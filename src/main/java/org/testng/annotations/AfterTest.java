@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.METHOD)
 @Documented
 public @interface AfterTest {
+
   /**
    * Whether methods on this class/method are enabled.
    *
@@ -46,9 +47,9 @@ public @interface AfterTest {
   /**
    * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
    * beforeGroups): if set to true, this configuration method will be run regardless of what groups
-   * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): if set to true, this configuration method will
-   * be run even if one or more methods invoked previously failed or was skipped.
+   * it belongs to. <br> For after methods (afterSuite, afterClass, ...): if set to true, this
+   * configuration method will be run even if one or more methods invoked previously failed or was
+   * skipped.
    *
    * @return the value (default false)
    */

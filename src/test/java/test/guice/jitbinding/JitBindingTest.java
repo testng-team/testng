@@ -8,14 +8,14 @@ import test.SimpleBaseTest;
 
 public class JitBindingTest extends SimpleBaseTest {
 
-    @Test
-    public void testConflictingJitBinding() {
-        TestNG tng = create(FirstModuleSample.class, SecondModuleSample.class);
-        TestListenerAdapter adapter = new TestListenerAdapter();
-        tng.addListener(adapter);
-        tng.run();
-        Assert.assertTrue(adapter.getFailedTests().isEmpty());
-        Assert.assertTrue(adapter.getSkippedTests().isEmpty());
-        Assert.assertEquals(adapter.getPassedTests().size(), 2);
-    }
+  @Test
+  public void testConflictingJitBinding() {
+    TestNG tng = create(FirstModuleSample.class, SecondModuleSample.class);
+    TestListenerAdapter adapter = new TestListenerAdapter();
+    tng.addListener(adapter);
+    tng.run();
+    Assert.assertTrue(adapter.getFailedTests().isEmpty());
+    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
+    Assert.assertEquals(adapter.getPassedTests().size(), 2);
+  }
 }

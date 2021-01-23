@@ -1,5 +1,11 @@
 package test.annotationtransformer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
@@ -9,21 +15,13 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-
 import org.testng.xml.XmlTest;
+import test.SimpleBaseTest;
 import test.annotationtransformer.issue1790.TestClassSample1;
 import test.annotationtransformer.issue1790.TestClassSample2;
 import test.annotationtransformer.issue1790.TransformerImpl;
-import test.SimpleBaseTest;
 import test.annotationtransformer.issue2312.RetryListener;
 import test.annotationtransformer.issue2312.SampleTestClass;
-
-import java.io.ByteArrayInputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
@@ -51,7 +49,9 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     assertThat(tla.getFailedTests()).extracting(NAME_EXTRACTOR).containsExactly("verify");
   }
 
-  /** Test a transformer on a method-level @Test */
+  /**
+   * Test a transformer on a method-level @Test
+   */
   @Test
   public void verifyAnnotationTransformerMethod() {
     TestNG tng = create(AnnotationTransformerSampleTest.class);
@@ -91,8 +91,8 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyMyParamTransformerOnlyOneNonNull() {
     assertThat(MyParamTransformer.onlyOneNonNull(null, null, null)).isFalse();
     assertThat(
-            MyParamTransformer.onlyOneNonNull(
-                MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null))
+        MyParamTransformer.onlyOneNonNull(
+            MyParamTransformer.class, MyParamTransformer.class.getConstructors()[0], null))
         .isFalse();
     assertThat(MyParamTransformer.onlyOneNonNull(MyParamTransformer.class, null, null)).isTrue();
   }
@@ -123,7 +123,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     if (transformer != null) {
       tng.addListener(transformer);
     }
-    tng.setTestClasses(new Class[] {AnnotationTransformerClassSampleTest.class});
+    tng.setTestClasses(new Class[]{AnnotationTransformerClassSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -145,7 +145,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
     tng.addListener(new MyListenerTransformer());
-    tng.setTestClasses(new Class[] {AnnotationTransformerClassSampleTest.class});
+    tng.setTestClasses(new Class[]{AnnotationTransformerClassSampleTest.class});
 
     tng.run();
     Assert.assertFalse(MySuiteListener.triggered);
@@ -157,7 +157,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG tng = new TestNG();
     tng.addListener(new ConfigurationTransformer());
     tng.setVerbose(0);
-    tng.setTestClasses(new Class[] {ConfigurationSampleTest.class});
+    tng.setTestClasses(new Class[]{ConfigurationSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -170,7 +170,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyDataProviderTransformer() {
     TestNG tng = create();
     tng.addListener(new DataProviderTransformer());
-    tng.setTestClasses(new Class[] {AnnotationTransformerDataProviderSampleTest.class});
+    tng.setTestClasses(new Class[]{AnnotationTransformerDataProviderSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -179,14 +179,12 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 1);
   }
 
-  public static class CustomizedTestListenerAdaptor extends TestListenerAdapter {}
-
   @Test(description = "GITHUB-2138")
   public void verifyAnnotationTransformerInvocationForAllApplicableEvents() {
     TestNG tng = create();
     FactoryTransformer transformer = new FactoryTransformer();
     tng.addListener(transformer);
-    tng.setTestClasses(new Class[] {AnnotationTransformerFactorySampleTest.class});
+    tng.setTestClasses(new Class[]{AnnotationTransformerFactorySampleTest.class});
     CustomizedTestListenerAdaptor tla = new CustomizedTestListenerAdaptor();
     tng.addListener(tla);
 
@@ -203,11 +201,10 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     assertThat(transformer.getLogs()).containsExactly(expectedLogs);
   }
 
-
   @Test(description = "Test for issue #605")
   public void verifyInvocationCountTransformer() {
     TestNG tng = create();
-    tng.setTestClasses(new Class[] {AnnotationTransformerInvocationCountTest.class});
+    tng.setTestClasses(new Class[]{AnnotationTransformerInvocationCountTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -217,7 +214,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng = create();
     tng.addListener(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
-    tng.setTestClasses(new Class[] {AnnotationTransformerInvocationCountTest.class});
+    tng.setTestClasses(new Class[]{AnnotationTransformerInvocationCountTest.class});
     tla = new TestListenerAdapter();
     tng.addListener(tla);
 
@@ -273,5 +270,9 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     myTestNG.run();
     int retried = RetryListener.getExecutionCount();
     assertThat(retried).isEqualTo(1);
+  }
+
+  public static class CustomizedTestListenerAdaptor extends TestListenerAdapter {
+
   }
 }

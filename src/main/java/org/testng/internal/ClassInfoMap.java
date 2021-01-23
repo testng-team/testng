@@ -1,12 +1,11 @@
 package org.testng.internal;
 
 import java.util.Collections;
-import org.testng.collections.Maps;
-import org.testng.xml.XmlClass;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.testng.collections.Maps;
+import org.testng.xml.XmlClass;
 
 public class ClassInfoMap {
 

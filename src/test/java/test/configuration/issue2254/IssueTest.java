@@ -31,7 +31,7 @@ public class IssueTest extends SimpleBaseTest {
     xmlSuite.setName("MySuite");
     xmlSuite.setTests(Collections.singletonList(test));
 
-     test.addIncludedGroup("A");
+    test.addIncludedGroup("A");
 
     test.setXmlSuite(xmlSuite);
 

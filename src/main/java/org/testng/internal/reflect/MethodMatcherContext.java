@@ -1,9 +1,8 @@
 package org.testng.internal.reflect;
 
+import java.lang.reflect.Method;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-
-import java.lang.reflect.Method;
 
 /**
  * Input context for MethodMatchers.
@@ -11,6 +10,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class MethodMatcherContext {
+
   private final Method method;
   private final Parameter[] methodParameter;
   private final Object[] arguments;

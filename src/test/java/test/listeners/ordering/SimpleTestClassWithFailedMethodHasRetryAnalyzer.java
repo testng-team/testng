@@ -13,6 +13,7 @@ public class SimpleTestClassWithFailedMethodHasRetryAnalyzer {
   }
 
   public static class OnceMore implements IRetryAnalyzer {
+
     private int counter = 1;
 
     @Override

@@ -4,14 +4,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class SampleTestCase {
-    public static final String DP_NAME = "dataProvider";
 
-    @DataProvider(name = DP_NAME)
-    public static Object[][] getData() {
-        throw new IllegalStateException("guess me!");
-    }
+  public static final String DP_NAME = "dataProvider";
 
-    @Test(dataProvider = DP_NAME)
-    public void test() {
-    }
+  @DataProvider(name = DP_NAME)
+  public static Object[][] getData() {
+    throw new IllegalStateException("guess me!");
+  }
+
+  @Test(dataProvider = DP_NAME)
+  public void test() {
+  }
 }

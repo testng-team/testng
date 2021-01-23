@@ -1,12 +1,11 @@
 package test.reflect;
 
 import java.util.List;
+import java.util.Set;
 import org.testng.IClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-
-import java.util.Set;
 
 /**
  * Created on 12/30/15.
@@ -14,6 +13,7 @@ import java.util.Set;
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class TestResultJustForTesting implements ITestResult {
+
   @Override
   public int getStatus() {
     return 0;

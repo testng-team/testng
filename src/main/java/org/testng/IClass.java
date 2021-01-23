@@ -3,22 +3,34 @@ package org.testng;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-/** <code>IClass</code> represents a test class and a collection of its instances. */
+/**
+ * <code>IClass</code> represents a test class and a collection of its instances.
+ */
 public interface IClass {
 
-  /** @return this test class name. This is the name of the corresponding Java class. */
+  /**
+   * @return this test class name. This is the name of the corresponding Java class.
+   */
   String getName();
 
-  /** @return the &lt;test&gt; tag this class was found in. */
+  /**
+   * @return the &lt;test&gt; tag this class was found in.
+   */
   XmlTest getXmlTest();
 
-  /** @return the *lt;class&gt; tag this class was found in. */
+  /**
+   * @return the *lt;class&gt; tag this class was found in.
+   */
   XmlClass getXmlClass();
 
-  /** @return its test name if this class implements org.testng.ITest, null otherwise. */
+  /**
+   * @return its test name if this class implements org.testng.ITest, null otherwise.
+   */
   String getTestName();
 
-  /** @return the Java class corresponding to this IClass. */
+  /**
+   * @return the Java class corresponding to this IClass.
+   */
   Class<?> getRealClass();
 
   /**

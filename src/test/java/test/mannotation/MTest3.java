@@ -7,28 +7,36 @@ import org.testng.annotations.Test;
 public class MTest3 extends MBase {
 
   @Test(groups = "method-test3")
-  public void groups1() {}
+  public void groups1() {
+  }
 
   @Test
-  public void groups2() {}
+  public void groups2() {
+  }
 
   @Test(dependsOnGroups = "dog2")
-  public void dependsOnGroups1() {}
+  public void dependsOnGroups1() {
+  }
 
   @Test
-  public void dependsOnGroups2() {}
+  public void dependsOnGroups2() {
+  }
 
   @Test(dependsOnMethods = "dom2")
-  public void dependsOnMethods1() {}
+  public void dependsOnMethods1() {
+  }
 
   @Test
-  public void dependsOnMethods2() {}
+  public void dependsOnMethods2() {
+  }
 
   @Test(enabled = false)
-  public void enabled1() {}
+  public void enabled1() {
+  }
 
   @Test
-  public void enabled2() {}
+  public void enabled2() {
+  }
 
   @BeforeSuite(groups = "method-test3")
   public void beforeSuite() {

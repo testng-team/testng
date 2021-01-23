@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.ITestContext;
@@ -9,13 +12,10 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 public abstract class AbstractParallelWorker {
 
-  public static AbstractParallelWorker newWorker(XmlSuite.ParallelMode mode, boolean groupByInstances) {
+  public static AbstractParallelWorker newWorker(XmlSuite.ParallelMode mode,
+      boolean groupByInstances) {
     if (XmlSuite.ParallelMode.INSTANCES.equals(mode) && groupByInstances) {
       return new InstanceBasedParallelParallelWorker();
     }
@@ -25,6 +25,7 @@ public abstract class AbstractParallelWorker {
   public abstract List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments);
 
   public static class Arguments {
+
     private List<ITestNGMethod> methods;
     private IInvoker invoker;
     private ConfigurationGroupMethods configMethods;
@@ -66,6 +67,7 @@ public abstract class AbstractParallelWorker {
     }
 
     public static class Builder {
+
       private final Arguments instance;
 
       public Builder() {

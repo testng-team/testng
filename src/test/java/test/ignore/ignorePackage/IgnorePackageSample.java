@@ -5,8 +5,10 @@ import org.testng.annotations.Test;
 public class IgnorePackageSample {
 
   @Test
-  public void test() {}
+  public void test() {
+  }
 
   @Test
-  public void test2() {}
+  public void test2() {
+  }
 }

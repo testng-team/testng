@@ -6,7 +6,12 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 
 public class Test1 {
+
   private static int m_count = 0;
+
+  private static void ppp(String s) {
+    System.out.println("[Test1] " + s);
+  }
 
   @Test
   public void f1() {
@@ -18,11 +23,6 @@ public class Test1 {
   @AfterTest
   public void cleanUp() {
     m_count = 0;
-  }
-
-
-  private static void ppp(String s) {
-    System.out.println("[Test1] " + s);
   }
 
 }

@@ -16,5 +16,6 @@ public class SampleDependent1 {
   }
 
   @Test(dependsOnGroups = {"fail"})
-  public void shouldBeSkipped() {}
+  public void shouldBeSkipped() {
+  }
 }

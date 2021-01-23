@@ -28,7 +28,7 @@ public class GitHub128Sample {
 
   @DataProvider(name = "methods")
   public Object[][] getMethods() throws NoSuchMethodException {
-    return new Object[][] {new Object[] {String.class.getMethod("toString"), new Object[0]}};
+    return new Object[][]{new Object[]{String.class.getMethod("toString"), new Object[0]}};
   }
 
   @Test(dataProvider = "methods")
@@ -45,7 +45,7 @@ public class GitHub128Sample {
 
   @DataProvider(name = "methods2")
   public Object[][] getMethods2() throws NoSuchMethodException {
-    return new Object[][] {new Object[] {new Object[0], String.class.getMethod("toString")}};
+    return new Object[][]{new Object[]{new Object[0], String.class.getMethod("toString")}};
   }
 
   @Test(dataProvider = "methods2")

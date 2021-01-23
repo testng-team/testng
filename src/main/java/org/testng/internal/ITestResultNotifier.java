@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import java.util.List;
 import java.util.Set;
-
 import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -35,7 +34,8 @@ public interface ITestResultNotifier {
    * @deprecated - Deprecated as of 7.4.0
    */
   @Deprecated
-  default void addInvokedMethod(InvokedMethod im) {}
+  default void addInvokedMethod(InvokedMethod im) {
+  }
 
   XmlTest getTest();
 

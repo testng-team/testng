@@ -1,9 +1,8 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
 import org.testng.IObjectFactory;
 import org.testng.TestNGException;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Default factory for test creation. Note that if no constructor is found matching the specified

@@ -4,6 +4,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class FailedInvocationCount2 {
+
   int m_count;
   int m_count2;
 

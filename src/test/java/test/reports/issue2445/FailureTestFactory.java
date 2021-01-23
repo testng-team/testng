@@ -3,6 +3,7 @@ package test.reports.issue2445;
 import org.testng.annotations.Factory;
 
 public class FailureTestFactory {
+
   @Factory
   public Object[] getTestClasses() {
     Object[] tests = new Object[2];

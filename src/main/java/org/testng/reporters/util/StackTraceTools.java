@@ -6,10 +6,11 @@ import org.testng.ITestNGMethod;
  * Functionality to allow tools to analyse and subdivide stack traces.
  *
  * @author Paul Mendelson
- * @since 5.3
  * @version $Revision: 173 $
+ * @since 5.3
  */
 public final class StackTraceTools {
+
   private StackTraceTools() {
     // defeat instantiation.
   }
@@ -17,7 +18,8 @@ public final class StackTraceTools {
   /**
    * @param stack The stack trace
    * @param method The test method
-   * @return topmost position of the test method in the stack, or top of stack if <code>method</code>
+   * @return topmost position of the test method in the stack, or top of stack if
+   * <code>method</code>
    * is not in it.
    */
   public static int getTestRoot(StackTraceElement[] stack, ITestNGMethod method) {
@@ -37,13 +39,14 @@ public final class StackTraceTools {
   /**
    * @param stack The stacktrace
    * @param method The test method
-   * @return topmost position of the test method in the stack, or top of stack if <code>method</code>
+   * @return topmost position of the test method in the stack, or top of stack if
+   * <code>method</code>
    * is not in it.
    */
   public static StackTraceElement[] getTestNGInstrastructure(
       StackTraceElement[] stack, ITestNGMethod method) {
     if (method == null || stack == null) {
-      return new StackTraceElement[] {};
+      return new StackTraceElement[]{};
     }
     int slot = StackTraceTools.getTestRoot(stack, method);
     if (slot >= 0) {

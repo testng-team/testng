@@ -2,7 +2,6 @@ package test.dataprovider;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
@@ -10,16 +9,20 @@ import org.testng.annotations.Test;
 public class StaticDataProviderSampleSample {
 
   @Test(dataProvider = "static", dataProviderClass = StaticProvider.class)
-  public void verifyStatic(String s) {}
+  public void verifyStatic(String s) {
+  }
 
   @Test(dataProvider = "external", dataProviderClass = NonStaticProvider.class)
-  public void verifyExternal(String s) {}
+  public void verifyExternal(String s) {
+  }
 
   @Test(dataProvider = "injection", dataProviderClass = FieldInjectionProvider.class)
-  public void verifyFieldInjection(String s) {}
+  public void verifyFieldInjection(String s) {
+  }
 
   @Test(dataProvider = "injection", dataProviderClass = ConstructorInjectionProvider.class)
-  public void verifyConstructorInjection(String s) {}
+  public void verifyConstructorInjection(String s) {
+  }
 
   public static class InjectionProviderModule extends AbstractModule {
 

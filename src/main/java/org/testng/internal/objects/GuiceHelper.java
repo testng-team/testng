@@ -5,12 +5,14 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-
 import java.util.function.BiPredicate;
 import java.util.stream.StreamSupport;
 import org.testng.IClass;
@@ -28,19 +30,17 @@ import org.testng.internal.ClassHelper;
 import org.testng.internal.InstanceCreator;
 import org.testng.internal.annotations.AnnotationHelper;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Stage;
-
 class GuiceHelper {
+
+  private static final BiPredicate<Module, Module> CLASS_EQUALITY = (m, n) -> m.getClass()
+      .equals(n.getClass());
   private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
-  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
+  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps
+      .newListMultiMap();
   private final String parentModule;
   private final String stageString;
   private final String testName;
   private final ITestContext context;
-
-  private static final BiPredicate<Module, Module> CLASS_EQUALITY  = (m,n) -> m.getClass().equals(n.getClass());
 
   GuiceHelper(ITestContext context) {
     parentModule = context.getSuite().getParentModule();
@@ -141,10 +141,11 @@ class GuiceHelper {
     if (!Module.class.isAssignableFrom(parentModule)) {
       throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
     }
-    return (Class<? extends Module>)parentModule;
+    return (Class<? extends Module>) parentModule;
   }
 
-  private Injector createInjector(Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
+  private Injector createInjector(Injector parent, IInjectorFactory injectorFactory,
+      List<Module> moduleInstances) {
     Stage stage = Stage.DEVELOPMENT;
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);
@@ -187,6 +188,7 @@ class GuiceHelper {
   }
 
   private static final class LazyHolder {
+
     private static final List<Module> spiModules = loadModules();
 
     private static List<Module> loadModules() {

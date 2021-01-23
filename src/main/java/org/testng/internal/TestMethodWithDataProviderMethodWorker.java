@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -7,10 +10,6 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.internal.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITestResult>> {
 
@@ -23,13 +22,12 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private final ITestNGMethod[] m_afterMethods;
   private final ConfigurationGroupMethods m_groupMethods;
   private final ITestContext m_testContext;
+  private final ITestResultNotifier m_notifier;
+  private final ITestInvoker m_testInvoker;
+  private final List<ITestResult> m_testResults = Lists.newArrayList();
   private int m_parameterIndex;
   private boolean m_skipFailedInvocationCounts;
   private int m_invocationCount;
-  private final ITestResultNotifier m_notifier;
-  private final ITestInvoker m_testInvoker;
-
-  private final List<ITestResult> m_testResults = Lists.newArrayList();
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(
@@ -98,8 +96,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
                       .forTestClass(m_testClass).usingBeforeMethods(m_beforeMethods)
                       .usingAfterMethods(m_afterMethods).usingGroupMethods(m_groupMethods)
                       .build(), retryResults,
-                      m_failureCount,
-                      m_testContext
+                  m_failureCount,
+                  m_testContext
               )
                   .count;
           m_testResults.addAll(retryResults);

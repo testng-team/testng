@@ -15,14 +15,14 @@ public class DataProviderHouse {
     }
     String name = value.name();
     if ("glutton".equalsIgnoreCase(name)) {
-      return new Object[][] {{"oreo", 200}};
+      return new Object[][]{{"oreo", 200}};
     }
     if ("nibbler".equalsIgnoreCase(name)) {
-      return new Object[][] {{"marie-gold", 10}};
+      return new Object[][]{{"marie-gold", 10}};
     }
-    return new Object[][] {
-      {"oreo", 200},
-      {"marie-gold", 10}
+    return new Object[][]{
+        {"oreo", 200},
+        {"marie-gold", 10}
     };
   }
 }

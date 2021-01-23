@@ -6,16 +6,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.testng.ITestContext;
 import org.testng.annotations.Guice;
 import org.testng.internal.annotations.AnnotationHelper;
-import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.objects.pojo.BasicAttributes;
+import org.testng.internal.objects.pojo.CreationAttributes;
 
 /**
  * A Guice backed Object dispenser that is aware of Dependency Injection
  */
 class GuiceBasedObjectDispenser implements IObjectDispenser {
 
-  private IObjectDispenser dispenser;
   private static final Map<Integer, GuiceHelper> helpers = new ConcurrentHashMap<>();
+  private IObjectDispenser dispenser;
+
+  private static boolean cannotDispense(Class<?> clazz) {
+    return AnnotationHelper.findAnnotationSuperClasses(Guice.class, clazz) == null;
+  }
 
   @Override
   public void setNextDispenser(IObjectDispenser dispenser) {
@@ -43,10 +47,6 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
     }
     //We dont have the ability to process object creation with elaborate attributes
     return this.dispenser.dispense(attributes);
-  }
-
-  private static boolean cannotDispense(Class<?> clazz) {
-    return AnnotationHelper.findAnnotationSuperClasses(Guice.class, clazz) == null;
   }
 
 }

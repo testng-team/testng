@@ -3,8 +3,10 @@ package test.dependent;
 import org.testng.annotations.Test;
 
 public class ImplicitGroupInclusion3SampleTest {
+
   @Test(groups = {"inc"})
-  public void test1() {}
+  public void test1() {
+  }
 
   @Test(groups = {"exc"})
   public void test2() {

@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.IInstanceInfo;
 
 public class InstanceInfo<T> implements IInstanceInfo<T> {
+
   private final Class<T> m_instanceClass;
   private final T m_instance;
 

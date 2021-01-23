@@ -1,12 +1,11 @@
 package org.testng.reporters.jq;
 
+import java.util.List;
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.util.Strings;
-
-import java.util.List;
 
 public class SuitePanel extends BasePanel {
 
@@ -28,12 +27,12 @@ public class SuitePanel extends BasePanel {
   private void generateSuitePanel(ISuite suite, XMLStringBuffer xsb) {
     String divName = suiteToTag(suite);
     xsb.push(D, C, "panel " + divName, "panel-name", "suite-" + divName);
-    String[] statuses = new String[] {FAILED, SKIPPED, PASSED};
+    String[] statuses = new String[]{FAILED, SKIPPED, PASSED};
     ResultsByClass[] results =
-        new ResultsByClass[] {
-          getModel().getFailedResultsByClass(suite),
-          getModel().getSkippedResultsByClass(suite),
-          getModel().getPassedResultsByClass(suite),
+        new ResultsByClass[]{
+            getModel().getFailedResultsByClass(suite),
+            getModel().getSkippedResultsByClass(suite),
+            getModel().getPassedResultsByClass(suite),
         };
 
     for (int i = 0; i < results.length; i++) {
@@ -76,7 +75,9 @@ public class SuitePanel extends BasePanel {
       StringBuilder sb = new StringBuilder();
       boolean first = true;
       for (Object p : tr.getParameters()) {
-        if (!first) sb.append(", ");
+        if (!first) {
+          sb.append(", ");
+        }
         first = false;
         sb.append(Utils.toString(p));
       }

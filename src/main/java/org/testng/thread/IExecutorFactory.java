@@ -15,8 +15,8 @@ public interface IExecutorFactory {
 
   /**
    * @param name - The name to be used as a prefix for all created threads.
-   * @param graph - A {@link org.testng.IDynamicGraph} object that represents the graph of methods and the
-   * hierarchy of execution.
+   * @param graph - A {@link org.testng.IDynamicGraph} object that represents the graph of methods
+   * and the hierarchy of execution.
    * @param factory - A {@link IThreadWorkerFactory} factory to create threads.
    * @param corePoolSize the number of threads to keep in the pool, even if they are idle, unless
    * {@code allowCoreThreadTimeOut} is set

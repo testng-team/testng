@@ -8,7 +8,7 @@ public class SimpleTestClassPoweredByFactoryWithFailedMethod {
 
   @Factory
   public static Object[] create() {
-    return new Object[] {
+    return new Object[]{
         new SimpleTestClassPoweredByFactoryWithFailedMethod(),
         new SimpleTestClassPoweredByFactoryWithFailedMethod(),
     };

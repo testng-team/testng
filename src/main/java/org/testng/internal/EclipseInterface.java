@@ -7,6 +7,7 @@ package org.testng.internal;
  * @since Aug 25, 2012
  */
 public class EclipseInterface {
+
   public static final Character OPENING_CHARACTER = '[';
   public static final Character CLOSING_CHARACTER = ']';
 

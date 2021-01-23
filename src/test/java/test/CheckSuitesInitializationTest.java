@@ -1,9 +1,7 @@
 package test;
 
 import java.util.Collections;
-
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -11,14 +9,14 @@ import org.testng.annotations.Test;
 /**
  * Check for a bug in how relative paths in suite files were being handled.
  *
- * All paths were being resolved using the initial suite's location and not
- * that of the current suite being parsed/processed.
+ * All paths were being resolved using the initial suite's location and not that of the current
+ * suite being parsed/processed.
  *
- * This test checks that TestNG can handle cases where we have the following set of
- * files (all linked using relative paths):
+ * This test checks that TestNG can handle cases where we have the following set of files (all
+ * linked using relative paths):
  *
- * - parent-suite -> [child-suite-1, children/child-suite-3]
- * - children/child-suite-3 -> [../child-suite-2, child-suite-4, morechildren/child-suite-5]
+ * - parent-suite -> [child-suite-1, children/child-suite-3] - children/child-suite-3 ->
+ * [../child-suite-2, child-suite-4, morechildren/child-suite-5]
  *
  * Check the <code>checksuitesinitialization</code> folder under test resources
  *

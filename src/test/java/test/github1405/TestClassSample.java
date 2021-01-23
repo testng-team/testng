@@ -4,7 +4,10 @@ import org.testng.annotations.Test;
 
 @Test
 public class TestClassSample {
-  public static void main(String[] args) {}
 
-  public void testMethod() {}
+  public static void main(String[] args) {
+  }
+
+  public void testMethod() {
+  }
 }

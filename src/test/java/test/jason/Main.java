@@ -4,6 +4,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 public class Main extends MainBase {
+
   public static boolean m_passed = false;
 
   @AfterClass

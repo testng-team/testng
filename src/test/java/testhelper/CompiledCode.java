@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import javax.tools.JavaFileObject.Kind;
 
 public class CompiledCode {
+
   private final byte[] byteCode;
   private final boolean skipLoading;
   private final String name;

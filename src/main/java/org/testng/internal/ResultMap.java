@@ -1,14 +1,13 @@
 package org.testng.internal;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.testng.IResultMap;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Objects;
-
-import java.util.Collection;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ResultMap implements IResultMap {
 

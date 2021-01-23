@@ -4,6 +4,7 @@ import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 public class TestSample {
+
   @Test(groups = "Cached")
   public void dataSuccessfullyReceivedFromCache() {
     Reporter.log("Cached");

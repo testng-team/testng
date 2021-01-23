@@ -1,5 +1,11 @@
 package org.testng.internal;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.IMethodInstance;
@@ -11,13 +17,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 import org.testng.internal.ConfigMethodArguments.Builder;
 import org.testng.thread.IWorker;
-
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -39,11 +38,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
   private final List<IClassListener> m_listeners;
+  private final ITestInvoker m_testInvoker;
+  private final IConfigInvoker m_configInvoker;
   private long currentThreadId;
   private long threadIdToRunOn = -1;
   private boolean completed = true;
-  private final ITestInvoker m_testInvoker;
-  private final IConfigInvoker m_configInvoker;
 
   public TestMethodWorker(
       ITestInvoker testInvoker,
@@ -154,7 +153,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return m_classMethodMap != null;
   }
 
-  /** Invoke the @BeforeClass methods if not done already */
+  /**
+   * Invoke the @BeforeClass methods if not done already
+   */
   protected void invokeBeforeClassMethods(ITestClass testClass, IMethodInstance mi) {
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
@@ -168,7 +169,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       }
       ConfigMethodArguments attributes = new Builder()
           .forTestClass(testClass)
-          .usingConfigMethodsAs(((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance.toString()))
+          .usingConfigMethodsAs(
+              ((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance.toString()))
           .forSuite(m_testContext.getSuite().getXmlSuite())
           .usingParameters(m_parameters)
           .usingInstance(instance)
@@ -177,7 +179,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
-  /** Invoke the @AfterClass methods if not done already */
+  /**
+   * Invoke the @AfterClass methods if not done already
+   */
   protected void invokeAfterClassMethods(ITestClass testClass, IMethodInstance mi) {
     // if no BeforeClass than return immediately
     // used for parallel case when BeforeClass were already invoked
@@ -243,16 +247,19 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   @Override
   public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
     if (m_methodInstances.isEmpty()) {
-        return 0;
+      return 0;
     }
     List<ITestNGMethod> otherTasks = other.getTasks();
     if (otherTasks.isEmpty()) {
-        return 0;
+      return 0;
     }
-    return TestMethodComparator.compareStatic(m_methodInstances.get(0).getMethod(), otherTasks.get(0));
+    return TestMethodComparator
+        .compareStatic(m_methodInstances.get(0).getMethod(), otherTasks.get(0));
   }
 
-  /** The priority of a worker is the priority of the first method it's going to run. */
+  /**
+   * The priority of a worker is the priority of the first method it's going to run.
+   */
   @Override
   public int getPriority() {
     return m_methodInstances.size() > 0 ? m_methodInstances.get(0).getMethod().getPriority() : 0;
@@ -274,8 +281,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 }
 
-/** Extends {@code TestMethodWorker} and is used to work on only a single method instance */
+/**
+ * Extends {@code TestMethodWorker} and is used to work on only a single method instance
+ */
 class SingleTestMethodWorker extends TestMethodWorker {
+
   private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS =
       new ConfigurationGroupMethods(new TestMethodContainer(() -> new ITestNGMethod[0]),
           new HashMap<>(), new HashMap<>());

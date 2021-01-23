@@ -1,12 +1,13 @@
 package org.testng.internal;
 
+import java.util.Map;
+import java.util.Set;
 import org.testng.IAttributes;
 import org.testng.collections.Maps;
 
-import java.util.Map;
-import java.util.Set;
-
-/** Simple implementation of IAttributes. */
+/**
+ * Simple implementation of IAttributes.
+ */
 public class Attributes implements IAttributes {
 
   private final Map<String, Object> m_attributes = Maps.newHashMap();

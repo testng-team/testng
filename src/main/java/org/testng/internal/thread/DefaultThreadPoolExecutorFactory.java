@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.testng.IDynamicGraph;
-import org.testng.thread.IExecutorFactory;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
-import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.internal.thread.graph.GraphThreadPoolExecutor;
+import org.testng.thread.IExecutorFactory;
+import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 
 public class DefaultThreadPoolExecutorFactory implements IExecutorFactory {

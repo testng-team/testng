@@ -1,5 +1,7 @@
 package org.testng.jarfileutils;
 
+import java.io.File;
+import java.io.IOException;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -8,9 +10,6 @@ import org.testng.jarfileutils.org.testng.SampleTest2;
 import org.testng.jarfileutils.org.testng.SampleTest3;
 import org.testng.jarfileutils.org.testng.SampleTest4;
 import org.testng.jarfileutils.org.testng.SampleTest5;
-
-import java.io.File;
-import java.io.IOException;
 
 public class JarCreator {
 
@@ -22,7 +21,7 @@ public class JarCreator {
   }
 
   public static File generateJar(Class<?>[] classes) throws IOException {
-    return generateJar(classes, new String[] {}, PREFIX, ARCHIVE_NAME);
+    return generateJar(classes, new String[]{}, PREFIX, ARCHIVE_NAME);
   }
 
   public static File generateJar(
@@ -38,18 +37,19 @@ public class JarCreator {
   }
 
   private static Class<?>[] getTestClasses() {
-    return new Class<?>[] {
-      SampleTest1.class, SampleTest2.class, SampleTest3.class, SampleTest4.class, SampleTest5.class
+    return new Class<?>[]{
+        SampleTest1.class, SampleTest2.class, SampleTest3.class, SampleTest4.class,
+        SampleTest5.class
     };
   }
 
   private static String[] getResources() {
-    return new String[] {
-      "jarfileutils/testng-tests.xml",
-      "jarfileutils/child.xml",
-      "jarfileutils/child/child.xml",
-      "jarfileutils/child/childofchild/childofchild.xml",
-      "jarfileutils/childofchild/childofchild.xml"
+    return new String[]{
+        "jarfileutils/testng-tests.xml",
+        "jarfileutils/child.xml",
+        "jarfileutils/child/child.xml",
+        "jarfileutils/child/childofchild/childofchild.xml",
+        "jarfileutils/childofchild/childofchild.xml"
     };
   }
 }

@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 
 @Listeners(TestListenerAdapter.class)
 public class SimpleTest {
+
   private int m_n;
 
   public SimpleTest(int n) {

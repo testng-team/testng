@@ -14,11 +14,12 @@ public class ExcludedFactory {
     factoryRan = true;
   }
 
-  @Test(groups = EXCLUDED_GROUP)
-  public void emptyTest() {}
-
   @DataProvider(name = "empty")
   private static Object[][] provider() {
-    return new Object[][] {{1}};
+    return new Object[][]{{1}};
+  }
+
+  @Test(groups = EXCLUDED_GROUP)
+  public void emptyTest() {
   }
 }

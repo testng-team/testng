@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class MainSuite {
+
   public static Test suite() {
     TestSuite suite = new TestSuite("MainSuite");
 

@@ -5,7 +5,8 @@ import org.testng.annotations.Test;
 
 public class FactoryWithExternalDataProviderTests {
 
-  public FactoryWithExternalDataProviderTests() {}
+  public FactoryWithExternalDataProviderTests() {
+  }
 
   @Factory(dataProvider = "data", dataProviderClass = ExternalDataProviders.class)
   public FactoryWithExternalDataProviderTests(final int i) {

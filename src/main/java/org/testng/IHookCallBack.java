@@ -7,8 +7,8 @@ package org.testng;
  *
  * <p><b>This interface is not meant to be implemented by clients, only by TestNG.</b>
  *
- * @see org.testng.IHookable
  * @author cbeust Jan 28, 2006
+ * @see org.testng.IHookable
  */
 public interface IHookCallBack {
 
@@ -19,6 +19,8 @@ public interface IHookCallBack {
    */
   void runTestMethod(ITestResult testResult);
 
-  /** @return the parameters that will be used to invoke the test method. */
+  /**
+   * @return the parameters that will be used to invoke the test method.
+   */
   Object[] getParameters();
 }

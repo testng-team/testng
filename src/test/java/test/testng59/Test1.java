@@ -9,11 +9,12 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class Test1 {
-  private boolean m_run= false;
+
+  private boolean m_run = false;
 
   @Test
   public void test1() {
-    m_run= true;
+    m_run = true;
   }
 
   @AfterClass

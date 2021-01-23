@@ -11,9 +11,9 @@ public class ReporterSample {
 
   @DataProvider(name = "dp")
   public Object[][] createParameters() {
-    return new Object[][] {
-        new Object[] {"param1"},
-        new Object[] {"param2"}
+    return new Object[][]{
+        new Object[]{"param1"},
+        new Object[]{"param2"}
     };
   }
 

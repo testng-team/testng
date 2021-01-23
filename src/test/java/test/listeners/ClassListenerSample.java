@@ -7,8 +7,10 @@ import org.testng.annotations.Test;
 public class ClassListenerSample {
 
   @Test
-  public void test() {}
+  public void test() {
+  }
 
   @Test
-  public void test2() {}
+  public void test2() {
+  }
 }

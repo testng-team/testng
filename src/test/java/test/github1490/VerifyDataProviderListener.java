@@ -2,6 +2,9 @@ package test.github1490;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.IDataProviderMethod;
 import org.testng.TestNG;
@@ -14,11 +17,40 @@ import test.listeners.github1490.DataProviderInfoProvider;
 import test.listeners.github1490.InstanceAwareLocalDataProviderListener;
 import test.listeners.github1490.LocalDataProviderListener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class VerifyDataProviderListener extends SimpleBaseTest {
+
+  private static void runTestWithListenerViaSuiteXml(String prefix, Class<?> clazz) {
+    XmlSuite xmlSuite = createXmlSuite("SampleSuite");
+    XmlTest xmlTest = createXmlTest(xmlSuite, "SampleTest");
+    createXmlClass(xmlTest, clazz);
+    xmlSuite.addListener(LocalDataProviderListener.class.getName());
+    TestNG tng = create(xmlSuite);
+    tng.run();
+    assertThat(LocalDataProviderListener.messages)
+        .containsExactlyElementsOf(Arrays.asList("before" + prefix, "after" + prefix));
+  }
+
+  private static void runTest(String prefix, Class<?> clazz, boolean hasListenerAnnotation) {
+    TestNG tng = create(clazz);
+    if (!hasListenerAnnotation) {
+      tng.addListener(new LocalDataProviderListener());
+    }
+    tng.run();
+    assertThat(LocalDataProviderListener.messages)
+        .containsExactlyElementsOf(Arrays.asList("before" + prefix, "after" + prefix));
+  }
+
+  private static void runTest(int expected, Class<?>... classes) {
+    TestNG tng = create(classes);
+    tng.addListener(new InstanceAwareLocalDataProviderListener());
+    tng.run();
+    assertThat(InstanceAwareLocalDataProviderListener.instanceCollectionBeforeExecution)
+        .size()
+        .isEqualTo(expected);
+    assertThat(InstanceAwareLocalDataProviderListener.instanceCollectionAfterExecution)
+        .size()
+        .isEqualTo(expected);
+  }
 
   @Test
   public void testInstanceBasedDataProviderInformation() {
@@ -61,8 +93,8 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
   @Test
   public void testMultipleFactoriesShareSameDataProvider() {
     Class<?>[] classes = {
-      TwoFactoriesShareSameDataProviderSampleOne.class,
-      TwoFactoriesShareSameDataProviderSampleTwo.class
+        TwoFactoriesShareSameDataProviderSampleOne.class,
+        TwoFactoriesShareSameDataProviderSampleTwo.class
     };
     runTest(0, classes);
   }
@@ -70,9 +102,9 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
   @Test
   public void testMultipleMethodsFactoriesShareSampleDataProvider() {
     Class<?>[] classes = {
-      TwoFactoriesShareSameDataProviderSampleOne.class,
-      TwoFactoriesShareSameDataProviderSampleTwo.class,
-      TwoTestMethodsShareSameDataProviderSampleTwo.class
+        TwoFactoriesShareSameDataProviderSampleOne.class,
+        TwoFactoriesShareSameDataProviderSampleTwo.class,
+        TwoTestMethodsShareSameDataProviderSampleTwo.class
     };
     runTest(1, classes);
   }
@@ -133,38 +165,5 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
   @AfterMethod
   public void resetListenerMessages() {
     LocalDataProviderListener.messages.clear();
-  }
-
-  private static void runTestWithListenerViaSuiteXml(String prefix, Class<?> clazz) {
-    XmlSuite xmlSuite = createXmlSuite("SampleSuite");
-    XmlTest xmlTest = createXmlTest(xmlSuite, "SampleTest");
-    createXmlClass(xmlTest, clazz);
-    xmlSuite.addListener(LocalDataProviderListener.class.getName());
-    TestNG tng = create(xmlSuite);
-    tng.run();
-    assertThat(LocalDataProviderListener.messages)
-        .containsExactlyElementsOf(Arrays.asList("before" + prefix, "after" + prefix));
-  }
-
-  private static void runTest(String prefix, Class<?> clazz, boolean hasListenerAnnotation) {
-    TestNG tng = create(clazz);
-    if (!hasListenerAnnotation) {
-      tng.addListener(new LocalDataProviderListener());
-    }
-    tng.run();
-    assertThat(LocalDataProviderListener.messages)
-        .containsExactlyElementsOf(Arrays.asList("before" + prefix, "after" + prefix));
-  }
-
-  private static void runTest(int expected, Class<?>... classes) {
-    TestNG tng = create(classes);
-    tng.addListener(new InstanceAwareLocalDataProviderListener());
-    tng.run();
-    assertThat(InstanceAwareLocalDataProviderListener.instanceCollectionBeforeExecution)
-        .size()
-        .isEqualTo(expected);
-    assertThat(InstanceAwareLocalDataProviderListener.instanceCollectionAfterExecution)
-        .size()
-        .isEqualTo(expected);
   }
 }

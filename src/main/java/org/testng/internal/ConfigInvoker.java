@@ -58,6 +58,40 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             == XmlSuite.FailurePolicy.CONTINUE;
   }
 
+  private static boolean isGroupLevelConfigurationMethod(ITestNGMethod itm) {
+    return itm.hasBeforeGroupsConfiguration() || itm.hasAfterGroupsConfiguration();
+  }
+
+  private static boolean isConfigMethodEligibleForScrutiny(ITestNGMethod tm) {
+    if (!tm.isBeforeMethodConfiguration()) {
+      return false;
+    }
+    if (!(tm instanceof ConfigurationMethod)) {
+      return false;
+    }
+    ConfigurationMethod cfg = (ConfigurationMethod) tm;
+    return cfg.isFirstTimeOnly();
+  }
+
+  private static void copyAttributesFromNativelyInjectedTestResult(
+      Object[] source, ITestResult target) {
+    if (source == null || target == null) {
+      return;
+    }
+    Arrays.stream(source)
+        .filter(each -> each instanceof ITestResult)
+        .findFirst()
+        .ifPresent(eachSource -> TestResult.copyAttributes((ITestResult) eachSource, target));
+  }
+
+  private static Object computeInstance(Object instance, Object inst, ITestNGMethod tm) {
+    if (instance == null
+        || !tm.getConstructorOrMethod().getDeclaringClass().isAssignableFrom(instance.getClass())) {
+      return inst;
+    }
+    return instance;
+  }
+
   /**
    * @return false if this class has successfully run all its @Configuration method or true if at
    * least one of these methods failed.
@@ -109,6 +143,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   /**
    * Filter all the beforeGroups methods and invoke only those that apply to the current test
    * method
+   *
    * @param arguments - A {@link GroupConfigMethodArguments} object.
    */
   public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
@@ -120,7 +155,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     String[] groups = arguments.getTestMethod().getGroups();
 
     for (String group : groups) {
-      List<ITestNGMethod> methods = arguments.getGroupMethods().getBeforeGroupMethodsForGroup(group);
+      List<ITestNGMethod> methods = arguments.getGroupMethods()
+          .getBeforeGroupMethodsForGroup(group);
       if (methods != null) {
         filteredMethods.addAll(methods);
       }
@@ -153,10 +189,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Remove them so they don't get run again
     //
     arguments.getGroupMethods().removeBeforeGroups(groups);
-  }
-
-  private static boolean isGroupLevelConfigurationMethod(ITestNGMethod itm) {
-    return itm.hasBeforeGroupsConfiguration() || itm.hasAfterGroupsConfiguration();
   }
 
   public void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments) {
@@ -274,7 +306,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups() ,
+        if (hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups(),
             arguments.getTestClass(),
             arguments.getInstance()) && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
@@ -367,7 +399,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
 
       Reporter.setCurrentTestResult(null);
-      return ;
+      return;
     }
     try {
       Reporter.setCurrentTestResult(testResult);
@@ -416,9 +448,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     if (before) {
-      TestListenerHelper.runPreConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
+      TestListenerHelper
+          .runPreConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
     } else {
-      TestListenerHelper.runPostConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
+      TestListenerHelper
+          .runPostConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
     }
 
   }
@@ -442,7 +476,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private boolean hasConfigFailure(ITestNGMethod currentTestMethod) {
     return currentTestMethod != null && m_methodInvocationResults.containsKey(currentTestMethod);
   }
-
 
   private void handleConfigurationFailure(
       Throwable ite,
@@ -480,17 +513,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
   }
 
-  private static boolean isConfigMethodEligibleForScrutiny(ITestNGMethod tm) {
-    if (!tm.isBeforeMethodConfiguration()) {
-      return false;
-    }
-    if (!(tm instanceof ConfigurationMethod)) {
-      return false;
-    }
-    ConfigurationMethod cfg = (ConfigurationMethod) tm;
-    return cfg.isFirstTimeOnly();
-  }
-
   /**
    * @return true if this class or a parent class failed to initialize.
    */
@@ -507,17 +529,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
                   || c.isAssignableFrom(cls)
                   && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure);
             });
-  }
-
-  private static void copyAttributesFromNativelyInjectedTestResult(
-      Object[] source, ITestResult target) {
-    if (source == null || target == null) {
-      return;
-    }
-    Arrays.stream(source)
-        .filter(each -> each instanceof ITestResult)
-        .findFirst()
-        .ifPresent(eachSource -> TestResult.copyAttributes((ITestResult) eachSource, target));
   }
 
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
@@ -591,14 +602,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     for (String group : beforeGroups) {
       m_beforegroupsFailures.put(group, Boolean.FALSE);
     }
-  }
-
-  private static Object computeInstance(Object instance, Object inst, ITestNGMethod tm) {
-    if (instance == null
-        || !tm.getConstructorOrMethod().getDeclaringClass().isAssignableFrom(instance.getClass())) {
-      return inst;
-    }
-    return instance;
   }
 
   private Set<Object> getInvocationResults(IClass testClass) {

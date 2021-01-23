@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
@@ -226,13 +225,14 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> List<A> findInheritedAnnotations(Class<?> cls, Class<A> annotationClass) {
+  public <A extends IAnnotation> List<A> findInheritedAnnotations(Class<?> cls,
+      Class<A> annotationClass) {
     Objects.requireNonNull(cls, "Cannot retrieve annotations from a null class.");
     Objects.requireNonNull(annotationClass, "Cannot work with a null annotation");
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
       throw new IllegalArgumentException(
-              "Java @Annotation class for '" + annotationClass + "' not found.");
+          "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     List<A> annotations = new ArrayList<>();
     if (!a.equals(org.testng.annotations.Listeners.class)) {
@@ -245,17 +245,18 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return annotations;
   }
 
-  private <A extends IAnnotation> void findSuperInterface(Class<?> cls, Class<?> inter, Class<A> annotationClass, Class<? extends Annotation> a, List<A> annotations) {
+  private <A extends IAnnotation> void findSuperInterface(Class<?> cls, Class<?> inter,
+      Class<A> annotationClass, Class<? extends Annotation> a, List<A> annotations) {
     if (inter.getAnnotation(a) != null) {
       annotations.add(findAnnotation(
-              cls,
-              inter.getAnnotation(a),
-              annotationClass,
-              cls,
-              null,
-              null,
-              new Pair<>(inter.getAnnotation(a), annotationClass),
-              null));
+          cls,
+          inter.getAnnotation(a),
+          annotationClass,
+          cls,
+          null,
+          null,
+          new Pair<>(inter.getAnnotation(a), annotationClass),
+          null));
     }
     for (Class<?> superInterface : inter.getInterfaces()) {
       findSuperInterface(cls, superInterface, annotationClass, a, annotations);

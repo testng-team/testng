@@ -6,8 +6,10 @@ import org.testng.annotations.Test;
 public class ZeroSampleTest {
 
   @Test
-  public void zeroA() {}
+  public void zeroA() {
+  }
 
   @Test
-  public void zeroB() {}
+  public void zeroB() {
+  }
 }

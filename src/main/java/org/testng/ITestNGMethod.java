@@ -1,13 +1,12 @@
 package org.testng;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
 import org.testng.xml.XmlTest;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
@@ -18,7 +17,7 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return The real class on which this method was declared (can be different from
-   *     getMethod().getDeclaringClass() if the test method was defined in a superclass).
+   * getMethod().getDeclaringClass() if the test method was defined in a superclass).
    */
   Class getRealClass();
 
@@ -32,7 +31,8 @@ public interface ITestNGMethod extends Cloneable {
   void setTestClass(ITestClass cls);
 
   /**
-   * Returns the method name. This is needed for serialization because methods are not Serializable.
+   * Returns the method name. This is needed for serialization because methods are not
+   * Serializable.
    *
    * @return the method name.
    */
@@ -57,7 +57,9 @@ public interface ITestNGMethod extends Cloneable {
    */
   String[] getGroupsDependedUpon();
 
-  /** @return If a group was not found. */
+  /**
+   * @return If a group was not found.
+   */
   String getMissingGroup();
 
   void setMissingGroup(String group);
@@ -68,37 +70,55 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return The methods this method depends on, possibly added to the methods declared on the
-   *     class.
+   * class.
    */
   String[] getMethodsDependedUpon();
 
   void addMethodDependedUpon(String methodName);
 
-  /** @return true if this method was annotated with @Test */
+  /**
+   * @return true if this method was annotated with @Test
+   */
   boolean isTest();
 
-  /** @return true if this method was annotated with @Configuration and beforeTestMethod = true */
+  /**
+   * @return true if this method was annotated with @Configuration and beforeTestMethod = true
+   */
   boolean isBeforeMethodConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeTestMethod = false */
+  /**
+   * @return true if this method was annotated with @Configuration and beforeTestMethod = false
+   */
   boolean isAfterMethodConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeClassMethod = true */
+  /**
+   * @return true if this method was annotated with @Configuration and beforeClassMethod = true
+   */
   boolean isBeforeClassConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeClassMethod = false */
+  /**
+   * @return true if this method was annotated with @Configuration and beforeClassMethod = false
+   */
   boolean isAfterClassConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeSuite = true */
+  /**
+   * @return true if this method was annotated with @Configuration and beforeSuite = true
+   */
   boolean isBeforeSuiteConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and afterSuite = true */
+  /**
+   * @return true if this method was annotated with @Configuration and afterSuite = true
+   */
   boolean isAfterSuiteConfiguration();
 
-  /** @return <code>true</code> if this method is a @BeforeTest (@Configuration beforeTest=true) */
+  /**
+   * @return <code>true</code> if this method is a @BeforeTest (@Configuration beforeTest=true)
+   */
   boolean isBeforeTestConfiguration();
 
-  /** @return <code>true</code> if this method is an @AfterTest (@Configuration afterTest=true) */
+  /**
+   * @return <code>true</code> if this method is an @AfterTest (@Configuration afterTest=true)
+   */
   boolean isAfterTestConfiguration();
 
   boolean isBeforeGroupsConfiguration();
@@ -114,20 +134,28 @@ public interface ITestNGMethod extends Cloneable {
   }
 
 
-  /** @return The timeout in milliseconds. */
+  /**
+   * @return The timeout in milliseconds.
+   */
   long getTimeOut();
 
   void setTimeOut(long timeOut);
 
-  /** @return the number of times this method needs to be invoked. */
+  /**
+   * @return the number of times this method needs to be invoked.
+   */
   int getInvocationCount();
 
   void setInvocationCount(int count);
 
-  /** @return the success percentage for this method (between 0 and 100). */
+  /**
+   * @return the success percentage for this method (between 0 and 100).
+   */
   int getSuccessPercentage();
 
-  /** @return The id of the thread this method was run in. */
+  /**
+   * @return The id of the thread this method was run in.
+   */
   String getId();
 
   void setId(String id);
@@ -142,10 +170,14 @@ public interface ITestNGMethod extends Cloneable {
    */
   boolean canRunFromClass(IClass testClass);
 
-  /** @return true if this method is alwaysRun=true */
+  /**
+   * @return true if this method is alwaysRun=true
+   */
   boolean isAlwaysRun();
 
-  /** @return the number of threads to be used when invoking the method on parallel */
+  /**
+   * @return the number of threads to be used when invoking the method on parallel
+   */
   int getThreadPoolSize();
 
   void setThreadPoolSize(int threadPoolSize);
@@ -160,9 +192,9 @@ public interface ITestNGMethod extends Cloneable {
 
   int getCurrentInvocationCount();
 
-  void setParameterInvocationCount(int n);
-
   int getParameterInvocationCount();
+
+  void setParameterInvocationCount(int n);
 
   void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker);
 
@@ -172,15 +204,17 @@ public interface ITestNGMethod extends Cloneable {
 
   IRetryAnalyzer getRetryAnalyzer(ITestResult result);
 
-  void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz);
-
   Class<? extends IRetryAnalyzer> getRetryAnalyzerClass();
+
+  void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz);
 
   boolean skipFailedInvocations();
 
   void setSkipFailedInvocations(boolean skip);
 
-  /** @return The time under which all invocationCount methods need to complete by. */
+  /**
+   * @return The time under which all invocationCount methods need to complete by.
+   */
   long getInvocationTimeOut();
 
   boolean ignoreMissingDependencies();
@@ -190,7 +224,8 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * Which invocation numbers of this method should be used (only applicable if it uses a data
    * provider). If this value is an empty list, use all the values returned from the data provider.
-   * These values are read from the XML file in the <code>&lt;include invocationNumbers="..."&gt;</code> tag.
+   * These values are read from the XML file in the <code>&lt;include
+   * invocationNumbers="..."&gt;</code> tag.
    *
    * @return The list of invocation numbers
    */
@@ -221,7 +256,9 @@ public interface ITestNGMethod extends Cloneable {
 
   void setInterceptedPriority(int priority);
 
-  /** @return the XmlTest this method belongs to. */
+  /**
+   * @return the XmlTest this method belongs to.
+   */
   XmlTest getXmlTest();
 
   ConstructorOrMethod getConstructorOrMethod();
@@ -268,6 +305,6 @@ public interface ITestNGMethod extends Cloneable {
   }
 
   default Class<?>[] getParameterTypes() {
-    return new Class<?>[] {};
+    return new Class<?>[]{};
   }
 }

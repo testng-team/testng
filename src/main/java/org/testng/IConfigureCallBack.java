@@ -7,8 +7,8 @@ package org.testng;
  *
  * <p><b>This interface is not meant to be implemented by clients, only by TestNG.</b>
  *
- * @see org.testng.IConfigurable
  * @author cbeust Sep 07, 2010
+ * @see org.testng.IConfigurable
  */
 public interface IConfigureCallBack {
 
@@ -19,6 +19,8 @@ public interface IConfigureCallBack {
    */
   void runConfigurationMethod(ITestResult testResult);
 
-  /** @return the parameters that will be used to invoke the configuration method. */
+  /**
+   * @return the parameters that will be used to invoke the configuration method.
+   */
   Object[] getParameters();
 }

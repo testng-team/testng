@@ -15,7 +15,9 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return conformingParameters;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected boolean hasConformance() {
     boolean matching = false;
@@ -31,7 +33,9 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return matching;
   }
 
-  /** @return injects to check against. */
+  /**
+   * @return injects to check against.
+   */
   protected abstract List<Set<InjectableParameter>> getConformanceInjectsOrder();
 
   /**
@@ -43,7 +47,9 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
    */
   protected abstract boolean match(final Parameter[] parameters, final Object[] arguments);
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Object[] getConformingArguments() {
     if (getConforms() == null) {

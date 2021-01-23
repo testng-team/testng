@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class ConfigurationSkippedExceptionTest {
+
   @BeforeMethod
   public void configurationLevelSkipException() {
     throw new SkipException("some skip message");

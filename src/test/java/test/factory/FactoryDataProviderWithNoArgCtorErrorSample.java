@@ -16,8 +16,8 @@ public class FactoryDataProviderWithNoArgCtorErrorSample extends BaseFactorySamp
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-      new Object[] {45}, new Object[] {46},
+    return new Object[][]{
+        new Object[]{45}, new Object[]{46},
     };
   }
 }

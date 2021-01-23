@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeTest;
 public class TestFixture {
 
   public static int globalCallSequence = 0;
+  public int fixtureBeforeTestCallSequence;
 
   public static int printGlobalCallSequence(String methodName) {
     globalCallSequence++;
@@ -12,9 +13,7 @@ public class TestFixture {
     return globalCallSequence;
   }
 
-  public int fixtureBeforeTestCallSequence;
-
-  @BeforeTest( groups="fixture")
+  @BeforeTest(groups = "fixture")
   public void beforeTest() {
     fixtureBeforeTestCallSequence = printGlobalCallSequence("TestFixture.beforeTest");
   }

@@ -2,7 +2,6 @@ package test.dataprovider;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
 import org.testng.annotations.DataProvider;
 
 public class FieldInjectionProvider {
@@ -13,6 +12,6 @@ public class FieldInjectionProvider {
 
   @DataProvider(name = "injection")
   public Object[][] create() {
-    return new Object[][] {{value}};
+    return new Object[][]{{value}};
   }
 }

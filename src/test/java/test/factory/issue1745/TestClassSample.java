@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlTest;
 
 public class TestClassSample {
+
   private ITestContext ctx;
   private XmlTest currentXmlTest;
   private String whatWasPassed = "";

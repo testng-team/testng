@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
  * @since Aug 01, 2006
  */
 public class HookSuccess599Test implements IHookable {
+
   static boolean m_hook = false;
   static boolean m_testWasRun = false;
   static String m_parameter = null;
@@ -30,7 +31,7 @@ public class HookSuccess599Test implements IHookable {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {new Object[] {"foo"}};
+    return new Object[][]{new Object[]{"foo"}};
   }
 
   @Test(dataProvider = "dp", timeOut = 100)

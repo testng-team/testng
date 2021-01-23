@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class PrivateAccessConfigurationMethods extends BasePrivateAccessConfigurationMethods {
+
   private boolean m_private = false;
   private boolean m_default = false;
   private boolean m_protected = false;

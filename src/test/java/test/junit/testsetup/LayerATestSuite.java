@@ -3,15 +3,14 @@ package test.junit.testsetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class LayerATestSuite
-{
-	public static Test suite()
-	{
-		TestSuite suite = new TestSuite( "Layer A Test Suite" );
+public class LayerATestSuite {
 
-		suite.addTestSuite( ATest.class );
+  public static Test suite() {
+    TestSuite suite = new TestSuite("Layer A Test Suite");
 
-		TestSuiteContainerWrapper wrapper = new TestSuiteContainerWrapper(suite, Data.class);
-		return wrapper;
-	}
+    suite.addTestSuite(ATest.class);
+
+    TestSuiteContainerWrapper wrapper = new TestSuiteContainerWrapper(suite, Data.class);
+    return wrapper;
+  }
 }

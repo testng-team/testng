@@ -1,13 +1,12 @@
 package test.dataprovider;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.internal.ConstructorOrMethod;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 public class ConstructorOrMethodSample {
 
@@ -29,11 +28,12 @@ public class ConstructorOrMethodSample {
     Assert.assertEquals(c.getParameterTypes().length, 1);
     Assert.assertEquals(c.getParameterTypes()[0], String.class);
 
-    return new Object[][] {{"0"}, {"1"}};
+    return new Object[][]{{"0"}, {"1"}};
   }
 
   @Test
-  public void test1() {}
+  public void test1() {
+  }
 
   @DataProvider(name = "dp2")
   public Object[][] createData2(ConstructorOrMethod cOrM) {
@@ -44,9 +44,10 @@ public class ConstructorOrMethodSample {
     Method m = cOrM.getMethod();
     Assert.assertEquals(m.getName(), "test2");
 
-    return new Object[][] {{"Cedric" + s}, {"Alois" + s}};
+    return new Object[][]{{"Cedric" + s}, {"Alois" + s}};
   }
 
   @Test(dataProvider = "dp2")
-  public void test2(String s) {}
+  public void test2(String s) {
+  }
 }

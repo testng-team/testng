@@ -5,6 +5,11 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class ConcreteTest extends Fixturable {
+
+  private static void ppp(String s) {
+    System.out.println("[ConcreteTest] " + s);
+  }
+
   @BeforeTest
   @AfterGroups("fixture")
   public void beforeFixture() {
@@ -14,10 +19,5 @@ public class ConcreteTest extends Fixturable {
   @Test(groups = "fixture")
   public void test() {
     ppp("TEST");
-  }
-
-
-  private static void ppp(String s) {
-    System.out.println("[ConcreteTest] " + s);
   }
 }

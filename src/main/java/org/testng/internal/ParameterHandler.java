@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import static org.testng.internal.Parameters.MethodParameters;
+
+import java.util.Map;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -8,11 +11,8 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 
-import static org.testng.internal.Parameters.MethodParameters;
-
-import java.util.Map;
-
 class ParameterHandler {
+
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
 
@@ -82,6 +82,7 @@ class ParameterHandler {
    * TestResult} containing the cause
    */
   static class ParameterBag {
+
     final ParameterHolder parameterHolder;
     final ITestResult errorResult;
 
@@ -102,7 +103,7 @@ class ParameterHandler {
     boolean runInParallel() {
       return ((parameterHolder != null)
           && (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
-              && parameterHolder.dataProviderHolder.isParallel()));
+          && parameterHolder.dataProviderHolder.isParallel()));
     }
   }
 }

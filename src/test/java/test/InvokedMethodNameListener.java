@@ -1,20 +1,19 @@
 package test;
 
 import com.google.common.base.Joiner;
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
-import org.testng.ITestListener;
-import org.testng.ITestResult;
-import org.testng.ITestContext;
-import org.testng.Reporter;
-import org.testng.collections.Lists;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.collections.Lists;
 
 // TODO replace other test IInvokedMethodListener by this one
 public class InvokedMethodNameListener implements IInvokedMethodListener, ITestListener {
@@ -23,9 +22,11 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   private final List<String> foundMethodNames = Collections.synchronizedList(new ArrayList<>());
   private final List<String> invokedMethodNames = Collections.synchronizedList(new ArrayList<>());
   private final List<String> failedMethodNames = Collections.synchronizedList(new ArrayList<>());
-  private final List<String> failedBeforeInvocationMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> failedBeforeInvocationMethodNames = Collections
+      .synchronizedList(new ArrayList<>());
   private final List<String> skippedMethodNames = Collections.synchronizedList(new ArrayList<>());
-  private final List<String> skippedAfterInvocationMethodNames = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> skippedAfterInvocationMethodNames = Collections
+      .synchronizedList(new ArrayList<>());
   private final List<String> succeedMethodNames = Collections.synchronizedList(new ArrayList<>());
   private final Map<String, ITestResult> results = new ConcurrentHashMap<>();
   private final Map<Class<?>, List<String>> mapping = new ConcurrentHashMap<>();
@@ -40,9 +41,42 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
     this(skipConfiguration, false);
   }
 
-  public InvokedMethodNameListener(boolean skipConfiguration, boolean wantSkippedMethodAfterInvocation) {
+  public InvokedMethodNameListener(boolean skipConfiguration,
+      boolean wantSkippedMethodAfterInvocation) {
     this.skipConfiguration = skipConfiguration;
     this.wantSkippedMethodAfterInvocation = wantSkippedMethodAfterInvocation;
+  }
+
+  private static String getName(ITestResult result) {
+    String testName = result.getName();
+    String methodName = result.getMethod().getConstructorOrMethod().getName();
+    String name;
+    if (testName.contains(methodName)) {
+      name = methodName;
+    } else {
+      name = testName + "#" + methodName;
+    }
+    if (result.getParameters().length != 0) {
+      name = name + "(" + Joiner.on(",").useForNull("null")
+          .join(getParameterNames(result.getParameters())) + ")";
+    }
+    return name;
+  }
+
+  private static List<String> getParameterNames(Object[] parameters) {
+    List<String> result = new ArrayList<>(parameters.length);
+    for (Object parameter : parameters) {
+      if (parameter == null) {
+        result.add("null");
+      } else {
+        if (parameter instanceof Object[]) {
+          result.add("[" + Joiner.on(",").useForNull("null").join((Object[]) parameter) + "]");
+        } else {
+          result.add(parameter.toString());
+        }
+      }
+    }
+    return result;
   }
 
   @Override
@@ -55,7 +89,8 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    List<String> methodNames = mapping.computeIfAbsent(testResult.getMethod().getRealClass(), k -> Lists.newArrayList());
+    List<String> methodNames = mapping
+        .computeIfAbsent(testResult.getMethod().getRealClass(), k -> Lists.newArrayList());
     methodNames.add(method.getTestMethod().getMethodName());
     String name = getName(testResult);
     switch (testResult.getStatus()) {
@@ -118,7 +153,8 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
     String name = getName(result);
     results.put(name, result);
     if (!succeedMethodNames.contains(name) || !failedMethodNames.contains(name)) {
-      throw new IllegalStateException("A FailedButWithinSuccessPercentage test is supposed to be invoked");
+      throw new IllegalStateException(
+          "A FailedButWithinSuccessPercentage test is supposed to be invoked");
     }
   }
 
@@ -132,37 +168,6 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
 
   public Set<Object> getTestInstances() {
     return testInstances;
-  }
-
-  private static String getName(ITestResult result) {
-    String testName = result.getName();
-    String methodName = result.getMethod().getConstructorOrMethod().getName();
-    String name;
-    if (testName.contains(methodName)) {
-      name = methodName;
-    } else {
-      name = testName + "#" + methodName;
-    }
-    if (result.getParameters().length != 0) {
-      name = name + "(" + Joiner.on(",").useForNull("null").join(getParameterNames(result.getParameters())) + ")";
-    }
-    return name;
-  }
-
-  private static List<String> getParameterNames(Object[] parameters) {
-    List<String> result = new ArrayList<>(parameters.length);
-    for (Object parameter : parameters) {
-      if (parameter == null) {
-        result.add("null");
-      } else {
-        if (parameter instanceof Object[]) {
-          result.add("[" + Joiner.on(",").useForNull("null").join((Object[]) parameter) + "]");
-        } else {
-          result.add(parameter.toString());
-        }
-      }
-    }
-    return result;
   }
 
   public List<String> getInvokedMethodNames() {

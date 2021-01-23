@@ -4,6 +4,7 @@ import junit.extensions.TestSetup;
 import junit.framework.TestSuite;
 
 public class TestSuiteContainerWrapper extends TestSetup {
+
   private static Data INSTANCE = null;
   private static TestSuite _test = null;
   private static Class dataImpl = null;

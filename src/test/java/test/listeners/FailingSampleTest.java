@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 @Listeners(SimpleListener.class)
 public class FailingSampleTest {
+
   @AfterMethod
   public void am() {
     SimpleListener.m_list.add(6);

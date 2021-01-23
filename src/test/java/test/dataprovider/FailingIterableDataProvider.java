@@ -1,9 +1,8 @@
 package test.dataprovider;
 
+import java.util.Iterator;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Iterator;
 
 public class FailingIterableDataProvider {
 
@@ -22,7 +21,7 @@ public class FailingIterableDataProvider {
         if (++count == 6) {
           throw new RuntimeException();
         }
-        return new Object[] {count};
+        return new Object[]{count};
       }
 
       @Override

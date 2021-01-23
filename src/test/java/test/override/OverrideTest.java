@@ -36,18 +36,22 @@ public class OverrideTest extends SimpleBaseTest {
   private void runTest(String include, String exclude) {
     File f = createTempFile(
         "<suite name=\"S\">"
-        + "  <test name=\"T\">"
-        + "    <classes>"
-        + "      <class name=\"test.override.OverrideSampleTest\" />"
-        + "    </classes>"
-        + "  </test>"
-        + "</suite>"
-        );
+            + "  <test name=\"T\">"
+            + "    <classes>"
+            + "      <class name=\"test.override.OverrideSampleTest\" />"
+            + "    </classes>"
+            + "  </test>"
+            + "</suite>"
+    );
     TestNG tng = create();
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    if (include != null) tng.setGroups(include);
-    if (exclude != null) tng.setExcludedGroups(exclude);
+    if (include != null) {
+      tng.setGroups(include);
+    }
+    if (exclude != null) {
+      tng.setExcludedGroups(exclude);
+    }
     tng.setTestSuites(Collections.singletonList(f.getAbsolutePath()));
     tng.run();
 

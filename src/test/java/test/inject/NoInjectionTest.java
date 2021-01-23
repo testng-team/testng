@@ -1,11 +1,10 @@
 package test.inject;
 
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.NoInjection;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 /**
  * Test the @NoInjection annotation.
@@ -16,7 +15,7 @@ public class NoInjectionTest {
 
   @DataProvider(name = "provider")
   public Object[][] provide() throws Exception {
-    return new Object[][] {{CC.class.getMethod("f")}};
+    return new Object[][]{{CC.class.getMethod("f")}};
   }
 
   @Test(dataProvider = "provider")
@@ -32,5 +31,6 @@ public class NoInjectionTest {
 
 class CC {
 
-  public void f() {}
+  public void f() {
+  }
 }

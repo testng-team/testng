@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target({java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.CONSTRUCTOR})
 @Documented
 public @interface Factory {
+
   /**
    * The name of the data provider for this test method.
    *

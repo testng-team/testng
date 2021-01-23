@@ -1,22 +1,20 @@
 package org.testng.internal.thread.graph;
 
-import org.testng.IDynamicGraph;
-import org.testng.thread.ITestNGThreadPoolExecutor;
-import org.testng.TestNGException;
-import org.testng.collections.Maps;
-import org.testng.IDynamicGraph.Status;
-import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.thread.TestNGThreadFactory;
-import org.testng.log4testng.Logger;
-
-import javax.annotation.Nonnull;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
+import org.testng.IDynamicGraph;
+import org.testng.IDynamicGraph.Status;
+import org.testng.TestNGException;
+import org.testng.collections.Maps;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.thread.TestNGThreadFactory;
+import org.testng.log4testng.Logger;
+import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 
@@ -64,13 +62,15 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
     synchronized (m_graph) {
       List<T> freeNodes = m_graph.getFreeNodes();
       if (m_comparator != null) {
-          freeNodes.sort(m_comparator);
+        freeNodes.sort(m_comparator);
       }
       runNodes(freeNodes);
     }
   }
 
-  /** Create one worker per node and execute them. */
+  /**
+   * Create one worker per node and execute them.
+   */
   private void runNodes(List<T> freeNodes) {
     List<IWorker<T>> workers = m_factory.createWorkers(freeNodes);
     mapNodeToWorker(workers, freeNodes);
@@ -97,7 +97,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
       } else {
         List<T> freeNodes = m_graph.getFreeNodes();
         if (m_comparator != null) {
-            freeNodes.sort(m_comparator);
+          freeNodes.sort(m_comparator);
         }
         handleThreadAffinity(freeNodes);
         runNodes(freeNodes);
@@ -169,6 +169,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
   }
 
   private class PhoneyWorker implements IWorker<T> {
+
     private long threadId;
 
     public PhoneyWorker(long threadId) {
@@ -196,7 +197,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
     }
 
     @Override
-    public void run() {}
+    public void run() {
+    }
 
     @Override
     public long getThreadIdToRunOn() {

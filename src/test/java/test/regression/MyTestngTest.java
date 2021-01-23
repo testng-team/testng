@@ -12,6 +12,6 @@ public class MyTestngTest {
 
   @BeforeTest()
   public void beforeTest(ITestContext tc) throws Exception {
-      throw new RuntimeException("barfing now");
+    throw new RuntimeException("barfing now");
   }
 }

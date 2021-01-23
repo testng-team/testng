@@ -1,8 +1,7 @@
 package org.testng.annotations;
 
-import org.testng.internal.annotations.IDataProvidable;
-
 import java.util.List;
+import org.testng.internal.annotations.IDataProvidable;
 
 /**
  * Encapsulate the @Factory / @testng.factory annotation

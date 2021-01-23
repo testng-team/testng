@@ -15,5 +15,6 @@ public class TestClassWithMultipleFailures {
   }
 
   @Test(dependsOnMethods = {"father", "mother"})
-  public void child() {}
+  public void child() {
+  }
 }

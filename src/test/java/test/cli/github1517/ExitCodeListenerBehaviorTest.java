@@ -17,10 +17,10 @@ public class ExitCodeListenerBehaviorTest extends SimpleBaseTest {
 
   @DataProvider
   public Object[][] getData() {
-    return new Object[][] {
-      {TestClassWithConfigFailureSample.class, 3},
-      {TestClassWithConfigSkipSample.class, 2},
-      {TestClassWithConfigSkipAndFailureSample.class, 3}
+    return new Object[][]{
+        {TestClassWithConfigFailureSample.class, 3},
+        {TestClassWithConfigSkipSample.class, 2},
+        {TestClassWithConfigSkipAndFailureSample.class, 3}
     };
   }
 }

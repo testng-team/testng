@@ -1,5 +1,9 @@
 package org.testng.reporters.jq;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -11,12 +15,8 @@ import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
 import org.testng.internal.Utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 public class Model {
+
   private ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
   private List<ISuite> m_suites = null;
   private Map<String, String> m_testTags = Maps.newHashMap();
@@ -33,6 +33,42 @@ public class Model {
   public Model(List<ISuite> suites) {
     m_suites = suites;
     init();
+  }
+
+  private static String getMethodName(String name) {
+    if (name == null) {
+      return "";
+    }
+    return name;
+  }
+
+  public static String getTestResultName(ITestResult tr) {
+    StringBuilder result = new StringBuilder(getMethodName(tr.getMethod().getMethodName()));
+    Object[] parameters = tr.getParameters();
+    if (parameters.length > 0) {
+      result.append("(");
+      StringBuilder p = new StringBuilder();
+      for (int i = 0; i < parameters.length; i++) {
+        if (i > 0) {
+          p.append(", ");
+        }
+        p.append(Utils.toString(parameters[i]));
+      }
+      if (p.length() > 100) {
+        String s = p.toString().substring(0, 100);
+        s = s + "...";
+        result.append(s);
+      } else {
+        result.append(p.toString());
+      }
+      result.append(")");
+    }
+
+    return result.toString();
+  }
+
+  public static String getImage(String tagClass) {
+    return tagClass + ".png";
   }
 
   public List<ISuite> getSuites() {
@@ -53,8 +89,8 @@ public class Model {
         skipped.addAll(context.getSkippedTests().getAllResults());
         passed.addAll(context.getPassedTests().getAllResults());
         IResultMap[] map =
-            new IResultMap[] {
-              context.getFailedTests(), context.getSkippedTests(), context.getPassedTests()
+            new IResultMap[]{
+                context.getFailedTests(), context.getSkippedTests(), context.getPassedTests()
             };
         for (IResultMap m : map) {
           for (ITestResult tr : m.getAllResults()) {
@@ -133,42 +169,8 @@ public class Model {
     return m_model.get(suite);
   }
 
-  private static String getMethodName(String name) {
-    if (name == null) {
-      return "";
-    }
-    return name;
-  }
-
-  public static String getTestResultName(ITestResult tr) {
-    StringBuilder result = new StringBuilder(getMethodName(tr.getMethod().getMethodName()));
-    Object[] parameters = tr.getParameters();
-    if (parameters.length > 0) {
-      result.append("(");
-      StringBuilder p = new StringBuilder();
-      for (int i = 0; i < parameters.length; i++) {
-        if (i > 0) p.append(", ");
-        p.append(Utils.toString(parameters[i]));
-      }
-      if (p.length() > 100) {
-        String s = p.toString().substring(0, 100);
-        s = s + "...";
-        result.append(s);
-      } else {
-        result.append(p.toString());
-      }
-      result.append(")");
-    }
-
-    return result.toString();
-  }
-
   public List<ITestResult> getAllFailedResults() {
     return m_allFailedResults;
-  }
-
-  public static String getImage(String tagClass) {
-    return tagClass + ".png";
   }
 
   public String getStatusForSuite(String suiteName) {

@@ -1,5 +1,6 @@
 package test.methodselectors;
 
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
@@ -7,14 +8,12 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 
-import java.util.List;
-
 public class PriorityTest {
 
   private void runTest(int priority, String[] passedTests) {
     TestNG tng = new TestNG();
     tng.setVerbose(0);
-    tng.setTestClasses(new Class[] { PrioritySampleTest.class });
+    tng.setTestClasses(new Class[]{PrioritySampleTest.class});
     tng.addMethodSelector("test.methodselectors.NoTestSelector", priority);
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
@@ -34,19 +33,19 @@ public class PriorityTest {
     }
   }
 
-//  @Test
+  //  @Test
   public void negativePriority() {
-    runTest(-5, new String[] {});
+    runTest(-5, new String[]{});
   }
 
   @Test
   public void lessThanTenPriority() {
-    runTest(5, new String[] { "alwaysRun" });
+    runTest(5, new String[]{"alwaysRun"});
   }
 
-//  @Test
+  //  @Test
   public void greaterThanTenPriority() {
-    runTest(15, new String[] { "alwaysRun", "neverRun" });
+    runTest(15, new String[]{"alwaysRun", "neverRun"});
   }
 
 

@@ -1,11 +1,10 @@
 package test.objectfactory;
 
+import java.lang.reflect.Constructor;
 import org.testng.Assert;
 import org.testng.IObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Constructor;
 
 public class CombinedTestAndObjectFactorySample implements IObjectFactory {
 
@@ -22,7 +21,7 @@ public class CombinedTestAndObjectFactorySample implements IObjectFactory {
   }
 
   @Override
-  public Object newInstance(Constructor constructor, Object... params)  {
+  public Object newInstance(Constructor constructor, Object... params) {
     try {
       Object o = constructor.newInstance(params);
       if (o instanceof CombinedTestAndObjectFactorySample) {

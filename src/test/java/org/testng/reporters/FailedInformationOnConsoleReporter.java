@@ -14,11 +14,6 @@ import org.testng.xml.XmlSuite;
 
 public class FailedInformationOnConsoleReporter implements IReporter {
 
-  @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outDir) {
-    suites.forEach(FailedInformationOnConsoleReporter::generateReport);
-  }
-
   private static void generateReport(ISuite suite) {
     suite.getResults().forEach(FailedInformationOnConsoleReporter::generateReport);
   }
@@ -69,5 +64,10 @@ public class FailedInformationOnConsoleReporter implements IReporter {
     builder.append(Utils.shortStackTrace(throwable, false));
     builder.append("\n\n");
     System.err.println(builder.toString());
+  }
+
+  @Override
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outDir) {
+    suites.forEach(FailedInformationOnConsoleReporter::generateReport);
   }
 }

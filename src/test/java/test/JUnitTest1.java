@@ -3,7 +3,6 @@ package test;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import test.junit.SetNameTest;
 import test.sample.JUnitSample1;
 import test.sample.JUnitSample2;
@@ -13,10 +12,14 @@ import test.sample.JUnitSample2;
  * This class
  *
  * @author Cedric Beust, May 5, 2004
- *
  */
 public class JUnitTest1 extends BaseTest {
-  @BeforeMethod(dependsOnGroups = { "initTest"} )
+
+  public static void ppp(String s) {
+    System.out.println("[JUnitTest1] " + s);
+  }
+
+  @BeforeMethod(dependsOnGroups = {"initTest"})
   public void initJUnitFlag() {
     getTest().setJUnit(true);
   }
@@ -42,7 +45,7 @@ public class JUnitTest1 extends BaseTest {
     addClass("test.sample.JUnitSample2");
     run();
     String[] passed = {
-      "testSample2ThatSetUpWasRun",
+        "testSample2ThatSetUpWasRun",
     };
     String[] failed = {
     };
@@ -71,7 +74,7 @@ public class JUnitTest1 extends BaseTest {
     addClass("test.sample.JUnitSample3");
     run();
     String[] passed = {
-      "test1", "test2"
+        "test1", "test2"
     };
     String[] failed = {
     };
@@ -87,10 +90,10 @@ public class JUnitTest1 extends BaseTest {
     String[] passed = {
     };
     String[] failed = {
-      "testM1"/*, "testM1", "tearDown"*/
+        "testM1"/*, "testM1", "tearDown"*/
     };
     String[] skipped = {
-      /*"testM1", "tearDown"*/
+        /*"testM1", "tearDown"*/
     };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
@@ -103,7 +106,7 @@ public class JUnitTest1 extends BaseTest {
     SetNameTest.m_ctorCount = 0;
     run();
     String[] passed = {
-      "testFoo", "testBar",
+        "testFoo", "testBar",
     };
     String[] failed = {
     };
@@ -117,16 +120,12 @@ public class JUnitTest1 extends BaseTest {
         "Expected 2 instances to be created, found " + SetNameTest.m_ctorCount);
   }
 
-  public static void ppp(String s) {
-    System.out.println("[JUnitTest1] " + s);
-  }
-
   @Test
   public void testAbstract() {
     addClass("test.sample.JUnitSample4");
     run();
     String[] passed = {
-      "testXY", "testXY", "testXY"
+        "testXY", "testXY", "testXY"
     };
     String[] failed = {
     };

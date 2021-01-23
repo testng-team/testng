@@ -1,5 +1,7 @@
 package test.simple;
 
+import java.util.Collection;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
@@ -10,11 +12,7 @@ import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import testhelper.OutputDirectoryPatch;
-
-import java.util.Collection;
-import java.util.List;
 
 public class IncludedExcludedTest {
 
@@ -30,23 +28,23 @@ public class IncludedExcludedTest {
 
   @Test(description = "First test method")
   public void verifyIncludedExcludedCount1() {
-    m_tng.setTestClasses(new Class[] {IncludedExcludedSampleTest.class});
+    m_tng.setTestClasses(new Class[]{IncludedExcludedSampleTest.class});
     m_tng.setGroups("a");
     m_tng.addListener((ITestNGListener)
-        new MyReporter(new String[] { "test3" }, new String[] { "test1", "test2"}));
+        new MyReporter(new String[]{"test3"}, new String[]{"test1", "test2"}));
     m_tng.run();
   }
 
   @Test(description = "Second test method")
   public void verifyIncludedExcludedCount2() {
-    m_tng.setTestClasses(new Class[] {IncludedExcludedSampleTest.class});
+    m_tng.setTestClasses(new Class[]{IncludedExcludedSampleTest.class});
     m_tng.addListener((ITestNGListener)
         new MyReporter(
-            new String[] {
+            new String[]{
                 "beforeSuite", "beforeTest", "beforeTestClass",
                 "beforeTestMethod", "test1", "beforeTestMethod", "test3"
-              },
-            new String[] { "test2"}));
+            },
+            new String[]{"test2"}));
     m_tng.run();
   }
 
@@ -62,8 +60,19 @@ class MyReporter implements IReporter {
     m_excluded = excluded;
   }
 
+  private static boolean containsInvokedMethod(Collection<IInvokedMethod> invoked, String string) {
+    for (IInvokedMethod m : invoked) {
+      if (m.getTestMethod().getMethodName().equals(string)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
+      String outputDirectory) {
     Assert.assertEquals(suites.size(), 1);
     ISuite suite = suites.get(0);
 
@@ -83,16 +92,6 @@ class MyReporter implements IReporter {
   private boolean containsMethod(Collection<ITestNGMethod> invoked, String string) {
     for (ITestNGMethod m : invoked) {
       if (m.getMethodName().equals(string)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  private static boolean containsInvokedMethod(Collection<IInvokedMethod> invoked, String string) {
-    for (IInvokedMethod m : invoked) {
-      if (m.getTestMethod().getMethodName().equals(string)) {
         return true;
       }
     }

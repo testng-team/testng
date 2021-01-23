@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class SampleTestclass {
+
   public static int counter = 0;
 
   @Test(retryAnalyzer = SimpleRetrier.class)
@@ -19,5 +20,6 @@ public class SampleTestclass {
   }
 
   @Test(dependsOnMethods = "parent")
-  public void child() {}
+  public void child() {
+  }
 }

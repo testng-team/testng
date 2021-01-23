@@ -12,10 +12,10 @@ public class SetUpExceptionTest extends test.BaseTest {
     String[] passed = {
     };
     String[] failed = {
-      "setUp"
+        "setUp"
     };
     String[] skipped = {
-      "testM1", "tearDown"
+        "testM1", "tearDown"
     };
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());

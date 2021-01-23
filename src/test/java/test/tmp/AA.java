@@ -6,9 +6,11 @@ import org.testng.annotations.Test;
 
 @Test(singleThreaded = true)
 public class AA {
+
   private int m_n;
 
-  public AA() {}
+  public AA() {
+  }
 
   public AA(int n) {
     m_n = n;
@@ -20,8 +22,8 @@ public class AA {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-      new Object[] { 42 },
+    return new Object[][]{
+        new Object[]{42},
     };
   }
 
@@ -37,7 +39,7 @@ public class AA {
 
   @Factory
   public Object[] create() {
-    return new Object[] { new A(), new AA() };
+    return new Object[]{new A(), new AA()};
   }
 
   @Test
@@ -50,7 +52,7 @@ public class AA {
     log("aatest2");
   }
 
-//  @Test(priority = 3)
+  //  @Test(priority = 3)
   public void atest3() {
   }
 

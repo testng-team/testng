@@ -17,12 +17,15 @@ public class Actual1Sample extends BaseSample {
   }
 
   @Test
-  public void test1() { }
+  public void test1() {
+  }
 
   @Test(dependsOnMethods = "test1")
-  public void test3() { }
+  public void test3() {
+  }
 
   @Test(dataProvider = "parameters")
-  public void test4(String parameter) { }
+  public void test4(String parameter) {
+  }
 
 }

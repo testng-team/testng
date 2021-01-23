@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,28 +16,26 @@ public class MethodInheritance {
 
   /**
    * A Custom comparator that helps in {@link ITestNGMethod} ordering keeping in mind the class
-   * hierarchy. Here's how the comparator works: <br>
-   * Lets say we have two method objects o1 and o2. <br>
-   * o1 is associated with MyClass and o2 is associated with AnotherClass.
+   * hierarchy. Here's how the comparator works: <br> Lets say we have two method objects o1 and o2.
+   * <br> o1 is associated with MyClass and o2 is associated with AnotherClass.
    *
    * <ul>
-   *   <li>-1 is returned if MyClass is the parent of AnotherClass
-   *   <li>1 is returned if AnotherClass is the parent of MyClass
-   *   <li>0 is returned otherwise if MyClass and AnotherClass are the same i.e., both methods
-   *       belong to the same class.
+   * <li>-1 is returned if MyClass is the parent of AnotherClass
+   * <li>1 is returned if AnotherClass is the parent of MyClass
+   * <li>0 is returned otherwise if MyClass and AnotherClass are the same i.e., both methods
+   * belong to the same class.
    * </ul>
    *
-   * Working of isAssignableFrom <br>
-   * Lets say we have : <br>
+   * Working of isAssignableFrom <br> Lets say we have : <br>
    *
    * <ol>
-   *   <li>interface Oven
-   *   <li>Microwave implements Oven
+   * <li>interface Oven
+   * <li>Microwave implements Oven
    * </ol>
    *
    * <ol>
-   *   <li>microwave instanceof Oven : <b>returns true</b>
-   *   <li>Oven.class.isAssignableFrom(microwave.getClass()) : <b>returns true</b>
+   * <li>microwave instanceof Oven : <b>returns true</b>
+   * <li>Oven.class.isAssignableFrom(microwave.getClass()) : <b>returns true</b>
    * </ol>
    */
   private static final Comparator<ITestNGMethod> COMPARATOR =
@@ -56,7 +53,9 @@ public class MethodInheritance {
         return result;
       };
 
-  /** Look in map for a class that is a superclass of methodClass */
+  /**
+   * Look in map for a class that is a superclass of methodClass
+   */
   private static List<ITestNGMethod> findMethodListSuperClass(
       Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
     return map.entrySet()
@@ -68,7 +67,9 @@ public class MethodInheritance {
         .orElse(null);
   }
 
-  /** Look in map for a class that is a subclass of methodClass */
+  /**
+   * Look in map for a class that is a subclass of methodClass
+   */
   private static Class<?> findSubClass(
       Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
     return map.keySet()
@@ -86,8 +87,8 @@ public class MethodInheritance {
    *
    * @param methods the list of methods
    * @param before true if we are handling a before method (meaning, the methods need to be sorted
-   *     base class first and subclass last). false otherwise (subclass methods first, base classes
-   *     last).
+   * base class first and subclass last). false otherwise (subclass methods first, base classes
+   * last).
    */
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
@@ -135,7 +136,7 @@ public class MethodInheritance {
             ITestNGMethod m1 = l.get(i);
             for (int j = i + 1; j < l.size(); j++) {
               ITestNGMethod m2 = l.get(j);
-              String[] groups = Optional.ofNullable(m2.getGroups()).orElse(new String[] {});
+              String[] groups = Optional.ofNullable(m2.getGroups()).orElse(new String[]{});
               if (groups.length != 0) {
                 //Do not resort to adding implicit depends-on if there are groups
                 continue;

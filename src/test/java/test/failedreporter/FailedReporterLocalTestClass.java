@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 public class FailedReporterLocalTestClass {
 
   public static class WithFailure {
+
     @Test
     public void testMethodWithFailure() {
       Assert.fail();
@@ -17,6 +18,7 @@ public class FailedReporterLocalTestClass {
   }
 
   public static class WithoutFailure {
+
     @Test
     public void testMethodWithoutFailure() {
       Assert.assertTrue(true);

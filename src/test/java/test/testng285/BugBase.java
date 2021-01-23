@@ -1,13 +1,13 @@
 package test.testng285;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Test(singleThreaded = true)
 public class BugBase {
+
   static Set<Long> m_threadIds;
 
   @BeforeClass

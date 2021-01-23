@@ -12,9 +12,9 @@ import test.SimpleBaseTest;
 
 public class MethodSelectionTest extends SimpleBaseTest {
 
-  @DataProvider(name ="dp")
+  @DataProvider(name = "dp")
   public static Object[][] getData() {
-    return new Object[][] {
+    return new Object[][]{
         // Method name
         {"$", "$"},
         {"another_test", "another_test"},

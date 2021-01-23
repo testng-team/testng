@@ -6,11 +6,10 @@ import org.testng.annotations.Test;
 
 
 /**
- *
  * @author Cedric Beust, May 5, 2004
- *
  */
 public class Test2 extends BaseTest {
+
   private boolean m_initializedCorrectly = false;
 
   @BeforeMethod
@@ -19,7 +18,7 @@ public class Test2 extends BaseTest {
   }
 
   // Shouldn't be called
-  @BeforeMethod(groups = { "excludeThisGroup"} )
+  @BeforeMethod(groups = {"excludeThisGroup"})
   public void incorrectSetup() {
     throw new RuntimeException("Should never be run");
   }
@@ -29,10 +28,10 @@ public class Test2 extends BaseTest {
     addClass("test.sample.Sample1");
     run();
     String[] passed = {
-      "method1",
-      "method2", "method3",
-      "broken", "throwExpectedException1ShouldPass",
-      "throwExpectedException2ShouldPass"
+        "method1",
+        "method2", "method3",
+        "broken", "throwExpectedException1ShouldPass",
+        "throwExpectedException2ShouldPass"
     };
     String[] failed = {
         "throwExceptionShouldFail", "verifyLastNameShouldFail"
@@ -54,12 +53,12 @@ public class Test2 extends BaseTest {
     run();
     String[] passed = {
         "testMethodGroup", "testClassGroup"
-      };
-      String[] failed = {
-          "testMethodGroupShouldFail", "testClassGroupShouldFail"
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+    };
+    String[] failed = {
+        "testMethodGroupShouldFail", "testClassGroupShouldFail"
+    };
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
 
 //      ppp("@@@@@@@@@@@@@@@@@@ PASSED TESTS");
 //      for (Object o : getPassedTests().values()) {
@@ -74,12 +73,12 @@ public class Test2 extends BaseTest {
     run();
     String[] passed = {
         "testMethodGroup",
-      };
-      String[] failed = {
-         "testMethodGroupShouldFail"
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+    };
+    String[] failed = {
+        "testMethodGroupShouldFail"
+    };
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
   }
 
 }

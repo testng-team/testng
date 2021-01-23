@@ -9,11 +9,11 @@ public final class RetryCountTest {
 
   @DataProvider
   public Object[][] provider() {
-    return new Object[][] {
-      {"a"},
-      {"b"},
-      {"c"},
-      {"d"}
+    return new Object[][]{
+        {"a"},
+        {"b"},
+        {"c"},
+        {"d"}
     };
   }
 

@@ -27,5 +27,4 @@ public class ChildTest extends ParentTest {
   }
 
 
-
 }

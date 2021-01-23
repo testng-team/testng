@@ -1,6 +1,7 @@
 package org.testng.internal.issue1339;
 
 public class BabyPanda extends LittlePanda {
+
   String name;
 
   @Override
@@ -10,8 +11,12 @@ public class BabyPanda extends LittlePanda {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     BabyPanda babyPanda = (BabyPanda) o;
 

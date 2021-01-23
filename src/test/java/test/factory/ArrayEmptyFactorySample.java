@@ -7,13 +7,14 @@ import org.testng.annotations.Test;
 
 public class ArrayEmptyFactorySample {
 
-  @DataProvider(name = "values")
-  public static Object[][] values() {
-    return new Object[][] {};
+  @Factory(dataProvider = "values")
+  public ArrayEmptyFactorySample(int value) {
   }
 
-  @Factory(dataProvider = "values")
-  public ArrayEmptyFactorySample(int value) {}
+  @DataProvider(name = "values")
+  public static Object[][] values() {
+    return new Object[][]{};
+  }
 
   @Test
   public void test() {

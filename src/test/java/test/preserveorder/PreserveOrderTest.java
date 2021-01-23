@@ -1,5 +1,9 @@
 package test.preserveorder;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -7,26 +11,32 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
-import java.util.Iterator;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class PreserveOrderTest extends SimpleBaseTest {
 
   @DataProvider
   public static Object[][] dpTests() {
-    return new Class<?>[][] {
-      new Class<?>[] { A.class, B.class, C.class },
-      new Class<?>[] { A.class, C.class, B.class },
-      new Class<?>[] { B.class, A.class, C.class },
-      new Class<?>[] { B.class, C.class, A.class },
-      new Class<?>[] { C.class, B.class, A.class },
-      new Class<?>[] { C.class, A.class, B.class }
+    return new Class<?>[][]{
+        new Class<?>[]{A.class, B.class, C.class},
+        new Class<?>[]{A.class, C.class, B.class},
+        new Class<?>[]{B.class, A.class, C.class},
+        new Class<?>[]{B.class, C.class, A.class},
+        new Class<?>[]{C.class, B.class, A.class},
+        new Class<?>[]{C.class, A.class, B.class}
+    };
+  }
+
+  @DataProvider
+  public static Object[][] dpMethods() {
+    return new String[][]{
+        new String[]{"a1", "a2", "a3"},
+        new String[]{"a1", "a3", "a2"},
+        new String[]{"a2", "a1", "a3"},
+        new String[]{"a2", "a3", "a1"},
+        new String[]{"a3", "a2", "a1"},
+        new String[]{"a3", "a1", "a2"}
     };
   }
 
@@ -51,18 +61,6 @@ public class PreserveOrderTest extends SimpleBaseTest {
         Assert.assertEquals(methodName, testClass.getSimpleName().toLowerCase() + i);
       }
     }
-  }
-
-  @DataProvider
-  public static Object[][] dpMethods() {
-    return new String[][] {
-      new String[] { "a1", "a2", "a3" },
-      new String[] { "a1", "a3", "a2" },
-      new String[] { "a2", "a1", "a3" },
-      new String[] { "a2", "a3", "a1" },
-      new String[] { "a3", "a2", "a1" },
-      new String[] { "a3", "a1", "a2" }
-    };
   }
 
   @Test(dataProvider = "dpMethods")
@@ -96,8 +94,8 @@ public class PreserveOrderTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "c4TestOne", "c4TestTwo", "c4TestThree",
-            "c3TestOne", "c3TestTwo", "c3TestThree"
+        "c4TestOne", "c4TestTwo", "c4TestThree",
+        "c3TestOne", "c3TestTwo", "c3TestThree"
     );
   }
 

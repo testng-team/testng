@@ -1,6 +1,9 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.testng.IDataProviderMethod;
 import org.testng.IRetryAnalyzer;
@@ -14,11 +17,9 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-
-/** This class represents a test method. */
+/**
+ * This class represents a test method.
+ */
 public class TestNGMethod extends BaseTestMethod {
 
   private int m_threadPoolSize = 0;
@@ -28,7 +29,9 @@ public class TestNGMethod extends BaseTestMethod {
   private CustomAttribute[] m_attributes = {};
   private IDataProviderMethod dataProviderMethod = null;
 
-  /** Constructs a <code>TestNGMethod</code> */
+  /**
+   * Constructs a <code>TestNGMethod</code>
+   */
   public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
     this(method, finder, true, xmlTest, instance);
   }
@@ -47,19 +50,51 @@ public class TestNGMethod extends BaseTestMethod {
     }
   }
 
-  /** {@inheritDoc} */
+  private static boolean doesTestAnnotationHaveADataProvider(ITestAnnotation testAnnotation) {
+    return !testAnnotation.getDataProvider().trim().isEmpty()
+        || testAnnotation.getDataProviderClass() != null;
+  }
+
+  private static ITestNGMethod[] clone(ITestNGMethod[] sources) {
+    return Arrays.stream(sources)
+        .map(ITestNGMethod::clone)
+        .toArray(ITestNGMethod[]::new);
+  }
+
+  private static IRetryAnalyzer cloneInstance(IRetryAnalyzer instance) {
+    if (instance == null) {
+      return null;
+    }
+    return InstanceCreator.newInstance(instance.getClass());
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getInvocationCount() {
     return m_invocationCount;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Sets the number of invocations for this method.
+   */
+  @Override
+  public void setInvocationCount(int counter) {
+    m_invocationCount = counter;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getSuccessPercentage() {
     return m_successPercentage;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isTest() {
     return true;
@@ -105,11 +140,6 @@ public class TestNGMethod extends BaseTestMethod {
     initGroups(ITestAnnotation.class);
   }
 
-  private static boolean doesTestAnnotationHaveADataProvider(ITestAnnotation testAnnotation) {
-    return !testAnnotation.getDataProvider().trim().isEmpty()
-        || testAnnotation.getDataProviderClass() != null;
-  }
-
   private String findDescription(ITestAnnotation testAnnotation, XmlTest xmlTest) {
     String result = testAnnotation.getDescription();
     if (result != null) {
@@ -133,22 +163,20 @@ public class TestNGMethod extends BaseTestMethod {
     return xmlInclude.getName().equals(m_method.getName());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getThreadPoolSize() {
     return m_threadPoolSize;
   }
 
-  /** Sets the number of threads on which this method should be invoked. */
+  /**
+   * Sets the number of threads on which this method should be invoked.
+   */
   @Override
   public void setThreadPoolSize(int threadPoolSize) {
     m_threadPoolSize = threadPoolSize;
-  }
-
-  /** Sets the number of invocations for this method. */
-  @Override
-  public void setInvocationCount(int counter) {
-    m_invocationCount = counter;
   }
 
   /**
@@ -192,19 +220,6 @@ public class TestNGMethod extends BaseTestMethod {
     clone.setPriority(getPriority());
 
     return clone;
-  }
-
-  private static ITestNGMethod[] clone(ITestNGMethod[] sources) {
-    return Arrays.stream(sources)
-        .map(ITestNGMethod::clone)
-        .toArray(ITestNGMethod[]::new);
-  }
-
-  private static IRetryAnalyzer cloneInstance(IRetryAnalyzer instance) {
-    if (instance == null) {
-      return null;
-    }
-    return InstanceCreator.newInstance(instance.getClass());
   }
 
   @Override

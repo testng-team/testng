@@ -13,10 +13,10 @@ public class DefaultMethodTest extends SimpleBaseTest {
 
   @DataProvider
   public Object[][] classes() {
-    return new Object[][] {
-            new Object[] { TestA.class },
-            new Object[] { TestB.class },
-            new Object[] { TestC.class }
+    return new Object[][]{
+        new Object[]{TestA.class},
+        new Object[]{TestB.class},
+        new Object[]{TestC.class}
     };
   }
 

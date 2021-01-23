@@ -1,11 +1,11 @@
 package org.testng.internal.reflect;
 
+import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
+import static org.testng.internal.reflect.InjectableParameter.Assistant.NONE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
-import static org.testng.internal.reflect.InjectableParameter.Assistant.NONE;
 
 /**
  * Checks for method argument match with or without filtering injectables.
@@ -18,7 +18,9 @@ public class DirectMethodMatcher extends AbstractNodeMethodMatcher {
     super(context);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected List<Set<InjectableParameter>> getConformanceInjectsOrder() {
     final List<Set<InjectableParameter>> injectsOrder = new ArrayList<>(1);
@@ -27,13 +29,17 @@ public class DirectMethodMatcher extends AbstractNodeMethodMatcher {
     return injectsOrder;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected boolean match(final Parameter[] parameters, final Object[] arguments) {
     return ReflectionRecipes.exactMatch(parameters, getContext().getArguments());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Object[] matchingArguments(Parameter[] parameters, Object[] arguments) {
     return arguments;

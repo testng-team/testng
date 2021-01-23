@@ -18,14 +18,14 @@ import org.testng.thread.IExecutorFactory;
 
 public class Configuration implements IConfiguration {
 
-  private IAnnotationFinder m_annotationFinder;
-  private ITestObjectFactory m_objectFactory;
-  private IHookable m_hookable;
-  private IConfigurable m_configurable;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
       Maps.newHashMap();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
       m_configurationListeners = Maps.newHashMap();
+  private IAnnotationFinder m_annotationFinder;
+  private ITestObjectFactory m_objectFactory;
+  private IHookable m_hookable;
+  private IConfigurable m_configurable;
   private boolean alwaysRunListeners = true;
   private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
 
@@ -110,14 +110,14 @@ public class Configuration implements IConfiguration {
   }
 
   @Override
-  public void setExecutorFactory(IExecutorFactory factory) {
-    this.m_executorFactory = factory;
-
+  public IExecutorFactory getExecutorFactory() {
+    return this.m_executorFactory;
   }
 
   @Override
-  public IExecutorFactory getExecutorFactory() {
-    return this.m_executorFactory;
+  public void setExecutorFactory(IExecutorFactory factory) {
+    this.m_executorFactory = factory;
+
   }
 
   @Override
@@ -126,13 +126,13 @@ public class Configuration implements IConfiguration {
   }
 
   @Override
-  public void setInjectorFactory(IInjectorFactory factory) {
-    this.injectorFactory = factory;
+  public IInjectorFactory getInjectorFactory() {
+    return this.injectorFactory;
   }
 
   @Override
-  public IInjectorFactory getInjectorFactory() {
-    return this.injectorFactory;
+  public void setInjectorFactory(IInjectorFactory factory) {
+    this.injectorFactory = factory;
   }
 
   @Override

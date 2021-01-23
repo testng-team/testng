@@ -1,7 +1,6 @@
 package test.superclass;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class Test3 extends BaseTest {

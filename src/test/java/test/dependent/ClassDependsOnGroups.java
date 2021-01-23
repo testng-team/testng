@@ -1,10 +1,10 @@
 package test.dependent;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class ClassDependsOnGroups extends BaseTest {
+
   @Test
   public void verifyDependsOnGroups() {
     addClass(test.dependent.DifferentClassDependsOnGroupsTest1.class.getName());

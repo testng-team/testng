@@ -1,6 +1,7 @@
 package test.retryAnalyzer.issue2148;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite.FailurePolicy;

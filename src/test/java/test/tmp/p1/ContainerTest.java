@@ -7,13 +7,13 @@ import org.testng.annotations.BeforeSuite;
 
 public class ContainerTest {
 
-    @BeforeSuite
-    public void startup() {
-        assertNotNull(null);
-    }
+  @BeforeSuite
+  public void startup() {
+    assertNotNull(null);
+  }
 
-    @AfterSuite
-    public void shutdown() {
-        assertNotNull(null);
-    }
+  @AfterSuite
+  public void shutdown() {
+    assertNotNull(null);
+  }
 }

@@ -6,24 +6,23 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import testhelper.PerformanceUtils;
 
-import java.util.*;
-
 
 /**
  * This class/interface
  */
 public class AssertTest {
+
   @Test
   public void nullObjectArrayAssertEquals() {
-    Object[] expected= null;
-    Object[] actual= null;
+    Object[] expected = null;
+    Object[] actual = null;
     Assert.assertEquals(actual, expected);
   }
 
   @Test
   public void nullObjectArrayAssertNoOrder() {
-    Object[] expected= null;
-    Object[] actual= null;
+    Object[] expected = null;
+    Object[] actual = null;
     Assert.assertEqualsNoOrder(actual, expected);
   }
 
@@ -95,8 +94,7 @@ public class AssertTest {
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
-    }
-    catch (AssertionError error) {
+    } catch (AssertionError error) {
       //do nothing
     }
   }
@@ -108,8 +106,7 @@ public class AssertTest {
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
-    }
-    catch (AssertionError error) {
+    } catch (AssertionError error) {
       //do nothing
     }
   }
@@ -117,8 +114,8 @@ public class AssertTest {
   /**
    * Testing comparison algorithm using big arrays.
    *
-   * @see <a href="https://github.com/cbeust/testng/issues/1384">Issue #1384 – Huge performance issue between 6.5.2
-   * and 6.11</a>
+   * @see <a href="https://github.com/cbeust/testng/issues/1384">Issue #1384 – Huge performance
+   * issue between 6.5.2 and 6.11</a>
    */
   @Test
   public void compareLargeArrays() {
@@ -137,7 +134,8 @@ public class AssertTest {
     // assertEquals() with primitive type arrays requires ~65Kb of memory
     // assertEquals() with Object-type requires ~3Mb of memory when comparing 100Kb arrays.
     // choosing 100Kb as a threshold
-    Assert.assertTrue(memoryUsage < 100 * 1024, "Amount of used memory should be approximately 65Kb");
+    Assert
+        .assertTrue(memoryUsage < 100 * 1024, "Amount of used memory should be approximately 65Kb");
   }
 
   @Test
@@ -177,10 +175,12 @@ public class AssertTest {
 
   @Test
   public void compareFloatArrays() {
-    float[] actual = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL, Float.MAX_VALUE,
-            Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
-    float[] expected = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL, Float.MAX_VALUE,
-            Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+    float[] actual = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL,
+        Float.MAX_VALUE,
+        Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+    float[] expected = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL,
+        Float.MAX_VALUE,
+        Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
     Assert.assertEquals(actual, expected);
   }
 
@@ -200,7 +200,7 @@ public class AssertTest {
 
   @Test
   public void compareFloatArraysWithNaNValues() {
-    Assert.assertEquals(new float[] { Float.NaN }, new float[] { Float.NaN });
+    Assert.assertEquals(new float[]{Float.NaN}, new float[]{Float.NaN});
   }
 
   @Test
@@ -211,15 +211,15 @@ public class AssertTest {
   @Test
   public void compareDoubleArrays() {
     double[] actual = {Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL, Double.MAX_VALUE,
-            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+        Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
     double[] expected = {Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL, Double.MAX_VALUE,
-            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+        Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
     Assert.assertEquals(actual, expected);
   }
 
   @Test
   public void compareDoubleArraysWithNaNValues() {
-    Assert.assertEquals(new double[] { Double.NaN }, new double[] { Double.NaN });
+    Assert.assertEquals(new double[]{Double.NaN}, new double[]{Double.NaN});
   }
 
   @Test
@@ -244,11 +244,11 @@ public class AssertTest {
   @Test(expectedExceptions = AssertionError.class)
   public void assertEqualsMapShouldFail() {
     Map<String, String> mapActual = new HashMap<String, String>() {{
-      put("a","1");
+      put("a", "1");
     }};
     Map<String, String> mapExpected = new HashMap<String, String>() {{
-      put("a","1");
-      put("b","2");
+      put("a", "1");
+      put("b", "2");
     }};
 
     Assert.assertEquals(mapActual, mapExpected);
@@ -273,13 +273,13 @@ public class AssertTest {
   }
 
   @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
-          expectedExceptionsMessageRegExp = "test expected \\[true\\] but found \\[false\\]")
+      expectedExceptionsMessageRegExp = "test expected \\[true\\] but found \\[false\\]")
   public void testAssertTrueMessage() {
     Assert.assertTrue(false, "test");
   }
 
   @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
-          expectedExceptionsMessageRegExp = "test expected \\[false\\] but found \\[true\\]")
+      expectedExceptionsMessageRegExp = "test expected \\[false\\] but found \\[true\\]")
   public void testAssertFalseMessage() {
     Assert.assertFalse(true, "test");
   }
@@ -338,14 +338,18 @@ public class AssertTest {
 
     int integer;
 
-    Contrived(int integer){
+    Contrived(int integer) {
       this.integer = integer;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (!(o instanceof Contrived)) return false;
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Contrived)) {
+        return false;
+      }
 
       Contrived contrived = (Contrived) o;
 
@@ -360,29 +364,35 @@ public class AssertTest {
 
   class Asymmetric extends Contrived {
 
-      char character;
+    char character;
 
-      Asymmetric(int integer, char character) {
-          super(integer);
-          this.character = character;
+    Asymmetric(int integer, char character) {
+      super(integer);
+      this.character = character;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Asymmetric)) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
       }
 
-      @Override
-      public boolean equals(Object o) {
-          if (this == o) return true;
-          if (!(o instanceof Asymmetric)) return false;
-          if (!super.equals(o)) return false;
+      Asymmetric that = (Asymmetric) o;
 
-          Asymmetric that = (Asymmetric) o;
+      return character == that.character;
+    }
 
-        return character == that.character;
-      }
-
-      @Override
-      public int hashCode() {
-          int result = super.hashCode();
-          result = 31 * result + (int) character;
-          return result;
-      }
+    @Override
+    public int hashCode() {
+      int result = super.hashCode();
+      result = 31 * result + (int) character;
+      return result;
+    }
   }
 }

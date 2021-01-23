@@ -10,15 +10,15 @@ import org.testng.annotations.Test;
 @Listeners(NoConfigAfterListenerSample.MySkipTestListener.class)
 public class NoConfigAfterListenerSample {
 
-    @Test
-    void shouldNotBeExecuted() {
-    }
+  @Test
+  void shouldNotBeExecuted() {
+  }
 
-    public static class MySkipTestListener implements IInvokedMethodListener {
+  public static class MySkipTestListener implements IInvokedMethodListener {
 
-        @Override
-        public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-            throw new SkipException("skip");
-        }
+    @Override
+    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+      throw new SkipException("skip");
     }
+  }
 }

@@ -4,8 +4,8 @@ import org.testng.annotations.Test;
 
 public class TestInterfaceListenersInheritSample implements ITestInterface {
 
-    @Test
-    public void testInterface() {
+  @Test
+  public void testInterface() {
 
-    }
+  }
 }

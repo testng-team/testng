@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiPredicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
@@ -7,10 +9,9 @@ import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 
-import java.util.Collections;
-import java.util.List;
-
-/** Collections of helper methods to help deal with TestNG configuration methods */
+/**
+ * Collections of helper methods to help deal with TestNG configuration methods
+ */
 class TestNgMethodUtils {
 
   private TestNgMethodUtils() {
@@ -22,7 +23,7 @@ class TestNgMethodUtils {
    *
    * @param method - A {@link ITestNGMethod} object which needs to be checked.
    * @return - <code>true</code> if the method is a configuration method and false if its a test
-   *     method.
+   * method.
    */
   static boolean isConfigurationMethod(ITestNGMethod method) {
     return isConfigurationMethod(method, false);
@@ -33,9 +34,9 @@ class TestNgMethodUtils {
    *
    * @param method - A {@link ITestNGMethod} object which needs to be checked.
    * @param includeGroupConfigs - <code>true</code> if before/after group configuration annotations
-   *     are also to be taken into consideration.
+   * are also to be taken into consideration.
    * @return - <code>true</code> if the method is a configuration method and false if its a test
-   *     method.
+   * method.
    */
   private static boolean isConfigurationMethod(ITestNGMethod method, boolean includeGroupConfigs) {
     boolean flag =
@@ -60,7 +61,7 @@ class TestNgMethodUtils {
    * @param method - A {@link ITestNGMethod} object which needs to be checked.
    * @param methods - A List of {@link ITestNGMethod} in which the check needs to be done.
    * @return - <code>true</code> if the method is a configuration method and exists in the list of
-   *     methods passed.
+   * methods passed.
    */
   private static boolean containsConfigurationMethod(
       ITestNGMethod method, List<ITestNGMethod> methods) {
@@ -77,7 +78,9 @@ class TestNgMethodUtils {
     return filterMethods(testClass, testClass.getAfterTestMethods(), predicate);
   }
 
-  /** @return Only the ITestNGMethods applicable for this testClass */
+  /**
+   * @return Only the ITestNGMethods applicable for this testClass
+   */
   static ITestNGMethod[] filterMethods(
       IClass testClass,
       ITestNGMethod[] methods,
@@ -126,7 +129,7 @@ class TestNgMethodUtils {
   /**
    * @param tm - The {@link ITestNGMethod} object which is to be tested.
    * @return - <code>true</code> if the method depends on other methods and cannot be run
-   *     independently.
+   * independently.
    */
   static boolean cannotRunMethodIndependently(ITestNGMethod tm) {
     String[] methods = tm.getMethodsDependedUpon();

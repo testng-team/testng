@@ -5,21 +5,21 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class ParallelWithFactorySampleTest extends BaseSequentialSample {
-  private int m_n;
 
-  @DataProvider
-  public static Object[][] dp() {
-    return new Object[][] {
-        new Object[] { 42 },
-        new Object[] { 43 }
-    };
-  }
+  private int m_n;
 
   @Factory(dataProvider = "dp")
   public ParallelWithFactorySampleTest(int n) {
     m_n = n;
   }
 
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        new Object[]{42},
+        new Object[]{43}
+    };
+  }
 
   protected int getN() {
     return m_n;

@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 public class FactoryAnnotatedConstructorExample {
+
   static List<FactoryAnnotatedConstructorExample> objects = Lists.newArrayList();
 
   private int data;

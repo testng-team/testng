@@ -1,12 +1,11 @@
 package org.testng.internal;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /**
  * Implementation of the Tarjan algorithm to find and display a cycle in a graph.
@@ -14,8 +13,9 @@ import java.util.Stack;
  * @author cbeust
  */
 public class Tarjan<T> {
-  int m_index = 0;
+
   private final Stack<T> m_s;
+  int m_index = 0;
   Map<T, Integer> m_indices = Maps.newHashMap();
   Map<T, Integer> m_lowlinks = Maps.newHashMap();
   private List<T> m_cycle;

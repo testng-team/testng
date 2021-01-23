@@ -1,5 +1,11 @@
 package org.testng.reporters;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -20,13 +26,6 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * This reporter is responsible for creating testng-failed.xml
  *
@@ -34,14 +33,51 @@ import java.util.stream.Collectors;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class FailedReporter implements IReporter {
+
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
   private XmlSuite m_xmlSuite;
 
-  public FailedReporter() {}
+  public FailedReporter() {
+  }
 
   public FailedReporter(XmlSuite xmlSuite) {
     m_xmlSuite = xmlSuite;
+  }
+
+  private static void getAllApplicableConfigs(Set<ITestNGMethod> configs, ITestClass iTestClass) {
+    configs.addAll(Arrays.asList(iTestClass.getBeforeSuiteMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterSuiteMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getBeforeTestConfigurationMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterTestConfigurationMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getBeforeTestMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterTestMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getBeforeClassMethods()));
+    configs.addAll(Arrays.asList(iTestClass.getAfterClassMethods()));
+  }
+
+  /**
+   * Get local parameters of one include method from origin test xml.
+   *
+   * @param srcXmlTest The {@link XmlTest} object that represents the source.
+   * @param method the method we want to find its parameters
+   * @return local parameters belong to one test method.
+   */
+  private static Map<String, String> findMethodLocalParameters(
+      XmlTest srcXmlTest, ITestNGMethod method) {
+    Class<?> clazz = method.getRealClass();
+
+    for (XmlClass c : srcXmlTest.getClasses()) {
+      if (clazz == c.getSupportClass()) {
+        for (XmlInclude xmlInclude : c.getIncludedMethods()) {
+          if (xmlInclude.getName().equals(method.getMethodName())) {
+            return xmlInclude.getLocalParameters();
+          }
+        }
+      }
+    }
+
+    return Collections.emptyMap();
   }
 
   @Override
@@ -99,7 +135,8 @@ public class FailedReporter implements IReporter {
         }
         methodsToReRun.add(current);
         List<ITestNGMethod> methodsDependedUpon =
-            MethodHelper.getMethodsDependedUpon(current, allTestMethods, Systematiser.getComparator());
+            MethodHelper
+                .getMethodsDependedUpon(current, allTestMethods, Systematiser.getComparator());
 
         for (ITestNGMethod m : methodsDependedUpon) {
           if (m.isTest()) {
@@ -133,18 +170,9 @@ public class FailedReporter implements IReporter {
     }
   }
 
-  private static void getAllApplicableConfigs(Set<ITestNGMethod> configs, ITestClass iTestClass) {
-    configs.addAll(Arrays.asList(iTestClass.getBeforeSuiteMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getAfterSuiteMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getBeforeTestConfigurationMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getAfterTestConfigurationMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getBeforeTestMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getAfterTestMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getBeforeClassMethods()));
-    configs.addAll(Arrays.asList(iTestClass.getAfterClassMethods()));
-  }
-
-  /** Generate testng-failed.xml */
+  /**
+   * Generate testng-failed.xml
+   */
   private void createXmlTest(
       ITestContext context, List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     XmlTest xmlTest = new XmlTest(m_xmlSuite);
@@ -163,7 +191,7 @@ public class FailedReporter implements IReporter {
    * @param methods The methods we want to represent
    * @param srcXmlTest The {@link XmlTest} object that represents the source.
    * @return A list of XmlClass objects (each representing a <class> tag) based on the parameter
-   *     methods
+   * methods
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     List<XmlClass> result = Lists.newArrayList();
@@ -178,9 +206,9 @@ public class FailedReporter implements IReporter {
 
     // Store parameters per XmlClass
 
-    Map<String,  Map<String,  String>> classParameters = Maps.newHashMap();
+    Map<String, Map<String, String>> classParameters = Maps.newHashMap();
     for (XmlClass c : srcXmlTest.getClasses()) {
-      classParameters.put(c.getName(),c.getLocalParameters());
+      classParameters.put(c.getName(), c.getLocalParameters());
     }
 
     int index = 0;
@@ -201,37 +229,13 @@ public class FailedReporter implements IReporter {
       }
       xmlClass.setIncludedMethods(methodNames);
       xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
-              .values()
-              .stream()
-              .flatMap(map -> map.entrySet().stream())
-              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)-> v2))));
+          .values()
+          .stream()
+          .flatMap(map -> map.entrySet().stream())
+          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v2))));
       result.add(xmlClass);
     }
 
     return result;
-  }
-
-  /**
-   * Get local parameters of one include method from origin test xml.
-   *
-   * @param srcXmlTest The {@link XmlTest} object that represents the source.
-   * @param method the method we want to find its parameters
-   * @return local parameters belong to one test method.
-   */
-  private static Map<String, String> findMethodLocalParameters(
-      XmlTest srcXmlTest, ITestNGMethod method) {
-    Class<?> clazz = method.getRealClass();
-
-    for (XmlClass c : srcXmlTest.getClasses()) {
-      if (clazz == c.getSupportClass()) {
-        for (XmlInclude xmlInclude : c.getIncludedMethods()) {
-          if (xmlInclude.getName().equals(method.getMethodName())) {
-            return xmlInclude.getLocalParameters();
-          }
-        }
-      }
-    }
-
-    return Collections.emptyMap();
   }
 }

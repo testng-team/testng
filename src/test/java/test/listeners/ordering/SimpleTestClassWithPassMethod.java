@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 public class SimpleTestClassWithPassMethod {
 
   @Test
-  public void testWillPass() {}
+  public void testWillPass() {
+  }
 
 }

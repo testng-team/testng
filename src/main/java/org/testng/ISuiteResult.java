@@ -1,9 +1,12 @@
 package org.testng;
 
-/** This class represents the result of a suite run. */
+/**
+ * This class represents the result of a suite run.
+ */
 public interface ISuiteResult {
 
-  /** @return The name of the property file for these tests.
+  /**
+   * @return The name of the property file for these tests.
    * @deprecated - This method is deprecated as of "7.4.0"
    */
   @Deprecated
@@ -11,6 +14,8 @@ public interface ISuiteResult {
     return "";
   }
 
-  /** @return The testing context for these tests. */
+  /**
+   * @return The testing context for these tests.
+   */
   ITestContext getTestContext();
 }

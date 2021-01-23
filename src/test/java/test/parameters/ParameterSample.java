@@ -8,15 +8,15 @@ import org.testng.annotations.Test;
 
 public class ParameterSample {
 
-  @Parameters({ "first-name" })
+  @Parameters({"first-name"})
   @BeforeMethod
   public void beforeTest(String firstName) {
     Assert.assertEquals(firstName, "Cedric");
   }
 
 
-  @Parameters({ "first-name" })
-  @Test(groups = { "singleString"})
+  @Parameters({"first-name"})
+  @Test(groups = {"singleString"})
   public void testSingleString(String firstName) {
     Assert.assertEquals(firstName, "Cedric");
   }

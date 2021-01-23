@@ -1,10 +1,9 @@
 package test.factory.issue1924;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;

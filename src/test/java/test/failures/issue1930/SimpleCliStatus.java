@@ -7,6 +7,7 @@ import org.testng.ITestListener;
 import org.testng.collections.Maps;
 
 public class SimpleCliStatus implements ITestListener {
+
   private Map<String, List<Integer>> failedTests = Maps.newHashMap();
 
   public Map<String, List<Integer>> getFailedTests() {

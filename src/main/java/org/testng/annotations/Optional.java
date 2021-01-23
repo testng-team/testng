@@ -3,10 +3,9 @@ package org.testng.annotations;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.testng.internal.Parameters;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import org.testng.internal.Parameters;
 
 /**
  * Specifies that the current parameter is optional. TestNG will pass in a specified default value,
@@ -15,6 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({PARAMETER})
 public @interface Optional {
+
   /**
    * The default value to pass to this parameter.
    *

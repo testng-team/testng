@@ -14,12 +14,19 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class ConfigurationTest {
+
   private boolean m_beforeSuite = false;
   private boolean m_afterSuite = false;
   private boolean m_beforeClass = false;
   private boolean m_afterClass = false;
   private boolean m_beforeMethod = false;
   private boolean m_afterMethod = false;
+
+  private static void ppp(String s) {
+    if (false) {
+      System.out.println("[ConfigurationTest] " + s);
+    }
+  }
 
   @BeforeSuite
   public void beforeSuite() {
@@ -113,11 +120,5 @@ public class ConfigurationTest {
     assert !m_afterSuite : "afterSuite shouldn't have run";
     assert !m_afterClass : "afterClass shouldn't have run";
     assert !m_afterMethod : "afterMethod shouldn't have run";
-  }
-
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[ConfigurationTest] " + s);
-    }
   }
 }

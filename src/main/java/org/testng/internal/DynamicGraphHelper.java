@@ -1,7 +1,12 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import org.testng.DependencyMap;
 import org.testng.ITestNGMethod;
 import org.testng.TestRunner;
@@ -12,12 +17,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.XmlTest;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class DynamicGraphHelper {
 
@@ -112,7 +111,7 @@ public final class DynamicGraphHelper {
   }
 
   private static boolean canGroupByInstances(XmlTest xmlTest) {
-    return xmlTest.getGroupByInstances() && ! xmlTest.getParallel().equals(ParallelMode.INSTANCES);
+    return xmlTest.getGroupByInstances() && !xmlTest.getParallel().equals(ParallelMode.INSTANCES);
   }
 
   private static ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
@@ -128,9 +127,9 @@ public final class DynamicGraphHelper {
     }
 
     final List<XmlClass> classesWithMethods = test.getXmlClasses()
-            .stream()
-            .filter(xmlClass -> methodsFromClass.keySet().contains(xmlClass.getName()))
-            .collect(Collectors.toList());
+        .stream()
+        .filter(xmlClass -> methodsFromClass.keySet().contains(xmlClass.getName()))
+        .collect(Collectors.toList());
 
     for (XmlClass c : classesWithMethods) {
       classes.put(c.getName(), new ArrayList<>());

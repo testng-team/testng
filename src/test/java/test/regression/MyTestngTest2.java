@@ -13,8 +13,9 @@ public class MyTestngTest2 extends MyTestngTest {
 
   @BeforeMethod()
   public void beforeMethod(ITestContext tc) throws Exception {
-      //throw new Exception("fail me");
+    //throw new Exception("fail me");
   }
+
   @Test()
   public void test(ITestContext tc) {
   }

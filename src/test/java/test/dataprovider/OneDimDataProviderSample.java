@@ -1,17 +1,21 @@
 package test.dataprovider;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 public class OneDimDataProviderSample {
 
   @DataProvider
   public static Object[] staticArray() {
-    return new Object[] {"foo", "bar"};
+    return new Object[]{"foo", "bar"};
+  }
+
+  @DataProvider
+  public static Iterator<Object> staticIterator() {
+    return Arrays.<Object>asList("foo", "bar").iterator();
   }
 
   @Test(dataProvider = "staticArray")
@@ -21,17 +25,12 @@ public class OneDimDataProviderSample {
 
   @DataProvider
   public Object[] array() {
-    return new Object[] {"foo", "bar"};
+    return new Object[]{"foo", "bar"};
   }
 
   @Test(dataProvider = "array")
   public void testArray(String s) {
     Assert.assertNotNull(s);
-  }
-
-  @DataProvider
-  public static Iterator<Object> staticIterator() {
-    return Arrays.<Object>asList("foo", "bar").iterator();
   }
 
   @Test(dataProvider = "staticIterator")

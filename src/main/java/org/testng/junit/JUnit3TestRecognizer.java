@@ -4,10 +4,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import junit.framework.Test;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 public class JUnit3TestRecognizer implements JUnitTestRecognizer {
 
-  public JUnit3TestRecognizer() {}
+  public JUnit3TestRecognizer() {
+  }
 
   public boolean isTest(Class c) {
     // class implementing junit.framework.Test with at least one test* method

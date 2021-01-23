@@ -1,17 +1,17 @@
 package org.testng;
 
-import org.testng.log4testng.Logger;
-
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.testng.log4testng.Logger;
 
 /**
  * Helper methods used by the Eclipse plug-in when converting tests from JUnit.
  */
 // TODO move code into eclipse project
 public class ConversionUtils {
+
   /**
    * Turns the output of a JUnit 4 @Parameters style data provider into one that is suitable for
    * TestNG's @DataProvider.

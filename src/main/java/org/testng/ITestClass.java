@@ -4,9 +4,9 @@ package org.testng;
  * This class represents a test class:
  *
  * <ul>
- *   <li>The test methods
- *   <li>The configuration methods (test and method)
- *   <li>The class file
+ * <li>The test methods
+ * <li>The configuration methods (test and method)
+ * <li>The class file
  * </ul>
  *
  * Note that the methods returned by instances of this class are expected to be correct at runtime.
@@ -41,12 +41,13 @@ public interface ITestClass extends IClass {
    * any of its test methods is invoked.
    *
    * @return All the methods that should be invoked after the test class has been created and before
-   *     any of its test methods is invoked.
+   * any of its test methods is invoked.
    */
   ITestNGMethod[] getBeforeClassMethods();
 
   /**
-   * Returns all the methods that should be invoked after all the tests have been run on this class.
+   * Returns all the methods that should be invoked after all the tests have been run on this
+   * class.
    *
    * @return All the methods that should be invoked after all the tests have been run on this class.
    */
@@ -71,7 +72,7 @@ public interface ITestClass extends IClass {
    * test.
    *
    * @return all @Configuration methods that should be invoked before any others in the current
-   *     test.
+   * test.
    */
   ITestNGMethod[] getBeforeTestConfigurationMethods();
 
@@ -80,7 +81,7 @@ public interface ITestClass extends IClass {
    * current test.
    *
    * @return all @Configuration methods that should be invoked last before any others in the current
-   *     test.
+   * test.
    */
   ITestNGMethod[] getAfterTestConfigurationMethods();
 

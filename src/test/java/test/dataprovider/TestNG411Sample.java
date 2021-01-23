@@ -12,7 +12,7 @@ public class TestNG411Sample {
 
   @DataProvider(name = CHECK_MAX_DATA)
   public Object[][] dataProviderCheckMax() {
-    return new Object[][] {{1, 2, 3, 3}};
+    return new Object[][]{{1, 2, 3, 3}};
   }
 
   @Test(
@@ -25,7 +25,7 @@ public class TestNG411Sample {
 
   @DataProvider(name = CHECK_MIN_DATA)
   public Object[][] dataProviderCheckMin() {
-    return new Object[][] {{1, 2}};
+    return new Object[][]{{1, 2}};
   }
 
   @Test(

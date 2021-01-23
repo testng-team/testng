@@ -1,14 +1,15 @@
 package test.retryAnalyzer;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-
 public class ExitCodeTest extends SimpleBaseTest {
+
   @Test
   public void exitsWithZeroOnSuccess() {
     TestNG tng = create(ImmediateSuccess.class);

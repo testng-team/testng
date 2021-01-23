@@ -8,17 +8,19 @@ import org.testng.annotations.Test;
  */
 public class TestClassContainer {
 
-    public static class SimpleTestClass {
-        @Test
-        public void testMethod() {
-        }
-    }
+  public static class SimpleTestClass {
 
-    @Listeners(TestListenerFor1232.class)
-    public static class SimpleTestClassWithListener {
-        @Test
-        public void testMethod() {
-        }
+    @Test
+    public void testMethod() {
     }
+  }
+
+  @Listeners(TestListenerFor1232.class)
+  public static class SimpleTestClassWithListener {
+
+    @Test
+    public void testMethod() {
+    }
+  }
 
 }

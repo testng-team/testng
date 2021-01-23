@@ -1,11 +1,10 @@
 package test.invokedmethodlistener;
 
+import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
-
-import java.util.List;
 
 public class InvokedMethodListener implements IInvokedMethodListener {
 

@@ -1,11 +1,10 @@
 package test.factory.github1083;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DataProviderArrayFactorySample {
 
@@ -17,18 +16,18 @@ public class DataProviderArrayFactorySample {
     this.parameter = parameter;
   }
 
-  @Test
-  public void test() {
-    parameters.add(parameter);
-  }
-
   @Factory(indices = 1, dataProvider = "dp")
   public static Object[] arrayFactory(String s) {
-    return new Object[] {new DataProviderArrayFactorySample(s)};
+    return new Object[]{new DataProviderArrayFactorySample(s)};
   }
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][] {new Object[] {"foo"}, new Object[] {"bar"}};
+    return new Object[][]{new Object[]{"foo"}, new Object[]{"bar"}};
+  }
+
+  @Test
+  public void test() {
+    parameters.add(parameter);
   }
 }

@@ -7,26 +7,26 @@ import org.testng.annotations.Test;
 
 public class Issue1029SampleTestClassWithFiveInstances {
 
-    private int i;
+  private int i;
 
-    @Factory(dataProvider = "dp")
-    public Issue1029SampleTestClassWithFiveInstances(int i) {
-        this.i = i;
-    }
+  @Factory(dataProvider = "dp")
+  public Issue1029SampleTestClassWithFiveInstances(int i) {
+    this.i = i;
+  }
 
-    @Test
-    public void a() {
-        Assert.assertTrue(i > 0);
-    }
+  @DataProvider(name = "dp")
+  public static Object[][] getData() {
+    return new Object[][]{
+        {1},
+        {2},
+        {3},
+        {4},
+        {5}
+    };
+  }
 
-    @DataProvider(name = "dp")
-    public static Object[][] getData() {
-        return new Object[][]{
-                {1},
-                {2},
-                {3},
-                {4},
-                {5}
-        };
-    }
+  @Test
+  public void a() {
+    Assert.assertTrue(i > 0);
+  }
 }

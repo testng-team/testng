@@ -7,8 +7,10 @@ import org.testng.annotations.Test;
 public class TestSampleWithListener {
 
   @Test
-  public void parent() {}
+  public void parent() {
+  }
 
   @Test(dependsOnMethods = "parent")
-  public void child() {}
+  public void child() {
+  }
 }

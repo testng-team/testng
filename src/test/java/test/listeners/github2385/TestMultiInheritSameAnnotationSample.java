@@ -4,8 +4,8 @@ import org.testng.annotations.Test;
 
 public class TestMultiInheritSameAnnotationSample implements ITestInterface, ITestInterfaceSame {
 
-    @Test
-    public void testMultiInheritSameAnnotation() {
+  @Test
+  public void testMultiInheritSameAnnotation() {
 
-    }
+  }
 }

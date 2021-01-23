@@ -26,16 +26,17 @@ import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
 
-/** Helper methods to parse annotations. */
+/**
+ * Helper methods to parse annotations.
+ */
 public final class Utils {
 
-  private static final String LINE_SEP = RuntimeBehavior.getDefaultLineSeparator();
-
-  private static final char[] SPECIAL_CHARACTERS = {
-    '*', '/', '\\', '?', '%', ':', ';', '<', '>', '&', '~', '|'
-  };
   public static final char CHAR_REPLACEMENT = '_';
   public static final char UNICODE_REPLACEMENT = 0xFFFD;
+  private static final String LINE_SEP = RuntimeBehavior.getDefaultLineSeparator();
+  private static final char[] SPECIAL_CHARACTERS = {
+      '*', '/', '\\', '?', '%', ':', ';', '<', '>', '&', '~', '|'
+  };
   private static final String FORMAT = String.format("[%s]", Utils.class.getSimpleName());
 
   private static final Logger LOG = Logger.getLogger(Utils.class);
@@ -50,7 +51,9 @@ public final class Utils {
     ESCAPES.put('&', "&amp;");
   }
 
-  /** Hide constructor for utility class. */
+  /**
+   * Hide constructor for utility class.
+   */
   private Utils() {
     // Hide constructor
   }
@@ -83,8 +86,8 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir encoding the output as
    * UTF-8. If outDir does not exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <code>null</code> then current directory
-   *     is used.
+   * @param outputDir the output directory (may not exist). If <code>null</code> then current
+   * directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
@@ -98,8 +101,8 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir. If outDir does not
    * exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <code>null</code> then current directory
-   *     is used.
+   * @param outputDir the output directory (may not exist). If <code>null</code> then current
+   * directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
@@ -114,7 +117,7 @@ public final class Utils {
    * exist, it is created.
    *
    * @param outputFolder the output directory (may not exist). If <tt>null</tt> then current
-   *     directory is used.
+   * directory is used.
    * @param fileNameParameter the filename
    * @param sb the file content
    */
@@ -338,11 +341,6 @@ public final class Utils {
     return RuntimeBehavior.showTestNGStackFrames() || TestRunner.getVerbose() >= 2;
   }
 
-  private enum StackTraceType {
-    SHORT,
-    FULL
-  }
-
   public static String escapeHtml(String s) {
     if (s == null) {
       return null;
@@ -396,7 +394,7 @@ public final class Utils {
       // the stack frames of the trace
       //
       String[] excludedStrings =
-          new String[] {"org.testng", "reflect", "org.gradle", "org.apache.maven.surefire"};
+          new String[]{"org.testng", "reflect", "org.gradle", "org.apache.maven.surefire"};
 
       int excludedCount = 0;
       while ((line = bufferedReader.readLine()) != null) {
@@ -490,11 +488,10 @@ public final class Utils {
 
   /**
    * If the file name contains special characters like *,/,\ and so on, exception will be thrown and
-   * report file will not be created.<br>
-   * Special characters are platform specific and they are not same for example on Windows and
-   * Macintosh. * is not allowed on Windows, but it is on Macintosh.<br>
-   * In order to have the same behavior of testng on the all platforms, characters like * will be
-   * replaced on all platforms whether they are causing the problem or not.
+   * report file will not be created.<br> Special characters are platform specific and they are not
+   * same for example on Windows and Macintosh. * is not allowed on Windows, but it is on
+   * Macintosh.<br> In order to have the same behavior of testng on the all platforms, characters
+   * like * will be replaced on all platforms whether they are causing the problem or not.
    *
    * @param fileNameParameter file name that could contain special characters.
    * @return fileName with special characters replaced
@@ -616,6 +613,11 @@ public final class Utils {
     return Arrays.stream(parameterTypes)
         .map(Class::getName)
         .collect(Collectors.joining(","));
+  }
+
+  private enum StackTraceType {
+    SHORT,
+    FULL
   }
 
 }

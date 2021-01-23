@@ -1,16 +1,15 @@
 package test.failedreporter;
 
+import static test.failedreporter.FailedReporterLocalTestClass.WithFailure;
+import static test.failedreporter.FailedReporterLocalTestClass.WithoutFailure;
+
+import java.io.File;
+import java.util.UUID;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
 import test.SimpleBaseTest;
-
-import java.io.File;
-import java.util.UUID;
-
-import static test.failedreporter.FailedReporterLocalTestClass.WithFailure;
-import static test.failedreporter.FailedReporterLocalTestClass.WithoutFailure;
 
 public class FailedReporterScenariosTest extends SimpleBaseTest {
 
@@ -41,7 +40,7 @@ public class FailedReporterScenariosTest extends SimpleBaseTest {
   private void runAssertions(File fileLocation) {
     try {
       FailedReporterTest.runAssertions(
-          fileLocation, new String[] {"testMethodWithFailure"}, "<include name=\"%s\"/>");
+          fileLocation, new String[]{"testMethodWithFailure"}, "<include name=\"%s\"/>");
       Assert.assertTrue(getLocation(fileLocation).exists());
     } finally {
       if (fileLocation.exists()) {
@@ -62,13 +61,13 @@ public class FailedReporterScenariosTest extends SimpleBaseTest {
     Class[] classes = {};
     switch (runType) {
       case WITH_FAILURES:
-        classes = new Class[] {WithFailure.class};
+        classes = new Class[]{WithFailure.class};
         break;
       case WITHOUT_FAILURES:
-        classes = new Class[] {WithoutFailure.class};
+        classes = new Class[]{WithoutFailure.class};
         break;
       case MIXED_MODE:
-        classes = new Class[] {WithFailure.class, WithoutFailure.class};
+        classes = new Class[]{WithFailure.class, WithoutFailure.class};
     }
     TestNG testNG = create(fileLocation.toPath(), classes);
     testNG.setUseDefaultListeners(true);

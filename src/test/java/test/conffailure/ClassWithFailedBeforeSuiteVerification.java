@@ -8,6 +8,10 @@ public class ClassWithFailedBeforeSuiteVerification {
   private static boolean m_success1 = true;
   private static boolean m_success2 = true;
 
+  public static boolean success() {
+    return m_success1 && m_success2;
+  }
+
   // Should not be run because beforeSuite failed on the other class
   @BeforeClass
   public void setUp() {
@@ -18,9 +22,5 @@ public class ClassWithFailedBeforeSuiteVerification {
   @AfterClass
   public void tearDown() {
     m_success2 = false;
-  }
-
-  public static boolean success() {
-    return m_success1 && m_success2;
   }
 }

@@ -18,7 +18,8 @@ public class DependentOnGroup2AlwaysRunSampleTest {
   }
 
   @Test(groups = {"group-a"})
-  public void a2() {}
+  public void a2() {
+  }
 
   @Test(
       dependsOnGroups = {"group-a"},

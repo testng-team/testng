@@ -18,10 +18,11 @@ public class DryRunSample {
   }
 
   @Test(dataProvider = "dp")
-  public void test1(int i) {}
+  public void test1(int i) {
+  }
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {{1}, {2}};
+    return new Object[][]{{1}, {2}};
   }
 }

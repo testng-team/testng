@@ -1,32 +1,15 @@
 package test.listeners;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.IExecutionListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
-
 public class ExecutionListenerTest extends SimpleBaseTest {
-
-  public static class ExecutionListener implements IExecutionListener {
-    public static boolean m_start = false;
-    public static boolean m_finish = false;
-
-    @Override
-    public void onExecutionStart() {
-      m_start = true;
-    }
-
-    @Override
-    public void onExecutionFinish() {
-      m_finish = true;
-    }
-  }
 
   @Test
   public void executionListenerWithXml() {
@@ -60,5 +43,21 @@ public class ExecutionListenerTest extends SimpleBaseTest {
 
     Assert.assertEquals(ExecutionListener.m_start, expected);
     Assert.assertEquals(ExecutionListener.m_finish, expected);
+  }
+
+  public static class ExecutionListener implements IExecutionListener {
+
+    public static boolean m_start = false;
+    public static boolean m_finish = false;
+
+    @Override
+    public void onExecutionStart() {
+      m_start = true;
+    }
+
+    @Override
+    public void onExecutionFinish() {
+      m_finish = true;
+    }
   }
 }

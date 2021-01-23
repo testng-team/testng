@@ -1,5 +1,9 @@
 package org.testng.internal;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -7,17 +11,13 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
-
 /**
  * Represents a proxy for an actual instance of {@link ITestNGMethod} but with the exception that it
  * generates a unique hashcode that is different from the original {@link ITestNGMethod} instance
  * that it wraps.
  */
 public class WrappedTestNGMethod implements ITestNGMethod {
+
   private final ITestNGMethod testNGMethod;
   private final int multiplicationFactor = new Random().nextInt();
 
@@ -241,13 +241,13 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setParameterInvocationCount(int n) {
-    testNGMethod.setParameterInvocationCount(n);
+  public int getParameterInvocationCount() {
+    return testNGMethod.getParameterInvocationCount();
   }
 
   @Override
-  public int getParameterInvocationCount() {
-    return testNGMethod.getParameterInvocationCount();
+  public void setParameterInvocationCount(int n) {
+    testNGMethod.setParameterInvocationCount(n);
   }
 
   @Override
@@ -271,13 +271,13 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-    testNGMethod.setRetryAnalyzerClass(clazz);
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return testNGMethod.getRetryAnalyzerClass();
   }
 
   @Override
-  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return testNGMethod.getRetryAnalyzerClass();
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    testNGMethod.setRetryAnalyzerClass(clazz);
   }
 
   @Override

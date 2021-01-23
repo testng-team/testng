@@ -1,8 +1,13 @@
 package org.testng.internal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.ITest;
@@ -15,15 +20,12 @@ import org.testng.TestRunner;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 
-import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
-
-/** This class represents the result of a test. */
+/**
+ * This class represents the result of a test.
+ */
 public class TestResult implements ITestResult {
 
+  private final IAttributes m_attributes = new Attributes();
   private ITestNGMethod m_method = null;
   private List<ITestNGMethod> skippedDueTo = Lists.newArrayList();
   private boolean skipAnalysed = false;
@@ -38,7 +40,6 @@ public class TestResult implements ITestResult {
   private ITestContext m_context;
   private int parameterIndex;
   private boolean m_wasRetried;
-  private final IAttributes m_attributes = new Attributes();
 
   private TestResult() {
     //defeat instantiation. We have factory methods.
@@ -84,6 +85,36 @@ public class TestResult implements ITestResult {
     testResult.init(method, ctx, null, start, 0L);
     TestResult.copyAttributes(result, testResult);
     return testResult;
+  }
+
+  private static String toString(int status) {
+    switch (status) {
+      case SUCCESS:
+        return "SUCCESS";
+      case FAILURE:
+        return "FAILURE";
+      case SKIP:
+        return "SKIP";
+      case SUCCESS_PERCENTAGE_FAILURE:
+        return "SUCCESS WITHIN PERCENTAGE";
+      case STARTED:
+        return "STARTED";
+      case CREATED:
+        return "CREATED";
+      default:
+        throw new TestNGException("Encountered an un-defined test status of [" + status + "].");
+    }
+  }
+
+  private static boolean isGlobalFailure(ITestResult result) {
+    ITestNGMethod m = result.getMethod();
+    return m.isBeforeTestConfiguration() || m.isBeforeSuiteConfiguration();
+  }
+
+  static void copyAttributes(ITestResult source, ITestResult target) {
+    source
+        .getAttributeNames()
+        .forEach(name -> target.setAttribute(name, source.getAttribute(name)));
   }
 
   private void init(ITestNGMethod method, ITestContext ctx, Throwable t, long start, long end) {
@@ -143,11 +174,6 @@ public class TestResult implements ITestResult {
     }
   }
 
-  @Override
-  public void setEndMillis(long millis) {
-    m_endMillis = millis;
-  }
-
   /**
    * If this result's related instance implements ITest or use @Test(testName=...), returns its test
    * name, otherwise returns null.
@@ -168,28 +194,41 @@ public class TestResult implements ITestResult {
   }
 
   @Override
+  public void setTestName(String name) {
+    m_name = name;
+  }
+
+  @Override
   public String getName() {
     return m_name;
   }
 
-  /** @return Returns the method. */
+  /**
+   * @return Returns the method.
+   */
   @Override
   public ITestNGMethod getMethod() {
     return m_method;
   }
 
-  /** @param method The method to set. */
+  /**
+   * @param method The method to set.
+   */
   public void setMethod(ITestNGMethod method) {
     m_method = method;
   }
 
-  /** @return Returns the status. */
+  /**
+   * @return Returns the status.
+   */
   @Override
   public int getStatus() {
     return m_status;
   }
 
-  /** @param status The status to set. */
+  /**
+   * @param status The status to set.
+   */
   @Override
   public void setStatus(int status) {
     m_status = status;
@@ -200,31 +239,46 @@ public class TestResult implements ITestResult {
     return ITestResult.SUCCESS == m_status;
   }
 
-  /** @return Returns the testClass. */
+  /**
+   * @return Returns the testClass.
+   */
   @Override
   public IClass getTestClass() {
     return m_method.getTestClass();
   }
 
-  /** @return Returns the throwable. */
+  /**
+   * @return Returns the throwable.
+   */
   @Override
   public Throwable getThrowable() {
     return m_throwable;
   }
 
-  /** @param throwable The throwable to set. */
+  /**
+   * @param throwable The throwable to set.
+   */
   @Override
   public void setThrowable(Throwable throwable) {
     m_throwable = throwable;
   }
 
-  /** @return Returns the endMillis. */
+  /**
+   * @return Returns the endMillis.
+   */
   @Override
   public long getEndMillis() {
     return m_endMillis;
   }
 
-  /** @return Returns the startMillis. */
+  @Override
+  public void setEndMillis(long millis) {
+    m_endMillis = millis;
+  }
+
+  /**
+   * @return Returns the startMillis.
+   */
   @Override
   public long getStartMillis() {
     return m_startMillis;
@@ -241,25 +295,6 @@ public class TestResult implements ITestResult {
         .add("method", m_method)
         .add("output", output != null && output.size() > 0 ? output.get(0) : null)
         .toString();
-  }
-
-  private static String toString(int status) {
-    switch (status) {
-      case SUCCESS:
-        return "SUCCESS";
-      case FAILURE:
-        return "FAILURE";
-      case SKIP:
-        return "SKIP";
-      case SUCCESS_PERCENTAGE_FAILURE:
-        return "SUCCESS WITHIN PERCENTAGE";
-      case STARTED:
-        return "STARTED";
-      case CREATED:
-        return "CREATED";
-      default:
-        throw new TestNGException("Encountered an un-defined test status of [" + status + "].");
-    }
   }
 
   @Override
@@ -350,17 +385,12 @@ public class TestResult implements ITestResult {
     return m_instanceName;
   }
 
-  @Override
-  public void setTestName(String name) {
-    m_name = name;
+  public int getParameterIndex() {
+    return parameterIndex;
   }
 
   void setParameterIndex(int parameterIndex) {
     this.parameterIndex = parameterIndex;
-  }
-
-  public int getParameterIndex() {
-    return parameterIndex;
   }
 
   public boolean wasRetried() {
@@ -395,9 +425,9 @@ public class TestResult implements ITestResult {
       return Collections.unmodifiableList(skippedDueTo);
     }
     //Looks like we didnt have any configuration failures. So some upstream method perhaps failed.
-    if (m_method.getMethodsDependedUpon().length==0) {
+    if (m_method.getMethodsDependedUpon().length == 0) {
       //Maybe group dependencies exist ?
-      if (m_method.getGroupsDependedUpon().length==0) {
+      if (m_method.getGroupsDependedUpon().length == 0) {
         return Collections.emptyList();
       }
       List<String> upstreamGroups = Arrays.asList(m_method.getGroupsDependedUpon());
@@ -425,11 +455,6 @@ public class TestResult implements ITestResult {
     return Collections.unmodifiableList(skippedDueTo);
   }
 
-  private static boolean isGlobalFailure(ITestResult result) {
-    ITestNGMethod m = result.getMethod();
-    return m.isBeforeTestConfiguration() || m.isBeforeSuiteConfiguration();
-  }
-
   private boolean isRelated(ITestResult result) {
     ITestNGMethod m = result.getMethod();
     if (!m.isBeforeClassConfiguration() && !m.isBeforeMethodConfiguration()) {
@@ -447,18 +472,12 @@ public class TestResult implements ITestResult {
       return false;
     }
     String[] mygroups = this.m_method.getGroups();
-    if (mygroups.length == 0 || m.getGroups().length ==0) {
+    if (mygroups.length == 0 || m.getGroups().length == 0) {
       return false;
     }
 
     List<String> cfgMethodGroups = Arrays.asList(m.getGroups());
     return Arrays.stream(mygroups).anyMatch(cfgMethodGroups::contains);
-  }
-
-  static void copyAttributes(ITestResult source, ITestResult target) {
-    source
-        .getAttributeNames()
-        .forEach(name -> target.setAttribute(name, source.getAttribute(name)));
   }
 
 

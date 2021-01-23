@@ -5,7 +5,9 @@ import junit.framework.Test;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 public class JUnit3TestMethod extends JUnitTestMethod {
 
   public JUnit3TestMethod(JUnitTestClass owner, Test test) {

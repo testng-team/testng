@@ -6,7 +6,8 @@ import org.testng.annotations.Test;
 public class SimpleTestClassWithPassFailMethods {
 
   @Test
-  public void testWillPass() {}
+  public void testWillPass() {
+  }
 
   @Test
   public void testWillFail() {
@@ -14,6 +15,7 @@ public class SimpleTestClassWithPassFailMethods {
   }
 
   @Test(dependsOnMethods = "testWillFail")
-  public void testWillSkip() {}
+  public void testWillSkip() {
+  }
 
 }

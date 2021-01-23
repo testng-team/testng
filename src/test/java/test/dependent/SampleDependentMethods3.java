@@ -10,9 +10,14 @@ import org.testng.annotations.Test;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class SampleDependentMethods3 {
+
   private boolean m_oneA = false;
   private boolean m_oneB = false;
   private boolean m_secondA = false;
+
+  public static void ppp(String s) {
+    System.out.println("[SampleDependentMethods] " + s);
+  }
 
   @Test
   public void one() {
@@ -41,9 +46,5 @@ public class SampleDependentMethods3 {
     assert m_oneA : "oneA wasn't run";
     assert m_oneB : "oneB wasn't run";
     assert m_secondA : "secondA wasn't run";
-  }
-
-  public static void ppp(String s) {
-    System.out.println("[SampleDependentMethods] " + s);
   }
 }

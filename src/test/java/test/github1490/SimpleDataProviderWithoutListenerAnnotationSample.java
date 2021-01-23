@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class SimpleDataProviderWithoutListenerAnnotationSample {
+
   @Test(dataProvider = "getData")
   public void testMethod(int i) {
     Assert.assertTrue(i > 0);
@@ -12,6 +13,6 @@ public class SimpleDataProviderWithoutListenerAnnotationSample {
 
   @DataProvider
   public Object[][] getData() {
-    return new Object[][] {{1}, {2}};
+    return new Object[][]{{1}, {2}};
   }
 }

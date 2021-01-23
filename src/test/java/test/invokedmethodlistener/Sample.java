@@ -25,8 +25,10 @@ public class Sample {
   }
 
   @AfterMethod
-  public void am() {}
+  public void am() {
+  }
 
   @BeforeSuite
-  public void bs() {}
+  public void bs() {
+  }
 }

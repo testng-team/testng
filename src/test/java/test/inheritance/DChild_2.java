@@ -14,6 +14,12 @@ import org.testng.annotations.Test;
  */
 public class DChild_2 extends Child_1 {
 
+  private static void ppp(String s) {
+    if (m_verbose) {
+      System.out.println("[D2] " + s);
+    }
+  }
+
   @BeforeMethod
   public void initDialog2() {
     m_methodList.add("initDialog2");
@@ -30,11 +36,5 @@ public class DChild_2 extends Child_1 {
   public void test() {
     m_methodList.add("test");
     ppp("      TEST");
-  }
-
-  private static void ppp(String s) {
-    if (m_verbose) {
-      System.out.println("[D2] " + s);
-    }
   }
 }

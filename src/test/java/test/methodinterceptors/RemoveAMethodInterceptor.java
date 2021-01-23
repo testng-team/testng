@@ -1,32 +1,15 @@
 package test.methodinterceptors;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * An interceptor that removes the method called "two".
  */
 public class RemoveAMethodInterceptor implements IMethodInterceptor {
-
-  @Override
-  public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-    List<IMethodInstance> result = new ArrayList<>();
-
-    for (IMethodInstance method : methods) {
-      String name = method.getMethod().getMethodName();
-      if (!name.equals("two")) {
-        result.add(method);
-      }
-    }
-
-    log(this, methods, result);
-
-    return result;
-  }
 
   public static void log(IMethodInterceptor listener, List<IMethodInstance> input,
       List<IMethodInstance> output) {
@@ -47,5 +30,21 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
 
   private static void log(String s) {
 //    System.out.println("[MI2] " + s);
+  }
+
+  @Override
+  public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
+    List<IMethodInstance> result = new ArrayList<>();
+
+    for (IMethodInstance method : methods) {
+      String name = method.getMethod().getMethodName();
+      if (!name.equals("two")) {
+        result.add(method);
+      }
+    }
+
+    log(this, methods, result);
+
+    return result;
   }
 }

@@ -1,13 +1,12 @@
 package test.thread;
 
+import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-
-import java.util.List;
 
 public class MultiThreadedDependentSampleTest {
 
@@ -83,7 +82,7 @@ public class MultiThreadedDependentSampleTest {
     log("c1");
   }
 
-  @Test(dependsOnGroups = { "1" })
+  @Test(dependsOnGroups = {"1"})
   public void d() {
     logThread();
     log("d");
@@ -120,7 +119,7 @@ public class MultiThreadedDependentSampleTest {
   }
 
   private void log(String string) {
-    synchronized(m_methods) {
+    synchronized (m_methods) {
       m_methods.add(string);
     }
   }

@@ -1,10 +1,11 @@
 package test.reports.issue2069;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -14,8 +15,8 @@ import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
 
-  private PrintStream currentError = System.err;
   private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  private PrintStream currentError = System.err;
 
   @BeforeMethod
   public void setup() throws UnsupportedEncodingException {

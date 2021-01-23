@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-
 import org.testng.collections.Lists;
 
 /**
@@ -26,18 +25,22 @@ import org.testng.collections.Lists;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
+
   private static final String UTF_8 = "UTF-8";
   private static final String PACKAGE_UTILS = PackageUtils.class.getSimpleName();
-  private static String[] testClassPaths;
-
-  /** The additional class loaders to find classes in. */
+  /**
+   * The additional class loaders to find classes in.
+   */
   private static final Collection<ClassLoader> classLoaders = new ConcurrentLinkedDeque<>();
+  private static String[] testClassPaths;
 
   private PackageUtils() {
     // Utility class. Defeat instantiation.
   }
 
-  /** Add a class loader to the searchable loaders. */
+  /**
+   * Add a class loader to the searchable loaders.
+   */
   public static void addClassLoader(final ClassLoader loader) {
     classLoaders.add(loader);
   }
@@ -63,7 +66,8 @@ public class PackageUtils {
 
     List<URL> dirs = Lists.newArrayList();
     // go through additional class loaders
-    List<ClassLoader> allClassLoaders = ClassHelper.appendContextualClassLoaders(Lists.newArrayList(classLoaders));
+    List<ClassLoader> allClassLoaders = ClassHelper
+        .appendContextualClassLoaders(Lists.newArrayList(classLoaders));
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {
@@ -267,7 +271,9 @@ public class PackageUtils {
     }
   }
 
-  /** @return true if name should be included. */
+  /**
+   * @return true if name should be included.
+   */
   private static boolean isIncluded(String name, List<String> included, List<String> excluded) {
     boolean result;
 

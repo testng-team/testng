@@ -2,10 +2,14 @@ package test.github1461;
 
 import org.testng.annotations.Test;
 
-/** we create a test NG class here, which has a global counter, counting all instances. */
+/**
+ * we create a test NG class here, which has a global counter, counting all instances.
+ */
 public class MyTestClassWithGlobalReferenceCounterSample {
 
-  /** global counter that keeps track on how many objects are currently on the heap */
+  /**
+   * global counter that keeps track on how many objects are currently on the heap
+   */
   public static int currentNumberOfMyTestObjects = 0;
 
   public MyTestClassWithGlobalReferenceCounterSample() {

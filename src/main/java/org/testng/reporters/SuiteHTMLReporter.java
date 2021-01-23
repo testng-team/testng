@@ -2,6 +2,15 @@ package org.testng.reporters;
 
 import static org.testng.internal.Utils.isStringNotEmpty;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -15,16 +24,6 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This class implements an HTML reporter for suites.
  *
@@ -32,6 +31,7 @@ import java.util.Map;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class SuiteHTMLReporter implements IReporter {
+
   public static final String METHODS_CHRONOLOGICAL = "methods.html";
   public static final String METHODS_ALPHABETICAL = "methods-alphabetical.html";
   public static final String GROUPS = "groups.html";
@@ -39,11 +39,24 @@ public class SuiteHTMLReporter implements IReporter {
   public static final String REPORTER_OUTPUT = "reporter-output.html";
   public static final String METHODS_NOT_RUN = "methods-not-run.html";
   public static final String TESTNG_XML = "testng.xml.html";
+  /**
+   * Generate information about the methods that were run
+   */
+  public static final String AFTER = "&lt;&lt;";
+  public static final String BEFORE = "&gt;&gt;";
   private static final String TD_A_TARGET_MAIN_FRAME_HREF = "<td><a target='mainFrame' href='";
   private static final String CLOSE_TD = "</td>";
-
+  private static final String SP = "&nbsp;";
+  private static final String SP2 = SP + SP + SP + SP;
   private final Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
+
+  private static String getMethodName(String name) {
+    if (name == null) {
+      return "";
+    }
+    return name;
+  }
 
   @Override
   public void generateReport(
@@ -110,7 +123,9 @@ public class SuiteHTMLReporter implements IReporter {
     Utils.writeFile(getOutputDirectory(xmlSuite), TESTNG_XML, sb);
   }
 
-  /** Generate the main index.html file that lists all the suites and their result */
+  /**
+   * Generate the main index.html file that lists all the suites and their result
+   */
   private void generateIndex(List<ISuite> suites) {
     StringBuilder sb = new StringBuilder();
     String title = "Test results";
@@ -259,9 +274,6 @@ public class SuiteHTMLReporter implements IReporter {
     Utils.writeFile(getOutputDirectory(xmlSuite), CLASSES, sb.toString());
   }
 
-  private static final String SP = "&nbsp;";
-  private static final String SP2 = SP + SP + SP + SP;
-
   private String generateClass(ITestClass cls) {
     StringBuilder sb = new StringBuilder();
 
@@ -274,14 +286,14 @@ public class SuiteHTMLReporter implements IReporter {
         .append("</tr>\n");
 
     String[] tags =
-        new String[] {"@Test", "@BeforeClass", "@BeforeMethod", "@AfterMethod", "@AfterClass"};
+        new String[]{"@Test", "@BeforeClass", "@BeforeMethod", "@AfterMethod", "@AfterClass"};
     ITestNGMethod[][] methods =
-        new ITestNGMethod[][] {
-          cls.getTestMethods(),
-          cls.getBeforeClassMethods(),
-          cls.getBeforeTestMethods(),
-          cls.getAfterTestMethods(),
-          cls.getAfterClassMethods()
+        new ITestNGMethod[][]{
+            cls.getTestMethods(),
+            cls.getBeforeClassMethods(),
+            cls.getBeforeTestMethods(),
+            cls.getAfterTestMethods(),
+            cls.getAfterClassMethods()
         };
 
     for (int i = 0; i < tags.length; i++) {
@@ -321,18 +333,6 @@ public class SuiteHTMLReporter implements IReporter {
     return sb.toString();
   }
 
-  /** Generate information about the methods that were run */
-  public static final String AFTER = "&lt;&lt;";
-
-  public static final String BEFORE = "&gt;&gt;";
-
-  private static String getMethodName(String name) {
-    if (name == null) {
-      return "";
-    }
-    return name;
-  }
-
   private void generateMethodsChronologically(
       XmlSuite xmlSuite, ISuite suite, String outputFileName, boolean alphabetical) {
     try (BufferedWriter bw = Utils.openWriter(getOutputDirectory(xmlSuite), outputFileName)) {
@@ -349,7 +349,8 @@ public class SuiteHTMLReporter implements IReporter {
 
       List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
       if (alphabetical) {
-        invokedMethods.sort(Comparator.comparing(o -> getMethodName(o.getTestMethod().getMethodName())));
+        invokedMethods
+            .sort(Comparator.comparing(o -> getMethodName(o.getTestMethod().getMethodName())));
       }
 
       SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
@@ -439,12 +440,14 @@ public class SuiteHTMLReporter implements IReporter {
     }
   }
 
-  /** Generate a HTML color based on the class of the method */
+  /**
+   * Generate a HTML color based on the class of the method
+   */
   private String createColor(ITestNGMethod tm) {
     // real class can be null if this client is remote (not serializable)
     long color = tm.getRealClass() != null ? tm.getRealClass().hashCode() & 0xffffff : 0xffffff;
     long[] rgb = {
-      ((color & 0xff0000) >> 16) & 0xff, ((color & 0x00ff00) >> 8) & 0xff, color & 0xff
+        ((color & 0xff0000) >> 16) & 0xff, ((color & 0x00ff00) >> 8) & 0xff, color & 0xff
     };
     // Not too dark
     for (int i = 0; i < rgb.length; i++) {
@@ -483,7 +486,9 @@ public class SuiteHTMLReporter implements IReporter {
     return result.toString();
   }
 
-  /** Generate information about methods and groups */
+  /**
+   * Generate information about methods and groups
+   */
   private void generateMethodsAndGroups(XmlSuite xmlSuite, ISuite suite) {
     StringBuilder sb = new StringBuilder();
 
@@ -542,7 +547,9 @@ public class SuiteHTMLReporter implements IReporter {
     Utils.writeFile(getOutputDirectory(xmlSuite), "main.html", index);
   }
 
-  /** */
+  /**
+   *
+   */
   private void generateTableOfContents(XmlSuite xmlSuite, ISuite suite) {
     StringBuilder tableOfContents = new StringBuilder();
 
@@ -659,10 +666,10 @@ public class SuiteHTMLReporter implements IReporter {
     }
 
     ISuiteResult[][] results =
-        new ISuiteResult[][] {
-          sortResults(redResults.values()),
-          sortResults(yellowResults.values()),
-          sortResults(greenResults.values())
+        new ISuiteResult[][]{
+            sortResults(redResults.values()),
+            sortResults(yellowResults.values()),
+            sortResults(greenResults.values())
         };
 
     String[] colors = {"failed", "skipped", "passed"};

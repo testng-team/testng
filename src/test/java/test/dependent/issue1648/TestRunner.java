@@ -1,16 +1,17 @@
 package test.dependent.issue1648;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class TestRunner extends SimpleBaseTest {
+
   @Test(description = "GITHUB-1648")
   public void testMethod() {
     List<String> expected =

@@ -6,8 +6,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class FailureSample {
+
   @BeforeClass
-  public void beforeClassFailureSample() {}
+  public void beforeClassFailureSample() {
+  }
 
   @Test
   public void newTest2() {
@@ -15,5 +17,6 @@ public class FailureSample {
   }
 
   @AfterClass
-  public void afterClassFailureSample() {}
+  public void afterClassFailureSample() {
+  }
 }

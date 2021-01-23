@@ -24,7 +24,7 @@ class MethodRunner implements IMethodRunner {
     List<ITestResult> result = Lists.newArrayList();
     int parametersIndex = 0;
     Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
-    for (Object[] next: allParameterValues) {
+    for (Object[] next : allParameterValues) {
       if (next == null) {
         // skipped value
         parametersIndex++;

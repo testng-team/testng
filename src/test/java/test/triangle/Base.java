@@ -10,7 +10,12 @@ import org.testng.annotations.BeforeSuite;
  * @author cbeust
  */
 public class Base {
+
   protected boolean m_isInitialized = false;
+
+  private static void ppp(String s) {
+    System.out.println("[Base] " + s);
+  }
 
   @BeforeSuite
   public void beforeSuite() {
@@ -25,9 +30,5 @@ public class Base {
   @AfterClass
   public void postAfterTestClass() {
     CountCalls.incr();
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[Base] " + s);
   }
 }

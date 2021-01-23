@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGListenerFactory;
@@ -19,10 +22,6 @@ import org.testng.internal.paramhandler.FakeTestContext;
 import org.testng.xml.XmlClass;
 import test.SimpleBaseTest;
 
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class TestListenerHelperTest {
 
   private IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
@@ -38,10 +37,10 @@ public class TestListenerHelperTest {
 
   @DataProvider(name = "getTestData")
   public Object[][] getTestData() {
-    return new Object[][] {
-      {TestClassWithListener.class, 1, false},
-      {SimpleBaseTest.class, 0, false},
-      {TestClassWithCompositeListener.class, 1, true}
+    return new Object[][]{
+        {TestClassWithListener.class, 1, false},
+        {SimpleBaseTest.class, 0, false},
+        {TestClassWithCompositeListener.class, 1, true}
     };
   }
 
@@ -69,9 +68,9 @@ public class TestListenerHelperTest {
 
   @DataProvider(name = "getFactoryTestData")
   public Object[][] getFactoryTestData() {
-    return new Object[][] {
-      {TestClassWithListener.class, DummyListenerFactory.class},
-      {TestClassDoublingupAsListenerFactory.class, TestClassDoublingupAsListenerFactory.class}
+    return new Object[][]{
+        {TestClassWithListener.class, DummyListenerFactory.class},
+        {TestClassDoublingupAsListenerFactory.class, TestClassDoublingupAsListenerFactory.class}
     };
   }
 }

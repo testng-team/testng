@@ -9,18 +9,23 @@ import org.testng.annotations.Test;
 public class C {
 
   @BeforeTest
-  public void beforeTest() {}
+  public void beforeTest() {
+  }
 
   @AfterTest
-  public void afterTest() {}
+  public void afterTest() {
+  }
 
   @Test
-  public void fc1() {}
+  public void fc1() {
+  }
 
   @BeforeSuite
-  public void beforeSuite() {}
+  public void beforeSuite() {
+  }
 
   @AfterSuite
-  public void afterSuite() {}
+  public void afterSuite() {
+  }
 
 }

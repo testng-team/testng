@@ -7,6 +7,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class Github1298Test {
+
   @BeforeMethod
   public void setUp(ITestResult tr) {
     tr.setAttribute("class", getClass().getName());

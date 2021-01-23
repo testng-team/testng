@@ -1,7 +1,6 @@
 package test.sanitycheck;
 
 import java.util.Collections;
-
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -11,7 +10,6 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 
 public class CheckTestNamesTest extends SimpleBaseTest {
@@ -32,8 +30,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     runSuite("sanitycheck/test1.xml");
   }
 
-  private void runSuite(String suitePath)
-  {
+  private void runSuite(String suitePath) {
     TestListenerAdapter tla = new TestListenerAdapter();
     boolean exceptionRaised = false;
     try {

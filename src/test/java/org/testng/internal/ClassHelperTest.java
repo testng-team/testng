@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -18,73 +19,13 @@ import org.testng.internal.issue1339.LittlePanda;
 import org.testng.internal.issue1456.TestClassSample;
 import org.testng.internal.misamples.AbstractMoves;
 import org.testng.internal.misamples.Batman;
-import org.testng.internal.misamples.MickJagger;
 import org.testng.internal.misamples.JohnTravoltaMoves;
+import org.testng.internal.misamples.MickJagger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 public class ClassHelperTest {
-
-  @Test
-  public void testGetAvailableMethods() {
-    runTest(getExpected(), LittlePanda.class);
-  }
-
-  @Test
-  public void testGetAvailableMethodsWhenOverrdingIsInvolved() {
-    List<String> expected = getExpected("equals", "hashCode", "toString");
-    runTest(expected, BabyPanda.class);
-  }
-
-  @Test
-  public void testFindClassInSameTest() {
-    runTest(TestClassSample.class, 1, TestClassSample.class);
-  }
-
-  @Test
-  public void testFindClassesInSameTest() {
-    runTest(TestClassSample.class, 2, TestClassSample.class, BabyPanda.class);
-  }
-
-  @Test
-  public void testNoClassDefFoundError() {
-      URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{}) {
-        @Override
-        public Class<?> loadClass(String name) throws ClassNotFoundException {
-            throw new NoClassDefFoundError();
-        }
-      };
-      ClassHelper.addClassLoader(urlClassLoader);
-      String fakeClassName = UUID.randomUUID().toString();
-      Assert.assertNull(ClassHelper.forName(fakeClassName), "The result should be null; no exception should be thrown.");
-  }
-
-  @Test(dataProvider = "data")
-  public void testWithDefaultMethodsBeingOverridden(Class<?>cls, int expectedCount, String...expected) {
-    Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(cls);
-    Assertions.assertThat(methods).hasSize(expectedCount);
-    for (Method m : methods) {
-      String actual = m.getDeclaringClass().getName() + "." + m.getName();
-      Assertions.assertThat(expected).contains(actual);
-    }
-  }
-
-  @DataProvider(name = "data")
-  public Object[][] getTestData() {
-    return new Object[][]{
-        {MickJagger.class, 1, MickJagger.class.getName() + ".dance"},
-        {JohnTravoltaMoves.class, 2, new String[]{
-            JohnTravoltaMoves.class.getName() + ".walk",
-            AbstractMoves.class.getName() + ".dance"}
-        },
-        {Batman.class, 3, new String[] {
-            Batman.class.getName() + ".fly",
-            Batman.class.getName() + ".liftWeights",
-            Batman.class.getName() + ".yellSlogan"
-        }}
-    };
-  }
 
   private static void runTest(Class<?> classToBeFound, int expectedCount, Class<?>... classes) {
     XmlSuite xmlSuite = new XmlSuite();
@@ -128,12 +69,74 @@ public class ClassHelperTest {
   }
 
   private static List<String> getExpected(String... additionalMethods) {
-    String[] defaultMethods = new String[] {"announcer", "announcer", "inheritable", "inheritable"};
+    String[] defaultMethods = new String[]{"announcer", "announcer", "inheritable", "inheritable"};
     if (additionalMethods == null) {
       return Arrays.asList(defaultMethods);
     }
     List<String> expected = new ArrayList<>(Arrays.asList(defaultMethods));
     expected.addAll(Arrays.asList(additionalMethods));
     return expected;
+  }
+
+  @Test
+  public void testGetAvailableMethods() {
+    runTest(getExpected(), LittlePanda.class);
+  }
+
+  @Test
+  public void testGetAvailableMethodsWhenOverrdingIsInvolved() {
+    List<String> expected = getExpected("equals", "hashCode", "toString");
+    runTest(expected, BabyPanda.class);
+  }
+
+  @Test
+  public void testFindClassInSameTest() {
+    runTest(TestClassSample.class, 1, TestClassSample.class);
+  }
+
+  @Test
+  public void testFindClassesInSameTest() {
+    runTest(TestClassSample.class, 2, TestClassSample.class, BabyPanda.class);
+  }
+
+  @Test
+  public void testNoClassDefFoundError() {
+    URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{}) {
+      @Override
+      public Class<?> loadClass(String name) throws ClassNotFoundException {
+        throw new NoClassDefFoundError();
+      }
+    };
+    ClassHelper.addClassLoader(urlClassLoader);
+    String fakeClassName = UUID.randomUUID().toString();
+    Assert.assertNull(ClassHelper.forName(fakeClassName),
+        "The result should be null; no exception should be thrown.");
+  }
+
+  @Test(dataProvider = "data")
+  public void testWithDefaultMethodsBeingOverridden(Class<?> cls, int expectedCount,
+      String... expected) {
+    Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(cls);
+    Assertions.assertThat(methods).hasSize(expectedCount);
+    for (Method m : methods) {
+      String actual = m.getDeclaringClass().getName() + "." + m.getName();
+      Assertions.assertThat(expected).contains(actual);
+    }
+  }
+
+  @DataProvider(name = "data")
+  public Object[][] getTestData() {
+    return new Object[][]{
+        {MickJagger.class, 1, MickJagger.class.getName() + ".dance"},
+        {JohnTravoltaMoves.class, 2, new String[]{
+            JohnTravoltaMoves.class.getName() + ".walk",
+            AbstractMoves.class.getName() + ".dance"}
+        },
+        {Batman.class, 3, new String[]{
+            Batman.class.getName() + ".fly",
+            Batman.class.getName() + ".liftWeights",
+            Batman.class.getName() + ".yellSlogan"
+        }}
+    };
   }
 }

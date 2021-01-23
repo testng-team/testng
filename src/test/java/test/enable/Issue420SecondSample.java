@@ -6,5 +6,6 @@ import org.testng.annotations.Test;
 public class Issue420SecondSample extends Issue420BaseTestCase {
 
   @Test
-  public void verifySomethingSecondSample() {}
+  public void verifySomethingSecondSample() {
+  }
 }

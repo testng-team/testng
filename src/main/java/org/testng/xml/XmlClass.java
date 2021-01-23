@@ -1,5 +1,8 @@
 package org.testng.xml;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -7,20 +10,22 @@ import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-/** This class describes the tag <code>&lt;class&gt;</code> in testng.xml. */
+/**
+ * This class describes the tag <code>&lt;class&gt;</code> in testng.xml.
+ */
 public class XmlClass implements Cloneable {
 
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
   private String m_name = null;
   private Class m_class = null;
-  /** The index of this class in the &lt;test&gt; tag */
+  /**
+   * The index of this class in the &lt;test&gt; tag
+   */
   private int m_index;
-  /** True if the classes need to be loaded */
+  /**
+   * True if the classes need to be loaded
+   */
   private boolean m_loadClasses = true;
 
   private Map<String, String> m_parameters = Maps.newHashMap();
@@ -54,6 +59,18 @@ public class XmlClass implements Cloneable {
     init(className, null, index, loadClasses);
   }
 
+  public static String listToString(List<Integer> invocationNumbers) {
+    StringBuilder result = new StringBuilder();
+    int i = 0;
+    for (Integer n : invocationNumbers) {
+      if (i++ > 0) {
+        result.append(" ");
+      }
+      result.append(n);
+    }
+    return result.toString();
+  }
+
   private void init(String className, Class cls, int index) {
     init(className, cls, index, true /* load classes */);
   }
@@ -76,48 +93,68 @@ public class XmlClass implements Cloneable {
     }
   }
 
-  /** @return Returns the className. */
+  /**
+   * @return Returns the className.
+   */
   public Class<?> getSupportClass() {
-    if (m_class == null) loadClass();
+    if (m_class == null) {
+      loadClass();
+    }
     return m_class;
   }
 
-  /** @param className The className to set. */
+  /**
+   * @param className The className to set.
+   */
   public void setClass(Class className) {
     m_class = className;
   }
 
-  /** @return Returns the excludedMethods. */
+  /**
+   * @return Returns the excludedMethods.
+   */
   public List<String> getExcludedMethods() {
     return m_excludedMethods;
   }
 
-  /** @param excludedMethods The excludedMethods to set. */
+  /**
+   * @param excludedMethods The excludedMethods to set.
+   */
   public void setExcludedMethods(List<String> excludedMethods) {
     m_excludedMethods = excludedMethods;
   }
 
-  /** @return Returns the includedMethods. */
+  /**
+   * @return Returns the includedMethods.
+   */
   public List<XmlInclude> getIncludedMethods() {
     return m_includedMethods;
   }
 
-  /** @param includedMethods The includedMethods to set. */
+  /**
+   * @param includedMethods The includedMethods to set.
+   */
   public void setIncludedMethods(List<XmlInclude> includedMethods) {
     m_includedMethods = includedMethods;
   }
 
-  /** @return Returns the name. */
+  /**
+   * @return Returns the name.
+   */
   public String getName() {
     return m_name;
   }
 
-  /** @param name The name to set. */
+  /**
+   * @param name The name to set.
+   */
   public void setName(String name) {
     m_name = name;
   }
 
-  /** @return true if the classes need to be loaded. */
+  /**
+   * @return true if the classes need to be loaded.
+   */
   public boolean loadClasses() {
     return m_loadClasses;
   }
@@ -162,19 +199,9 @@ public class XmlClass implements Cloneable {
     return xsb.toXML();
   }
 
-  public static String listToString(List<Integer> invocationNumbers) {
-    StringBuilder result = new StringBuilder();
-    int i = 0;
-    for (Integer n : invocationNumbers) {
-      if (i++ > 0) {
-        result.append(" ");
-      }
-      result.append(n);
-    }
-    return result.toString();
-  }
-
-  /** Clone an XmlClass by copying all its components. */
+  /**
+   * Clone an XmlClass by copying all its components.
+   */
   @Override
   public Object clone() {
     XmlClass result = new XmlClass(getName(), getIndex(), loadClasses());
@@ -215,15 +242,23 @@ public class XmlClass implements Cloneable {
     if (this == obj) {
       return true;
     }
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlClass other = (XmlClass) obj;
     if (other.m_loadClasses != m_loadClasses) {
       return XmlSuite.f();
     }
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_name.equals(other.m_name)) {
+      return XmlSuite.f();
+    }
 
     return true;
   }
@@ -233,7 +268,9 @@ public class XmlClass implements Cloneable {
     m_parameters.putAll(parameters);
   }
 
-  /** @return The parameters defined in this test tag and the tags above it. */
+  /**
+   * @return The parameters defined in this test tag and the tags above it.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlTest != null) {
@@ -245,7 +282,7 @@ public class XmlClass implements Cloneable {
 
   /**
    * @return The parameters defined in this tag, and only this test tag. To retrieve the inherited
-   *     parameters as well, call {@code getAllParameters()}.
+   * parameters as well, call {@code getAllParameters()}.
    */
   public Map<String, String> getLocalParameters() {
     return m_parameters;

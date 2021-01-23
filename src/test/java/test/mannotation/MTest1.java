@@ -23,7 +23,8 @@ import org.testng.annotations.Test;
     dataProvider = "dp", description = "Class level description")
 public class MTest1 {
 
-  public MTest1() {}
+  public MTest1() {
+  }
 
   @Test(enabled = true, groups = {"group3", "group4"},
       alwaysRun = true,
@@ -31,48 +32,56 @@ public class MTest1 {
       timeOut = 142, invocationCount = 143, successPercentage = 61,
       dataProvider = "dp2", description = "Method description",
       expectedExceptions = NullPointerException.class)
-  public void f() {}
+  public void f() {
+  }
 
   @BeforeSuite
   @BeforeTest
-  @BeforeGroups({ "b1", "b2"})
+  @BeforeGroups({"b1", "b2"})
   @BeforeClass
   @BeforeMethod
-  public void before() {}
+  public void before() {
+  }
 
   @AfterSuite
   @AfterTest
   @AfterGroups({"a1", "a2"})
   @AfterClass
   @AfterMethod
-  public void after() {}
+  public void after() {
+  }
 
-  @Test(groups = {"ogroup1", "ogroup2"}, dependsOnGroups = {"odg1", "odg2"}, dependsOnMethods = {"odm1", "odm2"},
-          description = "beforeSuite description", enabled = false, alwaysRun = true,
-          expectedExceptions = {MTest1.class, MTest2.class})
+  @Test(groups = {"ogroup1", "ogroup2"}, dependsOnGroups = {"odg1", "odg2"}, dependsOnMethods = {
+      "odm1", "odm2"},
+      description = "beforeSuite description", enabled = false, alwaysRun = true,
+      expectedExceptions = {MTest1.class, MTest2.class})
   @DataProvider(name = "dp4")
   public Object[][] otherConfigurations() {
     return null;
   }
 
   @Factory
-  public void factory() {}
+  public void factory() {
+  }
 
   @Parameters({"pp1", "pp2", "pp3"})
-  public void parameters() {}
+  public void parameters() {
+  }
 
   @BeforeSuite
   @BeforeTest
   @BeforeGroups
   @BeforeClass
   @BeforeMethod
-  public void newBefore() {}
+  public void newBefore() {
+  }
 
   @AfterSuite
   @AfterTest
   @AfterGroups
   @AfterClass
   @AfterMethod
-  public void newAfter() {}
+  public void newAfter() {
+  }
 
 }

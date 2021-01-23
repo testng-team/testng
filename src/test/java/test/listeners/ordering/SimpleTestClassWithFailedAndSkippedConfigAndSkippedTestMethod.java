@@ -6,15 +6,18 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SimpleTestClassWithFailedAndSkippedConfigAndSkippedTestMethod {
+
   @BeforeClass
   public void beforeClass() {
     Assert.fail();
   }
 
   @BeforeMethod
-  public void beforeMethod() {}
+  public void beforeMethod() {
+  }
 
   @Test
-  public void testWillPass() {}
+  public void testWillPass() {
+  }
 
 }

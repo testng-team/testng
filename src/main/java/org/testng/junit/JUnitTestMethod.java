@@ -4,7 +4,9 @@ import org.testng.ITestNGMethod;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConstructorOrMethod;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 // NO JUnit specific code here to avoid runtime errors
 public abstract class JUnitTestMethod extends BaseTestMethod {
 

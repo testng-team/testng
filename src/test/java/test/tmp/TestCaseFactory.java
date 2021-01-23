@@ -4,11 +4,6 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class TestCaseFactory {
-  class MyTestClass {
-    @Test
-    public void testAll() {
-    }
-  }
 
   @Factory
   public Object[] createTestCases() {
@@ -16,5 +11,12 @@ public class TestCaseFactory {
     testCases[0] = new MyTestClass() {
     };
     return testCases;
+  }
+
+  class MyTestClass {
+
+    @Test
+    public void testAll() {
+    }
   }
 }

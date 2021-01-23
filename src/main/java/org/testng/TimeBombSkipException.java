@@ -29,8 +29,8 @@ public class TimeBombSkipException extends SkipException {
   private DateFormat m_outFormat = sdf;
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format used
-   * for date comparison is <code>yyyy/MM/dd</code>
+   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format
+   * used for date comparison is <code>yyyy/MM/dd</code>
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
@@ -80,7 +80,8 @@ public class TimeBombSkipException extends SkipException {
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison and
+   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison
+   * and
    * display.
    *
    * @param msg exception message
@@ -96,14 +97,14 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format used
-   * for date comparison is <code>yyyy/MM/dd</code>
+   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format
+   * used for date comparison is <code>yyyy/MM/dd</code>
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
+   * unknown.)
    */
   public TimeBombSkipException(String msg, Date expirationDate, Throwable cause) {
     super(msg, cause);
@@ -118,8 +119,8 @@ public class TimeBombSkipException extends SkipException {
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
    * @param format format for the time comparison
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
+   * unknown.)
    */
   public TimeBombSkipException(String msg, Date expirationDate, String format, Throwable cause) {
     super(msg, cause);
@@ -135,8 +136,8 @@ public class TimeBombSkipException extends SkipException {
    * @param msg exception message
    * @param date time limit after which the SKIP becomes a FAILURE
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
+   * unknown.)
    */
   public TimeBombSkipException(String msg, String date, Throwable cause) {
     super(msg, cause);
@@ -151,8 +152,8 @@ public class TimeBombSkipException extends SkipException {
    * @param date time limit after which the SKIP becomes a FAILURE
    * @param format format of the passed in <code>date</code> and of the time comparison
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
+   * unknown.)
    */
   public TimeBombSkipException(String msg, String date, String format, Throwable cause) {
     this(msg, date, format, format, cause);
@@ -160,7 +161,8 @@ public class TimeBombSkipException extends SkipException {
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison and
+   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison
+   * and
    * display.
    *
    * @param msg exception message
@@ -168,8 +170,8 @@ public class TimeBombSkipException extends SkipException {
    * @param inFormat format of the passed in <code>date</code>
    * @param outFormat format of the time comparison
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).
-   *     (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
-   *     unknown.)
+   * (A <code>null</code> value is permitted, and indicates that the cause is nonexistent or
+   * unknown.)
    */
   public TimeBombSkipException(
       String msg, String date, String inFormat, String outFormat, Throwable cause) {

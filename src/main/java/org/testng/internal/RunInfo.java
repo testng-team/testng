@@ -1,12 +1,11 @@
 package org.testng.internal;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
-
-import java.util.List;
 
 /**
  * This class contains all the information needed to determine what methods should be run. It gets
@@ -17,13 +16,19 @@ public class RunInfo {
 
   private final Set<MethodSelectorDescriptor> m_methodSelectors = new TreeSet<>();
 
+  public static void ppp(String s) {
+    System.out.println("[RunInfo] " + s);
+  }
+
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);
     MethodSelectorDescriptor md = new MethodSelectorDescriptor(selector, priority);
     m_methodSelectors.add(md);
   }
 
-  /** @return true as soon as we fond a Method Selector that returns true for the method "tm". */
+  /**
+   * @return true as soon as we fond a Method Selector that returns true for the method "tm".
+   */
   public boolean includeMethod(ITestNGMethod tm, boolean isTestMethod) {
     boolean foundNegative = false;
     IMethodSelectorContext context = new DefaultMethodSelectorContext();
@@ -50,10 +55,6 @@ public class RunInfo {
     }
 
     return result;
-  }
-
-  public static void ppp(String s) {
-    System.out.println("[RunInfo] " + s);
   }
 
   public void setTestMethods(List<ITestNGMethod> testMethods) {

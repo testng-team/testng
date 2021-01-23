@@ -5,10 +5,34 @@ import org.testng.IConfigurationListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class ConfigurationListenerTest extends SimpleBaseTest {
+
+  private void runTest(Class<?> cls, int expected) {
+    TestNG tng = create(cls);
+    CL listener = new CL();
+    CL.m_status = 0;
+    tng.addListener(listener);
+    tng.run();
+
+    Assert.assertEquals(CL.m_status, expected);
+  }
+
+  @Test
+  public void shouldSucceed() {
+    runTest(ConfigurationListenerSucceedSampleTest.class, 1 + 3);
+  }
+
+  @Test
+  public void shouldFail() {
+    runTest(ConfigurationListenerFailSampleTest.class, 1 + 5);
+  }
+
+  @Test
+  public void shouldSkip() {
+    runTest(ConfigurationListenerSkipSampleTest.class, 1 + 5 + 7); // fail + skip
+  }
 
   static public class CL implements IConfigurationListener {
 
@@ -34,30 +58,5 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
       m_status += 7;
     }
 
-  }
-
-  private void runTest(Class<?> cls, int expected) {
-    TestNG tng = create(cls);
-    CL listener = new CL();
-    CL.m_status = 0;
-    tng.addListener(listener);
-    tng.run();
-
-    Assert.assertEquals(CL.m_status, expected);
-  }
-
-  @Test
-  public void shouldSucceed() {
-    runTest(ConfigurationListenerSucceedSampleTest.class, 1 + 3);
-  }
-
-  @Test
-  public void shouldFail() {
-    runTest(ConfigurationListenerFailSampleTest.class, 1 + 5);
-  }
-
-  @Test
-  public void shouldSkip() {
-    runTest(ConfigurationListenerSkipSampleTest.class, 1 + 5 + 7); // fail + skip
   }
 }

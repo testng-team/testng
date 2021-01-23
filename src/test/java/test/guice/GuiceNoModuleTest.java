@@ -7,5 +7,6 @@ import org.testng.annotations.Test;
 public class GuiceNoModuleTest {
 
   @Test
-  public void f() {}
+  public void f() {
+  }
 }

@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
-
 import java.util.stream.Collectors;
 import org.testng.IInvokedMethod;
 import org.testng.IMethodInstance;
@@ -35,6 +34,7 @@ import org.testng.util.TimeUtils;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
+
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
       new ConcurrentHashMap<>();
   private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<>();
@@ -120,7 +120,8 @@ public class MethodHelper {
           int lastIndex = regexp.lastIndexOf('.');
           String newMethodName;
           if (lastIndex != -1) {
-            String clazzName = (m.getTestClass() != null ? m.getTestClass().getRealClass() : m.getRealClass()).getName();
+            String clazzName = (m.getTestClass() != null ? m.getTestClass().getRealClass()
+                : m.getRealClass()).getName();
             newMethodName = clazzName + regexp.substring(lastIndex);
             results = matchMethod(methods, newMethodName);
             foundAtLeastAMethod = results.foundAtLeastAMethod;
@@ -234,7 +235,9 @@ public class MethodHelper {
     return alwaysRun;
   }
 
-  /** Extracts the unique list of <code>ITestNGMethod</code>s. */
+  /**
+   * Extracts the unique list of <code>ITestNGMethod</code>s.
+   */
   public static List<ITestNGMethod> uniqueMethodList(Collection<List<ITestNGMethod>> methods) {
     Set<ITestNGMethod> resultSet = Sets.newHashSet();
 
@@ -382,7 +385,9 @@ public class MethodHelper {
     return result;
   }
 
-  /** @return A sorted array containing all the methods 'method' depends on */
+  /**
+   * @return A sorted array containing all the methods 'method' depends on
+   */
   public static List<ITestNGMethod> getMethodsDependedUpon(
       ITestNGMethod method, ITestNGMethod[] methods, Comparator<ITestNGMethod> comparator) {
     Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
@@ -495,6 +500,7 @@ public class MethodHelper {
   }
 
   private static class MatchResults {
+
     private final List<ITestNGMethod> matchedMethods = Lists.newArrayList();
     private boolean foundAtLeastAMethod = false;
   }

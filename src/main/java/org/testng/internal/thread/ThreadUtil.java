@@ -1,16 +1,15 @@
 package org.testng.internal.thread;
 
-import java.util.concurrent.ThreadFactory;
-import org.testng.collections.Lists;
-import org.testng.internal.Utils;
-import org.testng.log4testng.Logger;
-
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.testng.collections.Lists;
+import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 /**
  * A helper class to interface TestNG concurrency usage.
@@ -19,7 +18,9 @@ public class ThreadUtil {
 
   public static final String THREAD_NAME = "TestNG";
 
-  /** @return true if the current thread was created by TestNG. */
+  /**
+   * @return true if the current thread was created by TestNG.
+   */
   public static boolean isTestNGThread() {
     return Thread.currentThread().getName().contains(THREAD_NAME);
   }
@@ -79,7 +80,9 @@ public class ThreadUtil {
     }
   }
 
-  /** Returns a readable name of the current executing thread. */
+  /**
+   * Returns a readable name of the current executing thread.
+   */
   public static String currentThreadInfo() {
     Thread thread = Thread.currentThread();
     return thread.getName() + "@" + thread.hashCode();

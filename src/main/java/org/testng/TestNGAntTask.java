@@ -1,5 +1,8 @@
 package org.testng;
 
+import static java.lang.Boolean.TRUE;
+import static org.testng.internal.Utils.isStringNotBlank;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -14,7 +17,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
@@ -41,69 +43,66 @@ import org.testng.internal.ant.AntReporterConfig;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
 
-import static java.lang.Boolean.TRUE;
-import static org.testng.internal.Utils.isStringNotBlank;
-
 /**
  * TestNG settings:
  *
  * <ul>
- *   <li>classfileset (inner)
- *   <li>classfilesetref (attribute)
- *   <li>xmlfileset (inner)
- *   <li>xmlfilesetref (attribute)
- *   <li>enableAssert (attribute)
- *   <li>excludedGroups (attribute)
- *   <li>groups (attribute)
- *   <li>junit (attribute)
- *   <li>listener (attribute)
- *   <li>outputdir (attribute)
- *   <li>parallel (attribute)
- *   <li>reporter (attribute)
- *   <li>sourcedir (attribute)
- *   <li>sourcedirref (attribute)
- *   <li>suitename (attribute)
- *   <li>suiterunnerclass (attribute)
- *   <li>target (attribute)
- *   <li>testjar (attribute)
- *   <li>testname (attribute)
- *   <li>threadcount (attribute)
- *   <li>dataproviderthreadcount (attribute)
- *   <li>verbose (attribute)
- *   <li>testrunfactory (attribute)
- *   <li>configFailurepolicy (attribute)
- *   <li>randomizeSuites (attribute)
- *   <li>methodselectors (attribute)
+ * <li>classfileset (inner)
+ * <li>classfilesetref (attribute)
+ * <li>xmlfileset (inner)
+ * <li>xmlfilesetref (attribute)
+ * <li>enableAssert (attribute)
+ * <li>excludedGroups (attribute)
+ * <li>groups (attribute)
+ * <li>junit (attribute)
+ * <li>listener (attribute)
+ * <li>outputdir (attribute)
+ * <li>parallel (attribute)
+ * <li>reporter (attribute)
+ * <li>sourcedir (attribute)
+ * <li>sourcedirref (attribute)
+ * <li>suitename (attribute)
+ * <li>suiterunnerclass (attribute)
+ * <li>target (attribute)
+ * <li>testjar (attribute)
+ * <li>testname (attribute)
+ * <li>threadcount (attribute)
+ * <li>dataproviderthreadcount (attribute)
+ * <li>verbose (attribute)
+ * <li>testrunfactory (attribute)
+ * <li>configFailurepolicy (attribute)
+ * <li>randomizeSuites (attribute)
+ * <li>methodselectors (attribute)
  * </ul>
  *
  * Ant settings:
  *
  * <ul>
- *   <li>classpath (inner)
- *   <li>classpathref (attribute)
- *   <li>jvm (attribute)
- *   <li>workingDir (attribute)
- *   <li>env (inner)
- *   <li>sysproperty (inner)
- *   <li>propertyset (inner)
- *   <li>jvmarg (inner)
- *   <li>timeout (attribute)
- *   <li>haltonfailure (attribute)
- *   <li>onHaltTarget (attribute)
- *   <li>failureProperty (attribute)
- *   <li>haltonFSP (attribute)
- *   <li>FSPproperty (attribute)
- *   <li>haltonskipped (attribute)
- *   <li>skippedProperty (attribute)
- *   <li>testRunnerFactory (attribute)
+ * <li>classpath (inner)
+ * <li>classpathref (attribute)
+ * <li>jvm (attribute)
+ * <li>workingDir (attribute)
+ * <li>env (inner)
+ * <li>sysproperty (inner)
+ * <li>propertyset (inner)
+ * <li>jvmarg (inner)
+ * <li>timeout (attribute)
+ * <li>haltonfailure (attribute)
+ * <li>onHaltTarget (attribute)
+ * <li>failureProperty (attribute)
+ * <li>haltonFSP (attribute)
+ * <li>FSPproperty (attribute)
+ * <li>haltonskipped (attribute)
+ * <li>skippedProperty (attribute)
+ * <li>testRunnerFactory (attribute)
  * </ul>
  *
  * Debug information:
  *
  * <ul>
- *   <li>dumpCommand (boolean)
- *   <li>dumpEnv (boolean)
- *   <li>dumpSys (boolean)
+ * <li>dumpCommand (boolean)
+ * <li>dumpEnv (boolean)
+ * <li>dumpSys (boolean)
  * </ul>
  *
  * @author <a href="mailto:the_mindstorm@evolva.ro">Alexandru Popescu</a>
@@ -112,34 +111,25 @@ import static org.testng.internal.Utils.isStringNotBlank;
  */
 public class TestNGAntTask extends Task {
 
+  private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
+  public String m_useDefaultListeners;
   protected CommandlineJava m_javaCommand;
-
   protected List<ResourceCollection> m_xmlFilesets = Lists.newArrayList();
   protected List<ResourceCollection> m_classFilesets = Lists.newArrayList();
   protected File m_outputDir;
   protected File m_testjar;
   protected File m_workingDir;
-  private Integer m_timeout;
-  private List<String> m_listeners = Lists.newArrayList();
-  private List<String> m_methodselectors = Lists.newArrayList();
-  private String m_objectFactory;
   protected String m_testRunnerFactory;
-  private boolean m_delegateCommandSystemProperties = false;
-
   protected Environment m_environment = new Environment();
-
-  /** The suite runner name (defaults to TestNG.class.getName(). */
+  /**
+   * The suite runner name (defaults to TestNG.class.getName().
+   */
   protected String m_mainClass = TestNG.class.getName();
-
   /**
    * True if the temporary file created by the Ant Task for command line parameters to TestNG should
    * be preserved after execution.
    */
   protected boolean m_dump;
-
-  private boolean m_dumpEnv;
-  private boolean m_dumpSys;
-
   protected boolean m_assertEnabled = true;
   protected boolean m_haltOnFailure;
   protected String m_onHaltTarget;
@@ -155,27 +145,27 @@ public class TestNGAntTask extends Task {
   protected String m_dataproviderthreadCount;
   protected String m_configFailurePolicy;
   protected Boolean m_randomizeSuites;
-  public String m_useDefaultListeners;
+  private Integer m_timeout;
+  private List<String> m_listeners = Lists.newArrayList();
+  private List<String> m_methodselectors = Lists.newArrayList();
+  private String m_objectFactory;
+  private boolean m_delegateCommandSystemProperties = false;
+  private boolean m_dumpEnv;
+  private boolean m_dumpSys;
   private String m_suiteName = "Ant suite";
   private String m_testName = "Ant test";
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
   private Mode mode = Mode.testng;
   private boolean forkJvm = true;
-
-  public enum Mode {
-    // lower-case to better look in build scripts
-    testng,
-    junit,
-    mixed
-  }
-
-  private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
-
-  /** The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task */
+  /**
+   * The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task
+   */
   private List<AntReporterConfig> reporterConfigs = Lists.newArrayList();
-
   private String m_testNames = "";
+  private Integer m_verbose = null;
+  private Integer m_suiteThreadPoolSize;
+  private String m_xmlPathInJar;
 
   public void setParallel(String parallel) {
     m_parallelMode = parallel;
@@ -227,9 +217,9 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * @param verbose the flag to log the command line. When verbose is set to true the command line parameters
-   * are stored in a temporary file stored in the user's default temporary file directory. The file
-   * created is prefixed with "testng".
+   * @param verbose the flag to log the command line. When verbose is set to true the command line
+   * parameters are stored in a temporary file stored in the user's default temporary file
+   * directory. The file created is prefixed with "testng".
    */
   public void setDumpCommand(boolean verbose) {
     m_dump = verbose;
@@ -282,7 +272,7 @@ public class TestNGAntTask extends Task {
    * <p>If the tests are running for more than this value, the tests will be canceled.
    *
    * @param value the maximum time (in milliseconds) allowed before declaring the test as
-   *     'timed-out'
+   * 'timed-out'
    */
   public void setTimeout(Integer value) {
     m_timeout = value;
@@ -427,12 +417,6 @@ public class TestNGAntTask extends Task {
   public void setExcludedGroups(String groups) {
     m_excludedGroups = groups;
   }
-
-  private Integer m_verbose = null;
-
-  private Integer m_suiteThreadPoolSize;
-
-  private String m_xmlPathInJar;
 
   public void setVerbose(Integer verbose) {
     m_verbose = verbose;
@@ -678,7 +662,9 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  /** @return the list of the XML file names. This method can be overridden by subclasses. */
+  /**
+   * @return the list of the XML file names. This method can be overridden by subclasses.
+   */
   protected List<String> getSuiteFileNames() {
     List<String> result = Lists.newArrayList();
 
@@ -798,7 +784,9 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  /** Executes the target, if any, that user designates executing before failing the test */
+  /**
+   * Executes the target, if any, that user designates executing before failing the test
+   */
   private void executeHaltTarget(int exitValue) {
     if (m_onHaltTarget != null) {
       if (m_outputDir != null) {
@@ -855,7 +843,9 @@ public class TestNGAntTask extends Task {
     return retVal;
   }
 
-  /** @return the created (or create) the  <CODE>CommandlineJava</CODE>. */
+  /**
+   * @return the created (or create) the  <CODE>CommandlineJava</CODE>.
+   */
   protected CommandlineJava getJavaCommand() {
     if (null == m_javaCommand) {
       m_javaCommand = new CommandlineJava();
@@ -997,7 +987,6 @@ public class TestNGAntTask extends Task {
    *
    * @param resources - A list of {@link ResourceCollection}
    * @return the list of files corresponding to the resource collection
-   * @throws BuildException
    */
   private List<String> getFiles(List<ResourceCollection> resources) throws BuildException {
     List<String> files = Lists.newArrayList();
@@ -1044,6 +1033,7 @@ public class TestNGAntTask extends Task {
   public void setXmlPathInJar(String path) {
     m_xmlPathInJar = path;
   }
+
   /**
    * Add the referenced property set as system properties for the TestNG JVM.
    *
@@ -1077,6 +1067,13 @@ public class TestNGAntTask extends Task {
     } else {
       super.handleOutput(output);
     }
+  }
+
+  public enum Mode {
+    // lower-case to better look in build scripts
+    testng,
+    junit,
+    mixed
   }
 
   private static class TestNGLogOS extends LogOutputStream {

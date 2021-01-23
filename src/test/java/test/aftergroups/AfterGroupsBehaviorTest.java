@@ -15,6 +15,21 @@ import test.aftergroups.issue1880.TestClassSample;
 
 public class AfterGroupsBehaviorTest extends SimpleBaseTest {
 
+  private static void runTest(Class<?> clazz, String groups, boolean shouldContinue,
+      String expected) {
+    XmlSuite xmlsuite = createXmlSuite("sample_suite", "sample_test", clazz);
+    xmlsuite.addIncludedGroup(groups);
+    TestNG testng = create(xmlsuite);
+    if (shouldContinue) {
+      testng.setConfigFailurePolicy(FailurePolicy.CONTINUE);
+    }
+    LocalConfigListener listener = new LocalConfigListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getMessages()).containsExactly(expected);
+
+  }
+
   @Test(description = "GITHUB-1880")
   public void ensureAfterGroupsAreInvokedWithAlwaysRunAttribute() {
     runTest(TestClassSample.class, "123", true, "after");
@@ -31,20 +46,6 @@ public class AfterGroupsBehaviorTest extends SimpleBaseTest {
         {TestclassSampleWithSkippedMember.class, "afterGroupsMethod"},
         {TestclassSampleWithFailedMember.class, "afterGroupsMethod"},
     };
-  }
-
-  private static void runTest(Class<?> clazz, String groups, boolean shouldContinue, String expected) {
-    XmlSuite xmlsuite = createXmlSuite("sample_suite", "sample_test", clazz);
-    xmlsuite.addIncludedGroup(groups);
-    TestNG testng = create(xmlsuite);
-    if (shouldContinue) {
-      testng.setConfigFailurePolicy(FailurePolicy.CONTINUE);
-    }
-    LocalConfigListener listener = new LocalConfigListener();
-    testng.addListener(listener);
-    testng.run();
-    assertThat(listener.getMessages()).containsExactly(expected);
-
   }
 
 

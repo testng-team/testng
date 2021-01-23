@@ -19,7 +19,8 @@ public class LocalTrackingListener implements IInvokedMethodListener {
     if (!results.containsKey(key)) {
       results.put(key, Lists.newArrayList());
     }
-    results.get(key).add(new Statistics(testResult.getMethod().getMethodName(), testResult.getStartMillis()));
+    results.get(key)
+        .add(new Statistics(testResult.getMethod().getMethodName(), testResult.getStartMillis()));
     if (!threadIds.containsKey(key)) {
       Long threadId = Long.parseLong(testResult.getAttribute(SampleTestClass.THREAD_ID).toString());
       threadIds.put(key, threadId);
@@ -35,6 +36,7 @@ public class LocalTrackingListener implements IInvokedMethodListener {
   }
 
   static class Statistics {
+
     String methodName;
     long startTimeInMs;
 

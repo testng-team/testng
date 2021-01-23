@@ -5,8 +5,10 @@ import org.testng.annotations.Test;
 public class SequentialClassB {
 
   @Test
-  public void testMethodOneSequentialClassB() {}
+  public void testMethodOneSequentialClassB() {
+  }
 
   @Test
-  public void testMethodTwoSequentialClassB() {}
+  public void testMethodTwoSequentialClassB() {
+  }
 }

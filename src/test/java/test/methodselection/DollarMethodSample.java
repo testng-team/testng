@@ -5,17 +5,22 @@ import org.testng.annotations.Test;
 public class DollarMethodSample {
 
   @Test
-  public void $() { }
+  public void $() {
+  }
 
   @Test
-  public void another_test() { }
+  public void another_test() {
+  }
 
   @Test
-  public void another$_test() { }
+  public void another$_test() {
+  }
 
   @Test
-  public void another$_test$() { }
+  public void another$_test$() {
+  }
 
   @Test
-  public void $another$_test$() { }
+  public void $another$_test$() {
+  }
 }

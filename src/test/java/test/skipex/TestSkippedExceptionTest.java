@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class TestSkippedExceptionTest {
+
   @Test
   public void genericSkipException() {
     throw new SkipException("genericSkipException is skipped for now");

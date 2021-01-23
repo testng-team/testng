@@ -1,19 +1,19 @@
 package org.testng;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 /**
  * Helper class to keep track of dependencies.
  */
 public class DependencyMap {
+
   private final ListMultiMap<String, ITestNGMethod> m_dependencies = Maps.newListMultiMap();
   private final ListMultiMap<String, ITestNGMethod> m_groups = Maps.newListMultiMap();
 
@@ -24,6 +24,57 @@ public class DependencyMap {
         m_groups.put(g, m);
       }
     }
+  }
+
+  private static boolean belongToDifferentClassHierarchy(
+      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    return !baseClassMethod.getRealClass().isAssignableFrom(derivedClassMethod.getRealClass());
+  }
+
+  private static boolean hasInstance(
+      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    Object baseInstance = baseClassMethod.getInstance();
+    Object derivedInstance = derivedClassMethod.getInstance();
+    boolean result = derivedInstance != null || baseInstance != null;
+    boolean params =
+        null != baseClassMethod.getFactoryMethodParamsInfo() && null != derivedClassMethod
+            .getFactoryMethodParamsInfo().getParameters();
+
+    if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
+      return hasSameParameters(baseClassMethod, derivedClassMethod);
+    }
+    return result;
+  }
+
+  private static boolean hasSameParameters(
+      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    return baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0]
+        .equals(derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0]);
+  }
+
+  private static boolean isSameInstance(
+      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
+    Object baseInstance = baseClassMethod.getInstance();
+    Object derivedInstance = derivedClassMethod.getInstance();
+    boolean nonNullInstances = derivedInstance != null && baseInstance != null;
+    if (!nonNullInstances) {
+      return false;
+    }
+    if (null != baseClassMethod.getFactoryMethodParamsInfo() && RuntimeBehavior
+        .enforceThreadAffinity()) {
+      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) &&
+          hasSameParameters(baseClassMethod, derivedClassMethod);
+    }
+    return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
+  }
+
+  private static String constructMethodNameUsingTestClass(
+      String currentMethodName, ITestNGMethod m) {
+    int lastIndex = currentMethodName.lastIndexOf('.');
+    if (lastIndex != -1) {
+      return m.getTestClass().getRealClass().getName() + currentMethodName.substring(lastIndex);
+    }
+    return currentMethodName;
   }
 
   public List<ITestNGMethod> getMethodsThatBelongTo(String group, ITestNGMethod fromMethod) {
@@ -79,53 +130,5 @@ public class DependencyMap {
 
     throw new TestNGException(
         "Method \"" + fromMethod + "\" depends on nonexistent method \"" + methodName + "\"");
-  }
-
-  private static boolean belongToDifferentClassHierarchy(
-      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    return !baseClassMethod.getRealClass().isAssignableFrom(derivedClassMethod.getRealClass());
-  }
-
-  private static boolean hasInstance(
-      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Object baseInstance = baseClassMethod.getInstance();
-    Object derivedInstance = derivedClassMethod.getInstance();
-    boolean result = derivedInstance != null || baseInstance != null;
-    boolean params = null != baseClassMethod.getFactoryMethodParamsInfo() && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
-
-    if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
-      return hasSameParameters(baseClassMethod, derivedClassMethod);
-    }
-    return result;
-  }
-
-  private static boolean hasSameParameters(
-      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    return baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0]
-        .equals(derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0]);
-  }
-
-  private static boolean isSameInstance(
-      ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Object baseInstance = baseClassMethod.getInstance();
-    Object derivedInstance = derivedClassMethod.getInstance();
-    boolean nonNullInstances = derivedInstance != null && baseInstance != null;
-    if (!nonNullInstances) {
-      return false;
-    }
-    if (null != baseClassMethod.getFactoryMethodParamsInfo() && RuntimeBehavior.enforceThreadAffinity()) {
-      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) &&
-          hasSameParameters(baseClassMethod, derivedClassMethod);
-    }
-    return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
-  }
-
-  private static String constructMethodNameUsingTestClass(
-      String currentMethodName, ITestNGMethod m) {
-    int lastIndex = currentMethodName.lastIndexOf('.');
-    if (lastIndex != -1) {
-      return m.getTestClass().getRealClass().getName() + currentMethodName.substring(lastIndex);
-    }
-    return currentMethodName;
   }
 }

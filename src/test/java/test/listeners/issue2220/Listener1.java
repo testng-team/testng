@@ -10,6 +10,10 @@ public class Listener1 implements ITestListener {
 
   static final List<String> logs = new LinkedList<>();
 
+  private static String getMethodName(ITestResult result) {
+    return result.getTestClass().getRealClass().getName() + "." + result.getName();
+  }
+
   @Override
   public void onTestStart(ITestResult result) {
     logs.add("started_test_method_" + getMethodName(result));
@@ -23,9 +27,5 @@ public class Listener1 implements ITestListener {
   @Override
   public void onFinish(ITestContext context) {
     logs.add("finished_<test>_" + context.getName());
-  }
-
-  private static String getMethodName(ITestResult result) {
-    return result.getTestClass().getRealClass().getName() + "." + result.getName();
   }
 }

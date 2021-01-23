@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 
 public class GuiceTestModule extends AbstractModule {
+
   private final MyContext myContext;
 
   @Inject

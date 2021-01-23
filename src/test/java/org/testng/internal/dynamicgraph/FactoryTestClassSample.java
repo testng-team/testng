@@ -5,6 +5,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class FactoryTestClassSample {
+
   private String text;
 
   @Factory(dataProvider = "getData")
@@ -12,19 +13,21 @@ public class FactoryTestClassSample {
     this.text = text;
   }
 
-  @Test
-  public void testMethod() {}
+  @DataProvider(name = "getData")
+  public static Object[][] getData() {
+    return new Object[][]{{"one"}, {"two"}, {"three"}};
+  }
 
   @Test
-  public void anotherTestMethod() {}
+  public void testMethod() {
+  }
+
+  @Test
+  public void anotherTestMethod() {
+  }
 
   @Override
   public String toString() {
     return text;
-  }
-
-  @DataProvider(name = "getData")
-  public static Object[][] getData() {
-    return new Object[][] {{"one"}, {"two"}, {"three"}};
   }
 }

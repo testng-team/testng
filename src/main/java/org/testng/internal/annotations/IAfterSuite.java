@@ -1,3 +1,5 @@
 package org.testng.internal.annotations;
 
-public interface IAfterSuite extends IBaseBeforeAfter {}
+public interface IAfterSuite extends IBaseBeforeAfter {
+
+}

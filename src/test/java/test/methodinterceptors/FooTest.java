@@ -5,11 +5,14 @@ import org.testng.annotations.Test;
 public class FooTest {
 
   @Test(groups = "fast")
-  public void zzzfast() {}
+  public void zzzfast() {
+  }
 
   @Test
-  public void slow() {}
+  public void slow() {
+  }
 
   @Test
-  public void a() {}
+  public void a() {
+  }
 }

@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DatadrivenSample {
+
   private boolean flag = true;
 
   @Test(dataProvider = "dp", retryAnalyzer = RetryForDataDrivenTest.class)
@@ -17,6 +18,6 @@ public class DatadrivenSample {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {{1}, {2}};
+    return new Object[][]{{1}, {2}};
   }
 }

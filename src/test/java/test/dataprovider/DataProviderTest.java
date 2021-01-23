@@ -1,5 +1,8 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
 import org.assertj.core.api.Condition;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -10,23 +13,20 @@ import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.util.ArrayList;
 import test.dataprovider.issue1691.DataProviderDefinitionAtClassLevelAndNoTestMethodUsage;
-import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
-import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
-import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevel;
+import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
 import test.dataprovider.issue1691.DataProviderDefinitionProvidedPartiallyAtClassLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassWithNoDataProviderInformationInTestMethod;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataProviderTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1691")
   public void testDataProviderInfoIgnored() {
-    InvokedMethodNameListener listener = run(DataProviderDefinitionAtClassLevelAndNoTestMethodUsage.class);
+    InvokedMethodNameListener listener = run(
+        DataProviderDefinitionAtClassLevelAndNoTestMethodUsage.class);
     assertThat(listener.getSucceedMethodNames())
         .containsExactly(
             "verifyHangoutPlaces(Hakuna Matata,Bangalore)",
@@ -231,33 +231,6 @@ public class DataProviderTest extends SimpleBaseTest {
     // .hasSize(2_000); TODO it is supposed to work
   }
 
-  public static class RegexCondition extends Condition<String> {
-
-    private final String regex;
-    private final boolean acceptNull;
-
-    public RegexCondition(String regex) {
-      this(regex, false);
-    }
-
-    public RegexCondition(String regex, boolean acceptNull) {
-      this.regex = regex;
-      this.acceptNull = acceptNull;
-    }
-
-    @Override
-    public boolean matches(String value) {
-      if (value == null) {
-        if (acceptNull) {
-          value = "null";
-        } else {
-          return false;
-        }
-      }
-      return value.matches(regex);
-    }
-  }
-
   @Test
   public void parallelDataProviderSample() {
     InvokedMethodNameListener listener = run(ParallelDataProviderSample.class);
@@ -380,5 +353,32 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.run();
     assertThat(tla.getFailedTests()).size().isEqualTo(1);
     assertThat(tla.getSkippedTests()).size().isEqualTo(2);
+  }
+
+  public static class RegexCondition extends Condition<String> {
+
+    private final String regex;
+    private final boolean acceptNull;
+
+    public RegexCondition(String regex) {
+      this(regex, false);
+    }
+
+    public RegexCondition(String regex, boolean acceptNull) {
+      this.regex = regex;
+      this.acceptNull = acceptNull;
+    }
+
+    @Override
+    public boolean matches(String value) {
+      if (value == null) {
+        if (acceptNull) {
+          value = "null";
+        } else {
+          return false;
+        }
+      }
+      return value.matches(regex);
+    }
   }
 }

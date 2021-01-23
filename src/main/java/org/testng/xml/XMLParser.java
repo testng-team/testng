@@ -2,12 +2,10 @@ package org.testng.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
@@ -34,12 +32,6 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     m_saxParser = parser;
   }
 
-  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
-    synchronized (m_saxParser) {
-      m_saxParser.parse(is, dh);
-    }
-  }
-
   /**
    * Tries to load a <code>SAXParserFactory</code> via <code>SAXParserFactory.newInstance()</code>.
    *
@@ -56,13 +48,21 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     }
   }
 
-  /** Tests if the current <code>SAXParserFactory</code> supports DTD validation. */
+  /**
+   * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
+   */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
       spf.getFeature("https://xml.org/sax/features/validation");
       return true;
     } catch (Exception ex) {
       return false;
+    }
+  }
+
+  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
+    synchronized (m_saxParser) {
+      m_saxParser.parse(is, dh);
     }
   }
 }

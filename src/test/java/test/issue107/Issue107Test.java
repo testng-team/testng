@@ -1,5 +1,7 @@
 package test.issue107;
 
+import java.util.Collections;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -9,9 +11,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
-import java.util.Collections;
-import java.util.Map;
-
 public class Issue107Test extends SimpleBaseTest {
 
   @Test(description = "GITHUB-107, Check that suite parameters set from listener does not affects tests count")
@@ -19,7 +18,8 @@ public class Issue107Test extends SimpleBaseTest {
     final XmlSuite suite = createXmlSuite("Simple suite");
 
     final Map<String, String> parameters = suite.getParameters();
-    parameters.put(TestTestngCounter.PARAMETER_NAME, "some value that must be overriden in listener");
+    parameters
+        .put(TestTestngCounter.PARAMETER_NAME, "some value that must be overriden in listener");
     suite.setParameters(parameters);
 
     runTest(suite);

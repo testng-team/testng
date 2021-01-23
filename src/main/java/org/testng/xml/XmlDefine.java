@@ -2,21 +2,21 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 
+import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
 
 public class XmlDefine {
 
   private String m_name;
-
-  public void setName(String name) {
-    m_name = name;
-  }
+  private List<String> m_includes = Lists.newArrayList();
 
   public String getName() {
     return m_name;
+  }
+
+  public void setName(String name) {
+    m_name = name;
   }
 
   public String toXml(String indent) {
@@ -34,8 +34,6 @@ public class XmlDefine {
 
     return xsb.toXML();
   }
-
-  private List<String> m_includes = Lists.newArrayList();
 
   public void onElement(String name) {
     m_includes.add(name);

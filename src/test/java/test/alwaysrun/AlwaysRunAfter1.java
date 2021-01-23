@@ -5,7 +5,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class AlwaysRunAfter1 {
+
   private static boolean m_success = false;
+
+  public static boolean success() {
+    return m_success;
+  }
 
   @BeforeClass
   public void setUpShouldFail() {
@@ -19,9 +24,6 @@ public class AlwaysRunAfter1 {
 
   // Adding this method or @Configuration will never be invoked
   @Test
-  public void dummy() {}
-
-  public static boolean success() {
-    return m_success;
+  public void dummy() {
   }
 }

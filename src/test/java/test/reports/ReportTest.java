@@ -1,5 +1,14 @@
 package test.reports;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import org.testng.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -15,17 +24,48 @@ import test.reports.issue1756.CustomTestNGReporter;
 import test.reports.issue1756.SampleTestClass;
 import test.simple.SimpleSample;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ReportTest extends SimpleBaseTest {
+
+  private static boolean m_success;
+
+  private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName)
+      throws IOException {
+    Path f = outputDir.resolve(Paths.get(suiteName, testName + ".html"));
+    Files.deleteIfExists(f);
+    return f;
+  }
+
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{
+        {GitHub1148Sample.class, new String[]{"verifyData(Cedric)"},
+            new String[]{"verifyData(Anne)"}},
+        {GitHub148Sample.class, new String[]{"testMethod(1)", "testMethod(2)"},
+            new String[]{"testMethod(3)"}}
+    };
+  }
+
+  private static Path checkFailed(Path testngFailedXml, String... failedMethods)
+      throws IOException {
+    Path outputDirectory = TestHelper.createRandomDirectory();
+
+    List<XmlSuite> suites = new Parser(Files.newInputStream(testngFailedXml)).parseToList();
+    TestNG tng = create(outputDirectory, suites);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+    tng.addListener(new FailedReporter());
+
+    tng.run();
+
+    assertThat(listener.getSucceedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getFailedMethodNames()).containsExactly(failedMethods);
+
+    Path testngFailedXml2 = outputDirectory.resolve(FailedReporter.TESTNG_FAILED_XML);
+    assertThat(testngFailedXml2).exists();
+
+    return testngFailedXml2;
+  }
 
   @Test
   public void verifyIndex() throws IOException {
@@ -90,12 +130,6 @@ public class ReportTest extends SimpleBaseTest {
     Assert.assertTrue(Files.exists(f2));
   }
 
-  private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName) throws IOException {
-    Path f = outputDir.resolve(Paths.get(suiteName, testName + ".html"));
-    Files.deleteIfExists(f);
-    return f;
-  }
-
   @Test
   public void shouldHonorSuiteName() throws IOException {
     Path outputDirectory = TestHelper.createRandomDirectory();
@@ -113,8 +147,6 @@ public class ReportTest extends SimpleBaseTest {
     Assert.assertTrue(Files.exists(fileA));
     Assert.assertTrue(Files.exists(fileB));
   }
-
-  private static boolean m_success;
 
   @Test
   public void reportLogShouldBeAvailableEvenWithTimeOut() {
@@ -177,16 +209,9 @@ public class ReportTest extends SimpleBaseTest {
     Assert.assertEquals(parameters.get(4)[2].toString(), "[null, dup, dup, str, null]");
   }
 
-  @DataProvider
-  public static Object[][] dp() {
-    return new Object[][]{
-        {GitHub1148Sample.class, new String[]{"verifyData(Cedric)"}, new String[]{"verifyData(Anne)"}},
-        {GitHub148Sample.class, new String[]{"testMethod(1)", "testMethod(2)"}, new String[]{"testMethod(3)"}}
-    };
-  }
-
   @Test(dataProvider = "dp")
-  public void runFailedTestTwiceShouldBeConsistent(Class<?> testClass, String[] succeedMethods, String[] failedMethods) throws IOException {
+  public void runFailedTestTwiceShouldBeConsistent(Class<?> testClass, String[] succeedMethods,
+      String[] failedMethods) throws IOException {
     Path outputDirectory = TestHelper.createRandomDirectory();
 
     TestNG tng = create(outputDirectory, testClass);
@@ -215,47 +240,8 @@ public class ReportTest extends SimpleBaseTest {
     CustomTestNGReporter reporter = new CustomTestNGReporter();
     testng.addListener(reporter);
     testng.run();
-    assertThat(reporter.getLogs()).containsExactly(SampleTestClass.getUuid(), SampleTestClass.getUuid());
-  }
-
-  private static Path checkFailed(Path testngFailedXml, String... failedMethods) throws IOException {
-    Path outputDirectory = TestHelper.createRandomDirectory();
-
-    List<XmlSuite> suites = new Parser(Files.newInputStream(testngFailedXml)).parseToList();
-    TestNG tng = create(outputDirectory, suites);
-    InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener(listener);
-    tng.addListener(new FailedReporter());
-
-    tng.run();
-
-    assertThat(listener.getSucceedMethodNames()).isEmpty();
-    assertThat(listener.getSkippedMethodNames()).isEmpty();
-    assertThat(listener.getFailedMethodNames()).containsExactly(failedMethods);
-
-    Path testngFailedXml2 = outputDirectory.resolve(FailedReporter.TESTNG_FAILED_XML);
-    assertThat(testngFailedXml2).exists();
-
-    return testngFailedXml2;
-  }
-
-  public static class DpArrays {
-    public enum Item {
-      ITEM1,
-      ITEM2
-    }
-
-    @DataProvider
-    public static Object[][] dpArrays() {
-      return new Object[][]{
-          {new Item[]{Item.ITEM1}},
-          {new Item[]{Item.ITEM1, Item.ITEM2}}
-      };
-    }
-
-    @Test(dataProvider = "dpArrays")
-    public void testMethod(Item[] strings) {
-    }
+    assertThat(reporter.getLogs())
+        .containsExactly(SampleTestClass.getUuid(), SampleTestClass.getUuid());
   }
 
   @Test
@@ -271,5 +257,25 @@ public class ReportTest extends SimpleBaseTest {
 
     Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1])"));
     Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1, ITEM2])"));
+  }
+
+  public static class DpArrays {
+
+    @DataProvider
+    public static Object[][] dpArrays() {
+      return new Object[][]{
+          {new Item[]{Item.ITEM1}},
+          {new Item[]{Item.ITEM1, Item.ITEM2}}
+      };
+    }
+
+    @Test(dataProvider = "dpArrays")
+    public void testMethod(Item[] strings) {
+    }
+
+    public enum Item {
+      ITEM1,
+      ITEM2
+    }
   }
 }

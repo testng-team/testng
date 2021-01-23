@@ -23,12 +23,12 @@ public class FakeInjector implements Injector {
   public FakeInjector() {
   }
 
-  private static void setInstance(FakeInjector i) {
-    instance = i;
-  }
-
   public static FakeInjector getInstance() {
     return instance;
+  }
+
+  private static void setInstance(FakeInjector i) {
+    instance = i;
   }
 
   @Override

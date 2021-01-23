@@ -10,6 +10,6 @@ public class Factory2Test {
 
   @Factory()
   public Object[] createObjects() {
-    return new Object[] {new Factory2Sample(), new Factory2Sample()};
+    return new Object[]{new Factory2Sample(), new Factory2Sample()};
   }
 }

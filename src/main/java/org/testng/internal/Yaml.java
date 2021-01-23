@@ -1,5 +1,11 @@
 package org.testng.internal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
@@ -16,17 +22,13 @@ import org.yaml.snakeyaml.nodes.NodeId;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
-/** YAML support for TestNG. */
+/**
+ * YAML support for TestNG.
+ */
 public final class Yaml {
 
-  private Yaml() {}
+  private Yaml() {
+  }
 
   public static XmlSuite parse(String filePath, InputStream is) throws FileNotFoundException {
     Constructor constructor = new TestNGConstructor(XmlSuite.class);

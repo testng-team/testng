@@ -9,6 +9,7 @@ import test.listeners.github1490.LocalDataProviderListener;
 
 @Listeners(LocalDataProviderListener.class)
 public class FactoryPoweredDataProviderWithListenerAnnotationSample {
+
   private final int i;
 
   @Factory(dataProvider = "dp")
@@ -16,13 +17,13 @@ public class FactoryPoweredDataProviderWithListenerAnnotationSample {
     this.i = i;
   }
 
+  @DataProvider(name = "dp")
+  public static Object[][] getData() {
+    return new Object[][]{{1}, {2}};
+  }
+
   @Test
   public void testMethod() {
     Assert.assertTrue(i > 0);
-  }
-
-  @DataProvider(name = "dp")
-  public static Object[][] getData() {
-    return new Object[][] {{1}, {2}};
   }
 }

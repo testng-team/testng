@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class ParameterConstructorTest {
+
   private String m_string;
   private int m_int;
   private boolean m_boolean;
@@ -22,11 +23,10 @@ public class ParameterConstructorTest {
   private long m_long;
   private short m_short;
 
-  @Parameters({ "string", "int", "boolean", "byte", "char", "double",
-      "float", "long", "short"  })
+  @Parameters({"string", "int", "boolean", "byte", "char", "double",
+      "float", "long", "short"})
   public ParameterConstructorTest(String s, int i, boolean bo, byte b, char c,
-      double d, float f, long l, short sh)
-  {
+      double d, float f, long l, short sh) {
     m_string = s;
     m_int = i;
     m_boolean = bo;

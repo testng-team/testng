@@ -1,32 +1,29 @@
 package test.thread;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
-
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 /**
- * Test that classes with dependent methods are still run in different threads
- * and in the correct order.
+ * Test that classes with dependent methods are still run in different threads and in the correct
+ * order.
  */
 public class MultiThreadedDependentTest extends SimpleBaseTest {
 
   /**
-   * Make sure that the topological order is preserved and that if
-   * the TestNG runner is configured to run n threads, the dependent
-   * methods are using these n threads.
+   * Make sure that the topological order is preserved and that if the TestNG runner is configured
+   * to run n threads, the dependent methods are using these n threads.
    */
   private void assertOrder(List<String> methods) {
-    List<String> expectedMethods = Arrays.asList(new String[] {
-      "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t"
+    List<String> expectedMethods = Arrays.asList(new String[]{
+        "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t"
     });
     int size = expectedMethods.size();
     Assert.assertEquals(methods.size(), size);
@@ -73,7 +70,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     tng.setThreadCount(threadCount);
     tng.setParallel(XmlSuite.ParallelMode.METHODS);
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
-    synchronized(map) {
+    synchronized (map) {
       tng.run();
       Assert.assertTrue(map.size() > 1, "Map size:" + map.size() + " expected more than 1");
       assertOrder(MultiThreadedDependentSampleTest.m_methods);

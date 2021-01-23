@@ -5,8 +5,8 @@ import org.testng.annotations.Test;
 
 public class SetStatusSample {
 
-    @Test
-    public void aFailingTest() {
-        Assert.fail("Failing deliberately");
-    }
+  @Test
+  public void aFailingTest() {
+    Assert.fail("Failing deliberately");
+  }
 }

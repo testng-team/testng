@@ -17,31 +17,42 @@ public class A {
   }
 
   @Test(groups = "1")
-  public void fa1() {}
+  public void fa1() {
+  }
 
-  @Test public void fa3() {}
+  @Test
+  public void fa3() {
+  }
 
   @BeforeGroups("1")
-  public void beforeGroups() {}
+  public void beforeGroups() {
+  }
 
   @AfterGroups("1")
-  public void afterGroups() {}
+  public void afterGroups() {
+  }
 
   @BeforeMethod
-  public void beforeMethod() {}
+  public void beforeMethod() {
+  }
 
   @AfterMethod
-  public void afterMethod() {}
+  public void afterMethod() {
+  }
 
   @BeforeSuite
-  public void beforeSuite() {}
+  public void beforeSuite() {
+  }
 
   @AfterSuite
-  public void afterSuite() {}
+  public void afterSuite() {
+  }
 
   @BeforeClass
-  public void beforeClass() {}
+  public void beforeClass() {
+  }
 
   @AfterClass
-  public void afterClass() {}
+  public void afterClass() {
+  }
 }

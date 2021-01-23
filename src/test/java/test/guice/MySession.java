@@ -1,3 +1,5 @@
 package test.guice;
 
-public class MySession {}
+public class MySession {
+
+}

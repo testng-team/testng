@@ -1,13 +1,13 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.DataProviderInvocationException;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.dataprovider.issue2157.TestClassWithDataProviderThatThrowsExceptions;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class FailingDataProviderTest extends SimpleBaseTest {
 

@@ -13,5 +13,6 @@ public class ChildTest extends ParentTest {
 
   @Override
   @Test
-  public void polymorphicMethod() {}
+  public void polymorphicMethod() {
+  }
 }

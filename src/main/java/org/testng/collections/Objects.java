@@ -1,14 +1,19 @@
 package org.testng.collections;
 
-import org.testng.util.Strings;
-
 import java.util.List;
+import org.testng.util.Strings;
 
 public final class Objects {
 
-  private Objects() {}
+  private Objects() {
+  }
+
+  public static ToStringHelper toStringHelper(Class<?> class1) {
+    return new ToStringHelper(class1.getSimpleName());
+  }
 
   private static class ValueHolder {
+
     private final String m_name;
     private final String m_value;
 
@@ -32,6 +37,7 @@ public final class Objects {
   }
 
   public static class ToStringHelper {
+
     private final String m_className;
     private final List<ValueHolder> values = Lists.newArrayList();
     private boolean m_omitNulls = false;
@@ -70,8 +76,12 @@ public final class Objects {
       StringBuilder result = new StringBuilder("[" + m_className + " ");
       for (int i = 0; i < values.size(); i++) {
         ValueHolder vh = values.get(i);
-        if (m_omitNulls && vh.isNull()) continue;
-        if (m_omitEmptyStrings && vh.isEmptyString()) continue;
+        if (m_omitNulls && vh.isNull()) {
+          continue;
+        }
+        if (m_omitEmptyStrings && vh.isEmptyString()) {
+          continue;
+        }
 
         if (i > 0) {
           result.append(" ");
@@ -82,9 +92,5 @@ public final class Objects {
 
       return result.toString();
     }
-  }
-
-  public static ToStringHelper toStringHelper(Class<?> class1) {
-    return new ToStringHelper(class1.getSimpleName());
   }
 }

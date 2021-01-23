@@ -1,12 +1,12 @@
 package test.github1336;
 
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
 public class BaseClass {
+
   private FakeDriver driver;
 
   @BeforeClass
@@ -18,7 +18,13 @@ public class BaseClass {
     return driver;
   }
 
+  void runTest(String url) {
+    getDriver().get(url);
+    Assert.assertEquals(getDriver().getCurrentUrl(), url);
+  }
+
   public static class FakeDriver {
+
     private String url;
 
     public void get(String url) {
@@ -33,10 +39,5 @@ public class BaseClass {
         return url;
       }
     }
-  }
-
-  void runTest(String url) {
-    getDriver().get(url);
-    Assert.assertEquals(getDriver().getCurrentUrl(), url);
   }
 }

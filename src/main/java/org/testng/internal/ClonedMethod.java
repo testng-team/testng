@@ -1,5 +1,10 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -8,22 +13,15 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlTest;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 public class ClonedMethod implements ITestNGMethod {
 
   private final ITestNGMethod m_method;
   private final Method m_javaMethod;
+  private final List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
   private String m_id;
   private int m_currentInvocationCount;
   private long m_date;
-
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private final List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
 
   public ClonedMethod(ITestNGMethod method, Method javaMethod) {
     m_method = method;
@@ -61,6 +59,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setDate(long date) {
+    m_date = date;
+  }
+
+  @Override
   public String getDescription() {
     return "";
   }
@@ -91,6 +94,11 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setId(String id) {
+    m_id = id;
+  }
+
+  @Override
   public long[] getInstanceHashCodes() {
     return m_method.getInstanceHashCodes();
   }
@@ -103,6 +111,10 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public int getInvocationCount() {
     return 1;
+  }
+
+  @Override
+  public void setInvocationCount(int count) {
   }
 
   @Override
@@ -126,12 +138,21 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setMissingGroup(String group) {
+  }
+
+  @Override
   public int getParameterInvocationCount() {
     return 1;
   }
 
   @Override
-  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {}
+  public void setParameterInvocationCount(int n) {
+  }
+
+  @Override
+  public void setMoreInvocationChecker(Callable<Boolean> moreInvocationChecker) {
+  }
 
   @Override
   public boolean hasMoreInvocation() {
@@ -149,13 +170,13 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-    m_method.setRetryAnalyzerClass(clazz);
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return m_method.getRetryAnalyzerClass();
   }
 
   @Override
-  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return m_method.getRetryAnalyzerClass();
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    m_method.setRetryAnalyzerClass(clazz);
   }
 
   @Override
@@ -169,8 +190,16 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
+  public void setTestClass(ITestClass cls) {
+  }
+
+  @Override
   public int getThreadPoolSize() {
     return m_method.getThreadPoolSize();
+  }
+
+  @Override
+  public void setThreadPoolSize(int threadPoolSize) {
   }
 
   @Override
@@ -254,35 +283,12 @@ public class ClonedMethod implements ITestNGMethod {
   }
 
   @Override
-  public void setDate(long date) {
-    m_date = date;
+  public void setIgnoreMissingDependencies(boolean ignore) {
   }
 
   @Override
-  public void setId(String id) {
-    m_id = id;
+  public void setSkipFailedInvocations(boolean skip) {
   }
-
-  @Override
-  public void setIgnoreMissingDependencies(boolean ignore) {}
-
-  @Override
-  public void setInvocationCount(int count) {}
-
-  @Override
-  public void setMissingGroup(String group) {}
-
-  @Override
-  public void setParameterInvocationCount(int n) {}
-
-  @Override
-  public void setSkipFailedInvocations(boolean skip) {}
-
-  @Override
-  public void setTestClass(ITestClass cls) {}
-
-  @Override
-  public void setThreadPoolSize(int threadPoolSize) {}
 
   @Override
   public boolean skipFailedInvocations() {

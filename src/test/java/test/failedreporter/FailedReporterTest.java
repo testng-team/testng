@@ -1,5 +1,7 @@
 package test.failedreporter;
 
+import java.io.File;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
@@ -16,11 +18,23 @@ import test.failedreporter.issue1297.inheritance.InheritancePassSample;
 import test.failedreporter.issue1297.straightforward.AllPassSample;
 import test.failedreporter.issue1297.straightforward.FailureSample;
 
-import java.io.File;
-import java.util.List;
-
 public class FailedReporterTest extends SimpleBaseTest {
+
   private File mTempDirectory;
+
+  static void runAssertions(File outputDir, String[] expectedMethods, String expectedLine) {
+    runAssertions(outputDir, expectedMethods, expectedLine, 1);
+  }
+
+  private static void runAssertions(
+      File outputDir, String[] expectedMethods, String expectedLine, int expected) {
+    File failed = new File(outputDir, "testng-failed.xml");
+    for (String s : expectedMethods) {
+      List<String> resultLines = Lists.newArrayList();
+      grep(failed, String.format(expectedLine, s), resultLines);
+      Assert.assertEquals(resultLines.size(), expected);
+    }
+  }
 
   @BeforeMethod
   public void setUp() {
@@ -35,13 +49,13 @@ public class FailedReporterTest extends SimpleBaseTest {
   @Test
   public void failedAndSkippedMethodsShouldBeIncluded() {
     testFailedReporter(
-        new String[] {"f1", "f2"}, "<include name=\"%s\"/>", FailedReporterSampleTest.class);
+        new String[]{"f1", "f2"}, "<include name=\"%s\"/>", FailedReporterSampleTest.class);
   }
 
   @Test
   public void failedMethodWithDataProviderShouldHaveInvocationNumbers() {
     testFailedReporter(
-        new String[] {"f1"},
+        new String[]{"f1"},
         "<include name=\"%s\" invocation-numbers=\"1\"/>",
         FailedReporter2SampleTest.class);
   }
@@ -49,21 +63,21 @@ public class FailedReporterTest extends SimpleBaseTest {
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigs() {
     triggerTest(AllPassSample.class, FailureSample.class);
-    String[] substitutions = new String[] {AllPassSample.class.getName()};
+    String[] substitutions = new String[]{AllPassSample.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
     substitutions =
-        new String[] {"newTest2", "beforeClassFailureSample", "afterClassFailureSample"};
+        new String[]{"newTest2", "beforeClassFailureSample", "afterClassFailureSample"};
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
   }
 
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsAmidstInheritance() {
     triggerTest(InheritanceFailureSample.class, InheritancePassSample.class);
-    String[] substitutions = new String[] {InheritancePassSample.class.getName()};
+    String[] substitutions = new String[]{InheritancePassSample.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
     substitutions =
-        new String[] {
-          "newTest2", "baseBeforeTest", "baseAfterClass", "baseBeforeClass", "baseBeforeMethod"
+        new String[]{
+            "newTest2", "baseBeforeTest", "baseAfterClass", "baseBeforeClass", "baseBeforeMethod"
         };
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
   }
@@ -71,18 +85,18 @@ public class FailedReporterTest extends SimpleBaseTest {
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsInvolvingGroupsAtTestLevel() {
     triggerTest(GroupsSampleBase.class.getPackage().getName(), true);
-    String[] substitutions = new String[] {GroupsPassSample.class.getName()};
+    String[] substitutions = new String[]{GroupsPassSample.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
-    substitutions = new String[] {"baseBeforeTest", "baseBeforeClassAlwaysRun", "newTest2"};
+    substitutions = new String[]{"baseBeforeTest", "baseBeforeClassAlwaysRun", "newTest2"};
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
   }
 
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsInvolvingGroupsAtSuiteLevel() {
     triggerTest(GroupsSampleBase.class.getPackage().getName(), false);
-    String[] substitutions = new String[] {GroupsPassSample.class.getName()};
+    String[] substitutions = new String[]{GroupsPassSample.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
-    substitutions = new String[] {"baseBeforeTest", "baseBeforeClassAlwaysRun", "newTest2"};
+    substitutions = new String[]{"baseBeforeTest", "baseBeforeClassAlwaysRun", "newTest2"};
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
   }
 
@@ -109,19 +123,5 @@ public class FailedReporterTest extends SimpleBaseTest {
     TestNG tng = create(mTempDirectory.toPath(), cls);
     tng.setUseDefaultListeners(true);
     tng.run();
-  }
-
-  static void runAssertions(File outputDir, String[] expectedMethods, String expectedLine) {
-    runAssertions(outputDir, expectedMethods, expectedLine, 1);
-  }
-
-  private static void runAssertions(
-      File outputDir, String[] expectedMethods, String expectedLine, int expected) {
-    File failed = new File(outputDir, "testng-failed.xml");
-    for (String s : expectedMethods) {
-      List<String> resultLines = Lists.newArrayList();
-      grep(failed, String.format(expectedLine, s), resultLines);
-      Assert.assertEquals(resultLines.size(), expected);
-    }
   }
 }

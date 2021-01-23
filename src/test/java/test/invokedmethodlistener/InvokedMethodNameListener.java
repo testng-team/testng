@@ -1,11 +1,10 @@
 package test.invokedmethodlistener;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class InvokedMethodNameListener implements IInvokedMethodListener {
 

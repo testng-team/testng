@@ -8,6 +8,7 @@ import org.testng.ITestNGListenerFactory;
  * implementation for instantiating listeners.
  */
 public final class DefaultListenerFactory implements ITestNGListenerFactory {
+
   @Override
   public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
     return InstanceCreator.newInstance(listenerClass);

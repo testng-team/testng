@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 
 public final class Lists {
 
-  private Lists() {}
+  private Lists() {
+  }
 
   public static <K> List<K> newArrayList() {
     return new ArrayList<>();
@@ -52,9 +53,11 @@ public final class Lists {
 
   /**
    * Utility method that merges two lists by applying the provided condition.
+   *
    * @param <T> - The generic type
    * @param l1 - The first list
-   * @param condition - The condition that is used to determine if an element is to be added or not.
+   * @param condition - The condition that is used to determine if an element is to be added or
+   * not.
    * @param lists - The lists which are to be merged into the first list
    * @return - The merged list.
    */

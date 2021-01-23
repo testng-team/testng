@@ -8,8 +8,8 @@ public class GitHub1148Sample {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-        { "Cedric" }, { "Anne" }
+    return new Object[][]{
+        {"Cedric"}, {"Anne"}
     };
   }
 

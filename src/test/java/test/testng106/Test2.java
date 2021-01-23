@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
  * This class/interface
  */
 public class Test2 {
+
   @Test
   public void method2() {
     System.out.println("method2");

@@ -9,10 +9,10 @@ import org.testng.xml.XmlSuite;
 
 public class ConfigMethodArguments extends MethodArguments {
 
-  private IClass testClass;
   private final ITestNGMethod[] allMethods;
   private final XmlSuite suite;
   private final ITestResult testMethodResult;
+  private IClass testClass;
 
   private ConfigMethodArguments(IClass testClass, ITestNGMethod currentTestMethod,
       ITestNGMethod[] allMethods, XmlSuite suite, Map<String, String> params,
@@ -26,6 +26,10 @@ public class ConfigMethodArguments extends MethodArguments {
 
   public IClass getTestClass() {
     return testClass;
+  }
+
+  public void setTestClass(IClass testClass) {
+    this.testClass = testClass;
   }
 
   public ITestNGMethod[] getConfigMethods() {
@@ -52,11 +56,6 @@ public class ConfigMethodArguments extends MethodArguments {
     return testMethodResult;
   }
 
-  public void setTestClass(IClass testClass) {
-    this.testClass = testClass;
-  }
-
-
   public static class Builder {
 
     private IClass testClass;
@@ -80,7 +79,7 @@ public class ConfigMethodArguments extends MethodArguments {
 
     public Builder usingConfigMethodsAs(ITestNGMethod[] allMethods) {
       if (allMethods == null) {
-        allMethods = new ITestNGMethod[] {};
+        allMethods = new ITestNGMethod[]{};
       }
       this.allMethods = allMethods;
       return this;

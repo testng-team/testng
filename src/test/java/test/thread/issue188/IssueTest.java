@@ -31,9 +31,10 @@ public class IssueTest extends SimpleBaseTest {
       testng.run();
       Set<Long> timestamps = Issue188TestSample.timestamps.keySet();
       if (timestamps.size() == 1) {
-      Assertions.assertThat(Issue188TestSample.timestamps.values().iterator().next())
-          .withFailMessage("Since all tests were started simultaneously,test method count should have been 6")
-          .hasSize(6);
+        Assertions.assertThat(Issue188TestSample.timestamps.values().iterator().next())
+            .withFailMessage(
+                "Since all tests were started simultaneously,test method count should have been 6")
+            .hasSize(6);
       } else {
         List<Long> keyset = Issue188TestSample.timestamps.keySet().stream()
             .sorted().collect(Collectors.toList());

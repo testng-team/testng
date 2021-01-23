@@ -8,6 +8,10 @@ public class AlwaysRunAfter3 {
 
   private static boolean m_success = false;
 
+  public static boolean success() {
+    return m_success;
+  }
+
   @BeforeMethod
   public void setUpShouldFail() {
     throw new RuntimeException("Failing in setUp");
@@ -19,9 +23,6 @@ public class AlwaysRunAfter3 {
   }
 
   @Test
-  public void dummy() {}
-
-  public static boolean success() {
-    return m_success;
+  public void dummy() {
   }
 }

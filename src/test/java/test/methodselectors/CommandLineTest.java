@@ -1,46 +1,48 @@
 package test.methodselectors;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommandLineTest extends SimpleBaseTest {
 
   private String[] ARG_WITHOUT_CLASSES =
-    new String[]{
-      "-log", "0",
-      "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-methodselectors", "",
-      ""
-  };
+      new String[]{
+          "-log", "0",
+          "-d", OutputDirectoryPatch.getOutputDirectory(),
+          "-methodselectors", "",
+          ""
+      };
 
   private String[] ARG_WITH_GROUPS =
-    new String[]{
-      "-log", "0",
-      "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-testclass", "test.methodselectors.SampleTest",
-      "-methodselectors", "",
-      "-groups", ""
-  };
+      new String[]{
+          "-log", "0",
+          "-d", OutputDirectoryPatch.getOutputDirectory(),
+          "-testclass", "test.methodselectors.SampleTest",
+          "-methodselectors", "",
+          "-groups", ""
+      };
 
   private String[] ARG_WITHOUT_GROUPS =
-    new String[]{
-      "-log", "0",
-      "-d", OutputDirectoryPatch.getOutputDirectory(),
-      "-testclass", "test.methodselectors.SampleTest",
-      "-methodselectors", "",
-  };
+      new String[]{
+          "-log", "0",
+          "-d", OutputDirectoryPatch.getOutputDirectory(),
+          "-testclass", "test.methodselectors.SampleTest",
+          "-methodselectors", "",
+      };
 
   private TestListenerAdapter tla;
+
+  public static void ppp(String s) {
+    //System.out.println("[CommandLineTest] " + s);
+  }
 
   @BeforeMethod
   public void setup() {
@@ -105,6 +107,7 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
   }
+
   @Test
   public void commandLineLessThanPriorityAllTests() {
     ppp("commandLineLessThanPriorityAllTests()");
@@ -168,11 +171,11 @@ public class CommandLineTest extends SimpleBaseTest {
   public void testOverrideExcludedMethodsCommandLineExclusions() {
     ppp("testOverrideExcludedMethodsCommandLineExclusions");
     String[] args = new String[]{
-            "src/test/java/test/methodselectors/sampleTest.xml",
-            "-log", "0",
-            "-d", OutputDirectoryPatch.getOutputDirectory(),
-            "-excludegroups", "test1",
-            "-overrideincludedmethods"
+        "src/test/java/test/methodselectors/sampleTest.xml",
+        "-log", "0",
+        "-d", OutputDirectoryPatch.getOutputDirectory(),
+        "-excludegroups", "test1",
+        "-overrideincludedmethods"
     };
 
     TestNG.privateMain(args, tla);
@@ -187,10 +190,10 @@ public class CommandLineTest extends SimpleBaseTest {
   public void testOverrideExcludedMethodsSuiteExclusions() {
     ppp("testOverrideExcludedMethodsSuiteExclusions");
     String[] args = new String[]{
-            "src/test/java/test/methodselectors/sampleTestExclusions.xml",
-            "-log", "0",
-            "-d", OutputDirectoryPatch.getOutputDirectory(),
-            "-overrideincludedmethods"
+        "src/test/java/test/methodselectors/sampleTestExclusions.xml",
+        "-log", "0",
+        "-d", OutputDirectoryPatch.getOutputDirectory(),
+        "-overrideincludedmethods"
     };
 
     TestNG.privateMain(args, tla);
@@ -203,19 +206,16 @@ public class CommandLineTest extends SimpleBaseTest {
 
   private void verifyTests(String title, String[] expected, List<ITestResult> found) {
     List<String> resultMethods = new ArrayList<>();
-    for( ITestResult result : found ) {
-      resultMethods.add( result.getName() );
+    for (ITestResult result : found) {
+      resultMethods.add(result.getName());
     }
 
-    Assert.assertEquals(resultMethods.size(), expected.length, "wrong number of " + title + " tests");
+    Assert
+        .assertEquals(resultMethods.size(), expected.length, "wrong number of " + title + " tests");
 
-    for(String e : expected) {
+    for (String e : expected) {
       Assert.assertTrue(resultMethods.contains(e), "Expected to find method " + e + " in "
           + title + " but didn't find it.");
     }
-  }
-
-  public static void ppp(String s) {
-    //System.out.println("[CommandLineTest] " + s);
   }
 }

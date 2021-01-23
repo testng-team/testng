@@ -5,8 +5,10 @@ import org.testng.annotations.Test;
 public class TestSampleWithoutListener {
 
   @Test
-  public void parent() {}
+  public void parent() {
+  }
 
   @Test(dependsOnMethods = "parent")
-  public void child() {}
+  public void child() {
+  }
 }

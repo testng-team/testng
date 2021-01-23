@@ -1,10 +1,9 @@
 package test.custom;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import org.testng.IAnnotationTransformer;
 import org.testng.TestNG;
 import org.testng.annotations.CustomAttribute;
@@ -12,16 +11,6 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 public class CustomAttributeTest extends SimpleBaseTest {
-
-  @Test
-  public void ensureCustomAttributesAreAvailable() {
-    runTest(null, "joy", Arrays.asList("KingFisher", "Bira"));
-  }
-
-  @Test
-  public void ensureCustomAttributesCanBeAlteredViaAnnotationTransformer() {
-    runTest(new CustomAttributesTransformer(), "sorrow", Arrays.asList("Coffee", "Tea"));
-  }
 
   private static void runTest(IAnnotationTransformer transformer, String key, List<String> values) {
     TestNG testng = create(TestClassSample.class);
@@ -36,6 +25,16 @@ public class CustomAttributeTest extends SimpleBaseTest {
     CustomAttribute attribute = attributes.get(0);
     assertThat(attribute.name()).isEqualTo(key);
     assertThat(attribute.values()).containsAll(values);
+  }
+
+  @Test
+  public void ensureCustomAttributesAreAvailable() {
+    runTest(null, "joy", Arrays.asList("KingFisher", "Bira"));
+  }
+
+  @Test
+  public void ensureCustomAttributesCanBeAlteredViaAnnotationTransformer() {
+    runTest(new CustomAttributesTransformer(), "sorrow", Arrays.asList("Coffee", "Tea"));
   }
 
 }

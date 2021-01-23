@@ -2,13 +2,11 @@ package org.testng;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
-
-import java.util.Collections;
-import org.testng.xml.XmlTest;
-
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.testng.xml.XmlTest;
 
 /**
  * This class defines a test context which contains all the information for a given test run. An
@@ -19,24 +17,34 @@ import java.util.List;
  */
 public interface ITestContext extends IAttributes {
 
-  /** @return The name of this test. */
+  /**
+   * @return The name of this test.
+   */
   String getName();
 
-  /** @return When this test started running. */
+  /**
+   * @return When this test started running.
+   */
   Date getStartDate();
 
-  /** @return When this test stopped running. */
+  /**
+   * @return When this test stopped running.
+   */
   Date getEndDate();
 
-  /** @return A list of all the tests that run successfully. */
+  /**
+   * @return A list of all the tests that run successfully.
+   */
   IResultMap getPassedTests();
 
-  /** @return A list of all the tests that were skipped */
+  /**
+   * @return A list of all the tests that were skipped
+   */
   IResultMap getSkippedTests();
 
   /**
    * @return A list of all the tests that failed but are being ignored because annotated with a
-   *     successPercentage.
+   * successPercentage.
    */
   IResultMap getFailedButWithinSuccessPercentageTests();
 
@@ -46,40 +54,60 @@ public interface ITestContext extends IAttributes {
    */
   IResultMap getFailedTests();
 
-  /** @return All the groups that are included for this test run. */
+  /**
+   * @return All the groups that are included for this test run.
+   */
   String[] getIncludedGroups();
 
-  /** @return All the groups that are excluded for this test run. */
+  /**
+   * @return All the groups that are excluded for this test run.
+   */
   String[] getExcludedGroups();
 
-  /** @return Where the reports will be generated. */
+  /**
+   * @return Where the reports will be generated.
+   */
   String getOutputDirectory();
 
-  /** @return The Suite object that was passed to the runner at start-up. */
+  /**
+   * @return The Suite object that was passed to the runner at start-up.
+   */
   ISuite getSuite();
 
-  /** @return All the test methods that were run. */
+  /**
+   * @return All the test methods that were run.
+   */
   ITestNGMethod[] getAllTestMethods();
 
   /**
    * @return The host where this test was run, or null if it was run locally. The returned string
-   *     has the form: host:port
+   * has the form: host:port
    */
   String getHost();
 
-  /** @return All the methods that were not included in this test run. */
+  /**
+   * @return All the methods that were not included in this test run.
+   */
   Collection<ITestNGMethod> getExcludedMethods();
 
-  /** @return The information about the successful configuration method invocations. */
+  /**
+   * @return The information about the successful configuration method invocations.
+   */
   IResultMap getPassedConfigurations();
 
-  /** @return The information about the skipped configuration method invocations. */
+  /**
+   * @return The information about the skipped configuration method invocations.
+   */
   IResultMap getSkippedConfigurations();
 
-  /** @return The information about the failed configuration method invocations. */
+  /**
+   * @return The information about the failed configuration method invocations.
+   */
   IResultMap getFailedConfigurations();
 
-  /** @return the current XmlTest. */
+  /**
+   * @return the current XmlTest.
+   */
   XmlTest getCurrentXmlTest();
 
   /**
@@ -92,7 +120,8 @@ public interface ITestContext extends IAttributes {
    * This method stands deprecated as of TestNG <code>7.3.0</code>
    */
   @Deprecated
-  default void addGuiceModule(Module module) {}
+  default void addGuiceModule(Module module) {
+  }
 
   /**
    * This method stands deprecated as of TestNG <code>7.3.0</code>

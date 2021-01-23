@@ -1,15 +1,19 @@
 package test.thread;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import test.BaseTest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SequentialTest extends BaseTest {
+
+  private static void ppp(String s) {
+    if (false) {
+      System.out.println("[SequentialTest] " + s);
+    }
+  }
 
   @Test
   public void verifySequential1() {
@@ -66,20 +70,20 @@ public class SequentialTest extends BaseTest {
 
     run();
 
-    Map<Long, Long>[] maps = new Map[] {
+    Map<Long, Long>[] maps = new Map[]{
         Helper.getMap(classes[0]),
         Helper.getMap(classes[1]),
         Helper.getMap(classes[2]),
     };
 
-    for(Map m : maps) {
+    for (Map m : maps) {
       Assert.assertEquals(m.size(), 1);
     }
 
-    long[] ids = new long[] {
-            maps[0].keySet().iterator().next(),
-            maps[1].keySet().iterator().next(),
-            maps[2].keySet().iterator().next(),
+    long[] ids = new long[]{
+        maps[0].keySet().iterator().next(),
+        maps[1].keySet().iterator().next(),
+        maps[2].keySet().iterator().next(),
     };
     Map<Long, Long> verifyMap = new HashMap<>();
 
@@ -89,13 +93,7 @@ public class SequentialTest extends BaseTest {
 
     Assert.assertEquals(verifyMap.size(), threadCount);
 
-    ppp("COUNT:" + threadCount  + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
-  }
-
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[SequentialTest] " + s);
-    }
+    ppp("COUNT:" + threadCount + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
   }
 
 }

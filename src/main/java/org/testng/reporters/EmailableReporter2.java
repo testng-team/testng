@@ -1,5 +1,8 @@
 package org.testng.reporters;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newBufferedWriter;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -23,28 +25,24 @@ import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.newBufferedWriter;
-
-/** Reporter that generates a single-page HTML report of the test results. */
+/**
+ * Reporter that generates a single-page HTML report of the test results.
+ */
 public class EmailableReporter2 implements IReporter {
+
   private static final Logger LOG = Logger.getLogger(EmailableReporter2.class);
-
-  protected PrintWriter writer;
-
   protected final List<SuiteResult> suiteResults = Lists.newArrayList();
-
   // Reusable buffer
   private final StringBuilder buffer = new StringBuilder();
-
+  protected PrintWriter writer;
   private String fileName = "emailable-report.html";
-
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
-  }
 
   public String getFileName() {
     return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 
   @Override
@@ -221,7 +219,9 @@ public class EmailableReporter2 implements IReporter {
     writer.println("</table>");
   }
 
-  /** Writes a summary of all the test scenarios. */
+  /**
+   * Writes a summary of all the test scenarios.
+   */
   protected void writeScenarioSummary() {
     writer.print("<table id='summary'>");
     writer.print("<thead>");
@@ -296,7 +296,9 @@ public class EmailableReporter2 implements IReporter {
     writer.println("</table>");
   }
 
-  /** Writes the scenario summary for the results of a given state for a single test. */
+  /**
+   * Writes the scenario summary for the results of a given state for a single test.
+   */
   private int writeScenarioSummary(
       String description,
       List<ClassResult> classResults,
@@ -389,7 +391,9 @@ public class EmailableReporter2 implements IReporter {
     return scenarioCount;
   }
 
-  /** Writes the details for all test scenarios. */
+  /**
+   * Writes the details for all test scenarios.
+   */
   protected void writeScenarioDetails() {
     int scenarioIndex = 0;
     for (SuiteResult suiteResult : suiteResults) {
@@ -410,7 +414,9 @@ public class EmailableReporter2 implements IReporter {
     }
   }
 
-  /** Writes the scenario details for the results of a given state for a single test. */
+  /**
+   * Writes the scenario details for the results of a given state for a single test.
+   */
   private int writeScenarioDetails(List<ClassResult> classResults, int startingScenarioIndex) {
     int scenarioIndex = startingScenarioIndex;
     for (ClassResult classResult : classResults) {
@@ -432,7 +438,9 @@ public class EmailableReporter2 implements IReporter {
     return scenarioIndex - startingScenarioIndex;
   }
 
-  /** Writes the details for an individual test scenario. */
+  /**
+   * Writes the details for an individual test scenario.
+   */
   private void writeScenario(int scenarioIndex, String label, ITestResult result) {
     writer.print("<h3 id=\"m");
     writer.print(scenarioIndex);
@@ -603,8 +611,11 @@ public class EmailableReporter2 implements IReporter {
     writer.print(">");
   }
 
-  /** Groups {@link TestResult}s by suite. */
+  /**
+   * Groups {@link TestResult}s by suite.
+   */
   protected static class SuiteResult {
+
     private final String suiteName;
     private final List<TestResult> testResults = Lists.newArrayList();
     private final ParallelMode mode;
@@ -621,7 +632,9 @@ public class EmailableReporter2 implements IReporter {
       return suiteName;
     }
 
-    /** @return the test results (possibly empty) */
+    /**
+     * @return the test results (possibly empty)
+     */
     public List<TestResult> getTestResults() {
       return testResults;
     }
@@ -631,9 +644,14 @@ public class EmailableReporter2 implements IReporter {
     }
   }
 
-  /** Groups {@link ClassResult}s by test, type (configuration or test), and status. */
+  /**
+   * Groups {@link ClassResult}s by test, type (configuration or test), and status.
+   */
   protected static class TestResult {
-    /** Orders test results by class name and then by method name (in lexicographic order). */
+
+    /**
+     * Orders test results by class name and then by method name (in lexicographic order).
+     */
     protected static final Comparator<ITestResult> RESULT_COMPARATOR =
         Comparator.comparing((ITestResult o) -> o.getTestClass().getName())
             .thenComparing(o -> o.getMethod().getMethodName());
@@ -753,22 +771,30 @@ public class EmailableReporter2 implements IReporter {
       return testName;
     }
 
-    /** @return the results for failed configurations (possibly empty) */
+    /**
+     * @return the results for failed configurations (possibly empty)
+     */
     public List<ClassResult> getFailedConfigurationResults() {
       return failedConfigurationResults;
     }
 
-    /** @return the results for failed tests (possibly empty) */
+    /**
+     * @return the results for failed tests (possibly empty)
+     */
     public List<ClassResult> getFailedTestResults() {
       return failedTestResults;
     }
 
-    /** @return the results for skipped configurations (possibly empty) */
+    /**
+     * @return the results for skipped configurations (possibly empty)
+     */
     public List<ClassResult> getSkippedConfigurationResults() {
       return skippedConfigurationResults;
     }
 
-    /** @return the results for skipped tests (possibly empty) */
+    /**
+     * @return the results for skipped tests (possibly empty)
+     */
     public List<ClassResult> getSkippedTestResults() {
       return skippedTestResults;
     }
@@ -777,7 +803,9 @@ public class EmailableReporter2 implements IReporter {
       return retriedTestResults;
     }
 
-    /** @return the results for passed tests (possibly empty) */
+    /**
+     * @return the results for passed tests (possibly empty)
+     */
     public List<ClassResult> getPassedTestResults() {
       return passedTestResults;
     }
@@ -830,8 +858,11 @@ public class EmailableReporter2 implements IReporter {
     }
   }
 
-  /** Groups {@link MethodResult}s by class. */
+  /**
+   * Groups {@link MethodResult}s by class.
+   */
   protected static class ClassResult {
+
     private final String className;
     private final List<MethodResult> methodResults;
 
@@ -848,22 +879,31 @@ public class EmailableReporter2 implements IReporter {
       return className;
     }
 
-    /** @return the non-null, non-empty {@link MethodResult} list */
+    /**
+     * @return the non-null, non-empty {@link MethodResult} list
+     */
     public List<MethodResult> getMethodResults() {
       return methodResults;
     }
   }
 
-  /** Groups test results by method. */
+  /**
+   * Groups test results by method.
+   */
   protected static class MethodResult {
+
     private final List<ITestResult> results;
 
-    /** @param results the non-null, non-empty result list */
+    /**
+     * @param results the non-null, non-empty result list
+     */
     public MethodResult(List<ITestResult> results) {
       this.results = results;
     }
 
-    /** @return the non-null, non-empty result list */
+    /**
+     * @return the non-null, non-empty result list
+     */
     public List<ITestResult> getResults() {
       return results;
     }

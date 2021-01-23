@@ -4,10 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
-
 import javax.annotation.Nullable;
-
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
@@ -17,6 +14,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.annotations.*;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
@@ -26,20 +24,19 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.BasicAttributes;
+import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.reflect.DataProviderMethodMatcher;
 import org.testng.internal.reflect.InjectableParameter;
 import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.Parameter;
 import org.testng.internal.reflect.ReflectionRecipes;
-import org.testng.internal.objects.Dispenser;
-import org.testng.internal.objects.IObjectDispenser;
-import org.testng.internal.objects.pojo.CreationAttributes;
-import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.testng.annotations.*;
 
 /**
  * Methods that bind parameters declared in testng.xml to actual values used to invoke methods.
@@ -47,6 +44,7 @@ import org.testng.annotations.*;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class Parameters {
+
   public static final String NULL_VALUE = "null";
 
   private static final List<Class<? extends Annotation>> annotationList =
@@ -64,6 +62,10 @@ public class Parameters {
           Factory.class);
 
   private static final Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+  private static final List<Class<?>> INJECTED_TYPES =
+      Arrays.asList(
+          ITestContext.class, ITestResult.class, XmlTest.class, Method.class, Object[].class);
+
   /*
            +--------------+--------------+---------+--------+----------+-------------+
            |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
@@ -118,7 +120,9 @@ public class Parameters {
     mapping.put(Factory.class.getSimpleName(), ctxTest);
   }
 
-  /** Creates the parameters needed for constructing a test class instance. */
+  /**
+   * Creates the parameters needed for constructing a test class instance.
+   */
   public static Object[] createInstantiationParameters(
       Constructor<?> ctor,
       String methodAnnotation,
@@ -138,11 +142,12 @@ public class Parameters {
   }
 
   /**
-   * Creates the parameters needed for the specified <code>@Configuration</code> <code>Method</code>.
+   * Creates the parameters needed for the specified <code>@Configuration</code>
+   * <code>Method</code>.
    *
    * @param m the configuraton method
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available
-   *     (this is not only in case the configuration method is a @Before/@AfterMethod
+   * (this is not only in case the configuration method is a @Before/@AfterMethod
    * @param finder the annotation finder
    */
   public static Object[] createConfigurationParameters(
@@ -300,25 +305,6 @@ public class Parameters {
         typeList.toArray(new Class<?>[0]), optionalValueList.toArray(new String[0]));
   }
 
-  /** Store the result of parameterTypes and optionalValues after filter out injected types */
-  static final class FilterOutInJectedTypesResult {
-    private final Class<?>[] parameterTypes;
-    private final String[] optionalValues;
-
-    private FilterOutInJectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
-      this.parameterTypes = parameterTypes;
-      this.optionalValues = optionalValues;
-    }
-
-    Class<?>[] getParameterTypes() {
-      return parameterTypes;
-    }
-
-    String[] getOptionalValues() {
-      return optionalValues;
-    }
-  }
-
   private static boolean areAllOptionalValuesNull(String[] optionalValues) {
     if (optionalValues == null || optionalValues.length == 0) {
       return true;
@@ -335,7 +321,7 @@ public class Parameters {
 
   /**
    * @return An array of parameters suitable to invoke this method, possibly picked from the
-   *     property file
+   * property file
    */
   private static Object[] createParametersForMethod(
       ConstructorOrMethod method,
@@ -393,10 +379,6 @@ public class Parameters {
   private static boolean canInject(String annotation) {
     return !("@" + Test.class.getSimpleName()).equalsIgnoreCase(annotation);
   }
-
-  private static final List<Class<?>> INJECTED_TYPES =
-      Arrays.asList(
-          ITestContext.class, ITestResult.class, XmlTest.class, Method.class, Object[].class);
 
   private static void checkParameterTypes(
       String methodName,
@@ -616,14 +598,17 @@ public class Parameters {
   }
 
   private static boolean isDataProviderClassEmpty(ITestAnnotation annotation) {
-    return annotation.getDataProviderClass() == null || Object.class.equals(annotation.getDataProviderClass());
+    return annotation.getDataProviderClass() == null || Object.class
+        .equals(annotation.getDataProviderClass());
   }
 
   private static boolean isDataProviderNameEmpty(ITestAnnotation annotation) {
     return Strings.isNullOrEmpty(annotation.getDataProvider());
   }
 
-  /** Find a method that has a @DataProvider(name=name) */
+  /**
+   * Find a method that has a @DataProvider(name=name)
+   */
   private static IDataProviderMethod findDataProvider(
       Object instance,
       ITestClass clazz,
@@ -705,7 +690,8 @@ public class Parameters {
     // Else, use the deprecated syntax
     //
     else {
-      extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
+      extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName,
+          new String[0], params, xmlSuite);
     }
 
     //
@@ -863,8 +849,9 @@ public class Parameters {
           };
 
       testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
-      for (IDataProviderInterceptor interceptor: holder.getInterceptors()) {
-        filteredParameters = interceptor.intercept(filteredParameters, dataProviderMethod, testMethod, methodParams.context);
+      for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
+        filteredParameters = interceptor
+            .intercept(filteredParameters, dataProviderMethod, testMethod, methodParams.context);
       }
 
       return new ParameterHolder(
@@ -926,8 +913,33 @@ public class Parameters {
     return null;
   }
 
-  /** A parameter passing helper class. */
+  /**
+   * Store the result of parameterTypes and optionalValues after filter out injected types
+   */
+  static final class FilterOutInJectedTypesResult {
+
+    private final Class<?>[] parameterTypes;
+    private final String[] optionalValues;
+
+    private FilterOutInJectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
+      this.parameterTypes = parameterTypes;
+      this.optionalValues = optionalValues;
+    }
+
+    Class<?>[] getParameterTypes() {
+      return parameterTypes;
+    }
+
+    String[] getOptionalValues() {
+      return optionalValues;
+    }
+  }
+
+  /**
+   * A parameter passing helper class.
+   */
   public static class MethodParameters {
+
     private final Map<String, String> xmlParameters;
     private final Method currentTestMethod;
     private final ITestContext context;
@@ -936,14 +948,6 @@ public class Parameters {
 
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {
       this(params, methodParams, null, null, null, null);
-    }
-
-    public static MethodParameters newInstance(
-        Map<String, String> params, ITestNGMethod testNGMethod, ITestContext context) {
-      Map<String, String> methodParams =
-          testNGMethod.findMethodParameters(context.getCurrentXmlTest());
-      Method method = testNGMethod.getConstructorOrMethod().getMethod();
-      return new MethodParameters(params, methodParams, null, method, context, null);
     }
 
     /**
@@ -969,6 +973,14 @@ public class Parameters {
       context = ctx;
       parameterValues = pv;
       testResult = tr;
+    }
+
+    public static MethodParameters newInstance(
+        Map<String, String> params, ITestNGMethod testNGMethod, ITestContext context) {
+      Map<String, String> methodParams =
+          testNGMethod.findMethodParameters(context.getCurrentXmlTest());
+      Method method = testNGMethod.getConstructorOrMethod().getMethod();
+      return new MethodParameters(params, methodParams, null, method, context, null);
     }
   }
 }

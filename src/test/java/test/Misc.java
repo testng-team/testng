@@ -16,16 +16,16 @@ public class Misc extends BaseTest {
 //    setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {
-      };
-      // @Configuration failures are not reported in the ITestListener
-      String[] failed = {
-      };
-      String[] skipped = {
-          "test",
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
-      verifyTests("Failed", skipped, getSkippedTests());
+    };
+    // @Configuration failures are not reported in the ITestListener
+    String[] failed = {
+    };
+    String[] skipped = {
+        "test",
+    };
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
+    verifyTests("Failed", skipped, getSkippedTests());
   }
 
 }

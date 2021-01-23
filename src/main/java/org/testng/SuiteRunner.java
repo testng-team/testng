@@ -1,6 +1,10 @@
 package org.testng;
 
+import static org.testng.internal.Utils.isStringBlank;
+
 import com.google.inject.Injector;
+import java.io.File;
+import java.lang.reflect.Method;
 import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -15,14 +19,9 @@ import org.testng.reporters.TextReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.*;
-
-import static org.testng.internal.Utils.isStringBlank;
-
 /**
- * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one suite. The test
+ * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one suite. The
+ * test
  * start is triggered by {@link #run()} method.
  */
 public class SuiteRunner implements ISuite, IInvokedMethodListener {
@@ -32,36 +31,29 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private final Map<String, ISuiteResult> suiteResults =
       Collections.synchronizedMap(Maps.newLinkedHashMap());
   private final List<TestRunner> testRunners = Lists.newArrayList();
-  private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newConcurrentMap();
-
-  private String outputDir;
-  private XmlSuite xmlSuite;
-  private Injector parentInjector;
-
+  private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps
+      .newConcurrentMap();
   private final List<ITestListener> testListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> classListeners =
       Maps.newConcurrentMap();
-  private ITestRunnerFactory tmpRunnerFactory;
   private final DataProviderHolder holder = new DataProviderHolder();
-
-  private boolean useDefaultListeners = true;
-
-  // The remote host where this suite was run, or null if run locally
-  private String remoteHost;
-
-  // The configuration
-  private IConfiguration configuration;
-
-  private ITestObjectFactory objectFactory;
-  private Boolean skipFailedInvocationCounts = Boolean.FALSE;
   private final List<IReporter> reporters = Lists.newArrayList();
-
-  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
-      invokedMethodListeners;
-
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
+  private String outputDir;
+  private XmlSuite xmlSuite;
+  private Injector parentInjector;
+  private ITestRunnerFactory tmpRunnerFactory;
+  private boolean useDefaultListeners = true;
+  // The remote host where this suite was run, or null if run locally
+  private String remoteHost;
+  // The configuration
+  private IConfiguration configuration;
+  private ITestObjectFactory objectFactory;
+  private Boolean skipFailedInvocationCounts = Boolean.FALSE;
+  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
+      invokedMethodListeners;
 
   public SuiteRunner(
       IConfiguration configuration,
@@ -116,6 +108,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         classListeners,
         holder,
         comparator);
+  }
+
+  public static void ppp(String s) {
+    System.out.println("[SuiteRunner] " + s);
   }
 
   private void init(
@@ -197,10 +193,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   @Override
   public String getName() {
     return xmlSuite.getName();
-  }
-
-  public void setObjectFactory(ITestObjectFactory objectFactory) {
-    this.objectFactory = objectFactory;
   }
 
   public void setReportResults(boolean reportResults) {
@@ -386,7 +378,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
    * Implement <suite parallel="tests">. Since this kind of parallelism happens at the suite level,
    * we need a special code path to execute it. All the other parallelism strategies are implemented
    * at the test level in TestRunner#createParallelWorkers (but since this method deals with just
-   * one &lt;test&gt; tag, it can't implement <suite parallel="tests">, which is why we're doing it here).
+   * one &lt;test&gt; tag, it can't implement <suite parallel="tests">, which is why we're doing it
+   * here).
    */
   private void runInParallelTestMode() {
     List<Runnable> tasks = Lists.newArrayList(testRunners.size());
@@ -402,24 +395,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     );
   }
 
-  private class SuiteWorker implements Runnable {
-    private final TestRunner testRunner;
-
-    public SuiteWorker(TestRunner tr) {
-      testRunner = tr;
-    }
-
-    @Override
-    public void run() {
-      Utils.log(
-          "[SuiteWorker]",
-          4,
-          "Running XML Test '" + testRunner.getTest().getName() + "' in Parallel");
-      runTest(testRunner);
-    }
-  }
-
-  /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
+  /**
+   * @param reporter The ISuiteListener interested in reporting the result of the current suite.
+   */
   protected void addListener(ISuiteListener reporter) {
     if (!listeners.containsKey(reporter.getClass())) {
       listeners.put(reporter.getClass(), reporter);
@@ -459,7 +437,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       this.holder.addInterceptor(interceptor);
     }
     if (listener instanceof ITestListener) {
-      for(TestRunner testRunner : testRunners) {
+      for (TestRunner testRunner : testRunners) {
         testRunner.addTestListener((ITestListener) listener);
       }
     }
@@ -485,7 +463,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     return xmlSuite.getParameter(parameterName);
   }
 
-  /** @see org.testng.ISuite#getMethodsByGroups() */
+  /**
+   * @see org.testng.ISuite#getMethodsByGroups()
+   */
   @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
     Map<String, Collection<ITestNGMethod>> result = Maps.newHashMap();
@@ -505,7 +485,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     return result;
   }
 
-  /** @see org.testng.ISuite#getExcludedMethods() */
+  /**
+   * @see org.testng.ISuite#getExcludedMethods()
+   */
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
     return testRunners.stream()
@@ -516,6 +498,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   @Override
   public IObjectFactory getObjectFactory() {
     return objectFactory instanceof IObjectFactory ? (IObjectFactory) objectFactory : null;
+  }
+
+  public void setObjectFactory(ITestObjectFactory objectFactory) {
+    this.objectFactory = objectFactory;
   }
 
   @Override
@@ -533,12 +519,101 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     return configuration.getAnnotationFinder();
   }
 
-  public static void ppp(String s) {
-    System.out.println("[SuiteRunner] " + s);
+  @Override
+  public String getHost() {
+    return remoteHost;
   }
 
-  /** The default implementation of {@link ITestRunnerFactory}. */
+  public void setHost(String host) {
+    remoteHost = host;
+  }
+
+  /**
+   * @see org.testng.ISuite#getSuiteState()
+   */
+  @Override
+  public SuiteRunState getSuiteState() {
+    return suiteState;
+  }
+
+  public void setSkipFailedInvocationCounts(Boolean skipFailedInvocationCounts) {
+    if (skipFailedInvocationCounts != null) {
+      this.skipFailedInvocationCounts = skipFailedInvocationCounts;
+    }
+  }
+
+  @Override
+  public Object getAttribute(String name) {
+    return attributes.getAttribute(name);
+  }
+
+  @Override
+  public void setAttribute(String name, Object value) {
+    attributes.setAttribute(name, value);
+  }
+
+  @Override
+  public Set<String> getAttributeNames() {
+    return attributes.getAttributeNames();
+  }
+
+  @Override
+  public Object removeAttribute(String name) {
+    return attributes.removeAttribute(name);
+  }
+
+  @Override
+  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+    // Empty implementation.
+  }
+
+  @Override
+  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
+    if (method == null) {
+      throw new NullPointerException("Method should not be null");
+    }
+    if (method.getTestMethod() instanceof IInvocationStatus) {
+      ((IInvocationStatus) method.getTestMethod()).setInvokedAt(method.getDate());
+    }
+  }
+
+  @Override
+  public List<IInvokedMethod> getAllInvokedMethods() {
+    return testRunners.stream()
+        .flatMap(tr -> {
+          Set<ITestResult> results = new HashSet<>();
+          results.addAll(tr.getConfigurationsScheduledForInvocation().getAllResults());
+          results.addAll(tr.getPassedConfigurations().getAllResults());
+          results.addAll(tr.getFailedConfigurations().getAllResults());
+          results.addAll(tr.getSkippedConfigurations().getAllResults());
+          results.addAll(tr.getPassedTests().getAllResults());
+          results.addAll(tr.getFailedTests().getAllResults());
+          results.addAll(tr.getFailedButWithinSuccessPercentageTests().getAllResults());
+          results.addAll(tr.getSkippedTests().getAllResults());
+          return results.stream();
+        })
+        .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
+        .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
+        .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))
+        .collect(Collectors.toList());
+  }
+
+  /////
+  // implements IInvokedMethodListener
+  //
+
+  @Override
+  public List<ITestNGMethod> getAllMethods() {
+    return this.testRunners.stream()
+        .flatMap(tr -> Arrays.stream(tr.getAllTestMethods()))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * The default implementation of {@link ITestRunnerFactory}.
+   */
   private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
+
     private final ITestListener[] failureGenerators;
     private final boolean useDefaultListeners;
     private final boolean skipFailedInvocationCounts;
@@ -622,7 +697,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
+  //
+  // implements IInvokedMethodListener
+  /////
+
   private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
+
     private final ITestListener[] failureGenerators;
     private final ITestRunnerFactory target;
 
@@ -666,95 +746,21 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-  public void setHost(String host) {
-    remoteHost = host;
-  }
+  private class SuiteWorker implements Runnable {
 
-  @Override
-  public String getHost() {
-    return remoteHost;
-  }
+    private final TestRunner testRunner;
 
-  /** @see org.testng.ISuite#getSuiteState() */
-  @Override
-  public SuiteRunState getSuiteState() {
-    return suiteState;
-  }
-
-  public void setSkipFailedInvocationCounts(Boolean skipFailedInvocationCounts) {
-    if (skipFailedInvocationCounts != null) {
-      this.skipFailedInvocationCounts = skipFailedInvocationCounts;
+    public SuiteWorker(TestRunner tr) {
+      testRunner = tr;
     }
-  }
 
-  @Override
-  public Object getAttribute(String name) {
-    return attributes.getAttribute(name);
-  }
-
-  @Override
-  public void setAttribute(String name, Object value) {
-    attributes.setAttribute(name, value);
-  }
-
-  @Override
-  public Set<String> getAttributeNames() {
-    return attributes.getAttributeNames();
-  }
-
-  @Override
-  public Object removeAttribute(String name) {
-    return attributes.removeAttribute(name);
-  }
-
-  /////
-  // implements IInvokedMethodListener
-  //
-
-  @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-    // Empty implementation.
-  }
-
-  @Override
-  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-    if (method == null) {
-      throw new NullPointerException("Method should not be null");
+    @Override
+    public void run() {
+      Utils.log(
+          "[SuiteWorker]",
+          4,
+          "Running XML Test '" + testRunner.getTest().getName() + "' in Parallel");
+      runTest(testRunner);
     }
-    if (method.getTestMethod() instanceof IInvocationStatus) {
-      ((IInvocationStatus) method.getTestMethod()).setInvokedAt(method.getDate());
-    }
-  }
-
-  //
-  // implements IInvokedMethodListener
-  /////
-
-  @Override
-  public List<IInvokedMethod> getAllInvokedMethods() {
-    return testRunners.stream()
-        .flatMap(tr -> {
-          Set<ITestResult> results = new HashSet<>();
-          results.addAll(tr.getConfigurationsScheduledForInvocation().getAllResults());
-          results.addAll(tr.getPassedConfigurations().getAllResults());
-          results.addAll(tr.getFailedConfigurations().getAllResults());
-          results.addAll(tr.getSkippedConfigurations().getAllResults());
-          results.addAll(tr.getPassedTests().getAllResults());
-          results.addAll(tr.getFailedTests().getAllResults());
-          results.addAll(tr.getFailedButWithinSuccessPercentageTests().getAllResults());
-          results.addAll(tr.getSkippedTests().getAllResults());
-          return results.stream();
-        })
-        .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
-        .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
-        .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public List<ITestNGMethod> getAllMethods() {
-    return this.testRunners.stream()
-        .flatMap(tr -> Arrays.stream(tr.getAllTestMethods()))
-        .collect(Collectors.toList());
   }
 }

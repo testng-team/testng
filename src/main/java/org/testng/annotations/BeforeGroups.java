@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.METHOD)
 @Documented
 public @interface BeforeGroups {
+
   /**
    * The list of groups that this configuration method will run before. If specified it overrides
    * the list of groups provided through {@link #groups()} attribute. This method is guaranteed to
@@ -56,9 +57,9 @@ public @interface BeforeGroups {
   /**
    * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
    * beforeGroups): If set to true, this configuration method will be run regardless of what groups
-   * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): If set to true, this configuration method will
-   * be run even if one or more methods invoked previously failed or was skipped.
+   * it belongs to. <br> For after methods (afterSuite, afterClass, ...): If set to true, this
+   * configuration method will be run even if one or more methods invoked previously failed or was
+   * skipped.
    *
    * @return the value (default false)
    */

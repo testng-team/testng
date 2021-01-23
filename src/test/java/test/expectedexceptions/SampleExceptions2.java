@@ -20,7 +20,8 @@ public class SampleExceptions2 {
   }
 
   @Test(expectedExceptions = NumberFormatException.class)
-  public void shouldFail2() {}
+  public void shouldFail2() {
+  }
 
   @Test(
       expectedExceptions = NumberFormatException.class,
@@ -49,5 +50,6 @@ public class SampleExceptions2 {
   }
 
   @Test(expectedExceptions = RuntimeException.class)
-  public void shouldFail4() {}
+  public void shouldFail4() {
+  }
 }

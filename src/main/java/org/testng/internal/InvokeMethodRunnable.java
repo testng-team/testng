@@ -9,6 +9,7 @@ import org.testng.ITestResult;
  * A Runnable Method invoker.
  */
 public class InvokeMethodRunnable implements Callable<Void> {
+
   private final ITestNGMethod m_method;
   private final Object m_instance;
   private final Object[] m_parameters;

@@ -4,6 +4,7 @@ import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 
 public class GroupConfiguration {
+
   @BeforeGroups(groups = {"a"})
   public void beforeGroups() {
     DummyTest.recordInvocation("beforeGroups", hashCode());

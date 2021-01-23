@@ -20,24 +20,12 @@ import org.testng.internal.Utils;
  */
 public class VerboseReporter implements IConfigurationListener, ITestListener {
 
-  /** Default prefix for messages printed out by this reporter */
+  /**
+   * Default prefix for messages printed out by this reporter
+   */
   public static final String LISTENER_PREFIX = "[VerboseTestNG] ";
-
-  private String suiteName;
   private final String prefix;
-
-  private enum Status {
-    SUCCESS(ITestResult.SUCCESS),
-    FAILURE(ITestResult.FAILURE),
-    SKIP(ITestResult.SKIP),
-    SUCCESS_PERCENTAGE_FAILURE(ITestResult.SUCCESS_PERCENTAGE_FAILURE),
-    STARTED(ITestResult.STARTED);
-    private int status;
-
-    Status(int i) {
-      status = i;
-    }
-  }
+  private String suiteName;
 
   /**
    * Create VerboseReporter with custom prefix
@@ -118,7 +106,9 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
         .toArray(ITestNGMethod[]::new);
   }
 
-  /** Print out test summary */
+  /**
+   * Print out test summary
+   */
   private void logResults(ITestContext context) {
     //
     // Log test summary
@@ -245,7 +235,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
   /**
    * @param method method to be described
    * @return FQN of a class + method declaration for a method passed in ie.
-   *     test.triangle.CheckCount.testCheckCount(java.lang.String)
+   * test.triangle.CheckCount.testCheckCount(java.lang.String)
    */
   private String getMethodDeclaration(ITestNGMethod method, ITestResult tr) {
 
@@ -273,5 +263,18 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
   @Override
   public String toString() {
     return "VerboseReporter{" + "suiteName=" + suiteName + '}';
+  }
+
+  private enum Status {
+    SUCCESS(ITestResult.SUCCESS),
+    FAILURE(ITestResult.FAILURE),
+    SKIP(ITestResult.SKIP),
+    SUCCESS_PERCENTAGE_FAILURE(ITestResult.SUCCESS_PERCENTAGE_FAILURE),
+    STARTED(ITestResult.STARTED);
+    private int status;
+
+    Status(int i) {
+      status = i;
+    }
   }
 }

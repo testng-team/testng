@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class OrderMethodTest extends BaseOrderMethodTest {
+
   @Test(groups = {"1.0"})
   public void z_first0() {
     m_group1[0] = true;

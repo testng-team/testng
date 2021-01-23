@@ -1,5 +1,11 @@
 package test.reports;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
+import javax.xml.parsers.ParserConfigurationException;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -15,12 +21,6 @@ import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 import test.SimpleBaseTest;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
 
 public class FailedReporterTest extends SimpleBaseTest {
 
@@ -43,7 +43,8 @@ public class FailedReporterTest extends SimpleBaseTest {
     tng.run();
 
     Collection<XmlSuite> failedSuites =
-        new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()).parse();
+        new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
+            .parse();
     XmlSuite failedSuite = failedSuites.iterator().next();
     Assert.assertEquals("42", failedSuite.getParameter("n"));
 
@@ -68,12 +69,12 @@ public class FailedReporterTest extends SimpleBaseTest {
     tng.run();
 
     final Diff myDiff = DiffBuilder.compare(Input.fromFile(expectedResult))
-                                   .withTest(Input.fromFile(temp.resolve(FailedReporter.TESTNG_FAILED_XML)
-                                                                .toAbsolutePath()
-                                                                .toString()))
-                                   .checkForSimilar()
-                                   .ignoreWhitespace()
-                                   .build();
+        .withTest(Input.fromFile(temp.resolve(FailedReporter.TESTNG_FAILED_XML)
+            .toAbsolutePath()
+            .toString()))
+        .checkForSimilar()
+        .ignoreWhitespace()
+        .build();
     Assert.assertFalse(myDiff.hasDifferences());
   }
 }

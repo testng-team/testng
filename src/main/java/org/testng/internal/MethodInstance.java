@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.util.Comparator;
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Objects;
@@ -7,33 +9,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
-import java.util.Comparator;
-import java.util.List;
-
 public class MethodInstance implements IMethodInstance {
-  private final ITestNGMethod m_method;
-
-  public MethodInstance(ITestNGMethod method) {
-    m_method = method;
-  }
-
-  @Override
-  public ITestNGMethod getMethod() {
-    return m_method;
-  }
-
-  @Override
-  public Object getInstance() {
-    return m_method.getInstance();
-  }
-
-  @Override
-  public String toString() {
-    return Objects.toStringHelper(getClass())
-        .add("method", m_method)
-        .add("instance", getInstance())
-        .toString();
-  }
 
   public static final Comparator<IMethodInstance> SORT_BY_INDEX =
       new Comparator<IMethodInstance>() {
@@ -58,8 +34,12 @@ public class MethodInstance implements IMethodInstance {
           // This can happen if these classes came from a @Factory, in which case, they
           // don't have an associated XmlClass
           if (class1 == null || class2 == null) {
-            if (class1 != null) return -1;
-            if (class2 != null) return 1;
+            if (class1 != null) {
+              return -1;
+            }
+            if (class2 != null) {
+              return 1;
+            }
             return 0;
           }
 
@@ -89,4 +69,27 @@ public class MethodInstance implements IMethodInstance {
           return null;
         }
       };
+  private final ITestNGMethod m_method;
+
+  public MethodInstance(ITestNGMethod method) {
+    m_method = method;
+  }
+
+  @Override
+  public ITestNGMethod getMethod() {
+    return m_method;
+  }
+
+  @Override
+  public Object getInstance() {
+    return m_method.getInstance();
+  }
+
+  @Override
+  public String toString() {
+    return Objects.toStringHelper(getClass())
+        .add("method", m_method)
+        .add("instance", getInstance())
+        .toString();
+  }
 }

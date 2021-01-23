@@ -1,14 +1,6 @@
 package org.testng.junit;
 
 import java.lang.reflect.Constructor;
-
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InvokedMethod;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,13 +9,18 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.testng.*;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InvokedMethod;
 import org.testng.internal.TestListenerHelper;
 
 /**
@@ -32,6 +29,7 @@ import org.testng.internal.TestListenerHelper;
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
+
   public static final String SUITE_METHODNAME = "suite";
 
   private ITestResultNotifier m_parentRunner;
@@ -40,7 +38,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   private List<ITestNGMethod> m_methods = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
-  public JUnitTestRunner() {}
+  public JUnitTestRunner() {
+  }
 
   public JUnitTestRunner(ITestResultNotifier tr) {
     m_parentRunner = tr;
@@ -61,13 +60,17 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     m_parentRunner = notifier;
   }
 
-  /** @see junit.framework.TestListener#startTest(junit.framework.Test) */
+  /**
+   * @see junit.framework.TestListener#startTest(junit.framework.Test)
+   */
   @Override
   public void startTest(Test test) {
     m_tests.put(test, new TestRunInfo(Calendar.getInstance().getTimeInMillis()));
   }
 
-  /** @see junit.framework.TestListener#addError(junit.framework.Test, java.lang.Throwable) */
+  /**
+   * @see junit.framework.TestListener#addError(junit.framework.Test, java.lang.Throwable)
+   */
   @Override
   public void addError(Test test, Throwable t) {
     recordFailure(test, t);
@@ -75,7 +78,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   /**
    * @see junit.framework.TestListener#addFailure(junit.framework.Test,
-   *     junit.framework.AssertionFailedError)
+   * junit.framework.AssertionFailedError)
    */
   @Override
   public void addFailure(Test test, AssertionFailedError t) {
@@ -89,7 +92,9 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     }
   }
 
-  /** @see junit.framework.TestListener#endTest(junit.framework.Test) */
+  /**
+   * @see junit.framework.TestListener#endTest(junit.framework.Test)
+   */
   @Override
   public void endTest(Test test) {
     TestRunInfo tri = m_tests.get(test);
@@ -252,6 +257,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   }
 
   private static class TestRunInfo {
+
     private final long m_start;
     private Throwable m_failure;
 

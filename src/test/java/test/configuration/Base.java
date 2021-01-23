@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 
 @Test(groups = {"base"})
 public class Base {
+
   static int m_count;
 
   @BeforeTest

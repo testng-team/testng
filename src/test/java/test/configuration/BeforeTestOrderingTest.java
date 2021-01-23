@@ -1,7 +1,11 @@
 package test.configuration;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -10,30 +14,22 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.TestHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class BeforeTestOrderingTest {
 
   private static final List<String> m_testNames = new ArrayList<>();
-
-  @BeforeSuite
-  public void init() {
-    m_testNames.clear();
-  }
+  private static final List<String> expected =
+      Arrays.asList("bt1", "f1", "at1", "bt2", "f2", "at2");
 
   static void addTest(String testName) {
     m_testNames.add(testName);
   }
 
-  private static final List<String> expected =
-      Arrays.asList("bt1", "f1", "at1", "bt2", "f2", "at2");
+  @BeforeSuite
+  public void init() {
+    m_testNames.clear();
+  }
 
   @Test
   public void verifyBeforeTestOrdering() throws IOException {

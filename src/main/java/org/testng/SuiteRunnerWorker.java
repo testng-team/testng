@@ -1,5 +1,9 @@
 package org.testng;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nonnull;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Objects;
@@ -7,11 +11,6 @@ import org.testng.internal.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * An {@code IWorker} that is used to encapsulate and run Suite Runners
@@ -136,6 +135,8 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
  */
 class SuiteResultCounts {
 
+  private static final String SKIPPED = "skipped";
+  private static final String RETRIED = "retried";
   int m_total = 0;
   int m_passes = 0;
   int m_skipped = 0;
@@ -143,8 +144,22 @@ class SuiteResultCounts {
   int m_confFailures = 0;
   int m_confSkips = 0;
   int m_retries = 0;
-  private static final String SKIPPED = "skipped";
-  private static final String RETRIED = "retried";
+
+  private static Map<String, Integer> seggregateSkippedTests(ITestContext context) {
+    int skipped = 0;
+    int retried = 0;
+    for (ITestResult result : context.getSkippedTests().getAllResults()) {
+      if (result.wasRetried()) {
+        retried++;
+      } else {
+        skipped++;
+      }
+    }
+    Map<String, Integer> data = Maps.newHashMap();
+    data.put(SKIPPED, skipped);
+    data.put(RETRIED, retried);
+    return data;
+  }
 
   public void calculateResultCounts(XmlSuite xmlSuite, SuiteRunnerMap suiteRunnerMap) {
     ISuite iSuite = suiteRunnerMap.get(xmlSuite);
@@ -176,21 +191,5 @@ class SuiteResultCounts {
     for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
       calculateResultCounts(childSuite, suiteRunnerMap);
     }
-  }
-
-  private static Map<String, Integer> seggregateSkippedTests(ITestContext context) {
-    int skipped = 0;
-    int retried = 0;
-    for (ITestResult result : context.getSkippedTests().getAllResults()) {
-      if (result.wasRetried()) {
-        retried++;
-      } else {
-        skipped++;
-      }
-    }
-    Map<String, Integer> data = Maps.newHashMap();
-    data.put(SKIPPED, skipped);
-    data.put(RETRIED, retried);
-    return data;
   }
 }

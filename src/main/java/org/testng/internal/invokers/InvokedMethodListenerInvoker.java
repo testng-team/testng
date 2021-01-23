@@ -1,12 +1,12 @@
 package org.testng.internal.invokers;
 
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 
 /**
  * Hides complexity of calling methods of {@link IInvokedMethodListener}.
@@ -27,7 +27,7 @@ public class InvokedMethodListenerInvoker {
    * @param listenerMethod method which should be called.
    * @param testResult test result which should be passed to the listener method upon invocation.
    * @param testContext test context which should be passed to the listener method upon invocation.
-   *     This parameter is only used when calling methods on an {@link IInvokedMethodListener}.
+   * This parameter is only used when calling methods on an {@link IInvokedMethodListener}.
    */
   public InvokedMethodListenerInvoker(
       InvokedMethodListenerMethod listenerMethod,
@@ -44,11 +44,10 @@ public class InvokedMethodListenerInvoker {
    *
    * @param listenerInstance the listener instance which should be invoked.
    * @param invokedMethod the {@link IInvokedMethod} instance which should be passed to the {@link
-   *     IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult)}, {@link
-   *     IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult)}, {@link
-   *     IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult, ITestContext)} or
-   *     {@link IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult, ITestContext)}
-   *     method.
+   * IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult)}, {@link
+   * IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult)}, {@link
+   * IInvokedMethodListener#beforeInvocation(IInvokedMethod, ITestResult, ITestContext)} or {@link
+   * IInvokedMethodListener#afterInvocation(IInvokedMethod, ITestResult, ITestContext)} method.
    */
   public void invokeListener(
       IInvokedMethodListener listenerInstance, IInvokedMethod invokedMethod) {
@@ -56,7 +55,7 @@ public class InvokedMethodListenerInvoker {
       listenerInstance.beforeInvocation(invokedMethod, m_testResult);
       listenerInstance.beforeInvocation(invokedMethod, m_testResult, m_testContext);
     }
-    if (this.m_listenerMethod == AFTER_INVOCATION){
+    if (this.m_listenerMethod == AFTER_INVOCATION) {
       listenerInstance.afterInvocation(invokedMethod, m_testResult);
       listenerInstance.afterInvocation(invokedMethod, m_testResult, m_testContext);
     }

@@ -1,5 +1,10 @@
 package org.testng;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.*;
@@ -8,29 +13,33 @@ import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
 /**
  * This class represents a test class: - The test methods - The configuration methods (test and
  * method) - The class file
  */
 class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo {
 
+  private static final Logger LOG = Logger.getLogger(TestClass.class);
+  private final String m_errorMsgPrefix;
   private IAnnotationFinder annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
   private ITestMethodFinder testMethodFinder = null;
-
   private IClass iClass = null;
   private String testName;
   private XmlTest xmlTest;
   private XmlClass xmlClass;
-  private final String m_errorMsgPrefix;
-
   private Map<String, List<ITestNGMethod>> beforeClassConfig = new HashMap<>();
+
+  protected TestClass(
+      IClass cls,
+      ITestMethodFinder testMethodFinder,
+      IAnnotationFinder annotationFinder,
+      XmlTest xmlTest,
+      XmlClass xmlClass,
+      String errorMsgPrefix) {
+    this.m_errorMsgPrefix = errorMsgPrefix;
+    init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClass);
+  }
 
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
@@ -44,19 +53,6 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   @Override
   public List<ITestNGMethod> getInstanceBeforeClassMethods(String instance) {
     return beforeClassConfig.get(instance);
-  }
-
-  private static final Logger LOG = Logger.getLogger(TestClass.class);
-
-  protected TestClass(
-      IClass cls,
-      ITestMethodFinder testMethodFinder,
-      IAnnotationFinder annotationFinder,
-      XmlTest xmlTest,
-      XmlClass xmlClass,
-      String errorMsgPrefix) {
-    this.m_errorMsgPrefix = errorMsgPrefix;
-    init(cls, testMethodFinder, annotationFinder, xmlTest, xmlClass);
   }
 
   @Override

@@ -2,17 +2,16 @@ package test.reflect;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import org.testng.IClass;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlTest;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created on 12/30/15.

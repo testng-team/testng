@@ -5,6 +5,12 @@ import org.testng.annotations.BeforeMethod;
 
 public class Child_1 extends ZBase_0 {
 
+  private static void ppp(String s) {
+    if (m_verbose) {
+      System.out.println("[C1] " + s);
+    }
+  }
+
   @BeforeMethod
   public void initDialog() {
     m_methodList.add("initDialog");
@@ -15,11 +21,5 @@ public class Child_1 extends ZBase_0 {
   public void tearDownDialog() {
     m_methodList.add("tearDownDialog");
     ppp("  TEAR_DOWN 1");
-  }
-
-  private static void ppp(String s) {
-    if (m_verbose) {
-      System.out.println("[C1] " + s);
-    }
   }
 }

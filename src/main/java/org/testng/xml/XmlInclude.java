@@ -1,21 +1,19 @@
 package org.testng.xml;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 public class XmlInclude {
 
-  private String m_name;
   private final List<Integer> m_invocationNumbers;
   private final int m_index;
-  private String m_description;
   private final Map<String, String> m_parameters = Maps.newHashMap();
-
+  private String m_name;
+  private String m_description;
   private XmlClass m_xmlClass;
 
   public XmlInclude() {
@@ -36,10 +34,6 @@ public class XmlInclude {
     m_index = index;
   }
 
-  public void setDescription(String description) {
-    m_description = description;
-  }
-
   public void setParameters(Map<String, String> parameters) {
     m_parameters.clear();
     m_parameters.putAll(parameters);
@@ -47,6 +41,10 @@ public class XmlInclude {
 
   public String getDescription() {
     return m_description;
+  }
+
+  public void setDescription(String description) {
+    m_description = description;
   }
 
   public String getName() {
@@ -98,18 +96,32 @@ public class XmlInclude {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlInclude other = (XmlInclude) obj;
     // if (m_index != other.m_index)
     // return XmlSuite.f();
     if (m_invocationNumbers == null) {
-      if (other.m_invocationNumbers != null) return XmlSuite.f();
-    } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) return XmlSuite.f();
+      if (other.m_invocationNumbers != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) {
+      return XmlSuite.f();
+    }
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_name.equals(other.m_name)) {
+      return XmlSuite.f();
+    }
     if (!m_parameters.equals(other.m_parameters)) {
       return XmlSuite.f();
     }
@@ -122,13 +134,15 @@ public class XmlInclude {
 
   /**
    * @return the parameters defined in this test tag, and only this test tag. To retrieve the
-   *     inherited parameters as well, call {@code getAllParameters()}.
+   * inherited parameters as well, call {@code getAllParameters()}.
    */
   public Map<String, String> getLocalParameters() {
     return m_parameters;
   }
 
-  /** @return the parameters defined in this tag and the tags above it. */
+  /**
+   * @return the parameters defined in this tag and the tags above it.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlClass != null) {

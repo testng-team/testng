@@ -6,7 +6,9 @@ import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-/** The class to work with "-testnames" */
+/**
+ * The class to work with "-testnames"
+ */
 public final class TestNamesMatcher {
 
   private final List<XmlSuite> cloneSuites = Lists.newArrayList();
@@ -17,6 +19,13 @@ public final class TestNamesMatcher {
   public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames) {
     this.testNames = testNames;
     cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, this.testNames);
+  }
+
+  private static XmlSuite cleanClone(XmlSuite xmlSuite, List<XmlTest> tests) {
+    XmlSuite result = (XmlSuite) xmlSuite.clone();
+    result.getTests().clear();
+    result.getTests().addAll(tests);
+    return result;
   }
 
   /**
@@ -73,12 +82,5 @@ public final class TestNamesMatcher {
       return null;
     }
     return cleanClone(suite, tests);
-  }
-
-  private static XmlSuite cleanClone(XmlSuite xmlSuite, List<XmlTest> tests) {
-    XmlSuite result = (XmlSuite) xmlSuite.clone();
-    result.getTests().clear();
-    result.getTests().addAll(tests);
-    return result;
   }
 }

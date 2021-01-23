@@ -18,28 +18,13 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   }
 
   @Override
-  public boolean getEnabled() {
-    return m_enabled;
-  }
-
-  @Override
-  public void setDependsOnGroups(String[] dependsOnGroups) {
-    m_dependsOnGroups = dependsOnGroups;
-  }
-
-  @Override
-  public void setDependsOnMethods(String[] dependsOnMethods) {
-    m_dependsOnMethods = dependsOnMethods;
-  }
-
-  @Override
   public void setGroups(String[] groups) {
     m_groups = groups;
   }
 
   @Override
-  public String getDescription() {
-    return m_description;
+  public boolean getEnabled() {
+    return m_enabled;
   }
 
   @Override
@@ -48,8 +33,23 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   }
 
   @Override
+  public String getDescription() {
+    return m_description;
+  }
+
+  @Override
+  public void setDescription(String description) {
+    m_description = description;
+  }
+
+  @Override
   public String[] getDependsOnGroups() {
     return m_dependsOnGroups;
+  }
+
+  @Override
+  public void setDependsOnGroups(String[] dependsOnGroups) {
+    m_dependsOnGroups = dependsOnGroups;
   }
 
   @Override
@@ -58,8 +58,8 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   }
 
   @Override
-  public void setDescription(String description) {
-    m_description = description;
+  public void setDependsOnMethods(String[] dependsOnMethods) {
+    m_dependsOnMethods = dependsOnMethods;
   }
 
   public int getPriority() {
@@ -71,12 +71,12 @@ public class TestOrConfiguration extends BaseAnnotation implements ITestOrConfig
   }
 
   @Override
-  public void setTimeOut(long timeOut) {
-    m_timeOut = timeOut;
+  public long getTimeOut() {
+    return m_timeOut;
   }
 
   @Override
-  public long getTimeOut() {
-    return m_timeOut;
+  public void setTimeOut(long timeOut) {
+    m_timeOut = timeOut;
   }
 }

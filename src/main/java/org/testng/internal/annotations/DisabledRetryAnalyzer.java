@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
  * Test#retryAnalyzer()}
  */
 public class DisabledRetryAnalyzer implements IRetryAnalyzer {
+
   @Override
   public boolean retry(ITestResult result) {
     return false;

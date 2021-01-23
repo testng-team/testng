@@ -1,10 +1,5 @@
 package org.testng.internal;
 
-import java.util.stream.Collectors;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -12,6 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+
 /**
  * Simple graph class to implement topological sort (used to sort methods based on what groups they
  * depend on).
@@ -19,11 +19,11 @@ import java.util.Set;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
+
   private static final boolean m_verbose = false;
   private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
-  private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
-
+  private List<T> m_strictlySortedNodes = null;
   //  A map of nodes that are not the predecessors of any node
   // (not needed for the algorithm but convenient to calculate
   // the parallel/sequential lists in TestNG).
@@ -31,6 +31,12 @@ public class Graph<T> {
 
   public Graph(Comparator<Node<T>> comparator) {
     this.comparator = comparator;
+  }
+
+  private static void ppp(String s) {
+    if (m_verbose) {
+      System.out.println("[Graph] " + s);
+    }
   }
 
   public void addNode(T tm) {
@@ -74,12 +80,16 @@ public class Graph<T> {
     return m_nodes.values();
   }
 
-  /** @return All the nodes that don't have any order with each other. */
+  /**
+   * @return All the nodes that don't have any order with each other.
+   */
   public Set<T> getIndependentNodes() {
     return m_independentNodes.keySet();
   }
 
-  /** @return All the nodes that have an order with each other, sorted in one of the valid sorts. */
+  /**
+   * @return All the nodes that have an order with each other, sorted in one of the valid sorts.
+   */
   public List<T> getStrictlySortedNodes() {
     return m_strictlySortedNodes;
   }
@@ -168,12 +178,6 @@ public class Graph<T> {
     }
   }
 
-  private static void ppp(String s) {
-    if (m_verbose) {
-      System.out.println("[Graph] " + s);
-    }
-  }
-
   private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
     for (Node<T> n : nodes) {
       if (!n.hasPredecessors()) {
@@ -236,14 +240,14 @@ public class Graph<T> {
   // class Node
   //
   public static class Node<T> {
+
     private final T m_object;
     private final Map<T, T> m_predecessors = Maps.newHashMap();
+    private final Set<Node<T>> m_neighbors = new HashSet<>();
 
     public Node(T tm) {
       m_object = tm;
     }
-
-    private final Set<Node<T>> m_neighbors = new HashSet<>();
 
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);

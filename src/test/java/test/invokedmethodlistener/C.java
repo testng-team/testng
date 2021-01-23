@@ -4,10 +4,12 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 @Test
-public class C extends A{
+public class C extends A {
 
   @BeforeSuite
-  public static void someMethod3() {}
+  public static void someMethod3() {
+  }
 
-  public void someTest() {}
+  public void someTest() {
+  }
 }

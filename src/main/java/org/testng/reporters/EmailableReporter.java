@@ -1,5 +1,19 @@
 package org.testng.reporters;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newBufferedWriter;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.IResultMap;
@@ -15,27 +29,13 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.newBufferedWriter;
-
 /**
  * Reported designed to render self-contained HTML top down view of a testing suite.
  *
  * @since 5.2
  */
 public class EmailableReporter implements IReporter {
+
   private static final Logger L = Logger.getLogger(EmailableReporter.class);
 
   // ~ Instance fields ------------------------------------------------------
@@ -60,7 +60,9 @@ public class EmailableReporter implements IReporter {
 
   // ~ Methods --------------------------------------------------------------
 
-  /** Creates summary of the run */
+  /**
+   * Creates summary of the run
+   */
   @Override
   public void generateReport(List<XmlSuite> xml, List<ISuite> suites, String outdir) {
     try {
@@ -198,7 +200,7 @@ public class EmailableReporter implements IReporter {
               .append("\">");
         }
         String description = method.getDescription();
-        String testInstanceName = resultSet.toArray(new ITestResult[] {})[0].getTestName();
+        String testInstanceName = resultSet.toArray(new ITestResult[]{})[0].getTestName();
         buff.append("<td><a href=\"#m")
             .append(m_methodIndex)
             .append("\">")
@@ -234,7 +236,9 @@ public class EmailableReporter implements IReporter {
     }
   }
 
-  /** Starts and defines columns result summary table */
+  /**
+   * Starts and defines columns result summary table
+   */
   private void startResultSummaryTable() {
     tableStart("methodOverview", "summary");
     m_out.println(
@@ -411,7 +415,7 @@ public class EmailableReporter implements IReporter {
         time_end = Math.max(overview.getEndDate().getTime(), time_end);
         summaryCell(
             formatter.format(
-                    (overview.getEndDate().getTime() - overview.getStartDate().getTime()) / 1000.)
+                (overview.getEndDate().getTime() - overview.getStartDate().getTime()) / 1000.)
                 + " seconds",
             true);
         summaryCell(overview.getIncludedGroups());
@@ -521,11 +525,16 @@ public class EmailableReporter implements IReporter {
   }
 
   // ~ Inner Classes --------------------------------------------------------
-  /** Arranges methods by classname and method name */
+
+  /**
+   * Arranges methods by classname and method name
+   */
   private static final class TestSorter implements Comparator<IInvokedMethod> {
     // ~ Methods -------------------------------------------------------------
 
-    /** Arranges methods by classname and method name */
+    /**
+     * Arranges methods by classname and method name
+     */
     @Override
     public int compare(IInvokedMethod o1, IInvokedMethod o2) {
       return (int) (o1.getDate() - o2.getDate());

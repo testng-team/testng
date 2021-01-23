@@ -1,14 +1,13 @@
 package org.testng.xml;
 
-import org.testng.reporters.XMLStringBuffer;
+import static org.testng.collections.CollectionUtils.hasElements;
+import static org.testng.internal.Utils.isStringNotEmpty;
+import static org.testng.xml.XmlSuite.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import static org.testng.collections.CollectionUtils.hasElements;
-import static org.testng.internal.Utils.isStringNotEmpty;
-import static org.testng.xml.XmlSuite.*;
+import org.testng.reporters.XMLStringBuffer;
 
 /**
  * This class provides String representation of both {@link XmlSuite} and {@link XmlTest} but adds
@@ -213,10 +212,10 @@ class DefaultXmlWeaver implements IWeaveXml {
     // groups
 
     if ((xmlTest.getXmlGroups() != null
-            && (!xmlTest.getXmlGroups().getDefines().isEmpty()
-                || (xmlTest.getXmlGroups().getRun() != null
-                    && (!xmlTest.getXmlGroups().getRun().getIncludes().isEmpty()
-                        || !xmlTest.getXmlGroups().getRun().getExcludes().isEmpty()))))
+        && (!xmlTest.getXmlGroups().getDefines().isEmpty()
+        || (xmlTest.getXmlGroups().getRun() != null
+        && (!xmlTest.getXmlGroups().getRun().getIncludes().isEmpty()
+        || !xmlTest.getXmlGroups().getRun().getExcludes().isEmpty()))))
         || !xmlTest.getXmlDependencyGroups().isEmpty()) {
       xsb.push("groups");
 
@@ -242,7 +241,7 @@ class DefaultXmlWeaver implements IWeaveXml {
       // run
       if ((xmlTest.getXmlGroups() != null && xmlTest.getXmlGroups().getRun() != null)
           && (!xmlTest.getXmlGroups().getRun().getIncludes().isEmpty()
-              || !xmlTest.getXmlGroups().getRun().getExcludes().isEmpty())) {
+          || !xmlTest.getXmlGroups().getRun().getExcludes().isEmpty())) {
         xsb.push("run");
 
         for (String includeGroupName : xmlTest.getXmlGroups().getRun().getIncludes()) {

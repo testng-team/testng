@@ -6,6 +6,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 public class FakeTestClass implements ITestClass {
+
   private Class<?> clazz;
 
   public FakeTestClass(Class<?> clazz) {
@@ -103,5 +104,6 @@ public class FakeTestClass implements ITestClass {
   }
 
   @Override
-  public void addInstance(Object instance) {}
+  public void addInstance(Object instance) {
+  }
 }

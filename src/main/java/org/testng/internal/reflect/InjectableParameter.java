@@ -14,8 +14,11 @@ public enum InjectableParameter {
   ITEST_RESULT,
   XML_TEST;
 
-  /** convenience means to add and remove injectables. */
+  /**
+   * convenience means to add and remove injectables.
+   */
   public static class Assistant {
+
     public static final Set<InjectableParameter> NONE = EnumSet.noneOf(InjectableParameter.class);
     public static final Set<InjectableParameter> ALL_INJECTS =
         EnumSet.allOf(InjectableParameter.class);

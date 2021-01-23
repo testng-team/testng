@@ -8,20 +8,20 @@ import org.testng.annotations.Test;
 
 public class BeforeWithParameterSample {
 
-   @BeforeMethod
-   @Parameters("parameter")
-   public static void beforeMethod(String parameter) {
-     Assert.assertEquals(parameter, "parameter value");
-   }
+  @BeforeMethod
+  @Parameters("parameter")
+  public static void beforeMethod(String parameter) {
+    Assert.assertEquals(parameter, "parameter value");
+  }
 
-   @DataProvider(name = "dataProvider")
-   public static Object[][] dataProvider() {
-     return new Object[][]{{"abc", "def"}};
-   }
+  @DataProvider(name = "dataProvider")
+  public static Object[][] dataProvider() {
+    return new Object[][]{{"abc", "def"}};
+  }
 
-   @Test(dataProvider = "dataProvider")
-   public static void testExample(String a, String b) {
-     Assert.assertEquals(a, "abc");
-     Assert.assertEquals(b, "def");
-   }
+  @Test(dataProvider = "dataProvider")
+  public static void testExample(String a, String b) {
+    Assert.assertEquals(a, "abc");
+    Assert.assertEquals(b, "def");
+  }
 }

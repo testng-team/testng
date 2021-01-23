@@ -1,11 +1,10 @@
 package test.factory.github1083;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConstructorFactorySample {
 
@@ -18,13 +17,13 @@ public class ConstructorFactorySample {
     this.parameter = parameter;
   }
 
+  @DataProvider
+  public static Object[][] dp() {
+    return new Object[][]{new Object[]{"foo"}, new Object[]{"bar"}};
+  }
+
   @Test
   public void test() {
     parameters.add(parameter);
-  }
-
-  @DataProvider
-  public static Object[][] dp() {
-    return new Object[][] {new Object[] {"foo"}, new Object[] {"bar"}};
   }
 }

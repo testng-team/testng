@@ -6,10 +6,15 @@ import org.testng.annotations.ITestOrConfiguration;
  * Base interface for IBeforeSuite, IAfterSuite, etc...
  */
 public interface IBaseBeforeAfter extends ITestOrConfiguration {
-  /** Whether methods on this class/method are enabled. */
+
+  /**
+   * Whether methods on this class/method are enabled.
+   */
   boolean getEnabled();
 
-  /** The list of groups this class/method belongs to. */
+  /**
+   * The list of groups this class/method belongs to.
+   */
   String[] getGroups();
 
   /**
@@ -32,9 +37,9 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /**
    * For before methods (beforeSuite, beforeTest, beforeTestClass and beforeTestMethod, but not
    * beforeGroups): If set to true, this configuration method will be run regardless of what groups
-   * it belongs to. <br>
-   * For after methods (afterSuite, afterClass, ...): If set to true, this configuration method will
-   * be run even if one or more methods invoked previously failed or was skipped.
+   * it belongs to. <br> For after methods (afterSuite, afterClass, ...): If set to true, this
+   * configuration method will be run even if one or more methods invoked previously failed or was
+   * skipped.
    */
   boolean getAlwaysRun();
 

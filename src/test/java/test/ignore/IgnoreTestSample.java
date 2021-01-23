@@ -6,9 +6,11 @@ import org.testng.annotations.Test;
 public class IgnoreTestSample {
 
   @Test
-  public void test() {}
+  public void test() {
+  }
 
   @Test
   @Ignore
-  public void ignoredTest() {}
+  public void ignoredTest() {
+  }
 }

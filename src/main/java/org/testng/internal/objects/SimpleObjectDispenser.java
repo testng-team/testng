@@ -2,9 +2,9 @@ package org.testng.internal.objects;
 
 import org.testng.TestNGException;
 import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.objects.pojo.DetailedAttributes;
-import org.testng.internal.objects.pojo.BasicAttributes;
 
 /**
  * A plain vanilla Object dispenser
@@ -15,7 +15,8 @@ class SimpleObjectDispenser implements IObjectDispenser {
   public void setNextDispenser(IObjectDispenser dispenser) {
     //We are not going to be doing anything with this downstream dispenser since we are
     //last in the chain of responsibility.
-    throw new UnsupportedOperationException("Cannot allow adding any further downstream object dispensers.");
+    throw new UnsupportedOperationException(
+        "Cannot allow adding any further downstream object dispensers.");
   }
 
   @Override

@@ -6,7 +6,8 @@ import org.testng.annotations.Test;
 public class SampleDependentMethods4 {
 
   @Test
-  public void step1() {}
+  public void step1() {
+  }
 
   @Test(dependsOnMethods = {"step1"})
   public void step2() {
@@ -14,5 +15,6 @@ public class SampleDependentMethods4 {
   }
 
   @Test(dependsOnMethods = {"step2"})
-  public void step3() {}
+  public void step3() {
+  }
 }

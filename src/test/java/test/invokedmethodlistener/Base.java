@@ -11,6 +11,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class Base {
+
   private boolean m_fail;
 
   public Base(boolean fail) {
@@ -22,22 +23,28 @@ public class Base {
   }
 
   @AfterMethod
-  public void afterMethod() {}
+  public void afterMethod() {
+  }
 
   @BeforeTest
-  public void beforeTest() {}
+  public void beforeTest() {
+  }
 
   @AfterTest
-  public void afterTest() {}
+  public void afterTest() {
+  }
 
   @BeforeClass
-  public void beforeClass() {}
+  public void beforeClass() {
+  }
 
   @AfterClass
-  public void afterClass() {}
+  public void afterClass() {
+  }
 
   @BeforeSuite
-  public void beforeSuite() {}
+  public void beforeSuite() {
+  }
 
   @AfterSuite
   public void afterSuite() {
@@ -48,7 +55,7 @@ public class Base {
 
   @Test
   public void a() {
-     if (m_fail) {
+    if (m_fail) {
       throw new IllegalArgumentException("Test Method FAILING");
     }
   }

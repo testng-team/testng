@@ -6,15 +6,20 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
 public class SampleBase {
+
   @BeforeTest
-  public void baseBeforeTest() {}
+  public void baseBeforeTest() {
+  }
 
   @BeforeClass
-  public void baseBeforeClass() {}
+  public void baseBeforeClass() {
+  }
 
   @BeforeMethod
-  public void baseBeforeMethod() {}
+  public void baseBeforeMethod() {
+  }
 
   @AfterClass
-  public void baseAfterClass() {}
+  public void baseAfterClass() {
+  }
 }

@@ -1,10 +1,11 @@
 package org.testng.internal;
 
+import java.util.Comparator;
 import org.testng.ITestNGMethod;
 
-import java.util.Comparator;
-
-/** Helps determine how should {@link ITestNGMethod} be ordered by TestNG. */
+/**
+ * Helps determine how should {@link ITestNGMethod} be ordered by TestNG.
+ */
 public final class Systematiser {
 
   private Systematiser() {
@@ -13,12 +14,12 @@ public final class Systematiser {
 
   /**
    * @return - A {@link Comparator} that helps TestNG sort {@link ITestNGMethod}s in a specific
-   *     order. Currently the following two orders are supported : <br>
-   *     <ol>
-   *       <li>Based on the name of methods
-   *       <li>Based on the <code>toString()</code> implementation that resides within the test
-   *           class
-   *     </ol>
+   * order. Currently the following two orders are supported : <br>
+   * <ol>
+   * <li>Based on the name of methods
+   * <li>Based on the <code>toString()</code> implementation that resides within the test
+   * class
+   * </ol>
    */
   public static Comparator<ITestNGMethod> getComparator() {
     Comparator<ITestNGMethod> comparator;
@@ -84,14 +85,10 @@ public final class Systematiser {
     INSTANCES("instances"),
     NONE("none");
 
-    Order(String value) {
-      this.value = value;
-    }
-
     private final String value;
 
-    public String getValue() {
-      return value;
+    Order(String value) {
+      this.value = value;
     }
 
     public static Order parse(String value) {
@@ -104,6 +101,10 @@ public final class Systematiser {
         }
       }
       return INSTANCES;
+    }
+
+    public String getValue() {
+      return value;
     }
   }
 }

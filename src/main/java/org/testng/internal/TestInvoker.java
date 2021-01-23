@@ -65,6 +65,22 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     this.invoker = invoker;
   }
 
+  private static void setTestStatus(ITestResult result, int status) {
+    // set the test to success as long as the testResult hasn't been changed by the user via
+    // Reporter.getCurrentTestResult
+    if (result.getStatus() == ITestResult.STARTED) {
+      result.setStatus(status);
+    }
+  }
+
+  private static int computeTestStatusComparingTestResultAndStatusHolder(
+      ITestResult testResult, StatusHolder holder, boolean wasResultUnaltered) {
+    if (wasResultUnaltered) {
+      return holder.status;
+    }
+    return testResult.getStatus();
+  }
+
   @Override
   public ITestResultNotifier getNotifier() {
     return m_notifier;
@@ -114,7 +130,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       return Collections.singletonList(result);
     }
 
-
     // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.
     if (testMethod.getInvocationCount() > 1 && testMethod.getThreadPoolSize() > 1) {
       return invokePooledTestMethods(testMethod, suite, parameters, groupMethods, context);
@@ -123,7 +138,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     long timeOutInvocationCount = testMethod.getInvocationTimeOut();
     // FIXME: Is this correct?
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 || timeOutInvocationCount > 0;
-
 
     ITestClass testClass = testMethod.getTestClass();
     ITestNGMethod[] beforeMethods =
@@ -156,9 +170,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    * must be done:
    *
    * <ul>
-   *   <li>through an <code>IHookable</code>
-   *   <li>directly (through reflection)
-   *   <li>in a separate thread (in case it needs to timeout)
+   * <li>through an <code>IHookable</code>
+   * <li>directly (through reflection)
+   * <li>in a separate thread (in case it needs to timeout)
    * </ul>
    *
    * <p>This method is also responsible for
@@ -191,10 +205,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           arguments.getParameters(), allParameters, testContext);
       ITestResult errorResult = bag.errorResult;
 
-      if (errorResult != null ) {
+      if (errorResult != null) {
         Throwable cause = errorResult.getThrowable();
         String m = errorResult.getMethod().getMethodName();
-        String msg = String.format("Encountered problems when gathering parameter values for [%s]. Root cause: ", m);
+        String msg = String
+            .format("Encountered problems when gathering parameter values for [%s]. Root cause: ",
+                m);
         throw new DataProviderInvocationException(msg, cause);
       }
       Object[] parameterValues =
@@ -355,7 +371,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return result;
   }
 
-  private boolean failuresPresentInUpstreamDependency(ITestNGMethod testMethod, ITestNGMethod[] methods) {
+  private boolean failuresPresentInUpstreamDependency(ITestNGMethod testMethod,
+      ITestNGMethod[] methods) {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
       Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
@@ -380,7 +397,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return false;
   }
 
-  /** @return the test results that apply to one of the instances of the testMethod. */
+  /**
+   * @return the test results that apply to one of the instances of the testMethod.
+   */
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
     Set<ITestResult> result = Sets.newHashSet();
     for (ITestResult r : results) {
@@ -395,8 +414,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return result;
   }
 
-
-  /** Invokes a method that has a specified threadPoolSize. */
+  /**
+   * Invokes a method that has a specified threadPoolSize.
+   */
   private List<ITestResult> invokePooledTestMethods(
       ITestNGMethod testMethod,
       XmlSuite suite,
@@ -416,7 +436,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       clonedMethod.setThreadPoolSize(1);
 
       MethodInstance mi = new MethodInstance(clonedMethod);
-      workers.add(new SingleTestMethodWorker(this, invoker, mi, parameters, testContext, m_classListeners));
+      workers.add(
+          new SingleTestMethodWorker(this, invoker, mi, parameters, testContext, m_classListeners));
     }
 
     return runWorkers(
@@ -445,21 +466,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, r);
     }
     runTestResultListener(r);
-  }
-
-
-  private static void setTestStatus(ITestResult result, int status) {
-    // set the test to success as long as the testResult hasn't been changed by the user via
-    // Reporter.getCurrentTestResult
-    if (result.getStatus() == ITestResult.STARTED) {
-      result.setStatus(status);
-    }
-  }
-
-  private static class StatusHolder {
-
-    boolean handled = false;
-    int status;
   }
 
   private void handleInvocationResults(
@@ -530,12 +536,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
 
     if (!failureContext.representsRetriedMethod && invoker.hasConfigurationFailureFor(
-        arguments.getTestMethod(), arguments.getTestMethod().getGroups() ,
+        arguments.getTestMethod(), arguments.getTestMethod().getGroups(),
         arguments.getTestClass(),
         arguments.getInstance())) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext,
           arguments.getInstance());
-      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception, testResult);
+      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(),
+          System.currentTimeMillis(), exception, testResult);
       result.setParameters(testResult.getParameters());
       TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
@@ -553,7 +560,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     //
     try {
       testResult = TestResult
-          .newTestResultFrom(testResult, arguments.getTestMethod(), m_testContext, System.currentTimeMillis());
+          .newTestResultFrom(testResult, arguments.getTestMethod(), m_testContext,
+              System.currentTimeMillis());
       //Recreate the invoked method object again, because we now have a new test result object
       invokedMethod = new InvokedMethod(invokedMethod.getDate(), testResult);
 
@@ -592,7 +600,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (MethodHelper.calculateTimeOut(arguments.getTestMethod()) <= 0) {
         if (hookableInstance != null) {
           MethodInvocationHelper.invokeHookable(
-              arguments.getInstance(), arguments.getParameterValues(), hookableInstance, thisMethod, testResult);
+              arguments.getInstance(), arguments.getParameterValues(), hookableInstance, thisMethod,
+              testResult);
         } else {
           // Not a IHookable, invoke directly
           MethodInvocationHelper.invokeMethod(thisMethod, arguments.getInstance(),
@@ -628,14 +637,17 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult.setEndMillis(System.currentTimeMillis());
       ExpectedExceptionsHolder expectedExceptionClasses =
           new ExpectedExceptionsHolder(
-              annotationFinder(), arguments.getTestMethod(), new RegexpExpectedExceptionsHolder(annotationFinder(),
-              arguments.getTestMethod()));
+              annotationFinder(), arguments.getTestMethod(),
+              new RegexpExpectedExceptionsHolder(annotationFinder(),
+                  arguments.getTestMethod()));
       StatusHolder holder =
-          considerExceptions(arguments.getTestMethod(), testResult, expectedExceptionClasses, failureContext);
+          considerExceptions(arguments.getTestMethod(), testResult, expectedExceptionClasses,
+              failureContext);
       int statusBeforeListenerInvocation = testResult.getStatus();
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       boolean wasResultUnaltered = statusBeforeListenerInvocation == testResult.getStatus();
-      handleInvocationResults(arguments.getTestMethod(), testResult, failureContext, holder, wasResultUnaltered);
+      handleInvocationResults(arguments.getTestMethod(), testResult, failureContext, holder,
+          wasResultUnaltered);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -755,12 +767,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return holder;
   }
 
-  private static int computeTestStatusComparingTestResultAndStatusHolder(
-      ITestResult testResult, StatusHolder holder, boolean wasResultUnaltered) {
-    if (wasResultUnaltered) {
-      return holder.status;
-    }
-    return testResult.getStatus();
+  private static class StatusHolder {
+
+    boolean handled = false;
+    int status;
   }
 
   private class MethodInvocationAgent {
@@ -771,7 +781,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     private final ITestInvoker invoker;
     private final TestMethodArguments arguments;
 
-    public MethodInvocationAgent(TestMethodArguments arguments, ITestInvoker invoker, ITestContext context) {
+    public MethodInvocationAgent(TestMethodArguments arguments, ITestInvoker invoker,
+        ITestContext context) {
       this.arguments = arguments;
       this.invoker = invoker;
       this.context = context;
@@ -786,7 +797,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       long start = System.currentTimeMillis();
 
       Map<String, String> allParameterNames = Maps.newHashMap();
-      ParameterHandler handler = new ParameterHandler(annotationFinder(), buildDataProviderHolder());
+      ParameterHandler handler = new ParameterHandler(annotationFinder(),
+          buildDataProviderHolder());
 
       ParameterBag bag = handler.createParameters(
           arguments.getTestMethod(),
@@ -810,7 +822,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         return invocationCount.get();
       }
 
-      Iterator<Object[]> allParameterValues = Objects.requireNonNull(bag.parameterHolder).parameters;
+      Iterator<Object[]> allParameterValues = Objects
+          .requireNonNull(bag.parameterHolder).parameters;
 
       try {
 
@@ -828,7 +841,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         }
       } catch (Throwable cause) {
         ITestResult r =
-            TestResult.newEndTimeAwareTestResult(arguments.getTestMethod(), m_testContext, cause, start);
+            TestResult
+                .newEndTimeAwareTestResult(arguments.getTestMethod(), m_testContext, cause, start);
         r.setStatus(TestResult.FAILURE);
         result.add(r);
         runTestResultListener(r);

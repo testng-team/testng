@@ -4,9 +4,7 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import test.SimpleBaseTest;
-import test.TestHelper;
 
 /**
  * Test IObjectFactory2, which is an object factory that receives just the Class in parameter.
@@ -16,7 +14,8 @@ public class ObjectFactory2Test extends SimpleBaseTest {
   private void testFactory(boolean onSuite) {
     ClassObjectFactorySampleTest.m_n = 0;
 
-    XmlSuite suite = createXmlSuite("Test IObjectFactory2", "TmpTest", ClassObjectFactorySampleTest.class);
+    XmlSuite suite = createXmlSuite("Test IObjectFactory2", "TmpTest",
+        ClassObjectFactorySampleTest.class);
     TestNG tng = create(suite);
 
     if (onSuite) {
@@ -26,7 +25,7 @@ public class ObjectFactory2Test extends SimpleBaseTest {
     }
 
     tng.run();
-    
+
     Assert.assertEquals(ClassObjectFactorySampleTest.m_n, 42);
   }
 

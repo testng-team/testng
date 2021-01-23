@@ -1,8 +1,7 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.IFactoryAnnotation;
-
 import java.util.List;
+import org.testng.annotations.IFactoryAnnotation;
 
 /**
  * An implementation of IFactory
@@ -24,13 +23,13 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
     m_dataProvider = dataProvider;
   }
 
-  public void setDataProviderClass(Class<?> dataProviderClass) {
-    m_dataProviderClass = dataProviderClass;
-  }
-
   @Override
   public Class<?> getDataProviderClass() {
     return m_dataProviderClass;
+  }
+
+  public void setDataProviderClass(Class<?> dataProviderClass) {
+    m_dataProviderClass = dataProviderClass;
   }
 
   @Override

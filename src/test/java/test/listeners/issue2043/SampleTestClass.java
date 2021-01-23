@@ -17,7 +17,8 @@ public class SampleTestClass implements ITestListener, ISuiteListener {
   }
 
   @BeforeClass
-  public void beforeClass() {}
+  public void beforeClass() {
+  }
 
   @Test(dataProviderClass = SampleDataProvider.class, dataProvider = "dp1master")
   public <T extends Object> void test1(Class<T> clazz) {

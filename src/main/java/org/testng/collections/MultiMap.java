@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
+
   protected final Map<K, C> m_objects;
 
   protected MultiMap(boolean isSorted) {

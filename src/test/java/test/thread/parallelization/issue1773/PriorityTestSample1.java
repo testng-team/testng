@@ -20,7 +20,7 @@ public class PriorityTestSample1 {
     log();
   }
 
-  private void log(){
+  private void log() {
     Reporter.log(Long.toString(Thread.currentThread().getId()));
   }
 }

@@ -1,15 +1,14 @@
 package org.testng.reporters.jq;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class NavigatorPanel extends BasePanel {
 
@@ -18,6 +17,10 @@ public class NavigatorPanel extends BasePanel {
   public NavigatorPanel(Model model, List<INavigatorPanel> panels) {
     super(model);
     m_panels = panels;
+  }
+
+  private static String maybe(int count, String s, String sep) {
+    return count > 0 ? count + " " + s + sep : "";
   }
 
   @Override
@@ -160,10 +163,6 @@ public class NavigatorPanel extends BasePanel {
     header.pop("li");
   }
 
-  private static String maybe(int count, String s, String sep) {
-    return count > 0 ? count + " " + s + sep : "";
-  }
-
   private List<ITestResult> getMethodsByStatus(
       ISuite suite, int status, Predicate<ITestResult> condition) {
     List<ITestResult> result = Lists.newArrayList();
@@ -176,48 +175,6 @@ public class NavigatorPanel extends BasePanel {
     result.sort(ResultsByClass.METHOD_NAME_COMPARATOR);
 
     return result;
-  }
-
-  private interface IResultProvider {
-    List<ITestResult> getResults();
-
-    String getType();
-  }
-
-  private abstract static class BaseResultProvider implements IResultProvider {
-    protected ISuite m_suite;
-    protected String m_type;
-
-    public BaseResultProvider(ISuite suite, String type) {
-      m_suite = suite;
-      m_type = type;
-    }
-
-    @Override
-    public String getType() {
-      return m_type;
-    }
-  }
-
-  private class ResultsByStatus extends BaseResultProvider {
-    private final int m_status;
-    private final Predicate<ITestResult> condition;
-
-    public ResultsByStatus(ISuite suite, String type, int status) {
-      this(suite, type, status, (result) -> true);
-    }
-
-    public ResultsByStatus(
-        ISuite suite, String type, int m_status, Predicate<ITestResult> condition) {
-      super(suite, type);
-      this.m_status = m_status;
-      this.condition = condition;
-    }
-
-    @Override
-    public List<ITestResult> getResults() {
-      return getMethodsByStatus(m_suite, m_status, condition);
-    }
   }
 
   private void generateMethodList(
@@ -286,6 +243,51 @@ public class NavigatorPanel extends BasePanel {
 
     if (count > 0) {
       main.addString(xsb.toXML());
+    }
+  }
+
+  private interface IResultProvider {
+
+    List<ITestResult> getResults();
+
+    String getType();
+  }
+
+  private abstract static class BaseResultProvider implements IResultProvider {
+
+    protected ISuite m_suite;
+    protected String m_type;
+
+    public BaseResultProvider(ISuite suite, String type) {
+      m_suite = suite;
+      m_type = type;
+    }
+
+    @Override
+    public String getType() {
+      return m_type;
+    }
+  }
+
+  private class ResultsByStatus extends BaseResultProvider {
+
+    private final int m_status;
+    private final Predicate<ITestResult> condition;
+
+    public ResultsByStatus(ISuite suite, String type, int status) {
+      this(suite, type, status, (result) -> true);
+    }
+
+    public ResultsByStatus(
+        ISuite suite, String type, int m_status, Predicate<ITestResult> condition) {
+      super(suite, type);
+      this.m_status = m_status;
+      this.condition = condition;
+    }
+
+    @Override
+    public List<ITestResult> getResults() {
+      return getMethodsByStatus(m_suite, m_status, condition);
     }
   }
 }

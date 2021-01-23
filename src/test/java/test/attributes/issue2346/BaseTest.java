@@ -10,7 +10,7 @@ import org.testng.annotations.Listeners;
 public class BaseTest {
 
   @BeforeMethod(alwaysRun = true)
-  public void setUp(ITestResult result)  {
+  public void setUp(ITestResult result) {
     String session = UUID.randomUUID().toString();
     result.setAttribute("session", session);
   }

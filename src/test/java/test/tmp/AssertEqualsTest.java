@@ -1,41 +1,13 @@
 package test.tmp;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 public class AssertEqualsTest {
-
-  private void log(String s) {
-    System.out.println("[" + Thread.currentThread().getId() + "] " + s);
-  }
-
-  @Test(threadPoolSize = 3, invocationCount = 6)
-  public void f1() {
-    log("start");
-    try {
-      int sleepTime = new Random().nextInt(500);
-      Thread.sleep(sleepTime);
-    }
-    catch (Exception e) {
-      log("  *** INTERRUPTED");
-    }
-    log("end");
-  }
-
-  @Test(threadPoolSize = 10, invocationCount = 10000)
-  public void verifyMethodIsThreadSafe() {
-//    foo();
-  }
-
-  @Test(dependsOnMethods = "verifyMethodIsThreadSafe")
-  public void verify() {
-    // make sure that nothing was broken
-  }
 
   public static void main(String[] args) {
     Set set1 = new LinkedHashSet();
@@ -60,9 +32,34 @@ public class AssertEqualsTest {
 
     try {
       Assert.assertEquals(set1, set2, "set1 must equals with set2");
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       ex.printStackTrace();
     }
+  }
+
+  private void log(String s) {
+    System.out.println("[" + Thread.currentThread().getId() + "] " + s);
+  }
+
+  @Test(threadPoolSize = 3, invocationCount = 6)
+  public void f1() {
+    log("start");
+    try {
+      int sleepTime = new Random().nextInt(500);
+      Thread.sleep(sleepTime);
+    } catch (Exception e) {
+      log("  *** INTERRUPTED");
+    }
+    log("end");
+  }
+
+  @Test(threadPoolSize = 10, invocationCount = 10000)
+  public void verifyMethodIsThreadSafe() {
+//    foo();
+  }
+
+  @Test(dependsOnMethods = "verifyMethodIsThreadSafe")
+  public void verify() {
+    // make sure that nothing was broken
   }
 }

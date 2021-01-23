@@ -1,11 +1,10 @@
 package test.assertion;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.asserts.Assertion;
 import org.testng.asserts.IAssert;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MyRawAssertion extends Assertion {
 

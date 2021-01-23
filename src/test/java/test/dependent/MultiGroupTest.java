@@ -1,10 +1,10 @@
 package test.dependent;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class MultiGroupTest extends BaseTest {
+
   @Test
   public void verifyDependsOnMultiGroups() {
     addClass(MultiGroup1SampleTest.class.getName());
@@ -12,7 +12,7 @@ public class MultiGroupTest extends BaseTest {
 
     run();
     String[] passed = {
-      "testA",
+        "testA",
     };
     String[] failed = {"test1"};
     String[] skipped = {"test2"};

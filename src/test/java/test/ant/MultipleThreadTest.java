@@ -1,19 +1,20 @@
 package test.ant;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 /**
  * Tests that more than one thread is used for running tests
  *
  * @author micheb10 2 Oct 2006
  */
 public class MultipleThreadTest {
+
   public static Set<Thread> _threads;
 
   @BeforeClass

@@ -3,7 +3,6 @@ package test.hook;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 /**
@@ -42,7 +41,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccessTest.class);
     run();
 
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
+    verifyTests("Passed", new String[]{"verify"}, getPassedTests());
     Assert.assertTrue(HookSuccessTest.m_hook);
     Assert.assertTrue(HookSuccessTest.m_testWasRun);
     Assert.assertEquals(HookSuccessTest.m_parameter, "foo");
@@ -53,7 +52,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccess599Test.class);
     run();
 
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
+    verifyTests("Passed", new String[]{"verify"}, getPassedTests());
     Assert.assertTrue(HookSuccess599Test.m_hook);
     Assert.assertTrue(HookSuccess599Test.m_testWasRun);
     Assert.assertEquals(HookSuccess599Test.m_parameter, "foo");
@@ -64,7 +63,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccess862Test.class);
     run();
 
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
+    verifyTests("Passed", new String[]{"verify"}, getPassedTests());
   }
 
   @Test
@@ -72,7 +71,7 @@ public class HookableTest extends BaseTest {
     addClass(HookSuccessWithListenerTest.class);
     run();
 
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
+    verifyTests("Passed", new String[]{"verify"}, getPassedTests());
     Assert.assertTrue(HookListener.m_hook);
   }
 

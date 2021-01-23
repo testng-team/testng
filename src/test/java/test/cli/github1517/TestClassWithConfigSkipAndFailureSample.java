@@ -6,6 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class TestClassWithConfigSkipAndFailureSample {
+
   @BeforeClass
   public void beforeClass() {
     throw new RuntimeException("Simulating a configuration failure");

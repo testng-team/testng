@@ -1,11 +1,12 @@
 package org.testng.internal.annotations;
 
-import org.testng.annotations.ITestAnnotation;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import org.testng.annotations.ITestAnnotation;
 
-/** For backward compatibility. */
+/**
+ * For backward compatibility.
+ */
 public interface IAnnotationTransformer extends org.testng.IAnnotationTransformer {
 
   default void transform(

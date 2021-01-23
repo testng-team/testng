@@ -5,15 +5,16 @@ import org.testng.annotations.Test;
 
 public class TestWithFailingConfig {
 
-    public static final int EXEC_TIME = 300;
+  public static final int EXEC_TIME = 300;
 
-    @BeforeClass
-    public void setUpClassWaitThenFail() throws InterruptedException {
-        Thread.sleep(EXEC_TIME);
-        throw new RuntimeException();
-    }
+  @BeforeClass
+  public void setUpClassWaitThenFail() throws InterruptedException {
+    Thread.sleep(EXEC_TIME);
+    throw new RuntimeException();
+  }
 
-    @Test
-    public void testNothing() {}
+  @Test
+  public void testNothing() {
+  }
 
 }

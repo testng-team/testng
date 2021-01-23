@@ -7,7 +7,7 @@ public class CreateDataTest {
 
   @DataProvider(name = "create-data")
   public Object[][] create() {
-    return new Object[][] {{new MyObject()}};
+    return new Object[][]{{new MyObject()}};
   }
 
   @Test(dataProvider = "create-data")

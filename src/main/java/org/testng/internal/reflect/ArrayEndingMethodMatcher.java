@@ -1,11 +1,11 @@
 package org.testng.internal.reflect;
 
+import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
 
 /**
  * Checks for array ending method argument match with or without filtering injectables.
@@ -19,7 +19,9 @@ public class ArrayEndingMethodMatcher extends AbstractNodeMethodMatcher {
     super(context);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected List<Set<InjectableParameter>> getConformanceInjectsOrder() {
     final List<Set<InjectableParameter>> injectsOrder = new ArrayList<>(1);
@@ -37,7 +39,9 @@ public class ArrayEndingMethodMatcher extends AbstractNodeMethodMatcher {
     return ReflectionRecipes.matchArrayEnding(parameters, getContext().getArguments());
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Object[] matchingArguments(final Parameter[] parameters, final Object[] arguments) {
     final Class<?>[] classes = ReflectionRecipes.classesFromParameters(parameters);

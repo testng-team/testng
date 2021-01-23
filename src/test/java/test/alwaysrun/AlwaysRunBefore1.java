@@ -9,13 +9,20 @@ import org.testng.annotations.Test;
 
 /**
  * Tests alwaysRun on a before Configuration method. Invoke this test by running group "A"
- *
  */
 public class AlwaysRunBefore1 {
+
   private static boolean m_beforeSuiteSuccess = false;
   private static boolean m_beforeTestSuccess = false;
   private static boolean m_beforeTestClassSuccess = false;
   private static boolean m_beforeTestMethodSuccess = false;
+
+  public static boolean success() {
+    return m_beforeSuiteSuccess
+        && m_beforeTestSuccess
+        && m_beforeTestClassSuccess
+        && m_beforeTestMethodSuccess;
+  }
 
   @BeforeSuite(alwaysRun = true)
   public void initSuite() {
@@ -43,12 +50,5 @@ public class AlwaysRunBefore1 {
     Assert.assertTrue(m_beforeTestSuccess);
     Assert.assertTrue(m_beforeTestClassSuccess);
     Assert.assertTrue(m_beforeTestMethodSuccess);
-  }
-
-  public static boolean success() {
-    return m_beforeSuiteSuccess
-        && m_beforeTestSuccess
-        && m_beforeTestClassSuccess
-        && m_beforeTestMethodSuccess;
   }
 }

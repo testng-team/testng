@@ -1,15 +1,20 @@
 package test.dependent;
 
+import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
-import java.util.List;
-
 public class GroupByInstancesSampleTest {
-  private String m_country;
+
   public static List<String> m_log = Lists.newArrayList();
+  private String m_country;
+
+  @Factory(dataProvider = "dp")
+  public GroupByInstancesSampleTest(String country) {
+    m_country = country;
+  }
 
   private static void log(String method, String country) {
     //    System.out.println("LOG:" + method + "#" + country + " " +
@@ -19,14 +24,9 @@ public class GroupByInstancesSampleTest {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][] {
-      new Object[] {"usa"}, new Object[] {"uk"},
+    return new Object[][]{
+        new Object[]{"usa"}, new Object[]{"uk"},
     };
-  }
-
-  @Factory(dataProvider = "dp")
-  public GroupByInstancesSampleTest(String country) {
-    m_country = country;
   }
 
   @Test

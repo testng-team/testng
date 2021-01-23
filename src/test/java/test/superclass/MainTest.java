@@ -1,7 +1,6 @@
 package test.superclass;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class MainTest extends BaseTest {
@@ -11,7 +10,7 @@ public class MainTest extends BaseTest {
     addClass("test.superclass.Child1Test");
     run();
     String[] passed = {
-      "tbase", "t1", "t2", "t3"
+        "tbase", "t1", "t2", "t3"
     };
     String[] failed = {
     };
@@ -24,7 +23,7 @@ public class MainTest extends BaseTest {
     addClass("test.superclass.Child2Test");
     run();
     String[] passed = {
-      "tbase", "t1", "t2", "t3"
+        "tbase", "t1", "t2", "t3"
     };
     String[] failed = {
     };

@@ -1,10 +1,9 @@
 package org.testng;
 
-import org.testng.xml.XmlTest;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import org.testng.xml.XmlTest;
 
 /**
  * A factory for TestRunners to be used by SuiteRunners.

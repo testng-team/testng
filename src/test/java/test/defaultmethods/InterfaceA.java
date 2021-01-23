@@ -9,17 +9,22 @@ import org.testng.annotations.Test;
 public interface InterfaceA {
 
   @Test
-  default void defaultMethodTest() {}
+  default void defaultMethodTest() {
+  }
 
   @BeforeClass
-  default void beforeClassRun() {}
+  default void beforeClassRun() {
+  }
 
   @AfterClass
-  default void afterClassRun() {}
+  default void afterClassRun() {
+  }
 
   @BeforeMethod
-  default void beforeMethodRun() {}
+  default void beforeMethodRun() {
+  }
 
   @AfterMethod
-  default void afterMethodRun() {}
+  default void afterMethodRun() {
+  }
 }

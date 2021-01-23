@@ -5,6 +5,7 @@ import org.testng.IHookable;
 import org.testng.ITestResult;
 
 public class HookListener implements IHookable {
+
   public static boolean m_hook = false;
 
   @Override

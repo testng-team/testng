@@ -1,12 +1,13 @@
 package test.assertion;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.LoggingAssert;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class AssertionTest {
+
   private LoggingAssert m_assert;
   private MyRawAssertion rawAssertion;
 

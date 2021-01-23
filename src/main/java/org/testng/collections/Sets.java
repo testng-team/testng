@@ -8,7 +8,8 @@ import java.util.Set;
 
 public final class Sets {
 
-  private Sets() {}
+  private Sets() {
+  }
 
   public static <V> Set<V> newHashSet() {
     return new HashSet<>();

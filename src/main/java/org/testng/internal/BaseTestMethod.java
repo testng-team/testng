@@ -24,55 +24,51 @@ import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-/** Superclass to represent both &#64;Test and &#64;Configuration methods. */
+/**
+ * Superclass to represent both &#64;Test and &#64;Configuration methods.
+ */
 public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
-
+  protected final Class<?> m_methodClass;
+  protected final ConstructorOrMethod m_method;
+  protected final IAnnotationFinder m_annotationFinder;
+  private final String m_methodName;
+  private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
+  private final Object m_instance;
+  private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
   /**
    * The test class on which the test method was found. Note that this is not necessarily the
    * declaring class.
    */
   protected ITestClass m_testClass;
-
-  protected final Class<?> m_methodClass;
-  protected final ConstructorOrMethod m_method;
-  private String m_signature;
   protected String m_id = "";
   protected long m_date = -1;
-  protected final IAnnotationFinder m_annotationFinder;
   protected String[] m_groups = {};
   protected String[] m_groupsDependedUpon = {};
   protected String[] m_methodsDependedUpon = {};
   protected String[] m_beforeGroups = {};
   protected String[] m_afterGroups = {};
+  protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
+  private String m_signature;
   private boolean m_isAlwaysRun;
   private boolean m_enabled;
-
-  private final String m_methodName;
   // If a depended group is not found
   private String m_missingGroup;
   private String m_description = null;
-  protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   private Callable<Boolean> m_moreInvocationChecker;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
-
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
   private long m_timeOut = 0;
-
   private boolean m_ignoreMissingDependencies;
   private int m_priority;
   private int m_interceptedPriority;
-
   private XmlTest m_xmlTest;
-  private final Object m_instance;
-
-  private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
+  private long invocationTime;
 
   public BaseTestMethod(
       String methodName,
@@ -86,7 +82,31 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_instance = instance;
   }
 
-  /** {@inheritDoc} */
+  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
+    Map<String, Set<String>> result = Maps.newHashMap();
+    if (xmlTest == null) {
+      return result;
+    }
+
+    for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
+      String name = e.getKey();
+      String dependsOn = e.getValue();
+      Set<String> set = result.computeIfAbsent(name, s -> Sets.newHashSet());
+      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
+    }
+
+    return result;
+  }
+
+  static StringBuilder stringify(String cls, ConstructorOrMethod method) {
+    StringBuilder result =
+        new StringBuilder(cls).append(".").append(method.getName()).append("(");
+    return result.append(method.stringifyParameterTypes()).append(")");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAlwaysRun() {
     return m_isAlwaysRun;
@@ -96,19 +116,25 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_isAlwaysRun = alwaysRun;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Class<?> getRealClass() {
     return m_methodClass;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ITestClass getTestClass() {
     return m_testClass;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void setTestClass(ITestClass tc) {
     if (tc == null) {
@@ -126,7 +152,9 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_testClass = tc;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getMethodName() {
     return m_methodName;
@@ -137,7 +165,9 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return IParameterInfo.embeddedInstance(m_instance);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long[] getInstanceHashCodes() {
     return m_testClass.getInstanceHashCodes();
@@ -153,85 +183,121 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return m_groups;
   }
 
-  /** {@inheritDoc} */
+  protected void setGroups(String[] groups) {
+    m_groups = groups;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String[] getGroupsDependedUpon() {
     return m_groupsDependedUpon;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String[] getMethodsDependedUpon() {
     return m_methodsDependedUpon;
   }
 
-  /** {@inheritDoc} */
+  protected void setMethodsDependedUpon(String[] methods) {
+    m_methodsDependedUpon = methods;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isTest() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isBeforeSuiteConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAfterSuiteConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isBeforeTestConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAfterTestConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isBeforeGroupsConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAfterGroupsConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isBeforeClassConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAfterClassConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isBeforeMethodConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAfterMethodConfiguration() {
     return false;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long getTimeOut() {
     return m_timeOut != 0 ? m_timeOut : (m_xmlTest != null ? m_xmlTest.getTimeOut(0) : 0);
@@ -252,23 +318,32 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return 1;
   }
 
-  /** No-op. */
+  /**
+   * No-op.
+   */
   @Override
-  public void setInvocationCount(int counter) {}
+  public void setInvocationCount(int counter) {
+  }
 
-  /** {@inheritDoc} Default value for successPercentage. */
+  /**
+   * {@inheritDoc} Default value for successPercentage.
+   */
   @Override
   public int getSuccessPercentage() {
     return 100;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getId() {
     return m_id;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void setId(String id) {
     m_id = id;
@@ -294,14 +369,17 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_date = date;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean canRunFromClass(IClass testClass) {
     return m_methodClass.isAssignableFrom(testClass.getRealClass());
   }
 
   /**
-   * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated Java Method.
+   * {@inheritDoc} Compares two BaseTestMethod using the test class then the associated Java
+   * Method.
    */
   @Override
   public boolean equals(Object obj) {
@@ -345,7 +423,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     if (object != null) {
       clazz = object.getClass();
     }
-    ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(clazz, annotationClass);
+    ITestOrConfiguration classAnnotation = getAnnotationFinder()
+        .findAnnotation(clazz, annotationClass);
 
     setGroups(
         getStringArray(
@@ -413,34 +492,12 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     setMethodsDependedUpon(methodsDependedUpon);
   }
 
-  private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
-    Map<String, Set<String>> result = Maps.newHashMap();
-    if (xmlTest == null) {
-      return result;
-    }
-
-    for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
-      String name = e.getKey();
-      String dependsOn = e.getValue();
-      Set<String> set = result.computeIfAbsent(name, s -> Sets.newHashSet());
-      set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
-    }
-
-    return result;
-  }
-
   protected IAnnotationFinder getAnnotationFinder() {
     return m_annotationFinder;
   }
 
   protected IClass getIClass() {
     return m_testClass;
-  }
-
-  static StringBuilder stringify(String cls, ConstructorOrMethod method) {
-    StringBuilder result =
-        new StringBuilder(cls).append(".").append(method.getName()).append("(");
-    return result.append(method.stringifyParameterTypes()).append(")");
   }
 
   private String computeSignature() {
@@ -464,7 +521,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
 
   private String instanceParameters() {
     IParameterInfo instance = getFactoryMethodParamsInfo();
-    if (instance != null ) {
+    if (instance != null) {
       return ", instance params:" + Arrays.toString(instance.getParameters());
     }
     return "";
@@ -477,7 +534,9 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return m_signature;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String toString() {
     return getSignature();
@@ -494,10 +553,6 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return vResult.toArray(new String[0]);
   }
 
-  protected void setGroups(String[] groups) {
-    m_groups = groups;
-  }
-
   protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
     List<String> l = Lists.newArrayList();
     l.addAll(Arrays.asList(groups));
@@ -505,11 +560,9 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_groupsDependedUpon = l.toArray(new String[0]);
   }
 
-  protected void setMethodsDependedUpon(String[] methods) {
-    m_methodsDependedUpon = methods;
-  }
-
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void addMethodDependedUpon(String method) {
     String[] newMethods = new String[m_methodsDependedUpon.length + 1];
@@ -518,41 +571,48 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_methodsDependedUpon = newMethods;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getMissingGroup() {
     return m_missingGroup;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void setMissingGroup(String group) {
     m_missingGroup = group;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getThreadPoolSize() {
     return 0;
   }
 
-  /** No-op. */
+  /**
+   * No-op.
+   */
   @Override
-  public void setThreadPoolSize(int threadPoolSize) {}
-
-  @Override
-  public void setDescription(String description) {
-    m_description = description;
+  public void setThreadPoolSize(int threadPoolSize) {
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getDescription() {
     return m_description;
   }
 
-  public void setEnabled(boolean enabled) {
-    m_enabled = enabled;
+  @Override
+  public void setDescription(String description) {
+    m_description = description;
   }
 
   @Override
@@ -560,13 +620,21 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return m_enabled;
   }
 
-  /** {@inheritDoc} */
+  public void setEnabled(boolean enabled) {
+    m_enabled = enabled;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String[] getBeforeGroups() {
     return m_beforeGroups;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String[] getAfterGroups() {
     return m_afterGroups;
@@ -583,13 +651,13 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   @Override
-  public void setParameterInvocationCount(int n) {
-    m_parameterInvocationCount = n;
+  public int getParameterInvocationCount() {
+    return m_parameterInvocationCount;
   }
 
   @Override
-  public int getParameterInvocationCount() {
-    return m_parameterInvocationCount;
+  public void setParameterInvocationCount(int n) {
+    m_parameterInvocationCount = n;
   }
 
   @Override
@@ -619,14 +687,14 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   @Override
-  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-    m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
-    m_retryAnalyzer = InstanceCreator.newInstance(m_retryAnalyzerClass);
+  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
+    return m_retryAnalyzerClass;
   }
 
   @Override
-  public Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return m_retryAnalyzerClass;
+  public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
+    m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
+    m_retryAnalyzer = InstanceCreator.newInstance(m_retryAnalyzerClass);
   }
 
   @Override
@@ -639,13 +707,13 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     m_skipFailedInvocations = s;
   }
 
-  public void setInvocationTimeOut(long timeOut) {
-    m_invocationTimeOut = timeOut;
-  }
-
   @Override
   public long getInvocationTimeOut() {
     return m_invocationTimeOut;
+  }
+
+  public void setInvocationTimeOut(long timeOut) {
+    m_invocationTimeOut = timeOut;
   }
 
   @Override
@@ -735,8 +803,6 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return null;
   }
 
-  private long invocationTime;
-
   @Override
   public void setInvokedAt(long date) {
     this.invocationTime = date;
@@ -753,10 +819,11 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     if (key != null && key.length != 0 && retryAnalyzer != null) {
       final String keyAsString = getSimpleName() + "#" + getParameterInvocationCount();
       final IRetryAnalyzer currentRetryAnalyzerInMap = m_testMethodToRetryAnalyzer.get(keyAsString);
-      if (currentRetryAnalyzerInMap == null || currentRetryAnalyzerInMap.getClass() != retryAnalyzer.getClass()) {
+      if (currentRetryAnalyzerInMap == null || currentRetryAnalyzerInMap.getClass() != retryAnalyzer
+          .getClass()) {
         retryAnalyzer = m_testMethodToRetryAnalyzer.compute(
-                keyAsString,
-                (s, ra) -> InstanceCreator.newInstance(this.m_retryAnalyzer.getClass()));
+            keyAsString,
+            (s, ra) -> InstanceCreator.newInstance(this.m_retryAnalyzer.getClass()));
       } else {
         retryAnalyzer = currentRetryAnalyzerInMap;
       }

@@ -17,14 +17,15 @@ import org.testng.internal.invokers.InvokedMethodListenerMethod;
 
 class BaseInvoker {
 
-  private final Collection<IInvokedMethodListener> m_invokedMethodListeners;
   protected final ITestResultNotifier m_notifier;
   protected final ITestContext m_testContext;
   protected final SuiteRunState m_suiteState;
-  protected IConfiguration m_configuration;
-
-  /** Class failures must be synced as the Invoker is accessed concurrently */
+  /**
+   * Class failures must be synced as the Invoker is accessed concurrently
+   */
   protected final Map<Class<?>, Set<Object>> m_classInvocationResults = Maps.newConcurrentMap();
+  private final Collection<IInvokedMethodListener> m_invokedMethodListeners;
+  protected IConfiguration m_configuration;
 
   public BaseInvoker(ITestResultNotifier notifier,
       Collection<IInvokedMethodListener> invokedMethodListeners,
@@ -35,6 +36,10 @@ class BaseInvoker {
     this.m_testContext = testContext;
     this.m_suiteState = suiteState;
     this.m_configuration = configuration;
+  }
+
+  static void log(int level, String s) {
+    Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
   }
 
   protected IAnnotationFinder annotationFinder() {
@@ -92,10 +97,6 @@ class BaseInvoker {
 
   protected boolean isSkipExceptionAndSkip(Throwable ite) {
     return SkipException.class.isAssignableFrom(ite.getClass()) && ((SkipException) ite).isSkip();
-  }
-
-  static void log(int level, String s) {
-    Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
   }
 
 }

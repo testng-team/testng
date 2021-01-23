@@ -6,6 +6,6 @@ public class ExternalDataProviders {
 
   @DataProvider
   public Object[] data() {
-    return new Object[] {1, 2, 3};
+    return new Object[]{1, 2, 3};
   }
 }

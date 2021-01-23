@@ -1,14 +1,14 @@
 package test.hook;
 
+import java.lang.reflect.Method;
 import org.testng.IConfigurable;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 
-import java.lang.reflect.Method;
-
 public abstract class BaseConfigurable implements IConfigurable {
+
   static int m_hookCount = 0;
   static boolean m_bs = false;
   static boolean m_bt = false;

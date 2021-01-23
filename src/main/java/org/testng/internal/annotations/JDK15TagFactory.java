@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -41,6 +40,9 @@ import org.testng.log4testng.Logger;
  * the Java element.
  */
 public class JDK15TagFactory {
+
+  private static final Default<Class<?>> DEFAULT_CLASS = c -> c == Object.class;
+  private static final Default<String> DEFAULT_STRING = Utils::isStringEmpty;
 
   public <A extends IAnnotation> A createTag(
       Class<?> cls, Method method, Annotation a, Class<A> annotationClass) {
@@ -515,19 +517,6 @@ public class JDK15TagFactory {
   }
 
   /**
-   * This interface is used to calculate the default value for various annotation return types. This
-   * is used when looking for an annotation in a hierarchy. We can't use null as a default since
-   * annotation don't allow nulls, so each type has a different way of defining its own default.
-   */
-  interface Default<T> {
-    boolean isDefault(T t);
-  }
-
-  private static final Default<Class<?>> DEFAULT_CLASS = c -> c == Object.class;
-
-  private static final Default<String> DEFAULT_STRING = Utils::isStringEmpty;
-
-  /**
    * Find the value of an annotation, starting with the annotation found on the method, then the
    * class and then parent classes until we either find a non-default value or we reach the top of
    * the hierarchy (Object).
@@ -595,5 +584,15 @@ public class JDK15TagFactory {
       Logger.getLogger(JDK15TagFactory.class).error(e.getMessage(), e);
     }
     return result;
+  }
+
+  /**
+   * This interface is used to calculate the default value for various annotation return types. This
+   * is used when looking for an annotation in a hierarchy. We can't use null as a default since
+   * annotation don't allow nulls, so each type has a different way of defining its own default.
+   */
+  interface Default<T> {
+
+    boolean isDefault(T t);
   }
 }

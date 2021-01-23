@@ -2,11 +2,10 @@ package org.testng.xml;
 
 import static org.testng.Assert.assertEquals;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import java.io.File;
 import java.util.List;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class ParserTest {
 
@@ -21,11 +20,11 @@ public class ParserTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {
-      {XML_FILE_NAME},
-      {new File(XML_FILE_NAME).toURI().toString()},
-      {"https://localhost:4444/testng.xml"},
-      {"https://localhost:4444/testng.xml"}
+    return new Object[][]{
+        {XML_FILE_NAME},
+        {new File(XML_FILE_NAME).toURI().toString()},
+        {"https://localhost:4444/testng.xml"},
+        {"https://localhost:4444/testng.xml"}
     };
   }
 }

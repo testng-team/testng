@@ -5,6 +5,8 @@ import org.testng.annotations.Test;
 
 @Listeners(DummyListenerFactory.class)
 public class TestClassWithCompositeListener {
+
   @Test
-  public void testMethod() {}
+  public void testMethod() {
+  }
 }

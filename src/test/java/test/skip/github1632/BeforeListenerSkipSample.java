@@ -12,19 +12,19 @@ import org.testng.annotations.Test;
 @Listeners(BeforeListenerSkipSample.MySkipTestListener.class)
 public class BeforeListenerSkipSample {
 
-    @BeforeMethod
-    void beforeMethod() {
-    }
+  @BeforeMethod
+  void beforeMethod() {
+  }
 
-    @Test
-    void shouldNotBeExecuted() {
-    }
+  @Test
+  void shouldNotBeExecuted() {
+  }
 
-    public static class MySkipTestListener implements IInvokedMethodListener {
+  public static class MySkipTestListener implements IInvokedMethodListener {
 
-        @Override
-        public void beforeInvocation(IInvokedMethod invokedMethod, ITestResult testResult) {
-            throw new SkipException("skip");
-        }
+    @Override
+    public void beforeInvocation(IInvokedMethod invokedMethod, ITestResult testResult) {
+      throw new SkipException("skip");
     }
+  }
 }

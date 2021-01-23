@@ -3,12 +3,21 @@ package org.testng.internal.collections;
 import org.testng.collections.Objects;
 
 public class Pair<A, B> {
+
   private final A first;
   private final B second;
 
   public Pair(A first, B second) {
     this.first = first;
     this.second = second;
+  }
+
+  public static <A, B> Pair<A, B> create(A first, B second) {
+    return of(first, second);
+  }
+
+  public static <A, B> Pair<A, B> of(A a, B b) {
+    return new Pair<>(a, b);
   }
 
   public A first() {
@@ -55,14 +64,6 @@ public class Pair<A, B> {
       return false;
     }
     return true;
-  }
-
-  public static <A, B> Pair<A, B> create(A first, B second) {
-    return of(first, second);
-  }
-
-  public static <A, B> Pair<A, B> of(A a, B b) {
-    return new Pair<>(a, b);
   }
 
   @Override

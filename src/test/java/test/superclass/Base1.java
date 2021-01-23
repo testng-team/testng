@@ -3,7 +3,15 @@ package test.superclass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 public class Base1 {
+
+  private static void ppp(String s) {
+    if (false) {
+      System.out.println("[Base] " + s);
+    }
+  }
+
   @BeforeClass
   public void bc() {
     ppp("BEFORE_CLASS");
@@ -17,11 +25,5 @@ public class Base1 {
   @Test
   public void tbase() {
     ppp("TEST IN BASE");
-  }
-
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[Base] " + s);
-    }
   }
 }

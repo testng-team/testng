@@ -4,4 +4,5 @@ import org.testng.annotations.Listeners;
 
 @Listeners(TestListener.class)
 public interface ITestInterfaceSame {
+
 }

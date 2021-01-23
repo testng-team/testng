@@ -6,7 +6,6 @@ import org.testng.annotations.Test;
  * This class
  *
  * @author Cedric Beust, Apr 26, 2004
- *
  */
 
 public class Sample2 {

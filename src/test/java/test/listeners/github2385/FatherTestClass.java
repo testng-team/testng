@@ -5,8 +5,9 @@ import org.testng.annotations.Test;
 
 @Listeners(TestClassListener.class)
 public class FatherTestClass extends BaseTestCLass {
-    @Test
-    public void testClassListeners() {
 
-    }
+  @Test
+  public void testClassListeners() {
+
+  }
 }

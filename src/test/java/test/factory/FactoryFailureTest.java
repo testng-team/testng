@@ -1,9 +1,9 @@
 package test.factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class FactoryFailureTest extends SimpleBaseTest {
@@ -24,8 +24,9 @@ public class FactoryFailureTest extends SimpleBaseTest {
   public void factoryProducesNoInstancesTest() {
     TestNG tng = create(FactoryFailureNoInstancesSample.class);
     String actualErr = "";
-    String expected = String.format("The Factory method %s should have produced at-least one instance.",
-        FactoryFailureNoInstancesSample.METHOD_NAME);
+    String expected = String
+        .format("The Factory method %s should have produced at-least one instance.",
+            FactoryFailureNoInstancesSample.METHOD_NAME);
     try {
       tng.run();
     } catch (Exception ex) {

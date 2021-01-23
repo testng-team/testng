@@ -5,6 +5,7 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 public class LListener implements IInvokedMethodListener {
+
   public static boolean invoked = false;
 
   @Override

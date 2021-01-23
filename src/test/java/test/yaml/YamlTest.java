@@ -1,5 +1,15 @@
 package test.yaml;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -10,26 +20,15 @@ import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class YamlTest extends SimpleBaseTest {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][] {
-      new Object[] { "a1" },
-      new Object[] { "a2" },
-      new Object[] { "a3" },
-      new Object[] { "a4" },
+    return new Object[][]{
+        new Object[]{"a1"},
+        new Object[]{"a2"},
+        new Object[]{"a3"},
+        new Object[]{"a4"},
     };
   }
 
@@ -59,15 +58,17 @@ public class YamlTest extends SimpleBaseTest {
     newSuite.deleteOnExit();
     Files.writeFile(yaml.toString(), newSuite);
     assertThat(parser.parse(newSuite.getAbsolutePath(), new FileInputStream(file), false))
-            .isEqualTo(xmlSuite);
+        .isEqualTo(xmlSuite);
   }
 
   @Test(description = "GITHUB-2078")
   public void testXmlDependencyGroups() throws IOException {
     String actualXmlFile = "src/test/resources/yaml/2078.xml";
-    XmlSuite actualXmlSuite = new SuiteXmlParser().parse(actualXmlFile, new FileInputStream(actualXmlFile), false);
+    XmlSuite actualXmlSuite = new SuiteXmlParser()
+        .parse(actualXmlFile, new FileInputStream(actualXmlFile), false);
     String expectedYamlFile = "src/test/resources/yaml/2078.yaml";
-    String expectedYaml = new String(java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
+    String expectedYaml = new String(java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)),
+        StandardCharsets.UTF_8);
     assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualTo(expectedYaml);
   }
 

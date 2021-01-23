@@ -8,6 +8,7 @@ import test.listeners.github1490.LocalDataProviderListener;
 
 @Listeners(LocalDataProviderListener.class)
 public class SimpleDataProviderWithListenerAnnotationSample {
+
   @Test(dataProvider = "getData")
   public void testMethod(int i) {
     Assert.assertTrue(i > 0);
@@ -15,6 +16,6 @@ public class SimpleDataProviderWithListenerAnnotationSample {
 
   @DataProvider
   public Object[][] getData() {
-    return new Object[][] {{1}, {2}};
+    return new Object[][]{{1}, {2}};
   }
 }

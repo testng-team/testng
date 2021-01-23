@@ -3,12 +3,16 @@ package test.failedreporter.issue1297.straightforward;
 import org.testng.annotations.*;
 
 public class AllPassSample {
+
   @BeforeClass
-  public void beforeClassAllPassSample() {}
+  public void beforeClassAllPassSample() {
+  }
 
   @Test
-  public void newTest1() {}
+  public void newTest1() {
+  }
 
   @AfterClass
-  public void afterClassAllPassSample() {}
+  public void afterClassAllPassSample() {
+  }
 }

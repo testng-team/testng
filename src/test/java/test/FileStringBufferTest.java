@@ -11,7 +11,7 @@ public class FileStringBufferTest {
       FileStringBuffer fsb = new FileStringBuffer(5);
       String s = "0123456789";
       String s3 = s + s + s;
-  
+
       fsb.append(s3);
 //      Assert.assertEquals(s3, fsb.toString());
     }
@@ -20,7 +20,7 @@ public class FileStringBufferTest {
       FileStringBuffer fsb = new FileStringBuffer(5);
       String s = "0123456789";
       String s3 = s + s + s;
-  
+
       fsb.append(s);
       fsb.append(s);
       fsb.append(s);

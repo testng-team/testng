@@ -1,23 +1,30 @@
 package test.groupinvocation;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DummyTest {
+
   private static Map<String, Integer> s_externalClassGroups = new HashMap<>();
 
+  public static void recordInvocation(String string, int i) {
+    s_externalClassGroups.put(string, i);
+  }
+
   @Test(groups = {"a"})
-  public void testA() {}
+  public void testA() {
+  }
 
   @Test(groups = {"b"})
-  public void testB() {}
+  public void testB() {
+  }
 
   @Test(groups = {"a", "b"})
-  public void testAB() {}
+  public void testAB() {
+  }
 
   @AfterClass(alwaysRun = true)
   public void checkInvocations() {
@@ -29,9 +36,5 @@ public class DummyTest {
         hashCode1,
         hashCode2,
         "External @BeforeGroups and @AfterGroups were not invoked on the" + " same class instance");
-  }
-
-  public static void recordInvocation(String string, int i) {
-    s_externalClassGroups.put(string, i);
   }
 }

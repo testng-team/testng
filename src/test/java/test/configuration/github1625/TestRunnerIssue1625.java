@@ -20,8 +20,8 @@ public class TestRunnerIssue1625 extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][] {
-      {TestclassSampleUsingMocks.class}, {TestclassSampleWithoutUsingMocks.class}
+    return new Object[][]{
+        {TestclassSampleUsingMocks.class}, {TestclassSampleWithoutUsingMocks.class}
     };
   }
 }

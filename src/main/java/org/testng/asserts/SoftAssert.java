@@ -1,7 +1,6 @@
 package org.testng.asserts;
 
 import java.util.Map;
-
 import org.testng.collections.Maps;
 
 /**
@@ -9,9 +8,10 @@ import org.testng.collections.Maps;
  * assertAll()} will cause an exception to be thrown if at least one assertion failed.
  */
 public class SoftAssert extends Assertion {
+
+  private static final String DEFAULT_SOFT_ASSERT_MESSAGE = "The following asserts failed:";
   // LinkedHashMap to preserve the order
   private final Map<AssertionError, IAssert<?>> m_errors = Maps.newLinkedHashMap();
-  private static final String DEFAULT_SOFT_ASSERT_MESSAGE = "The following asserts failed:";
 
   @Override
   protected void doAssert(IAssert<?> a) {

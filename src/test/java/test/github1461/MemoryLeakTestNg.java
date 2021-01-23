@@ -11,15 +11,6 @@ import org.testng.annotations.Test;
  */
 public class MemoryLeakTestNg {
 
-  @Test(timeOut = 10_000)
-  public void testMemoryLeak() throws Exception {
-
-    // we run the test programmatically
-    runTest();
-    // lets wait for garbage collection
-    waitForAllObjectsDestructed();
-  }
-
   private static void waitForAllObjectsDestructed() throws InterruptedException {
     while (true) {
       System.out.println("waiting for clean up...");
@@ -55,8 +46,8 @@ public class MemoryLeakTestNg {
 
     // and set a test (which also will never be finalized ... see later)
     testng.setTestClasses(
-        new Class[] {
-          MyTestClassWithGlobalReferenceCounterSample.class,
+        new Class[]{
+            MyTestClassWithGlobalReferenceCounterSample.class,
         });
 
     // lets run the test
@@ -67,5 +58,14 @@ public class MemoryLeakTestNg {
     // - the test object of type (MyTest)
     // will be garbage collected when leaving this method
     // ...
+  }
+
+  @Test(timeOut = 10_000)
+  public void testMemoryLeak() throws Exception {
+
+    // we run the test programmatically
+    runTest();
+    // lets wait for garbage collection
+    waitForAllObjectsDestructed();
   }
 }

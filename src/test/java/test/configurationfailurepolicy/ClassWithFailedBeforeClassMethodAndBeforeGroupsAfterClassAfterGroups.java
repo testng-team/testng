@@ -14,14 +14,18 @@ public class ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroup
   }
 
   @BeforeGroups(groups = "group1")
-  public void beforeGroup() {}
+  public void beforeGroup() {
+  }
 
   @Test(groups = "group1")
-  public void test1() {}
+  public void test1() {
+  }
 
   @AfterClass(groups = "group1")
-  public void tearDownClass() {}
+  public void tearDownClass() {
+  }
 
   @AfterGroups(groups = "group1")
-  public void afterGroup() {}
+  public void afterGroup() {
+  }
 }

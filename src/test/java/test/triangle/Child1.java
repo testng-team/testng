@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class Child1 extends Base {
+
   @Test
   public void child1() {
     assert m_isInitialized : "Wasn't initialized correctly " + hashCode() + " " + getClass();

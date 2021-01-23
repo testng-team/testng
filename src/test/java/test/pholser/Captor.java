@@ -9,6 +9,7 @@ import java.util.List;
  * @version $Id: Captor.java,v 1.3 2004/08/26 22:25:22 cedric Exp $
  */
 public class Captor {
+
   private static Captor instance = null;
   private List<String> captives;
 
@@ -24,12 +25,12 @@ public class Captor {
     instance().captives = new ArrayList<>();
   }
 
-  public void capture( String aString ) {
+  public void capture(String aString) {
 //    System.out.println("@@PHOLSER CAPTURING " + aString);
-    captives.add( aString );
+    captives.add(aString);
   }
 
   public List<String> captives() {
-    return Collections.unmodifiableList( captives );
+    return Collections.unmodifiableList(captives);
   }
 }

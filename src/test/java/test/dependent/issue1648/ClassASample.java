@@ -1,12 +1,11 @@
 package test.dependent.issue1648;
 
-import groovy.util.logging.Log;
+import java.util.List;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
-import java.util.List;
-
 public class ClassASample implements LogExtractor {
+
   private final List<String> logs = Lists.newArrayList();
 
   @Test

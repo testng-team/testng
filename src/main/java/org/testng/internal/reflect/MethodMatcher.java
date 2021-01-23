@@ -6,6 +6,7 @@ package org.testng.internal.reflect;
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public interface MethodMatcher {
+
   /**
    * Checks if the arguments conform to the method.
    *

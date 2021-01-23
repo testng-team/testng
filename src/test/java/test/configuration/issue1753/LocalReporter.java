@@ -1,17 +1,20 @@
 package test.configuration.issue1753;
 
-import org.testng.*;
-import org.testng.collections.Maps;
-import org.testng.xml.XmlSuite;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.testng.*;
+import org.testng.collections.Maps;
+import org.testng.xml.XmlSuite;
 
 public class LocalReporter implements IReporter {
 
   private Map<String, String> attributes = Maps.newHashMap();
+
+  private static Set<ITestResult> extractSkippedResults(ISuiteResult suiteResult) {
+    return suiteResult.getTestContext().getSkippedTests().getAllResults();
+  }
 
   @Override
   public void generateReport(
@@ -29,10 +32,6 @@ public class LocalReporter implements IReporter {
   private void extractAttributes(ITestResult result) {
     Consumer<String> attribute = each -> attributes.put(each, result.getAttribute(each).toString());
     result.getAttributeNames().forEach(attribute);
-  }
-
-  private static Set<ITestResult> extractSkippedResults(ISuiteResult suiteResult) {
-    return suiteResult.getTestContext().getSkippedTests().getAllResults();
   }
 
   Map<String, String> getAttributes() {

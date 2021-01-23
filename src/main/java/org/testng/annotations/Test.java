@@ -1,13 +1,12 @@
 package org.testng.annotations;
 
-import org.testng.IRetryAnalyzer;
-import org.testng.internal.annotations.DisabledRetryAnalyzer;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
+import org.testng.IRetryAnalyzer;
+import org.testng.internal.annotations.DisabledRetryAnalyzer;
 
 /**
  * Mark a class or a method as part of the test.
@@ -15,6 +14,7 @@ import static java.lang.annotation.ElementType.TYPE;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD, TYPE})
 public @interface Test {
+
   /**
    * The list of groups this class/method belongs to.
    *
@@ -93,9 +93,8 @@ public @interface Test {
   /**
    * The name of the data provider for this test method.
    *
-   * @see org.testng.annotations.DataProvider
-   *
    * @return the value (default empty)
+   * @see org.testng.annotations.DataProvider
    */
   String dataProvider() default "";
 
@@ -160,7 +159,8 @@ public @interface Test {
    * If set to true, all the methods on this test class are guaranteed to run in the same thread,
    * even if the tests are currently being run with parallel="true".
    *
-   * <p>This attribute can only be used at the class level and will be ignored if used at the method
+   * <p>This attribute can only be used at the class level and will be ignored if used at the
+   * method
    * level.
    *
    * @return true if single threaded (default false)
@@ -175,8 +175,8 @@ public @interface Test {
   Class<? extends IRetryAnalyzer> retryAnalyzer() default DisabledRetryAnalyzer.class;
 
   /**
-   * If true and invocationCount is specified with a value &gt; 1, then all invocations after a failure
-   * will be marked as a SKIP instead of a FAIL.
+   * If true and invocationCount is specified with a value &gt; 1, then all invocations after a
+   * failure will be marked as a SKIP instead of a FAIL.
    *
    * @return the value (default false)
    */

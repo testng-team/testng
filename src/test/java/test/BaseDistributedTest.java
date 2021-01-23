@@ -7,6 +7,7 @@ import org.testng.ITestResult;
 import org.testng.collections.Maps;
 
 public class BaseDistributedTest {
+
   private boolean m_verbose = false;
 
   protected void verifyTests(String title, String[] exp, Map<String, List<ITestResult>> found) {
@@ -26,8 +27,8 @@ public class BaseDistributedTest {
       }
 
       Assert.assertNotNull(found.get(name),
-              "Expected to find method " + name + " in " + title
-                      + " but didn't find it.");
+          "Expected to find method " + name + " in " + title
+              + " but didn't find it.");
     }
   }
 
@@ -39,6 +40,7 @@ public class BaseDistributedTest {
       }
     }
   }
+
   private void ppp(String s) {
     if (m_verbose) {
       System.out.println("[BaseDistributedTest] " + s);

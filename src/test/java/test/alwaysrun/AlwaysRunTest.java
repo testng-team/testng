@@ -5,7 +5,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
@@ -16,7 +15,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] {AlwaysRunAfter1.class});
+    testng.setTestClasses(new Class[]{AlwaysRunAfter1.class});
     testng.addListener(tla);
     testng.run();
     assertTrue(AlwaysRunAfter1.success(), "afterTestMethod should have run");
@@ -27,7 +26,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] {AlwaysRunAfter3.class});
+    testng.setTestClasses(new Class[]{AlwaysRunAfter3.class});
     testng.addListener(tla);
     testng.run();
     assertTrue(AlwaysRunAfter3.success(), "afterMethod should have run");
@@ -38,7 +37,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] {AlwaysRunAfter2.class});
+    testng.setTestClasses(new Class[]{AlwaysRunAfter2.class});
     testng.addListener(tla);
     testng.run();
     assertTrue(AlwaysRunAfter2.success(), "afterTestMethod should not have run");
@@ -49,7 +48,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = create();
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class[] {AlwaysRunBefore1.class});
+    testng.setTestClasses(new Class[]{AlwaysRunBefore1.class});
     testng.setGroups("A");
     testng.addListener(tla);
     testng.run();

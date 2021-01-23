@@ -1,5 +1,9 @@
 package test.factory;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
+import java.util.Map;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -10,14 +14,13 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.factory.issue1770.SampleTestFour;
 
-import java.util.Collections;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class FactoryWithDataProviderTest extends SimpleBaseTest {
 
-  /** Verify that a factory can receive a data provider */
+  private static final String RANDOM_VALUE = "random_value";
+
+  /**
+   * Verify that a factory can receive a data provider
+   */
   @Test
   public void verifyDataProvider() {
     TestNG tng = create(FactoryWithDataProvider.class);
@@ -26,8 +29,6 @@ public class FactoryWithDataProviderTest extends SimpleBaseTest {
     tng.run();
     assertThat(tla.getPassedTests()).hasSize(4);
   }
-
-  private static final String RANDOM_VALUE = "random_value";
 
   @Test(description = "GITHUB-1770")
   public void verifyDataProvider2() {

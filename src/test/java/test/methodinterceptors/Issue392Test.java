@@ -1,15 +1,13 @@
 package test.methodinterceptors;
 
-import org.testng.*;
-import org.testng.annotations.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.testng.*;
+import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class Issue392Test extends SimpleBaseTest {
 

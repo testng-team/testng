@@ -3,7 +3,9 @@ package org.testng.internal.junit;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Thrown when two array elements differ */
+/**
+ * Thrown when two array elements differ
+ */
 public class ArrayComparisonFailure extends AssertionError {
 
   private final List<Integer> fIndices = new ArrayList<>();
@@ -31,7 +33,9 @@ public class ArrayComparisonFailure extends AssertionError {
   @Override
   public String getMessage() {
     StringBuilder builder = new StringBuilder();
-    if (fMessage != null) builder.append(fMessage);
+    if (fMessage != null) {
+      builder.append(fMessage);
+    }
     builder.append("arrays first differed at element ");
     for (int each : fIndices) {
       builder.append("[");
@@ -43,7 +47,9 @@ public class ArrayComparisonFailure extends AssertionError {
     return builder.toString();
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String toString() {
     return getMessage();

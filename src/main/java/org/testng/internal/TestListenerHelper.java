@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
@@ -12,15 +13,17 @@ import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 
-import java.util.List;
-
-/** A helper class that internally houses some of the listener related actions support. */
+/**
+ * A helper class that internally houses some of the listener related actions support.
+ */
 public final class TestListenerHelper {
+
   private TestListenerHelper() {
     // Utility class. Defeat instantiation.
   }
 
-  static void runPreConfigurationListeners(ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
+  static void runPreConfigurationListeners(ITestResult tr, ITestNGMethod tm,
+      List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
       icl.beforeConfiguration(tr);
       try {
@@ -54,7 +57,7 @@ public final class TestListenerHelper {
         case ITestResult.SUCCESS:
           icl.onConfigurationSuccess(tr);
           try {
-          icl.onConfigurationSuccess(tr,tm);
+            icl.onConfigurationSuccess(tr, tm);
           } catch (Exception e) {
             ignoreInternalGradleException(e);
           }
@@ -108,14 +111,18 @@ public final class TestListenerHelper {
     }
   }
 
-  /** @return all the @Listeners annotations found in the current class and its superclasses and inherited interfaces.  */
+  /**
+   * @return all the @Listeners annotations found in the current class and its superclasses and
+   * inherited interfaces.
+   */
   @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
     result.listenerClasses = Lists.newArrayList();
 
     while (cls != Object.class) {
-      List<IListenersAnnotation> annotations = finder.findInheritedAnnotations(cls, IListenersAnnotation.class);
+      List<IListenersAnnotation> annotations = finder
+          .findInheritedAnnotations(cls, IListenersAnnotation.class);
       IListenersAnnotation l = finder.findAnnotation(cls, IListenersAnnotation.class);
       if (l != null) {
         annotations.add(l);
@@ -164,6 +171,7 @@ public final class TestListenerHelper {
   }
 
   public static class ListenerHolder {
+
     private List<Class<? extends ITestNGListener>> listenerClasses;
     private Class<? extends ITestNGListenerFactory> listenerFactoryClass;
 

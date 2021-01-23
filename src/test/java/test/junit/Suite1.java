@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class Suite1 {
+
   public Suite1(String s) {
     // dummy
   }

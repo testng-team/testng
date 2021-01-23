@@ -1,7 +1,6 @@
 package test.thread;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class ThreadTest extends BaseTest {

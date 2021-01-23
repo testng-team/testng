@@ -4,6 +4,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class BeforeClassThreadA {
+
   public static long WHEN;
 
   @BeforeClass(alwaysRun = true)
@@ -13,5 +14,6 @@ public class BeforeClassThreadA {
   }
 
   @Test
-  public void execute() {}
+  public void execute() {
+  }
 }

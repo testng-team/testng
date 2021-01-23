@@ -17,6 +17,16 @@ import test.invocationcount.issue426.SampleTestClassWithThreadPoolSizeDefined;
  */
 public class FirstAndLastTimeTest extends SimpleBaseTest {
 
+  private static List<String> run(Class<?> cls) {
+    TestNG tng = create(cls);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+
+    tng.run();
+
+    return listener.getInvokedMethodNames();
+  }
+
   @Test
   public void verifyDataProviderFalseFalse() {
     List<String> invokedMethodNames = run(DataProviderFalseFalseTest.class);
@@ -150,25 +160,15 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
   @Test(dataProvider = "classNames", description = "GITHUB-426")
   public void verifyFirstTimeOnly(Class<?> clazz) {
     List<String> invokedMethodNames = run(clazz);
-    String[] expected = new String[] {"beforeMethod", "testMethod", "testMethod"};
+    String[] expected = new String[]{"beforeMethod", "testMethod", "testMethod"};
     assertThat(invokedMethodNames).containsExactly(expected);
   }
 
   @DataProvider(name = "classNames")
   public Object[][] getClassNames() {
-    return new Object[][] {
-      {SampleTestClassWithNoThreadPoolSizeDefined.class},
-      {SampleTestClassWithThreadPoolSizeDefined.class}
+    return new Object[][]{
+        {SampleTestClassWithNoThreadPoolSizeDefined.class},
+        {SampleTestClassWithThreadPoolSizeDefined.class}
     };
-  }
-
-  private static List<String> run(Class<?> cls) {
-    TestNG tng = create(cls);
-    InvokedMethodNameListener listener = new InvokedMethodNameListener();
-    tng.addListener(listener);
-
-    tng.run();
-
-    return listener.getInvokedMethodNames();
   }
 }

@@ -5,8 +5,11 @@ import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.internal.IResultListener2;
 
-/** A very simple <code>ITestListener</code> used by the TestNG runner to find out the exit code. */
+/**
+ * A very simple <code>ITestListener</code> used by the TestNG runner to find out the exit code.
+ */
 public class ExitCodeListener implements IResultListener2 {
+
   private TestNG m_mainRunner;
 
   public ExitCodeListener() {
@@ -18,7 +21,8 @@ public class ExitCodeListener implements IResultListener2 {
   }
 
   @Override
-  public void beforeConfiguration(ITestResult tr) {}
+  public void beforeConfiguration(ITestResult tr) {
+  }
 
   @Override
   public void onTestFailure(ITestResult result) {
@@ -46,24 +50,35 @@ public class ExitCodeListener implements IResultListener2 {
   }
 
   @Override
-  public void onFinish(ITestContext context) {}
+  public void onFinish(ITestContext context) {
+  }
 
   @Override
   public void onTestStart(ITestResult result) {
     setHasRunTests();
   }
 
-  private void setHasRunTests() {}
+  private void setHasRunTests() {
+  }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
   @Override
-  public void onConfigurationFailure(ITestResult itr) {}
+  public void onConfigurationFailure(ITestResult itr) {
+  }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
   @Override
-  public void onConfigurationSkip(ITestResult itr) {}
+  public void onConfigurationSkip(ITestResult itr) {
+  }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
   @Override
-  public void onConfigurationSuccess(ITestResult itr) {}
+  public void onConfigurationSuccess(ITestResult itr) {
+  }
 }

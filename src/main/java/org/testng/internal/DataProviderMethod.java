@@ -1,12 +1,13 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
+import java.util.List;
 import org.testng.IDataProviderMethod;
 import org.testng.annotations.IDataProviderAnnotation;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
-/** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
+/**
+ * Represents an @{@link org.testng.annotations.DataProvider} annotated method.
+ */
 class DataProviderMethod implements IDataProviderMethod {
 
   private final Object instance;

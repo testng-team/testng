@@ -5,6 +5,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class TwoFactoriesShareSameDataProviderSampleTwo {
+
   private final String cookieName;
   private final int count;
 
