@@ -6,8 +6,6 @@ import static org.testng.Assert.assertEquals;
 
 /**
  * Unit tests for {@link Strings}
- *
- * @author Spencer Gilson
  */
 public class StringsTest {
     @Test
