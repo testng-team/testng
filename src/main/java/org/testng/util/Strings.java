@@ -67,7 +67,7 @@ public final class Strings {
     for (int i = 0; i < parts.length - 1; i++) {
       sb.append(parts[i]).append(delimiter);
     }
-    if (parts.length > 1) {
+    if (parts.length > 0) {
       sb.append(parts[parts.length - 1]);
     }
     return sb.toString();
