@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2296: Fix for assertEquals not working for sets as order is not guaranteed. (Prashant Maroti)
 Fixed: GITHUB-2465: Fix bux where Strings.join returns empty String
 Fixed: GITHUB-1632: throwing SkipException sets iTestResult status to Failure instead of Skip (Julien Herr & Krishnan Mahadevan)
 New  : GITHUB-2456: Add onDataProviderFailure listener (Krishnan Mahadevan)

@@ -2,6 +2,7 @@ package org.testng;
 
 import com.google.common.collect.ImmutableMap;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import testhelper.PerformanceUtils;
@@ -38,6 +39,27 @@ public class AssertTest {
   public void nullSetAssertEquals() {
     Set expected = null;
     Set actual = null;
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void testCollectionAssertEquals() {
+    final Collection<Asymmetric> expected = Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Collection<Asymmetric> actual = Sets.newHashSet(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
+    Assert.assertEquals(actual, expected);
+  }
+
+  @Test
+  public void testListAssertNotEquals() {
+    final Collection<Asymmetric> expected = Lists.newArrayList(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Collection<Asymmetric> actual = Lists.newArrayList(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
+    Assert.assertNotEquals(actual, expected);
+  }
+
+  @Test
+  public void testSetAssertEquals() {
+    final Set<Asymmetric> expected = Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Set<Asymmetric> actual = Sets.newHashSet(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
     Assert.assertEquals(actual, expected);
   }
 
