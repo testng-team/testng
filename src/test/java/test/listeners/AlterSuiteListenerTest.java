@@ -2,6 +2,7 @@ package test.listeners;
 
 import org.testng.*;
 import org.testng.annotations.Test;
+import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
@@ -16,35 +17,56 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
 
     @Test
     public void executionListenerWithXml() {
-        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class, AlterSuiteNameListener.class.getName());
+        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class, AlterSuiteNameListener.class.getName()).second();
         Assert.assertEquals(suite.getName(), AlterSuiteNameListener.class.getSimpleName());
     }
 
     @Test
     public void executionListenerWithoutListener() {
-        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class);
+        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class).second();
         Assert.assertEquals(suite.getName(), ALTER_SUITE_LISTENER);
     }
 
     @Test
     public void executionListenerWithXml2() {
-        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class, AlterXmlTestsInSuiteListener.class.getName());
+        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class, AlterXmlTestsInSuiteListener.class.getName()).second();
         Assert.assertEquals(suite.getTests().size(), 2);
     }
 
     @Test(description = "GITHUB-2469")
     public void executionListenerWithXml3() {
-        XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class,
+        Pair<TestNG, XmlSuite> retObjects = runTest(AlterSuiteListener1SampleTest.class,
                 AlterXmlTestWithParameterInSuiteListener.class.getName(), AlteredXmlSuiteReadListener.class.getName());
+        TestNG tng = retObjects.first();
+        XmlSuite suite = retObjects.second();
         Assert.assertEquals(suite.getTests().size(), 2);
+        List<ISuiteListener> listeners = tng.getSuiteListeners();
+        Assert.assertNotNull(listeners);
+        if(listeners.size() > 0){
+            for (ISuiteListener iSuiteListener :
+                    listeners) {
+                if (iSuiteListener instanceof AlteredXmlSuiteReadListener) {
+                    AlteredXmlSuiteReadListener alteredXmlSuiteReadListener = (AlteredXmlSuiteReadListener) iSuiteListener;
+                    XmlSuite xmlSuite = alteredXmlSuiteReadListener.currentSuiteOnStart.getXmlSuite();
+                    List<XmlTest> tests = xmlSuite.getTests();
+                    int i = 1;
+                    for (XmlTest xmlTest:
+                            tests) {
+                        Assert.assertEquals(xmlTest.getParameter("param"), String.valueOf(i));
+                        i++;
+                    }
+                }
+            }
+        } else {
+            Assert.assertTrue(false, "ISuiteListeners are Empty");
+        }
     }
 
-    private XmlSuite runTest(Class<?> listenerClass, String... listenerNames) {
+    private Pair<TestNG, XmlSuite> runTest(Class<?> listenerClass, String... listenerNames) {
         XmlSuite s = createXmlSuite(ALTER_SUITE_LISTENER);
         createXmlTest(s, "Test", listenerClass.getName());
-        boolean addListener = (listenerNames != null);
 
-        if (addListener) {
+        if (listenerNames.length > 0) {
             for (String listenerName:
                     listenerNames) {
                 s.addListener(listenerName);
@@ -53,21 +75,8 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
         TestNG tng = create();
         tng.setXmlSuites(Arrays.asList(s));
         tng.run();
-        return s;
-    }
-
-    private XmlSuite runTest(Class<?> listenerClass, String listenerName) {
-        XmlSuite s = createXmlSuite(ALTER_SUITE_LISTENER);
-        createXmlTest(s, "Test", listenerClass.getName());
-        boolean addListener = (listenerName != null);
-
-        if (addListener) {
-            s.addListener(listenerName);
-        }
-        TestNG tng = create();
-        tng.setXmlSuites(Arrays.asList(s));
-        tng.run();
-        return s;
+        Pair<TestNG, XmlSuite> returnObj = new Pair<>(tng, s);
+        return returnObj;
     }
 
     public static class AlterSuiteListener1SampleTest {
@@ -125,16 +134,11 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
 
     public static class AlteredXmlSuiteReadListener implements ISuiteListener {
 
+        public ISuite currentSuiteOnStart;
+
         @Override
         public void onStart(ISuite suite) {
-            XmlSuite xmlSuite = suite.getXmlSuite();
-            List<XmlTest> tests = xmlSuite.getTests();
-            int i = 1;
-            for (XmlTest xmlTest:
-                 tests) {
-                Assert.assertEquals(xmlTest.getParameter("param"), String.valueOf(i));
-                i++;
-            }
+            currentSuiteOnStart = suite;
         }
     }
 
