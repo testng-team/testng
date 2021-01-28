@@ -995,5 +995,11 @@
       <class name="test.timeout.github2440.TimeoutWithNoExecutorTest"/>
     </classes>
   </test>
+
+  <test name="GITHUB-2469">
+    <classes>
+      <class name="test.listeners.AlterSuiteListenerTest"/>
+    </classes>
+  </test>
 </suite>
 

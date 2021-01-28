@@ -426,7 +426,9 @@ public class XmlTest implements Cloneable {
     result.setJUnit(isJUnit());
     result.setParallel(getParallel());
     result.setVerbose(getVerbose());
-    result.setParameters(getLocalParameters());
+    Map<String, String> localParameters = new HashMap<>();
+    localParameters.putAll(getLocalParameters());
+    result.setParameters(localParameters);
     result.setXmlPackages(getXmlPackages());
     result.setTimeOut(getTimeOut());
 
