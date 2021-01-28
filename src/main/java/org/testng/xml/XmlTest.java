@@ -429,6 +429,7 @@ public class XmlTest implements Cloneable {
     result.setParameters(getLocalParameters());
     result.setXmlPackages(getXmlPackages());
     result.setTimeOut(getTimeOut());
+    result.setXmlClasses(getXmlClasses());
 
     Map<String, List<String>> metagroups = getMetaGroups();
     for (Map.Entry<String, List<String>> group : metagroups.entrySet()) {
