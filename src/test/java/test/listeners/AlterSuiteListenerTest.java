@@ -66,11 +66,10 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
         XmlSuite s = createXmlSuite(ALTER_SUITE_LISTENER);
         createXmlTest(s, "Test", listenerClass.getName());
 
-        if (listenerNames.length > 0) {
-            for (String listenerName:
-                    listenerNames) {
-                s.addListener(listenerName);
-            }
+
+        for (String listenerName:
+                listenerNames) {
+            s.addListener(listenerName);
         }
         TestNG tng = create();
         tng.setXmlSuites(Arrays.asList(s));
