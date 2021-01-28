@@ -5,6 +5,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import test.SimpleBaseTest;
+import test.junitreports.SimpleTestSample;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,6 +32,17 @@ public class XmlTestTest extends SimpleBaseTest {
   @DataProvider(name = "dp")
   public Object[][] getData() {
     return new Object[][] {{newSetOfParameters(null, "value")}, {newSetOfParameters("foo", null)}};
+  }
+
+  @Test(description = "GITHUB-2467")
+  public void testXMLClassesInCloneMethod() {
+    XmlSuite xmlSuite = createXmlSuite("suite");
+    XmlTest xmlTest = createXmlTest(xmlSuite, "test");
+    createXmlClass(xmlTest, SimpleTestSample.class);
+    XmlTest copyXmlTest = (XmlTest) xmlTest.clone();
+    Assert.assertNotNull(copyXmlTest);
+    Assert.assertNotNull(copyXmlTest.getXmlClasses());
+    Assert.assertEquals(xmlTest.getXmlClasses().size(), copyXmlTest.getXmlClasses().size());
   }
 
   private static Map<String, String> newSetOfParameters(String key, String value) {
