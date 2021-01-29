@@ -77,10 +77,10 @@ public class GuiceHelper {
     }
     Module obj;
     try {
-      Constructor<?> moduleConstructor = parentModule.getDeclaredConstructor(ITestContext.class);
-      obj = (Module) InstanceCreator.newInstance(moduleConstructor, context);
+      Constructor<? extends Module> moduleConstructor = parentModule.getDeclaredConstructor(ITestContext.class);
+      obj = InstanceCreator.newInstance(moduleConstructor, context);
     } catch (NoSuchMethodException e) {
-      obj = (Module) InstanceCreator.newInstance(parentModule);
+      obj = InstanceCreator.newInstance(parentModule);
     }
       context.addGuiceModule(obj);
     return obj;

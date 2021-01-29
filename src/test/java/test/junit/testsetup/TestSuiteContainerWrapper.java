@@ -2,13 +2,14 @@ package test.junit.testsetup;
 
 import junit.extensions.TestSetup;
 import junit.framework.TestSuite;
+import org.testng.internal.InstanceCreator;
 
 public class TestSuiteContainerWrapper extends TestSetup {
   private static Data INSTANCE = null;
   private static TestSuite _test = null;
-  private static Class dataImpl = null;
+  private static Class<? extends Data> dataImpl = null;
 
-  public TestSuiteContainerWrapper(TestSuite testSuite, Class dataImpl) {
+  public TestSuiteContainerWrapper(TestSuite testSuite, Class<? extends Data> dataImpl) {
     super(testSuite);
     _test = testSuite;
     TestSuiteContainerWrapper.dataImpl = dataImpl;
@@ -21,7 +22,7 @@ public class TestSuiteContainerWrapper extends TestSetup {
   @Override
   protected void setUp() throws Exception {
     System.out.println("setup");
-    INSTANCE = (Data) dataImpl.newInstance();
+    INSTANCE = InstanceCreator.newInstance(dataImpl);
   }
 
   @Override

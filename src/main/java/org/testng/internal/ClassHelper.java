@@ -318,7 +318,7 @@ public final class ClassHelper {
       }
 
       Constructor<T> ctor = declaringClass.getConstructor(String.class);
-      result = ctor.newInstance("Default test name");
+      result = InstanceCreator.newInstance(ctor, "Default test name");
     } catch (Exception e) {
       String message = e.getMessage();
       if ((message == null) && (e.getCause() != null)) {

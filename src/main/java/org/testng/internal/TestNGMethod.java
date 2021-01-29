@@ -200,13 +200,6 @@ public class TestNGMethod extends BaseTestMethod {
         .toArray(ITestNGMethod[]::new);
   }
 
-  private static IRetryAnalyzer cloneInstance(IRetryAnalyzer instance) {
-    if (instance == null) {
-      return null;
-    }
-    return InstanceCreator.newInstance(instance.getClass());
-  }
-
   @Override
   public boolean isDataDriven() {
     return isDataDriven;

@@ -11,6 +11,8 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.InjectionPoint;
 import com.google.inject.spi.TypeConverterBinding;
+import org.testng.internal.InstanceCreator;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +97,7 @@ public class FakeInjector implements Injector {
   public <T> T getInstance(Class<T> type) {
     try {
       setInstance(this);
-      return type.newInstance();
+      return InstanceCreator.newInstance(type);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
