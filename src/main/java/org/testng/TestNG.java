@@ -1483,7 +1483,7 @@ public class TestNG {
     }
 
     if (cla.objectFactory != null) {
-      setObjectFactory(ClassHelper.fileToClass(cla.objectFactory));
+      setObjectFactory((Class<? extends ITestObjectFactory>)ClassHelper.fileToClass(cla.objectFactory));
     }
     if (cla.testRunnerFactory != null) {
       setTestRunnerFactoryClass((Class<? extends ITestRunnerFactory>) ClassHelper.fileToClass(cla.testRunnerFactory));
