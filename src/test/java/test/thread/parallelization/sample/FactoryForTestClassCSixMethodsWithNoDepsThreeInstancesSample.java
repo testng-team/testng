@@ -1,6 +1,8 @@
 package test.thread.parallelization.sample;
 
+import org.testng.TestNGException;
 import org.testng.annotations.Factory;
+import org.testng.internal.InstanceCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +13,12 @@ public class FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample {
         List<Object> instances = new ArrayList<>();
 
         try {
-            instances.add(TestClassCSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassCSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassCSixMethodsWithNoDepsSample.class.newInstance());
-        } catch (InstantiationException e) {
+            instances.add(InstanceCreator.newInstance(TestClassCSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassCSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassCSixMethodsWithNoDepsSample.class));
+        } catch (TestNGException e) {
             throw new RuntimeException(
-                    "Could not instantiate an instance of TestClassCSixMethodsWithNoDepsSample because it is " +
-                            "abstract or for some other reason", e
-            );
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Could not instantiate an instance of TestClassCSixMethodsWithNoDepsSample " +
-                            "FactoryForTestClassCSixMethodsWithNoDepsThreeInstancesSample does not have access to its " +
-                            "class definition", e
+                    "Could not instantiate an instance of TestClassCSixMethodsWithNoDepsSample", e
             );
         }
 

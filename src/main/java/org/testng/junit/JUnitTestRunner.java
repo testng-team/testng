@@ -7,6 +7,7 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.InvokedMethod;
 
 import java.lang.reflect.InvocationTargetException;
@@ -139,22 +140,18 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
    * @param methods The test methods
    * @return The corresponding Test
    */
-  protected Test getTest(Class testClass, String... methods) {
+  protected Test getTest(Class<? extends Test> testClass, String... methods) {
     if (methods.length > 0) {
       TestSuite ts = new TestSuite();
       try {
-        Constructor c = testClass.getConstructor(String.class);
+        Constructor<? extends Test> c = testClass.getConstructor(String.class);
         for (String m : methods) {
           try {
-            ts.addTest((Test) c.newInstance(m));
-          } catch (InstantiationException ex) {
-            runFailed(testClass, "abstract class " + ex);
-          } catch (IllegalAccessException ex) {
-            runFailed(testClass, "constructor is not public " + ex);
+            ts.addTest(InstanceCreator.newInstance(c, m));
+          } catch (TestNGException ex) {
+            runFailed(testClass, ex.getMessage());
           } catch (IllegalArgumentException ex) {
             runFailed(testClass, "actual and formal parameters differ " + ex);
-          } catch (InvocationTargetException ex) {
-            runFailed(testClass, "exception while instatiating test for method '" + m + "' " + ex);
           }
         }
       } catch (NoSuchMethodException ex) {

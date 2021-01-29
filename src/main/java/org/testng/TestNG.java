@@ -619,16 +619,16 @@ public class TestNG {
     m_includedGroups = Utils.split(groups, ",");
   }
 
-  private void setTestRunnerFactoryClass(Class testRunnerFactoryClass) {
-    setTestRunnerFactory((ITestRunnerFactory) InstanceCreator.newInstance(testRunnerFactoryClass));
+  private void setTestRunnerFactoryClass(Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
+    setTestRunnerFactory(InstanceCreator.newInstance(testRunnerFactoryClass));
   }
 
   protected void setTestRunnerFactory(ITestRunnerFactory itrf) {
     m_testRunnerFactory = itrf;
   }
 
-  public void setObjectFactory(Class c) {
-    m_objectFactory = (ITestObjectFactory) InstanceCreator.newInstance(c);
+  public void setObjectFactory(Class<? extends ITestObjectFactory> c) {
+    setObjectFactory(InstanceCreator.newInstance(c));
   }
 
   public void setObjectFactory(ITestObjectFactory factory) {
@@ -1483,10 +1483,10 @@ public class TestNG {
     }
 
     if (cla.objectFactory != null) {
-      setObjectFactory(ClassHelper.fileToClass(cla.objectFactory));
+      setObjectFactory((Class<? extends ITestObjectFactory>)ClassHelper.fileToClass(cla.objectFactory));
     }
     if (cla.testRunnerFactory != null) {
-      setTestRunnerFactoryClass(ClassHelper.fileToClass(cla.testRunnerFactory));
+      setTestRunnerFactoryClass((Class<? extends ITestRunnerFactory>) ClassHelper.fileToClass(cla.testRunnerFactory));
     }
 
     ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);

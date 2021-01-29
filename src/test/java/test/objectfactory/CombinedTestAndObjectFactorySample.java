@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.IObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
+import org.testng.internal.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 
@@ -22,9 +23,9 @@ public class CombinedTestAndObjectFactorySample implements IObjectFactory {
   }
 
   @Override
-  public Object newInstance(Constructor constructor, Object... params)  {
+  public Object newInstance(Constructor<?> constructor, Object... params)  {
     try {
-      Object o = constructor.newInstance(params);
+      Object o = InstanceCreator.newInstance(constructor, params);
       if (o instanceof CombinedTestAndObjectFactorySample) {
         CombinedTestAndObjectFactorySample s = (CombinedTestAndObjectFactorySample) o;
         s.configured = true;

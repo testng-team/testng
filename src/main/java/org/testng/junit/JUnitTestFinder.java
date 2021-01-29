@@ -1,9 +1,10 @@
 package org.testng.junit;
 
 import java.lang.reflect.Modifier;
+
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.Utils;
 
-/** @author ljungman */
 public final class JUnitTestFinder {
 
   private static final String JUNIT3_TEST = "junit.framework.Test";
@@ -42,8 +43,7 @@ public final class JUnitTestFinder {
   private static JUnitTestRecognizer getJUnitTestRecognizer(String test, String name) {
     try {
       Class.forName(test);
-      Class<JUnitTestRecognizer> c = (Class<JUnitTestRecognizer>) Class.forName(name);
-      return c.newInstance();
+      return InstanceCreator.newInstance(name);
     } catch (Throwable t) {
       // ignore
       return null;

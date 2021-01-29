@@ -14,14 +14,14 @@ import java.lang.reflect.Constructor;
 public class ObjectFactoryImpl implements IObjectFactory {
 
   @Override
-  public Object newInstance(Constructor constructor, Object... params) {
+  public Object newInstance(Constructor<?> constructor, Object... params) {
     if (constructor == null) {
       throw new IllegalArgumentException("Constructor cannot be null.");
     }
     try {
       constructor.setAccessible(true);
-      return constructor.newInstance(params);
-    } catch (IllegalAccessException | InstantiationException ex) {
+      return InstanceCreator.newInstance(constructor, params);
+    } catch (TestNGException ex) {
       return ClassHelper.tryOtherConstructor(constructor.getDeclaringClass());
     } catch (SecurityException e) {
       throw new TestNGException(constructor.getName() + " must be public", e);

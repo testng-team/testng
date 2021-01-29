@@ -116,13 +116,6 @@ public class ClassImpl implements IClass {
     return m_defaultInstance;
   }
 
-  /** @return an instance from Guice if @Test(guiceModule) attribute was found, null otherwise */
-  private Object getInstanceFromGuice() {
-    Injector injector = m_testContext.getInjector(this);
-    if (injector == null) return null;
-    return injector.getInstance(m_class);
-  }
-
   /**
    * @deprecated - This method stands deprecated as of TestNG <code>7.3.0</code>
    */

@@ -1,8 +1,8 @@
 package org.testng;
 
+import org.testng.internal.InstanceCreator;
 import org.testng.log4testng.Logger;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.List;
 /**
  * Helper methods used by the Eclipse plug-in when converting tests from JUnit.
  */
+@Deprecated
 // TODO move code into eclipse project
 public class ConversionUtils {
   /**
@@ -22,24 +23,9 @@ public class ConversionUtils {
    */
   public static Object[] wrapDataProvider(Class<?> cls, Collection<Object[]> data) {
     List<Object> result = new ArrayList<>();
-    for (Object o : data) {
-      Object[] parameters = (Object[]) o;
-      Constructor<?> ctor = null;
+    for (Object[] parameters : data) {
       try {
-        for (Constructor<?> c : cls.getConstructors()) {
-          // Just comparing parameter array sizes. Comparing the parameter types
-          // is more error prone since we need to take conversions into account
-          // (int -> Integer, etc...).
-          if (c.getParameterTypes().length == parameters.length) {
-            ctor = c;
-            break;
-          }
-        }
-        if (ctor == null) {
-          throw new TestNGException("Couldn't find a constructor in " + cls);
-        }
-
-        result.add(ctor.newInstance(parameters));
+        result.add(InstanceCreator.newInstance(cls, parameters));
       } catch (Exception ex) {
         Logger.getLogger(ConversionUtils.class).error(ex.getMessage(), ex);
       }
