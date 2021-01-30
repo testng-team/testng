@@ -7,7 +7,6 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InstanceCreator;
 import org.testng.internal.InvokedMethod;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,21 +28,19 @@ import org.testng.internal.TestListenerHelper;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
- *
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   public static final String SUITE_METHODNAME = "suite";
 
-  private ITestResultNotifier m_parentRunner;
+  private final ITestObjectFactory m_objectFactory;
+  private final ITestResultNotifier m_parentRunner;
 
   private Map<Test, TestRunInfo> m_tests = new WeakHashMap<>();
   private List<ITestNGMethod> m_methods = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
-  public JUnitTestRunner() {}
-
-  public JUnitTestRunner(ITestResultNotifier tr) {
+  public JUnitTestRunner(ITestObjectFactory objectFactory, ITestResultNotifier tr) {
+    m_objectFactory = objectFactory;
     m_parentRunner = tr;
   }
 
@@ -59,7 +56,6 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   @Override
   public void setTestResultNotifier(ITestResultNotifier notifier) {
-    m_parentRunner = notifier;
   }
 
   /** @see junit.framework.TestListener#startTest(junit.framework.Test) */
@@ -109,7 +105,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
 
   private org.testng.internal.TestResult recordResults(Test test, TestRunInfo tri) {
     JUnitTestClass tc = new JUnit3TestClass(test);
-    JUnitTestMethod tm = new JUnit3TestMethod(tc, test);
+    JUnitTestMethod tm = new JUnit3TestMethod(m_objectFactory, tc, test);
 
     org.testng.internal.TestResult tr =
         org.testng.internal.TestResult.newEndTimeAwareTestResult(tm, null,
@@ -147,7 +143,7 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
         Constructor<? extends Test> c = testClass.getConstructor(String.class);
         for (String m : methods) {
           try {
-            ts.addTest(InstanceCreator.newInstance(c, m));
+            ts.addTest(m_objectFactory.newInstance(c, m));
           } catch (TestNGException ex) {
             runFailed(testClass, ex.getMessage());
           } catch (IllegalArgumentException ex) {

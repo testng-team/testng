@@ -34,7 +34,6 @@ public class FactoryMethod extends BaseTestMethod {
   private final IFactoryAnnotation factoryAnnotation;
   private final Object m_instance;
   private final ITestContext m_testContext;
-  private final ITestObjectFactory objectFactory;
   private String m_factoryCreationFailedMessage = null;
   private final DataProviderHolder holder;
 
@@ -52,7 +51,11 @@ public class FactoryMethod extends BaseTestMethod {
     for (Class<? extends ITestNGListener> listener : listeners) {
       Object obj = instance;
       if (obj == null) {
-        obj = InstanceCreator.newInstanceOrNull(listener);
+        try {
+          obj = m_objectFactory.newInstance(listener);
+        } catch (TestNGException e) {
+          // TODO log
+        }
       }
 
       if (obj != null) {
@@ -75,7 +78,7 @@ public class FactoryMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
       ITestObjectFactory objectFactory, DataProviderHolder holder) {
-    super(com.getName(), com, annotationFinder, instance);
+    super(objectFactory, com.getName(), com, annotationFinder, instance);
     this.holder = holder;
     init(instance, annotationFinder, com);
     Utils.checkInstanceOrStatic(instance, com.getMethod());
@@ -116,14 +119,14 @@ public class FactoryMethod extends BaseTestMethod {
     NoOpTestClass tc = new NoOpTestClass();
     tc.setTestClass(declaringClass);
     m_testClass = tc;
-    this.objectFactory = objectFactory;
-    m_groups = getAllGroups(declaringClass, testContext.getCurrentXmlTest(), annotationFinder);
+    m_groups = getAllGroups(objectFactory, declaringClass, testContext.getCurrentXmlTest(), annotationFinder);
   }
 
   private static String[] getAllGroups(
+      ITestObjectFactory objectFactory,
       Class<?> declaringClass, XmlTest xmlTest, IAnnotationFinder annotationFinder) {
     // Find the groups of the factory => all groups of all test methods
-    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(new RunInfo(), annotationFinder);
+    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(objectFactory, new RunInfo(), annotationFinder);
     ITestNGMethod[] testMethods = testMethodFinder.getTestMethods(declaringClass, xmlTest);
     Set<String> groups = new HashSet<>();
     for (ITestNGMethod method : testMethods) {
@@ -147,6 +150,7 @@ public class FactoryMethod extends BaseTestMethod {
 
     Iterator<Object[]> parameterIterator =
         Parameters.handleParameters(
+                m_objectFactory,
                 this,
                 allParameterNames,
                 m_instance,
@@ -193,16 +197,7 @@ public class FactoryMethod extends BaseTestMethod {
           position += testInstances.length;
         } else {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
-            Object instance;
-            if (objectFactory instanceof IObjectFactory) {
-              instance =
-                  ((IObjectFactory) objectFactory).newInstance(com.getConstructor(), parameters);
-            } else if (objectFactory instanceof IObjectFactory2) {
-              instance = ((IObjectFactory2) objectFactory).newInstance(com.getDeclaringClass());
-            } else {
-              throw new IllegalStateException(
-                  "Unsupported ITestObjectFactory " + objectFactory.getClass());
-            }
+            Object instance  = m_objectFactory.newInstance(com.getConstructor(), parameters);
             result.add(new ParameterInfo(instance,  parameters));
           }
           position++;

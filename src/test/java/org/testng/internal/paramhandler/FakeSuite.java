@@ -2,12 +2,11 @@ package org.testng.internal.paramhandler;
 
 import com.google.inject.Injector;
 import org.testng.IInvokedMethod;
-import org.testng.IObjectFactory;
-import org.testng.IObjectFactory2;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.SuiteRunState;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -42,13 +41,8 @@ public class FakeSuite implements ISuite {
   }
 
   @Override
-  public IObjectFactory getObjectFactory() {
-    return (constructor, params) -> new Object();
-  }
-
-  @Override
-  public IObjectFactory2 getObjectFactory2() {
-    return cls -> new Object();
+  public ITestObjectFactory getObjectFactory() {
+    return new ITestObjectFactory() {};
   }
 
   @Override

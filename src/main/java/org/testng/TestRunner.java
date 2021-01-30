@@ -86,6 +86,7 @@ public class TestRunner
   private XmlTest m_xmlTest;
   private String m_testName;
   private IInjectorFactory m_injectorFactory;
+  private ITestObjectFactory m_objectFactory;
 
   private GuiceHelper guiceHelper;
 
@@ -177,7 +178,9 @@ public class TestRunner
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
-      Comparator<ITestNGMethod> comparator, DataProviderHolder otherHolder) {
+      Comparator<ITestNGMethod> comparator,
+      DataProviderHolder otherHolder
+  ) {
     this.comparator = comparator;
     this.holder.merge(otherHolder);
     init(
@@ -247,6 +250,7 @@ public class TestRunner
     m_host = suite.getHost();
     m_testClassesFromXml = test.getXmlClasses();
     m_injectorFactory = m_configuration.getInjectorFactory();
+    m_objectFactory = m_configuration.getObjectFactory();
     setVerbose(test.getVerbose());
 
     boolean preserveOrder = test.getPreserveOrder();
@@ -375,7 +379,7 @@ public class TestRunner
     //
 
     ITestNGListenerFactory factory =
-        TestListenerHelper.createListenerFactory(m_testClassFinder, listenerFactoryClass);
+        TestListenerHelper.createListenerFactory(m_objectFactory, m_testClassFinder, listenerFactoryClass);
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
@@ -416,7 +420,12 @@ public class TestRunner
     if (null != xmlTest.getMethodSelectors()) {
       for (org.testng.xml.XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
         if (selector.getClassName() != null) {
-          IMethodSelector s = InstanceCreator.createSelector(selector);
+          IMethodSelector s;
+          try {
+            s = m_objectFactory.newInstance(selector.getClassName());
+          } catch (Exception ex) {
+            throw new TestNGException("Couldn't find method selector : " + selector.getClassName(), ex);
+          }
 
           m_runInfo.addMethodSelector(s, selector.getPriority());
         }
@@ -442,7 +451,7 @@ public class TestRunner
         new TestNGClassFinder(
             classMap, Maps.newHashMap(), m_configuration, this, holder);
     ITestMethodFinder testMethodFinder =
-        new TestNGMethodFinder(m_runInfo, m_annotationFinder, comparator);
+        new TestNGMethodFinder(m_objectFactory, m_runInfo, m_annotationFinder, comparator);
 
     m_runInfo.setTestMethods(testMethods);
 
@@ -456,6 +465,7 @@ public class TestRunner
       // Create TestClass
       ITestClass tc =
           new TestClass(
+              m_objectFactory,
               ic,
               testMethodFinder,
               m_annotationFinder,
@@ -666,7 +676,7 @@ public class TestRunner
               for (XmlInclude inc : includedMethods) {
                 methods.add(inc.getName());
               }
-              IJUnitTestRunner tr = IJUnitTestRunner.createTestRunner(TestRunner.this);
+              IJUnitTestRunner tr = IJUnitTestRunner.createTestRunner(m_objectFactory, TestRunner.this);
               tr.setInvokedMethodListeners(m_invokedMethodListeners);
               try {
                 tr.run(tc, methods.toArray(new String[0]));

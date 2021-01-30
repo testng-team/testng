@@ -1,6 +1,8 @@
 package org.testng;
 
 import com.google.inject.Injector;
+
+import java.lang.reflect.Constructor;
 import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -137,9 +139,38 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     List<IMethodInterceptor> localMethodInterceptors =
         methodInterceptors != null ? methodInterceptors : Lists.newArrayList();
     setOutputDir(outputDir);
-    objectFactory = this.configuration.getObjectFactory();
-    if (objectFactory == null) {
-      objectFactory = suite.getObjectFactory();
+    if (suite.getObjectFactoryClass() == null) {
+      objectFactory = configuration.getObjectFactory();
+    } else {
+      ITestObjectFactory suiteObjectFactory = configuration.getObjectFactory().newInstance(suite.getObjectFactoryClass());
+      objectFactory = new ITestObjectFactory() {
+        @Override
+        public <T> T newInstance(Class<T> cls, Object... parameters) {
+          try {
+            return configuration.getObjectFactory().newInstance(cls, parameters);
+          } catch (Exception e) {
+            return suiteObjectFactory.newInstance(cls, parameters);
+          }
+        }
+
+        @Override
+        public <T> T newInstance(String clsName, Object... parameters) {
+          try {
+            return configuration.getObjectFactory().newInstance(clsName, parameters);
+          } catch (Exception e) {
+            return suiteObjectFactory.newInstance(clsName, parameters);
+          }
+        }
+
+        @Override
+        public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+          try {
+            return configuration.getObjectFactory().newInstance(constructor, parameters);
+          } catch (Exception e) {
+            return suiteObjectFactory.newInstance(constructor, parameters);
+          }
+        }
+      };
     }
     // Add our own IInvokedMethodListener
     invokedMethodListeners = Maps.newConcurrentMap();
@@ -514,13 +545,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   @Override
-  public IObjectFactory getObjectFactory() {
-    return objectFactory instanceof IObjectFactory ? (IObjectFactory) objectFactory : null;
-  }
-
-  @Override
-  public IObjectFactory2 getObjectFactory2() {
-    return objectFactory instanceof IObjectFactory2 ? (IObjectFactory2) objectFactory : null;
+  public ITestObjectFactory getObjectFactory() {
+    return objectFactory;
   }
 
   /**

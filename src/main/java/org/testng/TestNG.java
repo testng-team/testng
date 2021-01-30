@@ -168,7 +168,8 @@ public class TestNG {
 
   private final Set<XmlMethodSelector> m_selectors = Sets.newLinkedHashSet();
 
-  private ITestObjectFactory m_objectFactory;
+  private static final ITestObjectFactory DEFAULT_OBJECT_FACTORY = new ITestObjectFactory() {};
+  private ITestObjectFactory m_objectFactory = DEFAULT_OBJECT_FACTORY;
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       m_invokedMethodListeners = Maps.newHashMap();
@@ -620,7 +621,7 @@ public class TestNG {
   }
 
   private void setTestRunnerFactoryClass(Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
-    setTestRunnerFactory(InstanceCreator.newInstance(testRunnerFactoryClass));
+    setTestRunnerFactory(m_objectFactory.newInstance(testRunnerFactoryClass));
   }
 
   protected void setTestRunnerFactory(ITestRunnerFactory itrf) {
@@ -628,7 +629,7 @@ public class TestNG {
   }
 
   public void setObjectFactory(Class<? extends ITestObjectFactory> c) {
-    setObjectFactory(InstanceCreator.newInstance(c));
+    setObjectFactory(m_objectFactory.newInstance(c));
   }
 
   public void setObjectFactory(ITestObjectFactory factory) {
@@ -643,7 +644,7 @@ public class TestNG {
    */
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
     for (Class<? extends ITestNGListener> cls : classes) {
-      addListener(InstanceCreator.newInstance(cls));
+      addListener(m_objectFactory.newInstance(cls));
     }
   }
 
@@ -792,7 +793,7 @@ public class TestNG {
 
   private IExecutorFactory createExecutorFactoryInstanceUsing(String clazzName) {
     Class<?> cls = ClassHelper.forName(clazzName);
-    Object instance = InstanceCreator.newInstance(cls);
+    Object instance = m_objectFactory.newInstance(cls);
     if (instance instanceof IExecutorFactory) {
       return (IExecutorFactory) instance;
     }
@@ -883,7 +884,7 @@ public class TestNG {
 
   private void addReporter(Class<? extends IReporter> r) {
     if (!m_reporters.containsKey(r)) {
-      m_reporters.put(r, InstanceCreator.newInstance(r));
+      m_reporters.put(r, m_objectFactory.newInstance(r));
     }
   }
 
@@ -934,12 +935,11 @@ public class TestNG {
       //
       // Find if we have an object factory
       //
-      if (s.getObjectFactory() != null) {
-        if (factory == null) {
-          factory = s.getObjectFactory();
-        } else {
+      if (s.getObjectFactoryClass() != null) {
+        if (factory != DEFAULT_OBJECT_FACTORY) {
           throw new TestNGException("Found more than one object-factory tag in your suites");
         }
+        factory = m_objectFactory.newInstance(s.getObjectFactoryClass());
       }
     }
 
@@ -961,8 +961,7 @@ public class TestNG {
             "Listener " + listenerName + " was not found in project's classpath");
       }
 
-      ITestNGListener listener = (ITestNGListener) InstanceCreator.newInstance(listenerClass);
-      addListener(listener);
+      addListener((ITestNGListener) m_objectFactory.newInstance(listenerClass));
     }
 
     // Add the child suite listeners
@@ -1387,7 +1386,7 @@ public class TestNG {
     if (cla.dependencyInjectorFactoryClass != null) {
       Class<?> clazz = ClassHelper.forName(cla.dependencyInjectorFactoryClass);
       if (clazz != null && IInjectorFactory.class.isAssignableFrom(clazz)) {
-        m_configuration.setInjectorFactory(InstanceCreator.newInstance((Class<IInjectorFactory>) clazz));
+        m_configuration.setInjectorFactory(m_objectFactory.newInstance((Class<IInjectorFactory>) clazz));
       }
     }
     if (cla.threadPoolFactoryClass != null) {
@@ -1671,12 +1670,30 @@ public class TestNG {
   }
 
   private void addReporter(ReporterConfig reporterConfig) {
-    IReporter instance = reporterConfig.newReporterInstance();
+    IReporter instance = newReporterInstance(reporterConfig);
     if (instance != null) {
       addListener(instance);
     } else {
       LOGGER.warn("Could not find reporter class : " + reporterConfig.getClassName());
     }
+  }
+
+  /** Creates a reporter based on the configuration */
+  private IReporter newReporterInstance(ReporterConfig config) {
+
+    Class<?> reporterClass = ClassHelper.forName(config.getClassName());
+    if (reporterClass == null) {
+      return null;
+    }
+    if (!IReporter.class.isAssignableFrom(reporterClass)) {
+      throw new TestNGException(config.getClassName() + " is not a IReporter");
+    }
+
+    IReporter reporter = (IReporter) m_objectFactory.newInstance(reporterClass);
+
+    reporter.getConfig().setProperties(config.getProperties());
+
+    return reporter;
   }
 
   /**

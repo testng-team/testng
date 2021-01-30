@@ -2,6 +2,7 @@ package test;
 
 import org.testng.Assert;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.TestNGException;
@@ -314,7 +315,7 @@ public class SimpleBaseTest {
     for (Class<?> clazz : classes) {
       methods.addAll(
           Arrays.asList(
-              AnnotationHelper.findMethodsWithAnnotation(clazz, ITestAnnotation.class, annotationFinder, xmlTest)
+              AnnotationHelper.findMethodsWithAnnotation(new ITestObjectFactory() {}, clazz, ITestAnnotation.class, annotationFinder, xmlTest)
           )
       );
     }

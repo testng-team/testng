@@ -17,7 +17,7 @@ public class GitHub1131Test extends SimpleBaseTest {
         TestNG tng = create(suite);
 
         if (onSuite) {
-            suite.setObjectFactory(new MyObjectFactory());
+            suite.setObjectFactoryClass(MyObjectFactory.class);
         } else {
             tng.setObjectFactory(MyObjectFactory.class);
         }

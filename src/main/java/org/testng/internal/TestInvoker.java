@@ -185,7 +185,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       Map<String, String> allParameters = Maps.newHashMap();
       // TODO: This recreates all the parameters every time when we only need
       // one specific set. Should optimize it by only recreating the set needed.
-      ParameterHandler handler = new ParameterHandler(annotationFinder(), this.holder);
+      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), this.holder);
 
       ParameterBag bag = handler.createParameters(arguments.getTestMethod(),
           arguments.getParameters(), allParameters, testContext);
@@ -786,7 +786,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       long start = System.currentTimeMillis();
 
       Map<String, String> allParameterNames = Maps.newHashMap();
-      ParameterHandler handler = new ParameterHandler(annotationFinder(), buildDataProviderHolder());
+      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), buildDataProviderHolder());
 
       ParameterBag bag = handler.createParameters(
           arguments.getTestMethod(),

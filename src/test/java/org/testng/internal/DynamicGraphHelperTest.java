@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -219,7 +220,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     } else {
       for (ITestNGMethod each : rawMethods) {
         ITestNGMethod m =
-            new TestNGMethod(each.getConstructorOrMethod().getMethod(), finder, xmlTest, object);
+            new TestNGMethod(new ITestObjectFactory() {}, each.getConstructorOrMethod().getMethod(), finder, xmlTest, object);
         fixedMethods.add(m);
       }
     }
@@ -239,6 +240,6 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
 
   private static ITestNGMethod[] methods(
       Class<?> clazz, XmlTest xmlTest, Class<? extends IAnnotation> annotationClass) {
-    return AnnotationHelper.findMethodsWithAnnotation(clazz, annotationClass, finder, xmlTest);
+    return AnnotationHelper.findMethodsWithAnnotation(new ITestObjectFactory() {}, clazz, annotationClass, finder, xmlTest);
   }
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import java.util.Objects;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -204,6 +205,7 @@ public class AnnotationHelper {
 
   /* Delegation method for creating the list of <CODE>ITestMethod</CODE>s to be analysed. */
   public static ITestNGMethod[] findMethodsWithAnnotation(
+      ITestObjectFactory objectFactory,
       Class<?> rootClass,
       Class<? extends IAnnotation> annotationClass,
       IAnnotationFinder annotationFinder,
@@ -280,9 +282,7 @@ public class AnnotationHelper {
 
             String key = createMethodKey(m);
             if (null == vResult.get(key)) {
-              ITestNGMethod tm =
-                  new TestNGMethod(
-                      /* m.getDeclaringClass(), */ m, annotationFinder, xmlTest, null); /* @@@ */
+              ITestNGMethod tm = new TestNGMethod(objectFactory, m, annotationFinder, xmlTest, null);
               vResult.put(key, tm);
             }
           }

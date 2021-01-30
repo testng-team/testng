@@ -766,7 +766,7 @@
     <classes>
       <class name="org.testng.internal.UtilsTest" />
       <class name="org.testng.internal.ClassHelperTest"/>
-      <class name="org.testng.internal.InstanceCreatorTest"/>
+      <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>
       <class name="test.issue1430.TestFileToClass"/>
     </classes>

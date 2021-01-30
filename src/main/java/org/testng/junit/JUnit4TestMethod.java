@@ -1,14 +1,14 @@
 package org.testng.junit;
 
 import org.junit.runner.Description;
+import org.testng.ITestObjectFactory;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
-/** @author lukas */
 public class JUnit4TestMethod extends JUnitTestMethod {
 
-  public JUnit4TestMethod(JUnitTestClass owner, Description desc) {
-    super(owner, desc.getMethodName(), getMethod(owner.getRealClass(), desc), desc);
+  public JUnit4TestMethod(ITestObjectFactory objectFactory, JUnitTestClass owner, Description desc) {
+    super(objectFactory, owner, desc.getMethodName(), getMethod(owner.getRealClass(), desc), desc);
   }
 
   private static ConstructorOrMethod getMethod(Class<?> c, Description desc) {

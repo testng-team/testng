@@ -1,6 +1,5 @@
 package test;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +12,7 @@ import org.testng.Assert;
 import org.testng.IClassListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
+import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.ITestRunnerFactory;
 import org.testng.SuiteRunner;
@@ -36,26 +36,21 @@ import org.testng.xml.XmlTest;
 
 /**
  * Base class for tests
- *
- * @author Cedric Beust, May 5, 2004
- *
+ * @since  May 5, 2004
  */
 public class BaseTest extends BaseDistributedTest {
   private static final String m_outputDirectory= "test-output-tests";
 
   private XmlSuite m_suite= null;
-  private ITestRunnerFactory m_testRunnerFactory;
-  private IConfiguration m_configuration;
+  private final ITestRunnerFactory m_testRunnerFactory;
+  private final IConfiguration m_configuration;
 
   private Integer m_verbose = null;
 
   public BaseTest() {
-    m_testRunnerFactory= new InternalTestRunnerFactory(this);
     m_configuration = new Configuration();
-  }
-
-  private IConfiguration getConfiguration() {
-    return m_configuration;
+    m_configuration.setObjectFactory(new ITestObjectFactory() {});
+    m_testRunnerFactory = new InternalTestRunnerFactory(this);
   }
 
   protected void setParallel(XmlSuite.ParallelMode parallel) {
@@ -350,13 +345,13 @@ public class BaseTest extends BaseDistributedTest {
     private final BaseTest m_baseTest;
 
     public InternalTestRunnerFactory(final BaseTest baseTest) {
-      m_baseTest= baseTest;
+      m_baseTest = baseTest;
     }
 
     @Override
     public TestRunner newTestRunner(ISuite suite, XmlTest test,
         Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
-      TestRunner testRunner= new TestRunner(m_baseTest.getConfiguration(), suite, test, false,
+      TestRunner testRunner= new TestRunner(m_baseTest.m_configuration, suite, test, false,
           listeners, classListeners, Systematiser.getComparator());
 
       testRunner.addListener(new TestHTMLReporter());

@@ -261,7 +261,7 @@ public class TestNGContentHandler extends DefaultHandler {
       String objectFactory = attributes.getValue("object-factory");
       if (null != objectFactory && m_loadClasses) {
         try {
-          m_currentSuite.setObjectFactory(InstanceCreator.newInstance(objectFactory));
+          m_currentSuite.setObjectFactoryClass((Class<? extends ITestObjectFactory>) Class.forName(objectFactory));
         } catch (Exception e) {
           Utils.log(
               "Parser",

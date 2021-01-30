@@ -9,7 +9,7 @@ public class LoggingObjectFactory extends ObjectFactoryImpl {
   public static int invoked;
 
   @Override
-  public Object newInstance(Constructor<?> constructor, Object... params) {
+  public <T> T newInstance(Constructor<T> constructor, Object... params) {
     invoked++;
     return super.newInstance(constructor, params);
   }

@@ -2,10 +2,11 @@ package org.testng.internal;
 
 import java.util.Arrays;
 import java.util.Objects;
+
 import org.testng.IDataProviderMethod;
-import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -29,17 +30,24 @@ public class TestNGMethod extends BaseTestMethod {
   private IDataProviderMethod dataProviderMethod = null;
 
   /** Constructs a <code>TestNGMethod</code> */
-  public TestNGMethod(Method method, IAnnotationFinder finder, XmlTest xmlTest, Object instance) {
-    this(method, finder, true, xmlTest, instance);
+  public TestNGMethod(
+      ITestObjectFactory objectFactory,
+      Method method,
+      IAnnotationFinder finder,
+      XmlTest xmlTest,
+      Object instance
+  ) {
+    this(objectFactory, method, finder, true, xmlTest, instance);
   }
 
   private TestNGMethod(
+      ITestObjectFactory objectFactory,
       Method method,
       IAnnotationFinder finder,
       boolean initialize,
       XmlTest xmlTest,
       Object instance) {
-    super(method.getName(), new ConstructorOrMethod(method), finder, instance);
+    super(objectFactory, method.getName(), new ConstructorOrMethod(method), finder, instance);
     setXmlTest(xmlTest);
 
     if (initialize) {
@@ -160,6 +168,7 @@ public class TestNGMethod extends BaseTestMethod {
   public BaseTestMethod clone() {
     TestNGMethod clone =
         new TestNGMethod(
+            m_objectFactory,
             getConstructorOrMethod().getMethod(),
             getAnnotationFinder(),
             false,

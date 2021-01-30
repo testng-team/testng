@@ -1,7 +1,5 @@
 package org.testng;
 
-import java.lang.reflect.Constructor;
-
 /**
  * Factory used to create all test instances. This factory is passed the constructor along with the
  * parameters that TestNG calculated based on the environment (@Parameters, etc...).
@@ -9,7 +7,6 @@ import java.lang.reflect.Constructor;
  * @see IObjectFactory2
  * @since 5.6
  */
+@Deprecated
 public interface IObjectFactory extends ITestObjectFactory {
-
-  Object newInstance(Constructor<?> constructor, Object... params);
 }

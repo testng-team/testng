@@ -40,8 +40,7 @@ public abstract class BaseClassFinder implements ITestClassFinder {
     return m_classes.computeIfAbsent(
         cls,
         key ->
-            new ClassImpl(
-                context, key, xmlClass, instance, m_classes, annotationFinder, objectFactory));
+            new ClassImpl(context, key, xmlClass, instance, m_classes, annotationFinder, objectFactory));
   }
 
   protected boolean classExists(Class<?> cls) {

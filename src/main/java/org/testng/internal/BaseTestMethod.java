@@ -11,10 +11,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
@@ -73,12 +75,15 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   private final Object m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
+  protected final ITestObjectFactory m_objectFactory;
 
   public BaseTestMethod(
+      ITestObjectFactory objectFactory,
       String methodName,
       ConstructorOrMethod com,
       IAnnotationFinder annotationFinder,
       Object instance) {
+    m_objectFactory = objectFactory;
     m_methodClass = com.getDeclaringClass();
     m_method = com;
     m_methodName = methodName;
@@ -621,7 +626,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   @Override
   public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
     m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
-    m_retryAnalyzer = InstanceCreator.newInstance(m_retryAnalyzerClass);
+    m_retryAnalyzer = m_objectFactory.newInstance(m_retryAnalyzerClass);
   }
 
   @Override
@@ -756,7 +761,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
       if (currentRetryAnalyzerInMap == null || currentRetryAnalyzerInMap.getClass() != retryAnalyzer.getClass()) {
         retryAnalyzer = m_testMethodToRetryAnalyzer.compute(
                 keyAsString,
-                (s, ra) -> InstanceCreator.newInstance(this.m_retryAnalyzer.getClass()));
+                (s, ra) -> m_objectFactory.newInstance(this.m_retryAnalyzer.getClass()));
       } else {
         retryAnalyzer = currentRetryAnalyzerInMap;
       }

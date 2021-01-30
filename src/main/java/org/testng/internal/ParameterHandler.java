@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
@@ -13,10 +14,12 @@ import static org.testng.internal.Parameters.MethodParameters;
 import java.util.Map;
 
 class ParameterHandler {
+  private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
 
-  ParameterHandler(IAnnotationFinder finder, DataProviderHolder holder) {
+  ParameterHandler(ITestObjectFactory objectFactory, IAnnotationFinder finder, DataProviderHolder holder) {
+    this.objectFactory = objectFactory;
     this.finder = finder;
     this.holder = holder;
   }
@@ -57,6 +60,7 @@ class ParameterHandler {
           MethodParameters.newInstance(parameters, testMethod, testContext);
       ParameterHolder paramHolder =
           Parameters.handleParameters(
+              objectFactory,
               testMethod,
               allParameterNames,
               instance,

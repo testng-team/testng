@@ -13,7 +13,7 @@ public class MyObjectFactory extends ObjectFactoryImpl {
     public static final List<Object[]> allParams = new ArrayList<>();
 
     @Override
-    public Object newInstance(Constructor<?> constructor, Object... params) {
+    public <T> T newInstance(Constructor<T> constructor, Object... params) {
         allParams.add(params);
         return super.newInstance(constructor, params);
     }

@@ -18,20 +18,18 @@ import org.testng.internal.TestResult;
 
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
- *
- * @author Lukas Jungmann
  */
 public class JUnit4TestRunner implements IJUnitTestRunner {
 
-  private ITestResultNotifier m_parentRunner;
+  private final ITestObjectFactory objectFactory;
+  private final ITestResultNotifier m_parentRunner;
+  private final List<ITestListener> m_listeners;
   private List<ITestNGMethod> m_methods = Lists.newArrayList();
-  private List<ITestListener> m_listeners = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
   private Map<Description, ITestResult> m_findedMethods = new WeakHashMap<>();
 
-  public JUnit4TestRunner() {}
-
-  public JUnit4TestRunner(ITestResultNotifier tr) {
+  public JUnit4TestRunner(ITestObjectFactory objectFactory, ITestResultNotifier tr) {
+    this.objectFactory = objectFactory;
     m_parentRunner = tr;
     m_listeners = m_parentRunner.getTestListeners();
   }
@@ -44,12 +42,6 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
   @Override
   public List<ITestNGMethod> getTestMethods() {
     return m_methods;
-  }
-
-  @Override
-  public void setTestResultNotifier(ITestResultNotifier notifier) {
-    m_parentRunner = notifier;
-    m_listeners = m_parentRunner.getTestListeners();
   }
 
   public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {
@@ -89,7 +81,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                   }
                   if (methods.length == 0) {
                     if (description.getTestClass() != null) {
-                      ITestResult tr = createTestResult(description);
+                      ITestResult tr = createTestResult(objectFactory, description);
                       m_findedMethods.put(description, tr);
                     }
                     // run everything
@@ -98,7 +90,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                   for (String m : methods) {
                     Pattern p = Pattern.compile(m);
                     if (p.matcher(description.getMethodName()).matches()) {
-                      ITestResult tr = createTestResult(description);
+                      ITestResult tr = createTestResult(objectFactory, description);
                       m_findedMethods.put(description, tr);
                       return true;
                     }
@@ -148,7 +140,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
       ITestResult tr = m_findedMethods.get(failure.getDescription());
       if (tr == null) {
         // Not a test method, should be a config
-        tr = createTestResult(failure.getDescription());
+        tr = createTestResult(objectFactory, failure.getDescription());
         runAfterInvocationListeners(tr);
         tr.setStatus(TestResult.FAILURE);
         tr.setEndMillis(Calendar.getInstance().getTimeInMillis());
@@ -238,9 +230,9 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     }
   }
 
-  private ITestResult createTestResult(Description test) {
+  private ITestResult createTestResult(ITestObjectFactory objectFactory, Description test) {
     JUnit4TestClass tc = new JUnit4TestClass(test);
-    JUnitTestMethod tm = new JUnit4TestMethod(tc, test);
+    JUnitTestMethod tm = new JUnit4TestMethod(objectFactory, tc, test);
 
 
     TestResult tr = TestResult.newTestResultFor(tm);
