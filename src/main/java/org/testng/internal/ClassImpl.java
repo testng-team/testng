@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import static org.testng.internal.Utils.isStringNotEmpty;
-
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import java.util.Collections;
@@ -41,7 +39,6 @@ public class ClassImpl implements IClass {
   private String m_testName = null;
   private final XmlClass m_xmlClass;
   private final ITestContext m_testContext;
-  private final boolean m_hasParentModule;
 
   public ClassImpl(
       ITestContext context,
@@ -67,7 +64,6 @@ public class ClassImpl implements IClass {
         m_testName = annotation.getTestName();
       }
     }
-    m_hasParentModule = isStringNotEmpty(m_testContext.getSuite().getParentModule());
   }
 
   @Override
@@ -105,7 +101,7 @@ public class ClassImpl implements IClass {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
       } else {
-        IObjectDispenser dispenser = Dispenser.newInstance();
+        IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
@@ -148,7 +144,7 @@ public class ClassImpl implements IClass {
         CreationAttributes attributes = new CreationAttributes(m_testContext, null, ea);
         result =
             new Object[] {
-                Dispenser.newInstance().dispense(attributes)
+                Dispenser.newInstance(m_objectFactory).dispense(attributes)
             };
       }
     }
@@ -189,7 +185,6 @@ public class ClassImpl implements IClass {
     ea.setClasses(m_classes);
     ea.setFinder(m_annotationFinder);
     ea.setDeclaringClass(m_class);
-    ea.setFactory(m_objectFactory);
     ea.setErrorMsgPrefix(errMsgPrefix);
     ea.setCreate(create);
     return ea;

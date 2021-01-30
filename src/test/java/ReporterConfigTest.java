@@ -23,14 +23,4 @@ public class ReporterConfigTest {
         assertTrue(serial.contains(PROP_NAME_1 + "=true"));
         assertTrue(serial.contains(PROP_NAME_2 + "=true"));
     }
-
-    @Test
-    public void testInstantiate() {
-        ReporterConfig reporterConfig = ReporterConfig.deserialize(CONFIG_STR);
-        IReporter reporter = Objects.requireNonNull(reporterConfig).newReporterInstance();
-        assertTrue(reporter instanceof XMLReporter);
-        XMLReporterConfig config = ((XMLReporter) reporter).getConfig();
-        assertTrue(config.isGenerateTestResultAttributes());
-        assertTrue(config.isGenerateGroupsAttribute());
-    }
 }

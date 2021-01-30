@@ -1,19 +1,19 @@
 package test.objectfactory;
 
 import org.testng.Assert;
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
 import org.testng.internal.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 
-public class CombinedTestAndObjectFactorySample implements IObjectFactory {
+public class CombinedTestAndObjectFactorySample implements ITestObjectFactory {
 
   private boolean configured = false;
 
   @ObjectFactory
-  public IObjectFactory create() {
+  public ITestObjectFactory create() {
     return new CombinedTestAndObjectFactorySample();
   }
 
@@ -23,9 +23,9 @@ public class CombinedTestAndObjectFactorySample implements IObjectFactory {
   }
 
   @Override
-  public Object newInstance(Constructor<?> constructor, Object... params)  {
+  public <T> T newInstance(Constructor<T> constructor, Object... params)  {
     try {
-      Object o = InstanceCreator.newInstance(constructor, params);
+      T o = InstanceCreator.newInstance(constructor, params);
       if (o instanceof CombinedTestAndObjectFactorySample) {
         CombinedTestAndObjectFactorySample s = (CombinedTestAndObjectFactorySample) o;
         s.configured = true;

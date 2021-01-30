@@ -3,6 +3,7 @@ package org.testng.internal;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGListenerFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -59,11 +60,14 @@ public class TestListenerHelperTest {
       Class<?> testClazz, Class<? extends ITestNGListenerFactory> listenerClazz) {
     ITestContext ctx = new FakeTestContext(testClazz);
     ClassInfoMap classMap = new ClassInfoMap(Collections.singletonList(new XmlClass(testClazz)));
+    ITestObjectFactory objectFactory = new ITestObjectFactory() {};
+    Configuration configuration = new Configuration();
+    configuration.setObjectFactory(objectFactory);
     TestNGClassFinder finder =
         new TestNGClassFinder(
-            classMap, Maps.newHashMap(), new Configuration(), ctx, new DataProviderHolder());
+            classMap, Maps.newHashMap(), configuration, ctx, new DataProviderHolder());
     ITestNGListenerFactory factory =
-        TestListenerHelper.createListenerFactory(finder, listenerClazz);
+        TestListenerHelper.createListenerFactory(objectFactory, finder, listenerClazz);
     assertThat(factory).isNotNull();
   }
 

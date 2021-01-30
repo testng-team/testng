@@ -15,6 +15,7 @@ import org.testng.IDataProviderMethod;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -536,6 +537,7 @@ public class Parameters {
   }
 
   private static IDataProviderMethod findDataProvider(
+      ITestObjectFactory objectFactory,
       Object instance,
       ITestClass clazz,
       ConstructorOrMethod m,
@@ -550,7 +552,7 @@ public class Parameters {
 
       if (!Utils.isStringEmpty(dataProviderName)) {
         result =
-            findDataProvider(instance, clazz, finder, dataProviderName, dataProviderClass, context);
+            findDataProvider(objectFactory, instance, clazz, finder, dataProviderName, dataProviderClass, context);
 
         if (null == result) {
           throw new TestNGException(
@@ -625,6 +627,7 @@ public class Parameters {
 
   /** Find a method that has a @DataProvider(name=name) */
   private static IDataProviderMethod findDataProvider(
+      ITestObjectFactory objectFactory,
       Object instance,
       ITestClass clazz,
       IAnnotationFinder finder,
@@ -645,7 +648,7 @@ public class Parameters {
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
         Object instanceToUse;
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          IObjectDispenser dispenser = Dispenser.newInstance();
+          IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
           BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
           CreationAttributes attributes = new CreationAttributes(context, basic, null);
           instanceToUse = dispenser.dispense(attributes);
@@ -654,7 +657,11 @@ public class Parameters {
         }
         // Not a static method but no instance exists, then create new one if possible
         if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
-          instanceToUse = InstanceCreator.newInstanceOrNull(cls);
+          try {
+            instanceToUse = objectFactory.newInstance(cls);
+          } catch (TestNGException e) {
+            instanceToUse = null;
+          }
         }
 
         if (result != null) {
@@ -730,14 +737,18 @@ public class Parameters {
    * @return An Iterator over the values for each parameter of this method.
    */
   public static ParameterHolder handleParameters(
+      ITestObjectFactory objectFactory,
       ITestNGMethod testMethod,
       Map<String, String> allParameterNames,
       Object instance,
       MethodParameters methodParams,
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
-      Object fedInstance, DataProviderHolder holder) {
+      Object fedInstance,
+      DataProviderHolder holder
+  ) {
     return handleParameters(
+        objectFactory,
         testMethod,
         allParameterNames,
         instance,
@@ -756,6 +767,7 @@ public class Parameters {
    * @return An Iterator over the values for each parameter of this method.
    */
   public static ParameterHolder handleParameters(
+      ITestObjectFactory objectFactory,
       ITestNGMethod testMethod,
       Map<String, String> allParameterNames,
       Object instance,
@@ -770,6 +782,7 @@ public class Parameters {
      */
     final IDataProviderMethod dataProviderMethod =
         findDataProvider(
+            objectFactory,
             instance,
             testMethod.getTestClass(),
             testMethod.getConstructorOrMethod(),

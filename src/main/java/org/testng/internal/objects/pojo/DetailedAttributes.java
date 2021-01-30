@@ -2,7 +2,6 @@ package org.testng.internal.objects.pojo;
 
 import java.util.Map;
 import org.testng.IClass;
-import org.testng.ITestObjectFactory;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
@@ -15,7 +14,6 @@ public class DetailedAttributes {
   private Map<Class<?>, IClass> classes;
   private XmlTest xmlTest;
   private IAnnotationFinder finder;
-  private ITestObjectFactory factory;
   private boolean create;
   private String errorMsgPrefix;
 
@@ -49,14 +47,6 @@ public class DetailedAttributes {
 
   public void setFinder(IAnnotationFinder finder) {
     this.finder = finder;
-  }
-
-  public ITestObjectFactory getFactory() {
-    return factory;
-  }
-
-  public void setFactory(ITestObjectFactory factory) {
-    this.factory = factory;
   }
 
   public boolean isCreate() {

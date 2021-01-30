@@ -60,12 +60,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     // Find all the new classes and their corresponding instances
     Set<Class<?>> allClasses = cim.getClasses();
 
-    // very first pass is to find ObjectFactory, can't create anything else until then
-    if (configuration.getObjectFactory() == null) {
-      objectFactory = createObjectFactory(allClasses);
-    } else {
-      objectFactory = configuration.getObjectFactory();
-    }
+    objectFactory = configuration.getObjectFactory();
 
     for (Class<?> cls : allClasses) {
       processClass(cim, instanceMap, configuration, cls);
@@ -203,9 +198,9 @@ public class TestNGClassFinder extends BaseClassFinder {
     return moreClasses;
   }
 
+  // TODO use the logic somewhere
   private ITestObjectFactory createObjectFactory(Set<Class<?>> allClasses) {
-    ITestObjectFactory objectFactory;
-    objectFactory = new ObjectFactoryImpl();
+    ITestObjectFactory objectFactory = new ObjectFactoryImpl();
     for (Class<?> cls : allClasses) {
       try {
         if (cls == null) {

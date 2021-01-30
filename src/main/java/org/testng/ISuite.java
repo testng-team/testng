@@ -23,9 +23,15 @@ public interface ISuite extends IAttributes {
   Map<String, ISuiteResult> getResults();
 
   /** @return The object factory used to create all test instances. */
-  IObjectFactory getObjectFactory();
+  ITestObjectFactory getObjectFactory();
 
-  IObjectFactory2 getObjectFactory2();
+  @Deprecated
+  /**
+   * @deprecated - This interface stands deprecated as of TestNG 7.5.0
+   */
+  default IObjectFactory2 getObjectFactory2() {
+    return null;
+  }
 
   /** @return The output directory used for the reports. */
   String getOutputDirectory();

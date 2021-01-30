@@ -28,6 +28,10 @@ public class ReporterConfig {
         return className;
     }
 
+    public List<Property> getProperties() {
+        return properties;
+    }
+
     public String serialize() {
         StringBuilder sb = new StringBuilder(className);
         if (!properties.isEmpty()) {
@@ -67,24 +71,6 @@ public class ReporterConfig {
         }
 
         return new ReporterConfig(className, properties);
-    }
-
-    /** Creates a reporter based on the current configuration */
-    public IReporter newReporterInstance() {
-
-        Class<?> reporterClass = ClassHelper.forName(className);
-        if (reporterClass == null) {
-            return null;
-        }
-        if (!IReporter.class.isAssignableFrom(reporterClass)) {
-            throw new TestNGException(className + " is not a IReporter");
-        }
-
-        IReporter reporter = (IReporter) InstanceCreator.newInstance(reporterClass);
-
-        reporter.getConfig().setProperties(properties);
-
-        return reporter;
     }
 
     public static class Property {

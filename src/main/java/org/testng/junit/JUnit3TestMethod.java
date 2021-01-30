@@ -2,14 +2,14 @@ package org.testng.junit;
 
 import java.lang.reflect.Method;
 import junit.framework.Test;
+import org.testng.ITestObjectFactory;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
-/** @author lukas */
 public class JUnit3TestMethod extends JUnitTestMethod {
 
-  public JUnit3TestMethod(JUnitTestClass owner, Test test) {
-    super(owner, getMethod(test), test);
+  public JUnit3TestMethod(ITestObjectFactory objectFactory, JUnitTestClass owner, Test test) {
+    super(objectFactory, owner, getMethod(test), test);
   }
 
   private static ConstructorOrMethod getMethod(Test t) {

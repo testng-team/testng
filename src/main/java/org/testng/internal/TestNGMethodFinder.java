@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
@@ -33,16 +34,19 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
 
+  private final ITestObjectFactory objectFactory;
   private final RunInfo runInfo;
   private final IAnnotationFinder annotationFinder;
   private final Comparator<ITestNGMethod> comparator;
 
-  public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
-    this(runInfo, annotationFinder, NO_COMPARISON);
+  public TestNGMethodFinder(ITestObjectFactory objectFactory, RunInfo runInfo, IAnnotationFinder annotationFinder) {
+    this(objectFactory, runInfo, annotationFinder, NO_COMPARISON);
   }
 
   public TestNGMethodFinder(
+      ITestObjectFactory objectFactory,
       RunInfo runInfo, IAnnotationFinder annotationFinder, Comparator<ITestNGMethod> comparator) {
+    this.objectFactory = objectFactory;
     this.runInfo = runInfo;
     this.annotationFinder = annotationFinder;
     this.comparator = comparator;
@@ -51,7 +55,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   @Override
   public ITestNGMethod[] getTestMethods(Class<?> clazz, XmlTest xmlTest) {
     return AnnotationHelper.findMethodsWithAnnotation(
-        clazz, ITestAnnotation.class, annotationFinder, xmlTest);
+        objectFactory, clazz, ITestAnnotation.class, annotationFinder, xmlTest);
   }
 
   @Override
@@ -237,6 +241,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     if (method.getDeclaringClass().isAssignableFrom(clazz)) {
       ConfigurationMethod confMethod =
           new ConfigurationMethod(
+              objectFactory,
               new ConstructorOrMethod(method),
               annotationFinder,
               isBeforeSuite,

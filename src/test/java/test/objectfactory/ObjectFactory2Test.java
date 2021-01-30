@@ -6,7 +6,6 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
-import test.TestHelper;
 
 /**
  * Test IObjectFactory2, which is an object factory that receives just the Class in parameter.
@@ -20,7 +19,7 @@ public class ObjectFactory2Test extends SimpleBaseTest {
     TestNG tng = create(suite);
 
     if (onSuite) {
-      suite.setObjectFactory(new ClassObjectFactory());
+      suite.setObjectFactoryClass(ClassObjectFactory.class);
     } else {
       tng.setObjectFactory(ClassObjectFactory.class);
     }

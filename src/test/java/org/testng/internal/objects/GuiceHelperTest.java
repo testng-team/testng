@@ -6,6 +6,7 @@ import static org.testng.Assert.assertNotNull;
 import org.testng.Assert;
 import org.testng.IInjectorFactory;
 import org.testng.ITest;
+import org.testng.ITestObjectFactory;
 import org.testng.SampleIModule;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
@@ -55,7 +56,15 @@ public final class GuiceHelperTest {
 
     private static final class MockClass extends ClassImpl {
         public MockClass() {
-            super(new FakeTestContext(), GuiceHelperTest.class, null, (ITest) () -> "GITHUB-2273", null, null, null);
+            super(
+                    new FakeTestContext(),
+                    GuiceHelperTest.class,
+                    null,
+                    (ITest) () -> "GITHUB-2273",
+                    null,
+                    null,
+                    new ITestObjectFactory() {}
+            );
         }
     }
 }
