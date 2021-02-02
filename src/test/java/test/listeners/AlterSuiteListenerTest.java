@@ -10,6 +10,7 @@ import test.SimpleBaseTest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class AlterSuiteListenerTest extends SimpleBaseTest {
 
@@ -40,25 +41,21 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
         TestNG tng = retObjects.first();
         XmlSuite suite = retObjects.second();
         Assert.assertEquals(suite.getTests().size(), 2);
-        List<ISuiteListener> listeners = tng.getSuiteListeners();
-        Assert.assertNotNull(listeners);
-        if(listeners.size() > 0){
-            for (ISuiteListener iSuiteListener :
-                    listeners) {
-                if (iSuiteListener instanceof AlteredXmlSuiteReadListener) {
-                    AlteredXmlSuiteReadListener alteredXmlSuiteReadListener = (AlteredXmlSuiteReadListener) iSuiteListener;
-                    XmlSuite xmlSuite = alteredXmlSuiteReadListener.currentSuiteOnStart.getXmlSuite();
-                    List<XmlTest> tests = xmlSuite.getTests();
-                    int i = 1;
-                    for (XmlTest xmlTest:
-                            tests) {
-                        Assert.assertEquals(xmlTest.getParameter("param"), String.valueOf(i));
-                        i++;
-                    }
+        List<ISuiteListener> listeners = Optional.ofNullable(tng.getSuiteListeners()).orElse(new ArrayList<>());
+        Assert.assertFalse(listeners.isEmpty());
+        for (ISuiteListener iSuiteListener :
+                listeners) {
+            if (iSuiteListener instanceof AlteredXmlSuiteReadListener) {
+                AlteredXmlSuiteReadListener alteredXmlSuiteReadListener = (AlteredXmlSuiteReadListener) iSuiteListener;
+                XmlSuite xmlSuite = alteredXmlSuiteReadListener.currentSuiteOnStart.getXmlSuite();
+                List<XmlTest> tests = xmlSuite.getTests();
+                int i = 1;
+                for (XmlTest xmlTest:
+                        tests) {
+                    Assert.assertEquals(xmlTest.getParameter("param"), String.valueOf(i));
+                    i++;
                 }
             }
-        } else {
-            Assert.assertTrue(false, "ISuiteListeners are Empty");
         }
     }
 
