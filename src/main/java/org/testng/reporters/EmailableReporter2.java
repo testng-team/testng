@@ -344,7 +344,7 @@ public class EmailableReporter2 implements IReporter {
               .append("<td rowspan=\"")
               .append(resultsCount)
               .append("\">")
-              .append(start)
+              .append(getFormattedStartTime(start))
               .append("</td>")
               .append("<td rowspan=\"")
               .append(resultsCount)
@@ -387,6 +387,10 @@ public class EmailableReporter2 implements IReporter {
       scenarioCount = scenarioIndex - startingScenarioIndex;
     }
     return scenarioCount;
+  }
+
+  protected String getFormattedStartTime(long startTimeInMillisFromEpoch) {
+    return String.valueOf(startTimeInMillisFromEpoch);
   }
 
   /** Writes the details for all test scenarios. */
