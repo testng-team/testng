@@ -21,6 +21,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: Gradle wrapper validation
+      uses: gradle/wrapper-validation-action@v1
+
     # Runs a single command using the runners shell
     - name: Install gpg secret key
       run: |
@@ -39,4 +42,3 @@ jobs:
     - name: Display next step
       run: |
         echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it"
-
