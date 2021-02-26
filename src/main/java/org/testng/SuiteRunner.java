@@ -1,6 +1,7 @@
 package org.testng;
 
 import com.google.inject.Injector;
+import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -17,7 +18,6 @@ import org.testng.xml.XmlTest;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.testng.internal.Utils.isStringBlank;
 
@@ -33,7 +33,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collections.synchronizedMap(Maps.newLinkedHashMap());
   private final List<TestRunner> testRunners = Lists.newArrayList();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newConcurrentMap();
-  private final TestListenerAdapter textReporter = new TestListenerAdapter();
 
   private String outputDir;
   private XmlSuite xmlSuite;
@@ -60,10 +59,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       invokedMethodListeners;
 
-  /** The list of all the methods invoked during this run */
-  private final Collection<IInvokedMethod> invokedMethods = new ConcurrentLinkedQueue<>();
-
-  private final List<ITestNGMethod> allTestMethods = Lists.newArrayList();
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
@@ -189,13 +184,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         tr.addMethodInterceptor(methodInterceptor);
       }
 
-      // Reuse the same text reporter so we can accumulate all the results
-      // (this is used to display the final suite report at the end)
-      tr.addListener(textReporter);
       testRunners.add(tr);
 
-      // Add the methods found in this test to our global count
-      allTestMethods.addAll(Arrays.asList(tr.getAllTestMethods()));
     }
   }
 
@@ -333,10 +323,13 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // Run all the test runners
       //
       boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(xmlSuite.getParallel());
-      if (!testsInParallel) {
-        runSequentially();
-      } else {
+      if (RuntimeBehavior.strictParallelism()) {
+        testsInParallel = !XmlSuite.ParallelMode.NONE.equals(xmlSuite.getParallel());
+      }
+      if (testsInParallel) {
         runInParallelTestMode();
+      } else {
+        runSequentially();
       }
 
       //
@@ -405,12 +398,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         "tests",
         tasks,
         xmlSuite.getThreadCount(),
-        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS),
-        false);
+        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS)
+    );
   }
 
   private class SuiteWorker implements Runnable {
-    private TestRunner testRunner;
+    private final TestRunner testRunner;
 
     public SuiteWorker(TestRunner tr) {
       testRunner = tr;
@@ -426,7 +419,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
   }
 
-  /** Registers ISuiteListeners interested in reporting the result of the current suite. */
+  /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
   protected void addListener(ISuiteListener reporter) {
     if (!listeners.containsKey(reporter.getClass())) {
       listeners.put(reporter.getClass(), reporter);
@@ -515,19 +508,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   /** @see org.testng.ISuite#getExcludedMethods() */
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
-    return getIncludedOrExcludedMethods(false /* included */);
-  }
-
-  private Collection<ITestNGMethod> getIncludedOrExcludedMethods(boolean included) {
-    List<ITestNGMethod> result = Lists.newArrayList();
-
-    for (TestRunner tr : testRunners) {
-      Collection<ITestNGMethod> methods =
-          included ? tr.getInvokedMethods() : tr.getExcludedMethods();
-      result.addAll(methods);
-    }
-
-    return result;
+    return testRunners.stream()
+        .flatMap(tr -> tr.getExcludedMethods().stream())
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -556,10 +539,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   /** The default implementation of {@link ITestRunnerFactory}. */
   private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
-    private ITestListener[] failureGenerators;
-    private boolean useDefaultListeners;
-    private boolean skipFailedInvocationCounts;
-    private IConfiguration configuration;
+    private final ITestListener[] failureGenerators;
+    private final boolean useDefaultListeners;
+    private final boolean skipFailedInvocationCounts;
+    private final IConfiguration configuration;
     private final Comparator<ITestNGMethod> comparator;
 
     public DefaultTestRunnerFactory(
@@ -569,7 +552,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         boolean skipFailedInvocationCounts,
         Comparator<ITestNGMethod> comparator) {
       this.configuration = configuration;
-      failureGenerators = failureListeners;
+      this.failureGenerators = failureListeners;
       this.useDefaultListeners = useDefaultListeners;
       this.skipFailedInvocationCounts = skipFailedInvocationCounts;
       this.comparator = comparator;
@@ -640,8 +623,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   private static class ProxyTestRunnerFactory implements ITestRunnerFactory {
-    private ITestListener[] failureGenerators;
-    private ITestRunnerFactory target;
+    private final ITestListener[] failureGenerators;
+    private final ITestRunnerFactory target;
 
     public ProxyTestRunnerFactory(ITestListener[] failureListeners, ITestRunnerFactory target) {
       failureGenerators = failureListeners;
@@ -738,7 +721,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (method == null) {
       throw new NullPointerException("Method should not be null");
     }
-    invokedMethods.add(method);
+    if (method.getTestMethod() instanceof IInvocationStatus) {
+      ((IInvocationStatus) method.getTestMethod()).setInvokedAt(method.getDate());
+    }
   }
 
   //
@@ -747,11 +732,29 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   @Override
   public List<IInvokedMethod> getAllInvokedMethods() {
-    return new ArrayList<>(invokedMethods);
+    return testRunners.stream()
+        .flatMap(tr -> {
+          Set<ITestResult> results = new HashSet<>();
+          results.addAll(tr.getConfigurationsScheduledForInvocation().getAllResults());
+          results.addAll(tr.getPassedConfigurations().getAllResults());
+          results.addAll(tr.getFailedConfigurations().getAllResults());
+          results.addAll(tr.getSkippedConfigurations().getAllResults());
+          results.addAll(tr.getPassedTests().getAllResults());
+          results.addAll(tr.getFailedTests().getAllResults());
+          results.addAll(tr.getFailedButWithinSuccessPercentageTests().getAllResults());
+          results.addAll(tr.getSkippedTests().getAllResults());
+          return results.stream();
+        })
+        .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
+        .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
+        .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))
+        .collect(Collectors.toList());
   }
 
   @Override
   public List<ITestNGMethod> getAllMethods() {
-    return allTestMethods;
+    return this.testRunners.stream()
+        .flatMap(tr -> Arrays.stream(tr.getAllTestMethods()))
+        .collect(Collectors.toList());
   }
 }

@@ -6,14 +6,10 @@ import org.testng.ITestResult;
 
 public class InvokedMethod implements IInvokedMethod {
 
-  private final Object m_instance;
-  private final ITestNGMethod m_testMethod;
   private final long m_date;
   private final ITestResult m_testResult;
 
-  public InvokedMethod(Object instance, ITestNGMethod method, long date, ITestResult testResult) {
-    m_instance = instance;
-    m_testMethod = method;
+  public InvokedMethod(long date, ITestResult testResult) {
     m_date = date;
     m_testResult = testResult;
   }
@@ -23,16 +19,17 @@ public class InvokedMethod implements IInvokedMethod {
    */
   @Override
   public boolean isTestMethod() {
-    return m_testMethod.isTest();
+    return m_testResult.getMethod().isTest();
   }
 
   @Override
   public String toString() {
-    StringBuilder result = new StringBuilder().append(m_testMethod);
+    StringBuilder result = new StringBuilder().append(m_testResult.getMethod());
     for (Object p : m_testResult.getParameters()) {
       result.append(p).append(" ");
     }
-    result.append(" ").append(m_instance != null ? m_instance.hashCode() : " <static>");
+    Object instance = m_testResult.getInstance();
+    result.append(" ").append(instance != null ? instance.hashCode() : " <static>");
 
     return result.toString();
   }
@@ -42,7 +39,7 @@ public class InvokedMethod implements IInvokedMethod {
    */
   @Override
   public boolean isConfigurationMethod() {
-    return TestNgMethodUtils.isConfigurationMethod(m_testMethod);
+    return TestNgMethodUtils.isConfigurationMethod(m_testResult.getMethod());
   }
 
   /* (non-Javadoc)
@@ -50,7 +47,7 @@ public class InvokedMethod implements IInvokedMethod {
    */
   @Override
   public ITestNGMethod getTestMethod() {
-    return m_testMethod;
+    return m_testResult.getMethod();
   }
 
   /* (non-Javadoc)

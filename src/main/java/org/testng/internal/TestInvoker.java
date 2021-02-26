@@ -91,7 +91,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // By the time this testMethod to be invoked,
     // all dependencies should be already run or we need to skip this method,
     // so invocation count should not affect dependencies check
-    String okToProceed = checkDependencies(testMethod, context.getAllTestMethods());
+    String okToProceed = checkDependencies(testMethod);
 
     if (okToProceed != null) {
       //
@@ -101,8 +101,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           registerSkippedTestResult(
               testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
       m_notifier.addSkippedTest(testMethod, result);
-      InvokedMethod invokedMethod = new InvokedMethod(result.getInstance(), testMethod,
-          System.currentTimeMillis(), result);
+      InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       testMethod.incrementCurrentInvocationCount();
       GroupConfigMethodArguments args = new Builder()
@@ -245,7 +244,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    * @param testMethod test method being checked for
    * @return error message or null if dependencies have been run successfully
    */
-  private String checkDependencies(ITestNGMethod testMethod, ITestNGMethod[] allTestMethods) {
+  private String checkDependencies(ITestNGMethod testMethod) {
     // If this method is marked alwaysRun, no need to check for its dependencies
     if (testMethod.isAlwaysRun()) {
       return null;
@@ -263,12 +262,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // If this method depends on groups, collect all the methods that
     // belong to these groups and make sure they have been run successfully
     String[] groups = testMethod.getGroupsDependedUpon();
+    ITestNGMethod[] allTestMethods = m_testContext.getAllTestMethods();
     if (null != groups && groups.length > 0) {
       // Get all the methods that belong to the group depended upon
       for (String element : groups) {
         ITestNGMethod[] methods =
             MethodGroupsHelper.findMethodsThatBelongToGroup(
-                testMethod, m_testContext.getAllTestMethods(), element);
+                testMethod, allTestMethods, element);
         if (methods.length == 0 && !testMethod.ignoreMissingDependencies()) {
           // Group is missing
           return "Method " + testMethod + " depends on nonexistent group \"" + element + "\"";
@@ -330,7 +330,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       }
     }
 
-    ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut, true);
+    ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut);
 
     //
     // Collect all the TestResults
@@ -527,8 +527,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     runConfigMethods(arguments, suite, testResult, setupConfigMethods);
 
     long startTime = System.currentTimeMillis();
-    InvokedMethod invokedMethod = new InvokedMethod(arguments.getInstance(),
-        arguments.getTestMethod(), startTime, testResult);
+    InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
 
     if (!failureContext.representsRetriedMethod && invoker.hasConfigurationFailureFor(
         arguments.getTestMethod(), arguments.getTestMethod().getGroups() ,
@@ -536,13 +535,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         arguments.getInstance())) {
       Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext,
           arguments.getInstance());
-      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception);
+      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception, testResult);
+      result.setParameters(testResult.getParameters());
       TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
       arguments.getTestMethod().incrementCurrentInvocationCount();
       testResult.setMethod(arguments.getTestMethod());
-      invokedMethod = new InvokedMethod(arguments.getInstance(),
-          arguments.getTestMethod(), startTime, result);
+      invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       runAfterGroupsConfigurations(arguments, suite, testResult);
 
@@ -556,8 +555,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult = TestResult
           .newTestResultFrom(testResult, arguments.getTestMethod(), m_testContext, System.currentTimeMillis());
       //Recreate the invoked method object again, because we now have a new test result object
-      invokedMethod = new InvokedMethod(arguments.getInstance(),
-          arguments.getTestMethod(), invokedMethod.getDate(), testResult);
+      invokedMethod = new InvokedMethod(invokedMethod.getDate(), testResult);
 
       testResult.setStatus(ITestResult.STARTED);
 
@@ -574,7 +572,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       log(3, "Invoking " + arguments.getTestMethod().getQualifiedName());
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
 
-      m_notifier.addInvokedMethod(invokedMethod);
+      if (arguments.getTestMethod() instanceof IInvocationStatus) {
+        ((IInvocationStatus) arguments.getTestMethod()).setInvokedAt(invokedMethod.getDate());
+      }
 
       Method thisMethod = arguments.getTestMethod().getConstructorOrMethod().getMethod();
 
@@ -700,15 +700,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     invoker.invokeConfigurations(cfgArgs);
   }
 
-  public ITestResult registerSkippedTestResult(
-      ITestNGMethod testMethod, long start, Throwable throwable) {
+  @Override
+  public ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start,
+      Throwable throwable, ITestResult source) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
+    if (source != null) {
+      TestResult.copyAttributes(source, result);
+    }
     result.setStatus(ITestResult.STARTED);
     runTestResultListener(result);
     result.setStatus(TestResult.SKIP);
     Reporter.setCurrentTestResult(result);
-
     return result;
   }
 

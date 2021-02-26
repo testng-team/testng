@@ -65,7 +65,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   String getHost();
 
-  /** The instance on which this method was run. */
+  /** @return The instance on which this method was run. */
   Object getInstance();
 
   /**
@@ -75,8 +75,8 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   Object[] getFactoryParameters();
 
   /**
-   * If this result's related instance implements ITest or use @Test(testName=...), returns its test
-   * name, otherwise returns null.
+   * @return The test name if this result's related instance implements ITest or use @Test(testName=...),
+   *            null otherwise.
    */
   String getTestName();
 

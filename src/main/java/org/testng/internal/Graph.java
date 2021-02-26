@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -18,8 +19,8 @@ import java.util.Set;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
-  private static boolean m_verbose = false;
-  private Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
+  private static final boolean m_verbose = false;
+  private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
 
@@ -92,21 +93,16 @@ public class Graph<T> {
     // Clone the list of nodes but only keep those that are
     // not independent.
     //
-    List<Node<T>> nodes2 = Lists.newArrayList();
-    for (Node<T> n : getNodes()) {
-      if (!isIndependent(n.getObject())) {
-        ppp("ADDING FOR SORT: " + n.getObject());
-        nodes2.add(n.clone());
-      } else {
-        ppp("SKIPPING INDEPENDENT NODE " + n);
-      }
-    }
+    List<Node<T>> nodes2 = getNodes().parallelStream()
+        .filter(n -> !isIndependent(n.getObject()))
+        .map(Node::clone)
+        .sorted(comparator)
+        .collect(Collectors.toList());
 
     //
     // Sort the nodes alphabetically to make sure that methods of the same class
     // get run close to each other as much as possible
     //
-    nodes2.sort(comparator);
 
     //
     // Sort
@@ -240,14 +236,14 @@ public class Graph<T> {
   // class Node
   //
   public static class Node<T> {
-    private T m_object;
-    private Map<T, T> m_predecessors = Maps.newHashMap();
+    private final T m_object;
+    private final Map<T, T> m_predecessors = Maps.newHashMap();
 
     public Node(T tm) {
       m_object = tm;
     }
 
-    private Set<Node<T>> m_neighbors = new HashSet<>();
+    private final Set<Node<T>> m_neighbors = new HashSet<>();
 
     public void addNeighbor(Node<T> neighbor) {
       m_neighbors.add(neighbor);
@@ -270,7 +266,10 @@ public class Graph<T> {
       return m_predecessors;
     }
 
-    /** @return true if this predecessor was found and removed */
+    /**
+     * @param o The predecessor to remove
+     * @return true if this predecessor was found and removed
+     */
     public boolean removePredecessor(T o) {
       boolean result = false;
 

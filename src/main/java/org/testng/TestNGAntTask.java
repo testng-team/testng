@@ -37,6 +37,7 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.internal.Utils;
+import org.testng.internal.ant.AntReporterConfig;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
 
@@ -160,6 +161,7 @@ public class TestNGAntTask extends Task {
   private Boolean m_skipFailedInvocationCounts;
   private String m_methods;
   private Mode mode = Mode.testng;
+  private boolean forkJvm = true;
 
   public enum Mode {
     // lower-case to better look in build scripts
@@ -171,7 +173,7 @@ public class TestNGAntTask extends Task {
   private static final Logger LOGGER = Logger.getLogger(TestNGAntTask.class);
 
   /** The list of report listeners added via &lt;reporter&gt; sub-element of the Ant task */
-  private List<ReporterConfig> reporterConfigs = Lists.newArrayList();
+  private List<AntReporterConfig> reporterConfigs = Lists.newArrayList();
 
   private String m_testNames = "";
 
@@ -225,7 +227,7 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * Sets the flag to log the command line. When verbose is set to true the command line parameters
+   * @param verbose the flag to log the command line. When verbose is set to true the command line parameters
    * are stored in a temporary file stored in the user's default temporary file directory. The file
    * created is prefixed with "testng".
    */
@@ -236,7 +238,7 @@ public class TestNGAntTask extends Task {
   /**
    * Sets the flag to write on <code>System.out</code> the Ant Environment properties.
    *
-   * @param verbose <tt>true</tt> for printing
+   * @param verbose <code>true</code> for printing
    */
   public void setDumpEnv(boolean verbose) {
     m_dumpEnv = verbose;
@@ -245,7 +247,7 @@ public class TestNGAntTask extends Task {
   /**
    * Sets te flag to write on <code>System.out</code> the system properties.
    *
-   * @param verbose <tt>true</tt> for dumping the info
+   * @param verbose <code>true</code> for dumping the info
    */
   public void setDumpSys(boolean verbose) {
     m_dumpSys = verbose;
@@ -294,7 +296,11 @@ public class TestNGAntTask extends Task {
     getJavaCommand().addSysproperty(sysp);
   }
 
-  /** Adds an environment variable; used when forking. */
+  /**
+   * Adds an environment variable; used when forking.
+   *
+   * @param var The variable
+   */
   public void addEnv(Environment.Variable var) {
     m_environment.addVariable(var);
   }
@@ -390,6 +396,10 @@ public class TestNGAntTask extends Task {
   // TestNG settings
   public void setMode(Mode mode) {
     this.mode = mode;
+  }
+
+  public void setForkJvm(boolean forkJvm) {
+    this.forkJvm = forkJvm;
   }
 
   /**
@@ -488,6 +498,12 @@ public class TestNGAntTask extends Task {
       delegateCommandSystemProperties();
     }
     List<String> argv = createArguments();
+
+    if (!forkJvm) {
+      TestNG tng = TestNG.privateMain(argv.toArray(new String[0]), null);
+      actOnResult(tng.getStatus(), false);
+      return;
+    }
 
     String fileName = "";
     FileWriter fw = null;
@@ -598,7 +614,7 @@ public class TestNGAntTask extends Task {
   }
 
   private void addReporterConfigs(List<String> argv) {
-    for (ReporterConfig reporterConfig : reporterConfigs) {
+    for (AntReporterConfig reporterConfig : reporterConfigs) {
       argv.add(CommandLineArgs.REPORTER);
       argv.add(reporterConfig.serialize());
     }
@@ -839,7 +855,7 @@ public class TestNGAntTask extends Task {
     return retVal;
   }
 
-  /** Creates or returns the already created <CODE>CommandlineJava</CODE>. */
+  /** @return the created (or create) the  <CODE>CommandlineJava</CODE>. */
   protected CommandlineJava getJavaCommand() {
     if (null == m_javaCommand) {
       m_javaCommand = new CommandlineJava();
@@ -849,7 +865,7 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * @return <tt>null</tt> if there is no timeout value, otherwise the watchdog instance.
+   * @return <code>null</code> if there is no timeout value, otherwise the watchdog instance.
    * @throws BuildException under unspecified circumstances
    * @since Ant 1.2
    */
@@ -1017,7 +1033,7 @@ public class TestNGAntTask extends Task {
     }
   }
 
-  public void addConfiguredReporter(ReporterConfig reporterConfig) {
+  public void addConfiguredReporter(AntReporterConfig reporterConfig) {
     reporterConfigs.add(reporterConfig);
   }
 

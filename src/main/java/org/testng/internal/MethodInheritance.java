@@ -1,10 +1,14 @@
 package org.testng.internal;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -54,25 +58,25 @@ public class MethodInheritance {
 
   /** Look in map for a class that is a superclass of methodClass */
   private static List<ITestNGMethod> findMethodListSuperClass(
-      Map<Class, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
-    for (Map.Entry<Class, List<ITestNGMethod>> entry : map.entrySet()) {
-      if (entry.getKey().isAssignableFrom(methodClass)) {
-        return entry.getValue();
-      }
-    }
-    return null;
+      Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
+    return map.entrySet()
+        .stream()
+        .parallel()
+        .filter(each -> each.getKey().isAssignableFrom(methodClass))
+        .map(Entry::getValue)
+        .findFirst()
+        .orElse(null);
   }
 
   /** Look in map for a class that is a subclass of methodClass */
-  private static Class findSubClass(
-      Map<Class, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
-    for (Class cls : map.keySet()) {
-      if (methodClass.isAssignableFrom(cls)) {
-        return cls;
-      }
-    }
-
-    return null;
+  private static Class<?> findSubClass(
+      Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
+    return map.keySet()
+        .stream()
+        .parallel()
+        .filter(methodClass::isAssignableFrom)
+        .findFirst()
+        .orElse(null);
   }
 
   /**
@@ -87,7 +91,7 @@ public class MethodInheritance {
    */
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
-    Map<Class, List<ITestNGMethod>> map = Maps.newHashMap();
+    Map<Class<?>, List<ITestNGMethod>> map = Maps.newHashMap();
 
     //
     // Put the list of methods in their hierarchy buckets
@@ -98,7 +102,7 @@ public class MethodInheritance {
       if (null != l) {
         l.add(method);
       } else {
-        Class subClass = findSubClass(map, methodClass);
+        Class<?> subClass = findSubClass(map, methodClass);
         if (null != subClass) {
           l = map.get(subClass);
           l.add(method);
@@ -115,29 +119,35 @@ public class MethodInheritance {
     //
     // Each bucket that has a list bigger than one element gets sorted
     //
-    for (List<ITestNGMethod> l : map.values()) {
-      if (l.size() > 1) {
-        // Sort them
-        sortMethodsByInheritance(l, before);
+    map.values().parallelStream()
+        .filter(l -> l.size() > 1)
+        .forEach(l -> {
+          // Sort them
+          sortMethodsByInheritance(l, before);
 
-        /*
-         *  Set methodDependedUpon accordingly
-         *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
-         *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
-         *  of base class. Vice versa for @AfterXXX methods
-         */
-        for (int i = 0; i < l.size() - 1; i++) {
-          ITestNGMethod m1 = l.get(i);
-          for (int j = i + 1; j < l.size(); j++) {
-            ITestNGMethod m2 = l.get(j);
-            if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
-              Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
-              m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+          /*
+           *  Set methodDependedUpon accordingly
+           *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
+           *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
+           *  of base class. Vice versa for @AfterXXX methods
+           */
+          for (int i = 0; i < l.size() - 1; i++) {
+            ITestNGMethod m1 = l.get(i);
+            for (int j = i + 1; j < l.size(); j++) {
+              ITestNGMethod m2 = l.get(j);
+              String[] groups = Optional.ofNullable(m2.getGroups()).orElse(new String[] {});
+              if (groups.length != 0) {
+                //Do not resort to adding implicit depends-on if there are groups
+                continue;
+              }
+              if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
+                Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
+                m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+              }
             }
           }
-        }
-      }
-    }
+
+        });
   }
 
   private static boolean dependencyExists(
@@ -149,31 +159,30 @@ public class MethodInheritance {
       ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
     ITestNGMethod[] methodsNamed = MethodHelper.findDependedUponMethods(m1, methods);
 
-    for (ITestNGMethod method : methodsNamed) {
-      if (method.equals(m2)) {
-        return true;
-      }
+    boolean match = Arrays.stream(methodsNamed)
+        .parallel()
+        .anyMatch(method -> method.equals(m2));
+    if (match) {
+      return true;
     }
 
-    for (String group : m1.getGroupsDependedUpon()) {
-      ITestNGMethod[] methodsThatBelongToGroup =
-          MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
-      for (ITestNGMethod method : methodsThatBelongToGroup) {
-        if (method.equals(m2)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return Arrays.stream(m1.getGroupsDependedUpon())
+        .parallel()
+        .anyMatch(group -> {
+              ITestNGMethod[] methodsThatBelongToGroup =
+                  MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
+              return Arrays.stream(methodsThatBelongToGroup)
+                  .parallel()
+                  .anyMatch(method -> method.equals(m2));
+            }
+        );
   }
 
   private static boolean equalsEffectiveClass(ITestNGMethod m1, ITestNGMethod m2) {
     try {
-      Class c1 = m1.getRealClass();
-      Class c2 = m2.getRealClass();
-
-      return c1 == null ? c2 == null : c1.equals(c2);
+      Class<?> c1 = m1.getRealClass();
+      Class<?> c2 = m2.getRealClass();
+      return Objects.equals(c1, c2);
     } catch (Exception ex) {
       return false;
     }

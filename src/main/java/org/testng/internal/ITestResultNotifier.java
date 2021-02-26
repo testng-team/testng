@@ -31,7 +31,11 @@ public interface ITestResultNotifier {
 
   void addFailedButWithinSuccessPercentageTest(ITestNGMethod tm, ITestResult tr);
 
-  void addInvokedMethod(InvokedMethod im);
+  /**
+   * @deprecated - Deprecated as of 7.4.0
+   */
+  @Deprecated
+  default void addInvokedMethod(InvokedMethod im) {}
 
   XmlTest getTest();
 

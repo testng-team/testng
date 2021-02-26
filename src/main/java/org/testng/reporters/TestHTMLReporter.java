@@ -1,10 +1,10 @@
 package org.testng.reporters;
 
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** This class implements an HTML reporter for individual tests. */
-public class TestHTMLReporter extends TestListenerAdapter {
+public class TestHTMLReporter implements ITestListener {
   private static final Comparator<ITestResult> NAME_COMPARATOR = new NameComparator();
   private static final Comparator<ITestResult> CONFIGURATION_COMPARATOR =
       new ConfigurationComparator();
@@ -39,12 +39,12 @@ public class TestHTMLReporter extends TestListenerAdapter {
         m_testContext,
         null /* host */,
         m_testContext.getOutputDirectory(),
-        getConfigurationFailures(),
-        getConfigurationSkips(),
-        getPassedTests(),
-        getFailedTests(),
-        getSkippedTests(),
-        getFailedButWithinSuccessPercentageTests());
+        context.getFailedConfigurations().getAllResults(),
+        context.getSkippedConfigurations().getAllResults(),
+        context.getPassedTests().getAllResults(),
+        context.getFailedTests().getAllResults(),
+        context.getSkippedTests().getAllResults(),
+        context.getFailedButWithinSuccessPercentageTests().getAllResults());
   }
   //
   // implements ITestListener

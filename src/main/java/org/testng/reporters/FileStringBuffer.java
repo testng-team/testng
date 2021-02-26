@@ -21,7 +21,6 @@ import java.io.Writer;
  *
  * <p>This class is not multi thread safe.
  *
- * @author Cedric Beust <cedric@beust.com>
  * @since Nov 9, 2012
  */
 public class FileStringBuffer implements IBuffer {

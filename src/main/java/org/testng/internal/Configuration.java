@@ -30,6 +30,7 @@ public class Configuration implements IConfiguration {
   private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
 
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
+  private boolean overrideIncludedMethods = false;
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -132,5 +133,15 @@ public class Configuration implements IConfiguration {
   @Override
   public IInjectorFactory getInjectorFactory() {
     return this.injectorFactory;
+  }
+
+  @Override
+  public boolean getOverrideIncludedMethods() {
+    return this.overrideIncludedMethods;
+  }
+
+  @Override
+  public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
+    this.overrideIncludedMethods = overrideIncludedMethods;
   }
 }

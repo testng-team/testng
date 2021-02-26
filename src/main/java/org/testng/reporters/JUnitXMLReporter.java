@@ -103,7 +103,11 @@ public class JUnitXMLReporter implements IResultListener2 {
   @Override
   public void onConfigurationSuccess(ITestResult itr) {}
 
-  /** generate the XML report given what we know from all the test results */
+  /**
+   * generate the XML report given what we know from all the test results
+   *
+   * @param context The test context
+   */
   protected void generateReport(ITestContext context) {
 
     XMLStringBuffer document = new XMLStringBuffer();
@@ -179,7 +183,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   private Set<String> getPackages(ITestContext context) {
     Set<String> result = Sets.newHashSet();
     for (ITestNGMethod m : context.getAllTestMethods()) {
-      Package pkg = m.getConstructorOrMethod().getDeclaringClass().getPackage();
+      Package pkg = m.getRealClass().getPackage();
       if (pkg != null) {
         result.add(pkg.getName());
       }

@@ -23,6 +23,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IIgnoreAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
@@ -56,6 +57,9 @@ public class JDK15TagFactory {
         result = createObjectFactoryTag();
       } else if (annotationClass == ITestAnnotation.class) {
         result = createTestTag(cls, a);
+      } else if (annotationClass == IIgnoreAnnotation.class) {
+        result = new IIgnoreAnnotation() {
+        };
       } else if (annotationClass == IListenersAnnotation.class) {
         result = createListenersTag(a);
       } else if (annotationClass == IBeforeSuite.class

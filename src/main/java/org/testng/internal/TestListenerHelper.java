@@ -5,6 +5,7 @@ import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IListenersAnnotation;
@@ -19,28 +20,57 @@ public final class TestListenerHelper {
     // Utility class. Defeat instantiation.
   }
 
-  static void runPreConfigurationListeners(ITestResult tr, List<IConfigurationListener> listeners) {
+  static void runPreConfigurationListeners(ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
       icl.beforeConfiguration(tr);
+      try {
+        icl.beforeConfiguration(tr, tm);
+      } catch (Exception e) {
+        ignoreInternalGradleException(e);
+      }
     }
   }
 
   static void runPostConfigurationListeners(
-      ITestResult tr, List<IConfigurationListener> listeners) {
+      ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
       switch (tr.getStatus()) {
         case ITestResult.SKIP:
           icl.onConfigurationSkip(tr);
+          try {
+            icl.onConfigurationSkip(tr, tm);
+          } catch (Exception e) {
+            ignoreInternalGradleException(e);
+          }
           break;
         case ITestResult.FAILURE:
           icl.onConfigurationFailure(tr);
+          try {
+            icl.onConfigurationFailure(tr, tm);
+          } catch (Exception e) {
+            ignoreInternalGradleException(e);
+          }
           break;
         case ITestResult.SUCCESS:
           icl.onConfigurationSuccess(tr);
+          try {
+          icl.onConfigurationSuccess(tr,tm);
+          } catch (Exception e) {
+            ignoreInternalGradleException(e);
+          }
           break;
         default:
           throw new AssertionError("Unexpected value: " + tr.getStatus());
       }
+    }
+  }
+
+  //This method is added because Gradle which builds TestNG seems to be using an older version
+  //of TestNG that doesn't know about the new methods that we added and so it causes
+  //the TestNG build to keep failing.
+  private static void ignoreInternalGradleException(Exception e) {
+    if (!e.getClass().getPackage().getName().startsWith("org.gradle.internal")) {
+      throw new ListenerInvocationException(e);
     }
   }
 
@@ -78,16 +108,20 @@ public final class TestListenerHelper {
     }
   }
 
-  /** @return all the @Listeners annotations found in the current class and its superclasses. */
+  /** @return all the @Listeners annotations found in the current class and its superclasses and inherited interfaces.  */
   @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
     result.listenerClasses = Lists.newArrayList();
 
     while (cls != Object.class) {
+      List<IListenersAnnotation> annotations = finder.findInheritedAnnotations(cls, IListenersAnnotation.class);
       IListenersAnnotation l = finder.findAnnotation(cls, IListenersAnnotation.class);
       if (l != null) {
-        Class<? extends ITestNGListener>[] classes = l.getValue();
+        annotations.add(l);
+      }
+      annotations.forEach(anno -> {
+        Class<? extends ITestNGListener>[] classes = anno.getValue();
         for (Class<? extends ITestNGListener> c : classes) {
           result.listenerClasses.add(c);
 
@@ -104,7 +138,7 @@ public final class TestListenerHelper {
             }
           }
         }
-      }
+      });
       cls = cls.getSuperclass();
     }
     return result;
@@ -139,6 +173,13 @@ public final class TestListenerHelper {
 
     public Class<? extends ITestNGListenerFactory> getListenerFactoryClass() {
       return listenerFactoryClass;
+    }
+  }
+
+  static class ListenerInvocationException extends RuntimeException {
+
+    public ListenerInvocationException(Throwable cause) {
+      super(cause);
     }
   }
 }

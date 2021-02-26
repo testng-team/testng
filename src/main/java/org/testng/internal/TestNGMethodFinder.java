@@ -33,8 +33,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   private static final Comparator<ITestNGMethod> NO_COMPARISON = (o1, o2) -> 0;
 
-  private RunInfo runInfo;
-  private IAnnotationFinder annotationFinder;
+  private final RunInfo runInfo;
+  private final IAnnotationFinder annotationFinder;
   private final Comparator<ITestNGMethod> comparator;
 
   public TestNGMethodFinder(RunInfo runInfo, IAnnotationFinder annotationFinder) {
@@ -55,59 +55,59 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   }
 
   @Override
-  public ITestNGMethod[] getBeforeClassMethods(Class cls) {
+  public ITestNGMethod[] getBeforeClassMethods(Class<?> cls) {
     return findConfiguration(cls, BEFORE_CLASS);
   }
 
   @Override
-  public ITestNGMethod[] getAfterClassMethods(Class cls) {
+  public ITestNGMethod[] getAfterClassMethods(Class<?> cls) {
     return findConfiguration(cls, AFTER_CLASS);
   }
 
   @Override
-  public ITestNGMethod[] getBeforeTestMethods(Class cls) {
+  public ITestNGMethod[] getBeforeTestMethods(Class<?> cls) {
     return findConfiguration(cls, BEFORE_TEST_METHOD);
   }
 
   @Override
-  public ITestNGMethod[] getAfterTestMethods(Class cls) {
+  public ITestNGMethod[] getAfterTestMethods(Class<?> cls) {
     return findConfiguration(cls, AFTER_TEST_METHOD);
   }
 
   @Override
-  public ITestNGMethod[] getBeforeSuiteMethods(Class cls) {
+  public ITestNGMethod[] getBeforeSuiteMethods(Class<?> cls) {
     return findConfiguration(cls, BEFORE_SUITE);
   }
 
   @Override
-  public ITestNGMethod[] getAfterSuiteMethods(Class cls) {
+  public ITestNGMethod[] getAfterSuiteMethods(Class<?> cls) {
     return findConfiguration(cls, AFTER_SUITE);
   }
 
   @Override
-  public ITestNGMethod[] getBeforeTestConfigurationMethods(Class clazz) {
+  public ITestNGMethod[] getBeforeTestConfigurationMethods(Class<?> clazz) {
     return findConfiguration(clazz, BEFORE_TEST);
   }
 
   @Override
-  public ITestNGMethod[] getAfterTestConfigurationMethods(Class clazz) {
+  public ITestNGMethod[] getAfterTestConfigurationMethods(Class<?> clazz) {
     return findConfiguration(clazz, AFTER_TEST);
   }
 
   @Override
-  public ITestNGMethod[] getBeforeGroupsConfigurationMethods(Class clazz) {
+  public ITestNGMethod[] getBeforeGroupsConfigurationMethods(Class<?> clazz) {
     return findConfiguration(clazz, BEFORE_GROUPS);
   }
 
   @Override
-  public ITestNGMethod[] getAfterGroupsConfigurationMethods(Class clazz) {
+  public ITestNGMethod[] getAfterGroupsConfigurationMethods(Class<?> clazz) {
     return findConfiguration(clazz, AFTER_GROUPS);
   }
 
-  private ITestNGMethod[] findConfiguration(final Class clazz, final MethodType configurationType) {
+  private ITestNGMethod[] findConfiguration(final Class<?> clazz, final MethodType configurationType) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
 
-    Set<Method> methods = ClassHelper.getAvailableMethods(clazz);
+    Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(clazz);
 
     for (Method m : methods) {
       IConfigurationAnnotation configuration =

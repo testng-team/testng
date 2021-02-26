@@ -77,7 +77,7 @@ public class CommandLineTest {
       "-d", OutputDirectoryPatch.getOutputDirectory(),
       "-junit",
       "-testclass", "test.sample.JUnitSample1",
-      "-suitename", "\""+suiteName+"\""
+      "-suitename", suiteName
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
@@ -100,7 +100,7 @@ public class CommandLineTest {
       "-d", OutputDirectoryPatch.getOutputDirectory(),
       "-junit",
       "-testclass", "test.sample.JUnitSample1",
-      "-testname", "\""+testName+"\""
+      "-testname", testName
     };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);

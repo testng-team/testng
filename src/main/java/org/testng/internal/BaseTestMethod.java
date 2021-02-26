@@ -22,12 +22,10 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
-public abstract class BaseTestMethod implements ITestNGMethod {
+public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
@@ -72,7 +70,7 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   private int m_interceptedPriority;
 
   private XmlTest m_xmlTest;
-  private Object m_instance;
+  private final Object m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
 
@@ -616,18 +614,8 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   public abstract ITestNGMethod clone();
 
   @Override
-  public IRetryAnalyzer getRetryAnalyzer() {
-    return m_retryAnalyzer;
-  }
-
-  @Override
   public IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
     return getRetryAnalyzerConsideringMethodParameters(result);
-  }
-
-  @Override
-  public void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer) {
-    m_retryAnalyzer = retryAnalyzer;
   }
 
   @Override
@@ -725,22 +713,13 @@ public abstract class BaseTestMethod implements ITestNGMethod {
   }
 
   @Override
-  public Map<String, String> findMethodParameters(XmlTest test) {
-    // Get the test+suite parameters
-    Map<String, String> result = test.getAllParameters();
-    for (XmlClass xmlClass : test.getXmlClasses()) {
-      if (xmlClass.getName().equals(getTestClass().getName())) {
-        result.putAll(xmlClass.getLocalParameters());
-        for (XmlInclude include : xmlClass.getIncludedMethods()) {
-          if (include.getName().equals(getMethodName())) {
-            result.putAll(include.getLocalParameters());
-            break;
-          }
-        }
-      }
-    }
+  public Class<?>[] getParameterTypes() {
+    return m_method.getParameterTypes();
+  }
 
-    return result;
+  @Override
+  public Map<String, String> findMethodParameters(XmlTest test) {
+    return XmlTestUtils.findMethodParameters(test, getTestClass().getName(), getMethodName());
   }
 
   @Override
@@ -754,6 +733,18 @@ public abstract class BaseTestMethod implements ITestNGMethod {
       return (IParameterInfo) m_instance;
     }
     return null;
+  }
+
+  private long invocationTime;
+
+  @Override
+  public void setInvokedAt(long date) {
+    this.invocationTime = date;
+  }
+
+  @Override
+  public long getInvocationTime() {
+    return invocationTime;
   }
 
   private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {

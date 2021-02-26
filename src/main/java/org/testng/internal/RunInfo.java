@@ -1,11 +1,11 @@
 package org.testng.internal;
 
+import java.util.Set;
+import java.util.TreeSet;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class RunInfo {
 
-  private final List<MethodSelectorDescriptor> m_methodSelectors = Lists.newArrayList();
+  private final Set<MethodSelectorDescriptor> m_methodSelectors = new TreeSet<>();
 
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);
@@ -25,7 +25,6 @@ public class RunInfo {
 
   /** @return true as soon as we fond a Method Selector that returns true for the method "tm". */
   public boolean includeMethod(ITestNGMethod tm, boolean isTestMethod) {
-    Collections.sort(m_methodSelectors);
     boolean foundNegative = false;
     IMethodSelectorContext context = new DefaultMethodSelectorContext();
 
@@ -40,7 +39,7 @@ public class RunInfo {
         break;
       }
 
-      // Proceeed normally
+      // Proceed normally
       IMethodSelector md = mds.getMethodSelector();
       result = md.includeMethod(context, tm, isTestMethod);
       if (context.isStopped()) {

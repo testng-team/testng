@@ -12,6 +12,10 @@ public class LogGatheringListener implements IInvokedMethodListener {
 
     Set<String> log = Sets.newHashSet();
 
+    public Set<String> getLog() {
+        return log;
+    }
+
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
         log.addAll(Reporter.getOutput(testResult));

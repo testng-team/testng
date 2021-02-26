@@ -50,9 +50,19 @@ class BaseInvoker {
     }
 
     InvokedMethodListenerInvoker invoker =
-        new InvokedMethodListenerInvoker(listenerMethod, testResult, m_testContext);
+        new InvokedMethodListenerInvoker(listenerMethod, testResult, testResult.getTestContext());
     for (IInvokedMethodListener currentListener : m_invokedMethodListeners) {
-      invoker.invokeListener(currentListener, invokedMethod);
+      try {
+        invoker.invokeListener(currentListener, invokedMethod);
+      } catch (SkipException e) {
+        String msg = String.format(
+            "Caught a [%s] exception from one of listeners %s. Will mark [%s()] as SKIPPED.",
+            SkipException.class.getSimpleName(), currentListener.getClass().getName(),
+            invokedMethod.getTestMethod().getQualifiedName());
+        Utils.warn(msg);
+        testResult.setStatus(ITestResult.SKIP);
+        testResult.setThrowable(e);
+      }
     }
   }
 

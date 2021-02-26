@@ -42,7 +42,13 @@ public class ClassMethodMap {
     }
   }
 
-  /** Remove the method from this map and returns true if it is the last of its class. */
+  /**
+   * Remove the method from this map.
+   *
+   * @param m The test method
+   * @param instance The test instance
+   * @return true if it is the last of its class
+   */
   public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
     Collection<ITestNGMethod> l = classMap.get(instance);
     if (l == null) {

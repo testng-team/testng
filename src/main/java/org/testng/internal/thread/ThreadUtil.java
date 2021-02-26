@@ -14,8 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A helper class to interface TestNG concurrency usage.
- *
- * @author <a href="mailto:the_mindstorm@evolva.ro>Alex Popescu</a>
  */
 public class ThreadUtil {
 
@@ -33,14 +31,12 @@ public class ThreadUtil {
    * @param tasks the list of tasks to be run
    * @param threadPoolSize the size of the parallel threads to be used to execute the tasks
    * @param timeout a maximum timeout to wait for tasks finalization
-   * @param triggerAtOnce <tt>true</tt> if the parallel execution of tasks should be trigger at once
    */
   public static void execute(
       String name,
       List<? extends Runnable> tasks,
       int threadPoolSize,
-      long timeout,
-      boolean triggerAtOnce) {
+      long timeout) {
 
     Utils.log(
         "ThreadUtil",

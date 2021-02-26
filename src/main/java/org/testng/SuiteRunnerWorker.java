@@ -21,10 +21,10 @@ import java.util.Map;
 public class SuiteRunnerWorker implements IWorker<ISuite> {
 
   private static final String LINE = "\n===============================================\n";
-  private SuiteRunner m_suiteRunner;
-  private Integer m_verbose;
-  private String m_defaultSuiteName;
-  private SuiteRunnerMap m_suiteRunnerMap;
+  private final SuiteRunner m_suiteRunner;
+  private final Integer m_verbose;
+  private final String m_defaultSuiteName;
+  private final SuiteRunnerMap m_suiteRunnerMap;
 
   public SuiteRunnerWorker(
       ISuite suiteRunner, SuiteRunnerMap suiteRunnerMap, int verbose, String defaultSuiteName) {
@@ -143,8 +143,8 @@ class SuiteResultCounts {
   int m_confFailures = 0;
   int m_confSkips = 0;
   int m_retries = 0;
-  private static String SKIPPED = "skipped";
-  private static String RETRIED = "retried";
+  private static final String SKIPPED = "skipped";
+  private static final String RETRIED = "retried";
 
   public void calculateResultCounts(XmlSuite xmlSuite, SuiteRunnerMap suiteRunnerMap) {
     ISuite iSuite = suiteRunnerMap.get(xmlSuite);

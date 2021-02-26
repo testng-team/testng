@@ -7,11 +7,12 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.LiteWeightTestNGMethod;
 import org.testng.internal.MethodHelper;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
@@ -24,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This reporter is responsible for creating testng-failed.xml
@@ -31,7 +33,7 @@ import java.util.Set;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
-public class FailedReporter extends TestListenerAdapter implements IReporter {
+public class FailedReporter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
   private XmlSuite m_xmlSuite;
@@ -89,6 +91,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       Set<ITestResult> allTests = Sets.newHashSet();
       allTests.addAll(failedTests);
       allTests.addAll(skippedTests);
+      ITestNGMethod[] allTestMethods = context.getAllTestMethods();
       for (ITestResult failedTest : allTests) {
         ITestNGMethod current = failedTest.getMethod();
         if (!current.isTest()) { // Don't count configuration methods
@@ -96,8 +99,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
         }
         methodsToReRun.add(current);
         List<ITestNGMethod> methodsDependedUpon =
-            MethodHelper.getMethodsDependedUpon(
-                current, context.getAllTestMethods(), Systematiser.getComparator());
+            MethodHelper.getMethodsDependedUpon(current, allTestMethods, Systematiser.getComparator());
 
         for (ITestNGMethod m : methodsDependedUpon) {
           if (m.isTest()) {
@@ -114,7 +116,13 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       //
       List<ITestNGMethod> result = Lists.newArrayList();
       Set<ITestNGMethod> relevantConfigs = Sets.newHashSet();
-      for (ITestNGMethod m : context.getAllTestMethods()) {
+      for (ITestNGMethod m : allTestMethods) {
+        if (RuntimeBehavior.isMemoryFriendlyMode()) {
+          //We are doing this because the `m` would not be of type
+          // LiteWeightTestNGMethod and hence the hashCode() and equals()
+          // computation would be different.
+          m = new LiteWeightTestNGMethod(m);
+        }
         if (methodsToReRun.contains(m)) {
           result.add(m);
           getAllApplicableConfigs(relevantConfigs, m.getTestClass());
@@ -159,16 +167,12 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     List<XmlClass> result = Lists.newArrayList();
-    Map<Class, Set<ITestNGMethod>> methodsMap = Maps.newHashMap();
+    Map<Class<?>, Set<ITestNGMethod>> methodsMap = Maps.newHashMap();
 
     for (ITestNGMethod m : methods) {
       Object instances = m.getInstance();
-      Class clazz = instances == null ? m.getRealClass() : instances.getClass();
-      Set<ITestNGMethod> methodList = methodsMap.get(clazz);
-      if (null == methodList) {
-        methodList = Sets.newHashSet();
-        methodsMap.put(clazz, methodList);
-      }
+      Class<?> clazz = instances == null ? m.getRealClass() : instances.getClass();
+      Set<ITestNGMethod> methodList = methodsMap.computeIfAbsent(clazz, k -> Sets.newHashSet());
       methodList.add(m);
     }
 
@@ -180,8 +184,8 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
     }
 
     int index = 0;
-    for (Map.Entry<Class, Set<ITestNGMethod>> entry : methodsMap.entrySet()) {
-      Class clazz = entry.getKey();
+    for (Map.Entry<Class<?>, Set<ITestNGMethod>> entry : methodsMap.entrySet()) {
+      Class<?> clazz = entry.getKey();
       Set<ITestNGMethod> methodList = entry.getValue();
       // @author Borojevic
       // Need to check all the methods, not just @Test ones.
@@ -189,14 +193,18 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
       List<XmlInclude> methodNames = Lists.newArrayList(methodList.size());
       int ind = 0;
       for (ITestNGMethod m : methodList) {
+
         XmlInclude methodName =
-            new XmlInclude(
-                m.getConstructorOrMethod().getName(), m.getFailedInvocationNumbers(), ind++);
+            new XmlInclude(m.getMethodName(), m.getFailedInvocationNumbers(), ind++);
         methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
         methodNames.add(methodName);
       }
       xmlClass.setIncludedMethods(methodNames);
-      xmlClass.setParameters(classParameters.get(xmlClass.getName()));
+      xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
+              .values()
+              .stream()
+              .flatMap(map -> map.entrySet().stream())
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)-> v2))));
       result.add(xmlClass);
     }
 
@@ -212,7 +220,7 @@ public class FailedReporter extends TestListenerAdapter implements IReporter {
    */
   private static Map<String, String> findMethodLocalParameters(
       XmlTest srcXmlTest, ITestNGMethod method) {
-    Class clazz = method.getRealClass();
+    Class<?> clazz = method.getRealClass();
 
     for (XmlClass c : srcXmlTest.getClasses()) {
       if (clazz == c.getSupportClass()) {

@@ -24,11 +24,13 @@ public @interface Parameters {
    * public void verifyXmlFile(String path) { ... }<br>
    * </code>
    *
-   * <p>and in <tt>testng.xml</tt>:
+   * <p>and in <code>testng.xml</code>:
    *
    * <p><code>
    * &lt;parameter name="xmlPath" value="account.xml" /&gt;<br>
    * </code>
+   *
+   * @return the value
    */
   String[] value() default {};
 }

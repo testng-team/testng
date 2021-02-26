@@ -1,15 +1,19 @@
 package org.testng.internal;
 
+import java.util.function.Consumer;
 import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeId;
+import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 
 import java.io.File;
@@ -73,7 +77,7 @@ public final class Yaml {
     }
   }
 
-  /**
+  /*
    * The main entry point to convert an XmlSuite into YAML. This method is allowed to be used by
    * external tools (e.g. Eclipse).
    */
@@ -302,6 +306,38 @@ public final class Yaml {
     public TestNGConstructor(Class<?> theRoot) {
       super(theRoot);
       yamlClassConstructors.put(NodeId.scalar, new ConstructParallelMode());
+      yamlClassConstructors.put(NodeId.mapping, new ConstructXmlScript());
+    }
+
+    private class ConstructXmlScript extends ConstructMapping {
+
+      @Override
+      public Object construct(Node node) {
+        if (node.getType().equals(org.testng.xml.XmlMethodSelector.class)) {
+          final XmlScript xmlScript = new XmlScript();
+          org.testng.xml.XmlMethodSelector selector = new org.testng.xml.XmlMethodSelector();
+          MappingNode mappingNode = ((MappingNode) node);
+          List<NodeTuple> tuples = mappingNode.getValue();
+          for (NodeTuple tuple : tuples) {
+            setValue(tuple, "expression", xmlScript::setExpression);
+            setValue(tuple, "language", xmlScript::setLanguage);
+            setValue(tuple, "className", selector::setClassName);
+            setValue(tuple, "priority", text -> selector.setPriority(Integer.parseInt(text)));
+          }
+          selector.setScript(xmlScript);
+          return selector;
+        }
+        return super.construct(node);
+      }
+
+      private void setValue(NodeTuple tuple, String key, Consumer<String> cons) {
+        ScalarNode keyNode = (ScalarNode) tuple.getKeyNode();
+        ScalarNode valueNode = (ScalarNode) tuple.getValueNode();
+        if (keyNode.getValue().equals(key)) {
+          String value = constructScalar(valueNode);
+          cons.accept(value);
+        }
+      }
     }
 
     private class ConstructParallelMode extends ConstructScalar {

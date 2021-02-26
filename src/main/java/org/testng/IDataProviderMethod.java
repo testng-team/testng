@@ -17,12 +17,12 @@ public interface IDataProviderMethod {
    */
   Method getMethod();
 
-  /** The name of this DataProvider. */
+  /** @return The name of this DataProvider. */
   String getName();
 
-  /** Whether this data provider should be run in parallel. */
+  /** @return Whether this data provider should be run in parallel. */
   boolean isParallel();
 
-  /** Which indices to run from this data provider, default: all. */
+  /** @return Which indices to run from this data provider, default: all. */
   List<Integer> getIndices();
 }

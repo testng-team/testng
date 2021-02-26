@@ -1,10 +1,8 @@
 package org.testng;
 
 import org.testng.annotations.CustomAttribute;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
-import org.testng.internal.InstanceCreator;
 import org.testng.xml.XmlTest;
 
 import java.util.List;
@@ -42,7 +40,11 @@ public interface ITestNGMethod extends Cloneable {
 
   Object getInstance();
 
-  /** Needed for serialization. */
+  /**
+   * Needed for serialization.
+   *
+   * @return The hashcode of instances
+   */
   long[] getInstanceHashCodes();
 
   /**
@@ -55,12 +57,11 @@ public interface ITestNGMethod extends Cloneable {
    */
   String[] getGroupsDependedUpon();
 
-  /** If a group was not found. */
+  /** @return If a group was not found. */
   String getMissingGroup();
 
   void setMissingGroup(String group);
 
-  /** Before and After groups */
   String[] getBeforeGroups();
 
   String[] getAfterGroups();
@@ -94,10 +95,10 @@ public interface ITestNGMethod extends Cloneable {
   /** @return true if this method was annotated with @Configuration and afterSuite = true */
   boolean isAfterSuiteConfiguration();
 
-  /** @return <tt>true</tt> if this method is a @BeforeTest (@Configuration beforeTest=true) */
+  /** @return <code>true</code> if this method is a @BeforeTest (@Configuration beforeTest=true) */
   boolean isBeforeTestConfiguration();
 
-  /** @return <tt>true</tt> if this method is an @AfterTest (@Configuration afterTest=true) */
+  /** @return <code>true</code> if this method is an @AfterTest (@Configuration afterTest=true) */
   boolean isAfterTestConfiguration();
 
   boolean isBeforeGroupsConfiguration();
@@ -135,7 +136,10 @@ public interface ITestNGMethod extends Cloneable {
 
   void setDate(long date);
 
-  /** Returns if this ITestNGMethod can be invoked from within IClass. */
+  /**
+   * @param testClass The test class
+   * @return true if this ITestNGMethod can be invoked from within IClass.
+   */
   boolean canRunFromClass(IClass testClass);
 
   /** @return true if this method is alwaysRun=true */
@@ -166,37 +170,17 @@ public interface ITestNGMethod extends Cloneable {
 
   ITestNGMethod clone();
 
-  /**
-   * @deprecated - This method stands deprecated as of TestNG 7.0.0.
-   * Please use {@link #getRetryAnalyzer(ITestResult)} instead.
-   */
-  @Deprecated
-  IRetryAnalyzer getRetryAnalyzer();
+  IRetryAnalyzer getRetryAnalyzer(ITestResult result);
 
-  /**
-   * @deprecated - This method stands deprecated as of TestNG 7.0.0.
-   * Please use {@link #setRetryAnalyzerClass(Class)} instead.
-   */
-  @Deprecated
-  void setRetryAnalyzer(IRetryAnalyzer retryAnalyzer);
+  void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz);
 
-  default IRetryAnalyzer getRetryAnalyzer(ITestResult result) {
-    return getRetryAnalyzer();
-  }
-
-  default void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
-    setRetryAnalyzer(InstanceCreator.newInstance(clazz));
-  }
-
-  default Class<? extends IRetryAnalyzer> getRetryAnalyzerClass() {
-    return getRetryAnalyzer().getClass();
-  }
+  Class<? extends IRetryAnalyzer> getRetryAnalyzerClass();
 
   boolean skipFailedInvocations();
 
   void setSkipFailedInvocations(boolean skip);
 
-  /** The time under which all invocationCount methods need to complete by. */
+  /** @return The time under which all invocationCount methods need to complete by. */
   long getInvocationTimeOut();
 
   boolean ignoreMissingDependencies();
@@ -206,7 +190,9 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * Which invocation numbers of this method should be used (only applicable if it uses a data
    * provider). If this value is an empty list, use all the values returned from the data provider.
-   * These values are read from the XML file in the <include invocationNumbers="..."> tag.
+   * These values are read from the XML file in the <code>&lt;include invocationNumbers="..."&gt;</code> tag.
+   *
+   * @return The list of invocation numbers
    */
   List<Integer> getInvocationNumbers();
 
@@ -215,12 +201,18 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * The list of invocation numbers that failed, which is only applicable for methods that have a
    * data provider.
+   *
+   * @param number The invocation number that failed
    */
   void addFailedInvocationNumber(int number);
 
   List<Integer> getFailedInvocationNumbers();
 
-  /** The scheduling priority. Lower priorities get scheduled first. */
+  /**
+   * The scheduling priority. Lower priorities get scheduled first.
+   *
+   * @return The priority value
+   */
   int getPriority();
 
   void setPriority(int priority);
@@ -273,5 +265,9 @@ public interface ITestNGMethod extends Cloneable {
    */
   default IDataProviderMethod getDataProviderMethod() {
     return null;
+  }
+
+  default Class<?>[] getParameterTypes() {
+    return new Class<?>[] {};
   }
 }

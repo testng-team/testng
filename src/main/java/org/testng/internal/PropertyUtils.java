@@ -25,7 +25,7 @@ public class PropertyUtils {
       return;
     }
 
-    Class propClass = getPropertyType(instance.getClass(), name);
+    Class<?> propClass = getPropertyType(instance.getClass(), name);
     if (propClass == null) {
       LOGGER.warn(
           "Cannot set property "
@@ -41,7 +41,7 @@ public class PropertyUtils {
     setPropertyRealValue(instance, name, realValue);
   }
 
-  public static Class getPropertyType(Class instanceClass, String propertyName) {
+  public static Class<?> getPropertyType(Class<?> instanceClass, String propertyName) {
     if (instanceClass == null) {
       LOGGER.warn(
           "Cannot retrieve property class for " + propertyName + ". Target instance class is null");
@@ -53,7 +53,7 @@ public class PropertyUtils {
     return propDesc.getPropertyType();
   }
 
-  private static PropertyDescriptor getPropertyDescriptor(Class targetClass, String propertyName) {
+  private static PropertyDescriptor getPropertyDescriptor(Class<?> targetClass, String propertyName) {
     PropertyDescriptor result = null;
     if (targetClass == null) {
       LOGGER.warn("Cannot retrieve property " + propertyName + ". Class is null");

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class SuiteRunnerMap {
 
-  private Map<String, ISuite> m_map = Maps.newHashMap();
+  private final Map<String, ISuite> m_map = Maps.newHashMap();
 
   public void put(XmlSuite xmlSuite, ISuite suite) {
     final String name = xmlSuite.getName();

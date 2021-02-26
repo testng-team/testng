@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
@@ -82,7 +83,7 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir encoding the output as
    * UTF-8. If outDir does not exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory
+   * @param outputDir the output directory (may not exist). If <code>null</code> then current directory
    *     is used.
    * @param fileName the filename
    * @param sb the file content
@@ -97,7 +98,7 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir. If outDir does not
    * exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <tt>null</tt> then current directory
+   * @param outputDir the output directory (may not exist). If <code>null</code> then current directory
    *     is used.
    * @param fileName the filename
    * @param sb the file content
@@ -164,7 +165,7 @@ public final class Utils {
    * Open a BufferedWriter for the specified file. If output directory doesn't exist, it is created.
    * If the output file exists, it is deleted. The output file is created in any case.
    *
-   * @param outputDir output directory. If <tt>null</tt>, then current directory is used
+   * @param outputDir output directory. If <code>null</code>, then current directory is used
    * @param fileNameParameter file name
    * @throws IOException if anything goes wrong while creating files.
    */
@@ -227,7 +228,11 @@ public final class Utils {
     LOG.error("[Error] " + errorMessage);
   }
 
-  /** Tokenize the string using the separator. */
+  public static void warn(String warnMsg) {
+    LOG.warn("[Warning] " + warnMsg);
+  }
+
+  /* Tokenize the string using the separator. */
   public static String[] split(String string, String sep) {
     if ((string == null) || (string.length() == 0)) {
       return new String[0];
@@ -421,7 +426,7 @@ public final class Utils {
     if (null == object) {
       return "null";
     }
-    final String toString = object.toString();
+    final String toString = toString(object);
     if (isStringEmpty(toString)) {
       return "\"\"";
     } else if (String.class.equals(objectClass)) {
@@ -517,7 +522,7 @@ public final class Utils {
     return result.toString();
   }
 
-  /** Make sure that either we have an instance or if not, that the method is static */
+  /* Make sure that either we have an instance or if not, that the method is static */
   public static void checkInstanceOrStatic(Object instance, Method method) {
     if (instance == null && method != null && !Modifier.isStatic(method.getModifiers())) {
       throw new TestNGException(
@@ -600,4 +605,17 @@ public final class Utils {
     }
     return result;
   }
+
+  public static Class<?>[] extractParameterTypes(Object[] objects) {
+    return Arrays.stream(objects)
+        .map(Object::getClass)
+        .toArray(Class<?>[]::new);
+  }
+
+  public static String stringifyTypes(Class<?>[] parameterTypes) {
+    return Arrays.stream(parameterTypes)
+        .map(Class::getName)
+        .collect(Collectors.joining(","));
+  }
+
 }

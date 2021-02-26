@@ -1,7 +1,5 @@
 package org.testng.internal;
 
-import com.google.inject.Injector;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -34,6 +32,10 @@ import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.Parameter;
 import org.testng.internal.reflect.ReflectionRecipes;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.CreationAttributes;
+import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -47,7 +49,7 @@ import org.testng.annotations.*;
 public class Parameters {
   public static final String NULL_VALUE = "null";
 
-  private static List<Class<? extends Annotation>> annotationList =
+  private static final List<Class<? extends Annotation>> annotationList =
       Arrays.asList(
           BeforeSuite.class,
           AfterSuite.class,
@@ -61,7 +63,7 @@ public class Parameters {
           AfterMethod.class,
           Factory.class);
 
-  private static Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+  private static final Map<String, List<Class<?>>> mapping = Maps.newHashMap();
   /*
            +--------------+--------------+---------+--------+----------+-------------+
            |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
@@ -118,7 +120,7 @@ public class Parameters {
 
   /** Creates the parameters needed for constructing a test class instance. */
   public static Object[] createInstantiationParameters(
-      Constructor ctor,
+      Constructor<?> ctor,
       String methodAnnotation,
       IAnnotationFinder finder,
       String[] parameterNames,
@@ -136,7 +138,7 @@ public class Parameters {
   }
 
   /**
-   * Creates the parameters needed for the specified <tt>@Configuration</tt> <code>Method</code>.
+   * Creates the parameters needed for the specified <code>@Configuration</code> <code>Method</code>.
    *
    * @param m the configuraton method
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available
@@ -181,7 +183,7 @@ public class Parameters {
   }
 
   private static Object[] createParametersForConstructor(
-      Constructor constructor,
+      Constructor<?> constructor,
       Class<?>[] parameterTypes,
       String[] optionalValues,
       String methodAnnotation,
@@ -300,8 +302,8 @@ public class Parameters {
 
   /** Store the result of parameterTypes and optionalValues after filter out injected types */
   static final class FilterOutInJectedTypesResult {
-    private Class<?>[] parameterTypes;
-    private String[] optionalValues;
+    private final Class<?>[] parameterTypes;
+    private final String[] optionalValues;
 
     private FilterOutInJectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
       this.parameterTypes = parameterTypes;
@@ -402,7 +404,7 @@ public class Parameters {
       String methodAnnotation,
       String[] parameterNames) {
     int totalLength = parameterTypes.length;
-    for (Class parameterType : parameterTypes) {
+    for (Class<?> parameterType : parameterTypes) {
       if (INJECTED_TYPES.contains(parameterType)) {
         totalLength--;
       }
@@ -455,7 +457,7 @@ public class Parameters {
     }
   }
 
-  private static boolean validParameters(String methodAnnotation, Class[] parameterTypes) {
+  private static boolean validParameters(String methodAnnotation, Class<?>[] parameterTypes) {
     List<Class<?>> localMapping = mapping.get(methodAnnotation.replace("@", ""));
     if (localMapping == null) {
       return false;
@@ -544,7 +546,7 @@ public class Parameters {
     IDataProvidable dp = findDataProviderInfo(clazz, m, finder);
     if (dp != null) {
       String dataProviderName = dp.getDataProvider();
-      Class dataProviderClass = dp.getDataProviderClass();
+      Class<?> dataProviderClass = dp.getDataProviderClass();
 
       if (!Utils.isStringEmpty(dataProviderName)) {
         result =
@@ -643,12 +645,10 @@ public class Parameters {
       if (null != dp && name.equals(getDataProviderName(dp, m))) {
         Object instanceToUse;
         if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          Injector injector = context.getInjector(clazz);
-          if (injector != null) {
-            instanceToUse = injector.getInstance(dataProviderClass);
-          } else {
-            instanceToUse = InstanceCreator.newInstance(dataProviderClass);
-          }
+          IObjectDispenser dispenser = Dispenser.newInstance();
+          BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
+          CreationAttributes attributes = new CreationAttributes(context, basic, null);
+          instanceToUse = dispenser.dispense(attributes);
         } else {
           instanceToUse = instance;
         }
@@ -725,7 +725,7 @@ public class Parameters {
 
   /**
    * If the method has parameters, fill them in. Either by using a @DataProvider if any was
-   * provided, or by looking up <parameters> in testng.xml
+   * provided, or by looking up <code>&lt;parameters&gt;</code> in testng.xml
    *
    * @return An Iterator over the values for each parameter of this method.
    */
@@ -751,7 +751,7 @@ public class Parameters {
 
   /**
    * If the method has parameters, fill them in. Either by using a @DataProvider if any was
-   * provided, or by looking up <parameters> in testng.xml
+   * provided, or by looking up <code>&lt;parameters&gt;</code> in testng.xml
    *
    * @return An Iterator over the values for each parameter of this method.
    */
@@ -793,15 +793,24 @@ public class Parameters {
             dataProviderMethod, testMethod, methodParams.context);
       }
 
-      final Iterator<Object[]> parameters =
-          MethodInvocationHelper.invokeDataProvider(
-              dataProviderMethod
-                  .getInstance(), /* a test instance or null if the dataprovider is static*/
-              dataProviderMethod.getMethod(),
-              testMethod,
-              methodParams.context,
-              fedInstance,
-              annotationFinder);
+      Iterator<Object[]> initParams;
+      try {
+        initParams = MethodInvocationHelper.invokeDataProvider(
+            dataProviderMethod
+                .getInstance(), /* a test instance or null if the dataprovider is static*/
+            dataProviderMethod.getMethod(),
+            testMethod,
+            methodParams.context,
+            fedInstance,
+            annotationFinder);
+      } catch (RuntimeException e) {
+        for (IDataProviderListener each : holder.getListeners()) {
+          each.onDataProviderFailure(testMethod, methodParams.context, e);
+        }
+        throw e;
+      }
+
+      final Iterator<Object[]> parameters = initParams;
 
       for (IDataProviderListener dataProviderListener : holder.getListeners()) {
         dataProviderListener.afterDataProviderExecution(
@@ -922,7 +931,7 @@ public class Parameters {
     private final Map<String, String> xmlParameters;
     private final Method currentTestMethod;
     private final ITestContext context;
-    private Object[] parameterValues;
+    private final Object[] parameterValues;
     private final ITestResult testResult;
 
     public MethodParameters(Map<String, String> params, Map<String, String> methodParams) {

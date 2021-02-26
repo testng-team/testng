@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import org.testng.annotations.Guice;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -28,12 +30,16 @@ import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraphHelper;
 import org.testng.internal.GroupsHelper;
+import org.testng.internal.IConfigEavesdropper;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.IContainer;
 import org.testng.internal.IInvoker;
+import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.InstanceCreator;
-import org.testng.internal.InvokedMethod;
 import org.testng.internal.Invoker;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.TestMethodContainer;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
@@ -46,6 +52,7 @@ import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
+import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
@@ -53,6 +60,7 @@ import org.testng.thread.IWorker;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
+import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
@@ -67,7 +75,8 @@ import static org.testng.internal.MethodHelper.fixMethodsWithClass;
 
 /** This class takes care of running one Test. */
 public class TestRunner
-    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod> {
+    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>,
+    IConfigEavesdropper {
 
   private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
   private static final Logger LOGGER = Logger.getLogger(TestRunner.class);
@@ -78,7 +87,7 @@ public class TestRunner
   private String m_testName;
   private IInjectorFactory m_injectorFactory;
 
-  private final GuiceHelper guiceHelper = new GuiceHelper(this);
+  private GuiceHelper guiceHelper;
 
   private List<XmlClass> m_testClassesFromXml = null;
 
@@ -86,37 +95,31 @@ public class TestRunner
   private IAnnotationFinder m_annotationFinder = null;
 
   /** ITestListeners support. */
-  private List<ITestListener> m_testListeners = Lists.newArrayList();
+  private final List<ITestListener> m_testListeners = Lists.newArrayList();
 
-  private Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private final Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
-  private IConfigurationListener m_confListener = new ConfigurationListener();
+  private final IConfigurationListener m_confListener = new ConfigurationListener();
 
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       Maps.newHashMap();
   private final DataProviderHolder holder = new DataProviderHolder();
 
-  /**
-   * All the test methods we found, associated with their respective classes. Note that these test
-   * methods might belong to different classes. We pick which ones to run at runtime.
-   */
-  private ITestNGMethod[] m_allTestMethods = new ITestNGMethod[0];
-
-  // Information about this test run
-
   private Date m_startDate = new Date();
   private Date m_endDate = null;
+  private final IContainer<ITestNGMethod> testMethodsContainer =
+      new TestMethodContainer(this::computeAndGetAllTestMethods);
 
   /** A map to keep track of Class <-> IClass. */
-  private Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
+  private final Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
 
   /** Where the reports will be created. */
   private String m_outputDirectory = DEFAULT_PROP_OUTPUT_DIR;
 
   // The XML method selector (groups/methods included/excluded in XML)
-  private XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
+  private final XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
 
   private static int m_verbose = 1;
 
@@ -133,19 +136,19 @@ public class TestRunner
   private ITestNGMethod[] m_afterSuiteMethods = {};
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
-  private List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
+  private final List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
   private ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
-  private Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
 
   // All the tests that were run along with their result
-  private IResultMap m_passedTests = new ResultMap();
-  private IResultMap m_failedTests = new ResultMap();
-  private IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
-  private IResultMap m_skippedTests = new ResultMap();
+  private final IResultMap m_passedTests = new ResultMap();
+  private final IResultMap m_failedTests = new ResultMap();
+  private final IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
+  private final IResultMap m_skippedTests = new ResultMap();
 
-  private RunInfo m_runInfo = new RunInfo();
+  private final RunInfo m_runInfo = new RunInfo();
 
   // The host where this test was run, or null if run locally
   private String m_host;
@@ -208,10 +211,7 @@ public class TestRunner
         classListeners);
   }
 
-  /**
-   * This constructor is used by testng-remote, any changes related to it please contact with
-   * testng-team.
-   */
+  /* /!\ This constructor is used by testng-remote, any changes related to it please contact with testng-team. */
   public TestRunner(
       IConfiguration configuration,
       ISuite suite,
@@ -403,6 +403,9 @@ public class TestRunner
     m_xmlMethodSelector.setExcludedGroups(createGroups(m_xmlTest.getExcludedGroups()));
     m_xmlMethodSelector.setScript(m_xmlTest.getScript());
 
+    // Groups override
+    m_xmlMethodSelector.setOverrideIncludedMethods(m_configuration.getOverrideIncludedMethods());
+
     // Methods
     m_xmlMethodSelector.setXmlClasses(m_xmlTest.getXmlClasses());
 
@@ -475,7 +478,7 @@ public class TestRunner
     //
     for (ITestClass tc : m_classMap.values()) {
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
-      fixMethodsWithClass(tc.getBeforeClassMethods(), tc, beforeClassMethods);
+      fixMethodsWithClass(((ITestClassConfigInfo) tc).getAllBeforeClassMethods().toArray(new ITestNGMethod[0]), tc, beforeClassMethods);
       fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterClassMethods(), tc, afterClassMethods);
@@ -516,16 +519,8 @@ public class TestRunner
             m_excludedMethods,
             comparator);
 
-    m_allTestMethods =
-        MethodHelper.collectAndOrderMethods(
-            testMethods,
-            true /* forTest? */,
-            m_runInfo,
-            m_annotationFinder,
-            false /* unique */,
-            m_excludedMethods,
-            comparator);
-    m_classMethodMap = new ClassMethodMap(Arrays.asList(m_allTestMethods), m_xmlMethodSelector);
+    m_classMethodMap = new ClassMethodMap(Arrays.asList(testMethodsContainer.getItems()), m_xmlMethodSelector);
+    m_groupMethods = new ConfigurationGroupMethods(testMethodsContainer, beforeGroupMethods, afterGroupMethods);
 
     m_afterXmlTestMethods =
         MethodHelper.collectAndOrderMethods(
@@ -546,9 +541,22 @@ public class TestRunner
             true /* unique */,
             m_excludedMethods,
             comparator);
-    // shared group methods
-    m_groupMethods =
-        new ConfigurationGroupMethods(m_allTestMethods, beforeGroupMethods, afterGroupMethods);
+  }
+
+  private ITestNGMethod[] computeAndGetAllTestMethods() {
+    List<ITestNGMethod> testMethods = Lists.newArrayList();
+    for (ITestClass tc : m_classMap.values()) {
+      fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
+    }
+
+    return MethodHelper.collectAndOrderMethods(
+        testMethods,
+        true /* forTest? */,
+        m_runInfo,
+        m_annotationFinder,
+        false /* unique */,
+        m_excludedMethods,
+        comparator);
   }
 
   public Collection<ITestClass> getTestClasses() {
@@ -589,6 +597,15 @@ public class TestRunner
       }
     } finally {
       afterRun();
+      forgetHeavyReferencesIfNeeded();
+    }
+  }
+
+  private void forgetHeavyReferencesIfNeeded() {
+    if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      testMethodsContainer.clearItems();
+      m_groupMethods = null;
+      m_classMethodMap = null;
     }
   }
 
@@ -620,6 +637,8 @@ public class TestRunner
       m_invoker.getConfigInvoker().invokeConfigurations(arguments);
     }
   }
+
+  private ITestNGMethod[] m_allJunitTestMethods = new ITestNGMethod[] {};
 
   private void privateRunJUnit() {
     final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
@@ -666,8 +685,8 @@ public class TestRunner
 
           @Override
           public int getPriority() {
-            if (m_allTestMethods.length == 1) {
-              return m_allTestMethods[0].getPriority();
+            if (m_allJunitTestMethods.length == 1) {
+              return m_allJunitTestMethods[0].getPriority();
             } else {
               return 0;
             }
@@ -680,7 +699,7 @@ public class TestRunner
         });
 
     runJUnitWorkers(workers);
-    m_allTestMethods = runMethods.toArray(new ITestNGMethod[0]);
+    m_allJunitTestMethods = runMethods.toArray(new ITestNGMethod[0]);
   }
 
   private static Comparator<ITestNGMethod> newComparator(boolean needPrioritySort) {
@@ -708,9 +727,17 @@ public class TestRunner
     // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
-    ITestNGMethod[] interceptedOrder = intercept(m_allTestMethods);
-    IDynamicGraph<ITestNGMethod> graph =
-        DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+    ITestNGMethod[] interceptedOrder = intercept(getAllTestMethods());
+    AtomicReference<IDynamicGraph<ITestNGMethod>> reference = new AtomicReference<>();
+    TimeUtils.computeAndShowTime("DynamicGraphHelper.createDynamicGraph()",
+        () -> {
+          IDynamicGraph<ITestNGMethod> ref = DynamicGraphHelper
+              .createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+          reference.set(ref);
+        }
+    );
+    IDynamicGraph<ITestNGMethod> graph = reference.get();
+
     graph.setVisualisers(this.visualisers);
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
@@ -794,10 +821,10 @@ public class TestRunner
 
     // Check if an interceptor had altered the effective test method count. If yes, then we need to
     // update our configurationGroupMethod object with that information.
-    if (resultArray.length != m_groupMethods.getAllTestMethods().length) {
+    if (resultArray.length != testMethodsContainer.getItems().length) {
       m_groupMethods =
           new ConfigurationGroupMethods(
-              resultArray,
+              new TestMethodContainer(() -> resultArray),
               m_groupMethods.getBeforeGroupsMethods(),
               m_groupMethods.getAfterGroupsMethods());
     }
@@ -963,7 +990,11 @@ public class TestRunner
 
   @Override
   public ITestNGMethod[] getAllTestMethods() {
-    return m_allTestMethods;
+    if (getTest().isJUnit()) {
+      //This is true only when we are running JUnit mode
+      return m_allJunitTestMethods;
+    }
+    return testMethodsContainer.getItems();
   }
 
   @Override
@@ -988,6 +1019,11 @@ public class TestRunner
     return m_failedConfigurations;
   }
 
+  @Override
+  public IResultMap getConfigurationsScheduledForInvocation() {
+    return m_configsToBeInvoked;
+  }
+
   /** @see org.testng.ITestContext#getPassedConfigurations() */
   @Override
   public IResultMap getPassedConfigurations() {
@@ -1002,7 +1038,7 @@ public class TestRunner
 
   @Override
   public void addPassedTest(ITestNGMethod tm, ITestResult tr) {
-    m_passedTests.addResult(tr, tm);
+    m_passedTests.addResult(tr);
   }
 
   @Override
@@ -1022,23 +1058,19 @@ public class TestRunner
 
   @Override
   public void addSkippedTest(ITestNGMethod tm, ITestResult tr) {
-    m_skippedTests.addResult(tr, tm);
+    m_skippedTests.addResult(tr);
   }
 
-  @Override
-  public void addInvokedMethod(InvokedMethod im) {
-    m_invokedMethods.add(im);
-  }
 
   @Override
   public void addFailedTest(ITestNGMethod testMethod, ITestResult result) {
-    logFailedTest(testMethod, result, false /* withinSuccessPercentage */);
+    logFailedTest(result, false /* withinSuccessPercentage */);
   }
 
   @Override
   public void addFailedButWithinSuccessPercentageTest(
       ITestNGMethod testMethod, ITestResult result) {
-    logFailedTest(testMethod, result, true /* withinSuccessPercentage */);
+    logFailedTest(result, true /* withinSuccessPercentage */);
   }
 
   @Override
@@ -1069,13 +1101,11 @@ public class TestRunner
     return Lists.newArrayList(listeners);
   }
 
-  private void logFailedTest(
-      ITestNGMethod method, ITestResult tr, boolean withinSuccessPercentage) {
-
+  private void logFailedTest(ITestResult tr, boolean withinSuccessPercentage) {
     if (withinSuccessPercentage) {
-      m_failedButWithinSuccessPercentageTests.addResult(tr, method);
+      m_failedButWithinSuccessPercentageTests.addResult(tr);
     } else {
-      m_failedTests.addResult(tr, method);
+      m_failedTests.addResult(tr);
     }
   }
 
@@ -1153,37 +1183,43 @@ public class TestRunner
     m_configurationListeners.add(icl);
   }
 
-  private final Collection<IInvokedMethod> m_invokedMethods = new ConcurrentLinkedQueue<>();
-
   private void dumpInvokedMethods() {
-    MethodHelper.dumpInvokedMethodsInfoToConsole(m_invokedMethods, getVerbose());
+    MethodHelper.dumpInvokedMethodInfoToConsole(getAllTestMethods(), getVerbose());
   }
 
-  public List<ITestNGMethod> getInvokedMethods() {
-    return MethodHelper.invokedMethodsToMethods(m_invokedMethods);
-  }
-
-  private IResultMap m_passedConfigurations = new ResultMap();
-  private IResultMap m_skippedConfigurations = new ResultMap();
-  private IResultMap m_failedConfigurations = new ResultMap();
+  private final IResultMap m_passedConfigurations = new ResultMap();
+  private final IResultMap m_skippedConfigurations = new ResultMap();
+  private final IResultMap m_failedConfigurations = new ResultMap();
+  private final IResultMap m_configsToBeInvoked = new ResultMap();
 
   private class ConfigurationListener implements IConfigurationListener {
     @Override
-    public void beforeConfiguration(ITestResult tr) {}
+    public void beforeConfiguration(ITestResult tr) {
+      m_configsToBeInvoked.addResult(tr);
+    }
 
     @Override
     public void onConfigurationFailure(ITestResult itr) {
-      m_failedConfigurations.addResult(itr, itr.getMethod());
+      m_failedConfigurations.addResult(itr);
+      removeConfigurationResultAfterExecution(itr);
     }
 
     @Override
     public void onConfigurationSkip(ITestResult itr) {
-      m_skippedConfigurations.addResult(itr, itr.getMethod());
+      m_skippedConfigurations.addResult(itr);
+      removeConfigurationResultAfterExecution(itr);
     }
 
     @Override
     public void onConfigurationSuccess(ITestResult itr) {
-      m_passedConfigurations.addResult(itr, itr.getMethod());
+      m_passedConfigurations.addResult(itr);
+      removeConfigurationResultAfterExecution(itr);
+    }
+
+    private void removeConfigurationResultAfterExecution(ITestResult itr) {
+      //The remove method of ResultMap removes based on hashCode
+      //So lets find the result based on the method and remove it off.
+      m_configsToBeInvoked.getAllResults().removeIf(tr -> tr.getMethod().equals(itr.getMethod()));
     }
   }
 
@@ -1199,7 +1235,7 @@ public class TestRunner
     return m_xmlTest;
   }
 
-  private IAttributes m_attributes = new Attributes();
+  private final IAttributes m_attributes = new Attributes();
 
   @Override
   public Object getAttribute(String name) {
@@ -1221,14 +1257,32 @@ public class TestRunner
     return m_attributes.removeAttribute(name);
   }
 
-  private ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
+  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
 
   @Override
   public List<Module> getGuiceModules(Class<? extends Module> cls) {
     return m_guiceModules.get(cls);
   }
 
-  private Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
+  @Override
+  public List<Module> getAllGuiceModules() {
+    return m_guiceModules.values().
+        stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public void addGuiceModule(Module module) {
+    Class<? extends Module> cls = module.getClass();
+    List<Module> modules = m_guiceModules.get(cls);
+    boolean found = modules.stream().anyMatch(each -> each.getClass().equals(cls));
+    if (!found) {
+      modules.add(module);
+    }
+  }
+
+  private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
 
   @Override
   public Injector getInjector(List<Module> moduleInstances) {
@@ -1237,6 +1291,12 @@ public class TestRunner
 
   @Override
   public Injector getInjector(IClass iClass) {
+    if (hasNoGuiceAnnotations(iClass)) {
+      return null;
+    }
+    if (guiceHelper == null) {
+      guiceHelper = new GuiceHelper(this);
+    }
     return guiceHelper.getInjector(iClass, this.m_injectorFactory);
   }
 
@@ -1244,4 +1304,14 @@ public class TestRunner
   public void addInjector(List<Module> moduleInstances, Injector injector) {
     m_injectors.put(moduleInstances, injector);
   }
+
+  private static boolean hasNoGuiceAnnotations(IClass iClass) {
+    return AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass()) == null;
+  }
+
+  @Override
+  public IInjectorFactory getInjectorFactory() {
+    return this.m_injectorFactory;
+  }
+
 }

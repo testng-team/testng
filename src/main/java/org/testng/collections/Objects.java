@@ -9,8 +9,8 @@ public final class Objects {
   private Objects() {}
 
   private static class ValueHolder {
-    private String m_name;
-    private String m_value;
+    private final String m_name;
+    private final String m_value;
 
     public ValueHolder(String name, String value) {
       m_name = name;
@@ -32,8 +32,8 @@ public final class Objects {
   }
 
   public static class ToStringHelper {
-    private String m_className;
-    private List<ValueHolder> values = Lists.newArrayList();
+    private final String m_className;
+    private final List<ValueHolder> values = Lists.newArrayList();
     private boolean m_omitNulls = false;
     private boolean m_omitEmptyStrings = false;
 

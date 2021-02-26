@@ -15,7 +15,7 @@ import java.util.Stack;
  */
 public class Tarjan<T> {
   int m_index = 0;
-  private Stack<T> m_s;
+  private final Stack<T> m_s;
   Map<T, Integer> m_indices = Maps.newHashMap();
   Map<T, Integer> m_lowlinks = Maps.newHashMap();
   private List<T> m_cycle;

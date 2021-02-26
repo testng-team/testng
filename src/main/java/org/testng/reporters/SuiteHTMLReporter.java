@@ -11,7 +11,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
 import org.testng.collections.Maps;
-import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
@@ -43,7 +42,7 @@ public class SuiteHTMLReporter implements IReporter {
   private static final String TD_A_TARGET_MAIN_FRAME_HREF = "<td><a target='mainFrame' href='";
   private static final String CLOSE_TD = "</td>";
 
-  private Map<String, ITestClass> m_classes = Maps.newHashMap();
+  private final Map<String, ITestClass> m_classes = Maps.newHashMap();
   private String m_outputDirectory;
 
   @Override
@@ -86,6 +85,7 @@ public class SuiteHTMLReporter implements IReporter {
    * Overridable by subclasses to create different directory names (e.g. with timestamps).
    *
    * @param outputDirectory the output directory specified by the user
+   * @return the name of the output directory of the report
    */
   protected String generateOutputDirectoryName(String outputDirectory) {
     return outputDirectory;
@@ -213,18 +213,12 @@ public class SuiteHTMLReporter implements IReporter {
     Collection<ITestNGMethod> excluded = suite.getExcludedMethods();
     StringBuilder sb2 = new StringBuilder("<h2>Methods that were not run</h2><table>\n");
     for (ITestNGMethod method : excluded) {
-      ConstructorOrMethod m = method.getConstructorOrMethod();
-      if (m != null) {
-        sb2.append("<tr><td>")
-            .append(m.getDeclaringClass().getName())
-            .append(".")
-            .append(m.getName());
-        String description = method.getDescription();
-        if (isStringNotEmpty(description)) {
-          sb2.append("<br/>").append(SP2).append("<i>").append(description).append("</i>");
-        }
-        sb2.append("</td></tr>\n");
+      sb2.append("<tr><td>").append(method.getQualifiedName());
+      String description = method.getDescription();
+      if (isStringNotEmpty(description)) {
+        sb2.append("<br/>").append(SP2).append("<i>").append(description).append("</i>");
       }
+      sb2.append("</td></tr>\n");
     }
     sb2.append("</table>");
 

@@ -14,6 +14,7 @@ public class ArrayComparisonFailure extends AssertionError {
    * Construct a new <code>ArrayComparisonFailure</code> with an error text and the array's
    * dimension that was not equal
    *
+   * @param message the message
    * @param cause the exception that caused the array's content to fail the assertion test
    * @param index the array position of the objects that are not equal.
    */

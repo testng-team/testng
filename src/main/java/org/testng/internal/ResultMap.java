@@ -1,71 +1,64 @@
 package org.testng.internal;
 
+import java.util.stream.Collectors;
 import org.testng.IResultMap;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Objects;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ResultMap implements IResultMap {
 
-  private final Map<ITestResult, ITestNGMethod> m_map = new ConcurrentHashMap<>();
+  private final Set<ITestResult> results = ConcurrentHashMap.newKeySet();
 
   @Override
   public void addResult(ITestResult result, ITestNGMethod method) {
-    m_map.put(result, method);
+    addResult(result);
+  }
+
+  @Override
+  public void addResult(ITestResult result) {
+    results.add(result);
   }
 
   @Override
   public Set<ITestResult> getResults(ITestNGMethod method) {
-    Set<ITestResult> result = new HashSet<>();
-
-    for (Map.Entry<ITestResult, ITestNGMethod> entry : m_map.entrySet()) {
-      if (entry.getValue().equals(method)) {
-        result.add(entry.getKey());
-      }
-    }
-
-    return result;
+    return results.stream()
+        .filter(result -> result.getMethod().equals(method))
+        .collect(Collectors.toSet());
   }
 
   @Override
   public void removeResult(ITestNGMethod m) {
-    for (Entry<ITestResult, ITestNGMethod> entry : m_map.entrySet()) {
-      if (entry.getValue().equals(m)) {
-        m_map.remove(entry.getKey());
-        return;
-      }
-    }
+    Set<ITestResult> toRemove = getResults(m);
+    results.removeAll(toRemove);
   }
 
   @Override
   public void removeResult(ITestResult r) {
-    m_map.remove(r);
+    results.remove(r);
   }
 
   @Override
   public Set<ITestResult> getAllResults() {
-    return m_map.keySet();
+    return results;
   }
 
   @Override
   public int size() {
-    return m_map.size();
+    return results.size();
   }
 
   @Override
   public Collection<ITestNGMethod> getAllMethods() {
-    return m_map.values();
+    return results.stream().map(ITestResult::getMethod).collect(Collectors.toSet());
   }
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(getClass()).add("map", m_map).toString();
+    return Objects.toStringHelper(getClass()).add("map", results).toString();
   }
 }

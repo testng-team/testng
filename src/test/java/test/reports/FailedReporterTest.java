@@ -6,13 +6,17 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
 import org.testng.xml.Parser;
+import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.xml.sax.SAXException;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.builder.Input;
+import org.xmlunit.diff.Diff;
 import test.SimpleBaseTest;
-
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,5 +52,28 @@ public class FailedReporterTest extends SimpleBaseTest {
 
     XmlClass failedClass = failedTest.getClasses().get(0);
     Assert.assertEquals("44", failedClass.getAllParameters().get("p"));
+  }
+
+  @Test(description = "ISSUE-2445")
+  public void testParameterPreservationWithFactory() throws IOException {
+    final SuiteXmlParser parser = new SuiteXmlParser();
+    final String testSuite = "src/test/resources/xml/github2445/test-suite.xml";
+    final String expectedResult = "src/test/resources/xml/github2445/expected-failed-report.xml";
+    final XmlSuite xmlSuite = parser.parse(testSuite, new FileInputStream(testSuite), true);
+    final TestNG tng = create(xmlSuite);
+
+    final Path temp = Files.createTempDirectory("tmp");
+    tng.setOutputDirectory(temp.toAbsolutePath().toString());
+    tng.addListener(new FailedReporter());
+    tng.run();
+
+    final Diff myDiff = DiffBuilder.compare(Input.fromFile(expectedResult))
+                                   .withTest(Input.fromFile(temp.resolve(FailedReporter.TESTNG_FAILED_XML)
+                                                                .toAbsolutePath()
+                                                                .toString()))
+                                   .checkForSimilar()
+                                   .ignoreWhitespace()
+                                   .build();
+    Assert.assertFalse(myDiff.hasDifferences());
   }
 }

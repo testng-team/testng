@@ -2,11 +2,11 @@ package org.testng.internal;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
 import org.testng.collections.Lists;
@@ -218,8 +218,8 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     // important that these maps always stay consistent with each other. All modifications should go
     // through addEdge
     // and removeNode.
-    private final Map<T, Map<T, Integer>> m_incomingEdges = new HashMap<>();
-    private final Map<T, Map<T, Integer>> m_outgoingEdges = new HashMap<>();
+    private final Map<T, Map<T, Integer>> m_incomingEdges = new ConcurrentHashMap<>();
+    private final Map<T, Map<T, Integer>> m_outgoingEdges = new ConcurrentHashMap<>();
 
     public void addEdge(int weight, T from, T to, boolean ignoreCycles) {
       if (from.equals(to)) {
@@ -355,7 +355,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     }
 
     private static <T> void addEdgeToMap(Map<T, Map<T, Integer>> map, T n1, T n2, int weight) {
-      Map<T, Integer> edges = map.computeIfAbsent(n1, k -> new HashMap<>());
+      Map<T, Integer> edges = map.computeIfAbsent(n1, k -> new ConcurrentHashMap<>());
 
       Integer existingWeight = edges.get(n2);
       edges.put(n2, Math.max(weight, existingWeight != null ? existingWeight : Integer.MIN_VALUE));

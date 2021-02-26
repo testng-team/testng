@@ -344,7 +344,7 @@ public class EmailableReporter2 implements IReporter {
               .append("<td rowspan=\"")
               .append(resultsCount)
               .append("\">")
-              .append(start)
+              .append(getFormattedStartTime(start))
               .append("</td>")
               .append("<td rowspan=\"")
               .append(resultsCount)
@@ -387,6 +387,10 @@ public class EmailableReporter2 implements IReporter {
       scenarioCount = scenarioIndex - startingScenarioIndex;
     }
     return scenarioCount;
+  }
+
+  protected String getFormattedStartTime(long startTimeInMillisFromEpoch) {
+    return String.valueOf(startTimeInMillisFromEpoch);
   }
 
   /** Writes the details for all test scenarios. */
@@ -691,7 +695,12 @@ public class EmailableReporter2 implements IReporter {
       return results.stream().filter(ITestResult::wasRetried).collect(Collectors.toSet());
     }
 
-    /** Groups test results by method and then by class. */
+    /**
+     * Groups test results by method and then by class.
+     *
+     * @param results All test results
+     * @return Test result grouped by method and class
+     */
     protected List<ClassResult> groupResults(Set<ITestResult> results) {
       List<ClassResult> classResults = Lists.newArrayList();
       if (!results.isEmpty()) {
@@ -805,7 +814,12 @@ public class EmailableReporter2 implements IReporter {
       return excludedGroups;
     }
 
-    /** Formats an array of groups for display. */
+    /**
+     * Formats an array of groups for display.
+     *
+     * @param groups The groups
+     * @return The String value of the groups
+     */
     protected String formatGroups(String[] groups) {
       if (groups.length == 0) {
         return "";

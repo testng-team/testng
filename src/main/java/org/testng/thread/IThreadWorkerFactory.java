@@ -4,9 +4,6 @@ import java.util.List;
 
 /**
  * A factory that creates workers used by {@code GraphThreadPoolExecutor}
- *
- * @author nullin
- * @param <T>
  */
 public interface IThreadWorkerFactory<T> {
 

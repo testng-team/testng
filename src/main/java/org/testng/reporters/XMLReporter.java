@@ -79,6 +79,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
     Utils.writeUtf8File(config.getOutputDirectory(), fileName(), rootBuffer, null /* no prefix */);
   }
 
+  @Override
   public void addCustomTagsFor(XMLStringBuffer xmlBuffer, ITestResult testResult) {
 
   }
@@ -196,7 +197,14 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
     return props;
   }
 
-  /** Add started-at, finished-at and duration-ms attributes to the <suite> tag */
+  /**
+   * Add started-at, finished-at and duration-ms attributes to the <code>&lt;suite&gt;</code> tag
+   *
+   * @param config The reporter config
+   * @param attributes The properties
+   * @param minStartDate The minimum start date
+   * @param maxEndDate The maximum end date
+   */
   public static void addDurationAttributes(
       XMLReporterConfig config, Properties attributes, Date minStartDate, Date maxEndDate) {
 
@@ -217,6 +225,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
     return new LinkedHashSet<>(methods);
   }
 
+  @Override
   public XMLReporterConfig getConfig() {
     return config;
   }

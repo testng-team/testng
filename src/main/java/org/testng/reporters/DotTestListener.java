@@ -1,9 +1,10 @@
 package org.testng.reporters;
 
+import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 
-public class DotTestListener extends TestListenerAdapter {
+public class DotTestListener implements ITestListener {
   private int m_count = 0;
 
   @Override

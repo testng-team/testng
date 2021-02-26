@@ -13,8 +13,6 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
 
-import static org.testng.xml.XmlSuite.ParallelMode.skipDeprecatedValues;
-
 /** This class describes the tag &lt;suite&gt; in testng.xml. */
 public class XmlSuite implements Cloneable {
   /** Parallel modes. */
@@ -23,11 +21,7 @@ public class XmlSuite implements Cloneable {
     METHODS("methods"),
     CLASSES("classes"),
     INSTANCES("instances"),
-    NONE("none", false),
-    @Deprecated
-    TRUE("true"),
-    @Deprecated
-    FALSE("false", false);
+    NONE("none", false);
 
     private final String name;
     private final boolean isParallel;
@@ -41,38 +35,38 @@ public class XmlSuite implements Cloneable {
       this.isParallel = isParallel;
     }
 
+    private static void warnUser(String value, ParallelMode mode) {
+      Utils.log(
+          XmlSuite.class.getSimpleName(),
+          1,
+          "[WARN] 'parallel' value '" + value +
+              "' is no longer valid, defaulting to '" + mode + "'.");
+    }
+
     public static XmlSuite.ParallelMode getValidParallel(String parallel) {
       if (parallel == null) {
         return ParallelMode.NONE;
       }
       try {
-        return XmlSuite.ParallelMode.valueOf(parallel.toUpperCase());
+        return ParallelMode.valueOf(parallel.toUpperCase());
       } catch (IllegalArgumentException e) {
+        if ("true".equalsIgnoreCase(parallel)) {
+          warnUser("true", METHODS);
+          return ParallelMode.METHODS;
+        }
+        if ("false".equalsIgnoreCase(parallel)) {
+          warnUser("false", NONE);
+          return ParallelMode.NONE;
+        }
         return ParallelMode.NONE;
       }
     }
 
+    /**
+     * @deprecated - This method stands deprecated as of v7.4.0
+     */
+    @Deprecated
     public static ParallelMode skipDeprecatedValues(ParallelMode parallel) {
-      if (parallel == ParallelMode.TRUE) {
-        Utils.log(
-            "XmlSuite",
-            1,
-            "[WARN] 'parallel' value 'true' is deprecated, default value will be used instead: '"
-                + ParallelMode.METHODS
-                + "'.");
-        return ParallelMode.METHODS;
-      }
-
-      if (parallel == ParallelMode.FALSE) {
-        Utils.log(
-            "XmlSuite",
-            1,
-            "[WARN] 'parallel' value 'false' is deprecated, default value will be used instead: '"
-                + ParallelMode.NONE
-                + "'.");
-        return ParallelMode.NONE;
-      }
-
       return parallel;
     }
 
@@ -186,7 +180,7 @@ public class XmlSuite implements Cloneable {
   private String m_timeOut;
 
   /** List of child XML suites specified using <suite-file> tags. */
-  private List<XmlSuite> m_childSuites = Lists.newArrayList();
+  private final List<XmlSuite> m_childSuites = Lists.newArrayList();
 
   /** Parent XML suite if this suite was specified in another suite using <suite-file> tag. */
   private XmlSuite m_parentSuite;
@@ -249,27 +243,13 @@ public class XmlSuite implements Cloneable {
     m_objectFactory = objectFactory;
   }
 
-  /** @deprecated Use #setParallel(XmlSuite.ParallelMode) instead */
-  @Deprecated
-  public void setParallel(String parallel) {
-    if (parallel == null) {
-      setParallel((ParallelMode) null);
-    } else {
-      setParallel(XmlSuite.ParallelMode.getValidParallel(parallel));
-    }
-  }
-
   /**
    * Sets the parallel mode.
    *
    * @param parallel The parallel mode.
    */
   public void setParallel(ParallelMode parallel) {
-    if (parallel == null) {
-      m_parallel = DEFAULT_PARALLEL;
-    } else {
-      m_parallel = skipDeprecatedValues(parallel);
-    }
+    m_parallel = (parallel == null) ? DEFAULT_PARALLEL : parallel;
   }
 
   public void setParentModule(String parentModule) {
@@ -416,7 +396,7 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * Gets the parameters that apply to tests in this suite.<br>
+   * @return the parameters that apply to tests in this suite.<br>
    * The set of parameters for a suite is appended with parameters from the parent suite. Also, parameters
    * from this suite override the same named parameters from the parent suite.
    */
@@ -850,12 +830,6 @@ public class XmlSuite implements Cloneable {
       if (other.m_xmlPackages != null) return f();
     } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return f();
     return true;
-  }
-
-  /** @deprecated Use {@link #setPreserveOrder(Boolean)} instead */
-  @Deprecated
-  public void setPreserveOrder(String f) {
-    setPreserveOrder(Boolean.valueOf(f));
   }
 
   public void setPreserveOrder(Boolean f) {

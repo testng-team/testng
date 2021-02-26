@@ -121,8 +121,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
       m_parentRunner.addPassedTest(tm, tr);
     }
 
-    InvokedMethod im = new InvokedMethod(test, tm, tri.m_start, tr);
-    m_parentRunner.addInvokedMethod(im);
+    InvokedMethod im = new InvokedMethod(tri.m_start, tr);
+    tm.setInvokedAt(im.getDate());
     m_methods.add(tm);
     for (IInvokedMethodListener l : m_invokedMethodListeners) {
       l.beforeInvocation(im, tr);
@@ -134,6 +134,10 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   /**
    * Returns the Test corresponding to the given suite. This is a template method, subclasses
    * override runFailed(), clearStatus().
+   *
+   * @param testClass The test class
+   * @param methods The test methods
+   * @return The corresponding Test
    */
   protected Test getTest(Class testClass, String... methods) {
     if (methods.length > 0) {
@@ -202,7 +206,13 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     start(testClass, methods);
   }
 
-  /** Starts a test run. Analyzes the command line arguments and runs the given test suite. */
+  /**
+   * Starts a test run. Analyzes the command line arguments and runs the given test suite.
+   *
+   * @param testCase The test class to run
+   * @param methods The test methods to run
+   * @return The test result
+   */
   public TestResult start(Class testCase, String... methods) {
     try {
       Test suite = getTest(testCase, methods);
@@ -224,7 +234,11 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
         "Failure in JUnit mode for class " + clazz.getName() + ": " + message);
   }
 
-  /** Creates the TestResult to be used for the test run. */
+  /**
+   * Creates the TestResult to be used for the test run.
+   *
+   * @return The created test result
+   */
   protected TestResult createTestResult() {
     return new TestResult();
   }

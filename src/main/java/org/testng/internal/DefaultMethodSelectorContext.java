@@ -13,7 +13,7 @@ import java.util.Map;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class DefaultMethodSelectorContext implements IMethodSelectorContext {
-  private Map<Object, Object> m_userData = Maps.newHashMap();
+  private final Map<Object, Object> m_userData = Maps.newHashMap();
   private boolean m_isStopped = false;
 
   @Override

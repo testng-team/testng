@@ -1,7 +1,13 @@
 package org.testng.xml;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -9,6 +15,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
+import org.testng.util.Strings;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -33,42 +40,46 @@ import static org.testng.internal.Utils.isStringBlank;
  * @author Cedric Beust
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
+// TODO move to internal
 public class TestNGContentHandler extends DefaultHandler {
   private XmlSuite m_currentSuite = null;
   private XmlTest m_currentTest = null;
-  private List<String> m_currentDefines = null;
-  private List<String> m_currentRuns = null;
+  private XmlDefine m_currentDefine = null;
+  private XmlRun m_currentRun = null;
   private List<XmlClass> m_currentClasses = null;
   private int m_currentTestIndex = 0;
   private int m_currentClassIndex = 0;
   private int m_currentIncludeIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
-  private List<XmlSuite> m_suites = Lists.newArrayList();
+  private final List<XmlSuite> m_suites = Lists.newArrayList();
   private XmlGroups m_currentGroups = null;
-  private List<String> m_currentIncludedGroups = null;
-  private List<String> m_currentExcludedGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
   private Map<String, String> m_currentClassParameters = null;
   private Include m_currentInclude;
-  private List<String> m_currentMetaGroup = null;
-  private String m_currentMetaGroupName;
 
   //Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
   private final EntityResolver m_redirectionAwareResolver = (publicId, systemId) -> {
     URL url = new URL(systemId);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    InputStream stream = getClass().getResourceAsStream(url.getPath());
+    if (stream == null) {
+      String msg = String.format("Failed to read [%s] from CLASSPATH. "
+          + "Attempting to read from [%s].", url.getPath(), systemId);
+      Logger.getLogger(getClass()).warn(msg);
+      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-    int status = conn.getResponseCode();
-    if ((status == HttpURLConnection.HTTP_MOVED_TEMP
-        || status == HttpURLConnection.HTTP_MOVED_PERM
-        || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+      int status = conn.getResponseCode();
+      if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+          || status == HttpURLConnection.HTTP_MOVED_PERM
+          || status == HttpURLConnection.HTTP_SEE_OTHER)) {
 
-      String newUrl = conn.getHeaderField("Location");
-      conn = (HttpURLConnection) new URL(newUrl).openConnection();
+        String newUrl = conn.getHeaderField("Location");
+        conn = (HttpURLConnection) new URL(newUrl).openConnection();
+      }
+      stream = conn.getInputStream();
     }
-    return new InputSource(conn.getInputStream());
+    return new InputSource(Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));
   };
 
   enum Location {
@@ -79,7 +90,7 @@ public class TestNGContentHandler extends DefaultHandler {
     EXCLUDE
   }
 
-  private Stack<Location> m_locations = new Stack<>();
+  private final Stack<Location> m_locations = new Stack<>();
 
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
@@ -88,12 +99,12 @@ public class TestNGContentHandler extends DefaultHandler {
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
-  private List<String> m_suiteFiles = Lists.newArrayList();
+  private final List<String> m_suiteFiles = Lists.newArrayList();
   private boolean m_enabledTest;
   private List<String> m_listeners;
 
-  private String m_fileName;
-  private boolean m_loadClasses;
+  private final String m_fileName;
+  private final boolean m_loadClasses;
   private boolean m_validate = false;
   private boolean m_hasWarn = false;
 
@@ -103,29 +114,50 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   @Override
-  public InputSource resolveEntity(String systemId, String publicId)
+  public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException, IOException {
 
-    if (publicId == null) {
-      return m_redirectionAwareResolver.resolveEntity(systemId, null);
-    }
-    if (Parser.isUnRecognizedPublicId(publicId)) {
-      if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(publicId)) {
-        throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
+    if (skipConsideringSystemId(systemId)) {
+      m_validate = true;
+      InputStream is = loadDtdUsingClassLoader();
+      if (is != null) {
+        return new InputSource(is);
       }
-      return m_redirectionAwareResolver.resolveEntity(systemId, publicId);
+      //If the classpath loading of DTD fails, then we try to load it from "https" TestNG site.
+      System.out.println(
+          "WARNING: couldn't find in classpath "
+              + systemId
+              + "\n"
+              + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
+      return m_redirectionAwareResolver.resolveEntity(publicId, Parser.HTTPS_TESTNG_DTD_URL);
     }
-    m_validate = true;
-    InputStream is = loadDtdUsingClassLoader();
-    if (is != null) {
-      return new InputSource(is);
+    //If we are here, then we don't know the host from which user is trying to load the dtd
+    if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(systemId)) {
+      throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
     }
-    System.out.println(
-        "WARNING: couldn't find in classpath "
-            + publicId
-            + "\n"
-            + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
-    return super.resolveEntity(systemId, Parser.HTTPS_TESTNG_DTD_URL);
+    return m_redirectionAwareResolver.resolveEntity(publicId, systemId);
+  }
+
+  private static boolean skipConsideringSystemId(String systemId) {
+    return Strings.isNullOrEmpty(systemId)
+        || Parser.isDTDDomainInternallyKnownToTestNG(systemId)
+        || isMalformedFileSystemBasedSystemId(systemId);
+  }
+
+  private static boolean isMalformedFileSystemBasedSystemId(String systemId) {
+    try {
+
+      URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8.name()).trim());
+      if (url.getProtocol().equals("file")) {
+        File file = new File(url.getFile());
+        boolean isDirectory =  file.isDirectory();
+        boolean fileExists = file.exists();
+        return isDirectory || !fileExists;
+      }
+      return false;
+    } catch (MalformedURLException | UnsupportedEncodingException e) {
+      return true;
+    }
   }
 
   private static boolean isUnsecuredUrl(String str) {
@@ -207,11 +239,11 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances != null) {
-        m_currentSuite.setGroupByInstances(Boolean.valueOf(groupByInstances));
+        m_currentSuite.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentSuite.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
+        m_currentSuite.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
       }
       String threadCount = attributes.getValue("thread-count");
       if (null != threadCount) {
@@ -257,20 +289,12 @@ public class TestNGContentHandler extends DefaultHandler {
   private void xmlDefine(boolean start, Attributes attributes) {
     if (start) {
       String name = attributes.getValue("name");
-      m_currentDefines = Lists.newArrayList();
-      m_currentMetaGroup = Lists.newArrayList();
-      m_currentMetaGroupName = name;
+      m_currentDefine = new XmlDefine();
+      m_currentDefine.setName(name);
     } else {
-      if (m_currentTest != null) {
-        m_currentTest.addMetaGroup(m_currentMetaGroupName, m_currentMetaGroup);
-      } else {
-        XmlDefine define = new XmlDefine();
-        define.setName(m_currentMetaGroupName);
-        define.getIncludes().addAll(m_currentMetaGroup);
-
-        m_currentGroups.addDefine(define);
-      }
-      m_currentDefines = null;
+      // define is only defined within the context of XmlGroups
+      m_currentGroups.addDefine(m_currentDefine);
+      m_currentDefine = null;
     }
   }
 
@@ -309,15 +333,15 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentTest.setJUnit(Boolean.valueOf(jUnit));
+        m_currentTest.setJUnit(Boolean.parseBoolean(jUnit));
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
-        m_currentTest.setSkipFailedInvocationCounts(Boolean.valueOf(skip));
+        m_currentTest.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));
       }
       String groupByInstances = attributes.getValue("group-by-instances");
       if (groupByInstances != null) {
-        m_currentTest.setGroupByInstances(Boolean.valueOf(groupByInstances));
+        m_currentTest.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
       String preserveOrder = attributes.getValue("preserve-order");
       if (preserveOrder != null) {
@@ -350,7 +374,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_enabledTest = true;
       String enabledTestString = attributes.getValue("enabled");
       if (null != enabledTestString) {
-        m_enabledTest = Boolean.valueOf(enabledTestString);
+        m_enabledTest = Boolean.parseBoolean(enabledTestString);
       }
     } else {
       if (null != m_currentTestParameters && m_currentTestParameters.size() > 0) {
@@ -370,8 +394,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <classes> */
-  public void xmlClasses(boolean start, Attributes attributes) {
+  public void xmlClasses(boolean start) {
     if (start) {
       m_currentClasses = Lists.newArrayList();
       m_currentClassIndex = 0;
@@ -381,8 +404,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <listeners> */
-  public void xmlListeners(boolean start, Attributes attributes) {
+  public void xmlListeners(boolean start) {
     if (start) {
       m_listeners = Lists.newArrayList();
     } else {
@@ -393,7 +415,6 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <listener> */
   public void xmlListener(boolean start, Attributes attributes) {
     if (start) {
       String listener = attributes.getValue("class-name");
@@ -401,8 +422,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <packages> */
-  public void xmlPackages(boolean start, Attributes attributes) {
+  public void xmlPackages(boolean start) {
     if (start) {
       m_currentPackages = Lists.newArrayList();
     } else {
@@ -427,8 +447,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <method-selectors> */
-  public void xmlMethodSelectors(boolean start, Attributes attributes) {
+  public void xmlMethodSelectors(boolean start) {
     if (start) {
       m_currentSelectors = new ArrayList<>();
       return;
@@ -442,7 +461,6 @@ public class TestNGContentHandler extends DefaultHandler {
     m_currentSelectors = null;
   }
 
-  /** Parse <selector-class> */
   public void xmlSelectorClass(boolean start, Attributes attributes) {
     if (start) {
       m_currentSelector.setName(attributes.getValue("name"));
@@ -454,8 +472,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <method-selector> */
-  public void xmlMethodSelector(boolean start, Attributes attributes) {
+  public void xmlMethodSelector(boolean start) {
     if (start) {
       m_currentSelector = new XmlMethodSelector();
     } else {
@@ -477,23 +494,16 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <run> */
-  public void xmlRun(boolean start, Attributes attributes) {
+  public void xmlRun(boolean start) {
     if (start) {
-      m_currentRuns = Lists.newArrayList();
+      m_currentRun = new XmlRun();
     } else {
-      if (m_currentTest != null) {
-        m_currentTest.setIncludedGroups(m_currentIncludedGroups);
-        m_currentTest.setExcludedGroups(m_currentExcludedGroups);
-      } else {
-        m_currentSuite.setIncludedGroups(m_currentIncludedGroups);
-        m_currentSuite.setExcludedGroups(m_currentExcludedGroups);
-      }
-      m_currentRuns = null;
+      // Xml run is only defined in the context of groups
+      m_currentGroups.setRun(m_currentRun);
+      m_currentRun = null;
     }
   }
 
-  /** Parse <group> */
   public void xmlGroup(boolean start, Attributes attributes) {
     if (start) {
       m_currentTest.addXmlDependencyGroup(
@@ -501,16 +511,16 @@ public class TestNGContentHandler extends DefaultHandler {
     }
   }
 
-  /** Parse <groups> */
-  public void xmlGroups(boolean start, Attributes attributes) {
+  public void xmlGroups(boolean start) {
     if (start) {
       m_currentGroups = new XmlGroups();
-      m_currentIncludedGroups = Lists.newArrayList();
-      m_currentExcludedGroups = Lists.newArrayList();
     } else {
       if (m_currentTest == null) {
         m_currentSuite.setGroups(m_currentGroups);
+      } else {
+        m_currentTest.setGroups(m_currentGroups);
       }
+
       m_currentGroups = null;
     }
   }
@@ -525,8 +535,9 @@ public class TestNGContentHandler extends DefaultHandler {
     if (!m_validate && !m_hasWarn) {
       String msg = String.format(
           "It is strongly recommended to add "
-              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of your file, "
-              + "otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL
+              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of the suite file [%s]"
+              + " otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL,
+          this.m_fileName
       );
       Logger.getLogger(TestNGContentHandler.class).warn(msg);
       m_hasWarn = true;
@@ -544,17 +555,17 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("script".equals(qName)) {
       xmlScript(true, attributes);
     } else if ("method-selector".equals(qName)) {
-      xmlMethodSelector(true, attributes);
+      xmlMethodSelector(true);
     } else if ("method-selectors".equals(qName)) {
-      xmlMethodSelectors(true, attributes);
+      xmlMethodSelectors(true);
     } else if ("selector-class".equals(qName)) {
       xmlSelectorClass(true, attributes);
     } else if ("classes".equals(qName)) {
-      xmlClasses(true, attributes);
+      xmlClasses(true);
     } else if ("packages".equals(qName)) {
-      xmlPackages(true, attributes);
+      xmlPackages(true);
     } else if ("listeners".equals(qName)) {
-      xmlListeners(true, attributes);
+      xmlListeners(true);
     } else if ("listener".equals(qName)) {
       xmlListener(true, attributes);
     } else if ("class".equals(qName)) {
@@ -577,11 +588,11 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("define".equals(qName)) {
       xmlDefine(true, attributes);
     } else if ("run".equals(qName)) {
-      xmlRun(true, attributes);
+      xmlRun(true);
     } else if ("group".equals(qName)) {
       xmlGroup(true, attributes);
     } else if ("groups".equals(qName)) {
-      xmlGroups(true, attributes);
+      xmlGroups(true);
     } else if ("methods".equals(qName)) {
       xmlMethod(true);
     } else if ("include".equals(qName)) {
@@ -644,10 +655,10 @@ public class TestNGContentHandler extends DefaultHandler {
 
         include.setDescription(m_currentInclude.description);
         m_currentIncludedMethods.add(include);
-      } else if (null != m_currentDefines) {
-        m_currentMetaGroup.add(name);
-      } else if (null != m_currentRuns) {
-        m_currentIncludedGroups.add(name);
+      } else if (null != m_currentDefine) {
+        m_currentDefine.onElement(name);
+      } else if (null != m_currentRun) {
+        m_currentRun.onInclude(name);
       } else if (null != m_currentPackage) {
         m_currentPackage.getInclude().add(name);
       }
@@ -663,8 +674,8 @@ public class TestNGContentHandler extends DefaultHandler {
       String name = attributes.getValue("name");
       if (null != m_currentExcludedMethods) {
         m_currentExcludedMethods.add(name);
-      } else if (null != m_currentRuns) {
-        m_currentExcludedGroups.add(name);
+      } else if (null != m_currentRun) {
+        m_currentRun.onExclude(name);
       } else if (null != m_currentPackage) {
         m_currentPackage.getExclude().add(name);
       }
@@ -701,25 +712,25 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("define".equals(qName)) {
       xmlDefine(false, null);
     } else if ("run".equals(qName)) {
-      xmlRun(false, null);
+      xmlRun(false);
     } else if ("groups".equals(qName)) {
-      xmlGroups(false, null);
+      xmlGroups(false);
     } else if ("methods".equals(qName)) {
       xmlMethod(false);
     } else if ("classes".equals(qName)) {
-      xmlClasses(false, null);
+      xmlClasses(false);
     } else if ("packages".equals(qName)) {
-      xmlPackages(false, null);
+      xmlPackages(false);
     } else if ("class".equals(qName)) {
       m_currentClass.setParameters(m_currentClassParameters);
       m_currentClassParameters = null;
       popLocation();
     } else if ("listeners".equals(qName)) {
-      xmlListeners(false, null);
+      xmlListeners(false);
     } else if ("method-selector".equals(qName)) {
-      xmlMethodSelector(false, null);
+      xmlMethodSelector(false);
     } else if ("method-selectors".equals(qName)) {
-      xmlMethodSelectors(false, null);
+      xmlMethodSelectors(false);
     } else if ("selector-class".equals(qName)) {
       xmlSelectorClass(false, null);
     } else if ("script".equals(qName)) {

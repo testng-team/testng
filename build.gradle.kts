@@ -1,13 +1,16 @@
 object This {
-    val version = "7.1.1-SNAPSHOT"
-    val artifactId = "testng"
-    val groupId = "org.testng"
-    val description = "Testing framework for Java"
-    val url = "https://testng.org"
-    val scm = "github.com/cbeust/testng"
+    const val version = "7.3.1"
+    const val artifactId = "testng"
+    const val groupId = "org.testng"
+    const val description = "Testing framework for Java"
+    const val url = "https://testng.org"
+    const val scm = "github.com/cbeust/testng"
 
     // Should not need to change anything below
-    val issueManagementUrl = "https://$scm/issues"
+    const val issueManagementUrl = "https://$scm/issues"
+    const val name = "TestNG"
+    const val java9ModuleName = groupId
+    const val vendor = name
 }
 
 allprojects {
@@ -15,13 +18,7 @@ allprojects {
     version = This.version
     apply<MavenPublishPlugin>()
     tasks.withType<Javadoc> {
-        options {
-            isFailOnError = false
-            quiet()
-            outputLevel = JavadocOutputLevel.QUIET
-            jFlags = listOf("-Xdoclint:none", "-quiet")
-            "-quiet"
-        }
+        excludes.add("org/testng/internal/**")
     }
 }
 
@@ -39,6 +36,25 @@ buildscript {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    // use gradle feature
+    // in order to optionally exposed transitive dependency
+
+    registerFeature("ant") {
+        usingSourceSet(sourceSets["main"])
+    }
+
+    registerFeature("guice") {
+        usingSourceSet(sourceSets["main"])
+    }
+
+    registerFeature("junit") {
+        usingSourceSet(sourceSets["main"])
+    }
+
+    registerFeature("yaml") {
+        usingSourceSet(sourceSets["main"])
+    }
 }
 
 repositories {
@@ -58,25 +74,44 @@ plugins {
 }
 
 dependencies {
+
+    listOf("org.apache.ant:ant:1.10.9").forEach {
+        "antApi"(it)
+    }
+
+    listOf("com.google.inject:guice:4.2.3:no_aop").forEach {
+        "guiceApi"(it)
+    }
+
+    listOf("junit:junit:4.12").forEach {
+        "junitApi"(it)
+    }
+
+    listOf("org.yaml:snakeyaml:1.21").forEach {
+        "yamlApi"(it)
+    }
+
     listOf("com.google.code.findbugs:jsr305:3.0.1").forEach {
         compileOnly(it)
     }
 
-    listOf("com.beust:jcommander:1.72",
-            "org.apache.ant:ant:1.10.3",
-            "junit:junit:4.12",
-            "com.google.inject:guice:4.2.2:no_aop",
-            "org.yaml:snakeyaml:1.21").forEach {
+    listOf("com.beust:jcommander:1.78").forEach {
         api(it)
     }
 
-    listOf("org.assertj:assertj-core:3.10.0",
+    listOf("org.webjars:jquery:3.5.1").forEach {
+        api(it)
+    }
+
+    listOf("org.apache.ant:ant-testutil:1.10.9",
+            "org.assertj:assertj-core:3.10.0",
             "org.codehaus.groovy:groovy-all:2.4.7",
             "org.spockframework:spock-core:1.0-groovy-2.4",
             "org.apache-extras.beanshell:bsh:2.0b6",
             "org.mockito:mockito-core:2.12.0",
             "org.jboss.shrinkwrap:shrinkwrap-api:1.2.6",
-            "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6").forEach {
+            "org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6",
+            "org.xmlunit:xmlunit-assertj:2.8.2").forEach {
         testImplementation(it)
     }
 }
@@ -84,8 +119,26 @@ dependencies {
 tasks.jar {
     manifest {
         attributes(
+            // Basic JAR manifest attributes
+            "Specification-Title" to This.name,
+            "Specification-Version" to This.version,
+            "Specification-Vendor" to This.vendor,
+            "Implementation-Title" to This.name,
+            "Implementation-Version" to This.version,
+            "Implementation-Vendor" to This.vendor,
+            "Implementation-Vendor-Id" to This.groupId,
+            "Implementation-Url" to This.url,
+
+            // Java 9 module name
+            "Automatic-Module-Name" to This.java9ModuleName,
+
+            // BND Plugin instructions (for OSGi)
+            "Bundle-Name" to This.name,
+            "Bundle-SymbolicName" to This.java9ModuleName,
+            "Bundle-Vendor" to This.vendor,
             "Bundle-License" to "https://apache.org/licenses/LICENSE-2.0",
-            "Bundle-Description" to "TestNG is a testing framework.",
+            "Bundle-Description" to This.description,
+            "Bundle-Version" to This.version,
             "Import-Package" to """
                 "bsh.*;version="[2.0.0,3.0.0)";resolution:=optional",
                 "com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional",
@@ -98,19 +151,10 @@ tasks.jar {
                 "!org.testng.*",
                 "!com.sun.*",
                 "*"
-            """,
-            "Automatic-Module-Name" to "org.testng"
+            """
         )
     }
 }
-
-tasks.register<Copy>("filter") {
-    from("src/main/resources/Version.java")
-    into("src/main/java/org/testng/internal")
-    expand("VERSION" to This.version)
-}
-
-tasks["compileJava"].dependsOn("filter")
 
 tasks.test {
     useTestNG() {
@@ -129,6 +173,7 @@ tasks.withType<Test> {
 sonarqube {
     properties {
         property("sonar.host.url", "https://sonarcloud.io/")
+        property("sonar.organization", "testng-team")
         property("sonar.github.repository", "cbeust/testng")
         property("sonar.github.login", "testng-bot")
     }
@@ -141,8 +186,8 @@ sonarqube {
 //
 
 bintray {
-    user = project.findProperty("bintrayUser")?.toString()
-    key = project.findProperty("bintrayApiKey")?.toString()
+    user = project.findProperty("bintrayUser")?.toString() ?: System.getenv("BINTRAY_USER")
+    key = project.findProperty("bintrayApiKey")?.toString() ?: System.getenv("BINTRAY_API_KEY")
     dryRun = false
     publish = true
 
@@ -182,6 +227,7 @@ with(publishing) {
             afterEvaluate {
                 from(components["java"])
             }
+            suppressAllPomMetadataWarnings()
             artifact(sourcesJar)
             artifact(javadocJar)
             pom {
@@ -204,6 +250,16 @@ with(publishing) {
                         name.set("Cedric Beust")
                         email.set("cedric@beust.com")
                     }
+                    developer {
+                        id.set("juherr")
+                        name.set("Julien Herr")
+                        email.set("julien@herr.fr")
+                    }
+                    developer {
+                        id.set("krmahadevan")
+                        name.set("Krishnan Mahadevan")
+                        email.set("krishnan.mahadevan1978@gmail.com")
+                    }
                 }
                 scm {
                     connection.set("scm:git:git://${This.scm}.git")
@@ -220,8 +276,8 @@ with(publishing) {
                 uri("https://oss.sonatype.org/content/repositories/snapshots/") else
                 uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = project.findProperty("sonatypeUser") as? String
-                password = project.findProperty("sonatypePassword") as? String
+                username = project.findProperty("sonatypeUser")?.toString() ?: System.getenv("SONATYPE_USER")
+                password = project.findProperty("sonatypePassword")?.toString() ?: System.getenv("SONATYPE_PASSWORD")
             }
         }
         maven {

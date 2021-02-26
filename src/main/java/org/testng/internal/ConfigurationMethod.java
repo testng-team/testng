@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import org.testng.internal.annotations.IBeforeGroups;
 import org.testng.internal.annotations.IBeforeMethod;
 import org.testng.internal.annotations.IBeforeSuite;
 import org.testng.internal.annotations.IBeforeTest;
+import org.testng.log4testng.Logger;
 
 public class ConfigurationMethod extends BaseTestMethod {
 
@@ -125,6 +128,12 @@ public class ConfigurationMethod extends BaseTestMethod {
       Object instance) {
     List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod method : methods) {
+      if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
+        String msg = "Detected a static method [" + method.getQualifiedName() + "()]. Static configuration methods can cause "
+            + " unexpected behavior.";
+        Logger.getLogger(Configuration.class).warn(msg);
+      }
+
       result.add(
           new ConfigurationMethod(
               method.getConstructorOrMethod(),
@@ -150,6 +159,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance) {
+
     return createMethods(
         methods,
         annotationFinder,
@@ -234,26 +244,22 @@ public class ConfigurationMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance) {
-    ITestNGMethod[] result = new ITestNGMethod[methods.length];
-    for (int i = 0; i < methods.length; i++) {
-      result[i] =
-          new ConfigurationMethod(
-              methods[i].getConstructorOrMethod(),
-              annotationFinder,
-              false,
-              false,
-              false,
-              false,
-              false,
-              false,
-              false,
-              false,
-              new String[0],
-              isBefore ? new String[0] : methods[i].getAfterGroups(),
-              instance);
-    }
-
-    return result;
+    return Arrays.stream(methods)
+        .parallel()
+        .map(m -> new ConfigurationMethod(
+            m.getConstructorOrMethod(),
+            annotationFinder,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            new String[0],
+            isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
+            instance)).toArray(ITestNGMethod[]::new);
   }
 
   public static ITestNGMethod[] createTestMethodConfigurationMethods(

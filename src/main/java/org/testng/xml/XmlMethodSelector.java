@@ -6,7 +6,7 @@ import org.testng.reporters.XMLStringBuffer;
 import java.util.Properties;
 
 /**
- * This class describes the tag <method-selector> in testng.xml.
+ * This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml.
  */
 public class XmlMethodSelector {
   // Either this:
@@ -41,55 +41,6 @@ public class XmlMethodSelector {
 
   public void setScript(XmlScript script) {
     m_script = script;
-  }
-
-  /**
-   * @return Returns the expression.
-   * @deprecated Use {@link #getScript()} instead.
-   */
-  @Deprecated
-  public String getExpression() {
-    if (m_script == null) {
-      return null;
-    }
-    return m_script.getExpression();
-  }
-
-  /**
-   * @param expression The expression to set.
-   * @deprecated Use {@link #setScript(XmlScript)} instead.
-   */
-  @Deprecated
-  public void setExpression(String expression) {
-    if (m_script == null) {
-      m_script = new XmlScript();
-    }
-    m_script.setExpression(expression);
-  }
-
-  /**
-   * @return Returns the language.
-   * @deprecated Use {@link #getScript()} instead
-   */
-  @Deprecated
-  public String getLanguage() {
-    if (m_script == null) {
-      return null;
-    }
-    return m_script.getLanguage();
-  }
-
-  /**
-   * @param language The language to set.
-   * @deprecated Use {@link #setScript(XmlScript)} instead
-   */
-  //  @OnElement(tag = "script", attributes = "language")
-  @Deprecated
-  public void setLanguage(String language) {
-    if (m_script == null) {
-      m_script = new XmlScript();
-    }
-    m_script.setLanguage(language);
   }
 
   public int getPriority() {

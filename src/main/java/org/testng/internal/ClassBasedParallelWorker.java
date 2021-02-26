@@ -17,11 +17,7 @@ import java.util.stream.Collectors;
 
 class ClassBasedParallelWorker extends AbstractParallelWorker {
 
-  @Override
-  public List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments) {
-    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
-    // Methods that belong to classes with a sequential=true or parallel=classes
-    // attribute must all be run in the same worker
+  private static Set<Class<?>> gatherClassesThatShouldRunSequentially(Arguments arguments) {
     Set<Class<?>> sequentialClasses = Sets.newHashSet();
     for (ITestNGMethod m : arguments.getMethods()) {
       Class<?> cls = m.getRealClass();
@@ -33,6 +29,15 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
         sequentialClasses.add(cls);
       }
     }
+    return sequentialClasses;
+  }
+
+  @Override
+  public List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments) {
+    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
+    // Methods that belong to classes with a sequential=true or parallel=classes
+    // attribute must all be run in the same worker
+    Set<Class<?>> sequentialClasses = gatherClassesThatShouldRunSequentially(arguments);
 
     List<IMethodInstance> methodInstances = Lists.newArrayList();
     for (ITestNGMethod tm : arguments.getMethods()) {
@@ -49,7 +54,7 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
         params = getParameters(im);
         prevClass = c;
       }
-      if (sequentialClasses.contains(c)) {
+      if (shouldRunSequentially(c, sequentialClasses)) {
         if (!processedClasses.contains(c)) {
           processedClasses.add(c);
           // Sequential class: all methods in one worker
@@ -65,6 +70,11 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
     }
 
     return result;
+  }
+
+  private static boolean shouldRunSequentially(Class<?> c, Set<Class<?>> sequentialClasses) {
+    return sequentialClasses.contains(c) ||
+        sequentialClasses.stream().anyMatch(each -> each.isAssignableFrom(c));
   }
 
   private static List<IMethodInstance> findClasses(

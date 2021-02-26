@@ -22,6 +22,8 @@ public interface IMethodSelector {
   /**
    * Invoked when all the test methods are known so that the method selector can perform additional
    * work, such as adding the transitive closure of all the groups being included and depended upon.
+   *
+   * @param testMethods The test methods
    */
   void setTestMethods(List<ITestNGMethod> testMethods);
 }

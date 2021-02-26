@@ -144,6 +144,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           .forSuite(arguments.getSuite())
           .usingParameters(arguments.getParameters())
           .usingInstance(arguments.getInstance())
+          .forTestMethod(arguments.getTestMethod())
           .build();
       invokeConfigurations(configMethodArguments);
     }
@@ -216,6 +217,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         .forSuite(arguments.getSuite())
         .usingParameters(arguments.getParameters())
         .usingInstance(arguments.getInstance())
+        .forTestMethod(arguments.getTestMethod())
         .build();
 
     invokeConfigurations(configMethodArguments);
@@ -277,10 +279,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             arguments.getInstance()) && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod =
-              new InvokedMethod(arguments.getInstance(), tm, System.currentTimeMillis(), testResult);
+              new InvokedMethod(System.currentTimeMillis(), testResult);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setStatus(ITestResult.SKIP);
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+
           handleConfigurationSkip(
               tm, testResult, configurationAnnotation,
               arguments.getTestMethod(),
@@ -307,7 +310,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
                 arguments.getTestMethodResult());
         testResult.setParameters(parameters);
 
-        runConfigurationListeners(testResult, true /* before */);
+        runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
 
         Object newInstance = computeInstance(arguments.getInstance(), inst, tm);
         if (isConfigMethodEligibleForScrutiny(tm)) {
@@ -319,7 +322,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         }
         copyAttributesFromNativelyInjectedTestResult(parameters,
             arguments.getTestMethodResult());
-        runConfigurationListeners(testResult, false /* after */);
+        runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
+        if (testResult.getStatus() == ITestResult.SKIP) {
+          Throwable t = testResult.getThrowable();
+          if (t != null) {
+            throw t;
+          }
+        }
       } catch (Throwable ex) {
         handleConfigurationFailure(
             ex, tm, testResult, configurationAnnotation,
@@ -344,10 +353,22 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     tm.setId(ThreadUtil.currentThreadInfo());
 
     InvokedMethod invokedMethod =
-        new InvokedMethod(targetInstance, tm, System.currentTimeMillis(), testResult);
+        new InvokedMethod(System.currentTimeMillis(), testResult);
 
     runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
-    m_notifier.addInvokedMethod(invokedMethod);
+
+    if (tm instanceof IInvocationStatus) {
+      ((IInvocationStatus) tm).setInvokedAt(invokedMethod.getDate());
+    }
+    if (testResult.getStatus() == ITestResult.SKIP) {
+      //There was a skip marked by the listener invocation.
+      testResult.setEndMillis(System.currentTimeMillis());
+      Reporter.setCurrentTestResult(testResult);
+      runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
+
+      Reporter.setCurrentTestResult(null);
+      return ;
+    }
     try {
       Reporter.setCurrentTestResult(testResult);
       ConstructorOrMethod method = tm.getConstructorOrMethod();
@@ -393,13 +414,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         : m_configuration.getConfigurable();
   }
 
-
-  private void runConfigurationListeners(ITestResult tr, boolean before) {
+  private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     if (before) {
-      TestListenerHelper.runPreConfigurationListeners(tr, m_notifier.getConfigurationListeners());
+      TestListenerHelper.runPreConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
     } else {
-      TestListenerHelper.runPostConfigurationListeners(tr, m_notifier.getConfigurationListeners());
+      TestListenerHelper.runPostConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
     }
+
   }
 
   /**
@@ -415,7 +436,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     recordConfigurationInvocationFailed(
         tm, testResult.getTestClass(), annotation, currentTestMethod, instance, suite);
     testResult.setStatus(ITestResult.SKIP);
-    runConfigurationListeners(testResult, false /* after */);
+    runConfigurationListeners(testResult, currentTestMethod, false /* after */);
   }
 
   private boolean hasConfigFailure(ITestNGMethod currentTestMethod) {
@@ -447,7 +468,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             + cause.getMessage());
     handleException(cause, tm, testResult, 1);
     testResult.setStatus(ITestResult.FAILURE);
-    runConfigurationListeners(testResult, false /* after */);
+    runConfigurationListeners(testResult, currentTestMethod, false /* after */);
 
     //
     // If in TestNG mode, need to take a look at the annotation to figure out
@@ -500,6 +521,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   private void setMethodInvocationFailure(ITestNGMethod method, Object instance) {
+    if (method == null) {
+      return;
+    }
     Set<Object> instances =
         m_methodInvocationResults.computeIfAbsent(method, k -> Sets.newHashSet());
     instances.add(TestNgMethodUtils.getMethodInvocationToken(method, instance));

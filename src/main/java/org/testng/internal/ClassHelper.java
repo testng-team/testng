@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.lang.reflect.Executable;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
@@ -46,7 +47,7 @@ public final class ClassHelper {
     // Hide Constructor
   }
 
-  /** Add a class loader to the searchable loaders. */
+  /* Add a class loader to the searchable loaders. */
   public static void addClassLoader(final ClassLoader loader) {
     classLoaders.add(loader);
   }
@@ -132,7 +133,7 @@ public final class ClassHelper {
       consumer.accept(f, method);
     }
 
-    for (Constructor constructor : cls.getDeclaredConstructors()) {
+    for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
       IFactoryAnnotation f = finder.findAnnotation(constructor, IFactoryAnnotation.class);
       consumer.accept(f, constructor);
     }
@@ -142,10 +143,33 @@ public final class ClassHelper {
   }
 
   /**
+   * @param clazz - The {@link Class} in which the search is to be done.
+   * @return - A {@link Set} of {@link Method} excluding default methods from base class interfaces.
+   */
+  public static Set<Method> getAvailableMethodsExcludingDefaults(Class<?> clazz) {
+    //First group the methods based on names
+    Map<String, List<Method>> groups = getAvailableMethods(clazz).stream()
+        .collect(Collectors.groupingBy(Method::getName));
+    //Remove any methods that are default methods (which is usually true only with methods in
+    //interfaces that are classified as "default" methods
+    groups.values()
+        .stream()
+        .filter(group -> group.size() > 1)
+        .forEach(group -> group.removeIf(Method::isDefault));
+    //Wrap them back into a set and return to the caller.
+    return groups.values().stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
+  }
+
+  /*
    * Extract all callable methods of a class and all its super (keeping in mind the Java access
    * rules).
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
+    if (clazz == null || clazz.equals(Object.class)) {
+      return Sets.newHashSet();
+    }
     Map<String, Set<Method>> methods = Maps.newHashMap();
     for (final Method declaredMethod : ReflectionHelper.getLocalMethods(clazz)) {
       appendMethod(methods, declaredMethod);

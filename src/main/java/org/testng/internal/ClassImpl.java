@@ -3,7 +3,8 @@ package org.testng.internal;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
 import com.google.inject.Injector;
-
+import com.google.inject.Module;
+import java.util.Collections;
 import org.testng.GuiceHelper;
 import org.testng.IClass;
 import org.testng.IInjectorFactory;
@@ -15,10 +16,14 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.CreationAttributes;
+import org.testng.internal.objects.pojo.DetailedAttributes;
+import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +33,7 @@ public class ClassImpl implements IClass {
   private final Class<?> m_class;
   private Object m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
-  private List<Object> m_instances = Lists.newArrayList();
+  private final List<Object> m_instances = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
   private long[] m_instanceHashCodes;
   private final Object m_instance;
@@ -76,7 +81,7 @@ public class ClassImpl implements IClass {
   }
 
   @Override
-  public Class getRealClass() {
+  public Class<?> getRealClass() {
     return m_class;
   }
 
@@ -100,20 +105,11 @@ public class ClassImpl implements IClass {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
       } else {
-        Object instance = getInstanceFromGuice();
-
-        if (instance != null) {
-          m_defaultInstance = instance;
-        } else {
-          m_defaultInstance =
-              InstanceCreator.createInstance(
-                  m_class,
-                  m_classes,
-                  m_testContext.getCurrentXmlTest(),
-                  m_annotationFinder,
-                  m_objectFactory,
-                  create, errMsgPrefix);
-        }
+        IObjectDispenser dispenser = Dispenser.newInstance();
+        BasicAttributes basic = new BasicAttributes(this, null);
+        DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
+        CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
+        m_defaultInstance = dispenser.dispense(attributes);
       }
     }
 
@@ -127,12 +123,18 @@ public class ClassImpl implements IClass {
     return injector.getInstance(m_class);
   }
 
+  /**
+   * @deprecated - This method stands deprecated as of TestNG <code>7.3.0</code>
+   */
+  @Deprecated
   public Injector getParentInjector(IInjectorFactory injectorFactory) {
     ISuite suite = m_testContext.getSuite();
     // Reuse the previous parent injector, if any
     Injector injector = suite.getParentInjector();
     if (injector == null) {
-      injector = GuiceHelper.createInjector(m_testContext, injectorFactory, Collections.emptyList());
+      Module parentModule = GuiceHelper.getParentModule(m_testContext);
+      injector = GuiceHelper.createInjector(null, m_testContext, injectorFactory,
+          parentModule == null ? Collections.emptyList() : Collections.singletonList(parentModule));
       suite.setParentInjector(injector);
     }
     return injector;
@@ -149,15 +151,11 @@ public class ClassImpl implements IClass {
 
     if (m_testContext.getCurrentXmlTest().isJUnit()) {
       if (create) {
+        DetailedAttributes ea = newDetailedAttributes(create, errorMsgPrefix);
+        CreationAttributes attributes = new CreationAttributes(m_testContext, null, ea);
         result =
             new Object[] {
-                InstanceCreator.createInstance(
-                    m_class,
-                    m_classes,
-                    m_testContext.getCurrentXmlTest(),
-                    m_annotationFinder,
-                    m_objectFactory,
-                    create, errorMsgPrefix)
+                Dispenser.newInstance().dispense(attributes)
             };
       }
     }
@@ -190,5 +188,17 @@ public class ClassImpl implements IClass {
 
   private static int computeHashCode(Object instance) {
     return IParameterInfo.embeddedInstance(instance).hashCode();
+  }
+
+  private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {
+    DetailedAttributes ea = new DetailedAttributes();
+    ea.setXmlTest(m_testContext.getCurrentXmlTest());
+    ea.setClasses(m_classes);
+    ea.setFinder(m_annotationFinder);
+    ea.setDeclaringClass(m_class);
+    ea.setFactory(m_objectFactory);
+    ea.setErrorMsgPrefix(errMsgPrefix);
+    ea.setCreate(create);
+    return ea;
   }
 }

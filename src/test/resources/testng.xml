@@ -6,6 +6,7 @@
   <suite-files>
     <suite-file path="./junit-suite.xml" />
     <suite-file path="./parent-module-suite.xml" />
+    <suite-file path="./188.xml"/>
   </suite-files>
 
   <listeners>
@@ -99,6 +100,7 @@
       <class name="test.mannotation.MAnnotation2SampleTest" />
       <class name="test.mannotation.issue1976.IssueTest" />
       <class name="test.thread.FactoryTest" />
+      <class name="test.thread.issue2361.IssueTest"/>
       <class name="test.thread.SequentialTest" />
       <class name="test.thread.ParallelTestTest" />
       <class name="test.thread.DataProviderThreadPoolSizeTest" />
@@ -126,10 +128,12 @@
       <class name="test.testng195.AfterMethodTest" />
       <class name="test.regression.BeforeTestFailingTest"/>
       <class name="test.configuration.github1700.RunTest"/>
+      <class name="test.configuration.issue2432.IssueTest"/>
       <class name="test.aftergroups.AfterGroupsBehaviorTest"/>
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
+      <class name="test.attributes.issue2346.IssueTest"/>
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
       <class name="test.preserveorder.PreserveOrderTest" />
@@ -156,6 +160,7 @@
       <class name="test.groups.issue1834.IssueTest"/>
       <class name="test.groups.issue182.IssueTest"/>
       <class name="test.groups.issue2152.IssueTest"/>
+      <class name="test.groups.issue2232.IssueTest"/>
       <class name="test.parameters.ShadowTest" />
       <class name="test.parameters.ParameterOverrideTest" />
       <class name="test.parameters.ParameterInjectAndOptionTest" />
@@ -181,9 +186,10 @@
       <class name="test.listeners.github1735.ExecutionListenerTest"/>
       <class name="test.listeners.github1602.IssueTest"/>
       <class name="test.listeners.issue1777.IssueTest"/>
-      <class name="test.listeners.issue1632.IssueTest"/>
+      <class name="test.skip.github1632.IssueTest"/>
       <class name="test.listeners.issue2220.IssueTest"/>
-      <class name="test_result.GitHub1197Test"/>
+      <class name="test.listeners.issue2328.IssueTest"/>
+      <class name="test_result.ResultStatusTest"/>
       <class name="test_result.issue1590.IssueTest"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
@@ -198,10 +204,12 @@
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
       <class name="test.objectfactory.github1827.GitHub1827Test"/>
-      <class name="test.github1490.VerifyDataProviderListener"/>      
+      <class name="test.github1490.VerifyDataProviderListener"/>
+      <class name="test.listeners.issue2456.IssueTest"/>
       <class name="test.methodselection.MethodSelectionTest"/>
       <class name="test.beforegroups.BeforeGroupsTest"/>
       <class name="test.invocationcount.issue1719.IssueTest"/>
+      <class name="org.testng.internal.listeners.parameterindex.ParameterIndexListenerTest"/>
     </classes>
   </test>
 
@@ -233,6 +241,7 @@
       <class name="test.listeners.github1130.GitHub1130Test"/>
       <class name="test.listeners.github1296.GitHub1296Test"/>
       <class name="test.listeners.github1465.IssueTest"/>
+      <class name="test.listeners.github2385.IssueTest"/>
     </classes>
   </test>
 
@@ -419,6 +428,12 @@
 
       <class name="test.factory.github1131.GitHub1131Test" />
       <class name="test.factory.nested.GitHub1307Test"/>
+
+    </classes>
+  </test>
+  <test name="factory test" parallel = "instances" thread-count="3" group-by-instances="true">
+    <classes>
+      <class name="test.factory.github2428.IssueTest" />
     </classes>
   </test>
 
@@ -586,6 +601,7 @@
       <class name="test.dataprovider.issue2255.IssueTest"/>
       <class name="test.dataprovider.issue217.IssueTest"/>
       <class name="test.dataprovider.issue2267.IssueTest"/>
+      <class name="test.dataprovider.issue2327.IssueTest"/>
     </classes>
   </test>
 
@@ -667,9 +683,10 @@
   </test>
 
   <!-- TestNG ant task related tests -->
-  <test name="Ant-ClassFileResolution" >
+  <test name="Ant" >
     <classes>
         <class name="test.ant.TestCommandLineArgs" />
+        <class name="test.ant.AntTest"/>
     </classes>
   </test>
 
@@ -750,6 +767,7 @@
       <class name="org.testng.internal.UtilsTest" />
       <class name="org.testng.internal.ClassHelperTest"/>
       <class name="org.testng.internal.InstanceCreatorTest"/>
+      <class name="org.testng.util.StringsTest"/>
       <class name="test.issue1430.TestFileToClass"/>
     </classes>
   </test>
@@ -844,15 +862,10 @@
       <class name="test.configuration.SingleConfigurationTest" />
       <class name="test.configuration.github1625.TestRunnerIssue1625"/>
       <class name="test.configuration.issue1753.IssueTest"/>
+      <class name="test.configuration.issue2400.IssueTest"/>
       <class name="test.configuration.BeforeClassTest"/>
       <class name="test.configuration.issue2209.IssueTest"/>
       <class name="test.configuration.issue2254.IssueTest"/>
-    </classes>
-  </test>
-
-  <test name="Mustache">
-    <classes>
-      <class name="test.mustache.MustacheTest" />
     </classes>
   </test>
 
@@ -949,8 +962,7 @@
 
   <test name="threadAffinity">
     <classes>
-      <class name="test.thread.parallelization.issue1773.IssueTest"/>
-      <class name="test.thread.parallelization.issue2110.IssueTest"/>
+      <class name="test.thread.parallelization.ThreadAffinityTest"/>
     </classes>
   </test>
 
@@ -974,7 +986,19 @@
 
   <test name="GITHUB-2273">
     <classes>
-      <class name="org.testng.GuiceHelperTest"/>
+      <class name="org.testng.internal.objects.GuiceHelperTest"/>
+    </classes>
+  </test>
+
+  <test name="GITHUB-2440">
+    <classes>
+      <class name="test.timeout.github2440.TimeoutWithNoExecutorTest"/>
+    </classes>
+  </test>
+
+  <test name="GITHUB-2469">
+    <classes>
+      <class name="test.listeners.AlterSuiteListenerTest"/>
     </classes>
   </test>
 </suite>

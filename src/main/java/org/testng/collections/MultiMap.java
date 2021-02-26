@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
   protected final Map<K, C> m_objects;
@@ -19,23 +20,15 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   protected abstract C createValue();
 
   public boolean put(K key, V method) {
-    boolean setExists = true;
-    C l = m_objects.get(key);
-    if (l == null) {
-      setExists = false;
-      l = createValue();
-      m_objects.put(key, l);
-    }
-    return l.add(method) && setExists;
+    AtomicBoolean exists = new AtomicBoolean(true);
+    return m_objects.computeIfAbsent(key, k -> {
+      exists.set(false);
+      return createValue();
+    }).add(method) && exists.get();
   }
 
   public C get(K key) {
-    C list = m_objects.get(key);
-    if (list == null) {
-      list = createValue();
-      m_objects.put(key, list);
-    }
-    return list;
+    return m_objects.computeIfAbsent(key, k -> createValue());
   }
 
   public Set<K> keySet() {

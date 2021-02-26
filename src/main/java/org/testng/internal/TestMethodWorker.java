@@ -32,9 +32,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // Map of the test methods and their associated instances
   // It has to be a set because the same method can be passed several times
   // and associated to a different instance
-  private List<IMethodInstance> m_methodInstances;
+  private final List<IMethodInstance> m_methodInstances;
   private final Map<String, String> m_parameters;
-  private List<ITestResult> m_testResults = Lists.newArrayList();
+  private final List<ITestResult> m_testResults = Lists.newArrayList();
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
@@ -168,7 +168,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       }
       ConfigMethodArguments attributes = new Builder()
           .forTestClass(testClass)
-          .usingConfigMethodsAs(testClass.getBeforeClassMethods())
+          .usingConfigMethodsAs(((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance.toString()))
           .forSuite(m_testContext.getSuite().getXmlSuite())
           .usingParameters(m_parameters)
           .usingInstance(instance)
@@ -277,7 +277,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 /** Extends {@code TestMethodWorker} and is used to work on only a single method instance */
 class SingleTestMethodWorker extends TestMethodWorker {
   private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS =
-      new ConfigurationGroupMethods(new ITestNGMethod[0], new HashMap<>(), new HashMap<>());
+      new ConfigurationGroupMethods(new TestMethodContainer(() -> new ITestNGMethod[0]),
+          new HashMap<>(), new HashMap<>());
 
   public SingleTestMethodWorker(
       TestInvoker testInvoker,

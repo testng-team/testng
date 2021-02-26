@@ -23,12 +23,12 @@ public class SkipException extends RuntimeException {
   }
 
   /**
-   * Flag if the current exception marks a skipped method (<tt>true</tt>) or a failure
-   * (<tt>false</tt>). By default Subclasses should override this method in order to provide smarter
+   * Flag if the current exception marks a skipped method (<code>true</code>) or a failure
+   * (<code>false</code>). By default Subclasses should override this method in order to provide smarter
    * behavior.
    *
-   * @return <tt>true</tt> if the method should be considered a skip, <tt>false</tt> if the method
-   *     should be considered failed. If not overwritten it returns <tt>true</tt>
+   * @return <code>true</code> if the method should be considered a skip, <code>false</code> if the method
+   *     should be considered failed. If not overwritten it returns <code>true</code>
    */
   public boolean isSkip() {
     return true;

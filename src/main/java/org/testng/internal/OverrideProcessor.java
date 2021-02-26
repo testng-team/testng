@@ -9,13 +9,11 @@ import java.util.Collection;
 
 /**
  * Override the groups included in the XML file with groups specified on the command line.
- *
- * @author Cedric Beust <cedric@beust.com>
  */
 public class OverrideProcessor implements IPostProcessor {
 
-  private String[] m_groups;
-  private String[] m_excludedGroups;
+  private final String[] m_groups;
+  private final String[] m_excludedGroups;
 
   public OverrideProcessor(String[] groups, String[] excludedGroups) {
     m_groups = groups;

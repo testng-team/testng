@@ -134,7 +134,9 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
           long current = w.getThreadIdToRunOn();
           runnable.setThreadIdToRunOn(current);
         }
-        mapping.put(freeNode, runnable);
+        if (runnable.toString().contains(freeNode.toString())) {
+          mapping.put(freeNode, runnable);
+        }
       }
     }
   }
