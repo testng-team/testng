@@ -142,10 +142,23 @@ public class Assert {
   }
 
   private static void assertNotEqualsImpl(Object actual, Object expected, String message) {
-    boolean equal = areEqualImpl(actual, expected);
-    if (equal) {
+    boolean notEqual = areNotEqualImpl(actual, expected);
+    if (!notEqual) {
       failEquals(actual, expected, message);
     }
+  }
+
+  private static boolean areNotEqualImpl(Object actual, Object expected) {
+    if ((expected == null) && (actual == null)) {
+      return false;
+    }
+    if (expected == null ^ actual == null) {
+      return true;
+    }
+    if (!expected.equals(actual) && !actual.equals(expected)) {
+      return true;
+    }
+    return false;
   }
 
   private static boolean areEqualImpl(Object actual, Object expected) {
