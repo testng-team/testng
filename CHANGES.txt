@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2483: Asymmetric not equals
 New  : GITHUB-2459: Support configurable start time - emailable report (Barry Evans)
 Fixed: GITHUB-2467: XmlTest does not copy the xmlClasses during clone (C.V.Aditya)
 Fixed: GITHUB-2469: Parameters added in XmlTest during AlterSuiteListener not available in SuiteListener (C.V.Aditya)
