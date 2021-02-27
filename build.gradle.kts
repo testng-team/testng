@@ -1,5 +1,5 @@
 object This {
-    const val version = "7.3.1"
+    const val version = "7.4.0"
     const val artifactId = "testng"
     const val groupId = "org.testng"
     const val description = "Testing framework for Java"
