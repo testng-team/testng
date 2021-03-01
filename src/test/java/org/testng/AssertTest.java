@@ -49,6 +49,17 @@ public class AssertTest {
     Assert.assertEquals(actual, expected);
   }
 
+  @Test(description = "GITHUB-2483", expectedExceptions = AssertionError.class)
+  public void testAsymetricNotEquals(){
+    AsymetricEquals equalsSame = AsymetricEquals.equalsSame();
+    AsymetricEquals equalsAll = AsymetricEquals.equalsAll();
+    //sanity
+    Assert.assertFalse(equalsSame.equals(equalsAll));
+    Assert.assertTrue(equalsAll.equals(equalsSame));
+    //actual check
+    Assert.assertNotEquals(equalsSame, equalsAll);
+  }
+
   @Test
   public void testListAssertNotEquals() {
     final Collection<Asymmetric> expected = Lists.newArrayList(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
@@ -406,5 +417,38 @@ public class AssertTest {
           result = 31 * result + (int) character;
           return result;
       }
+  }
+
+  static class AsymetricEquals {
+
+    static AsymetricEquals equalsAll(){
+      return new AsymetricEquals(null);
+    }
+
+    static AsymetricEquals equalsSame(){
+      return new AsymetricEquals(new Object());
+    }
+
+    Object value;
+
+    private AsymetricEquals(Object value) {
+      this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof AsymetricEquals)) return false;
+
+      AsymetricEquals that = (AsymetricEquals) o;
+      if (value == null)
+        return true;
+      return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(value);
+    }
   }
 }

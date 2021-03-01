@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2483: Asymmetric not equals (cdalexndr)
 
 7.4.0
 New  : GITHUB-2459: Support configurable start time - emailable report (Barry Evans)
