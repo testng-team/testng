@@ -367,6 +367,20 @@ public class AssertTest {
     Assert.assertNotEqualsDeep(map, map);
   }
 
+  @Test(description = "GITHUB-2486")
+  public void testAssertNotSame() {
+    Contrived object = new Contrived(2);
+    Contrived object2 = new Contrived(2);
+    Assert.assertNotSame(object2, object);
+  }
+
+  @Test(description = "GITHUB-2486", expectedExceptions = AssertionError.class)
+  public void testAssertSame() {
+    Contrived object = new Contrived(2);
+    Contrived object2 = new Contrived(2);
+    Assert.assertSame(object2, object);
+  }
+
   class Contrived {
 
     int integer;
