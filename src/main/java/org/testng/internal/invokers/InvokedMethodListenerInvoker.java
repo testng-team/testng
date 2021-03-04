@@ -53,8 +53,10 @@ public class InvokedMethodListenerInvoker {
   public void invokeListener(
       IInvokedMethodListener listenerInstance, IInvokedMethod invokedMethod) {
     if (this.m_listenerMethod == BEFORE_INVOCATION) {
-      listenerInstance.beforeInvocation(invokedMethod, m_testResult);
-      listenerInstance.beforeInvocation(invokedMethod, m_testResult, m_testContext);
+      if (!invokedMethod.isConfigurationMethod()) {
+        listenerInstance.beforeInvocation(invokedMethod, m_testResult);
+        listenerInstance.beforeInvocation(invokedMethod, m_testResult, m_testContext);
+      }
     }
     if (this.m_listenerMethod == AFTER_INVOCATION){
       listenerInstance.afterInvocation(invokedMethod, m_testResult);
