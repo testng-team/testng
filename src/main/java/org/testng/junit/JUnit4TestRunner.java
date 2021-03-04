@@ -250,7 +250,9 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
       ((IInvocationStatus) tr.getMethod()).setInvokedAt(im.getDate());
     }
     for (IInvokedMethodListener l : m_invokeListeners) {
-      l.beforeInvocation(im, tr);
+      if (!im.isConfigurationMethod()) {
+        l.beforeInvocation(im, tr);
+      }
     }
     return tr;
   }
