@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="get-factory-method-params-info-test [issue2426]">
+    <listeners>
+        <listener class-name="org.testng.internal.issue2426.MethodListener" />
+    </listeners>
+
+    <test name="getFactoryMethodParamsInfo-test">
+        <classes>
+            <class name="org.testng.internal.issue2426.TestClass"/>
+        </classes>
+    </test>
+</suite>
