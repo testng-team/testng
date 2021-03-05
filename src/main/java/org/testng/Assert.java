@@ -988,7 +988,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertSame(Object actual, Object expected, String message) {
-    if (Objects.equals(actual, expected)) {
+    if (expected == actual) {
       return;
     }
     failNotSame(actual, expected, message);
@@ -1014,7 +1014,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertNotSame(Object actual, Object expected, String message) {
-    if (Objects.equals(actual, expected)) {
+    if (expected == actual) {
       failSame(actual, expected, message);
     }
   }
