@@ -231,7 +231,7 @@ public class TestNGClassFinder extends BaseClassFinder {
             throw new TestNGException("Return type of " + m + " is not IObjectFactory");
           }
           try {
-            Object instance = cls.newInstance();
+            Object instance = InstanceCreator.newInstance(cls);
             if (m.getParameterTypes().length > 0
                 && m.getParameterTypes()[0].equals(ITestContext.class)) {
               objectFactory = (ITestObjectFactory) m.invoke(instance, m_testContext);

@@ -9,6 +9,7 @@ import org.testng.TestNGException;
 import org.testng.TestRunner;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.Utils;
 
 /**
@@ -30,13 +31,12 @@ public interface IJUnitTestRunner {
   List<ITestNGMethod> getTestMethods();
 
   static IJUnitTestRunner createTestRunner(TestRunner runner) {
-    IJUnitTestRunner tr = null;
+    IJUnitTestRunner tr;
     try {
       // try to get runner for JUnit 4 first
       Class.forName("org.junit.Test");
-      Class<?> clazz = ClassHelper.forName(JUNIT_4_TESTRUNNER);
-      if (clazz != null) {
-        tr = (IJUnitTestRunner) clazz.newInstance();
+      tr = InstanceCreator.newInstanceOrNull(JUNIT_4_TESTRUNNER);
+      if (tr != null) {
         tr.setTestResultNotifier(runner);
       }
     } catch (Throwable t) {
@@ -44,9 +44,8 @@ public interface IJUnitTestRunner {
       try {
         // fallback to JUnit 3
         Class.forName("junit.framework.Test");
-        Class<?> clazz = ClassHelper.forName(JUNIT_TESTRUNNER);
-        if (clazz != null) {
-          tr = (IJUnitTestRunner) clazz.newInstance();
+        tr = InstanceCreator.newInstanceOrNull(JUNIT_TESTRUNNER);
+        if (tr != null) {
           tr.setTestResultNotifier(runner);
         }
       } catch (Exception ex) {

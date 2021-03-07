@@ -1,6 +1,8 @@
 package test.thread.parallelization.sample;
 
+import org.testng.TestNGException;
 import org.testng.annotations.Factory;
+import org.testng.internal.InstanceCreator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,22 +13,15 @@ public class FactoryForTestClassFSixMethodsWithNoDepsSixInstancesSample {
         List<Object> instances = new ArrayList<>();
 
         try {
-            instances.add(TestClassFSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassFSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassFSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassFSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassFSixMethodsWithNoDepsSample.class.newInstance());
-            instances.add(TestClassFSixMethodsWithNoDepsSample.class.newInstance());
-        } catch (InstantiationException e) {
+            instances.add(InstanceCreator.newInstance(TestClassFSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassFSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassFSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassFSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassFSixMethodsWithNoDepsSample.class));
+            instances.add(InstanceCreator.newInstance(TestClassFSixMethodsWithNoDepsSample.class));
+        } catch (TestNGException e) {
             throw new RuntimeException(
-                    "Could not instantiate an instance of TestClassFSixMethodsWithNoDepsSample because it is " +
-                            "abstract or for some other reason", e
-            );
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Could not instantiate an instance of TestClassFSixMethodsWithNoDepsSample " +
-                            "FactoryTestClassFSixMethodsWithNoDepsThreeInstancesSample does not have access to its " +
-                            "class definition", e
+                    "Could not instantiate an instance of TestClassFSixMethodsWithNoDepsSample", e
             );
         }
 

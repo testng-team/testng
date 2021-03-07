@@ -25,6 +25,19 @@ public final class InstanceCreator {
     // Hide Constructor
   }
 
+  public static <T> T newInstanceOrNull(String className) {
+    Class<?> clazz = ClassHelper.forName(className);
+    if (clazz == null) {
+      return null;
+    }
+    return (T) newInstance(clazz);
+  }
+
+  public static <T> T newInstance(String className) {
+    Class<?> clazz = ClassHelper.forName(className);
+    return (T) newInstance(clazz);
+  }
+
   public static <T> T newInstance(Class<T> clazz) {
     try {
       return clazz.newInstance();
@@ -55,6 +68,23 @@ public final class InstanceCreator {
       throw new TestNGException(
           CANNOT_INSTANTIATE_CLASS + constructor.getDeclaringClass().getName(), e);
     }
+  }
+
+  public static <T> T newInstance(Class<T> cls, Object... parameters) {
+    Constructor<T> ctor = null;
+    for (Constructor<?> c : cls.getConstructors()) {
+      // Just comparing parameter array sizes. Comparing the parameter types
+      // is more error prone since we need to take conversions into account
+      // (int -> Integer, etc...).
+      if (c.getParameterTypes().length == parameters.length) {
+        ctor = (Constructor<T>) c;
+        break;
+      }
+    }
+    if (ctor == null) {
+      throw new TestNGException("Couldn't find a constructor in " + cls);
+    }
+    return newInstance(ctor, parameters);
   }
 
   public static IMethodSelector createSelector(org.testng.xml.XmlMethodSelector selector) {
