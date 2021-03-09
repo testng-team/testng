@@ -261,11 +261,11 @@ public class ReportTest extends SimpleBaseTest {
   public static class NullParameter {
     @DataProvider
     public static Object[][] nullProvider() {
-      return new Object[][]{{null}};
+      return new Object[][]{{null, "Bazinga!"}};
     }
 
     @Test(dataProvider = "nullProvider")
-    public void testMethod(Object object) {
+    public void testMethod(Object nullReference, String bazinga) {
     }
   }
 
@@ -295,6 +295,6 @@ public class ReportTest extends SimpleBaseTest {
     tng.run();
     System.setOut(previousOut);
 
-    Assert.assertTrue(systemOutCapture.toString().contains("PASSED: testMethod(null)"));
+    Assert.assertTrue(systemOutCapture.toString().contains("PASSED: testMethod(null, \"Bazinga!\")"));
   }
 }
