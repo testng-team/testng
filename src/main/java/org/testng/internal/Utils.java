@@ -610,8 +610,7 @@ public final class Utils {
 
   public static Class<?>[] extractParameterTypes(Object[] objects) {
     return Arrays.stream(objects)
-            .filter(o -> !isNull(o))
-            .map(Object::getClass)
+            .map((Object o) -> o != null ? o.getClass(): null)
             .toArray(Class<?>[]::new);
   }
 
