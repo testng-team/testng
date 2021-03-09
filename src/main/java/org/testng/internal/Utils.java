@@ -26,6 +26,8 @@ import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
 
+import static java.util.Objects.isNull;
+
 /** Helper methods to parse annotations. */
 public final class Utils {
 
@@ -608,8 +610,9 @@ public final class Utils {
 
   public static Class<?>[] extractParameterTypes(Object[] objects) {
     return Arrays.stream(objects)
-        .map(Object::getClass)
-        .toArray(Class<?>[]::new);
+            .filter(o -> !isNull(o))
+            .map(Object::getClass)
+            .toArray(Class<?>[]::new);
   }
 
   public static String stringifyTypes(Class<?>[] parameterTypes) {
