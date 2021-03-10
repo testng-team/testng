@@ -26,7 +26,6 @@ import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
 
-import static java.util.Objects.isNull;
 
 /** Helper methods to parse annotations. */
 public final class Utils {
