@@ -608,12 +608,6 @@ public final class Utils {
     return result;
   }
 
-  public static Class<?>[] extractParameterTypes(Object[] objects) {
-    return Arrays.stream(objects)
-            .map((Object o) -> o != null ? o.getClass(): null)
-            .toArray(Class<?>[]::new);
-  }
-
   public static String stringifyTypes(Class<?>[] parameterTypes) {
     return Arrays.stream(parameterTypes)
         .map(Class::getName)
