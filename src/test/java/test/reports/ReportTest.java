@@ -258,8 +258,19 @@ public class ReportTest extends SimpleBaseTest {
     }
   }
 
+  public static class NullParameter {
+    @DataProvider
+    public static Object[][] nullProvider() {
+      return new Object[][]{{null, "Bazinga!"}};
+    }
+
+    @Test(dataProvider = "nullProvider")
+    public void testMethod(Object nullReference, String bazinga) {
+    }
+  }
+
   @Test
-  public void reportArraysToString() throws IOException {
+  public void reportArraysToString() {
     TestNG tng = create(DpArrays.class);
     tng.addListener(new TextReporter("name", 2));
 
@@ -271,5 +282,19 @@ public class ReportTest extends SimpleBaseTest {
 
     Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1])"));
     Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1, ITEM2])"));
+  }
+
+  @Test
+  public void reportCreatedWithNullParameter() {
+    TestNG tng = create(NullParameter.class);
+    tng.addListener(new TextReporter("name", 2));
+
+    PrintStream previousOut = System.out;
+    ByteArrayOutputStream systemOutCapture = new ByteArrayOutputStream();
+    System.setOut(new PrintStream(systemOutCapture));
+    tng.run();
+    System.setOut(previousOut);
+
+    Assert.assertTrue(systemOutCapture.toString().contains("PASSED: testMethod(null, \"Bazinga!\")"));
   }
 }

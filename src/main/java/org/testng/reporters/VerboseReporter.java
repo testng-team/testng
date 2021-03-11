@@ -184,7 +184,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     int identLevel = sb.length();
     sb.append(getMethodDeclaration(tm, itr));
     Object[] params = itr.getParameters();
-    Class<?>[] paramTypes = Utils.extractParameterTypes(itr.getParameters());
+    Class<?>[] paramTypes = itr.getMethod().getParameterTypes();
     if (null != params && params.length > 0) {
       // The error might be a data provider parameter mismatch, so make
       // a special case here
@@ -265,7 +265,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
       buf.append(Utils.annotationFormFor(method)).append(" ");
     }
     buf.append(method.getQualifiedName());
-    Class<?>[] objects = Utils.extractParameterTypes(tr.getParameters());
+    Class<?>[] objects = tr.getMethod().getParameterTypes();
     buf.append("(").append(Utils.stringifyTypes(objects)).append(")");
     return buf.toString();
   }
