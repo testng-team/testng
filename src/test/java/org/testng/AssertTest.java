@@ -381,10 +381,14 @@ public class AssertTest {
     Assert.assertSame(object2, object);
   }
 
-  @Test(description = "GITHUB-2490")
-  public void testAssertNotEqualsWithNullObject() {
-    Assert.assertNotEquals(null, new Object());
-    Assert.assertNotEquals(new Object(), null);
+  @Test(description = "GITHUB-2490", expectedExceptions = AssertionError.class)
+  public void testAssertNotEqualsWithActualNull() {
+    Assert.assertNotEquals(null, new BrokenEquals());
+  }
+
+  @Test(description = "GITHUB-2490", expectedExceptions = AssertionError.class)
+  public void testAssertNotEqualsWithExpectedNull() {
+    Assert.assertNotEquals(new BrokenEquals(), null);
   }
 
   class Contrived {
@@ -469,6 +473,13 @@ public class AssertTest {
     @Override
     public int hashCode() {
       return Objects.hashCode(value);
+    }
+  }
+
+  static class BrokenEquals {
+    @Override
+    public boolean equals(Object o) {
+      return true; // broken implementation
     }
   }
 }
