@@ -381,6 +381,12 @@ public class AssertTest {
     Assert.assertSame(object2, object);
   }
 
+  @Test(description = "GITHUB-2490")
+  public void testAssertNotEqualsWithNullObject() {
+    Assert.assertNotEquals(null, new Object());
+    Assert.assertNotEquals(new Object(), null);
+  }
+
   class Contrived {
 
     int integer;

@@ -152,7 +152,7 @@ public class Assert {
     if ((expected == null) && (actual == null)) {
       return false;
     }
-    if (expected == null ^ actual == null) {
+    if(((expected == null) && !actual.equals(expected)) ^ ((actual == null) && !expected.equals(actual))){
       return true;
     }
     if (!expected.equals(actual) && !actual.equals(expected)) {
