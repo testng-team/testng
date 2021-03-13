@@ -153,7 +153,7 @@ public class Assert {
       return false;
     }
     if (expected == null) {
-      return !actual.equals(expected);
+      return true;
     }
     return !expected.equals(actual);
   }
