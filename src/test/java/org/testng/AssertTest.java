@@ -381,12 +381,12 @@ public class AssertTest {
     Assert.assertSame(object2, object);
   }
 
-  @Test(description = "GITHUB-2490", expectedExceptions = AssertionError.class)
+  @Test(description = "GITHUB-2490")
   public void testAssertNotEqualsWithActualNull() {
     Assert.assertNotEquals(null, new BrokenEquals());
   }
 
-  @Test(description = "GITHUB-2490", expectedExceptions = AssertionError.class)
+  @Test(description = "GITHUB-2490")
   public void testAssertNotEqualsWithExpectedNull() {
     Assert.assertNotEquals(new BrokenEquals(), null);
   }
