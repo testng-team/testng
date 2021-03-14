@@ -12,8 +12,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.DataProviderInvocationException;
 import org.testng.IClassListener;
@@ -79,7 +81,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       throw new IllegalArgumentException(
           "COULDN'T FIND TESTCLASS FOR " + testMethod.getRealClass());
     }
-    XmlSuite suite = context.getSuite().getXmlSuite();
 
     if (!MethodHelper.isEnabled(
         testMethod.getConstructorOrMethod().getMethod(), annotationFinder())) {
@@ -117,7 +118,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
     // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.
     if (testMethod.getInvocationCount() > 1 && testMethod.getThreadPoolSize() > 1) {
-      return invokePooledTestMethods(testMethod, suite, parameters, groupMethods, context);
+      return invokePooledTestMethods(testMethod, parameters, groupMethods, context);
     }
 
     long timeOutInvocationCount = testMethod.getInvocationTimeOut();
@@ -305,7 +306,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       List<IWorker<ITestNGMethod>> workers,
       int threadPoolSize,
       ConfigurationGroupMethods groupMethods,
-      XmlSuite suite,
       Map<String, String> parameters) {
     // Invoke @BeforeGroups on the original method (reduce thread contention,
     // and also solve thread confinement)
@@ -321,26 +321,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       invoker.invokeBeforeGroupsConfigurations(arguments);
     }
 
-    long maxTimeOut = -1; // 10 seconds
-
-    for (IWorker<ITestNGMethod> tmw : workers) {
-      long mt = tmw.getTimeOut();
-      if (mt > maxTimeOut) {
-        maxTimeOut = mt;
-      }
-    }
+    long maxTimeOut = workers.parallelStream()
+        .map(IWorker::getTimeOut)
+        .max(Long::compare)
+        .orElse(-1L);
 
     ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut);
 
     //
     // Collect all the TestResults
     //
-    List<ITestResult> result = Lists.newArrayList();
-    for (IWorker<ITestNGMethod> tmw : workers) {
-      if (tmw instanceof TestMethodWorker) {
-        result.addAll(((TestMethodWorker) tmw).getTestResults());
-      }
-    }
+    List<ITestResult> result = workers.parallelStream()
+        .filter(tmw -> tmw instanceof TestMethodWorker)
+        .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
+        .collect(Collectors.toList());
 
     for (Object instance : instances) {
       GroupConfigMethodArguments arguments = new GroupConfigMethodArguments.Builder()
@@ -371,35 +365,31 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         return true;
       }
 
-      for (ITestResult result : results) {
-        if (!result.isSuccess()) {
-          return true;
-        }
+      Optional<ITestResult> found = results.parallelStream()
+          .filter(testResult -> !testResult.isSuccess())
+          .findAny();
+      if (found.isPresent()) {
+        return true;
       }
+
     }
     return false;
   }
 
   /** @return the test results that apply to one of the instances of the testMethod. */
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
-    Set<ITestResult> result = Sets.newHashSet();
-    for (ITestResult r : results) {
-      Object o = method.getInstance();
-      // Keep this instance if 1) It's on a different class or 2) It's on the same class
-      // and on the same instance
-      Object instance = r.getInstance() != null ? r.getInstance() : r.getMethod().getInstance();
-      if (r.getTestClass() != method.getTestClass() || instance == o) {
-        result.add(r);
-      }
-    }
-    return result;
+    return results.parallelStream()
+        .filter(r -> {
+          // Keep this instance if 1) It's on a different class or 2) It's on the same class
+          // and on the same instance
+          Object instance = r.getInstance() != null ? r.getInstance() : r.getMethod().getInstance();
+          return r.getTestClass() != method.getTestClass() || instance == method.getInstance();
+        }).collect(Collectors.toSet());
   }
-
 
   /** Invokes a method that has a specified threadPoolSize. */
   private List<ITestResult> invokePooledTestMethods(
       ITestNGMethod testMethod,
-      XmlSuite suite,
       Map<String, String> parameters,
       ConfigurationGroupMethods groupMethods,
       ITestContext testContext) {
@@ -420,7 +410,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
 
     return runWorkers(
-        testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, suite, parameters);
+        testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, parameters);
   }
 
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
