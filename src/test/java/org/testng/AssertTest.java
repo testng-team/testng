@@ -391,6 +391,21 @@ public class AssertTest {
     Assert.assertNotEquals(new BrokenEquals(), null);
   }
 
+  @Test(description = "GITHUB-2490")
+  public void testAssertNotEqualsWithExpectedNullAndNewObject() {
+    Assert.assertNotEquals(new Object(), null);
+  }
+
+  @Test
+  public void testAssertNotEqualsWithActualNullExceptedEmptyString() {
+    Assert.assertNotEquals(null, "");
+  }
+
+  @Test
+  public void testAssertNotEqualsWithActualEmptyStringExceptedNull() {
+    Assert.assertNotEquals("", null);
+  }
+
   class Contrived {
 
     int integer;
