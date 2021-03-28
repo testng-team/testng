@@ -235,7 +235,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
       String[] afterGroups,
       Object instance) {
     if (method.getDeclaringClass().isAssignableFrom(clazz)) {
-      ITestNGMethod confMethod =
+      ConfigurationMethod confMethod =
           new ConfigurationMethod(
               new ConstructorOrMethod(method),
               annotationFinder,
@@ -249,7 +249,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
               isAfterTestMethod,
               beforeGroups,
               afterGroups,
-              instance);
+              instance, this.runInfo.getXmlTest());
       results.add(confMethod);
     }
   }

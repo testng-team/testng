@@ -1,5 +1,6 @@
 Current
-Fixes: GITHUB-2493: Avoid NPE from TextReporter execution when a dataprovider method provides null (baflQA)
+Fixed: GITHUB-2489: Hierarchical base- and test-class @AfterClass methods out of order using groups (Krishnan Mahadevan)
+Fixed: GITHUB-2493: Avoid NPE from TextReporter execution when a dataprovider method provides null (baflQA)
 Fixed: GITHUB-2483: Asymmetric not equals (cdalexndr)
 Fixed: GITHUB-2486: assertSame/assertNotSame broken after GITHUB-2296 (Vitalii Diravka)
 

@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
-import org.testng.IInvokedMethod;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -27,6 +26,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 import org.testng.util.TimeUtils;
+import org.testng.xml.XmlTest;
 
 /**
  * Collection of helper methods to help sort and arrange methods.
@@ -263,7 +263,11 @@ public class MethodHelper {
 
     Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
 
+    XmlTest xmlTest = null;
     for (ITestNGMethod m : methods) {
+      if (xmlTest == null) {
+        xmlTest = m.getXmlTest();
+      }
       result.addNode(m);
 
       List<ITestNGMethod> predecessors = Lists.newArrayList();
@@ -289,12 +293,14 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
-      String[] groupsDependedUpon = m.getGroupsDependedUpon();
-      if (groupsDependedUpon.length > 0) {
-        for (String group : groupsDependedUpon) {
-          ITestNGMethod[] methodsThatBelongToGroup =
-              MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
-          predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
+      if (XmlTest.isGroupBasedExecution(xmlTest)) {
+        String[] groupsDependedUpon = m.getGroupsDependedUpon();
+        if (groupsDependedUpon.length > 0) {
+          for (String group : groupsDependedUpon) {
+            ITestNGMethod[] methodsThatBelongToGroup =
+                MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+            predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
+          }
         }
       }
 
@@ -407,18 +413,6 @@ public class MethodHelper {
         methodList.add(itm);
       }
     }
-  }
-
-  public static List<ITestNGMethod> invokedMethodsToMethods(
-      Collection<IInvokedMethod> invokedMethods) {
-    List<ITestNGMethod> result = Lists.newArrayList();
-    for (IInvokedMethod im : invokedMethods) {
-      ITestNGMethod tm = im.getTestMethod();
-      tm.setDate(im.getDate());
-      result.add(tm);
-    }
-
-    return result;
   }
 
   public static List<IMethodInstance> methodsToMethodInstances(List<ITestNGMethod> sl) {

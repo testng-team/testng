@@ -14,7 +14,7 @@ public class SampleInheritance extends BaseSampleInheritance {
 //    System.out.println("CONFIGURATION 0");
   }
 
-  @BeforeClass(dependsOnGroups = { "configuration1"})
+  @BeforeClass(groups = "final", dependsOnGroups = { "configuration1"})
   public void configuration2() {
     assert m_configurations.size() == 2
 	: "Expected size 2 found " + m_configurations.size();
@@ -25,14 +25,14 @@ public class SampleInheritance extends BaseSampleInheritance {
     addConfiguration("configuration2");
   }
 
-  @Test(dependsOnGroups = { "inheritedTestMethod"} )
+  @Test(groups = "final", dependsOnGroups = { "inheritedTestMethod"} )
   public void inheritedMethodsWereCalledInOrder() {
     assert m_invokedBaseMethod : "Didn't invoke test method in base class";
     assert m_invokedBaseConfiguration : "Didn't invoke configuration method in base class";
 
   }
 
-  @Test
+  @Test(groups = "final2", dependsOnGroups = "final")
   public void configurationsWereCalledInOrder() {
     assert m_configurations.size() == 3;
     assert "configuration0".equals(m_configurations.get(0))

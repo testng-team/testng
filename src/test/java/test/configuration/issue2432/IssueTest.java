@@ -30,8 +30,8 @@ public class IssueTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     testng.addListener(listener);
     testng.run();
-    List<String> expected = Arrays.asList("prepareConfig", "prepareConfigForTest1", "uploadConfigToDatabase",
-        "verifyConfigurationAfterInstall", "test1");
+    List<String> expected = Arrays.asList("prepareConfig", "uploadConfigToDatabase",
+        "verifyConfigurationAfterInstall", "prepareConfigForTest1", "test1");
     assertThat(listener.getInvokedMethodNames()).containsExactlyElementsOf(expected);
   }
 

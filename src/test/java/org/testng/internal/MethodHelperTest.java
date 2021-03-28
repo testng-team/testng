@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import org.testng.ITestNGMethod;
+import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -30,7 +31,7 @@ public class MethodHelperTest {
             false,
             new String[0],
             new String[0],
-            testClass);
+            testClass, Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest());
     method.addMethodDependedUpon("dummyDependsOnMethod");
     ITestNGMethod[] methods = new ITestNGMethod[0];
 
