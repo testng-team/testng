@@ -665,4 +665,23 @@ public class XmlTest implements Cloneable {
   public boolean nameMatchesAny(List<String> names) {
     return names.contains(getName());
   }
+
+  /**
+   * @param xmlTest - The {@link XmlTest} that represents the current <code>test</code>
+   * @return - <code>true</code> if group based selection was employed and false otherwise.
+   */
+  public static boolean isGroupBasedExecution(XmlTest xmlTest) {
+    if (xmlTest == null) {
+      return false;
+    }
+    XmlGroups xmlGroups = xmlTest.getXmlGroups();
+    if (xmlGroups == null) {
+      return false;
+    }
+    XmlRun xmlRun = xmlGroups.getRun();
+    if (xmlRun == null) {
+      return false;
+    }
+    return !xmlRun.getIncludes().isEmpty();
+  }
 }

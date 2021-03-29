@@ -2,11 +2,13 @@ package org.testng.internal;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 
 import java.util.List;
+import org.testng.xml.XmlTest;
 
 /**
  * This class contains all the information needed to determine what methods should be run. It gets
@@ -16,6 +18,15 @@ import java.util.List;
 public class RunInfo {
 
   private final Set<MethodSelectorDescriptor> m_methodSelectors = new TreeSet<>();
+  private final Supplier<XmlTest> xmlTest;
+
+  public RunInfo(Supplier<XmlTest>  xmlTest) {
+    this.xmlTest = xmlTest;
+  }
+
+  public XmlTest getXmlTest() {
+    return xmlTest.get();
+  }
 
   public void addMethodSelector(IMethodSelector selector, int priority) {
     Utils.log("RunInfo", 3, "Adding method selector: " + selector + " priority: " + priority);

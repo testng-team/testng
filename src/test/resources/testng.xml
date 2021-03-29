@@ -323,13 +323,14 @@
 
   <test name="Inheritance">
     <classes>
-      <class name="test.SampleInheritance" />
+      <class name="test.inheritance.InheritanceConfigTest" />
       <class name="test.inheritance.ClassScopeTest" />
       <class name="test.inheritance.testng739.TestNG739"/>
       <class name="test.inheritance.testng234.PolymorphicFailureTest" />
       <class name="test.inheritance.testng471.TestNG471" />
       <class name="test.inheritance.github980.Github980Test"/>
       <class name="test.inheritance.github949.Github949Test"/>
+      <class name="test.inheritance.issue2489.IssueTest"/>
     </classes>
   </test>
 

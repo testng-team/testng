@@ -8,10 +8,10 @@ import java.util.Map;
 
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.xml.XmlTest;
 
 public class MethodInheritance {
 
@@ -131,12 +131,13 @@ public class MethodInheritance {
            *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
            *  of base class. Vice versa for @AfterXXX methods
            */
+
           for (int i = 0; i < l.size() - 1; i++) {
             ITestNGMethod m1 = l.get(i);
             for (int j = i + 1; j < l.size(); j++) {
               ITestNGMethod m2 = l.get(j);
-              String[] groups = Optional.ofNullable(m2.getGroups()).orElse(new String[] {});
-              if (groups.length != 0) {
+              boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
+              if (groupMode) {
                 //Do not resort to adding implicit depends-on if there are groups
                 continue;
               }

@@ -148,7 +148,7 @@ public class TestRunner
   private final IResultMap m_failedButWithinSuccessPercentageTests = new ResultMap();
   private final IResultMap m_skippedTests = new ResultMap();
 
-  private final RunInfo m_runInfo = new RunInfo();
+  private final RunInfo m_runInfo = new RunInfo(this::getCurrentXmlTest);
 
   // The host where this test was run, or null if run locally
   private String m_host;

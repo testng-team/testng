@@ -123,7 +123,7 @@ public class FactoryMethod extends BaseTestMethod {
   private static String[] getAllGroups(
       Class<?> declaringClass, XmlTest xmlTest, IAnnotationFinder annotationFinder) {
     // Find the groups of the factory => all groups of all test methods
-    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(new RunInfo(), annotationFinder);
+    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(new RunInfo(()-> xmlTest), annotationFinder);
     ITestNGMethod[] testMethods = testMethodFinder.getTestMethods(declaringClass, xmlTest);
     Set<String> groups = new HashSet<>();
     for (ITestNGMethod method : testMethods) {

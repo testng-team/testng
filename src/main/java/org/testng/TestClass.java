@@ -30,7 +30,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private XmlClass xmlClass;
   private final String m_errorMsgPrefix;
 
-  private Map<String, List<ITestNGMethod>> beforeClassConfig = new HashMap<>();
+  private final Map<String, List<ITestNGMethod>> beforeClassConfig = new HashMap<>();
 
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
@@ -155,26 +155,26 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               testMethodFinder.getBeforeTestConfigurationMethods(m_testClass),
               annotationFinder,
               true,
-              instance);
+              instance, this.xmlTest);
       m_afterTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               testMethodFinder.getAfterTestConfigurationMethods(m_testClass),
               annotationFinder,
               false,
-              instance);
+              instance, this.xmlTest);
       m_beforeClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               testMethodFinder.getBeforeClassMethods(m_testClass),
               annotationFinder,
               true,
-              instance);
+              instance, xmlTest);
       beforeClassConfig.put(instance.toString(), Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               testMethodFinder.getAfterClassMethods(m_testClass),
               annotationFinder,
               false,
-              instance);
+              instance, xmlTest);
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass),
@@ -189,10 +189,10 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               instance);
       m_beforeTestMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
-              testMethodFinder.getBeforeTestMethods(m_testClass), annotationFinder, true, instance);
+              testMethodFinder.getBeforeTestMethods(m_testClass), annotationFinder, true, instance, xmlTest);
       m_afterTestMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
-              testMethodFinder.getAfterTestMethods(m_testClass), annotationFinder, false, instance);
+              testMethodFinder.getAfterTestMethods(m_testClass), annotationFinder, false, instance, xmlTest);
     }
   }
 

@@ -29,7 +29,7 @@ public class BaseSampleInheritance {
 
   protected boolean m_invokedBaseConfiguration = false;
 
-  @BeforeClass
+  @BeforeClass(alwaysRun = true)
   public void baseConfiguration() {
     m_invokedBaseConfiguration = true;
   }
