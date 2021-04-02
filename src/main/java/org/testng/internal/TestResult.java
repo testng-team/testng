@@ -239,7 +239,7 @@ public class TestResult implements ITestResult {
         .add("name", getName())
         .add("status", toString(m_status))
         .add("method", m_method)
-        .add("output", output != null && output.size() > 0 ? output.get(0) : null)
+        .add("output", !output.isEmpty() ? output.get(0) : null)
         .toString();
   }
 
