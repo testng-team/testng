@@ -603,6 +603,7 @@
       <class name="test.dataprovider.issue217.IssueTest"/>
       <class name="test.dataprovider.issue2267.IssueTest"/>
       <class name="test.dataprovider.issue2327.IssueTest"/>
+      <class name="test.dataprovider.issue2504.IssueTest"/>
     </classes>
   </test>
 
