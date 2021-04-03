@@ -1,20 +1,18 @@
 package test.objectfactory;
 
-import org.testng.IObjectFactory2;
+import org.testng.ITestObjectFactory;
 import org.testng.internal.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 
-public class ClassObjectFactory implements IObjectFactory2 {
+public class ClassObjectFactory implements ITestObjectFactory {
 
-  @Override
-  public Object newInstance(Class<?> cls) {
-    try {
-      Constructor<?> ctor = cls.getConstructors()[0];
-      return InstanceCreator.newInstance(ctor, 42);
-    } catch(Exception ex) {
-      ex.printStackTrace();
-      return null;
+  public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+    T object = InstanceCreator.newInstance(constructor, parameters);
+    if (object instanceof ISetValue) {
+      ((ISetValue) object).setValue(42);
     }
+    return object;
   }
+
 }

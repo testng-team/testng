@@ -50,7 +50,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    Assert.assertEquals(LoggingObjectFactory.invoked, 1);
+    Assert.assertEquals(ContextAwareObjectFactoryFactory.invoked, 1);
   }
 
   @Test(expectedExceptions = TestNGException.class)

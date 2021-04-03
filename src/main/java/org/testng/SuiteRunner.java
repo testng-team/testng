@@ -142,7 +142,15 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (suite.getObjectFactoryClass() == null) {
       objectFactory = configuration.getObjectFactory();
     } else {
-      ITestObjectFactory suiteObjectFactory = configuration.getObjectFactory().newInstance(suite.getObjectFactoryClass());
+      boolean create = !configuration.getObjectFactory().getClass().equals(suite.getObjectFactoryClass());
+      final ITestObjectFactory suiteObjectFactory;
+      if (create) {
+        //Dont keep creating the object factory repeatedly since our current object factory
+        //Was already created based off of a suite level object factory.
+        suiteObjectFactory = objectFactory.newInstance(suite.getObjectFactoryClass());
+      } else {
+        suiteObjectFactory = configuration.getObjectFactory();
+      }
       objectFactory = new ITestObjectFactory() {
         @Override
         public <T> T newInstance(Class<T> cls, Object... parameters) {

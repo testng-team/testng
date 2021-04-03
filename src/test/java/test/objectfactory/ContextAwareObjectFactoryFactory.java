@@ -1,15 +1,18 @@
 package test.objectfactory;
 
-import org.testng.IObjectFactory;
 import org.testng.ITestContext;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.internal.ObjectFactoryImpl;
 
 public class ContextAwareObjectFactoryFactory {
 
+  public static int invoked;
+
   @ObjectFactory
-  public IObjectFactory create(ITestContext context) {
+  public ITestObjectFactory create(ITestContext context) {
     assert context != null;
+    invoked++;
     return new ObjectFactoryImpl();
   }
 }

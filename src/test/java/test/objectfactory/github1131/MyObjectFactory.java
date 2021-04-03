@@ -1,6 +1,6 @@
 package test.objectfactory.github1131;
 
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.internal.ObjectFactoryImpl;
 
@@ -19,7 +19,7 @@ public class MyObjectFactory extends ObjectFactoryImpl {
     }
 
     @ObjectFactory
-    public IObjectFactory newInstance() {
+    public ITestObjectFactory newInstance() {
         return new MyObjectFactory();
     }
 }

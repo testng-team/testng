@@ -1,6 +1,6 @@
 package org.testng.internal;
 
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 
 import java.lang.reflect.Constructor;
@@ -11,7 +11,7 @@ import java.lang.reflect.Constructor;
  *
  * @since 5.6
  */
-public class ObjectFactoryImpl implements IObjectFactory {
+public class ObjectFactoryImpl implements ITestObjectFactory {
 
   @Override
   public <T> T newInstance(Constructor<T> constructor, Object... params) {
