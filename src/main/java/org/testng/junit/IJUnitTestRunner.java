@@ -5,11 +5,10 @@ import java.util.List;
 
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.TestRunner;
-import org.testng.internal.ClassHelper;
 import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InstanceCreator;
 import org.testng.internal.Utils;
 
 /**
@@ -18,36 +17,27 @@ import org.testng.internal.Utils;
  */
 public interface IJUnitTestRunner {
 
-  String JUNIT_TESTRUNNER = "org.testng.junit.JUnitTestRunner";
-  String JUNIT_4_TESTRUNNER = "org.testng.junit.JUnit4TestRunner";
-
-
   void setInvokedMethodListeners(Collection<IInvokedMethodListener> listener);
 
-  void setTestResultNotifier(ITestResultNotifier notifier);
+  @Deprecated
+  default void setTestResultNotifier(ITestResultNotifier notifier) {}
 
-  void run(Class junitTestClass, String... methods);
+  void run(Class<?> junitTestClass, String... methods);
 
   List<ITestNGMethod> getTestMethods();
 
-  static IJUnitTestRunner createTestRunner(TestRunner runner) {
+  static IJUnitTestRunner createTestRunner(ITestObjectFactory objectFactory, TestRunner runner) {
     IJUnitTestRunner tr;
     try {
       // try to get runner for JUnit 4 first
       Class.forName("org.junit.Test");
-      tr = InstanceCreator.newInstanceOrNull(JUNIT_4_TESTRUNNER);
-      if (tr != null) {
-        tr.setTestResultNotifier(runner);
-      }
+      tr = new JUnit4TestRunner(objectFactory, runner);
     } catch (Throwable t) {
       Utils.log(IJUnitTestRunner.class.getSimpleName(), 2, "JUnit 4 was not found on the classpath");
       try {
         // fallback to JUnit 3
         Class.forName("junit.framework.Test");
-        tr = InstanceCreator.newInstanceOrNull(JUNIT_TESTRUNNER);
-        if (tr != null) {
-          tr.setTestResultNotifier(runner);
-        }
+        tr = new JUnitTestRunner(objectFactory, runner);
       } catch (Exception ex) {
         Utils.log(IJUnitTestRunner.class.getSimpleName(), 2, "JUnit 3 was not found on the classpath");
         // there's no JUnit on the classpath

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
@@ -60,12 +61,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     // Find all the new classes and their corresponding instances
     Set<Class<?>> allClasses = cim.getClasses();
 
-    // very first pass is to find ObjectFactory, can't create anything else until then
-    if (configuration.getObjectFactory() == null) {
-      objectFactory = createObjectFactory(allClasses);
-    } else {
-      objectFactory = configuration.getObjectFactory();
-    }
+    objectFactory = createObjectFactory(allClasses, configuration.getObjectFactory());
 
     for (Class<?> cls : allClasses) {
       processClass(cim, instanceMap, configuration, cls);
@@ -203,10 +199,10 @@ public class TestNGClassFinder extends BaseClassFinder {
     return moreClasses;
   }
 
-  private ITestObjectFactory createObjectFactory(Set<Class<?>> allClasses) {
-    ITestObjectFactory objectFactory;
-    objectFactory = new ObjectFactoryImpl();
+  // TODO use the logic somewhere
+  private ITestObjectFactory createObjectFactory(Set<Class<?>> allClasses, ITestObjectFactory fallback) {
     for (Class<?> cls : allClasses) {
+
       try {
         if (cls == null) {
           continue;
@@ -222,7 +218,11 @@ public class TestNGClassFinder extends BaseClassFinder {
               "[WARN] Can't link and determine methods of " + cls + "(" + e.getMessage() + ")");
           ms = new Method[0];
         }
+        Set<Method> objectMethods = Arrays.stream(Object.class.getMethods())
+            .collect(Collectors.toSet());
+        ms = Arrays.stream(ms).filter(m-> !objectMethods.contains(m)).toArray(Method[]::new);
         for (Method m : ms) {
+
           IAnnotation a = annotationFinder.findAnnotation(m, IObjectFactoryAnnotation.class);
           if (a == null) {
             continue;
@@ -231,14 +231,12 @@ public class TestNGClassFinder extends BaseClassFinder {
             throw new TestNGException("Return type of " + m + " is not IObjectFactory");
           }
           try {
-            Object instance = InstanceCreator.newInstance(cls);
+
             if (m.getParameterTypes().length > 0
                 && m.getParameterTypes()[0].equals(ITestContext.class)) {
-              objectFactory = (ITestObjectFactory) m.invoke(instance, m_testContext);
-            } else {
-              objectFactory = (ITestObjectFactory) m.invoke(instance);
+              return (ITestObjectFactory) m.invoke(fallback.newInstance(cls), m_testContext);
             }
-            return objectFactory;
+            return (ITestObjectFactory) m.invoke(fallback.newInstance(cls));
           } catch (Exception ex) {
             throw new TestNGException("Error creating object factory: " + cls, ex);
           }
@@ -258,7 +256,7 @@ public class TestNGClassFinder extends BaseClassFinder {
         }
       }
     }
-    return objectFactory;
+    return fallback;
   }
 
   private static boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {

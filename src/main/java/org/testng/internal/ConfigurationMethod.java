@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -49,6 +50,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   private boolean m_inheritGroupsFromTestClass = false;
 
   private ConfigurationMethod(
+      ITestObjectFactory objectFactory,
       ConstructorOrMethod com,
       IAnnotationFinder annotationFinder,
       boolean isBeforeSuite,
@@ -63,7 +65,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       String[] afterGroups,
       boolean initialize,
       Object instance) {
-    super(com.getName(), com, annotationFinder, instance);
+    super(objectFactory, com.getName(), com, annotationFinder, instance);
     if (initialize) {
       init();
     }
@@ -85,6 +87,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public ConfigurationMethod(
+      ITestObjectFactory objectFactory,
       ConstructorOrMethod com,
       IAnnotationFinder annotationFinder,
       boolean isBeforeSuite,
@@ -100,6 +103,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       Object instance,
       XmlTest xmlTest) {
     this(
+        objectFactory,
         com,
         annotationFinder,
         isBeforeSuite,
@@ -118,6 +122,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   private static ITestNGMethod[] createMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder finder,
       boolean isBeforeSuite,
@@ -140,6 +145,7 @@ public class ConfigurationMethod extends BaseTestMethod {
 
       result.add(
           new ConfigurationMethod(
+              objectFactory,
               method.getConstructorOrMethod(),
               finder,
               isBeforeSuite,
@@ -159,12 +165,14 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public static ITestNGMethod[] createSuiteConfigurationMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance) {
 
     return createMethods(
+        objectFactory,
         methods,
         annotationFinder,
         isBefore,
@@ -179,11 +187,13 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public static ITestNGMethod[] createTestConfigurationMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance, XmlTest xmlTest) {
     return createMethods(
+        objectFactory,
         methods,
         annotationFinder,
         false,
@@ -198,11 +208,13 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public static ITestNGMethod[] createClassConfigurationMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance, XmlTest xmlTest) {
     return createMethods(
+        objectFactory,
         methods,
         annotationFinder,
         false,
@@ -217,6 +229,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public static ITestNGMethod[] createBeforeConfigurationMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
@@ -225,6 +238,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     for (int i = 0; i < methods.length; i++) {
       result[i] =
           new ConfigurationMethod(
+              objectFactory,
               methods[i].getConstructorOrMethod(),
               annotationFinder,
               false,
@@ -244,6 +258,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public static ITestNGMethod[] createAfterConfigurationMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
@@ -251,6 +266,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     return Arrays.stream(methods)
         .parallel()
         .map(m -> new ConfigurationMethod(
+            objectFactory,
             m.getConstructorOrMethod(),
             annotationFinder,
             false,
@@ -268,11 +284,13 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   public static ITestNGMethod[] createTestMethodConfigurationMethods(
+      ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
       Object instance, XmlTest xmlTest) {
     return createMethods(
+        objectFactory,
         methods,
         annotationFinder,
         false,
@@ -429,6 +447,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   public ConfigurationMethod clone() {
     ConfigurationMethod clone =
         new ConfigurationMethod(
+            m_objectFactory,
             getConstructorOrMethod(),
             getAnnotationFinder(),
             isBeforeSuiteConfiguration(),

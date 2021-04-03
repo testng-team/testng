@@ -74,8 +74,8 @@ class DefaultXmlWeaver implements IWeaveXml {
         "skipfailedinvocationcounts",
         xmlSuite.skipFailedInvocationCounts().toString(),
         DEFAULT_SKIP_FAILED_INVOCATION_COUNTS.toString());
-    if (null != xmlSuite.getObjectFactory()) {
-      p.setProperty("object-factory", xmlSuite.getObjectFactory().getClass().getName());
+    if (null != xmlSuite.getObjectFactoryClass()) {
+      p.setProperty("object-factory", xmlSuite.getObjectFactoryClass().getName());
     }
     if (isStringNotEmpty(xmlSuite.getParentModule())) {
       p.setProperty("parent-module", xmlSuite.getParentModule());

@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.ITestNGMethod;
 import org.testng.Reporter;
+import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -19,6 +20,7 @@ public class MethodHelperTest {
         new ConstructorOrMethod(testClass.getClass().getMethod("dummyMethod"));
     IAnnotationFinder annotationFinder = new JDK15AnnotationFinder(new AnnotationTransformer());
     ITestNGMethod method = new ConfigurationMethod(
+            new ITestObjectFactory() {},
             constructorOrMethod,
             annotationFinder,
             false,

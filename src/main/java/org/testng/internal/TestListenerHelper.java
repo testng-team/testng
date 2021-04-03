@@ -6,6 +6,7 @@ import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestNGMethod;
+import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.IListenersAnnotation;
@@ -145,6 +146,7 @@ public final class TestListenerHelper {
   }
 
   public static ITestNGListenerFactory createListenerFactory(
+      ITestObjectFactory objectFactory,
       TestNGClassFinder finder, Class<? extends ITestNGListenerFactory> factoryClass) {
     ITestNGListenerFactory listenerFactory = null;
     try {
@@ -155,11 +157,15 @@ public final class TestListenerHelper {
         }
       }
       if (listenerFactory == null) {
-        listenerFactory = factoryClass != null ? factoryClass.newInstance() : null;
+        if (DefaultListenerFactory.class.equals(factoryClass)) {
+          listenerFactory = new DefaultListenerFactory(objectFactory);
+        } else {
+          listenerFactory = factoryClass != null ? objectFactory.newInstance(factoryClass) : null;
+        }
       }
       return listenerFactory;
     } catch (Exception ex) {
-      throw new TestNGException("Couldn't instantiate the ITestNGListenerFactory: " + ex);
+      throw new TestNGException("Couldn't instantiate the ITestNGListenerFactory: " + ex, ex);
     }
   }
 

@@ -1,6 +1,6 @@
 package test.objectfactory.github1131;
 
-import org.testng.IObjectFactory;
+import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.internal.ObjectFactoryImpl;
 
@@ -13,13 +13,13 @@ public class MyObjectFactory extends ObjectFactoryImpl {
     public static final List<Object[]> allParams = new ArrayList<>();
 
     @Override
-    public Object newInstance(Constructor<?> constructor, Object... params) {
+    public <T> T newInstance(Constructor<T> constructor, Object... params) {
         allParams.add(params);
         return super.newInstance(constructor, params);
     }
 
     @ObjectFactory
-    public IObjectFactory newInstance() {
+    public ITestObjectFactory newInstance() {
         return new MyObjectFactory();
     }
 }

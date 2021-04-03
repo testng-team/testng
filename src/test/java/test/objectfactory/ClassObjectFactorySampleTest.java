@@ -3,19 +3,17 @@ package test.objectfactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ClassObjectFactorySampleTest {
+public class ClassObjectFactorySampleTest implements ISetValue {
 
   public static int m_n = 0;
-
-  /**
-   * Will be invoked with 42 by the factory.
-   */
-  public ClassObjectFactorySampleTest(int n) {
-    m_n = n;
-  }
 
   @Test
   public void f() {
     Assert.assertEquals(m_n, 42);
+  }
+
+  @Override
+  public void setValue(int i) {
+    m_n = i;
   }
 }

@@ -9,6 +9,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNG;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
@@ -187,7 +188,7 @@ public class XmlSuite implements Cloneable {
 
   private List<String> m_suiteFiles = Lists.newArrayList();
 
-  private ITestObjectFactory m_objectFactory;
+  private Class<? extends ITestObjectFactory> m_objectFactoryClass;
 
   private List<String> m_listeners = Lists.newArrayList();
 
@@ -235,12 +236,22 @@ public class XmlSuite implements Cloneable {
     return m_guiceStage;
   }
 
+  @Deprecated
   public ITestObjectFactory getObjectFactory() {
-    return m_objectFactory;
+    return InstanceCreator.newInstance(getObjectFactoryClass());
   }
 
+  public Class<? extends ITestObjectFactory> getObjectFactoryClass() {
+    return m_objectFactoryClass;
+  }
+
+  @Deprecated
   public void setObjectFactory(ITestObjectFactory objectFactory) {
-    m_objectFactory = objectFactory;
+    setObjectFactoryClass(objectFactory.getClass());
+  }
+
+  public void setObjectFactoryClass(Class<? extends ITestObjectFactory> objectFactoryClass) {
+    m_objectFactoryClass = objectFactoryClass;
   }
 
   /**
@@ -583,7 +594,7 @@ public class XmlSuite implements Cloneable {
     result.setMethodSelectors(getMethodSelectors());
     result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
-    result.setObjectFactory(getObjectFactory());
+    result.setObjectFactoryClass(getObjectFactoryClass());
     result.setAllowReturnValues(getAllowReturnValues());
     result.setTimeOut(getTimeOut());
     return result;
@@ -700,7 +711,7 @@ public class XmlSuite implements Cloneable {
 
     result = prime * result + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    result = prime * result + ((m_objectFactory == null) ? 0 : m_objectFactory.hashCode());
+    result = prime * result + ((m_objectFactoryClass == null) ? 0 : m_objectFactoryClass.hashCode());
     result = prime * result + ((m_parallel == null) ? 0 : m_parallel.hashCode());
     //    result = prime * result
     //        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
@@ -781,11 +792,11 @@ public class XmlSuite implements Cloneable {
     } else if (!m_name.equals(other.m_name)) {
       return f();
     }
-    if (m_objectFactory == null) {
-      if (other.m_objectFactory != null) {
+    if (m_objectFactoryClass == null) {
+      if (other.m_objectFactoryClass != null) {
         return f();
       }
-    } else if (!m_objectFactory.equals(other.m_objectFactory)) {
+    } else if (!m_objectFactoryClass.equals(other.m_objectFactoryClass)) {
       return f();
     }
     if (m_parallel == null) {

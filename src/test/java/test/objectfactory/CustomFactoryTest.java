@@ -27,7 +27,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
   @Test
   public void setFactoryOnSuite() {
     XmlSuite suite = createXmlSuite("objectfactory", "TmpTest", SimpleSample.class);
-    suite.setObjectFactory(new LoggingObjectFactory());
+    suite.setObjectFactoryClass(LoggingObjectFactory.class);
     TestNG tng = create(suite);
     tng.run();
 
@@ -46,11 +46,11 @@ public class CustomFactoryTest extends SimpleBaseTest {
   @Test
   public void factoryReceivesContext() {
     XmlSuite suite = createXmlSuite("objectfactory", "TmpTest", SimpleSample.class, ContextAwareObjectFactoryFactory.class);
-    suite.setObjectFactory(new LoggingObjectFactory());
+    suite.setObjectFactoryClass(LoggingObjectFactory.class);
     TestNG tng = create(suite);
     tng.run();
 
-    Assert.assertEquals(LoggingObjectFactory.invoked, 1);
+    Assert.assertEquals(ContextAwareObjectFactoryFactory.invoked, 1);
   }
 
   @Test(expectedExceptions = TestNGException.class)

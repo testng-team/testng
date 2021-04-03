@@ -5,7 +5,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
-import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -274,65 +273,6 @@ public final class ClassHelper {
     }
 
     return false;
-  }
-
-  /** Find the best constructor given the parameters found on the annotation */
-  static Constructor<?> findAnnotatedConstructor(
-      IAnnotationFinder finder, Class<?> declaringClass) {
-    Constructor<?>[] constructors = declaringClass.getDeclaredConstructors();
-
-    for (Constructor<?> result : constructors) {
-      IParametersAnnotation parametersAnnotation =
-          finder.findAnnotation(result, IParametersAnnotation.class);
-      if (parametersAnnotation != null) {
-        String[] parameters = parametersAnnotation.getValue();
-        Class<?>[] parameterTypes = result.getParameterTypes();
-        if (parameters.length != parameterTypes.length) {
-          throw new TestNGException(
-              "Parameter count mismatch:  "
-                  + result
-                  + "\naccepts "
-                  + parameterTypes.length
-                  + " parameters but the @Test annotation declares "
-                  + parameters.length);
-        }
-        return result;
-      }
-
-      IFactoryAnnotation factoryAnnotation =
-          finder.findAnnotation(result, IFactoryAnnotation.class);
-      if (factoryAnnotation != null) {
-        return result;
-      }
-    }
-
-    return null;
-  }
-
-  public static <T> T tryOtherConstructor(Class<T> declaringClass) {
-    T result;
-    try {
-      // Special case for inner classes
-      if (declaringClass.getModifiers() == 0) {
-        return null;
-      }
-
-      Constructor<T> ctor = declaringClass.getConstructor(String.class);
-      result = InstanceCreator.newInstance(ctor, "Default test name");
-    } catch (Exception e) {
-      String message = e.getMessage();
-      if ((message == null) && (e.getCause() != null)) {
-        message = e.getCause().getMessage();
-      }
-      String error =
-          "Could not create an instance of class "
-              + declaringClass
-              + ((message != null) ? (": " + message) : "")
-              + ".\nPlease make sure it has a constructor that accepts either a String or no parameter.";
-      throw new TestNGException(error);
-    }
-
-    return result;
   }
 
   /**

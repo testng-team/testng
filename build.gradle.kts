@@ -158,7 +158,7 @@ tasks.jar {
 
 tasks.test {
     useTestNG() {
-        suiteXmlFiles.add(File("src/test/resources/testng.xml"))
+        suites("src/test/resources/testng.xml")
         listeners.add("org.testng.reporters.FailedInformationOnConsoleReporter")
         testLogging.showStandardStreams = true
         systemProperties = mapOf("test.resources.dir" to "build/resources/test")
