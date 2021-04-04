@@ -1,12 +1,6 @@
 package org.testng.internal;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import java.util.Collections;
-import org.testng.GuiceHelper;
 import org.testng.IClass;
-import org.testng.IInjectorFactory;
-import org.testng.ISuite;
 import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
@@ -110,23 +104,6 @@ public class ClassImpl implements IClass {
     }
 
     return m_defaultInstance;
-  }
-
-  /**
-   * @deprecated - This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  public Injector getParentInjector(IInjectorFactory injectorFactory) {
-    ISuite suite = m_testContext.getSuite();
-    // Reuse the previous parent injector, if any
-    Injector injector = suite.getParentInjector();
-    if (injector == null) {
-      Module parentModule = GuiceHelper.getParentModule(m_testContext);
-      injector = GuiceHelper.createInjector(null, m_testContext, injectorFactory,
-          parentModule == null ? Collections.emptyList() : Collections.singletonList(parentModule));
-      suite.setParentInjector(injector);
-    }
-    return injector;
   }
 
   @Override

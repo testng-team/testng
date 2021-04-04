@@ -10,13 +10,14 @@ import com.google.inject.Stage;
  */
 public interface IInjectorFactory {
   /**
-   * @deprecated
    * Note that {@link #getInjector(Injector, Stage, Module...)} should be used instead.
    *
    * @param stage - A {@link Stage} object that defines the appropriate stage
    * @param modules - An array of {@link Module}
    * @return - An {@link com.google.inject.Injector} instance that can be used to perform dependency
    * injection.
+   *
+   * @deprecated - As of TestNG <code>7.5.0</code>
    */
   @Deprecated
   Injector getInjector(Stage stage, Module... modules);

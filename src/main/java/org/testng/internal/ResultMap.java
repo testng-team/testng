@@ -15,11 +15,6 @@ public class ResultMap implements IResultMap {
   private final Set<ITestResult> results = ConcurrentHashMap.newKeySet();
 
   @Override
-  public void addResult(ITestResult result, ITestNGMethod method) {
-    addResult(result);
-  }
-
-  @Override
   public void addResult(ITestResult result) {
     results.add(result);
   }
