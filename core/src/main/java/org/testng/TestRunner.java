@@ -369,7 +369,7 @@ public class TestRunner
     //
 
     ITestNGListenerFactory factory =
-        TestListenerHelper.createListenerFactory(m_objectFactory, m_testClassFinder, listenerFactoryClass);
+        TestListenerHelper.createListenerFactory(m_objectFactory, m_testClassFinder, listenerFactoryClass, this);
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {

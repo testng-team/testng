@@ -33,6 +33,11 @@ import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.ISuiteContext;
+import org.testng.internal.objects.pojo.BasicAttributes;
+import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.thread.IExecutorFactory;
 import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
@@ -950,7 +955,33 @@ public class TestNG {
     m_configuration.setExecutorFactory(getExecutorFactory());
   }
 
+  private ISuiteContext newSuiteContextFor(XmlSuite s) {
+    return new ISuiteContext() {
+      @Override
+      public String getParentModule() {
+        return s.getParentModule();
+      }
+
+      @Override
+      public String getGuiceStage() {
+        return s.getGuiceStage();
+      }
+
+      @Override
+      public String getName() {
+        return s.getName();
+      }
+
+      @Override
+      public IInjectorFactory getInjectorFactory() {
+        return m_configuration.getInjectorFactory();
+      }
+    };
+  }
+
   private void addListeners(XmlSuite s) {
+    IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
+    ISuiteContext context = newSuiteContextFor(s);
     for (String listenerName : s.getListeners()) {
       Class<?> listenerClass = ClassHelper.forName(listenerName);
 
@@ -960,7 +991,10 @@ public class TestNG {
             "Listener " + listenerName + " was not found in project's classpath");
       }
 
-      addListener((ITestNGListener) m_objectFactory.newInstance(listenerClass));
+      BasicAttributes basic = new BasicAttributes(null, listenerClass);
+      CreationAttributes attribute = new CreationAttributes(basic, context);
+      Object listener = dispenser.dispense(attribute);
+      addListener((ITestNGListener) listener);
     }
 
     // Add the child suite listeners

@@ -4,6 +4,7 @@ import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
+import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -67,7 +68,7 @@ public class TestListenerHelperTest {
         new TestNGClassFinder(
             classMap, Maps.newHashMap(), configuration, ctx, new DataProviderHolder());
     ITestNGListenerFactory factory =
-        TestListenerHelper.createListenerFactory(objectFactory, finder, listenerClazz);
+        TestListenerHelper.createListenerFactory(objectFactory, finder, listenerClazz, ctx);
     assertThat(factory).isNotNull();
   }
 

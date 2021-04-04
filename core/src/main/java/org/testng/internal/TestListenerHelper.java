@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
+import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
@@ -14,6 +15,7 @@ import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 
 import java.util.List;
+import org.testng.internal.objects.Dispenser;
 
 /** A helper class that internally houses some of the listener related actions support. */
 public final class TestListenerHelper {
@@ -147,7 +149,9 @@ public final class TestListenerHelper {
 
   public static ITestNGListenerFactory createListenerFactory(
       ITestObjectFactory objectFactory,
-      TestNGClassFinder finder, Class<? extends ITestNGListenerFactory> factoryClass) {
+      TestNGClassFinder finder,
+      Class<? extends ITestNGListenerFactory> factoryClass,
+      ITestContext context) {
     ITestNGListenerFactory listenerFactory = null;
     try {
       if (finder != null) {
@@ -158,7 +162,7 @@ public final class TestListenerHelper {
       }
       if (listenerFactory == null) {
         if (DefaultListenerFactory.class.equals(factoryClass)) {
-          listenerFactory = new DefaultListenerFactory(objectFactory);
+          listenerFactory = new DefaultListenerFactory(objectFactory, context);
         } else {
           listenerFactory = factoryClass != null ? objectFactory.newInstance(factoryClass) : null;
         }
