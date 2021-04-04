@@ -48,15 +48,26 @@ class GuiceHelper {
     this.context = context;
   }
 
+  GuiceHelper(ISuiteContext context) {
+    parentModule = context.getParentModule();
+    stageString = context.getGuiceStage();
+    testName = context.getName();
+    this.context = null;
+  }
+
   Injector getInjector(IClass iClass, IInjectorFactory injectorFactory) {
+    return getInjector(iClass.getRealClass(), injectorFactory);
+  }
+
+  Injector getInjector(Class<?> cls, IInjectorFactory injectorFactory) {
     Guice guice =
-        AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass());
+        AnnotationHelper.findAnnotationSuperClasses(Guice.class, cls);
     if (guice == null) {
       return null;
     }
     Injector parentInjector = getParentInjector(injectorFactory);
 
-    List<Module> classLevelModules = getModules(guice, parentInjector, iClass.getRealClass());
+    List<Module> classLevelModules = getModules(guice, parentInjector, cls);
 
     // Get an injector with the class's modules + any defined parent module installed
     // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
@@ -70,13 +81,19 @@ class GuiceHelper {
 
   private Injector getParentInjector(IInjectorFactory factory) {
     // Reuse the previous parent injector, if any
-    ISuite suite = context.getSuite();
-    Injector injector = suite.getParentInjector();
+    Injector injector = null;
+    ISuite suite = null;
+    if (context != null) {
+      suite = context.getSuite();
+      injector = suite.getParentInjector();
+    }
     if (injector == null) {
       Module parentModule = getParentModule();
       injector = createInjector(null, factory,
           parentModule == null ? Collections.emptyList() : Collections.singletonList(parentModule));
-      suite.setParentInjector(injector);
+      if (suite != null) {
+        suite.setParentInjector(injector);
+      }
     }
     return injector;
   }

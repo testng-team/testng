@@ -26,12 +26,24 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
   public Object dispense(CreationAttributes attributes) {
     if (attributes.getBasicAttributes() != null) {
       BasicAttributes sa = attributes.getBasicAttributes();
-      if (cannotDispense(sa.getTestClass().getRealClass())) {
+      Class<?> cls = sa.getTestClass() == null ? sa.getRawClass() : sa.getTestClass().getRealClass();
+      if (cannotDispense(cls)) {
         return this.dispenser.dispense(attributes);
       }
       ITestContext ctx = attributes.getContext();
-      GuiceHelper helper = helpers.computeIfAbsent(ctx.hashCode(), k -> new GuiceHelper(ctx));
-      Injector injector = helper.getInjector(sa.getTestClass(), ctx.getInjectorFactory());
+      ISuiteContext suiteCtx = attributes.getSuiteContext();
+      GuiceHelper helper;
+      if (ctx == null) {
+        helper = helpers.computeIfAbsent(suiteCtx.hashCode(), k -> new GuiceHelper(suiteCtx));
+      } else {
+        helper = helpers.computeIfAbsent(ctx.hashCode(), k -> new GuiceHelper(ctx));
+      }
+      Injector injector;
+      if (ctx == null) {
+        injector = helper.getInjector(cls, suiteCtx.getInjectorFactory());
+      } else {
+        injector = helper.getInjector(cls, ctx.getInjectorFactory());
+      }
       if (injector == null) {
         return null;
       }

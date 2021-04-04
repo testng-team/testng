@@ -804,6 +804,7 @@
       <class name="test.guice.GuiceTest" />
       <class name="test.guice.GuiceInheritanceTest" />
       <class name="test.guice.GuiceModuleFactoryTest" />
+      <class name="test.guice.issue279.IssueTest"/>
     </classes>
   </test>
 
