@@ -92,6 +92,9 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
       xsb.addRequired(S, Long.toString(tr.getStartMillis() - start) + " ms", C, "method-start");
       xsb.pop(D);
     }
+    if (!invokedMethods.isEmpty()) {
+      xsb.pop(D);
+    }
     return xsb.toXML();
   }
 
