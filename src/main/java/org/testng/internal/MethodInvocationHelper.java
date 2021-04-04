@@ -240,7 +240,6 @@ public class MethodInvocationHelper {
               error[0] = null;
               tr.setThrowable(null);
             } catch (Throwable t) {
-              error[0] = t;
               tr.setThrowable(t); // make Throwable available to IHookable
             }
           }
@@ -251,9 +250,6 @@ public class MethodInvocationHelper {
           }
         };
     hookable.run(callback, testResult);
-    if (error[0] != null) {
-      throw error[0];
-    }
   }
 
   /**
