@@ -152,13 +152,13 @@ public class Assert {
     if ((expected == null) && (actual == null)) {
       return false;
     }
-    if (expected == null ^ actual == null) {
-      return true;
+    if (expected == null) {
+      return actual.equals(actual);
     }
-    if (!expected.equals(actual) && !actual.equals(expected)) {
-      return true;
+    if (actual == null) {
+      return expected.equals(expected);
     }
-    return false;
+    return !expected.equals(actual);
   }
 
   private static boolean areEqualImpl(Object actual, Object expected) {
