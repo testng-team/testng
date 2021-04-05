@@ -42,8 +42,7 @@ artifacts {
 
 buildscript {
     repositories {
-        jcenter()
-
+        mavenCentral()
     }
     dependencies {
         //Check for the latest version here: https://plugins.gradle.org/plugin/com.jfrog.artifactory
@@ -52,5 +51,3 @@ buildscript {
 }
 
 apply from: 'gradle/publishing-maven.gradle'
-apply from: 'gradle/publishing-jcenter.gradle'
-

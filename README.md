@@ -1,6 +1,5 @@
 [![Build Status](https://img.shields.io/travis/cbeust/testng.svg)](https://travis-ci.org/cbeust/testng)
 [![Maven Central](https://img.shields.io/maven-central/v/org.testng/testng.svg)](https://maven-badges.herokuapp.com/maven-central/org.testng/testng)
-[![Bintray](https://api.bintray.com/packages/cbeust/maven/testng/images/download.svg)](https://bintray.com/cbeust/maven/testng/_latestVersion)
 [![License](https://img.shields.io/github/license/cbeust/testng.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Sonarqube tech debt](https://img.shields.io/sonar/https/sonarqube.com/org.testng:testng/tech_debt.svg?label=Sonarqube%20tech%20debt)](https://sonarqube.com/dashboard/index?id=org.testng:testng)
 [![Sonarqube Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=org.testng%3Atestng&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.testng%3Atestng)

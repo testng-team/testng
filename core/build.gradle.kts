@@ -24,7 +24,6 @@ allprojects {
 
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
         maven { setUrl("https://plugins.gradle.org/m2") }
     }
@@ -58,7 +57,6 @@ java {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
     maven { setUrl("https://plugins.gradle.org/m2") }
 }
@@ -70,7 +68,6 @@ plugins {
     signing
     groovy
     id("org.sonarqube").version("2.8")
-    id("com.jfrog.bintray").version("1.8.3") // Don't use 1.8.4, crash when publishing
 }
 
 dependencies {
@@ -181,30 +178,8 @@ sonarqube {
 
 //
 // Releases:
-// ./gradlew bintrayUpload (to JCenter)
 // ./gradlew publish (to Sonatype, then go to https://oss.sonatype.org/index.html#stagingRepositories to publish)
 //
-
-bintray {
-    user = project.findProperty("bintrayUser")?.toString() ?: System.getenv("BINTRAY_USER")
-    key = project.findProperty("bintrayApiKey")?.toString() ?: System.getenv("BINTRAY_API_KEY")
-    dryRun = false
-    publish = true
-
-    setPublications("custom")
-
-    with(pkg) {
-        repo = "maven"
-        name = This.artifactId
-        with(version) {
-            name = This.version
-            desc = This.description
-            with(gpg) {
-                sign = true
-            }
-        }
-    }
-}
 
 val sourcesJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
