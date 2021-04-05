@@ -1,6 +1,6 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
-import static org.testng.internal.Invoker.SAME_CLASS;
+import static org.testng.internal.invokers.Invoker.SAME_CLASS;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 
@@ -24,7 +24,8 @@ import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.ConfigMethodArguments.Builder;
+import org.testng.internal.*;
+import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
@@ -48,10 +49,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private final Map<String, Boolean> m_beforegroupsFailures = Maps.newConcurrentMap();
 
   public ConfigInvoker(ITestResultNotifier notifier,
-      Collection<IInvokedMethodListener> invokedMethodListeners,
-      ITestContext testContext,
-      SuiteRunState suiteState,
-      IConfiguration configuration) {
+                       Collection<IInvokedMethodListener> invokedMethodListeners,
+                       ITestContext testContext,
+                       SuiteRunState suiteState,
+                       IConfiguration configuration) {
     super(notifier, invokedMethodListeners, testContext, suiteState, configuration);
     this.m_continueOnFailedConfiguration =
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
@@ -270,7 +271,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
                   + " is not enabled");
           continue;
         }
-        if (MethodHelper.isDisabled(configurationAnnotation)) {
+        if (!MethodHelper.isEnabled(configurationAnnotation)) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }

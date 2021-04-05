@@ -1,11 +1,13 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.internal.ITestInvoker.FailureContext;
+import org.testng.internal.invokers.ITestInvoker;
+import org.testng.internal.invokers.ITestInvoker.FailureContext;
+import org.testng.internal.invokers.TestMethodArguments;
 
 public interface IMethodRunner {
 

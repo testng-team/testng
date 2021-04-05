@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.List;
 import org.testng.IInvokedMethod;
@@ -6,6 +6,8 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
+import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.ITestResultNotifier;
 import org.testng.xml.XmlSuite;
 
 public interface ITestInvoker {
@@ -23,8 +25,8 @@ public interface ITestInvoker {
       ITestContext context);
 
   ITestResult invokeTestMethod(
-      TestMethodArguments arguments, XmlSuite suite,
-      FailureContext failureContext);
+          TestMethodArguments arguments, XmlSuite suite,
+          FailureContext failureContext);
 
   FailureContext retryFailed(
       TestMethodArguments arguments, List<ITestResult> result,

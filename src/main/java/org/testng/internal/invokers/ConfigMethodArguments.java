@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.Map;

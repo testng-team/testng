@@ -21,7 +21,7 @@ public final class TestListenerHelper {
     // Utility class. Defeat instantiation.
   }
 
-  static void runPreConfigurationListeners(ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
+  public static void runPreConfigurationListeners(ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
       icl.beforeConfiguration(tr);
       try {
@@ -32,7 +32,7 @@ public final class TestListenerHelper {
     }
   }
 
-  static void runPostConfigurationListeners(
+  public static void runPostConfigurationListeners(
       ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
       switch (tr.getStatus()) {

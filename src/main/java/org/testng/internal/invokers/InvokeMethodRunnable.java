@@ -1,9 +1,10 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.concurrent.Callable;
 import org.testng.IHookable;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.internal.ConstructorOrMethod;
 
 /**
  * A Runnable Method invoker.

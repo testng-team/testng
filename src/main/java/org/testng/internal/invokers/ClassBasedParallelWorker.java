@@ -1,9 +1,10 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.internal.MethodInstance;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;

@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderListener;
@@ -11,6 +11,8 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.invokers.ParameterHandler;
+import org.testng.internal.invokers.ParameterHolder;
 import org.testng.internal.paramhandler.DataDrivenSampleTestClass;
 import org.testng.internal.paramhandler.ExceptionThrowingDataDrivenSampleTestClass;
 import org.testng.internal.paramhandler.FakeTestContext;

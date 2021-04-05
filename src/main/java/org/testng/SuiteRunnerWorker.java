@@ -3,7 +3,7 @@ package org.testng;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Objects;
-import org.testng.internal.SuiteRunnerMap;
+import org.testng.internal.invokers.SuiteRunnerMap;
 import org.testng.internal.Utils;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;

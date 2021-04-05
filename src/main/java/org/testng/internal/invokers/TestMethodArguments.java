@@ -1,8 +1,9 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.Map;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.internal.ConfigurationGroupMethods;
 
 public class TestMethodArguments extends MethodArguments {
 

@@ -83,7 +83,7 @@
       <class name="test.sample.AfterClassCalledAtEnd"/>
       <class name="test.GraphTest"/>
       <class name="org.testng.internal.DynamicGraphTest"/>
-      <class name="org.testng.internal.ParameterHandlerTest"/>
+      <class name="org.testng.internal.invokers.ParameterHandlerTest"/>
       <class name="org.testng.internal.TestListenerHelperTest"/>
       <class name="org.testng.internal.GroupsHelperTest"/>
       <class name="org.testng.internal.DynamicGraphHelperTest"/>

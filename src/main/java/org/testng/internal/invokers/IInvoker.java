@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 /**
  * This class defines an invoker.

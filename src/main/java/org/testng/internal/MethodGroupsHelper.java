@@ -230,7 +230,7 @@ public class MethodGroupsHelper {
    *     the method that owns the dependsOnGroups statement (only used if a group is missing to flag
    *     an error on that method).
    */
-  protected static ITestNGMethod[] findMethodsThatBelongToGroup(
+  public static ITestNGMethod[] findMethodsThatBelongToGroup(
       ITestNGMethod method, ITestNGMethod[] methods, String groupRegexp) {
     ITestNGMethod[] found = findMethodsThatBelongToGroup(methods, groupRegexp);
 

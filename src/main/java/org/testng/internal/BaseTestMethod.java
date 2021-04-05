@@ -24,6 +24,7 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */

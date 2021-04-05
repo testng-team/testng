@@ -26,7 +26,7 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.ReporterConfig;
 import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.SuiteRunnerMap;
+import org.testng.internal.invokers.SuiteRunnerMap;
 import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.internal.Version;
