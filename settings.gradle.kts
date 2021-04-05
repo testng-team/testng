@@ -11,3 +11,5 @@ gradleEnterprise {
         publishAlways()
     }
 }
+
+include("core")
