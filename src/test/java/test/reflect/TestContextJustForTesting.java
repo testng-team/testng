@@ -1,8 +1,5 @@
 package test.reflect;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import org.testng.IClass;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ITestContext;
@@ -11,13 +8,10 @@ import org.testng.xml.XmlTest;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 /**
- * Created on 12/30/15.
  *
- * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class TestContextJustForTesting implements ITestContext {
 
@@ -109,26 +103,6 @@ public class TestContextJustForTesting implements ITestContext {
   @Override
   public XmlTest getCurrentXmlTest() {
     return null;
-  }
-
-  @Override
-  public List<Module> getGuiceModules(Class<? extends Module> cls) {
-    return null;
-  }
-
-  @Override
-  public Injector getInjector(List<Module> moduleInstances) {
-    return null;
-  }
-
-  @Override
-  public Injector getInjector(IClass iClass) {
-    return null;
-  }
-
-  @Override
-  public void addInjector(List<Module> moduleInstances, Injector injector) {
-
   }
 
   @Override

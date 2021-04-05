@@ -63,14 +63,6 @@ public class XmlSuite implements Cloneable {
       }
     }
 
-    /**
-     * @deprecated - This method stands deprecated as of v7.4.0
-     */
-    @Deprecated
-    public static ParallelMode skipDeprecatedValues(ParallelMode parallel) {
-      return parallel;
-    }
-
     public boolean isParallel() {
       return isParallel;
     }
@@ -236,6 +228,10 @@ public class XmlSuite implements Cloneable {
     return m_guiceStage;
   }
 
+  /**
+   * @deprecated - This method stands deprecated as of TestNG <code>7.5.0</code>.
+   * Use {@link XmlSuite#getObjectFactoryClass()} instead.
+   */
   @Deprecated
   public ITestObjectFactory getObjectFactory() {
     return InstanceCreator.newInstance(getObjectFactoryClass());

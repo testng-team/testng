@@ -15,9 +15,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import org.testng.annotations.Guice;
-import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -51,7 +48,6 @@ import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
-import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
@@ -64,9 +60,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlTest;
-
-import com.google.inject.Injector;
-import com.google.inject.Module;
 
 import javax.annotation.Nonnull;
 
@@ -86,8 +79,6 @@ public class TestRunner
   private String m_testName;
   private IInjectorFactory m_injectorFactory;
   private ITestObjectFactory m_objectFactory;
-
-  private GuiceHelper guiceHelper;
 
   private List<XmlClass> m_testClassesFromXml = null;
 
@@ -1264,58 +1255,6 @@ public class TestRunner
   @Override
   public Object removeAttribute(String name) {
     return m_attributes.removeAttribute(name);
-  }
-
-  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
-
-  @Override
-  public List<Module> getGuiceModules(Class<? extends Module> cls) {
-    return m_guiceModules.get(cls);
-  }
-
-  @Override
-  public List<Module> getAllGuiceModules() {
-    return m_guiceModules.values().
-        stream()
-        .flatMap(Collection::stream)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public void addGuiceModule(Module module) {
-    Class<? extends Module> cls = module.getClass();
-    List<Module> modules = m_guiceModules.get(cls);
-    boolean found = modules.stream().anyMatch(each -> each.getClass().equals(cls));
-    if (!found) {
-      modules.add(module);
-    }
-  }
-
-  private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
-
-  @Override
-  public Injector getInjector(List<Module> moduleInstances) {
-    return m_injectors.get(moduleInstances);
-  }
-
-  @Override
-  public Injector getInjector(IClass iClass) {
-    if (hasNoGuiceAnnotations(iClass)) {
-      return null;
-    }
-    if (guiceHelper == null) {
-      guiceHelper = new GuiceHelper(this);
-    }
-    return guiceHelper.getInjector(iClass, this.m_injectorFactory);
-  }
-
-  @Override
-  public void addInjector(List<Module> moduleInstances, Injector injector) {
-    m_injectors.put(moduleInstances, injector);
-  }
-
-  private static boolean hasNoGuiceAnnotations(IClass iClass) {
-    return AnnotationHelper.findAnnotationSuperClasses(Guice.class, iClass.getRealClass()) == null;
   }
 
   @Override

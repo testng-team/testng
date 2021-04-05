@@ -10,10 +10,8 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 /**
- * An interface defining the notification for @Test results and also \@Configuration results.
+ * An interface defining the notification for @Test results and also <code>@Configuration</code> results.
  *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public interface ITestResultNotifier {
 
@@ -30,12 +28,6 @@ public interface ITestResultNotifier {
   void addFailedTest(ITestNGMethod tm, ITestResult tr);
 
   void addFailedButWithinSuccessPercentageTest(ITestNGMethod tm, ITestResult tr);
-
-  /**
-   * @deprecated - Deprecated as of 7.4.0
-   */
-  @Deprecated
-  default void addInvokedMethod(InvokedMethod im) {}
 
   XmlTest getTest();
 

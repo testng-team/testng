@@ -134,7 +134,6 @@ class DefaultXmlWeaver implements IWeaveXml {
     if (xmlSuite.getXmlMethodSelectors() != null) {
       xsb.getStringBuffer().append(xmlSuite.getXmlMethodSelectors().toXml("  "));
     } else {
-      // deprecated
       if (hasElements(xmlSuite.getMethodSelectors())) {
         xsb.push("method-selectors");
         for (XmlMethodSelector selector : xmlSuite.getMethodSelectors()) {

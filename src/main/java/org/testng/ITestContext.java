@@ -1,14 +1,9 @@
 package org.testng;
 
-import com.google.inject.Injector;
-import com.google.inject.Module;
-
-import java.util.Collections;
 import org.testng.xml.XmlTest;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This class defines a test context which contains all the information for a given test run. An
@@ -81,44 +76,6 @@ public interface ITestContext extends IAttributes {
 
   /** @return the current XmlTest. */
   XmlTest getCurrentXmlTest();
-
-  /**
-   * This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  List<Module> getGuiceModules(Class<? extends Module> cls);
-
-  /**
-   * This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  default void addGuiceModule(Module module) {}
-
-  /**
-   * This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  default List<Module> getAllGuiceModules() {
-    return Collections.emptyList();
-  }
-
-  /**
-   * This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  Injector getInjector(List<Module> moduleInstances);
-
-  /**
-   * This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  Injector getInjector(IClass iClass);
-
-  /**
-   * This method stands deprecated as of TestNG <code>7.3.0</code>
-   */
-  @Deprecated
-  void addInjector(List<Module> moduleInstances, Injector injector);
 
   default IInjectorFactory getInjectorFactory() {
     return null;
