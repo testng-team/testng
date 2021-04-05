@@ -7,9 +7,7 @@ object This {
     const val scm = "github.com/cbeust/testng"
 
     // Should not need to change anything below
-    const val issueManagementUrl = "https://$scm/issues"
     const val name = "TestNG"
-    const val java9ModuleName = groupId
     const val vendor = name
 }
 
@@ -118,24 +116,24 @@ tasks.jar {
         attributes(
             // Basic JAR manifest attributes
             "Specification-Title" to This.name,
-            "Specification-Version" to This.version,
+            "Specification-Version" to project.version,
             "Specification-Vendor" to This.vendor,
             "Implementation-Title" to This.name,
-            "Implementation-Version" to This.version,
+            "Implementation-Version" to project.version,
             "Implementation-Vendor" to This.vendor,
-            "Implementation-Vendor-Id" to This.groupId,
+            "Implementation-Vendor-Id" to project.group,
             "Implementation-Url" to This.url,
 
             // Java 9 module name
-            "Automatic-Module-Name" to This.java9ModuleName,
+            "Automatic-Module-Name" to project.group,
 
             // BND Plugin instructions (for OSGi)
             "Bundle-Name" to This.name,
-            "Bundle-SymbolicName" to This.java9ModuleName,
+            "Bundle-SymbolicName" to project.group,
             "Bundle-Vendor" to This.vendor,
             "Bundle-License" to "https://apache.org/licenses/LICENSE-2.0",
             "Bundle-Description" to This.description,
-            "Bundle-Version" to This.version,
+            "Bundle-Version" to project.version,
             "Import-Package" to """
                 "bsh.*;version="[2.0.0,3.0.0)";resolution:=optional",
                 "com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional",
@@ -196,7 +194,7 @@ val javadocJar by tasks.creating(Jar::class) {
 with(publishing) {
     publications {
         create<MavenPublication>("custom") {
-            groupId = This.groupId
+            groupId = project.group.toString()
             artifactId = This.artifactId
             version = project.version.toString()
             afterEvaluate {
@@ -217,7 +215,7 @@ with(publishing) {
                 }
                 issueManagement {
                     system.set("Github")
-                    url.set(This.issueManagementUrl)
+                    url.set("https://${This.scm}/issues")
                 }
                 developers {
                     developer {
@@ -247,7 +245,7 @@ with(publishing) {
     repositories {
         maven {
             name = "sonatype"
-            url = if (This.version.contains("SNAPSHOT"))
+            url = if (project.version.toString().contains("SNAPSHOT"))
                 uri("https://oss.sonatype.org/content/repositories/snapshots/") else
                 uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
