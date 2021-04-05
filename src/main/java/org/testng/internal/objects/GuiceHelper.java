@@ -25,7 +25,6 @@ import org.testng.collections.ListMultiMap;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
-import org.testng.internal.InstanceCreator;
 import org.testng.internal.annotations.AnnotationHelper;
 
 import com.google.inject.Injector;

@@ -12,7 +12,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;

@@ -2,7 +2,7 @@ package test.thread.parallelization.sample;
 
 import org.testng.TestNGException;
 import org.testng.annotations.Factory;
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 
 import java.util.ArrayList;
 import java.util.List;

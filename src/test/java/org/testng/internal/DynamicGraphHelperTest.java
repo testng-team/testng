@@ -26,6 +26,7 @@ import org.testng.internal.dynamicgraph.SoftDependencyTestClassSample;
 import org.testng.internal.dynamicgraph.testpackage.PackageTestClassA;
 import org.testng.internal.dynamicgraph.testpackage.PackageTestClassBAbstract;
 import org.testng.internal.dynamicgraph.testpackage.PackageTestClassBB;
+import org.testng.internal.objects.InstanceCreator;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;

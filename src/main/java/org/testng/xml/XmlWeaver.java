@@ -2,7 +2,7 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.reflect.ReflectionRecipes;
 
