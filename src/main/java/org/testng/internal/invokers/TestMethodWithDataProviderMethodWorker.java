@@ -1,11 +1,15 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
-import org.testng.internal.TestMethodArguments.Builder;
+import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.TestResult;
+import org.testng.internal.invokers.ITestInvoker;
+import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
 import java.util.List;

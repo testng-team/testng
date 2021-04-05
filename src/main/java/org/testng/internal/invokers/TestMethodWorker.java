@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
@@ -9,7 +9,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
-import org.testng.internal.ConfigMethodArguments.Builder;
+import org.testng.internal.*;
+import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.thread.IWorker;
 
 import javax.annotation.Nonnull;

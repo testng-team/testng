@@ -11,9 +11,9 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.testng.*;
 import org.testng.collections.Lists;
-import org.testng.internal.IInvocationStatus;
+import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InvokedMethod;
+import org.testng.internal.invokers.InvokedMethod;
 import org.testng.internal.TestResult;
 
 /**

@@ -1,10 +1,11 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
+import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;

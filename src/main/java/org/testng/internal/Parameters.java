@@ -22,11 +22,13 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.ParameterHolder.ParameterOrigin;
+import org.testng.internal.invokers.ParameterHolder;
+import org.testng.internal.invokers.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.invokers.MethodInvocationHelper;
 import org.testng.internal.reflect.DataProviderMethodMatcher;
 import org.testng.internal.reflect.InjectableParameter;
 import org.testng.internal.reflect.MethodMatcher;
@@ -44,8 +46,6 @@ import org.testng.annotations.*;
 
 /**
  * Methods that bind parameters declared in testng.xml to actual values used to invoke methods.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class Parameters {
   public static final String NULL_VALUE = "null";

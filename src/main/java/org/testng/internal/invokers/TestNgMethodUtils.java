@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.function.BiPredicate;
 import org.testng.IClass;
@@ -6,6 +6,8 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.Utils;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,20 +7,23 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
-import org.testng.internal.ITestInvoker.FailureContext;
-import org.testng.internal.TestMethodArguments.Builder;
+import org.testng.internal.Parameters;
+import org.testng.internal.PoolService;
+import org.testng.internal.invokers.*;
+import org.testng.internal.invokers.ITestInvoker.FailureContext;
+import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
-class MethodRunner implements IMethodRunner {
+public class MethodRunner implements IMethodRunner {
 
   @Override
   public List<ITestResult> runInSequence(TestMethodArguments arguments,
-      ITestInvoker testInvoker,
-      ITestContext context,
-      AtomicInteger invocationCount,
-      FailureContext failure,
-      Iterator<Object[]> allParamValues,
-      boolean skipFailedInvocationCounts) {
+                                         ITestInvoker testInvoker,
+                                         ITestContext context,
+                                         AtomicInteger invocationCount,
+                                         FailureContext failure,
+                                         Iterator<Object[]> allParamValues,
+                                         boolean skipFailedInvocationCounts) {
     List<ITestResult> result = Lists.newArrayList();
     int parametersIndex = 0;
     Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);

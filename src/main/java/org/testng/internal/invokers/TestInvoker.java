@@ -1,8 +1,9 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
-import static org.testng.internal.Invoker.CAN_RUN_FROM_CLASS;
+import static org.testng.internal.invokers.Invoker.CAN_RUN_FROM_CLASS;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+import static org.testng.internal.invokers.ParameterHandler.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,9 +39,9 @@ import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.GroupConfigMethodArguments.Builder;
-import org.testng.internal.InvokeMethodRunnable.TestNGRuntimeException;
-import org.testng.internal.ParameterHandler.ParameterBag;
+import org.testng.internal.*;
+import org.testng.internal.invokers.GroupConfigMethodArguments.Builder;
+import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.thread.IWorker;
@@ -54,11 +55,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private final boolean m_skipFailedInvocationCounts;
 
   public TestInvoker(ITestResultNotifier m_notifier,
-      ITestContext m_testContext, SuiteRunState m_suiteState,
-      IConfiguration m_configuration, Collection<IInvokedMethodListener> m_invokedMethodListeners,
-      DataProviderHolder holder, List<IClassListener> m_classListeners,
-      boolean m_skipFailedInvocationCounts,
-      ConfigInvoker invoker) {
+                     ITestContext m_testContext, SuiteRunState m_suiteState,
+                     IConfiguration m_configuration, Collection<IInvokedMethodListener> m_invokedMethodListeners,
+                     DataProviderHolder holder, List<IClassListener> m_classListeners,
+                     boolean m_skipFailedInvocationCounts,
+                     ConfigInvoker invoker) {
     super(m_notifier, m_invokedMethodListeners, m_testContext, m_suiteState, m_configuration
     );
     this.holder = holder;

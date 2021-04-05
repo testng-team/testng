@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.ISuite;
 import org.testng.TestNGException;

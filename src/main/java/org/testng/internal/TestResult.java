@@ -355,7 +355,7 @@ public class TestResult implements ITestResult {
     m_name = name;
   }
 
-  void setParameterIndex(int parameterIndex) {
+  public void setParameterIndex(int parameterIndex) {
     this.parameterIndex = parameterIndex;
   }
 
@@ -455,11 +455,9 @@ public class TestResult implements ITestResult {
     return Arrays.stream(mygroups).anyMatch(cfgMethodGroups::contains);
   }
 
-  static void copyAttributes(ITestResult source, ITestResult target) {
+  public static void copyAttributes(ITestResult source, ITestResult target) {
     source
         .getAttributeNames()
         .forEach(name -> target.setAttribute(name, source.getAttribute(name)));
   }
-
-
 }

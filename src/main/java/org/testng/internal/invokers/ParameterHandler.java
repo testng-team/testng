@@ -1,10 +1,13 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
+import org.testng.internal.Parameters;
+import org.testng.internal.TestResult;
+import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;

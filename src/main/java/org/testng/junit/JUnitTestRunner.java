@@ -7,7 +7,7 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.InvokedMethod;
+import org.testng.internal.invokers.InvokedMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

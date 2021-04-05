@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import org.testng.IDataProviderMethod;
 
@@ -7,8 +7,6 @@ import java.util.Iterator;
 /**
  * A simple holder for parameters that contains the parameters and where these came from (data
  * provider or testng.xml)
- *
- * @author cbeust
  */
 public class ParameterHolder {
   /** Origin of the parameters. */
@@ -19,7 +17,7 @@ public class ParameterHolder {
   }
 
   final IDataProviderMethod dataProviderHolder;
-  final Iterator<Object[]> parameters;
+  public final Iterator<Object[]> parameters;
   final ParameterOrigin origin;
 
   public ParameterHolder(

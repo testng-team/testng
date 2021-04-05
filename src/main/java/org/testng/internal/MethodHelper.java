@@ -25,14 +25,12 @@ import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
+import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlTest;
 
 /**
  * Collection of helper methods to help sort and arrange methods.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm[at]evolva[dot]ro'>Alexandru Popescu</a>
  */
 public class MethodHelper {
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
@@ -98,7 +96,7 @@ public class MethodHelper {
    * @param methods list of methods to search for depended upon methods
    * @return list of methods that match the criteria
    */
-  protected static ITestNGMethod[] findDependedUponMethods(
+  public static ITestNGMethod[] findDependedUponMethods(
       ITestNGMethod m, ITestNGMethod[] methods) {
 
     String canonicalMethodName = calculateMethodCanonicalName(m);
@@ -187,12 +185,12 @@ public class MethodHelper {
     return null;
   }
 
-  protected static boolean isEnabled(Class<?> objectClass, IAnnotationFinder finder) {
+  public static boolean isEnabled(Class<?> objectClass, IAnnotationFinder finder) {
     ITestAnnotation testClassAnnotation = AnnotationHelper.findTest(finder, objectClass);
     return isEnabled(testClassAnnotation);
   }
 
-  protected static boolean isEnabled(Method m, IAnnotationFinder finder) {
+  public static boolean isEnabled(Method m, IAnnotationFinder finder) {
     ITestAnnotation annotation = AnnotationHelper.findTest(finder, m);
 
     // If no method annotation, look for one on the class
@@ -203,15 +201,11 @@ public class MethodHelper {
     return isEnabled(annotation);
   }
 
-  protected static boolean isEnabled(ITestOrConfiguration test) {
+  public static boolean isEnabled(ITestOrConfiguration test) {
     return null == test || test.getEnabled();
   }
 
-  static boolean isDisabled(ITestOrConfiguration test) {
-    return !isEnabled(test);
-  }
-
-  static boolean isAlwaysRun(IConfigurationAnnotation configurationAnnotation) {
+  public static boolean isAlwaysRun(IConfigurationAnnotation configurationAnnotation) {
     if (null == configurationAnnotation) {
       return false;
     }
@@ -462,7 +456,7 @@ public class MethodHelper {
         .orElse(null);
   }
 
-  protected static long calculateTimeOut(ITestNGMethod tm) {
+  public static long calculateTimeOut(ITestNGMethod tm) {
     return tm.getTimeOut() > 0 ? tm.getTimeOut() : tm.getInvocationTimeOut();
   }
 

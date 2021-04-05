@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,13 +11,12 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.SuiteRunState;
+import org.testng.internal.IConfiguration;
+import org.testng.internal.ITestResultNotifier;
 
 /**
  * This class is responsible for invoking methods: - test methods - configuration methods - possibly
  * in a separate thread and then for notifying the result listeners.
- *
- * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
- * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class Invoker implements IInvoker {
 

@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.Map;
@@ -11,6 +11,9 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
 import org.testng.collections.Maps;
+import org.testng.internal.IConfiguration;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.InvokedMethodListenerInvoker;
 import org.testng.internal.invokers.InvokedMethodListenerMethod;
