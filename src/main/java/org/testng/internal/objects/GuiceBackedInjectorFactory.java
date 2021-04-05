@@ -1,4 +1,4 @@
-package org.testng.internal;
+package org.testng.internal.objects;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -7,7 +7,7 @@ import com.google.inject.Stage;
 import javax.annotation.Nullable;
 import org.testng.IInjectorFactory;
 
-class GuiceBackedInjectorFactory implements IInjectorFactory {
+public class GuiceBackedInjectorFactory implements IInjectorFactory {
   @Deprecated
   @Override
   public Injector getInjector(Stage stage, Module... modules) {

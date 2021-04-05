@@ -1,7 +1,8 @@
-package org.testng.internal;
+package org.testng.internal.objects;
 
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
+import org.testng.internal.objects.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 

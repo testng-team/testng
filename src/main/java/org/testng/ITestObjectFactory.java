@@ -1,6 +1,6 @@
 package org.testng;
 
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 

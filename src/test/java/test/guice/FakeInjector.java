@@ -11,7 +11,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.InjectionPoint;
 import com.google.inject.spi.TypeConverterBinding;
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 
 import java.lang.annotation.Annotation;
 import java.util.List;

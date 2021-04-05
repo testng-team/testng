@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 
 import java.lang.reflect.Constructor;
 

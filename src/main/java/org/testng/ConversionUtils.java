@@ -1,6 +1,6 @@
 package org.testng;
 
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 import org.testng.log4testng.Logger;
 
 import java.util.ArrayList;

@@ -13,6 +13,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.objects.GuiceBackedInjectorFactory;
 import org.testng.internal.thread.DefaultThreadPoolExecutorFactory;
 import org.testng.thread.IExecutorFactory;
 

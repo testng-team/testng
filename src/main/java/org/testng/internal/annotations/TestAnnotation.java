@@ -3,7 +3,6 @@ package org.testng.internal.annotations;
 import org.testng.IRetryAnalyzer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.internal.InstanceCreator;
 
 /**
  * An implementation of ITest

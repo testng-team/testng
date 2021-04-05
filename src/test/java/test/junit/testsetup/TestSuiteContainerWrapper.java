@@ -2,7 +2,7 @@ package test.junit.testsetup;
 
 import junit.extensions.TestSetup;
 import junit.framework.TestSuite;
-import org.testng.internal.InstanceCreator;
+import org.testng.internal.objects.InstanceCreator;
 
 public class TestSuiteContainerWrapper extends TestSetup {
   private static Data INSTANCE = null;

@@ -3,7 +3,7 @@ package test.objectfactory;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
-import org.testng.internal.ObjectFactoryImpl;
+import org.testng.internal.objects.ObjectFactoryImpl;
 
 public class ContextAwareObjectFactoryFactory {
 

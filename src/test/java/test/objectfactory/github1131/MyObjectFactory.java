@@ -2,7 +2,7 @@ package test.objectfactory.github1131;
 
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
-import org.testng.internal.ObjectFactoryImpl;
+import org.testng.internal.objects.ObjectFactoryImpl;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
