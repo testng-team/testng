@@ -30,7 +30,7 @@ public class TestCommandLineArgs {
 
   @Test
   public void testPathResolution() {
-    File file = new File("CHANGES.txt");
+    File file = new File("../CHANGES.txt");
 
     assert file.exists();
 
