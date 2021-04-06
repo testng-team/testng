@@ -19,6 +19,15 @@ import org.testng.collections.Lists;
  * Assertion tool class. Presents assertion methods with a more natural parameter order. The order
  * is always <B>actualValue</B>, <B>expectedValue</B> [, message].
  *
+ * <p><b>Important:</b> Assertion methods comparing two values for equality, such as {@code assertEquals},
+ * are <i>only</i> intended to test equality for an actual and an (un-)expected result value. They
+ * are not designed for testing whether a class correctly implements {@code equals(Object)}. For
+ * example {@code assertEquals} might return fast when provided with the same object as actual and
+ * expected value without calling {@code equals(Object)} at all. Such tests trying to verify the
+ * {@code equals(Object)} implementation should instead be written explicitly and
+ * {@link #assertTrue(boolean) assertTrue} or {@link #assertFalse(boolean) assertFalse} should be
+ * used to verify the result, e.g.: {@code assertTrue(var.equals(var))}, {@code assertFalse(var.equals(null))}.
+ *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 public class Assert {
