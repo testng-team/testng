@@ -2,7 +2,7 @@ package org.testng.internal.objects.pojo;
 
 import java.util.Objects;
 import org.testng.ITestContext;
-import org.testng.internal.objects.ISuiteContext;
+import org.testng.internal.invokers.objects.GuiceContext;
 
 /**
  * Represents the parameters that are associated with object creation.
@@ -12,7 +12,7 @@ public class CreationAttributes {
   private final BasicAttributes basic;
   private final DetailedAttributes detailed;
   private final ITestContext context;
-  private final ISuiteContext suiteContext;
+  private final GuiceContext suiteContext;
 
   public CreationAttributes(ITestContext ctx, BasicAttributes basic,
       DetailedAttributes detailed) {
@@ -23,7 +23,7 @@ public class CreationAttributes {
     this.suiteContext = null;
   }
 
-  public CreationAttributes(BasicAttributes basic, ISuiteContext suiteContext) {
+  public CreationAttributes(BasicAttributes basic, GuiceContext suiteContext) {
     this.basic = basic;
     this.detailed = null;
     this.context = null;
@@ -42,7 +42,7 @@ public class CreationAttributes {
     return context;
   }
 
-  public ISuiteContext getSuiteContext() {
+  public GuiceContext getSuiteContext() {
     return suiteContext;
   }
 }

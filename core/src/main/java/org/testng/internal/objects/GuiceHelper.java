@@ -30,6 +30,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+import org.testng.internal.invokers.objects.GuiceContext;
 
 class GuiceHelper {
   private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
@@ -48,7 +49,7 @@ class GuiceHelper {
     this.context = context;
   }
 
-  GuiceHelper(ISuiteContext context) {
+  GuiceHelper(GuiceContext context) {
     parentModule = context.getParentModule();
     stageString = context.getGuiceStage();
     testName = context.getName();
