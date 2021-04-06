@@ -33,9 +33,9 @@ import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.invokers.objects.GuiceContext;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
-import org.testng.internal.objects.ISuiteContext;
 import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.thread.IExecutorFactory;
@@ -955,33 +955,9 @@ public class TestNG {
     m_configuration.setExecutorFactory(getExecutorFactory());
   }
 
-  private ISuiteContext newSuiteContextFor(XmlSuite s) {
-    return new ISuiteContext() {
-      @Override
-      public String getParentModule() {
-        return s.getParentModule();
-      }
-
-      @Override
-      public String getGuiceStage() {
-        return s.getGuiceStage();
-      }
-
-      @Override
-      public String getName() {
-        return s.getName();
-      }
-
-      @Override
-      public IInjectorFactory getInjectorFactory() {
-        return m_configuration.getInjectorFactory();
-      }
-    };
-  }
-
   private void addListeners(XmlSuite s) {
     IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
-    ISuiteContext context = newSuiteContextFor(s);
+    GuiceContext context = new GuiceContext(s, this.m_configuration);
     for (String listenerName : s.getListeners()) {
       Class<?> listenerClass = ClassHelper.forName(listenerName);
 

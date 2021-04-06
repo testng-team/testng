@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.testng.ITestContext;
 import org.testng.annotations.Guice;
 import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.invokers.objects.GuiceContext;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.objects.pojo.BasicAttributes;
 
@@ -31,7 +32,7 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
         return this.dispenser.dispense(attributes);
       }
       ITestContext ctx = attributes.getContext();
-      ISuiteContext suiteCtx = attributes.getSuiteContext();
+      GuiceContext suiteCtx = attributes.getSuiteContext();
       GuiceHelper helper;
       if (ctx == null) {
         helper = helpers.computeIfAbsent(suiteCtx.hashCode(), k -> new GuiceHelper(suiteCtx));
