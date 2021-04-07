@@ -196,7 +196,7 @@ public class FactoryMethod extends BaseTestMethod {
         } else {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
             Object instance  = m_objectFactory.newInstance(com.getConstructor(), parameters);
-            result.add(new ParameterInfo(instance,  parameters));
+            result.add(new ParameterInfo(instance, position, parameters));
           }
           position++;
         }

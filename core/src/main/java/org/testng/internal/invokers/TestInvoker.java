@@ -634,9 +634,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       // that it has parameters, so might have to revisit this if bugs get reported
       // for the case where this method has parameters that don't come from a data
       // provider
-      if (testResult.getThrowable() != null && arguments.getParameterValues().length > 0) {
+      if (testResult.getThrowable() != null &&
+              (arguments.getParameterValues().length > 0 || testResult.getFactoryParameters().length > 0)) {
+        int parametersIndex = testResult.getMethod().getFactoryMethodParamsInfo().getIndex();
+        if (parametersIndex > 0) {
+          arguments.getParametersIndex();
+        }
         arguments.getTestMethod()
-            .addFailedInvocationNumber(arguments.getParametersIndex());
+                .addFailedInvocationNumber(parametersIndex);
       }
 
       //
