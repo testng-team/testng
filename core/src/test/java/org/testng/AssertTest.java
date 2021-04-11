@@ -1,18 +1,16 @@
 package org.testng;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.*;
+
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+
+import com.google.common.collect.ImmutableMap;
+
 import testhelper.PerformanceUtils;
 
-import java.util.*;
-
-
-/**
- * This class/interface
- */
 public class AssertTest {
   @Test
   public void nullObjectArrayAssertEquals() {
@@ -30,15 +28,15 @@ public class AssertTest {
 
   @Test
   public void nullCollectionAssertEquals() {
-    Collection expected = null;
-    Collection actual = null;
+    Collection<?> expected = null;
+    Collection<?> actual = null;
     Assert.assertEquals(actual, expected);
   }
 
   @Test
   public void nullSetAssertEquals() {
-    Set expected = null;
-    Set actual = null;
+    Set<?> expected = null;
+    Set<?> actual = null;
     Assert.assertEquals(actual, expected);
   }
 
@@ -76,8 +74,8 @@ public class AssertTest {
 
   @Test
   public void nullMapAssertEquals() {
-    Map expected = null;
-    Map actual = null;
+    Map<?, ?> expected = null;
+    Map<?, ?> actual = null;
     Assert.assertEquals(actual, expected);
   }
 
@@ -123,8 +121,8 @@ public class AssertTest {
 
   @Test
   public void oneNullMapAssertEquals() {
-    Map expected = Maps.newHashMap();
-    Map actual = null;
+    Map<?, ?> expected = Maps.newHashMap();
+    Map<?, ?> actual = null;
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
@@ -136,8 +134,8 @@ public class AssertTest {
 
   @Test
   public void oneNullSetAssertEquals() {
-    Set expected = null;
-    Set actual = Sets.newHashSet();
+    Set<?> expected = null;
+    Set<?> actual = Sets.newHashSet();
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
@@ -274,6 +272,7 @@ public class AssertTest {
     Assert.assertEquals(actual, expected, 0.1d);
   }
 
+  @SuppressWarnings("serial")
   @Test(expectedExceptions = AssertionError.class)
   public void assertEqualsMapShouldFail() {
     Map<String, String> mapActual = new HashMap<String, String>() {{
@@ -297,6 +296,26 @@ public class AssertTest {
     Object[] actual = {1, new Asymmetric(42, 'd'), "inDay"};
     Object[] expected = {1, new Contrived(42), "inDay"};
     Assert.assertEquals(actual, expected);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void testAssertEqualsWithActualBrokenEqualsTrue() {
+    // BrokenEqualsTrue.equals(Object) always returns true, even for null
+    // However, Assert is not supposed to check equals(Object) implementation, so assertEquals should fail
+    Assert.assertEquals(new BrokenEqualsTrue(), null);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void testAssertEqualsWithExpectedBrokenEqualsTrue() {
+    // BrokenEqualsTrue.equals(Object) always returns true, even for null
+    // However, Assert is not supposed to check equals(Object) implementation, so assertEquals should fail
+    Assert.assertEquals(null, new BrokenEqualsTrue());
+  }
+
+  @Test
+  public void testAssertEqualsWithNull() {
+    Object obj = null;
+    Assert.assertEquals(obj, obj);
   }
 
   @Test(description = "GITHUB-1935", expectedExceptions = AssertionError.class,
@@ -382,13 +401,29 @@ public class AssertTest {
   }
 
   @Test(description = "GITHUB-2490")
-  public void testAssertNotEqualsWithActualNull() {
-    Assert.assertNotEquals(null, new BrokenEquals());
+  public void testAssertNotEqualsWithActualBrokenEqualsTrue() {
+    // BrokenEqualsTrue.equals(Object) always returns true, even for null
+    // However, Assert is not supposed to check equals(Object) implementation, so assertNotEquals should succeed
+    Assert.assertNotEquals(new BrokenEqualsTrue(), null);
   }
 
   @Test(description = "GITHUB-2490")
-  public void testAssertNotEqualsWithExpectedNull() {
-    Assert.assertNotEquals(new BrokenEquals(), null);
+  public void testAssertNotEqualsWithExpectedBrokenEqualsTrue() {
+    // BrokenEqualsTrue.equals(Object) always returns true, even for null
+    // However, Assert is not supposed to check equals(Object) implementation, so assertNotEquals should succeed
+    Assert.assertNotEquals(null, new BrokenEqualsTrue());
+  }
+
+  @Test(description = "GITHUB-2490")
+  public void testAssertNotEqualsWithActualBrokenEqualsFalse() {
+    // BrokenEqualsFalse.equals(Object) always returns false; assertNotEquals should fail
+    Assert.assertNotEquals(new BrokenEqualsFalse(), null);
+  }
+
+  @Test(description = "GITHUB-2490")
+  public void testAssertNotEqualsWithExpectedBrokenEqualsFalse() {
+    // BrokenEqualsFalse.equals(Object) always returns false; assertNotEquals should fail
+    Assert.assertNotEquals(null, new BrokenEqualsFalse());
   }
 
   @Test(description = "GITHUB-2490")
@@ -404,6 +439,12 @@ public class AssertTest {
   @Test
   public void testAssertNotEqualsWithActualEmptyStringExceptedNull() {
     Assert.assertNotEquals("", null);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void testAssertNotEqualsWithNull() {
+    Object obj = null;
+    Assert.assertNotEquals(obj, obj);
   }
 
   class Contrived {
@@ -491,10 +532,17 @@ public class AssertTest {
     }
   }
 
-  static class BrokenEquals {
+  static class BrokenEqualsTrue {
     @Override
     public boolean equals(Object o) {
       return true; // broken implementation
+    }
+  }
+
+  static class BrokenEqualsFalse {
+    @Override
+    public boolean equals(Object o) {
+      return false; // broken implementation
     }
   }
 }
