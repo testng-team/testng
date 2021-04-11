@@ -5,6 +5,7 @@ import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
 import org.testng.collections.Lists;
 
 /**
@@ -158,14 +160,12 @@ public class Assert {
   }
 
   private static boolean areNotEqualImpl(Object actual, Object expected) {
-    if ((expected == null) && (actual == null)) {
-      return false;
-    }
     if (expected == null) {
-      return actual.equals(actual);
+      return actual != null;
     }
+    // expected != null && actual == null
     if (actual == null) {
-      return expected.equals(expected);
+      return true;
     }
     return !expected.equals(actual);
   }
@@ -174,18 +174,16 @@ public class Assert {
     if ((expected == null) && (actual == null)) {
       return true;
     }
-    if (expected == null ^ actual == null) {
+    // Only one of them is null
+    if (expected == null || actual == null) {
       return false;
     }
-    if (expected.equals(actual) && actual.equals(expected)) {
-      return true;
-    }
-    return false;
+    return expected.equals(actual) && actual.equals(expected);
   }
 
   /**
    * returns not equal reason or null if equal
-   **/
+   */
   private static String getArrayNotEqualReason(Object actual, Object expected) {
     if (Objects.equals(actual, expected)) {
       return null;
@@ -1347,7 +1345,7 @@ public class Assert {
 
   /**
    * returns not equal reason or null if equal
-   **/
+   */
   private static String getNotEqualReason(Set<?> actual, Set<?> expected) {
     if (Objects.equals(actual, expected)) {
       return null;
@@ -1385,7 +1383,7 @@ public class Assert {
 
   /**
    * returns not equal deep reason or null if equal
-   **/
+   */
   private static String getNotEqualDeepReason(Set<?> actual, Set<?> expected) {
     if (Objects.equals(actual, expected)) {
       return null;
@@ -1490,7 +1488,7 @@ public class Assert {
 
   /**
    * returns not equal deep reason or null if equal
-   **/
+   */
   private static String getNotEqualDeepReason(Map<?, ?> actual, Map<?, ?> expected) {
     if (Objects.equals(actual, expected)) {
       return null;
