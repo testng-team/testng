@@ -1271,7 +1271,9 @@ public class Assert {
 
   /**
    * Asserts that two arrays contain the same elements in no particular order. If they do not, an
-   * AssertionError, with the given message, is thrown.
+   * {@code AssertionError}, with the given message, is thrown. The arrays are not compared 'deeply',
+   * that means, if the elements are arrays as well their {@code equals} method is used which only
+   * checks for reference equality.
    *
    * @param actual   the actual value
    * @param expected the expected value
@@ -1326,7 +1328,9 @@ public class Assert {
 
   /**
    * Asserts that two arrays contain the same elements in no particular order. If they do not, an
-   * AssertionError is thrown.
+   * {@code AssertionError} is thrown. The arrays are not compared 'deeply', that means, if the
+   * elements are arrays as well their {@code equals} method is used which only checks for reference
+   * equality.
    *
    * @param actual   the actual value
    * @param expected the expected value

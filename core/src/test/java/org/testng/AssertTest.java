@@ -305,6 +305,57 @@ public class AssertTest {
     Assert.assertEquals("x", "y");
   }
 
+  @Test
+  public void testAssertEqualsNoOrder() {
+    String[] actual = {"a", "b"};
+    String[] expected = {"b", "a"};
+    Assert.assertEqualsNoOrder(actual, expected);
+  }
+
+  @Test
+  public void testAssertEqualsNoOrderWithEmpty() {
+    Assert.assertEqualsNoOrder(new String[0], new String[0]);
+  }
+
+  @Test
+  public void testAssertEqualsNoOrderWithDifferentElementType() {
+    Assert.assertEqualsNoOrder(new String[0], new Object[0]);
+    Object[] actual = {"a"};
+    String[] expected = {"a"};
+    Assert.assertEqualsNoOrder(actual, expected);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void testAssertEqualsNoOrderWithDuplicate() {
+    String[] actual = {"a"};
+    String[] expected = {"a", "a"};
+    Assert.assertEqualsNoOrder(actual, expected);
+  }
+
+  @Test
+  public void testAssertEqualsNoOrderWithBothNull() {
+    Assert.assertEqualsNoOrder(null, null);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void testAssertEqualsNoOrderWithActualNull() {
+    Assert.assertEqualsNoOrder(null, new String[0]);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void testAssertEqualsNoOrderWithExpectedNull() {
+    Assert.assertEqualsNoOrder(new String[0], null);
+  }
+
+  @Test(description = "GITHUB-2500", expectedExceptions = AssertionError.class)
+  public void testAssertEqualsNoOrderNotDeep() {
+    // assertEqualsNoOrder does not compare arrays deeply, so elements which are
+    // arrays as well are only compared for reference equality
+    String[][] actual = {{}};
+    String[][] expected = {{}};
+    Assert.assertEqualsNoOrder(actual, expected);
+  }
+
   @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
           expectedExceptionsMessageRegExp = "test expected \\[true\\] but found \\[false\\]")
   public void testAssertTrueMessage() {
