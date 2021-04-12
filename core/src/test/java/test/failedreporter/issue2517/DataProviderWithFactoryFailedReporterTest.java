@@ -34,17 +34,13 @@ public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
 
     private void testFailedReporter(String[] expectedMethods, String expectedLine, Class<?>... cls) {
         triggerTest(cls);
-        runAssertions(mTempDirectory, expectedMethods, expectedLine);
+        runAssertions(mTempDirectory, expectedMethods, expectedLine, 1);
     }
 
     private void triggerTest(Class<?>... cls) {
         TestNG tng = create(mTempDirectory.toPath(), cls);
         tng.setUseDefaultListeners(true);
         tng.run();
-    }
-
-    static void runAssertions(File outputDir, String[] expectedMethods, String expectedLine) {
-        runAssertions(outputDir, expectedMethods, expectedLine, 1);
     }
 
     private static void runAssertions(
