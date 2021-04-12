@@ -4,14 +4,14 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class FailedDataProviderWithFactoryReporterSampleTest {
+public class DataProviderWithFactoryFailedReporterSample {
     private Integer data;
 
-    public FailedDataProviderWithFactoryReporterSampleTest() {
+    public DataProviderWithFactoryFailedReporterSample() {
     }
 
     @Factory(dataProvider = "dp")
-    public FailedDataProviderWithFactoryReporterSampleTest(Integer data) {
+    public DataProviderWithFactoryFailedReporterSample(Integer data) {
         this.data = data;
     }
 

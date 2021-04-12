@@ -11,7 +11,7 @@ import test.SimpleBaseTest;
 import java.io.File;
 import java.util.List;
 
-public class FailedDataProviderWithFactoryReporterTest extends SimpleBaseTest {
+public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
     private File mTempDirectory;
 
     @BeforeMethod
@@ -29,7 +29,7 @@ public class FailedDataProviderWithFactoryReporterTest extends SimpleBaseTest {
         testFailedReporter(
                 new String[]{"f1"},
                 "<include name=\"%s\" invocation-numbers=\"1\"/>",
-                FailedDataProviderWithFactoryReporterSampleTest.class);
+                DataProviderWithFactoryFailedReporterSample.class);
     }
 
     private void testFailedReporter(String[] expectedMethods, String expectedLine, Class<?>... cls) {
