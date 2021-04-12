@@ -7,16 +7,13 @@ import org.testng.annotations.Test;
 public class DataProviderWithFactoryFailedReporterSample {
     private Integer data;
 
-    public DataProviderWithFactoryFailedReporterSample() {
-    }
-
     @Factory(dataProvider = "dp")
     public DataProviderWithFactoryFailedReporterSample(Integer data) {
         this.data = data;
     }
 
     @DataProvider
-    public Object[][] dp() {
+    public static Object[][] dp() {
         return new Object[][]{
                 new Object[]{0}, new Object[]{1}, new Object[]{2},
         };
