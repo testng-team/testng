@@ -11,6 +11,11 @@ public interface IParameterInfo {
   Object getInstance();
 
   /**
+   * @return - The actual index of instance associated with a factory method
+   */
+  int getIndex();
+
+  /**
    * @return - The parameters associated with the factory method as an array.
    */
   Object[] getParameters();
