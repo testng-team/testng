@@ -140,42 +140,42 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     m_testMethods = createTestMethods(methods);
 
     for (Object eachInstance : iClass.getInstances(false)) {
-      Object instance = IParameterInfo.embeddedInstance(eachInstance);
       m_beforeSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
               testMethodFinder.getBeforeSuiteMethods(m_testClass),
               annotationFinder,
               true,
-              instance);
+              eachInstance);
       m_afterSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
               testMethodFinder.getAfterSuiteMethods(m_testClass),
               annotationFinder,
               false,
-              instance);
+              eachInstance);
       m_beforeTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
               testMethodFinder.getBeforeTestConfigurationMethods(m_testClass),
               annotationFinder,
               true,
-              instance, this.xmlTest);
+              this.xmlTest, eachInstance);
       m_afterTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
               testMethodFinder.getAfterTestConfigurationMethods(m_testClass),
               annotationFinder,
               false,
-              instance, this.xmlTest);
+              this.xmlTest, eachInstance);
       m_beforeClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
               testMethodFinder.getBeforeClassMethods(m_testClass),
               annotationFinder,
               true,
-              instance, xmlTest);
+              xmlTest, eachInstance);
+      Object instance = IParameterInfo.embeddedInstance(eachInstance);
       beforeClassConfig.put(instance.toString(), Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
@@ -183,37 +183,35 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               testMethodFinder.getAfterClassMethods(m_testClass),
               annotationFinder,
               false,
-              instance, xmlTest);
+              xmlTest, eachInstance);
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
               testMethodFinder.getBeforeGroupsConfigurationMethods(m_testClass),
               annotationFinder,
               true,
-              instance);
+              eachInstance);
       m_afterGroupsMethods =
           ConfigurationMethod.createAfterConfigurationMethods(
               objectFactory,
               testMethodFinder.getAfterGroupsConfigurationMethods(m_testClass),
               annotationFinder,
               false,
-              instance);
+              eachInstance);
       m_beforeTestMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
               testMethodFinder.getBeforeTestMethods(m_testClass),
               annotationFinder,
               true,
-              instance,
-              xmlTest);
+              xmlTest, eachInstance);
       m_afterTestMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
               testMethodFinder.getAfterTestMethods(m_testClass),
               annotationFinder,
               false,
-              instance,
-              xmlTest);
+              xmlTest, eachInstance);
     }
   }
 
