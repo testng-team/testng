@@ -48,6 +48,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   private boolean m_isAfterGroupsConfiguration;
 
   private boolean m_inheritGroupsFromTestClass = false;
+  private final IParameterInfo factoryMethodInfo;
 
   private ConfigurationMethod(
       ITestObjectFactory objectFactory,
@@ -65,10 +66,15 @@ public class ConfigurationMethod extends BaseTestMethod {
       String[] afterGroups,
       boolean initialize,
       Object instance) {
-    super(objectFactory, com.getName(), com, annotationFinder, instance);
+    super(objectFactory, com.getName(), com, annotationFinder,
+        IParameterInfo.embeddedInstance(instance));
     if (initialize) {
       init();
     }
+
+    this.factoryMethodInfo = (instance instanceof IParameterInfo)
+        ? (IParameterInfo) instance
+        : null;
 
     m_isBeforeSuiteConfiguration = isBeforeSuite;
     m_isAfterSuiteConfiguration = isAfterSuite;
@@ -86,6 +92,14 @@ public class ConfigurationMethod extends BaseTestMethod {
     m_afterGroups = afterGroups;
   }
 
+  @Override
+  public IParameterInfo getFactoryMethodParamsInfo() {
+    if (this.factoryMethodInfo != null) {
+      return this.factoryMethodInfo;
+    }
+    return super.getFactoryMethodParamsInfo();
+  }
+
   public ConfigurationMethod(
       ITestObjectFactory objectFactory,
       ConstructorOrMethod com,
@@ -100,8 +114,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterMethod,
       String[] beforeGroups,
       String[] afterGroups,
-      Object instance,
-      XmlTest xmlTest) {
+      XmlTest xmlTest, Object instance) {
     this(
         objectFactory,
         com,
@@ -133,8 +146,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterClass,
       boolean isBeforeMethod,
       boolean isAfterMethod,
-      Object instance,
-      XmlTest xmlTest) {
+      XmlTest xmlTest, Object instance) {
     List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod method : methods) {
       if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
@@ -158,7 +170,7 @@ public class ConfigurationMethod extends BaseTestMethod {
               isAfterMethod,
               new String[0],
               new String[0],
-              instance, xmlTest));
+              xmlTest, instance));
     }
 
     return result.toArray(new ITestNGMethod[0]);
@@ -183,7 +195,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         false,
         false,
-        instance, null);
+        null, instance);
   }
 
   public static ITestNGMethod[] createTestConfigurationMethods(
@@ -191,7 +203,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      Object instance, XmlTest xmlTest) {
+      XmlTest xmlTest, Object instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -204,7 +216,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         false,
         false,
-        instance, xmlTest);
+        xmlTest, instance);
   }
 
   public static ITestNGMethod[] createClassConfigurationMethods(
@@ -212,7 +224,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      Object instance, XmlTest xmlTest) {
+      XmlTest xmlTest, Object instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -225,7 +237,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         !isBefore,
         false,
         false,
-        instance, xmlTest);
+        xmlTest, instance);
   }
 
   public static ITestNGMethod[] createBeforeConfigurationMethods(
@@ -251,7 +263,7 @@ public class ConfigurationMethod extends BaseTestMethod {
               false,
               isBefore ? methods[i].getBeforeGroups() : new String[0],
               new String[0],
-              instance, null);
+              null, instance);
     }
 
     return result;
@@ -279,7 +291,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             false,
             new String[0],
             isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
-            instance, null))
+            null, instance))
         .toArray(ITestNGMethod[]::new);
   }
 
@@ -288,7 +300,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      Object instance, XmlTest xmlTest) {
+      XmlTest xmlTest,
+      Object instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -301,8 +314,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         isBefore,
         !isBefore,
-        instance,
-        xmlTest);
+        xmlTest, instance);
   }
 
   /** @return Returns the isAfterClassConfiguration. */
@@ -461,7 +473,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             getBeforeGroups(),
             getAfterGroups(),
             false /* do not call init() */,
-            getInstance());
+            getFactoryMethodParamsInfo());
     clone.m_testClass = getTestClass();
     clone.setDate(getDate());
     clone.setGroups(getGroups());

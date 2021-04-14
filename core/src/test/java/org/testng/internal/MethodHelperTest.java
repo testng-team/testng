@@ -33,7 +33,7 @@ public class MethodHelperTest {
             false,
             new String[0],
             new String[0],
-            testClass, Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest());
+        Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest(), testClass);
     method.addMethodDependedUpon("dummyDependsOnMethod");
     ITestNGMethod[] methods = new ITestNGMethod[0];
 
