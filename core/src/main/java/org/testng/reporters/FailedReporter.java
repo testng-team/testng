@@ -20,6 +20,7 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -197,9 +198,24 @@ public class FailedReporter implements IReporter {
         XmlInclude methodName =
             new XmlInclude(m.getMethodName(), m.getFailedInvocationNumbers(), ind++);
         methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
+        methodName.setConstructorOrMethod(m.getConstructorOrMethod());
         methodNames.add(methodName);
       }
-      xmlClass.setIncludedMethods(methodNames);
+
+      List<XmlInclude> groupedMethodNames = new ArrayList<>();
+      methodNames.stream()
+              .collect(Collectors.groupingBy(XmlInclude::getConstructorOrMethod))
+              .forEach((method, methodNameList) -> {
+                XmlInclude tmpMethodName = methodNameList.get(0);
+                if (methodNameList.size() > 1) {
+                  methodNameList.forEach(methodName -> {
+                    tmpMethodName.addInvocationNumbers(methodName.getInvocationNumbers());
+                  });
+                }
+                groupedMethodNames.add(tmpMethodName);
+              });
+
+      xmlClass.setIncludedMethods(groupedMethodNames);
       xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
               .values()
               .stream()
