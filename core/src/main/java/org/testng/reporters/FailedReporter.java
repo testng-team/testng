@@ -194,7 +194,6 @@ public class FailedReporter implements IReporter {
       List<XmlInclude> methodNames = Lists.newArrayList(methodList.size());
       int ind = 0;
       for (ITestNGMethod m : methodList) {
-
         XmlInclude methodName =
             new XmlInclude(m.getMethodName(), m.getFailedInvocationNumbers(), ind++);
         methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));

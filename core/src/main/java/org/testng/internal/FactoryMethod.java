@@ -181,9 +181,9 @@ public class FactoryMethod extends BaseTestMethod {
                     com.getDeclaringClass().getName(), com.getName());
           }
           if (indices == null || indices.isEmpty()) {
-            int finalPosition = position;
+            final int instancePosition = position;
             result.addAll(Arrays.stream(testInstances).map(instance ->
-              new ParameterInfo(instance, finalPosition, parameters)
+              new ParameterInfo(instance, instancePosition, parameters)
             ).collect(Collectors.toList()));
           } else {
             for (Integer index : indices) {
