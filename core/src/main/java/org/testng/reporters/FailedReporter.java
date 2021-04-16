@@ -201,7 +201,7 @@ public class FailedReporter implements IReporter {
         methodNames.add(methodName);
       }
 
-      List<XmlInclude> groupedMethodNames = new ArrayList<>();
+      List<XmlInclude> groupedByMethodNames = new ArrayList<>();
       methodNames.stream()
               .collect(Collectors.groupingBy(XmlInclude::getConstructorOrMethod))
               .forEach((method, methodNameList) -> {
@@ -211,10 +211,10 @@ public class FailedReporter implements IReporter {
                     tmpMethodName.addInvocationNumbers(methodName.getInvocationNumbers());
                   });
                 }
-                groupedMethodNames.add(tmpMethodName);
+                groupedByMethodNames.add(tmpMethodName);
               });
 
-      xmlClass.setIncludedMethods(groupedMethodNames);
+      xmlClass.setIncludedMethods(groupedByMethodNames);
       xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
               .values()
               .stream()

@@ -74,6 +74,7 @@ public class XmlInclude {
 
   public void addInvocationNumbers(List<Integer> invocationNumberList) {
     m_invocationNumbers.addAll(invocationNumberList);
+    // Deleting of duplicates numbers
     m_invocationNumbers = m_invocationNumbers.stream().distinct().collect(Collectors.toList());
   }
 
