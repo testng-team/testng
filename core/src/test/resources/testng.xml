@@ -134,6 +134,7 @@
       <class name="test.testng285.TestNG285Test" />
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.failedreporter.issue2517.DataProviderWithFactoryFailedReporterTest" />
+      <class name="test.failedreporter.issue2521.DataProviderWithFactoryMultiFailedReporterTest" />
       <class name="test.attributes.AttributeTest"/>
       <class name="test.attributes.issue2346.IssueTest"/>
       <class name="test.verify.VerifyTest"/>
