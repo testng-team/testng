@@ -25,4 +25,11 @@ public class DataProviderWithFactoryMultiFailedReporterSample {
             throw new RuntimeException();
         }
     }
+
+    @Test
+    public void f2() {
+        if (data != 0) {
+            throw new RuntimeException();
+        }
+    }
 }
