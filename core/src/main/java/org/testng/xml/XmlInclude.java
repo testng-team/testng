@@ -1,5 +1,8 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
@@ -11,7 +14,7 @@ import java.util.Properties;
 public class XmlInclude {
 
   private String m_name;
-  private final List<Integer> m_invocationNumbers;
+  private Set<Integer> m_invocationNumbers;
   private final int m_index;
   private String m_description;
   private final Map<String, String> m_parameters = Maps.newHashMap();
@@ -32,7 +35,7 @@ public class XmlInclude {
 
   public XmlInclude(String n, List<Integer> list, int index) {
     m_name = n;
-    m_invocationNumbers = list;
+    m_invocationNumbers = new HashSet<>(list);
     m_index = index;
   }
 
@@ -58,7 +61,11 @@ public class XmlInclude {
   }
 
   public List<Integer> getInvocationNumbers() {
-    return m_invocationNumbers;
+    return new ArrayList<>(m_invocationNumbers);
+  }
+
+  public void addInvocationNumbers(List<Integer> invocationNumberList) {
+    m_invocationNumbers.addAll(invocationNumberList);
   }
 
   public int getIndex() {
