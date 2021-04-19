@@ -1,5 +1,8 @@
 package org.testng.reporters;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -10,6 +13,7 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.LiteWeightTestNGMethod;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.RuntimeBehavior;
@@ -191,28 +195,29 @@ public class FailedReporter implements IReporter {
       // @author Borojevic
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass = new XmlClass(clazz.getName(), index++, false /* don't load classes */);
-      List<XmlInclude> methodNames = Lists.newArrayList(methodList.size());
-      int ind = 0;
-      for (ITestNGMethod m : methodList) {
-        XmlInclude methodName =
-            new XmlInclude(m.getMethodName(), m.getFailedInvocationNumbers(), ind++);
-        methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
-        methodName.setConstructorOrMethod(m.getConstructorOrMethod());
-        methodNames.add(methodName);
-      }
 
-      List<XmlInclude> groupedByMethodNames = new ArrayList<>();
-      methodNames.stream()
-              .collect(Collectors.groupingBy(XmlInclude::getConstructorOrMethod))
-              .forEach((method, methodNameList) -> {
-                XmlInclude tmpMethodName = methodNameList.get(0);
-                if (methodNameList.size() > 1) {
-                  methodNameList.forEach(methodName -> {
-                    tmpMethodName.addInvocationNumbers(methodName.getInvocationNumbers());
-                  });
-                }
-                groupedByMethodNames.add(tmpMethodName);
-              });
+      Map<ConstructorOrMethod, List<ITestNGMethod>> group = methodList.stream()
+          .collect(Collectors.groupingBy(ITestNGMethod::getConstructorOrMethod));
+
+      List<XmlInclude> groupedByMethodNames = group.values()
+          .stream()
+          .map(each -> asXmlIncludes(each, srcXmlTest))
+          .map(each -> {
+            if (each.size() > 1) {
+              XmlInclude tmpMethodName = each.get(0);
+              each.stream()
+                  .map(XmlInclude::getInvocationNumbers)
+                  .reduce((a1, a2) -> {
+                    Set<Integer> set = new HashSet<>(a1);
+                    set.addAll(a2);
+                    return new ArrayList<>(set);
+                  }).ifPresent(tmpMethodName::addInvocationNumbers);
+              return Collections.singletonList(tmpMethodName);
+            }
+            return each;
+          })
+          .flatMap(Collection::stream)
+          .collect(Collectors.toList());
 
       xmlClass.setIncludedMethods(groupedByMethodNames);
       xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
@@ -248,5 +253,17 @@ public class FailedReporter implements IReporter {
     }
 
     return Collections.emptyMap();
+  }
+
+  private static List<XmlInclude> asXmlIncludes(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
+    AtomicInteger i = new AtomicInteger(0);
+    return methods.stream()
+        .map(m -> {
+          XmlInclude methodName =
+              new XmlInclude(m.getMethodName(), m.getFailedInvocationNumbers(), i.getAndIncrement());
+          methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
+          return methodName;
+        })
+        .collect(Collectors.toList());
   }
 }

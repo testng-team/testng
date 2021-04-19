@@ -1,20 +1,20 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.ConstructorOrMethod;
 import org.testng.reporters.XMLStringBuffer;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class XmlInclude {
 
   private String m_name;
-  private ConstructorOrMethod m_method;
-  private List<Integer> m_invocationNumbers;
+  private Set<Integer> m_invocationNumbers;
   private final int m_index;
   private String m_description;
   private final Map<String, String> m_parameters = Maps.newHashMap();
@@ -35,12 +35,8 @@ public class XmlInclude {
 
   public XmlInclude(String n, List<Integer> list, int index) {
     m_name = n;
-    m_invocationNumbers = list;
+    m_invocationNumbers = new HashSet<>(list);
     m_index = index;
-  }
-
-  public void setConstructorOrMethod(ConstructorOrMethod m_method) {
-    this.m_method = m_method;
   }
 
   public void setDescription(String description) {
@@ -50,10 +46,6 @@ public class XmlInclude {
   public void setParameters(Map<String, String> parameters) {
     m_parameters.clear();
     m_parameters.putAll(parameters);
-  }
-
-  public ConstructorOrMethod getConstructorOrMethod() {
-    return m_method;
   }
 
   public String getDescription() {
@@ -69,13 +61,11 @@ public class XmlInclude {
   }
 
   public List<Integer> getInvocationNumbers() {
-    return m_invocationNumbers;
+    return new ArrayList<>(m_invocationNumbers);
   }
 
   public void addInvocationNumbers(List<Integer> invocationNumberList) {
     m_invocationNumbers.addAll(invocationNumberList);
-    // Deleting of duplicates numbers
-    m_invocationNumbers = m_invocationNumbers.stream().distinct().collect(Collectors.toList());
   }
 
   public int getIndex() {
