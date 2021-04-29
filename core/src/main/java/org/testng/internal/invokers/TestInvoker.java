@@ -562,6 +562,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       log(3, "Invoking " + arguments.getTestMethod().getQualifiedName());
       runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
+      if (testResult.getStatus() == ITestResult.SKIP) {
+        return testResult;
+      }
 
       if (arguments.getTestMethod() instanceof IInvocationStatus) {
         ((IInvocationStatus) arguments.getTestMethod()).setInvokedAt(invokedMethod.getDate());

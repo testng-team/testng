@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2522: TestNG 7.4.0 Can not skip test through listener (Nan Liang)
 Fixed: GITHUB-2529: Link to testng.xml in CONTRIBUTING.md file was dead
 Fixed: GITHUB-2521: The method has a separate string with 'invocation-number' parameters for each failure (does not group) in 'testng-failed.xml' file for DataProvider + Factory (Pavel Sakharchuk)
 Fixed: GITHUB-2426: New feature TestNG - getFactoryMethodParamsInfo on ConfigurationMethod (Krishnan Mahadevan)
