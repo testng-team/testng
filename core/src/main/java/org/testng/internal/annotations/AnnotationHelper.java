@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.Objects;
+
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -277,6 +278,11 @@ public class AnnotationHelper {
             if (shouldIgnore) {
               Utils.log("", 2, "Method " + m + ""
                   + " is being skipped since its been marked to be ignored");
+              continue;
+            }
+
+            if (Arrays.stream(m.getAnnotations()).anyMatch(a -> a.annotationType().getName().equals("groovy.transform.Internal"))) {
+              Utils.log("", 2, "Method " + m + " is being skipped since it a Groovy internal method.");
               continue;
             }
 
