@@ -1008,5 +1008,11 @@
       <class name="test.listeners.AlterSuiteListenerTest"/>
     </classes>
   </test>
-</suite>
 
+  <test name="GITHUB-2360">
+    <classes>
+      <class name="test.github2360.Issue2360Test"/>
+    </classes>
+  </test>
+
+</suite>
