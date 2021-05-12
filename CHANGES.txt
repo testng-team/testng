@@ -2,6 +2,7 @@ Current
 Fixes: GITHUB-2493: Avoid NPE from TextReporter execution when a dataprovider method provides null (baflQA)
 Fixed: GITHUB-2483: Asymmetric not equals (cdalexndr)
 Fixed: GITHUB-2486: assertSame/assertNotSame broken after GITHUB-2296 (Vitalii Diravka)
+Fixed: GITHUB-2544: TestNG Retry Fails on complex data-provider arguments (Anindya Roy)
 
 7.4.0
 New  : GITHUB-2459: Support configurable start time - emailable report (Barry Evans)
