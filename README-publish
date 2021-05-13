@@ -2,7 +2,6 @@ The release can be validated with this project:  https://github.com/testng-team/
 
 To publish:
 
-- ./gradlew bintrayUpload will upload the release to JCenter. It will fail if the version is a SNAPSHOT
 - ./gradlew uploadArchives will upload
   - the snapshot to https://oss.sonatype.org/content/repositories/snapshots
   - the release to https://oss.sonatype.org/service/local/staging/deploy/maven2
