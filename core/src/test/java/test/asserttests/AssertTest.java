@@ -9,10 +9,7 @@ import org.testng.collections.Sets;
 import java.io.IOException;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.testng.Assert.expectThrows;
+import static org.testng.Assert.*;
 
 public class AssertTest {
 
@@ -34,26 +31,26 @@ public class AssertTest {
   public void intArray_Issue4() {
     int[] intArr00 = {1};
     int[] intArr01 = {1};
-    Assert.assertEquals(intArr00, intArr01);
+    assertEquals(intArr00, intArr01);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_1() {
     int[] intArr = {1, 2};
     long[] longArr = {1, 2};
-    Assert.assertEquals(intArr, longArr);
+    assertEquals(intArr, longArr);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_2() {
     int[] intArr = {1, 2};
-    Assert.assertEquals(intArr, (long) 1);
+    assertEquals(intArr, (long) 1);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void arraysFailures_3() {
     long[] longArr = {1};
-    Assert.assertEquals((long) 1, longArr);
+    assertEquals((long) 1, longArr);
   }
 
   @Test
@@ -70,8 +67,8 @@ public class AssertTest {
     set1.add(2);
     set2.add(2);
 
-    Assert.assertEquals(set1, set2);
-    Assert.assertEquals(set2, set1);
+    assertEquals(set1, set2);
+    assertEquals(set2, set1);
   }
 
   @Test(expectedExceptions = AssertionError.class)
@@ -148,7 +145,7 @@ public class AssertTest {
 
   @Test
   public void doubleNaNAssertion() {
-    Assert.assertEquals(Double.NaN, Double.NaN, 0.0);
+    assertEquals(Double.NaN, Double.NaN, 0.0);
   }
 
   @DataProvider
@@ -162,7 +159,7 @@ public class AssertTest {
 
   @Test(dataProvider="identicalArraysWithNull")
   public void identicalArraysWithNullValues(String[] actual, String[] expected) {
-    Assert.assertEquals(actual, expected);
+    assertEquals(actual, expected);
   }
 
   @DataProvider
