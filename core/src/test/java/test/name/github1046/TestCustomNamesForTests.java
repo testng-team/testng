@@ -17,7 +17,7 @@ public class TestCustomNamesForTests extends SimpleBaseTest {
         XmlSuite xmlSuite = createXmlSuite("Suite", "Test", TestClassSample.class);
         TestNG tng = create(xmlSuite);
         LocalTestNameGatherer reporter = new LocalTestNameGatherer();
-        tng.addListener((ITestNGListener) reporter);
+        tng.addListener(reporter);
         tng.run();
         Set<String> expectedNames = Sets.newHashSet();
         for (String method : Arrays.asList("testSample1", "testSample2")) {
@@ -27,6 +27,6 @@ public class TestCustomNamesForTests extends SimpleBaseTest {
         }
         expectedNames.add("ordinaryTestMethod_TestNG_TestCase_999");
         expectedNames.add("dontChangeName");
-        Assert.assertEquals(reporter.getTestnames(), expectedNames);
+        Assert.assertEqualsNoOrder(reporter.getTestnames(), expectedNames);
     }
 }

@@ -42,8 +42,14 @@ public class AssertTest {
 
   @Test
   public void testCollectionAssertEquals() {
-    final Collection<Asymmetric> expected = Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
-    final Collection<Asymmetric> actual = Sets.newHashSet(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
+    final Collection<Asymmetric> expected = Sets.newHashSet(
+            new Asymmetric(10, 'a'),
+            new Asymmetric(11, 'b')
+    );
+    final Collection<Asymmetric> actual = Sets.newHashSet(
+            new Asymmetric(10, 'a'),
+            new Asymmetric(11, 'b')
+    );
     Assert.assertEquals(actual, expected);
   }
 
@@ -67,8 +73,14 @@ public class AssertTest {
 
   @Test
   public void testSetAssertEquals() {
-    final Set<Asymmetric> expected = Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
-    final Set<Asymmetric> actual = Sets.newHashSet(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
+    final Set<Asymmetric> expected = Sets.newHashSet(
+            new Asymmetric(10, 'a'),
+            new Asymmetric(11, 'b')
+    );
+    final Set<Asymmetric> actual = Sets.newHashSet(
+            new Asymmetric(10, 'a'),
+            new Asymmetric(11, 'b')
+    );
     Assert.assertEquals(actual, expected);
   }
 
@@ -81,13 +93,8 @@ public class AssertTest {
 
   @Test
   public void setAssertEquals() {
-    Set<Object> expected = Sets.newHashSet();
-    Set<Object> actual = Sets.newHashSet();
-
-    expected.add(1);
-    expected.add("a");
-    actual.add("a");
-    actual.add(1);
+    Set<Object> expected = Sets.newHashSet("a", 1);
+    Set<Object> actual = Sets.newHashSet("a", 1);
 
     Assert.assertEquals(actual, expected);
   }
