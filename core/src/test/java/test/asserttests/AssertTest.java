@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import org.testng.collections.Sets;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
@@ -176,4 +176,183 @@ public class AssertTest {
     Assert.assertNotEquals(actual, expected);
   }
 
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkCollectionEqualsFailsWhenDifferentOrder() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEquals(collection1, collection2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkCollectionEqualsNoOrder() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEqualsNoOrder(collection1, collection2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkCollectionEquals() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+
+    assertEquals(collection1, collection2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkCollectionNotEquals() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertNotEquals(collection1, collection2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkCollectionNotEqualsFailsWhenDifferentOrder() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+
+    assertNotEquals(collection1, collection2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkIteratorEqualsFailsWhenDifferentOrder() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b"))).iterator();
+
+    assertEquals(iterator1, iterator2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkIteratorEqualsNoOrder() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b"))).iterator();
+
+    assertEqualsNoOrder(iterator1, iterator2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkIteratorEquals() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+
+    assertEquals(iterator1, iterator2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkIteratorNotEquals() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b"))).iterator();
+
+    assertNotEquals(iterator1, iterator2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkIteratorNotEqualsFailsWhenDifferentOrder() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+
+    assertNotEquals(iterator1, iterator2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkSetEqualsFailsWhenDifferentOrder() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEquals(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkSetEqualsNoOrder() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEqualsNoOrder(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkSetEquals() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+
+    assertEquals(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkSetNotEquals() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertNotEquals(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkSetNotEqualsFailsWhenDifferentOrder() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+
+    assertNotEquals(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkArrayEqualsFailsWhenDifferentOrder() {
+
+    String[] array1 = { "a", "b", "c" };
+    String[] array2 = { "a", "c", "b" };
+
+    assertEquals(array1, array2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkArrayEqualsNoOrder() {
+
+    String[] array1 = { "a", "b", "c" };
+    String[] array2 = { "a", "c", "b" };
+
+    assertEqualsNoOrder(array1, array2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkArrayEquals() {
+
+    String[] array1 = { "a", "b", "c" };
+    String[] array2 = { "a", "b", "c" };
+
+    assertEquals(array1, array2);
+  }
+
+  @Test(description = "GITHUB-2540")
+  public void checkArrayNotEquals() {
+
+    String[] array1 = { "a", "b", "c" };
+    String[] array2 = { "a", "c", "b" };
+
+    assertNotEquals(array1, array2);
+  }
+
+  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
+  public void checkArrayNotEqualsFailsWhenDifferentOrder() {
+
+    String[] array1 = {"a", "b", "c" };
+    String[] array2 = {"a", "b", "c" };
+
+    assertNotEquals(array1, array2);
+  }
 }

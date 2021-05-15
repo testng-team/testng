@@ -353,7 +353,7 @@ public class AssertTest {
 
   @Test
   public void testAssertEqualsNoOrderWithBothNull() {
-    Assert.assertEqualsNoOrder(null, null);
+    Assert.assertEqualsNoOrder((Object[]) null, (Object[]) null);
   }
 
   @Test(expectedExceptions = AssertionError.class)
