@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.testng.collections.Lists;
 
@@ -1094,7 +1097,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Collection<?> actual, Collection<?> expected, String message) {
-    if (Objects.equals(actual, expected)) {
+    if (actual == expected) { // We don't use Objects.equals here because order is checked
       return;
     }
 
@@ -1146,7 +1149,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Iterator<?> actual, Iterator<?> expected, String message) {
-    if (Objects.equals(actual, expected)) {
+    if (actual == expected) { // We don't use Objects.equals here because order is checked
       return;
     }
     if (actual == null || expected == null) {
@@ -1203,7 +1206,7 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEquals(Iterable<?> actual, Iterable<?> expected, String message) {
-    if (Objects.equals(actual, expected)) {
+    if (actual == expected) { // We don't use Objects.equals here because order is checked
       return;
     }
 
@@ -1238,7 +1241,7 @@ public class Assert {
       if (message != null) {
         fail(message);
       } else {
-        fail("Arrays not equal: " + Arrays.toString(expected) + " and " + Arrays.toString(actual));
+        fail("Arrays not equal: expected: " + Arrays.toString(expected) + " and actual: " + Arrays.toString(actual));
       }
     }
     if (actual.length != expected.length) {
@@ -1278,13 +1281,13 @@ public class Assert {
    * @param message  the assertion error message
    */
   public static void assertEqualsNoOrder(Object[] actual, Object[] expected, String message) {
-    if (Arrays.equals(actual, expected)) {
+    if (actual == expected) { // We don't use Arrays.equals here because order is not checked
       return;
     }
 
-    if ((actual == null && expected != null) || (actual != null && expected == null)) {
+    if (actual == null || expected == null) {
       failAssertNoEqual(
-          "Arrays not equal: " + Arrays.toString(expected) + " and " + Arrays.toString(actual),
+          "Arrays not equal: expected: " + Arrays.toString(expected) + " and actual: " + Arrays.toString(actual),
           message);
     }
 
@@ -1293,16 +1296,45 @@ public class Assert {
           "Arrays do not have the same size:" + actual.length + " != " + expected.length, message);
     }
 
-    List<Object> actualCollection = Lists.newArrayList();
-    actualCollection.addAll(Arrays.asList(actual));
+    List<Object> actualCollection = Lists.newArrayList(actual);
     for (Object o : expected) {
       actualCollection.remove(o);
     }
-    if (actualCollection.size() != 0) {
+    if (!actualCollection.isEmpty()) {
       failAssertNoEqual(
-          "Arrays not equal: " + Arrays.toString(expected) + " and " + Arrays.toString(actual),
+          "Arrays not equal: expected: " + Arrays.toString(expected) + " and actual: " + Arrays.toString(actual),
           message);
     }
+  }
+
+  public static void assertEqualsNoOrder(Collection<?> actual, Collection<?> expected, String message) {
+    List<?> actualCollection = Lists.newArrayList(actual);
+    actualCollection.removeAll(expected);
+    if (!actualCollection.isEmpty()) {
+      failAssertNoEqual(
+              "Collections not equal: expected: " + expected + " and actual: " + actual,
+              message);
+    }
+  }
+
+  public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected, String message) {
+    List<?> actualCollection = Lists.newArrayList(actual);
+    actualCollection.removeAll(Lists.newArrayList(expected));
+    if (!actualCollection.isEmpty()) {
+      failAssertNoEqual(
+              "Iterators not equal: expected: " + toString(expected) + " and actual: " + toString(actual),
+              message);
+    }
+  }
+
+  private static String toString(Iterator<?> iterator) {
+      if (iterator == null) {
+          return null;
+      }
+      Iterable<Object> iterable = () -> (Iterator<Object>) iterator;
+      return StreamSupport.stream(iterable.spliterator(), false)
+              .map(Object::toString)
+              .collect(Collectors.joining(", "));
   }
 
   private static void failAssertNoEqual(String defaultMessage, String message) {
@@ -1337,6 +1369,14 @@ public class Assert {
     assertEqualsNoOrder(actual, expected, null);
   }
 
+  public static void assertEqualsNoOrder(Collection<?> actual, Collection<?> expected) {
+    assertEqualsNoOrder(actual, expected, null);
+  }
+
+  public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected) {
+    assertEqualsNoOrder(actual, expected, null);
+  }
+
   /**
    * Asserts that two sets are equal.
    *
@@ -1350,8 +1390,43 @@ public class Assert {
   /**
    * returns not equal reason or null if equal
    */
+  private static String getNotEqualReason(Collection<?> actual, Collection<?> expected) {
+    if (actual == expected) { // We don't use Arrays.equals here because order is checked
+      return null;
+    }
+
+    if (actual == null || expected == null) {
+      // Keep the back compatible
+      return "Collections not equal: expected: " + expected + " and actual: " + actual;
+    }
+
+    if (!Objects.equals(actual, expected)) {
+      return "Collections differ: expected " + expected + " but got " + actual;
+    }
+
+    return getNotEqualReason(actual.iterator(), expected.iterator());
+  }
+
+    private static String getNotEqualReason(Iterator<?> actual, Iterator<?> expected) {
+      if (actual == expected) { // We don't use Arrays.equals here because order is checked
+        return null;
+      }
+
+      if (actual == null || expected == null) {
+        // Keep the back compatible
+        return "Iterators not equal: expected: " + toString(expected) + " and actual: " + toString(actual);
+      }
+
+      while (actual.hasNext() && expected.hasNext()) {
+        if (!Objects.equals(actual.next(), expected.next())) {
+          return "Iterators not same element order: expected: " + toString(expected) + " and actual: " + toString(actual);
+        }
+      }
+      return null;
+    }
+
   private static String getNotEqualReason(Set<?> actual, Set<?> expected) {
-    if (Objects.equals(actual, expected)) {
+    if (actual == expected) { // We don't use Arrays.equals here because order is checked
       return null;
     }
 
@@ -1363,7 +1438,7 @@ public class Assert {
     if (!Objects.equals(actual, expected)) {
       return "Sets differ: expected " + expected + " but got " + actual;
     }
-    return null;
+    return getNotEqualReason(actual.iterator(), expected.iterator());
   }
 
   /**
@@ -1555,64 +1630,90 @@ public class Assert {
     assertNotEqualsImpl(actual, expected, message);
   }
 
-  public static void assertNotEquals(Object actual1, Object actual2) {
-    assertNotEquals(actual1, actual2, null);
+  public static void assertNotEquals(Object[] actual, Object[] expected, String message) {
+    assertArrayNotEquals(actual, expected, message);
   }
 
-  static void assertNotEquals(String actual1, String actual2, String message) {
-    assertNotEquals((Object) actual1, (Object) actual2, message);
+  public static void assertNotEquals(Iterator<?> actual, Iterator<?> expected, String message) {
+    String notEqualReason = getNotEqualReason(actual, expected);
+    if (notEqualReason == null) {
+      Assert.fail(format(actual, expected, message, false));
+    }
   }
 
-  static void assertNotEquals(String actual1, String actual2) {
-    assertNotEquals(actual1, actual2, null);
+  public static void assertNotEquals(Collection<?> actual, Collection<?> expected, String message) {
+    String notEqualReason = getNotEqualReason(actual, expected);
+    if (notEqualReason == null) {
+      Assert.fail(format(actual, expected, message, false));
+    }
   }
 
-  static void assertNotEquals(long actual1, long actual2, String message) {
-    assertNotEquals(Long.valueOf(actual1), Long.valueOf(actual2), message);
+  public static void assertNotEquals(Object actual, Object expected) {
+    assertNotEquals(actual, expected, null);
   }
 
-  static void assertNotEquals(long actual1, long actual2) {
-    assertNotEquals(actual1, actual2, null);
+  public static void assertNotEquals(Collection<?> actual, Collection<?> expected) {
+    assertNotEquals(actual, expected, null);
   }
 
-  static void assertNotEquals(boolean actual1, boolean actual2, String message) {
-    assertNotEquals(Boolean.valueOf(actual1), Boolean.valueOf(actual2), message);
+  public static void assertNotEquals(Iterator<?> actual, Iterator<?> expected) {
+    assertNotEquals(actual, expected, null);
   }
 
-  static void assertNotEquals(boolean actual1, boolean actual2) {
-    assertNotEquals(actual1, actual2, null);
+  static void assertNotEquals(String actual, String expected, String message) {
+    assertNotEquals((Object) actual, (Object) expected, message);
   }
 
-  static void assertNotEquals(byte actual1, byte actual2, String message) {
-    assertNotEquals(Byte.valueOf(actual1), Byte.valueOf(actual2), message);
+  static void assertNotEquals(String actual, String expectec) {
+    assertNotEquals(actual, expectec, null);
   }
 
-  static void assertNotEquals(byte actual1, byte actual2) {
-    assertNotEquals(actual1, actual2, null);
+  static void assertNotEquals(long actual, long expected, String message) {
+    assertNotEquals(Long.valueOf(actual), Long.valueOf(expected), message);
   }
 
-  static void assertNotEquals(char actual1, char actual2, String message) {
-    assertNotEquals(Character.valueOf(actual1), Character.valueOf(actual2), message);
+  static void assertNotEquals(long actual, long expected) {
+    assertNotEquals(actual, expected, null);
   }
 
-  static void assertNotEquals(char actual1, char actual2) {
-    assertNotEquals(actual1, actual2, null);
+  static void assertNotEquals(boolean actual, boolean expected, String message) {
+    assertNotEquals(Boolean.valueOf(actual), Boolean.valueOf(expected), message);
   }
 
-  static void assertNotEquals(short actual1, short actual2, String message) {
-    assertNotEquals(Short.valueOf(actual1), Short.valueOf(actual2), message);
+  static void assertNotEquals(boolean actual, boolean expected) {
+    assertNotEquals(actual, expected, null);
   }
 
-  static void assertNotEquals(short actual1, short actual2) {
-    assertNotEquals(actual1, actual2, null);
+  static void assertNotEquals(byte actual, byte expected, String message) {
+    assertNotEquals(Byte.valueOf(actual), Byte.valueOf(expected), message);
   }
 
-  static void assertNotEquals(int actual1, int actual2, String message) {
-    assertNotEquals(Integer.valueOf(actual1), Integer.valueOf(actual2), message);
+  static void assertNotEquals(byte actual, byte expected) {
+    assertNotEquals(actual, expected, null);
   }
 
-  static void assertNotEquals(int actual1, int actual2) {
-    assertNotEquals(actual1, actual2, null);
+  static void assertNotEquals(char actual, char expected, String message) {
+    assertNotEquals(Character.valueOf(actual), Character.valueOf(expected), message);
+  }
+
+  static void assertNotEquals(char actual, char expected) {
+    assertNotEquals(actual, expected, null);
+  }
+
+  static void assertNotEquals(short actual, short expected, String message) {
+    assertNotEquals(Short.valueOf(actual), Short.valueOf(expected), message);
+  }
+
+  static void assertNotEquals(short actual, short expected) {
+    assertNotEquals(actual, expected, null);
+  }
+
+  static void assertNotEquals(int actual, int expected, String message) {
+    assertNotEquals(Integer.valueOf(actual), Integer.valueOf(expected), message);
+  }
+
+  static void assertNotEquals(int actual, int expected) {
+    assertNotEquals(actual, expected, null);
   }
 
   public static void assertNotEquals(float actual, float expected, float delta, String message) {
@@ -1621,8 +1722,8 @@ public class Assert {
     }
   }
 
-  public static void assertNotEquals(float actual1, float actual2, float delta) {
-    assertNotEquals(actual1, actual2, delta, null);
+  public static void assertNotEquals(float actual, float expected, float delta) {
+    assertNotEquals(actual, expected, delta, null);
   }
 
   public static void assertNotEquals(double actual, double expected, double delta, String message) {
@@ -1675,8 +1776,8 @@ public class Assert {
     }
   }
 
-  public static void assertNotEquals(double actual1, double actual2, double delta) {
-    assertNotEquals(actual1, actual2, delta, null);
+  public static void assertNotEquals(double actual, double expected, double delta) {
+    assertNotEquals(actual, expected, delta, null);
   }
 
   /**

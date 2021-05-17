@@ -1,11 +1,6 @@
 package org.testng.collections;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
@@ -27,6 +22,14 @@ public final class Lists {
 
   public static <K> List<K> newArrayList(Collection<K> c) {
     return new ArrayList<>(c);
+  }
+
+  public static <K> List<K> newArrayList(Iterator<K> c) {
+    List<K> result = new ArrayList<>();
+    while (c.hasNext()) {
+      result.add(c.next());
+    }
+    return result;
   }
 
   @SafeVarargs
