@@ -1309,9 +1309,7 @@ public class Assert {
 
   public static void assertEqualsNoOrder(Collection<?> actual, Collection<?> expected, String message) {
     List<?> actualCollection = Lists.newArrayList(actual);
-    for (Object o : expected) {
-      actualCollection.remove(o);
-    }
+    actualCollection.removeAll(expected);
     if (!actualCollection.isEmpty()) {
       failAssertNoEqual(
               "Collections not equal: expected: " + expected + " and actual: " + actual,
@@ -1321,9 +1319,7 @@ public class Assert {
 
   public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected, String message) {
     List<?> actualCollection = Lists.newArrayList(actual);
-    while (expected.hasNext()) {
-      actualCollection.remove(expected.next());
-    }
+    actualCollection.removeAll(Lists.newArrayList(expected));
     if (!actualCollection.isEmpty()) {
       failAssertNoEqual(
               "Iterators not equal: expected: " + toString(expected) + " and actual: " + toString(actual),
