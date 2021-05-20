@@ -10,13 +10,52 @@ import static org.testng.Assert.assertEquals;
 public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
 
     @Test(description = "GITHUB-2148")
-    public void ensureTestsAreRetried() {
-        TestNG testng = create(ComplexDataProviderSample.class);
+    public void testWithoutDataProvider() {
+        TestNG testng = create(RetryAnalyzerWithoutDataProvider.class);
         TestListenerAdapter tla = new TestListenerAdapter();
         testng.addListener(tla);
         testng.run();
-        assertEquals(tla.getPassedTests().size(), 5);
+        assertEquals(tla.getPassedTests().size(), 1);
+        assertEquals(tla.getSkippedTests().size(), 3);
+    }
+
+    @Test(description = "GITHUB-2148")
+    public void testWithDataProviderStringArray() {
+        TestNG testng = create(DataProviderWithStringArraySample.class);
+        TestListenerAdapter tla = new TestListenerAdapter();
+        testng.addListener(tla);
+        testng.run();
+        assertEquals(tla.getPassedTests().size(), 1);
+        assertEquals(tla.getSkippedTests().size(), 3);
+    }
+
+    @Test(description = "GITHUB-2148")
+    public void testWithSingleParam() {
+        TestNG testng = create(DataProviderWithSingleParam.class);
+        TestListenerAdapter tla = new TestListenerAdapter();
+        testng.addListener(tla);
+        testng.run();
+        assertEquals(tla.getPassedTests().size(), 2);
+        assertEquals(tla.getSkippedTests().size(), 3);
+    }
+
+    @Test(description = "GITHUB-2148")
+    public void testWithDataProviderWithObjectAndArraySample() {
+        TestNG testng = create(ComplexDataProviderWithObjectAndArraySample.class);
+        TestListenerAdapter tla = new TestListenerAdapter();
+        testng.addListener(tla);
+        testng.run();
+        assertEquals(tla.getPassedTests().size(), 1);
+        assertEquals(tla.getSkippedTests().size(), 3);
+    }
+
+    @Test(description = "GITHUB-2148")
+    public void testDataProviderWithRetryAttemptsFailure() {
+        TestNG testng = create(DataProviderWithRetryAttemptsFailure.class);
+        TestListenerAdapter tla = new TestListenerAdapter();
+        testng.addListener(tla);
+        testng.run();
         assertEquals(tla.getFailedTests().size(), 1);
-        assertEquals(tla.getSkippedTests().size(), 15);
+        assertEquals(tla.getSkippedTests().size(), 3);
     }
 }
