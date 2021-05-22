@@ -29,7 +29,10 @@ public class GuiceTest extends SimpleBaseTest {
 
     assertThat(Guice1Test.m_object).isNotNull();
     assertThat(Guice2Test.m_object).isNotNull();
-    assertThat(Guice1Test.m_object).isEqualTo(Guice2Test.m_object);
+    assertThat(Guice1Test.m_object)
+            .describedAs("Guice injectors are generated for each test class, so different class " +
+                    "receive different ISingleton instances")
+            .isNotEqualTo(Guice2Test.m_object);
   }
 
   @Test

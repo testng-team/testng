@@ -20,5 +20,9 @@ public @interface Guice {
   /** @return the list of modules to query when trying to create an instance of this test class. */
   Class<? extends Module>[] modules() default {};
 
+  /**
+   * @deprecated use {@code @Inject ITestContext} and {@code @Inject @CurrentTestClass Class<?>} instead
+   */
+  @Deprecated
   Class<? extends IModuleFactory> moduleFactory() default IModuleFactory.class;
 }

@@ -180,6 +180,7 @@ class GuiceHelper {
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
     List<Module> result = Lists.newArrayList();
+    result.add(new TestContextModule(context, testClass));
     for (Class<? extends Module> moduleClass : guice.modules()) {
       List<Module> modules = getGuiceModules(moduleClass);
       if (modules != null && !modules.isEmpty()) {

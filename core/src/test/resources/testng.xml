@@ -262,6 +262,7 @@
       <class name="test.inject.InjectBeforeMethodTest"/>
       <class name="test.inject.InjectTestResultTest" />
       <class name="test.inject.InjectDataProviderTest"/>
+      <class name="test.inject.InjectTestContextWithGuiceTest"/>
       <class name="test.inject.NoInjectionTest" />
       <class name="test.inject.NativeInjectionTest" />
       <class name="test.inject.Github1298Test"/>

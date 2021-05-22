@@ -16,6 +16,5 @@ public class GuiceParentModule extends AbstractModule {
   protected void configure() {
     bind(MyService.class).toProvider(MyServiceProvider.class);
     bind(MyContext.class).to(MyContextImpl.class).in(Singleton.class);
-    bind(ITestContext.class).toInstance(context);
   }
 }

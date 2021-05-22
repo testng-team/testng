@@ -1,9 +1,8 @@
 package org.testng.internal.objects;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertNotNull;
 
-import org.testng.Assert;
 import org.testng.IInjectorFactory;
 import org.testng.ITest;
 import org.testng.ITestObjectFactory;
@@ -30,9 +29,9 @@ public final class GuiceHelperTest {
 
         assertNotNull(injector);
         Module[] modules = injector.getModules();
-        assertNotNull(modules);
-        assertEquals(modules.length, 1);
-        Assert.assertEquals(modules[0], new SampleIModule().getModule());
+        assertThat(modules)
+                .describedAs("injector.getModules() should include new SampleIModule().getModule()")
+                .contains(new SampleIModule().getModule());
     }
 
     private static final class MockInjectorFactory implements IInjectorFactory {
