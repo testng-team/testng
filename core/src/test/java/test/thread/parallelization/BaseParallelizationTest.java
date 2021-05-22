@@ -3,6 +3,7 @@ package test.thread.parallelization;
 import com.google.common.collect.Multimap;
 import org.testng.annotations.Test;
 import org.testng.internal.collections.Pair;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 import test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent;
@@ -43,6 +43,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.T
 import static test.thread.parallelization.TestNgRunStateTracker.getTestMethodEventLogsForMethod;
 
 public class BaseParallelizationTest extends SimpleBaseTest {
+    private final static Logger log = Logger.getLogger(BaseParallelizationTest.class);
 
     //Get a list of the names of declared methods with the @Test annotation from the specified class
     public static List<String> getDeclaredTestMethods(Class<?> clazz) {
@@ -315,10 +316,12 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifySimultaneousTestMethods(List<EventLog> testMethodEventLogs, String
             testName, int  threadCount) {
 
-        System.out.println("Verifying parallel execution of test methods for test named " + testName  + " with " +
-                "thread count " + threadCount);
-        System.out.println(testMethodEventLogs.size() + " test method event logs for " + testMethodEventLogs.size() / 3
-                + " test methods");
+        if (log.isDebugEnabled()) {
+            log.debug("Verifying parallel execution of test methods for test named " + testName  + " with " +
+                    "thread count " + threadCount);
+            log.debug(testMethodEventLogs.size() + " test method event logs for " + testMethodEventLogs.size() / 3
+                    + " test methods");
+        }
 
         //Keep track of the methods that have started, but not completed execution.
         Map<String, EventLog> methodsExecuting = new HashMap<>();
@@ -343,8 +346,10 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         //Get the start events for the first batch of methods.
         List<EventLog> eventLogTestMethodListenerStartEvents = testMethodEventLogs.subList(0, blockSize);
 
-        System.out.println("First " + blockSize + " test method event logs should all be test method start events: " +
-                getStringForEventLogList(eventLogTestMethodListenerStartEvents));
+        if (log.isDebugEnabled()) {
+            log.debug("First " + blockSize + " test method event logs should all be test method start events: " +
+                    getStringForEventLogList(eventLogTestMethodListenerStartEvents));
+        }
 
         //Verify that all the events in the sublist extracted for the start events of the block of methods expected
         //to execute in parallel all have the test method start event type and that they all executed in different
@@ -369,7 +374,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         for(int i = blockSize; i < testMethodEventLogs.size(); i++) {
             EventLog eventLog = testMethodEventLogs.get(i);
 
-            System.out.println("Processing test method event log at index " + i + ": " + eventLog);
+            log.debug("Processing test method event log at index " + i + ": " + eventLog);
 
             String classAndMethodNameAndInstanceHash = (String)eventLog.getData(CLASS_NAME) + "." +
                     (String)eventLog.getData(METHOD_NAME) + ":" + eventLog.getData(CLASS_INSTANCE).hashCode();
@@ -424,9 +429,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     public static void verifyParallelTestMethodsWithNonParallelDataProvider(List<EventLog> testMethodEventLogs, String
             testName, Map<String, Integer> expectedInvocationCounts, int numUniqueMethods, int threadCount) {
 
-        System.out.println("Verifying parallel execution of test methods using non-parallel data providers for " +
+        log.debug("Verifying parallel execution of test methods using non-parallel data providers for " +
                 "test named " + testName + " with thread count " + threadCount);
-        System.out.println(testMethodEventLogs.size() + " test method event logs for " + numUniqueMethods +
+        log.debug(testMethodEventLogs.size() + " test method event logs for " + numUniqueMethods +
                 " unique methods");
 
         Map<String, EventLog> methodsExecuting = new HashMap<>();
@@ -457,9 +462,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
         //Get the start events for the first batch of methods.
         List<EventLog> eventLogTestMethodListenerStartEvents = testMethodEventLogs.subList(0, blockSize);
 
-        System.out.println("First " + blockSize + " test method event logs should all be test method start events: "+
+        log.debug("First " + blockSize + " test method event logs should all be test method start events: "+
                 "\n" + getStringForEventLogList(eventLogTestMethodListenerStartEvents));
-        System.out.println(getStringForEventLogList(eventLogTestMethodListenerStartEvents));
+        log.debug(getStringForEventLogList(eventLogTestMethodListenerStartEvents));
 
         //Keep track of the current methods that are executing and their thread IDs
         for(EventLog eventLog : eventLogTestMethodListenerStartEvents) {
@@ -486,7 +491,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
             EventLog eventLog = testMethodEventLogs.get(i);
 
-            System.out.println("Processing test method event log at index " + i + ": " + eventLog);
+            log.debug("Processing test method event log at index " + i + ": " + eventLog);
 
             String classAndMethodName = (String)eventLog.getData(CLASS_NAME) + "." +
                     (String)eventLog.getData(METHOD_NAME);
@@ -557,7 +562,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     methodsCompleted.put(classAndMethodName, eventLog);
                 }
 
-                System.out.println(classAndMethodName + " has executed " +
+                log.debug(classAndMethodName + " has executed " +
                         methodInvocationsCounts.get(classAndMethodName) + " times. Expected to execute " +
                             (expectedInvocationCounts.get(classAndMethodName) -
                                     methodInvocationsCounts.get(classAndMethodName)) + " more times");

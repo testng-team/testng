@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 import org.testng.internal.reflect.DataProviderMethodMatcher;
 import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
@@ -19,6 +20,8 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class TestMethodMatcher {
+  private static final Logger log = Logger.getLogger(TestMethodMatcher.class);
+
   private static Method getMethod(final String methodName) {
     Method method = null;
     for (final Method m : TestMethodMatcher.class.getMethods()) {
@@ -84,7 +87,7 @@ public class TestMethodMatcher {
     try {
       method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
     } catch (final Throwable throwable) {
-      System.out.println("methodParamPairs failure");
+      log.debug("methodParamPairs failure");
       throwable.printStackTrace();
       Assert.fail("methodParamPairs failure");
     }
@@ -108,14 +111,14 @@ public class TestMethodMatcher {
 
   public void goodTestIssue122(String s, String[] strings) {
     for (String item : strings) {
-      System.out.println("An item is \"" + item + "\"");
+      log.debug("An item is \"" + item + "\"");
     }
     Assert.assertEquals(s, "3");
   }
 
   public void badTestIssue122(String s, String... strings) {
     for (String item : strings) {
-      System.out.println("An item is \"" + item + "\"");
+      log.debug("An item is \"" + item + "\"");
     }
     Assert.assertEquals(s, "3");
   }
@@ -125,7 +128,7 @@ public class TestMethodMatcher {
     final String[] s1, final String... strings
   ) {
     for (String item : strings) {
-      System.out.println("An item is \"" + item + "\"");
+      log.debug("An item is \"" + item + "\"");
     }
     Assert.assertEquals(i, 3);
     Assert.assertNotNull(b);
@@ -153,17 +156,17 @@ public class TestMethodMatcher {
     final XmlTest xmlTest,
     final String... strings
   ) {
-    System.out.println("MyMethod1 is \"" + myMethod1 + "\"");
-    System.out.println("MyMethod2 is \"" + myMethod2 + "\"");
-    System.out.println("CurrentTestMethod is \"" + currentTestMethod + "\"");
-    System.out.println("MyITestContext is \"" + myTestContext + "\"");
-    System.out.println("ITestContext is \"" + iTestContext + "\"");
-    System.out.println("ITestResult is \"" + iTestResult + "\"");
-    System.out.println("MyTestResult is \"" + myTestResult + "\"");
-    System.out.println("XmlTest is \"" + xmlTest + "\"");
-    System.out.println("MyXmlTest is \"" + myXmlTest + "\"");
+    log.debug("MyMethod1 is \"" + myMethod1 + "\"");
+    log.debug("MyMethod2 is \"" + myMethod2 + "\"");
+    log.debug("CurrentTestMethod is \"" + currentTestMethod + "\"");
+    log.debug("MyITestContext is \"" + myTestContext + "\"");
+    log.debug("ITestContext is \"" + iTestContext + "\"");
+    log.debug("ITestResult is \"" + iTestResult + "\"");
+    log.debug("MyTestResult is \"" + myTestResult + "\"");
+    log.debug("XmlTest is \"" + xmlTest + "\"");
+    log.debug("MyXmlTest is \"" + myXmlTest + "\"");
     for (String item : strings) {
-      System.out.println("An item is \"" + item + "\"");
+      log.debug("An item is \"" + item + "\"");
     }
     Assert.assertNotNull(myTestContext);
     Assert.assertTrue(myTestContext instanceof TestContextJustForTesting);
@@ -203,17 +206,17 @@ public class TestMethodMatcher {
     final XmlTest xmlTest,
     final String[] strings
   ) {
-    System.out.println("MyMethod1 is \"" + myMethod1 + "\"");
-    System.out.println("MyMethod2 is \"" + myMethod2 + "\"");
-    System.out.println("CurrentTestMethod is \"" + currentTestMethod + "\"");
-    System.out.println("MyITestContext is \"" + myTestContext + "\"");
-    System.out.println("ITestContext is \"" + iTestContext + "\"");
-    System.out.println("ITestResult is \"" + iTestResult + "\"");
-    System.out.println("MyTestResult is \"" + myTestResult + "\"");
-    System.out.println("XmlTest is \"" + xmlTest + "\"");
-    System.out.println("MyXmlTest is \"" + myXmlTest + "\"");
+    log.debug("MyMethod1 is \"" + myMethod1 + "\"");
+    log.debug("MyMethod2 is \"" + myMethod2 + "\"");
+    log.debug("CurrentTestMethod is \"" + currentTestMethod + "\"");
+    log.debug("MyITestContext is \"" + myTestContext + "\"");
+    log.debug("ITestContext is \"" + iTestContext + "\"");
+    log.debug("ITestResult is \"" + iTestResult + "\"");
+    log.debug("MyTestResult is \"" + myTestResult + "\"");
+    log.debug("XmlTest is \"" + xmlTest + "\"");
+    log.debug("MyXmlTest is \"" + myXmlTest + "\"");
     for (String item : strings) {
-      System.out.println("An item is \"" + item + "\"");
+      log.debug("An item is \"" + item + "\"");
     }
     Assert.assertNotNull(myTestContext);
     Assert.assertTrue(myTestContext instanceof TestContextJustForTesting);

@@ -6,14 +6,13 @@ import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.testng.Assert.assertEquals;
 
@@ -52,6 +51,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 8) There are no method exclusions
  */
 public class ParallelByMethodsTestCase7Scenario1 extends BaseParallelizationTest {
+    private static final Logger log = Logger.getLogger(ParallelByMethodsTestCase7Scenario1.class);
 
     private static final String SUITE = "SingleTestSuite";
     private static final String TEST = "SingleTestClassTest";
@@ -85,11 +85,11 @@ public class ParallelByMethodsTestCase7Scenario1 extends BaseParallelizationTest
 
         tng.addListener((ITestNGListener)new TestNgRunStateListener());
 
-        System.out.println("Beginning ParallelByMethodsTestCase7Scenario1. This test scenario consists of a " +
+        log.debug("Beginning ParallelByMethodsTestCase7Scenario1. This test scenario consists of a " +
                 "single suite with a single test consisting of a single test class with five methods with a " +
                 "factory method using a data provider specifying 3 sets of data. There are no dependencies.");
 
-        System.out.println("Suite: " + SUITE + ", Test: " + TEST + ", Test class: "
+        log.debug("Suite: " + SUITE + ", Test: " + TEST + ", Test class: "
                 + TestClassAFiveMethodsWithFactoryUsingDataProviderAndNoDepsSample.class.getCanonicalName() +
                 ". Thread count: 15");
 

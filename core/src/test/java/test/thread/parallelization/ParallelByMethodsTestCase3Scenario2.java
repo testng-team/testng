@@ -4,6 +4,7 @@ import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 import test.thread.parallelization.sample.TestClassAFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample;
@@ -17,8 +18,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static org.testng.Assert.assertEquals;
 
@@ -61,6 +60,7 @@ import static test.thread.parallelization.TestNgRunStateTracker.reset;
  * 7) There are no method exclusions
  */
 public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest {
+    private static final Logger log = Logger.getLogger(ParallelByMethodsTestCase3Scenario2.class);
 
     private static final String SUITE_A = "TestSuiteA";
     private static final String SUITE_B = "TestSuiteB";
@@ -139,22 +139,22 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
         TestNG tng = create(suiteOne, suiteTwo);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
-        System.out.println("Beginning ParallelByMethodsTestCase3Scenario2. This test scenario consists of two " +
+        log.debug("Beginning ParallelByMethodsTestCase3Scenario2. This test scenario consists of two " +
                 "suites with 1 and 2 tests respectively. One test for a suite shall consist of a single test class " +
                 "while the rest shall consist of more than one test class. Each test class has some methods with use " +
                 "a data provider and some which do not. Two data providers are used: one which provides two sets of " +
                 "data, one which provide three sets of data. There are no dependencies or factories.");
 
-        System.out.println("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
+        log.debug("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
                 TestClassAFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() + ", " +
                 TestClassBSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() +
                 ". Thread count: 3");
 
-        System.out.println("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_A + ", Test class: " +
+        log.debug("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_A + ", Test class: " +
                 TestClassCFiveMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class.getCanonicalName() +
                 ". Thread count: 4");
 
-        System.out.println("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_B + ", Test classes: " +
+        log.debug("Suite: " + SUITE_B + ", Test: " + SUITE_B_TEST_B + ", Test classes: " +
                 TestClassDThreeMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class + ", " +
                 TestClassEFourMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class + ", " +
                 TestClassFSixMethodsWithDataProviderOnSomeMethodsAndNoDepsSample.class + ". Thread count: 4");

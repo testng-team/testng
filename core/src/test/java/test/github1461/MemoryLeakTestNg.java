@@ -2,6 +2,7 @@ package test.github1461;
 
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 
 /**
  * This class reproduces a memory leak problem when running TestNG tests. The same (memory behavior
@@ -10,6 +11,7 @@ import org.testng.annotations.Test;
  * <p>See https://github.com/cbeust/testng/issues/1461
  */
 public class MemoryLeakTestNg {
+  private static final Logger log = Logger.getLogger(MemoryLeakTestNg.class);
 
   @Test(timeOut = 10_000)
   public void testMemoryLeak() throws Exception {
@@ -22,7 +24,7 @@ public class MemoryLeakTestNg {
 
   private static void waitForAllObjectsDestructed() throws InterruptedException {
     while (true) {
-      System.out.println("waiting for clean up...");
+      log.debug("waiting for clean up...");
       // enforce a full gc
       System.gc();
 
@@ -34,7 +36,7 @@ public class MemoryLeakTestNg {
       }
       // let's wait 1 seconds and try again ...
       Thread.sleep(1_000);
-      System.out.println(
+      log.debug(
           "["
               + MyTestClassWithGlobalReferenceCounterSample.currentNumberOfMyTestObjects
               + "] test object(s) still exist.");
@@ -49,7 +51,7 @@ public class MemoryLeakTestNg {
           @Override
           protected void finalize() {
             // it seems that this object will never be finalized !!!
-            System.out.println("TestNG finalized");
+            log.debug("TestNG finalized");
           }
         };
 

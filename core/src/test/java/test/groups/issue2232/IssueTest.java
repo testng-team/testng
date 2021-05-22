@@ -82,7 +82,7 @@ public class IssueTest extends SimpleBaseTest {
     command.add(classpath);
     command.add(className);
     command.addAll(args);
-    Reporter.log("Executing the command " + command, true);
+    Reporter.log("Executing the command " + command, 2, true);
     ProcessBuilder builder = new ProcessBuilder(command);
     Process process = builder.inheritIO().start();
     process.waitFor();
