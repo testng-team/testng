@@ -66,6 +66,9 @@ plugins {
     signing
     groovy
     id("org.sonarqube").version("2.8")
+    // Improves Gradle Test logging
+    // See https://github.com/vlsi/vlsi-release-plugins/tree/master/plugins/gradle-extensions-plugin
+    id("com.github.vlsi.gradle-extensions") version "1.74"
 }
 
 dependencies {
