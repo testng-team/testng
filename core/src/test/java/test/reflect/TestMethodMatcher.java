@@ -9,10 +9,13 @@ import org.testng.annotations.Test;
 import org.testng.internal.reflect.DataProviderMethodMatcher;
 import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
+import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
 
 import java.lang.reflect.Method;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Created on 12/24/15
@@ -80,17 +83,11 @@ public class TestMethodMatcher {
 
   @Test(dataProvider = "methodParamPairs")
   public void testMatcher(final String methodName, final Object[] params,
-                          final ITestContext iTestContext, final ITestResult iTestResult) {
+                          final ITestContext iTestContext, final ITestResult iTestResult) throws Throwable {
     final Method method = getMethod(methodName);
     final MethodMatcher matcher = new DataProviderMethodMatcher(
       new MethodMatcherContext(method, params, iTestContext, iTestResult));
-    try {
-      method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
-    } catch (final Throwable throwable) {
-      log.debug("methodParamPairs failure");
-      throwable.printStackTrace();
-      Assert.fail("methodParamPairs failure");
-    }
+    method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
   }
 
   @Test(dataProvider = "methodParamFailingPairs")
@@ -100,13 +97,13 @@ public class TestMethodMatcher {
     final MethodMatcher matcher = new DataProviderMethodMatcher(
       new MethodMatcherContext(method, params, iTestContext, iTestResult));
     Assert.assertFalse(matcher.conforms());
-    try {
+    assertThatThrownBy(() -> {
       method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
-      Assert.fail();
-    } catch (final Throwable throwable) {
-      throwable.printStackTrace();
-      //noop
-    }
+    }).isInstanceOf(MethodMatcherException.class)
+            // separate lines are used here to avoid \n vs \r\n if running tests in Windows
+            .hasMessageContaining("has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
+            .hasMessageContaining("Method: ")
+            .hasMessageContaining("Arguments: ");
   }
 
   public void goodTestIssue122(String s, String[] strings) {
