@@ -20,14 +20,9 @@ import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 import java.util.Collections;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class IssueTest extends SimpleBaseTest {
-
-  private static final Random random = new Random();
-
-  @Test(description = "GITHUB-2232", invocationCount = 10)
+  @Test(description = "GITHUB-2232", invocationCount = 2)
   //This test case doesn't vet out the fix completely because the bug by itself is very
   //sporadic and is not easy to reproduce. That is why this test is being executed 10 times
   // to ensure that the issue can be reproduced in one of the executions
@@ -35,7 +30,6 @@ public class IssueTest extends SimpleBaseTest {
     TestNG testng = create(constructSuite());
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(0);
-    TimeUnit.MILLISECONDS.sleep(random.nextInt(5000));
   }
 
   private XmlSuite constructSuite() {
@@ -56,7 +50,7 @@ public class IssueTest extends SimpleBaseTest {
     return xmlsuite;
   }
 
-  @Test(invocationCount = 10, description = "GITHUB-2232")
+  @Test(invocationCount = 2, description = "GITHUB-2232")
   //Ensuring that the bug doesn't surface even when tests are executed via the command line mode
   public void commandlineTest() throws IOException, InterruptedException {
     Path suitefile = Files.write(Files.createTempFile("testng", ".xml"),
@@ -64,7 +58,6 @@ public class IssueTest extends SimpleBaseTest {
     List<String> args = Collections.singletonList(suitefile.toFile().getAbsolutePath());
     int status = exec(Collections.emptyList(), args);
     assertThat(status).isEqualTo(0);
-    TimeUnit.MILLISECONDS.sleep(random.nextInt(5000));
   }
 
   private int exec(List<String> jvmArgs, List<String> args)
