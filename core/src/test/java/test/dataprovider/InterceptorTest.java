@@ -47,7 +47,7 @@ public class InterceptorTest extends SimpleBaseTest {
   @Test(dataProvider = "dp1")
   public void ensureInterceptorIsInvokedViaListenersTag(Class<?> testClass) throws IOException {
     String xml = TestHelper.SUITE_XML_HEADER
-        + "<suite name=\"2111_suite\" verbose=\"2\">\n"
+        + "<suite name=\"2111_suite\" verbose=\"0\">\n"
         + "    <listeners>\n"
         + "        <listener class-name=\"test.dataprovider.issue2111.LocalDataProviderInterceptor\"/>\n"
         + "        <listener class-name=\"test.dataprovider.issue2111.LocalDataProviderInterceptor\"/>\n"
@@ -63,7 +63,6 @@ public class InterceptorTest extends SimpleBaseTest {
     Files.writeFile(xml, suiteFile);
     TestNG testng = create();
     testng.setTestSuites(Collections.singletonList(suiteFile.getAbsolutePath()));
-    testng.setVerbose(2);
     CountingListener counter = new CountingListener();
     testng.addListener(counter);
     testng.run();

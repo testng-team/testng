@@ -159,7 +159,23 @@ tasks.test {
         suites("src/test/resources/testng.xml")
         listeners.add("org.testng.reporters.FailedInformationOnConsoleReporter")
         testLogging.showStandardStreams = true
-        systemProperties = mapOf("test.resources.dir" to "build/resources/test")
+        systemProperty("test.resources.dir", "build/resources/test")
+        fun passProperty(name: String, default: String? = null) {
+            val value = System.getProperty(name) ?: default
+            value?.let { systemProperty(name, it) }
+        }
+        // Default verbose is 0, however, it can be adjusted vi -Dtestng.default.verbose=2
+        passProperty("testng.default.verbose", "0")
+        // Allow running tests in a custom locale with -Duser.language=...
+        passProperty("user.language")
+        passProperty("user.country")
+        val props = System.getProperties()
+        // Pass testng.* properties to the test JVM
+        for (e in props.propertyNames() as `java.util`.Enumeration<String>) {
+            if (e.startsWith("testng.") || e.startsWith("java")) {
+                passProperty(e)
+            }
+        }
         maxHeapSize = "1500m"
     }
 }

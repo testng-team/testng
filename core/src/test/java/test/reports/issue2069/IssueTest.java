@@ -35,7 +35,6 @@ public class IssueTest extends SimpleBaseTest {
     createXmlTest(xmlSuite, "TestSuite", Dummy1.class).setJunit(true);
     createXmlTest(xmlSuite, "TestCase", Dummy2.class).setJunit(true);
     TestNG tng = create(xmlSuite);
-    tng.setVerbose(2);
     tng.setUseDefaultListeners(true);
     tng.run();
     String data = new String(baos.toByteArray(), StandardCharsets.UTF_8);

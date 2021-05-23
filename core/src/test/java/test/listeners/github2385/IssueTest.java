@@ -98,7 +98,6 @@ public class IssueTest extends SimpleBaseTest {
 
         TestNG tng = new TestNG();
         tng.setXmlSuites(Collections.singletonList(xmlSuite));
-        tng.setVerbose(2);
         tng.run();
 
         assertFalse(TestListener.listenerMethodInvoked);

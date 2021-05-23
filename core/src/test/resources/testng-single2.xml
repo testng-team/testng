@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Timeout Tests" verbose="2">
+<suite name="Timeout Tests">
 
   <test name="TimeoutTest" time-out="1000">
       <classes>

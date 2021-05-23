@@ -19,7 +19,6 @@ public class SkippedExceptionTest {
     TestListenerAdapter listener= new TestListenerAdapter();
     TestNG test= new TestNG(false);
     test.addListener((ITestNGListener)listener);
-    test.setVerbose(0);
     test.setTestClasses(new Class[] {ConfigurationSkippedExceptionTest.class});
     test.run();
     List<ITestResult> confSkips= listener.getConfigurationSkips();

@@ -37,7 +37,6 @@ public class InterleavedInvocationTest extends BaseTest {
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(new Class[] {TestChild1.class, TestChild2.class});
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.run();
 
     Assert.assertEquals(LOG.size(), 8, LOG.toString());

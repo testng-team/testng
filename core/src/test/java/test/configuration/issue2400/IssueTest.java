@@ -10,7 +10,6 @@ public class IssueTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2400")
   public void ensureDefaultConfigurationsAreSkipped() {
     TestNG testng = create(TestNGTestClass.class);
-    testng.setVerbose(2);
     testng.run();
     SoftAssert softAssert = new SoftAssert();
     DataStore.INSTANCE.getTracker()

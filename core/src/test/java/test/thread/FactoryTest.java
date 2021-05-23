@@ -26,7 +26,6 @@ public class FactoryTest {
 
   private void runTest(XmlSuite.ParallelMode parallelMode, int expectedThreadIdCount) {
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     tng.setTestClasses(new Class[] { FactorySampleTest.class});
     if (parallelMode != null) {
       tng.setParallel(parallelMode);

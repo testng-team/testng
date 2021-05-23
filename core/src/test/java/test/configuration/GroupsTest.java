@@ -15,7 +15,6 @@ public class GroupsTest {
   @BeforeMethod
   public void setUp() {
     m_testNg = new TestNG();
-    m_testNg.setVerbose(0);
   }
 
   @Test

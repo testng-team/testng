@@ -150,7 +150,6 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   @Test
   public void withFactory() {
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     tng.setTestClasses(new Class[] { MyFactory.class});
     FactoryTest.m_count = 0;
 

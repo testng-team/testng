@@ -120,7 +120,6 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     MySuiteListener.triggered = false;
     MySuiteListener2.triggered = false;
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     if (transformer != null) {
       tng.addListener(transformer);
     }
@@ -144,7 +143,6 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     MySuiteListener.triggered = false;
     MySuiteListener2.triggered = false;
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     tng.addListener(new MyListenerTransformer());
     tng.setTestClasses(new Class[] {AnnotationTransformerClassSampleTest.class});
 
@@ -157,7 +155,6 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   public void verifyConfigurationTransformer() {
     TestNG tng = new TestNG();
     tng.addListener(new ConfigurationTransformer());
-    tng.setVerbose(0);
     tng.setTestClasses(new Class[] {ConfigurationSampleTest.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
@@ -260,7 +257,6 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG testng = create(TestClassSample1.class, TestClassSample2.class);
     TransformerImpl transformer = new TransformerImpl();
     testng.addListener(transformer);
-    testng.setVerbose(2);
     testng.run();
     assertThat(transformer.getClasses()).hasSize(2);
     assertThat(transformer.getConstructors()).isEmpty();

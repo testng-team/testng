@@ -14,7 +14,6 @@ public class IssueTest extends SimpleBaseTest {
   @Test
   public void ensureTestClassInstantiationWorksWhenFactoryMethodAndCustomConstructorPresent() {
     TestNG testng = create(TestclassSample.class);
-    testng.setVerbose(2);
     testng.run();
     List<String> expected = Arrays.asList("1", "2");
     assertThat(TestclassSample.logs).containsExactlyInAnyOrderElementsOf(expected);

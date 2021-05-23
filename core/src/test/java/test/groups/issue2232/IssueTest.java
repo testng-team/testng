@@ -42,7 +42,6 @@ public class IssueTest extends SimpleBaseTest {
     XmlSuite xmlsuite = createXmlSuite("2232_suite");
     xmlsuite.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     xmlsuite.setThreadCount(256);
-    xmlsuite.setVerbose(2);
     xmlsuite.setParallel(XmlSuite.ParallelMode.CLASSES);
     XmlTest xmltest = createXmlTest(xmlsuite, "2232_test");
     XmlRun xmlrun = new XmlRun();

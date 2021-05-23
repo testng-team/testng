@@ -39,7 +39,6 @@ public class IssueTest extends SimpleBaseTest {
     TestNG tng = new TestNG();
     tng.addListener(listener);
     tng.setXmlSuites(Collections.singletonList(xmlSuite));
-    tng.setVerbose(1);
     tng.run();
 
     Assert.assertEquals(listener.beforeCount, 9);

@@ -10,7 +10,6 @@ public class IssueTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2255")
   public void runTest() {
     TestNG testNG = create(SampleTestCase.class);
-    testNG.setVerbose(2);
     testNG.run();
     assertThat(SampleTestCase.data).containsExactly(100, 200);
   }

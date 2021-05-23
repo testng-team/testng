@@ -21,7 +21,6 @@ public class IssueTest extends SimpleBaseTest {
       TestNG testng = new TestNG();
       XmlSuite xmlSuite = new XmlSuite();
       xmlSuite.setParallel(XmlSuite.ParallelMode.METHODS);
-      xmlSuite.setVerbose(2);
       xmlSuite.setThreadCount(10);
       xmlSuite.setName("Parallel Issue Suite");
       createXmlTest(xmlSuite, "Test1", Issue188TestSample.class);

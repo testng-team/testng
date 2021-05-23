@@ -86,7 +86,6 @@ public class PriorityTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2075")
   public void testInterruptStatusWithMethodsThatHavePriorities() {
     XmlSuite xmlSuite = createXmlSuite("my_suite", "my_test", InterruptTest.class);
-    xmlSuite.setVerbose(2);
     TestNG tng = create(xmlSuite);
     TestListenerAdapter listener = new TestListenerAdapter();
     tng.addListener(listener);

@@ -47,7 +47,6 @@ public class TestHelper {
   private static TestNG createTestNG(Path outputDir) {
     TestNG result = new TestNG();
     result.setOutputDirectory(outputDir.toAbsolutePath().toString());
-    result.setVerbose(-1);
 
     return result;
   }
