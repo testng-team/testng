@@ -201,14 +201,13 @@ public class DependentTest extends BaseTest {
 
     tng.run();
 
-    // When running parallel, invoke order is consistent, but succeed order isn't.
     assertThat(listener.getInvokedMethodNames()).matches(strings -> {
       boolean result = false;
       for (String[] runMethod : runMethods) {
         result = result || Arrays.asList(runMethod).equals(strings);
       }
       return result;
-    });
+    }, "When running parallel, invoke order is consistent, but succeed order isn't " + Arrays.deepToString(runMethods));
     assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrder(runMethods[0]);
   }
 }
