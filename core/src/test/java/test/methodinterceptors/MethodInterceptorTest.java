@@ -11,6 +11,7 @@ import org.testng.xml.XmlSuite;
 import org.xml.sax.SAXException;
 
 import test.SimpleBaseTest;
+import test.TestHelper;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,8 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class MethodInterceptorTest extends SimpleBaseTest {
 
   private String XML =
-    "<!DOCTYPE suite SYSTEM \"https://beust.com/testng/testng-1.0.dtd\" >" +
-    "" +
+    TestHelper.SUITE_XML_HEADER +
     "<suite name=\"Single\" verbose=\"0\">" +
     "" +
     "<listeners>" +

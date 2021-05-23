@@ -11,6 +11,7 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 
 import org.testng.xml.XmlTest;
+import test.TestHelper;
 import test.annotationtransformer.issue1790.TestClassSample1;
 import test.annotationtransformer.issue1790.TestClassSample2;
 import test.annotationtransformer.issue1790.TransformerImpl;
@@ -229,7 +230,8 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
   @Test
   public void annotationTransformerInXmlShouldBeRun() throws Exception {
     String xml =
-        "<suite name=\"SingleSuite\" >"
+        TestHelper.SUITE_XML_HEADER
+            + "<suite name=\"SingleSuite\" >"
             + "  <listeners>"
             + "    <listener class-name=\"test.annotationtransformer.AnnotationTransformerInTestngXml\" />"
             + "  </listeners>"

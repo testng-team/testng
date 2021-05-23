@@ -11,6 +11,13 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 public class TestHelper {
+  /*
+   * TestNG issues a warning if the XML misses DOCTYPE, so here's a common header for
+   * xml suites generated in the tests.
+   */
+  public static final String SUITE_XML_HEADER =
+          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                  "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n";
 
   public static XmlSuite createSuite(String cls, String suiteName) {
     XmlSuite result = new XmlSuite();

@@ -10,6 +10,7 @@ import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.reporters.Files;
 import test.SimpleBaseTest;
+import test.TestHelper;
 
 /**
  * Verify that command line switches override parameters in testng.xml.
@@ -35,7 +36,8 @@ public class OverrideTest extends SimpleBaseTest {
 
   private void runTest(String include, String exclude) {
     File f = createTempFile(
-        "<suite name=\"S\">"
+        TestHelper.SUITE_XML_HEADER
+        + "<suite name=\"S\">"
         + "  <test name=\"T\">"
         + "    <classes>"
         + "      <class name=\"test.override.OverrideSampleTest\" />"
