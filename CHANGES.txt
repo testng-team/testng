@@ -1,4 +1,21 @@
 Current
+Fixed: GITHUB-2540: assertEquals(Collection) need check order (Stuart Marks & Julien Herr)
+Fixed: GITHUB-2360: Groovy 3 internal generated methods are detected as test methods (Ian Springer)
+Fixed: GITHUB-2522: TestNG 7.4.0 Can not skip test through listener (Nan Liang)
+Fixed: GITHUB-2529: Link to testng.xml in CONTRIBUTING.md file was dead
+Fixed: GITHUB-2521: The method has a separate string with 'invocation-number' parameters for each failure (does not group) in 'testng-failed.xml' file for DataProvider + Factory (Pavel Sakharchuk)
+Fixed: GITHUB-2426: New feature TestNG - getFactoryMethodParamsInfo on ConfigurationMethod (Krishnan Mahadevan)
+Fixed: GITHUB-2517: Factory data-provider parameters not displayed in 'testng-failed.xml' file (Pavel Sakharchuk)
+Fixed: GITHUB-279: Guice dependency injection into listeners and reporters (Krishnan Mahadevan)
+Fixed: GITHUB-2504: Data provider data cannot be populated to onTestStart hook when BeforeMethod is failed (Krishnan Mahadevan)
+Fixed: GITHUB-2489: Hierarchical base- and test-class @AfterClass methods out of order using groups (Krishnan Mahadevan)
+Fixed: GITHUB-2493: Avoid NPE from TextReporter execution when a dataprovider method provides null (baflQA)
+Fixed: GITHUB-2483: Asymmetric not equals (cdalexndr)
+Fixed: GITHUB-2486: assertSame/assertNotSame broken after GITHUB-2296 (Vitalii Diravka)
+Fixed: GITHUB-2490: assertNotEquals returns fast when argument is null, not calling equals(Object) (Anindya Roy)
+Fixed: GITHUB-2500: Mention in assertEqualsNoOrder doc that arrays are not compared deeply (Marcono1234)
+
+7.4.0
 New  : GITHUB-2459: Support configurable start time - emailable report (Barry Evans)
 Fixed: GITHUB-2467: XmlTest does not copy the xmlClasses during clone (C.V.Aditya)
 Fixed: GITHUB-2469: Parameters added in XmlTest during AlterSuiteListener not available in SuiteListener (C.V.Aditya)
