@@ -31,7 +31,6 @@ public class VerifyTest extends SimpleBaseTest {
     test.setXmlClasses(Arrays.asList(c1, c2));
 
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     tng.setXmlSuites(Collections.singletonList(suite));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);

@@ -22,6 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class FailedReporterTest extends SimpleBaseTest {
 
   @Test
@@ -74,6 +76,8 @@ public class FailedReporterTest extends SimpleBaseTest {
                                    .checkForSimilar()
                                    .ignoreWhitespace()
                                    .build();
-    Assert.assertFalse(myDiff.hasDifferences());
+
+    assertThat(myDiff)
+            .matches((it) -> !it.hasDifferences(), "!it.hasDifferences()");
   }
 }

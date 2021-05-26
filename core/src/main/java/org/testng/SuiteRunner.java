@@ -56,6 +56,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private String remoteHost;
 
   // The configuration
+  // Note: adjust test.multiplelisteners.SimpleReporter#generateReport test if renaming the field
   private IConfiguration configuration;
 
   private ITestObjectFactory objectFactory;

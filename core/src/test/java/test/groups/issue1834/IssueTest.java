@@ -4,6 +4,7 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.Files;
 import test.SimpleBaseTest;
+import test.TestHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +27,8 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   private static String asSuite() {
-    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n"
-        + "<suite name=\"1834_Suite\" parallel=\"false\" verbose=\"2\">\n"
+    return TestHelper.SUITE_XML_HEADER
+        + "<suite name=\"1834_Suite\" parallel=\"false\" verbose=\"0\">\n"
         + "  <test name=\"1834_Test\">\n"
         + "    <groups>\n"
         + "      <run>\n"

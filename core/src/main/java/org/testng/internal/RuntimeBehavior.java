@@ -13,6 +13,7 @@ public final class RuntimeBehavior {
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
   private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
   public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
+  public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
 
   private RuntimeBehavior() {}
 
@@ -114,5 +115,13 @@ public final class RuntimeBehavior {
    */
   public static boolean enforceThreadAffinity() {
     return Boolean.parseBoolean(System.getProperty(TESTNG_THREAD_AFFINITY, "false"));
+  }
+
+  /**
+   * Returns the default verbosity level if not specified at the suite level.
+   * @return default XML suite verbosity level, or 1 if property is missing
+   */
+  public static int getDefaultVerboseLevel() {
+    return Integer.getInteger(TESTNG_DEFAULT_VERBOSE, 1);
   }
 }

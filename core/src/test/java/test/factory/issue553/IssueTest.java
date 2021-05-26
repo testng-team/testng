@@ -14,7 +14,6 @@ public class IssueTest extends SimpleBaseTest {
       expectedExceptionsMessageRegExp = "\\nFound a default constructor and also a Factory method when working with .*")
   public void testMethod() {
     XmlTest xmltest = createXmlTest("suite", "test", Concrete.class);
-    xmltest.setVerbose(2);
     TestNG testng = create(xmltest.getSuite());
     TestListenerAdapter listener = new TestListenerAdapter();
     testng.addListener(listener);

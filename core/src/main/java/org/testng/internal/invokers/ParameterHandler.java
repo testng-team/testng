@@ -20,11 +20,13 @@ class ParameterHandler {
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
+  private int verbose;
 
-  ParameterHandler(ITestObjectFactory objectFactory, IAnnotationFinder finder, DataProviderHolder holder) {
+  ParameterHandler(ITestObjectFactory objectFactory, IAnnotationFinder finder, DataProviderHolder holder, int verbose) {
     this.objectFactory = objectFactory;
     this.finder = finder;
     this.holder = holder;
+    this.verbose = verbose;
   }
 
   ParameterBag createParameters(
@@ -74,9 +76,11 @@ class ParameterHandler {
               holder);
       return new ParameterBag(paramHolder);
     } catch (Throwable cause) {
-      String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
-      if (Strings.isNotNullAndNotEmpty(msg)) {
-        Utils.error(msg);
+      if (verbose >= 2) {
+        String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
+        if (Strings.isNotNullAndNotEmpty(msg)) {
+          Utils.error(msg);
+        }
       }
 
       ITestResult result = TestResult.newTestResultWithCauseAs(testMethod, testContext, cause);

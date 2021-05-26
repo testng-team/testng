@@ -88,7 +88,6 @@ public class ParallelTestTest extends BaseTest {
     }
 
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     if (isCommandLine) {
       tng.setCommandLineSuite(xmlSuite);
     } else {

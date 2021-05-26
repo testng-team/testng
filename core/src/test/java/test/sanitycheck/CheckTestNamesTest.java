@@ -91,7 +91,6 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     result.getXmlClasses().add(new XmlClass(SampleTest2.class.getCanonicalName()));
 
     TestNG tng = new TestNG();
-    tng.setVerbose(0);
     tng.setXmlSuites(Collections.singletonList(xmlSuite));
     tng.run();
   }

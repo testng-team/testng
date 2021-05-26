@@ -22,7 +22,6 @@ public class TestMaker
     tng.setListenerClasses(Arrays.asList(TestListenerAdapter.class, SimpleReporter.class));
     final List<XmlSuite> suites = createSuites();
     tng.setXmlSuites(suites);
-    tng.setVerbose(0);
     tng.run();
 
 //    Reporter.log(tng.getSuiteListeners().size() + "", true);

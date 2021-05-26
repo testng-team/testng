@@ -14,7 +14,6 @@ public class IssueTest extends SimpleBaseTest {
   public void testIfInterruptsAreCleared() {
     XmlSuite xmlSuite = createXmlSuite("my_suite", "my_test", FailingInterruptTest.class);
     xmlSuite.setParallel(ParallelMode.METHODS);
-    xmlSuite.setVerbose(2);
     TestNG tng = create(xmlSuite);
     TestListenerAdapter listener = new TestListenerAdapter();
     tng.addListener(listener);

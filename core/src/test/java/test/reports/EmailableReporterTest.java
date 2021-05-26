@@ -1,6 +1,5 @@
 package test.reports;
 
-import org.testng.Assert;
 import org.testng.IReporter;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -15,6 +14,8 @@ import test.SimpleBaseTest;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.security.Permission;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EmailableReporterTest extends SimpleBaseTest {
     private SecurityManager manager;
@@ -90,15 +91,16 @@ public class EmailableReporterTest extends SimpleBaseTest {
                 System.setProperty(jvm, filename);
             }
             TestNG.main(args);
+        } catch (SecurityException t) {
+            //Gobble Security exception
+        } finally {
             if (jvm != null) {
                 //reset the jvm arguments
                 System.setProperty(jvm, "");
             }
-        } catch (SecurityException t) {
-            //Gobble Security exception
         }
         File actual = new File(output.getAbsolutePath(), filename);
-        Assert.assertEquals(actual.exists(), true);
+        assertThat(actual).exists();
     }
 
     private void runTestViaRunMethod(IReporter reporter, String jvm) {
@@ -108,24 +110,27 @@ public class EmailableReporterTest extends SimpleBaseTest {
         if (jvm != null) {
             System.setProperty(jvm, filename);
         }
-        TestNG testNG = create();
-        testNG.setOutputDirectory(output.getAbsolutePath());
-        if (reporter instanceof EmailableReporter2) {
-            ((EmailableReporter2) reporter).setFileName(filename);
-        }
-        if (reporter instanceof EmailableReporter) {
-            ((EmailableReporter) reporter).setFileName(filename);
-        }
-        testNG.addListener((ITestNGListener) reporter);
-        testNG.setTestClasses(new Class[] {ReporterSample.class});
-        testNG.run();
-        if (jvm != null) {
-            //reset the jvm argument if it was set
-            System.setProperty(jvm, "");
+        try {
+            TestNG testNG = create();
+            testNG.setOutputDirectory(output.getAbsolutePath());
+            if (reporter instanceof EmailableReporter2) {
+                ((EmailableReporter2) reporter).setFileName(filename);
+            }
+            if (reporter instanceof EmailableReporter) {
+                ((EmailableReporter) reporter).setFileName(filename);
+            }
+            testNG.addListener((ITestNGListener) reporter);
+            testNG.setTestClasses(new Class[]{ReporterSample.class});
+            testNG.run();
+        } finally {
+            if (jvm != null) {
+                //reset the jvm argument if it was set
+                System.setProperty(jvm, "");
+            }
         }
 
         File actual = new File(output.getAbsolutePath(), filename);
-        Assert.assertEquals(actual.exists(), true);
+        assertThat(actual).exists();
     }
 
     public static class MySecurityManager extends SecurityManager {

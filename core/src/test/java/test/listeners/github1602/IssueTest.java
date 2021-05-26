@@ -19,7 +19,6 @@ public class IssueTest extends SimpleBaseTest {
         TestNG tng = create(clazz);
         ListenerForIssue1602 listener = new ListenerForIssue1602();
         tng.setConfigFailurePolicy(policy);
-        tng.setVerbose(2);
         tng.addListener(listener);
         tng.run();
         assertThat(listener.getLogs()).containsExactlyElementsOf(expected);

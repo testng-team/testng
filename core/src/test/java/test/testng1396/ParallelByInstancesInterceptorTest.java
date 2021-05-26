@@ -22,7 +22,6 @@ public class ParallelByInstancesInterceptorTest {
     @Test(description = "test for https://github.com/cbeust/testng/issues/1396")
     public void should_honor_interceptor_order_when_running_parallel_instances() {
         TestNG tng = new TestNG();
-        tng.setVerbose(0);
 
         // 10 instances is enough that we see the non-deterministic ordering of hashmaps more often than not
         tng.setTestClasses(new Class[]{

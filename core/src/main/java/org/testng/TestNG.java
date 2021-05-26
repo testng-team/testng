@@ -1197,7 +1197,7 @@ public class TestNG {
   private int getVerbose(XmlSuite xmlSuite) {
     return xmlSuite.getVerbose() != null
         ? xmlSuite.getVerbose()
-        : (m_verbose != null ? m_verbose : DEFAULT_VERBOSE);
+        : (m_verbose != null ? m_verbose : RuntimeBehavior.getDefaultVerboseLevel());
   }
 
   /**

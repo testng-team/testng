@@ -13,7 +13,6 @@ public class XClassOrderWithFactoryTest {
     testng.setTestClasses(new Class[] {XClassOrderWithFactory.class});
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.run();
     Assert.assertEquals(XClassOrderWithFactory.LOG.toString(), XClassOrderWithFactory.EXPECTED_LOG);
   }

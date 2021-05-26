@@ -21,7 +21,7 @@ public class SimpleReporter implements IReporter
     {
       try
       {
-        final Field field = SuiteRunner.class.getDeclaredField("m_configuration");
+        final Field field = SuiteRunner.class.getDeclaredField("configuration");
         field.setAccessible(true);
         final IConfiguration conf = (IConfiguration) field.get(iSuite);
         ListenerAssert.assertListenerType(conf.getConfigurationListeners(), TestListenerAdapter.class);

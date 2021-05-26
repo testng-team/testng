@@ -24,7 +24,6 @@ public class IncludedExcludedTest {
   public void init() {
     m_tng = new TestNG();
     m_tng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    m_tng.setVerbose(0);
     m_tng.setUseDefaultListeners(false);
   }
 

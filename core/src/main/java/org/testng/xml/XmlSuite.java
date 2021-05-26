@@ -291,7 +291,7 @@ public class XmlSuite implements Cloneable {
    * @return The verbose.
    */
   public Integer getVerbose() {
-    return m_verbose != null ? m_verbose : TestNG.DEFAULT_VERBOSE;
+    return m_verbose != null ? m_verbose : RuntimeBehavior.getDefaultVerboseLevel();
   }
 
   /**

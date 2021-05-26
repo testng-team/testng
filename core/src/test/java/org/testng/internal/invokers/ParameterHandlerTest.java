@@ -11,8 +11,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.invokers.ParameterHandler;
-import org.testng.internal.invokers.ParameterHolder;
 import org.testng.internal.paramhandler.DataDrivenSampleTestClass;
 import org.testng.internal.paramhandler.ExceptionThrowingDataDrivenSampleTestClass;
 import org.testng.internal.paramhandler.FakeTestContext;
@@ -35,7 +33,7 @@ public class ParameterHandlerTest extends SimpleBaseTest {
   public void beforeClass() {
     Collection<IDataProviderListener> listeners = Collections.emptyList();
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
-    handler = new ParameterHandler(new ITestObjectFactory() {}, finder, new DataProviderHolder());
+    handler = new ParameterHandler(new ITestObjectFactory() {}, finder, new DataProviderHolder(), 0);
   }
 
   @Test

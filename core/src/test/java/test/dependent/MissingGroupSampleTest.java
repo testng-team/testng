@@ -3,6 +3,7 @@ package test.dependent;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
+import test.TestHelper;
 
 import java.io.ByteArrayInputStream;
 
@@ -18,7 +19,7 @@ public class MissingGroupSampleTest {
 
   public static void main(String[] args) throws Exception {
     TestNG tng = new TestNG();
-    String xml =
+    String xml = TestHelper.SUITE_XML_HEADER +
         "<suite name=\"dgf\" verbose=\"10\">"
             + "<test name=\"dgf\">"
             + "<classes><class name=\"test.dependent.MissingGroupSampleTest\"></class></classes>"

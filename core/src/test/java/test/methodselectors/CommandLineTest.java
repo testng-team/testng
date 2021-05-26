@@ -1,5 +1,6 @@
 package test.methodselectors;
 
+import org.assertj.core.api.Assertions;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -168,7 +169,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void testOverrideExcludedMethodsCommandLineExclusions() {
     ppp("testOverrideExcludedMethodsCommandLineExclusions");
     String[] args = new String[]{
-            "src/test/java/test/methodselectors/sampleTest.xml",
+            "src/test/resources/test/methodselectors/sampleTest.xml",
             "-log", "0",
             "-d", OutputDirectoryPatch.getOutputDirectory(),
             "-excludegroups", "test1",
@@ -177,7 +178,8 @@ public class CommandLineTest extends SimpleBaseTest {
 
     TestNG.privateMain(args, tla);
 
-    String[] passed = {};
+    // test1 is excluded, so only test2 is left in the passed list
+    String[] passed = {"test2"};
     String[] failed = {};
     verifyTests("Passed", passed, tla.getPassedTests());
     verifyTests("Failed", failed, tla.getFailedTests());
@@ -187,7 +189,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void testOverrideExcludedMethodsSuiteExclusions() {
     ppp("testOverrideExcludedMethodsSuiteExclusions");
     String[] args = new String[]{
-            "src/test/java/test/methodselectors/sampleTestExclusions.xml",
+            "src/test/resources/test/methodselectors/sampleTestExclusions.xml",
             "-log", "0",
             "-d", OutputDirectoryPatch.getOutputDirectory(),
             "-overrideincludedmethods"
@@ -207,12 +209,9 @@ public class CommandLineTest extends SimpleBaseTest {
       resultMethods.add( result.getName() );
     }
 
-    Assert.assertEquals(resultMethods.size(), expected.length, "wrong number of " + title + " tests");
-
-    for(String e : expected) {
-      Assert.assertTrue(resultMethods.contains(e), "Expected to find method " + e + " in "
-          + title + " but didn't find it.");
-    }
+    Assertions.assertThat(resultMethods.toArray(new String[0]))
+            .describedAs(title)
+            .isEqualTo(expected);
   }
 
   public static void ppp(String s) {

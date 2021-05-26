@@ -1,6 +1,6 @@
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-  
-<suite name="Suitename from xml" verbose="1" parallel="false" thread-count="2">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suitename from xml" parallel="false" thread-count="2">
   
   <test name="TestName">
     <classes>

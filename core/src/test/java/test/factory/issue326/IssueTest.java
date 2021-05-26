@@ -18,7 +18,6 @@ public class IssueTest extends SimpleBaseTest {
     testng.setParallel(ParallelMode.INSTANCES);
     testng.setThreadCount(20);
     testng.setDataProviderThreadCount(10);
-    testng.setVerbose(2);
     LocalTrackingListener listener = new LocalTrackingListener();
     testng.addListener(listener);
     testng.run();

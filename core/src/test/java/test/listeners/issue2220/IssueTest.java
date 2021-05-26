@@ -17,7 +17,6 @@ public class IssueTest extends SimpleBaseTest {
     createXmlTest(xmlsuite, "test_1", TestClass01.class);
     createXmlTest(xmlsuite, "test_2", TestClass02.class);
     TestNG testng = create(xmlsuite);
-    testng.setVerbose(2);
     testng.run();
     List<String> expected = Arrays.asList(
         "started_<test>_test_1",

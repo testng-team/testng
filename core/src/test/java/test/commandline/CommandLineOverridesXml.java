@@ -7,6 +7,7 @@ import org.testng.jarfileutils.JarCreator;
 import org.testng.xml.XmlSuite;
 
 import test.SimpleBaseTest;
+import test.TestHelper;
 import test.commandline.issue341.LocalLogAggregator;
 import test.commandline.issue341.TestSampleA;
 import test.commandline.issue341.TestSampleB;
@@ -96,8 +97,7 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
   }
 
   private static String buildSuiteContentThatRefersToInvalidTestClass() {
-    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n"
+    return TestHelper.SUITE_XML_HEADER
         + "<suite name=\"1810_Suite\">\n"
         + "    <test name=\"1810_test\">\n"
         + "        <classes>\n"

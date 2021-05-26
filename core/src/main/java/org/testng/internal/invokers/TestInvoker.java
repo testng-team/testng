@@ -185,9 +185,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     do {
       failure.instances = Lists.newArrayList();
       Map<String, String> allParameters = Maps.newHashMap();
+      int verbose = testContext.getCurrentXmlTest().getVerbose();
       // TODO: This recreates all the parameters every time when we only need
       // one specific set. Should optimize it by only recreating the set needed.
-      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), this.holder);
+      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
 
       ParameterBag bag = handler.createParameters(arguments.getTestMethod(),
           arguments.getParameters(), allParameters, testContext);
@@ -786,7 +787,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       long start = System.currentTimeMillis();
 
       Map<String, String> allParameterNames = Maps.newHashMap();
-      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), buildDataProviderHolder());
+      int verbose = context.getCurrentXmlTest().getVerbose();
+      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), buildDataProviderHolder(), verbose);
 
       ParameterBag bag = handler.createParameters(
           arguments.getTestMethod(),

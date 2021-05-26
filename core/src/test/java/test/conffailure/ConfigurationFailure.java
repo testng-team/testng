@@ -43,7 +43,6 @@ public class ConfigurationFailure extends SimpleBaseTest {
     TestNG testng = create(classes);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.run();
   }
 
