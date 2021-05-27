@@ -11,7 +11,7 @@ public class Github2560Test extends SimpleBaseTest {
 
     @Test
     public void staticFactory() {
-        TestNG testng = create(FactoryTest.class);
+        TestNG testng = create(FactoryTestSample.class);
         testng.setDefaultSuiteName("Static @Factory tests");
         InvokedMethodListener invokedMethodListener = new InvokedMethodListener();
         testng.addListener(invokedMethodListener);
@@ -29,7 +29,7 @@ public class Github2560Test extends SimpleBaseTest {
 
     @Test
     public void constructorFactory() {
-        TestNG testng = create(ConstructorTest.class);
+        TestNG testng = create(ConstructorTestSample.class);
         testng.setDefaultSuiteName("Constructor @Factory tests");
         InvokedMethodListener invokedMethodListener = new InvokedMethodListener();
         testng.addListener(invokedMethodListener);

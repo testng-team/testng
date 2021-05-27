@@ -2,11 +2,11 @@ package test.factory.github2560;
 
 import org.testng.annotations.*;
 
-public class TestClass {
+public class TestClassSample {
 
     private final int hashCode;
 
-    public TestClass(int hashCode) {
+    public TestClassSample(int hashCode) {
         this.hashCode = hashCode;
     }
 

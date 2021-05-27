@@ -2,12 +2,12 @@ package test.factory.github2560;
 
 import org.testng.annotations.*;
 
-public class ConstructorTest {
+public class ConstructorTestSample {
 
     private final int hashCode;
 
     @Factory(dataProvider = "constructorArguments")
-    public ConstructorTest(int hashCode) {
+    public ConstructorTestSample(int hashCode) {
         this.hashCode = hashCode;
     }
 
