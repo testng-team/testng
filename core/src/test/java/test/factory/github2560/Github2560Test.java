@@ -7,6 +7,9 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
+import java.util.List;
+import java.util.Map;
+
 public class Github2560Test extends SimpleBaseTest {
 
     @Test
@@ -18,7 +21,7 @@ public class Github2560Test extends SimpleBaseTest {
 
         testng.run();
 
-        ImmutableMap<Integer, ImmutableList<String>> expected = ImmutableMap.of(
+        Map<Integer, List<String>> expected = ImmutableMap.of(
                 0, ImmutableList.of("beforeClass", "beforeMethod", "test", "afterMethod", "afterClass"),
                 1, ImmutableList.of("beforeClass", "beforeMethod", "test", "afterMethod", "afterClass"),
                 2, ImmutableList.of("beforeClass", "beforeMethod", "test", "afterMethod", "afterClass")
@@ -36,7 +39,7 @@ public class Github2560Test extends SimpleBaseTest {
 
         testng.run();
 
-        ImmutableMap<Integer, ImmutableList<String>> expected = ImmutableMap.of(
+        Map<Integer, List<String>> expected = ImmutableMap.of(
                 0, ImmutableList.of("beforeClass", "beforeMethod", "test", "afterMethod", "afterClass"),
                 1, ImmutableList.of("beforeClass", "beforeMethod", "test", "afterMethod", "afterClass"),
                 2, ImmutableList.of("beforeClass", "beforeMethod", "test", "afterMethod", "afterClass")

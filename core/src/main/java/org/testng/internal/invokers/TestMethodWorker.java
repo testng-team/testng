@@ -169,7 +169,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       }
       ConfigMethodArguments attributes = new Builder()
           .forTestClass(testClass)
-          .usingConfigMethodsAs(((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance.toString()))
+          .usingConfigMethodsAs(testClass.getBeforeClassMethods(instance.toString()))
           .forSuite(m_testContext.getSuite().getXmlSuite())
           .usingParameters(m_parameters)
           .usingInstance(instance)
@@ -199,9 +199,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         m_classMethodMap.getInvokedAfterClassMethods();
     Set<Object> instances =
         invokedAfterClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
-    Object inst = mi.getInstance();
-    if (!instances.contains(inst)) {
-      invokeInstances.add(inst);
+    Object instance = mi.getInstance();
+    if (!instances.contains(instance)) {
+      invokeInstances.add(instance);
     }
 
     for (IClassListener listener : m_listeners) {
@@ -210,7 +210,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     for (Object invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes = new Builder()
           .forTestClass(testClass)
-          .usingConfigMethodsAs(testClass.getAfterClassMethods())
+          .usingConfigMethodsAs(testClass.getAfterClassMethods(instance.toString()))
           .forSuite(m_testContext.getSuite().getXmlSuite())
           .usingParameters(m_parameters)
           .usingInstance(invokeInstance)

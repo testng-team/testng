@@ -8,17 +8,13 @@ import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * This class represents a test class: - The test methods - The configuration methods (test and
  * method) - The class file
  */
-class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo {
+class TestClass extends NoOpTestClass implements ITestClass {
 
   private IAnnotationFinder annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
@@ -31,21 +27,8 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private final ITestObjectFactory objectFactory;
   private final String m_errorMsgPrefix;
 
-  private final Map<String, List<ITestNGMethod>> beforeClassConfig = new HashMap<>();
-
-  @Override
-  public List<ITestNGMethod> getAllBeforeClassMethods() {
-    return beforeClassConfig.values().parallelStream().reduce((a, b) -> {
-      List<ITestNGMethod> methodList = new ArrayList<>(a);
-      methodList.addAll(b);
-      return methodList;
-    }).orElse(Lists.newArrayList());
-  }
-
-  @Override
-  public List<ITestNGMethod> getInstanceBeforeClassMethods(String instance) {
-    return beforeClassConfig.get(instance);
-  }
+  private final Map<String, List<ITestNGMethod>> beforeClassMethodsPerInstance = new HashMap<>();
+  private final Map<String, List<ITestNGMethod>> afterClassMethodsPerInstance = new HashMap<>();
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
 
@@ -135,6 +118,32 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     iClass.addInstance(instance);
   }
 
+  @Override
+  public ITestNGMethod[] getBeforeClassMethods() {
+    return beforeClassMethodsPerInstance.values().stream()
+            .flatMap(Collection::stream)
+            .toArray(ITestNGMethod[]::new);
+  }
+
+  @Override
+  public ITestNGMethod[] getBeforeClassMethods(String instance) {
+    return beforeClassMethodsPerInstance.getOrDefault(instance, Collections.emptyList()).stream()
+            .toArray(ITestNGMethod[]::new);
+  }
+
+  @Override
+  public ITestNGMethod[] getAfterClassMethods() {
+    return afterClassMethodsPerInstance.values().stream()
+            .flatMap(Collection::stream)
+            .toArray(ITestNGMethod[]::new);
+  }
+
+  @Override
+  public ITestNGMethod[] getAfterClassMethods(String instance) {
+    return afterClassMethodsPerInstance.getOrDefault(instance, Collections.emptyList()).stream()
+            .toArray(ITestNGMethod[]::new);
+  }
+
   private void initMethods() {
     ITestNGMethod[] methods = testMethodFinder.getTestMethods(m_testClass, xmlTest);
     m_testMethods = createTestMethods(methods);
@@ -175,8 +184,6 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               annotationFinder,
               true,
               xmlTest, eachInstance);
-      Object instance = IParameterInfo.embeddedInstance(eachInstance);
-      beforeClassConfig.put(instance.toString(), Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
@@ -212,6 +219,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               annotationFinder,
               false,
               xmlTest, eachInstance);
+
+      Object instance = IParameterInfo.embeddedInstance(eachInstance);
+      beforeClassMethodsPerInstance.computeIfAbsent(instance.toString(), ignored -> new ArrayList<>())
+              .addAll(Arrays.asList(m_beforeClassMethods));
+      afterClassMethodsPerInstance.computeIfAbsent(instance.toString(), ignored -> new ArrayList<>())
+              .addAll(Arrays.asList(m_afterClassMethods));
     }
   }
 
