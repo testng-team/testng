@@ -9,7 +9,7 @@ package org.testng;
  * <ul>
  *   <li>Command line parameter <code>alwaysRunListeners</code> </li>
  *   <li>Build tool</li>
- *   <li>Via {@link TestNG#alwaysRunListeners(boolean)}</li>
+ *   <li>Via {@code TestNG.alwaysRunListeners(false)}</li>
  * </ul>
  */
 public interface IInvokedMethodListener extends ITestNGListener {
