@@ -17,7 +17,15 @@ gradleEnterprise {
     }
 }
 
-include("core")
+// Sorted by name
+include(":testng-ant")
+include(":testng-api")
+include(":testng-asserts")
+include(":testng-bom")
+include(":testng-collections")
+include(":testng-core")
+include(":testng-core-api")
+include(":testng-test-kit")
 
 enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
