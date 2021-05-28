@@ -45,13 +45,14 @@ dependencies {
     // Annotations have to be available on the compile classpath for the proper compilation
     api("com.google.code.findbugs:jsr305:_")
     api("com.beust:jcommander:_")
-    api("org.webjars:jquery:_")
 
-    implementation(projects.testngCollections)
     "guiceApi"(platform("com.google.inject:guice-bom:_"))
     "guiceApi"("com.google.inject:guice")
     "junitApi"("junit:junit:_")
     "yamlApi"("org.yaml:snakeyaml:_")
+
+    implementation(projects.testngCollections)
+    implementation("org.webjars:jquery:_")
 
     testImplementation(projects.testngAsserts)
     testImplementation("org.codehaus.groovy:groovy-all:_")
