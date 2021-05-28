@@ -37,6 +37,7 @@ public final class GuiceHelperTest {
 
     private static final class MockInjectorFactory implements IInjectorFactory {
         @Override
+        @SuppressWarnings("deprecation")
         public Injector getInjector(Stage stage, Module... modules) {
             return new MockInjector(modules);
         }

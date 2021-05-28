@@ -16,7 +16,7 @@ public class TestContextSample {
   public Object[] createContext(ITestContext ctx) {
     String[] groups = ctx.getIncludedGroups();
 
-    int n = groups.length > 0 ? new Integer(groups[0]) : 0;
+    int n = groups.length > 0 ? Integer.parseInt(groups[0]) : 0;
     Object[] result = new Object[n];
     for (int i = 0; i < n; i++) {
       result[i] = "foo";

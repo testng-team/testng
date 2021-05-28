@@ -30,34 +30,34 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
 
         @Override
         public void onExecutionStart() {
-            order.add(new Integer(1));
+            order.add(1);
 
         }
 
         @Override
         public void onExecutionFinish() {
-            order.add(new Integer(6));
+            order.add(6);
         }
 
         @Override
         public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-            order.add(new Integer(5));
+            order.add(5);
         }
 
         @Override
         public void alter(List<XmlSuite> suites) {
-            order.add(new Integer(2));
+            order.add(2);
         }
 
         @Override
         public void onStart(ISuite suite) {
-            order.add(new Integer(3));
+            order.add(3);
 
         }
 
         @Override
         public void onFinish(ISuite suite) {
-            order.add(new Integer(4));
+            order.add(4);
 
         }
     }

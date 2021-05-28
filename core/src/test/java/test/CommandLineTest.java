@@ -138,6 +138,7 @@ public class CommandLineTest {
         passed.get(0).getName().equals("method3")));
   }
 
+  @SuppressWarnings("deprecation")
   @Test(description = "GITHUB-2207")
   public void testInjectorFactoryCanBeConfiguredViaProperties() {
     Map<String, String> params = new HashMap<>();
@@ -164,6 +165,7 @@ public class CommandLineTest {
   public static class TestInjectorFactory implements IInjectorFactory {
 
     @Override
+    @SuppressWarnings("deprecation")
     public Injector getInjector(Stage stage, Module... modules) {
       return null;
     }

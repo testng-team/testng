@@ -49,6 +49,7 @@ public class MemoryLeakTestNg {
     TestNG testng =
         new TestNG() {
           @Override
+          @SuppressWarnings("deprecation")
           protected void finalize() {
             // it seems that this object will never be finalized !!!
             log.debug("TestNG finalized");

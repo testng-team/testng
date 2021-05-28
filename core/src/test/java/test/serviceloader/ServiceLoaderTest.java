@@ -44,6 +44,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-2259")
+  @SuppressWarnings("deprecation")
   public void ensureSpiLoadedListenersCanBeSkipped2() {
     TestNG tng = create(ServiceLoaderSampleTest.class);
     URL url = getClass().getClassLoader().getResource("serviceloader.jar");
