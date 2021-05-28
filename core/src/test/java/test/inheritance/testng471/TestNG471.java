@@ -14,7 +14,6 @@ public class TestNG471 extends SimpleBaseTest {
   public void test_classes_should_not_be_skipped_when_a_after_method_fails() {
     TestNG tng = create(Class1.class, Class2.class, Class3.class);
     tng.setPreserveOrder(true);
-    tng.setVerbose(10);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.setPreserveOrder(true);
     tng.addListener(listener);

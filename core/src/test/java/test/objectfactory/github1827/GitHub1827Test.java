@@ -13,7 +13,6 @@ public class GitHub1827Test extends SimpleBaseTest {
     public void ensureExceptionThrownWhenNoSuitableConstructorFound() {
 
         TestNG testng = create(GitHub1827Sample.class);
-        testng.setVerbose(3);
         testng.run();
     }
 }

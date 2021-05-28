@@ -74,7 +74,6 @@ public class SimpleBaseTest {
   public static TestNG create() {
     TestNG result = new TestNG();
     result.setUseDefaultListeners(false);
-    result.setVerbose(0);
     return result;
   }
 

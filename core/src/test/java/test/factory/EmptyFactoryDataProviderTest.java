@@ -16,7 +16,6 @@ public class EmptyFactoryDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     // Used to check the warning message
-    testng.setVerbose(2);
 
     testng.run();
 

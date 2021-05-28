@@ -17,7 +17,6 @@ import test.SimpleBaseTest;
 public abstract class BaseFailuresTest extends SimpleBaseTest {
 
   protected static TestNG run(TestNG result, Class<?>[] classes, String outputDir) {
-    result.setVerbose(0);
     result.setOutputDirectory(outputDir);
     result.setTestClasses(classes);
     result.run();

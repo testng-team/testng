@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Github 1284 suite" verbose="2" preserve-order="true">
+<suite name="Github 1284 suite" preserve-order="true">
 
     <suite-files>
         <suite-file path="github1284_withchildlistener.xml" />

@@ -8,6 +8,7 @@ import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -19,6 +20,7 @@ import test.thread.parallelization.TestNgRunStateListener;
 import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 
 public class EfficientPriorityParallelizationTest extends BaseParallelizationTest {
+    private static final Logger log = Logger.getLogger(EfficientPriorityParallelizationTest2.class);
     private static final String SUITE_A = "TestSuiteA";
 
     private static final String SUITE_A_TEST_A = "TestSuiteA-HighPriorityTestClassTest";
@@ -75,16 +77,16 @@ public class EfficientPriorityParallelizationTest extends BaseParallelizationTes
         tng.setSuiteThreadPoolSize(THREAD_POOL_SIZE);
         tng.addListener((ITestNGListener) new TestNgRunStateListener());
 
-        System.out.println("Beginning EfficientPriorityParallelizationTest. This test scenario consists of 1 suite " + 
+        log.debug("Beginning EfficientPriorityParallelizationTest. This test scenario consists of 1 suite " + 
                 "with 2 tests. Parallel is set to TESTS at the suite level, METHODS at the test level, and the thread pool size is 2. One test shall consist of a " + 
                 "single test class with a single, high-priority, slow-running method, while the other test shall " + 
                 "consist of a single test class with several low-priority, quick-running methods. There are no " + 
                 "dependencies, data providers or factories.");
 
-        System.out.println("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
+        log.debug("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_A + ", Test classes: " +
                 HighPriorityTestSample.class.getCanonicalName() + ". Thread count: 2");
 
-        System.out.println("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_B + ", Test class: " +
+        log.debug("Suite: " + SUITE_A + ", Test: " + SUITE_A_TEST_B + ", Test class: " +
                 LowPriorityTestSample.class.getCanonicalName() + ". Thread count: 2");
 
         tng.run();

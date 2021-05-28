@@ -14,7 +14,6 @@ public class IssueTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2504")
   public void ensureParametersCopiedOnConfigFailures() {
     XmlTest xmltest = createXmlTest("2504_suite", "2504_test");
-    xmltest.setVerbose(2);
     xmltest.setXmlClasses(Collections.singletonList(new XmlClass(SampleTestCase.class)));
     TestNG testNG = create(Collections.singletonList(xmltest.getSuite()));
     SampleTestCaseListener listener = new SampleTestCaseListener();

@@ -33,7 +33,6 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     xmlsuite.setThreadCount(6);
     createXmlTest(xmlsuite, "Test 1", classes);
     TestNG testng = create(xmlsuite);
-    testng.setVerbose(2);
     LogGatheringListener listener = new LogGatheringListener();
     testng.addListener(listener);
     testng.run();
@@ -48,7 +47,6 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     createXmlTest(xmlsuite, "Test_1", PriorityTestSample1.class, PriorityTestSample2.class).setParallel(mode);
     createXmlTest(xmlsuite, "Test_2", PriorityTestSample1.class,PriorityTestSample2.class).setParallel(mode);
     TestNG testng = create(xmlsuite);
-    testng.setVerbose(2);
     LogGatheringListener listener = new LogGatheringListener();
     testng.addListener(listener);
     testng.run();
@@ -79,7 +77,6 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     xmlsuite.setThreadCount(6);
     createXmlTest(xmlsuite, "Test_1", TestMultipleInstance.class).setParallel(mode);
     TestNG testng = create(xmlsuite);
-    testng.setVerbose(2);
     testng.run();
     Assertions.assertThat(testng.getStatus()).isEqualTo(0);
   }
@@ -91,7 +88,6 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     xmlsuite.setThreadCount(50);
     createXmlTest(xmlsuite, "2110_test", TestClass.class);
     TestNG testng = create(xmlsuite);
-    testng.setVerbose(2);
     testng.run();
     assertThat(TestClass.getThreadIds()).hasSize(1);
   }

@@ -1,6 +1,6 @@
-<!DOCTYPE suite SYSTEM "https://beust.com/testng/testng-1.0.dtd" >
-  
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SingleSuite" parallel="false" thread-count="4"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />

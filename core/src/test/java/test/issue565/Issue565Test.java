@@ -20,7 +20,6 @@ public class Issue565Test extends SimpleBaseTest {
     XmlSuite suite = createXmlSuite("Deadlock-Suite");
     suite.setParallel(ParallelMode.CLASSES);
     suite.setThreadCount(5);
-    suite.setVerbose(10);
     suite.setGroupByInstances(true);
 
     XmlTest test = createXmlTestWithPackages(suite, "Deadlock-Test", ClassInGroupB.class);

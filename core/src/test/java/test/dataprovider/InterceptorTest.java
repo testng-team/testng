@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import org.testng.reporters.Files;
+import test.TestHelper;
 import test.dataprovider.issue2111.CountingListener;
 import test.dataprovider.issue2111.LocalDataProviderInterceptor;
 import test.dataprovider.issue2111.TestClassExample;
@@ -45,8 +46,8 @@ public class InterceptorTest extends SimpleBaseTest {
 
   @Test(dataProvider = "dp1")
   public void ensureInterceptorIsInvokedViaListenersTag(Class<?> testClass) throws IOException {
-    String xml = "<!DOCTYPE suite SYSTEM \"https://beust.com/testng/testng-1.0.dtd\">\n"
-        + "<suite name=\"2111_suite\" verbose=\"2\">\n"
+    String xml = TestHelper.SUITE_XML_HEADER
+        + "<suite name=\"2111_suite\" verbose=\"0\">\n"
         + "    <listeners>\n"
         + "        <listener class-name=\"test.dataprovider.issue2111.LocalDataProviderInterceptor\"/>\n"
         + "        <listener class-name=\"test.dataprovider.issue2111.LocalDataProviderInterceptor\"/>\n"
@@ -62,7 +63,6 @@ public class InterceptorTest extends SimpleBaseTest {
     Files.writeFile(xml, suiteFile);
     TestNG testng = create();
     testng.setTestSuites(Collections.singletonList(suiteFile.getAbsolutePath()));
-    testng.setVerbose(2);
     CountingListener counter = new CountingListener();
     testng.addListener(counter);
     testng.run();

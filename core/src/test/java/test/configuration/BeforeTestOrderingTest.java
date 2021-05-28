@@ -38,7 +38,6 @@ public class BeforeTestOrderingTest {
   @Test
   public void verifyBeforeTestOrdering() throws IOException {
     XmlSuite s = new XmlSuite();
-
     Reporter.log("BEFORE");
 
     XmlTest t1 = new XmlTest(s);

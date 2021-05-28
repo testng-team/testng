@@ -12,7 +12,6 @@ public class Misc extends BaseTest {
   @Test
   public void makeSureSetUpWithParameterWithNoParametersFails() {
     addClass("test.sample.SetUpWithParameterTest");
-    setVerbose(0);
 //    setParallel(XmlSuite.PARALLEL_METHODS);
     run();
     String[] passed = {

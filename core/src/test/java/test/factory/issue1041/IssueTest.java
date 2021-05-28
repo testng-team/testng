@@ -15,7 +15,6 @@ public class IssueTest extends SimpleBaseTest {
     TestNG testng = create(FactoryAnnotatedConstructorExample.class);
     ResultExtractor extractor = new ResultExtractor();
     testng.addListener(extractor);
-    testng.setVerbose(4);
     testng.run();
     List<Object[]> expected = Lists.newArrayList();
     expected.add(new Object[]{1});

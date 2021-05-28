@@ -33,7 +33,6 @@ public class BeforeClassTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1035")
   public void ensureBeforeClassGetsCalledConcurrentlyWhenWorkingWithFactories() {
     TestNG testng = create(MyFactory.class);
-    testng.setVerbose(2);
     testng.setParallel(ParallelMode.INSTANCES);
     testng.setGroupByInstances(true);
     testng.run();

@@ -14,7 +14,6 @@ public class InheritanceConfigTest extends SimpleBaseTest {
   @Test
   public void testMethod() {
     XmlTest xmlTest = createXmlTest("xml_suite", "xml_test");
-    xmlTest.setVerbose(3);
     xmlTest.setXmlClasses(Collections.singletonList(new XmlClass(SampleInheritance.class)));
     xmlTest.addIncludedGroup("configuration0");
     xmlTest.addIncludedGroup("configuration1");

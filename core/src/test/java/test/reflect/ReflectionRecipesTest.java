@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import org.testng.internal.reflect.InjectableParameter;
 import org.testng.internal.reflect.Parameter;
 import org.testng.internal.reflect.ReflectionRecipes;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
 
 import java.lang.annotation.Retention;
@@ -28,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class ReflectionRecipesTest {
+  private static final Logger log = Logger.getLogger(ReflectionRecipesTest.class);
 
   private static final Object[] A0 = new Object[]{343, true};
   private static final Parameter[] S0 = getMethodParameters(T.class, "s0");
@@ -68,7 +70,7 @@ public class ReflectionRecipesTest {
   public Object[][] exactMatchDP() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     final Method[] methods = ExactMatchTest.class.getDeclaredMethods();
     final List<Object[]> objects = new ArrayList<>();
-    System.out.println("exactMatchDP:");
+    log.debug("exactMatchDP:");
     for (int i = 0; i < methods.length; i++) {
       final Method method = methods[i];
       final ExactMatchTest.Expectation annotation =
@@ -80,7 +82,7 @@ public class ReflectionRecipesTest {
         final Method providerMethod = ExactMatchTest.class.getMethod(provider, int.class);
         final Object out = providerMethod.invoke(ExactMatchTest.class, flag);
         Assert.assertTrue(out instanceof Object[][]);
-        System.out.println(method.getName() + ", " + out);
+        log.debug(method.getName() + ", " + out);
         objects.add(new Object[]{out, method});
       }
     }
@@ -91,7 +93,7 @@ public class ReflectionRecipesTest {
   public Object[][] matchArrayEndingDP() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     final Method[] methods = MatchArrayEndingTest.class.getDeclaredMethods();
     final List<Object[]> objects = new ArrayList<>();
-    System.out.println("matchArrayEndingDP:");
+    log.debug("matchArrayEndingDP:");
     for (int i = 0; i < methods.length; i++) {
       final Method method = methods[i];
       final MatchArrayEndingTest.Expectation annotation =
@@ -103,7 +105,7 @@ public class ReflectionRecipesTest {
         final Method providerMethod = MatchArrayEndingTest.class.getMethod(provider, int.class);
         final Object out = providerMethod.invoke(MatchArrayEndingTest.class, flag);
         Assert.assertTrue(out instanceof Object[][]);
-        System.out.println(method.getName() + ", " + out);
+        log.debug(method.getName() + ", " + out);
         objects.add(new Object[]{out, method});
       }
     }
@@ -178,9 +180,9 @@ public class ReflectionRecipesTest {
 
   @Test(dataProvider = "methodInputParameters")
   public void testFilters(final Parameter[] parameters) {
-    System.out.println("In: " + Arrays.asList(parameters));
+    log.debug("In: " + Arrays.asList(parameters));
     final Parameter[] parameters1 = ReflectionRecipes.filter(parameters, InjectableParameter.Assistant.ALL_INJECTS);
-    System.out.println("Out: " + Arrays.asList(parameters1));
+    log.debug("Out: " + Arrays.asList(parameters1));
     Assert.assertEquals(parameters1.length, 2);
     Assert.assertEquals(parameters1[0].getType(), int.class);
     Assert.assertEquals(parameters1[1].getType(), Boolean.class);
@@ -188,13 +190,13 @@ public class ReflectionRecipesTest {
 
   @Test(dataProvider = "methodInputParamArgsPair")
   public void testInject(final Parameter[] parameters, final Object[] args) {
-    System.out.println("In: " + Arrays.asList(parameters));
-    System.out.println("args: " + Arrays.asList(args));
+    log.debug("In: " + Arrays.asList(parameters));
+    log.debug("args: " + Arrays.asList(args));
     final Object[] injectedArgs = ReflectionRecipes.inject(
       parameters, InjectableParameter.Assistant.ALL_INJECTS, args,
             (Method)null, null, null
     );
-    System.out.println("injectedArgs: " + Arrays.asList(injectedArgs));
+    log.debug("injectedArgs: " + Arrays.asList(injectedArgs));
     Assert.assertEquals(injectedArgs.length, parameters.length);
   }
 

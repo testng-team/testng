@@ -3,26 +3,28 @@ package test.groupbug;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 
 public class ITCaseTwo {
+  private final static Logger log = Logger.getLogger(ITCaseTwo.class);
 
   @BeforeClass
   public void beforeClassTwo() {
-    System.out.printf("RUN %s.beforeClass()\n", getClass());
+    log.debug("RUN " + getClass() + ".beforeClass()");
   }
 
   @AfterClass(alwaysRun = true)
   public void afterClassTwo() {
-    System.out.printf("RUN %s.afterClass()\n", getClass());
+    log.debug("RUN " + getClass() + ".afterClass()");
   }
 
   @Test(groups = "std-two")
   public void two1() {
-    System.out.printf("RUN %s.two1()\n", getClass());
+    log.debug("RUN " + getClass() + ".one1()");
   }
 
   @Test(groups = "logic-two", dependsOnGroups = "std-two")
   public void two2() {
-    System.out.printf("RUN %s.two2()\n", getClass());
+    log.debug("RUN " + getClass() + ".one2()");
   }
 }

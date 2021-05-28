@@ -33,8 +33,11 @@ matrix:
     - env: JDK='OpenJDK 9'
       install: . ./install-jdk.sh -F 9
 
+# Skip the default ./gradlew assemble
+install: true
 script:
-  - ./gradlew check --stacktrace --scan
+  # Travis does not handle dynamic progress bar :(
+  - TERM=dumb ./gradlew check --stacktrace --scan
 after_success:
   - ./travis.sh deploy
   - ./travis.sh sonarqube

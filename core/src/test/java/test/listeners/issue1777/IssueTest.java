@@ -55,7 +55,6 @@ public class IssueTest extends SimpleBaseTest {
             "before_configuration_method: afterMethod[test2]",
             "after_configuration_method: afterMethod[test2]",
             "after_configuration_method: afterMethod[test2]");
-    System.err.println(listener.cfgMsgs);
     assertThat(listener.cfgMsgs).containsExactlyElementsOf(expectedConfigMessages);
   }
 

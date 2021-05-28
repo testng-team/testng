@@ -69,7 +69,6 @@ public class FailurePolicyTest {
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(classesUnderTest);
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.run();
 
@@ -87,7 +86,6 @@ public class FailurePolicyTest {
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setTestClasses(classesUnderTest);
     testng.addListener(tla);
-    testng.setVerbose(0);
     testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.setGroups("group1");
     testng.run();

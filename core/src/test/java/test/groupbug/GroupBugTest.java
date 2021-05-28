@@ -14,7 +14,6 @@ public class GroupBugTest extends SimpleBaseTest {
           "Comment out dependsOnGroups in ITCaseOne will fix the ordering, that's the bug")
   public void shouldOrderByClass() {
     TestNG tng = create(ITCaseOne.class, ITCaseTwo.class);
-    tng.setVerbose(10);
     tng.setGroupByInstances(true);
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
