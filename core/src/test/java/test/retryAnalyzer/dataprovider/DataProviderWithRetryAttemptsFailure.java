@@ -13,9 +13,10 @@ public class DataProviderWithRetryAttemptsFailure {
                 new Object[]{false, "abc1", "cdf1"}};
     }
 
+    // Test retry-analyzer with end result as failed after 3 successful retry attempts
     @Test(dataProvider = "getObjectData", retryAnalyzer = DataProviderRetryAnalyzer.class)
     public void test(boolean flag, String... values) {
-        Assert.assertTrue(countWithObjectAndStringArrayForFailure-- < 0, "Test execution is not" +
+        Assert.assertTrue(flag, "Test execution is not" +
                 "successful after 3 retry attempts configured in retryAnalyzer for this data " + values +
                 "with boolean flag as " + flag);
     }

@@ -13,6 +13,7 @@ public class ComplexDataProviderWithObjectAndArraySample {
                 new Object[]{false, "abc1", "cdf1"}};
     }
 
+    // Test retry-analyzer with complex data-provider end result as passed after 3 successful retry attempts
     @Test(dataProvider = "getObjectData", retryAnalyzer = DataProviderRetryAnalyzer.class)
     public void test(boolean flag, String... values) {
         Assert.assertTrue(countWithObjectAndStringArrayForSuccess-- == 0, "Test execution is not" +

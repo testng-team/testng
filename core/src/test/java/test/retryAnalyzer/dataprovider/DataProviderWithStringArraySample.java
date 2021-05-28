@@ -13,6 +13,8 @@ public class DataProviderWithStringArraySample {
                 new String[]{"abc1", "cdf1"}};
     }
 
+    // Test with string array of objects in data-provider with end result as true after 3 successful
+    // retry attempts
     @Test(dataProvider = "getTestData", retryAnalyzer = DataProviderRetryAnalyzer.class)
     public void test(String... values) {
         Assert.assertTrue(countWithStringArray-- == 0, "Test execution is not" +
