@@ -203,7 +203,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       Object[] parameterValues =
           Parameters.getParametersFromIndex(Objects.requireNonNull(bag.parameterHolder).parameters,
               arguments.getParametersIndex());
-      if (bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.NATIVE) {
+      if (bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.NATIVE ||
+          bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER) {
         parameterValues = arguments.getParameterValues();
       }
 
