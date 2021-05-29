@@ -67,6 +67,11 @@ public class NoOpTestClass implements ITestClass {
     return m_afterClassMethods;
   }
 
+  @Override
+  public ITestNGMethod[] getAfterClassMethods(String instance) {
+    return new ITestNGMethod[0]; // TODO
+  }
+
   /** @return Returns the afterTestMethods. */
   @Override
   public ITestNGMethod[] getAfterTestMethods() {
@@ -77,6 +82,11 @@ public class NoOpTestClass implements ITestClass {
   @Override
   public ITestNGMethod[] getBeforeClassMethods() {
     return m_beforeClassMethods;
+  }
+
+  @Override
+  public ITestNGMethod[] getBeforeClassMethods(String instance) {
+    return new ITestNGMethod[0]; // TODO
   }
 
   /** @return Returns the beforeTestMethods. */

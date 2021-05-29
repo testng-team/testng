@@ -98,10 +98,20 @@ public abstract class JUnitTestClass implements ITestClass {
     return m_beforeClass.toArray(new ITestNGMethod[m_beforeClass.size()]);
   }
 
+  @Override
+  public ITestNGMethod[] getBeforeClassMethods(String instance) {
+    return new ITestNGMethod[0]; // TODO
+  }
+
   /** @see org.testng.ITestClass#getAfterClassMethods() */
   @Override
   public ITestNGMethod[] getAfterClassMethods() {
     return m_afterClass.toArray(new ITestNGMethod[m_afterClass.size()]);
+  }
+
+  @Override
+  public ITestNGMethod[] getAfterClassMethods(String instance) {
+    return new ITestNGMethod[0]; // TODO
   }
 
   // features not supported by JUnit

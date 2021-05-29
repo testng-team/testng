@@ -45,12 +45,16 @@ public interface ITestClass extends IClass {
    */
   ITestNGMethod[] getBeforeClassMethods();
 
+  ITestNGMethod[] getBeforeClassMethods(String instance);
+
   /**
    * Returns all the methods that should be invoked after all the tests have been run on this class.
    *
    * @return All the methods that should be invoked after all the tests have been run on this class.
    */
   ITestNGMethod[] getAfterClassMethods();
+
+  ITestNGMethod[] getAfterClassMethods(String instance);
 
   /**
    * Returns All the methods that should be invoked before the suite is run.

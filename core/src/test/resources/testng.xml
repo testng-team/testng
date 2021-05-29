@@ -441,6 +441,11 @@
       <class name="test.factory.github2428.IssueTest" />
     </classes>
   </test>
+  <test name="factory test" group-by-instances="true">
+    <classes>
+      <class name="test.factory.github2560.Github2560Test" />
+    </classes>
+  </test>
 
   <test name="TimeOut">
     <classes>

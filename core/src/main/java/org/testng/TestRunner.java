@@ -478,7 +478,7 @@ public class TestRunner
     //
     for (ITestClass tc : m_classMap.values()) {
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
-      fixMethodsWithClass(((ITestClassConfigInfo) tc).getAllBeforeClassMethods().toArray(new ITestNGMethod[0]), tc, beforeClassMethods);
+      fixMethodsWithClass(tc.getBeforeClassMethods(), tc, beforeClassMethods);
       fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterClassMethods(), tc, afterClassMethods);

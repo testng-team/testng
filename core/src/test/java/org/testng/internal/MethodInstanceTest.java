@@ -196,7 +196,17 @@ public class MethodInstanceTest {
     }
 
     @Override
+    public ITestNGMethod[] getBeforeClassMethods(String instance) {
+      return new ITestNGMethod[0];
+    }
+
+    @Override
     public ITestNGMethod[] getAfterClassMethods() {
+      return new ITestNGMethod[0];
+    }
+
+    @Override
+    public ITestNGMethod[] getAfterClassMethods(String instance) {
       return new ITestNGMethod[0];
     }
 
