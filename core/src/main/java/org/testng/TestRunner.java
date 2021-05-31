@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -923,6 +925,20 @@ public class TestRunner
         itl.onFinish(this);
       }
     }
+    if (!isStart) {
+      MethodHelper.clear(methods(this.getPassedConfigurations()));
+      MethodHelper.clear(methods(this.getFailedConfigurations()));
+      MethodHelper.clear(methods(this.getSkippedConfigurations()));
+      MethodHelper.clear(methods(Arrays.stream(this.getAllTestMethods())));
+    }
+  }
+
+  private static Stream<Method> methods(IResultMap resultMap) {
+    return methods(resultMap.getAllMethods().stream());
+  }
+
+  private static Stream<Method> methods(Stream<ITestNGMethod> methods) {
+    return methods.map(each -> each.getConstructorOrMethod().getMethod());
   }
 
   /////

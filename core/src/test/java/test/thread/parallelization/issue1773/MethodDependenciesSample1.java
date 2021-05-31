@@ -16,6 +16,6 @@ public class MethodDependenciesSample1 {
   }
 
   private void log() {
-    Reporter.log(Long.toString(Thread.currentThread().getId()));
+    LogGatheringListener.addLog(Thread.currentThread().getId());
   }
 }

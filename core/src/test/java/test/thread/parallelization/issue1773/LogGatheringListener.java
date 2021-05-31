@@ -1,23 +1,21 @@
 package test.thread.parallelization.issue1773;
 
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
-import org.testng.ITestResult;
-import org.testng.Reporter;
-import org.testng.collections.Sets;
-
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class LogGatheringListener implements IInvokedMethodListener {
+public class LogGatheringListener {
 
-    Set<String> log = Sets.newHashSet();
+    private static Set<Long> log = ConcurrentHashMap.newKeySet();
 
-    public Set<String> getLog() {
+    public static Set<Long> getLog() {
         return log;
     }
 
-    @Override
-    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-        log.addAll(Reporter.getOutput(testResult));
+    public static void addLog(long threadId) {
+        log.add(threadId);
+    }
+
+    public static void reset() {
+        log = ConcurrentHashMap.newKeySet();
     }
 }
