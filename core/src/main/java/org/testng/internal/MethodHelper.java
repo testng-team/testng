@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.testng.IMethodInstance;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -454,6 +455,11 @@ public class MethodHelper {
         .findFirst()
         .map(MethodHelper::calculateMethodCanonicalName)
         .orElse(null);
+  }
+
+  public static void clear(Stream<Method> methods) {
+    methods.filter(Objects::nonNull)
+        .forEach(CANONICAL_NAME_CACHE::remove);
   }
 
   public static long calculateTimeOut(ITestNGMethod tm) {

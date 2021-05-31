@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
@@ -26,6 +27,11 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     System.setProperty(RuntimeBehavior.TESTNG_THREAD_AFFINITY, "true");
   }
 
+  @BeforeMethod
+  public void beforeMethod() {
+    LogGatheringListener.reset();
+  }
+
   @Test(dataProvider = "dp1")
   public void testThreadAffinity(Class<?>... classes) {
     XmlSuite xmlsuite = createXmlSuite("test_suite");
@@ -33,10 +39,8 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     xmlsuite.setThreadCount(6);
     createXmlTest(xmlsuite, "Test 1", classes);
     TestNG testng = create(xmlsuite);
-    LogGatheringListener listener = new LogGatheringListener();
-    testng.addListener(listener);
     testng.run();
-    assertThat(listener.getLog()).hasSize(2);
+    assertThat(LogGatheringListener.getLog()).hasSize(2);
   }
 
   @Test(dataProvider = "dp2")
@@ -47,10 +51,8 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     createXmlTest(xmlsuite, "Test_1", PriorityTestSample1.class, PriorityTestSample2.class).setParallel(mode);
     createXmlTest(xmlsuite, "Test_2", PriorityTestSample1.class,PriorityTestSample2.class).setParallel(mode);
     TestNG testng = create(xmlsuite);
-    LogGatheringListener listener = new LogGatheringListener();
-    testng.addListener(listener);
     testng.run();
-    assertThat(listener.getLog()).hasSize(size);
+    assertThat(LogGatheringListener.getLog()).hasSize(size);
   }
 
   @DataProvider(name = "dp2")
