@@ -7,7 +7,6 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.TestRunner;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.Utils;
 
@@ -26,7 +25,7 @@ public interface IJUnitTestRunner {
 
   List<ITestNGMethod> getTestMethods();
 
-  static IJUnitTestRunner createTestRunner(ITestObjectFactory objectFactory, TestRunner runner) {
+  static IJUnitTestRunner createTestRunner(ITestObjectFactory objectFactory, ITestResultNotifier runner) {
     IJUnitTestRunner tr;
     try {
       // try to get runner for JUnit 4 first

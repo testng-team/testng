@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.Utils;
 import org.testng.util.Strings;
 
 /**
@@ -116,7 +117,7 @@ public class Reporter {
    * @param logToStandardOut Whether to print this string on standard out too
    */
   public static void log(String s, int level, boolean logToStandardOut) {
-    if (TestRunner.getVerbose() >= level) {
+    if (Utils.getVerbose() >= level) {
       log(s, getCurrentTestResult());
       if (logToStandardOut) {
         System.out.println(s);
@@ -145,7 +146,7 @@ public class Reporter {
    * @param level The verbosity of this message
    */
   public static void log(String s, int level) {
-    if (TestRunner.getVerbose() >= level) {
+    if (Utils.getVerbose() >= level) {
       log(s, getCurrentTestResult());
     }
   }
