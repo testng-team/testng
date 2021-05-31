@@ -9,7 +9,6 @@
 /local.properties
 build
 eclipse-build
-gradle.properties
 ivy*
 javadocs
 lib
