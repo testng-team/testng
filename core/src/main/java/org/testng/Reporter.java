@@ -33,8 +33,7 @@ public class Reporter {
   /** All output logged in a sequential order. */
   private static final List<String> m_output = new Vector<>();
 
-  /** The key is the hashCode of the ITestResult. */
-  private static final Map<Integer, List<Integer>> m_methodOutputMap = Maps.newHashMap();
+  private static final Map<String, List<Integer>> m_methodOutputMap = Maps.newHashMap();
 
   private static boolean m_escapeHtml = false;
   // This variable is responsible for persisting all output that is yet to be associated with any
@@ -84,7 +83,7 @@ public class Reporter {
     int n = getOutput().size();
 
     List<Integer> lines =
-        m_methodOutputMap.computeIfAbsent(m.hashCode(), k -> Lists.newArrayList());
+        m_methodOutputMap.computeIfAbsent(m.id(), k -> Lists.newArrayList());
 
     // Check if there was already some orphaned output for the current thread.
     if (m_orphanedOutput.get() != null) {
@@ -163,7 +162,7 @@ public class Reporter {
       // null value.
       return result;
     }
-    List<Integer> lines = m_methodOutputMap.get(tr.hashCode());
+    List<Integer> lines = m_methodOutputMap.get(tr.id());
     if (lines != null) {
       for (Integer n : lines) {
         result.add(getOutput().get(n));

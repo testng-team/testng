@@ -109,6 +109,12 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   }
 
   /**
+   * @return - A unique id for the current JVM that represents a unique way of identifying a
+   * specific test method's result.
+   */
+  String id();
+
+  /**
    * @param result - The test result of a method
    * @return - <code>true</code> if the test failure was due to a timeout.
    */
