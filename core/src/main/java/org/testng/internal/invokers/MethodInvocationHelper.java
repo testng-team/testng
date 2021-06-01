@@ -159,7 +159,13 @@ public class MethodInvocationHelper {
       Type returnType = dataProvider.getGenericReturnType();
       if (returnType instanceof ParameterizedType) {
         ParameterizedType contentType = (ParameterizedType) returnType;
-        Class<?> type = (Class<?>) contentType.getActualTypeArguments()[0];
+        Type actualType = contentType.getActualTypeArguments()[0];
+        Class<?> type;
+        if (actualType instanceof ParameterizedType) {
+          type = (Class<?>)((ParameterizedType) actualType).getActualTypeArguments()[0];
+        } else {
+          type = (Class<?>) actualType;
+        }
         if (type.isArray()) {
           return (Iterator<Object[]>) result;
         } else {
