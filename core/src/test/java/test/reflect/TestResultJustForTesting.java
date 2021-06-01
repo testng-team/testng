@@ -1,6 +1,7 @@
 package test.reflect;
 
 import java.util.List;
+import java.util.UUID;
 import org.testng.IClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -14,6 +15,8 @@ import java.util.Set;
  * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
  */
 public class TestResultJustForTesting implements ITestResult {
+
+  private final String id = UUID.randomUUID().toString();
   @Override
   public int getStatus() {
     return 0;
@@ -152,5 +155,10 @@ public class TestResultJustForTesting implements ITestResult {
   @Override
   public Object removeAttribute(String name) {
     return null;
+  }
+
+  @Override
+  public String id() {
+    return id;
   }
 }

@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.testng.IAttributes;
 import org.testng.IClass;
@@ -39,6 +40,7 @@ public class TestResult implements ITestResult {
   private int parameterIndex;
   private boolean m_wasRetried;
   private final IAttributes m_attributes = new Attributes();
+  private final String id = UUID.randomUUID().toString();
 
   private TestResult() {
     //defeat instantiation. We have factory methods.
@@ -423,6 +425,10 @@ public class TestResult implements ITestResult {
         .filter(method -> upstreamMethods.contains(method.getQualifiedName()))
         .collect(Collectors.toList());
     return Collections.unmodifiableList(skippedDueTo);
+  }
+
+  public String id() {
+    return id;
   }
 
   private static boolean isGlobalFailure(ITestResult result) {
