@@ -1,3 +1,3 @@
 plugins {
-    id("testng.published-java-library")
+    id("testng.java-library")
 }

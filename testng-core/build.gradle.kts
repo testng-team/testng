@@ -1,5 +1,5 @@
 plugins {
-    id("testng.published-java-library")
+    id("testng.java-library")
     groovy
     id("testng.sonarqube")
 }

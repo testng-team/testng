@@ -1,5 +1,5 @@
 plugins {
-    id("testng.published-java-platform")
+    id("testng.java-platform")
 }
 
 // This is a convenience artifact to add dependencies to all the API jars

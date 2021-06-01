@@ -1,5 +1,6 @@
 plugins {
-    id("testng.published-java-platform")
+    // Note: un-comment a dependency in testng.published-java-library when testng-bom becomes published
+    id("testng.java-platform")
 }
 
 // Add a convenience pom.xml that sets all the versions
