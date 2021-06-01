@@ -1,6 +1,10 @@
 package test.thread.parallelization;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.TestNG;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -37,29 +41,47 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     XmlSuite xmlsuite = createXmlSuite("test_suite");
     xmlsuite.setParallel(XmlSuite.ParallelMode.CLASSES);
     xmlsuite.setThreadCount(6);
-    createXmlTest(xmlsuite, "Test 1", classes);
+    createXmlTest(xmlsuite, "Test_1", classes);
     TestNG testng = create(xmlsuite);
     testng.run();
-    assertThat(LogGatheringListener.getLog()).hasSize(2);
+    Map<Class<?>, Set<Long>> map = LogGatheringListener.getLog().get("Test_1");
+    SoftAssertions softly = new SoftAssertions();
+    Arrays.stream(classes)
+        .forEach(each -> softly.assertThat(map.get(each))
+            .withFailMessage("All tests within " + each.getName()
+                + " should have run in the same thread")
+            .hasSize(1));
+    softly.assertAll();
   }
 
   @Test(dataProvider = "dp2")
-  public void testThreadAffinityAcrossTests(XmlSuite.ParallelMode mode, int size) {
+  public void testThreadAffinityAcrossTests(XmlSuite.ParallelMode mode) {
     XmlSuite xmlsuite = createXmlSuite("test_suite");
     xmlsuite.setParallel(XmlSuite.ParallelMode.TESTS);
     xmlsuite.setThreadCount(6);
-    createXmlTest(xmlsuite, "Test_1", PriorityTestSample1.class, PriorityTestSample2.class).setParallel(mode);
-    createXmlTest(xmlsuite, "Test_2", PriorityTestSample1.class,PriorityTestSample2.class).setParallel(mode);
+    Class<?>[] testClasses = new Class<?>[] {PriorityTestSample1.class, PriorityTestSample2.class};
+    createXmlTest(xmlsuite, "Test_1", testClasses).setParallel(mode);
+    createXmlTest(xmlsuite, "Test_2", testClasses).setParallel(mode);
     TestNG testng = create(xmlsuite);
     testng.run();
-    assertThat(LogGatheringListener.getLog()).hasSize(size);
+    SoftAssertions softly = new SoftAssertions();
+    for(String test : Arrays.asList("Test_1", "Test_2")) {
+      Map<Class<?>, Set<Long>> map = LogGatheringListener.getLog().get(test);
+      for (Class<?> cls : testClasses) {
+        softly.assertThat(map.get(cls))
+            .withFailMessage("All tests within " + cls.getName()
+                + " should have run in the same thread")
+            .hasSize(1);
+      }
+    }
+    softly.assertAll();
   }
 
   @DataProvider(name = "dp2")
   public Object[][] createTestData() {
     return new Object[][] {
-            {XmlSuite.ParallelMode.NONE, 2},
-            {XmlSuite.ParallelMode.CLASSES, 4}
+            {XmlSuite.ParallelMode.NONE},
+            {XmlSuite.ParallelMode.CLASSES}
     };
   }
 
