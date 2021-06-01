@@ -1,5 +1,8 @@
 package test.dataprovider;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.assertj.core.api.Condition;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -19,6 +22,11 @@ import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOf
 import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevel;
 import test.dataprovider.issue1691.DataProviderDefinitionProvidedPartiallyAtClassLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassWithNoDataProviderInformationInTestMethod;
+import test.dataprovider.issue2565.Data;
+import test.dataprovider.issue2565.SampleTestUsingConsumer;
+import test.dataprovider.issue2565.SampleTestUsingFunction;
+import test.dataprovider.issue2565.SampleTestUsingPredicate;
+import test.dataprovider.issue2565.SampleTestUsingSupplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -229,6 +237,24 @@ public class DataProviderTest extends SimpleBaseTest {
         .are(new RegexCondition("checkCME\\(\\d+\\)|null", true));
     // TODO null is not an expected value
     // .hasSize(2_000); TODO it is supposed to work
+  }
+
+  @Test(description = "GITHUB-2565", dataProvider = "2565")
+  public void testForFunctionalInterfacesInLazyLoadingDataProviders(Class<?> cls, List<String> expected) {
+    Data.INSTANCE.clear();
+    run(cls);
+    List<String> actualList = Data.INSTANCE.getData();
+    assertThat(actualList).isEqualTo(expected);
+  }
+
+  @DataProvider(name = "2565")
+  public Object[][] getTestDataFor2565() {
+    return new Object[][] {
+        {SampleTestUsingSupplier.class, Arrays.asList("Optimus_Prime", "Megatron")},
+        {SampleTestUsingPredicate.class, Collections.singletonList("IronHide")},
+        {SampleTestUsingFunction.class, Collections.singletonList("Bumble_Bee")},
+        {SampleTestUsingConsumer.class, Collections.singletonList("StarScream")}
+    };
   }
 
   public static class RegexCondition extends Condition<String> {

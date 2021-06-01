@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2565: Dataprovider only supporting a raw type for Iterator return type (Krishnan Mahadevan)
 Fixed: GITHUB-2557: Flaky test: ThreadAffinityTest#testThreadAffinity (Krishnan Mahadevan)
 Fixed: GITHUB-2567: MethodHelper#CANONICAL_NAME_CACHE is never reset, so it could result in a memory leak (Krishnan Mahadevan)
 Fixed: GITHUB-2540: assertEquals(Collection) need check order (Stuart Marks & Julien Herr)
