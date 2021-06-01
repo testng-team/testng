@@ -36,3 +36,38 @@ dependencies {
     shadedDependencyElements(projects.testngAsserts)
     shadedDependencyElements(projects.testngCore)
 }
+
+tasks.mergedJar {
+    manifest {
+        // providers.gradleProperty does not work
+        // see https://github.com/gradle/gradle/issues/14972
+        val name = rootProject.findProperty("project.name")
+        val vendor = rootProject.findProperty("project.vendor.name")
+        attributes(
+            // Java 9 module name
+            "Automatic-Module-Name" to project.group,
+
+            // BND Plugin instructions (for OSGi)
+            "Bundle-Name" to name,
+            "Bundle-SymbolicName" to project.group,
+            "Bundle-Vendor" to vendor,
+            // See http://docs.osgi.org/specification/osgi.core/7.0.0/framework.module.html#i2654895
+            "Bundle-License" to "Apache-2.0",
+            "Bundle-Description" to project.description,
+            "Bundle-Version" to project.version,
+            "Import-Package" to """
+                bsh.*;version="[2.0.0,3.0.0)";resolution:=optional,
+                com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional,
+                com.google.inject.*;version="[1.2,1.3)";resolution:=optional,
+                junit.framework;version="[3.8.1, 5.0.0)";resolution:=optional,
+                org.junit.*;resolution:=optional,
+                org.apache.tools.ant.*;version="[1.7.0, 2.0.0)";resolution:=optional,
+                org.yaml.*;version="[1.6,2.0)";resolution:=optional,
+                !com.beust.testng,
+                !org.testng.*,
+                !com.sun.*,
+                *;resolution:=optional
+            """.trimIndent().replace("\n", "")
+        )
+    }
+}
