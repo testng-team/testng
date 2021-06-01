@@ -1,5 +1,6 @@
 package test.thread.parallelization.issue1773;
 
+import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 public class PriorityTestSample1 {
@@ -20,6 +21,7 @@ public class PriorityTestSample1 {
   }
 
   private void log(){
-    LogGatheringListener.addLog(Thread.currentThread().getId());
+    String testname = Reporter.getCurrentTestResult().getTestContext().getName();
+    LogGatheringListener.addLog(testname, PriorityTestSample1.class, Thread.currentThread().getId());
   }
 }
