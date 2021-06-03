@@ -1,11 +1,10 @@
-name: Publish to Maven Central
+name: Publish Snapshot
 
 # Trigger this workflow whenever code is pushed to "master" branch.defaults:
 # We would like to publish to maven central for both snapshot and release versions.
 on:
   push:
     branches: [ master ]
-
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,5 +23,4 @@ jobs:
 
     - name: Publish to GitHub
       run: |
-        ./gradlew -Pgh publish
-
+        ./gradlew -PghNexusUsername=${{ secrets.SONATYPE_USER }} -PghNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Pgh publish
