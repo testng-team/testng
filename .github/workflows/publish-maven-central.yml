@@ -32,9 +32,9 @@ jobs:
         gpg --list-secret-keys --keyid-format LONG
         ls -l $HOME/.gnupg
 
-    - name: Publish release
+    - name: Publish to GitHub
       run: |
-        ./gradlew -PghTestNexusUsername=${{ secrets.SONATYPE_USER }} -PghTestNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Prc=1 prepareVote
+        ./gradlew -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Pgh publish
 
     - name: Display next step
       run: |
