@@ -1,4 +1,8 @@
 Current
+Changed: GITHUB-2564: Source code is split into several modules for better modularity in the future (for now only a combined jar is released as it was before)
+Added: GITHUB-2564: Added license files as META-INF/LICENSE.txt within the released jar
+Test: GITHUB-2564: Added pax-exam-based OSGi test to verify the manifest
+Changed: GITHUB-2564: Migrated the build to Gradle 7.0.2
 Fixed: GITHUB-2576: Guice 5.0 drops no-aop variant, so TestNG should probably upgrade and avoid no-aop dependency (Nan Liang)
 Fixed: GITHUB-2566: Reporter#getOutput(ITestResult tr) uses Map.get(tr.hashCode()) which might result in surprising results (Krishnan Mahadevan)
 Fixed: GITHUB-2565: Dataprovider only supporting a raw type for Iterator return type (Krishnan Mahadevan)
