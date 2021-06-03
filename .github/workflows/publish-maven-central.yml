@@ -34,7 +34,7 @@ jobs:
 
     - name: Publish release
       run: |
-        ./gradlew -PghTestNexusUsername=${{ secrets.SONATYPE_USER }} -PghTestNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} publish
+        ./gradlew -PghTestNexusUsername=${{ secrets.SONATYPE_USER }} -PghTestNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Prc=1 prepareVote
 
     - name: Display next step
       run: |
