@@ -30,6 +30,7 @@ include(":testng-reflection-utils")
 include(":testng-runner-api")
 include(":testng-runner-junit4")
 include(":testng-test-kit")
+include(":testng-test-osgi")
 
 enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

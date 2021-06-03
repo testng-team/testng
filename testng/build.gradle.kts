@@ -48,13 +48,14 @@ tasks.mergedJar {
             "Automatic-Module-Name" to project.group,
 
             // BND Plugin instructions (for OSGi)
+            "Bundle-ManifestVersion" to 2,
             "Bundle-Name" to name,
             "Bundle-SymbolicName" to project.group,
             "Bundle-Vendor" to vendor,
             // See http://docs.osgi.org/specification/osgi.core/7.0.0/framework.module.html#i2654895
             "Bundle-License" to "Apache-2.0",
             "Bundle-Description" to project.description,
-            "Bundle-Version" to project.version,
+            "Bundle-Version" to project.version.toString().removeSuffix("-SNAPSHOT"),
             "Import-Package" to """
                 bsh.*;version="[2.0.0,3.0.0)";resolution:=optional,
                 com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional,
@@ -63,11 +64,36 @@ tasks.mergedJar {
                 org.junit.*;resolution:=optional,
                 org.apache.tools.ant.*;version="[1.7.0, 2.0.0)";resolution:=optional,
                 org.yaml.*;version="[1.6,2.0)";resolution:=optional,
-                !com.beust.testng,
-                !org.testng.*,
-                !com.sun.*,
                 *;resolution:=optional
-            """.trimIndent().replace("\n", "")
+            """.trimIndent().replace("\n", ""),
+            "Export-Package" to """
+                org.testng
+                org.testng.annotations
+                org.testng.asserts
+                org.testng.collections
+                org.testng.internal
+                org.testng.internal.annotations
+                org.testng.internal.ant
+                org.testng.internal.collections
+                org.testng.internal.invokers
+                org.testng.internal.invokers.objects
+                org.testng.internal.junit
+                org.testng.internal.objects
+                org.testng.internal.objects.pojo
+                org.testng.internal.reflect
+                org.testng.internal.thread
+                org.testng.internal.thread.graph
+                org.testng.junit
+                org.testng.log
+                org.testng.log4testng
+                org.testng.reporters
+                org.testng.reporters.jq
+                org.testng.reporters.util
+                org.testng.thread
+                org.testng.util
+                org.testng.xml
+                org.testng.xml.internal
+            """.trimIndent().replace("\n", ",")
         )
     }
 }
