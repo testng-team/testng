@@ -32,10 +32,11 @@ jobs:
         gpg --list-secret-keys --keyid-format LONG
         ls -l $HOME/.gnupg
 
-    - name: Publish to GitHub
-      run: |
-        ./gradlew -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Pgh publish
+    # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
+    #- name: Publish release
+    #  run: |
+    #    ./gradlew -PghNexusUsername=${{ secrets.SONATYPE_USER }} -PghNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Prc=1 prepareVote
 
-    - name: Display next step
-      run: |
-        echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it"
+    #- name: Display next step
+    #  run: |
+    #    echo "Now go to https://oss.sonatype.org/index.html#stagingRepositories, select the repo, Close it and then Release it"
