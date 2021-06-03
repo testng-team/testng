@@ -33,11 +33,8 @@ jobs:
         ls -l $HOME/.gnupg
 
     - name: Publish release
-      env:
-        SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
-        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
       run: |
-        ./gradlew -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -P signing.keyId=${{ secrets.GPG_KEY_ID }} publish
+        ./gradlew -PghTestNexusUsername=${{ secrets.SONATYPE_USER }} -PghTestNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} publish
 
     - name: Display next step
       run: |
