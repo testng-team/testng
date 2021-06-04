@@ -149,6 +149,10 @@ public class AssertTest {
    */
   @Test
   public void compareLargeArrays() {
+    if (!PerformanceUtils.canMeasureAllocatedMemory()) {
+      throw new SkipException(
+          "PerformanceUtils.canMeasureAllocatedMemory returns false, skipping test");
+    }
     int length = 1024 * 100;
     byte[] first = new byte[length];
     byte[] second = new byte[length];
