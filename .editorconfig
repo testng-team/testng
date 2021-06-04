@@ -18,3 +18,12 @@ trim_trailing_whitespace = false
 
 [*.java]
 indent_size = 2
+
+[*.js]
+indent_size = 2
+
+[*.xml]
+indent_size = 2
+
+[{*.yml,*.yaml}]
+indent_size = 2

@@ -1,0 +1,73 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Test
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  matrix_prep:
+    name: Matrix Preparation
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    env:
+      # Ask matrix.js to produce 7 jobs
+      MATRIX_JOBS: 7
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - id: set-matrix
+        run: |
+          node .github/workflows/matrix.js
+
+  build:
+    needs: matrix_prep
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
+    name: '${{ matrix.name }}'
+    env:
+      TZ: ${{ matrix.tz }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 10
+      # Install built-in JDK
+      - name: 'Set up JDK ${{ matrix.jdk.version }} / ${{ matrix.jdk.distribution }}'
+        uses: actions/setup-java@v2
+        if: ${{ matrix.jdk.distribution != 'jdkfile' }}
+        with:
+          distribution: ${{ matrix.jdk.distribution }}
+          java-version: ${{ matrix.jdk.version }}
+          architecture: x64
+      # Install custom JDK from URL
+      - name: 'Download JDK ${{ matrix.jdk.distribution }} / ${{ matrix.jdk.version }} from ${{ matrix.jdk.url }}'
+        if: ${{ matrix.jdk.distribution == 'jdkfile' }}
+        run: |
+          jdk_url="${{ matrix.jdk.url }}"
+          wget -nv -O "${{ runner.temp }}/java_package.tar.gz" "${jdk_url}"
+      - name: 'Set up JDK ${{ matrix.jdk.version }} / ${{ matrix.jdk.url }}'
+        uses: actions/setup-java@v2
+        if: ${{ matrix.jdk.distribution == 'jdkfile' }}
+        with:
+          distribution: ${{ matrix.jdk.distribution }}
+          java-version: ${{ matrix.jdk.version }}
+          jdkFile: '${{ runner.temp }}/java_package.tar.gz'
+          architecture: x64
+      - name: Test
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          job-id: jdk${{ matrix.jdk.version }}
+          arguments: |
+            --no-parallel --no-daemon --scan
+            build
+          properties: |
+            testng.test.extra.jvmargs=${{ matrix.testExtraJvmArgs }}
