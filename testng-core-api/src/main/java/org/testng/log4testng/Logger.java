@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -357,7 +358,7 @@ public class Logger {
       // Set the value of the root logger (if any).
       String rootLevelStr = pProperties.getProperty(ROOT_LOGGER);
       if (rootLevelStr != null) {
-        Integer ilevel = levelMap.get(rootLevelStr.toUpperCase());
+        Integer ilevel = levelMap.get(rootLevelStr.toUpperCase(Locale.ROOT));
         if (ilevel == null) {
           throw new IllegalArgumentException(
               "Unknown level for log4testng.rootLogger "
@@ -387,7 +388,7 @@ public class Logger {
           throw new IllegalArgumentException("Illegal property value: " + logger);
         }
 
-        Integer ilevel = levelMap.get(level.toUpperCase());
+        Integer ilevel = levelMap.get(level.toUpperCase(Locale.ROOT));
         if (ilevel == null) {
           throw new IllegalArgumentException(
               "Unknown level " + level + " for logger " + logger + " in log4testng.properties");
