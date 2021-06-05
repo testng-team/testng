@@ -1,6 +1,7 @@
 package test.factory.github2428;
 
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import org.testng.IReporter;
@@ -8,9 +9,9 @@ import org.testng.ISuite;
 import org.testng.xml.XmlSuite;
 
 public class Reporter implements IReporter {
-  private final Set<String> results = new HashSet<>();
+  private final Set<Object> results = Collections.newSetFromMap(new IdentityHashMap<>());
 
-  public Set<String> getResults() {
+  public Set<Object> getResults() {
     return results;
   }
 
@@ -23,6 +24,6 @@ public class Reporter implements IReporter {
         .getTestContext()
         .getPassedConfigurations()
         .getAllResults()
-        .forEach(x -> results.add(x.getInstance().toString()));
+        .forEach(x -> results.add(x.getInstance()));
   }
 }
