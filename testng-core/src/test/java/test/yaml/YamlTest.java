@@ -67,6 +67,6 @@ public class YamlTest extends SimpleBaseTest {
     String expectedYaml =
         new String(
             java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
-    assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualTo(expectedYaml);
+    assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualToNormalizingNewlines(expectedYaml);
   }
 }
