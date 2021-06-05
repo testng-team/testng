@@ -1,13 +1,15 @@
 package test.configuration.issue1035;
 
-import java.util.Collections;
+import static java.util.Collections.newSetFromMap;
+import static java.util.Collections.synchronizedSet;
+
+import java.util.IdentityHashMap;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.testng.annotations.Factory;
 
 public class MyFactory {
   public static final Set<InvocationTracker> TRACKER =
-      Collections.newSetFromMap(new ConcurrentHashMap<>());
+      synchronizedSet(newSetFromMap(new IdentityHashMap<>()));
 
   @Factory
   public Object[] instances() {
