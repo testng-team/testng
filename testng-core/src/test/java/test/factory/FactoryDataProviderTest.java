@@ -1,8 +1,8 @@
 package test.factory;
 
-import java.util.Iterator;
-import org.testng.Assert;
-import org.testng.ITestResult;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
@@ -45,11 +45,9 @@ public class FactoryDataProviderTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
-    Iterator<ITestResult> iterator = tla.getPassedTests().iterator();
-    BaseFactorySample t1 = (BaseFactorySample) iterator.next().getInstance();
-    BaseFactorySample t2 = (BaseFactorySample) iterator.next().getInstance();
-    Assert.assertEquals(t1.getN(), n1);
-    Assert.assertEquals(t2.getN(), n2);
+    assertThat(tla.getPassedTests())
+        .describedAs("arguments of passed tests: getPassedTests()")
+        .extracting(x -> ((BaseFactorySample) x.getInstance()).getN())
+        .isEqualTo(Arrays.asList(n1, n2));
   }
 }

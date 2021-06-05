@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -34,7 +35,7 @@ public class Graph<T> {
   }
 
   public void addNode(T tm) {
-    ppp("ADDING NODE " + tm + " " + tm.hashCode());
+    ppp(() -> "ADDING NODE " + tm + " " + tm.hashCode());
     m_nodes.put(tm, new Node<>(tm));
     // Initially, all the nodes are put in the independent list as well
   }
@@ -62,7 +63,7 @@ public class Graph<T> {
       initializeIndependentNodes();
       m_independentNodes.remove(predecessor);
       m_independentNodes.remove(tm);
-      ppp("  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
+      ppp(() -> "  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
     }
   }
 
@@ -176,6 +177,12 @@ public class Graph<T> {
     }
   }
 
+  private static void ppp(Supplier<String> s) {
+    if (m_verbose) {
+      System.out.println("[Graph] " + s.get());
+    }
+  }
+
   private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
     for (Node<T> n : nodes) {
       if (!n.hasPredecessors()) {
@@ -279,9 +286,9 @@ public class Graph<T> {
       if (null != pred) {
         result = null != m_predecessors.remove(o);
         if (result) {
-          ppp("  REMOVED PRED " + o + " FROM NODE " + m_object);
+          ppp(() -> "  REMOVED PRED " + o + " FROM NODE " + m_object);
         } else {
-          ppp("  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
+          ppp(() -> "  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
         }
       }
 

@@ -1,10 +1,25 @@
 package org.testng.internal;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 import org.testng.ITestNGMethod;
 
 /** Helps determine how should {@link ITestNGMethod} be ordered by TestNG. */
 public final class Systematiser {
+
+  private static final Comparator<ITestNGMethod> COMPARE_INSTANCES =
+      Comparator.comparingInt(ITestNGMethod::getPriority)
+          .thenComparing(method -> method.getRealClass().getName())
+          .thenComparing(ITestNGMethod::getMethodName)
+          .thenComparing(Object::toString)
+          .thenComparing(
+              method -> {
+                IParameterInfo paramsInfo = method.getFactoryMethodParamsInfo();
+                // TODO: avoid toString in parameter comparison
+                return paramsInfo == null ? "" : Arrays.toString(paramsInfo.getParameters());
+              })
+          .thenComparingInt(method -> Objects.hashCode(method.getInstance()));
 
   private Systematiser() {
     // Utility class. Defeat instantiation.
@@ -65,7 +80,7 @@ public final class Systematiser {
             new Comparator<ITestNGMethod>() {
               @Override
               public int compare(ITestNGMethod o1, ITestNGMethod o2) {
-                return o1.toString().compareTo(o2.toString());
+                return COMPARE_INSTANCES.compare(o1, o2);
               }
 
               @Override
