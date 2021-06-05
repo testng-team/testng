@@ -2,9 +2,8 @@ package org.testng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.*;
@@ -30,7 +29,8 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private final ITestObjectFactory objectFactory;
   private final String m_errorMsgPrefix;
 
-  private final Map<String, List<ITestNGMethod>> beforeClassConfig = new HashMap<>();
+  private final IdentityHashMap<Object, List<ITestNGMethod>> beforeClassConfig =
+      new IdentityHashMap<>();
 
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
@@ -47,7 +47,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceBeforeClassMethods(String instance) {
+  public List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
     return beforeClassConfig.get(instance);
   }
 
@@ -183,7 +183,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               xmlTest,
               eachInstance);
       Object instance = IParameterInfo.embeddedInstance(eachInstance);
-      beforeClassConfig.put(instance.toString(), Arrays.asList(m_beforeClassMethods));
+      beforeClassConfig.put(instance, Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,

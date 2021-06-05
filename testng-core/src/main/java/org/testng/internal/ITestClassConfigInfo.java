@@ -16,12 +16,12 @@ public interface ITestClassConfigInfo {
   }
 
   /**
-   * Query the instance before class methods from config methods map
+   * Query the instance before class methods from config methods map.
    *
    * @param instance object hashcode
    * @return All before class methods of instance
    */
-  default List<ITestNGMethod> getInstanceBeforeClassMethods(String instance) {
+  default List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
     return Lists.newArrayList();
   }
 }
