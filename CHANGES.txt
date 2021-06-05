@@ -1,4 +1,5 @@
 Current
+Fixed: Wrong results from GuiceBasedObjectDispenser when there's Object#hashCode collision
 Changed: GITHUB-2564: Source code is split into several modules for better modularity in the future (for now only a combined jar is released as it was before)
 Added: GITHUB-2564: Added license files as META-INF/LICENSE.txt within the released jar
 Test: GITHUB-2564: Added pax-exam-based OSGi test to verify the manifest
