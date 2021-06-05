@@ -155,7 +155,7 @@ public class DataProviderTest extends SimpleBaseTest {
   public void instanceDataProviderTest() {
     InvokedMethodNameListener listener = run(InstanceDataProviderSampleFactory.class);
 
-    assertThat(listener.getSucceedMethodNames()).hasSize(2).are(new RegexCondition("f\\(\\d+\\)"));
+    assertThat(listener.getSucceedMethodNames()).hasSize(2).are(new RegexCondition("f\\(-?\\d+\\)"));
   }
 
   @Test(enabled = false, description = "java 1.4 tests no more supported")
