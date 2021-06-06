@@ -6,11 +6,6 @@ plugins {
     id("testng.testing")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 tasks.withType<Javadoc>().configureEach {
     excludes.add("org/testng/internal/**")
 }
