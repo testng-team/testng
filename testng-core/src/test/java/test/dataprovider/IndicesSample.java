@@ -1,10 +1,9 @@
 package test.dataprovider;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import java.util.Arrays;
 import java.util.Iterator;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class IndicesSample {
 

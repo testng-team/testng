@@ -36,7 +36,9 @@ public class CustomFactoryTest extends SimpleBaseTest {
 
   @Test(description = "This broke after I made the change to enable AbstractTest")
   public void setFactoryByAnnotation() {
-    XmlSuite suite = createXmlSuite("objectfactory", "TmpTest", SimpleSample.class, MyObjectFactoryFactory.class);
+    XmlSuite suite =
+        createXmlSuite(
+            "objectfactory", "TmpTest", SimpleSample.class, MyObjectFactoryFactory.class);
     TestNG tng = create(suite);
     tng.run();
 
@@ -45,7 +47,9 @@ public class CustomFactoryTest extends SimpleBaseTest {
 
   @Test
   public void factoryReceivesContext() {
-    XmlSuite suite = createXmlSuite("objectfactory", "TmpTest", SimpleSample.class, ContextAwareObjectFactoryFactory.class);
+    XmlSuite suite =
+        createXmlSuite(
+            "objectfactory", "TmpTest", SimpleSample.class, ContextAwareObjectFactoryFactory.class);
     suite.setObjectFactoryClass(LoggingObjectFactory.class);
     TestNG tng = create(suite);
     tng.run();
@@ -55,7 +59,9 @@ public class CustomFactoryTest extends SimpleBaseTest {
 
   @Test(expectedExceptions = TestNGException.class)
   public void setInvalidMethodFactoryByAnnotation() {
-    XmlSuite suite = createXmlSuite("objectfactory", "TmpTest", SimpleSample.class, BadMethodObjectFactoryFactory.class);
+    XmlSuite suite =
+        createXmlSuite(
+            "objectfactory", "TmpTest", SimpleSample.class, BadMethodObjectFactoryFactory.class);
     TestNG tng = create(suite);
     tng.run();
   }

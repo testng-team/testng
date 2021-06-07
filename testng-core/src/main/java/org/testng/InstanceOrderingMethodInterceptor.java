@@ -1,10 +1,9 @@
 package org.testng;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.List;
 import java.util.Map;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /** A method interceptor that sorts its methods per instances (i.e. per class). */
 class InstanceOrderingMethodInterceptor implements IMethodInterceptor {

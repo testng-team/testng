@@ -1,20 +1,17 @@
 package org.testng.internal.thread;
 
-import java.util.concurrent.ThreadFactory;
-import org.testng.collections.Lists;
-import org.testng.internal.Utils;
-import org.testng.log4testng.Logger;
-
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.testng.collections.Lists;
+import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
-/**
- * A helper class to interface TestNG concurrency usage.
- */
+/** A helper class to interface TestNG concurrency usage. */
 public class ThreadUtil {
 
   public static final String THREAD_NAME = "TestNG";
@@ -33,10 +30,7 @@ public class ThreadUtil {
    * @param timeout a maximum timeout to wait for tasks finalization
    */
   public static void execute(
-      String name,
-      List<? extends Runnable> tasks,
-      int threadPoolSize,
-      long timeout) {
+      String name, List<? extends Runnable> tasks, int threadPoolSize, long timeout) {
 
     Utils.log(
         "ThreadUtil",
@@ -88,12 +82,6 @@ public class ThreadUtil {
   public static ExecutorService createExecutor(int threadCount, String threadFactoryName) {
     ThreadFactory tf = new TestNGThreadFactory("method=" + threadFactoryName);
     return new ThreadPoolExecutor(
-        threadCount,
-        threadCount,
-        0L,
-        TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<>(),
-        tf);
+        threadCount, threadCount, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), tf);
   }
-
 }

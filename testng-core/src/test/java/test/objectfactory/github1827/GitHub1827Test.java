@@ -7,12 +7,13 @@ import test.SimpleBaseTest;
 
 public class GitHub1827Test extends SimpleBaseTest {
 
-    @Test(expectedExceptions = TestNGException.class,
-            expectedExceptionsMessageRegExp = ".*Check to make sure it can be instantiated",
-            description = "GITHUB-1827")
-    public void ensureExceptionThrownWhenNoSuitableConstructorFound() {
+  @Test(
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp = ".*Check to make sure it can be instantiated",
+      description = "GITHUB-1827")
+  public void ensureExceptionThrownWhenNoSuitableConstructorFound() {
 
-        TestNG testng = create(GitHub1827Sample.class);
-        testng.run();
-    }
+    TestNG testng = create(GitHub1827Sample.class);
+    testng.run();
+  }
 }

@@ -8,19 +8,14 @@ import org.testng.annotations.Test;
 public class TestClass02 {
 
   @BeforeClass
-  public void setup() {
-  }
+  public void setup() {}
 
   @Test(priority = 1)
-  public void test01() {
-  }
+  public void test01() {}
 
   @Test(priority = 2)
-  public void test02() {
-  }
+  public void test02() {}
 
   @Test(priority = 3)
-  public void test03() {
-  }
-
+  public void test03() {}
 }

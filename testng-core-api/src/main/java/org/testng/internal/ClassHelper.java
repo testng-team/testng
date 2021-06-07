@@ -1,6 +1,15 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
@@ -13,16 +22,6 @@ import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 /** Utility class for different class manipulations. */
 public final class ClassHelper {
@@ -79,7 +78,8 @@ public final class ClassHelper {
       try {
         return classLoader.loadClass(className);
       } catch (ClassNotFoundException | NoClassDefFoundError ex) {
-        // With additional class loaders, it is legitimate to ignore ClassNotFoundException / NoClassDefFoundError
+        // With additional class loaders, it is legitimate to ignore ClassNotFoundException /
+        // NoClassDefFoundError
         if (classLoaders.isEmpty()) {
           logClassNotFoundError(className, ex);
         }
@@ -113,19 +113,20 @@ public final class ClassHelper {
    * @param finder The finder (JDK 1.4 or JDK 5.0+) use to search for the annotation.
    * @return the @Factory <CODE>methods</CODE>
    */
-  //Code smell: The javadocs for this method says that if more than one Factory method is found
-  //an exception is thrown. But the method is not doing that. This needs more investigation for
-  //regression side effects before being addressed.
+  // Code smell: The javadocs for this method says that if more than one Factory method is found
+  // an exception is thrown. But the method is not doing that. This needs more investigation for
+  // regression side effects before being addressed.
   public static List<ConstructorOrMethod> findDeclaredFactoryMethods(
       Class<?> cls, IAnnotationFinder finder) {
     List<ConstructorOrMethod> result = new ArrayList<>();
-    BiConsumer<IFactoryAnnotation, Executable> consumer = (f, executable) -> {
-      if (f != null) {
-        ConstructorOrMethod factory = new ConstructorOrMethod(executable);
-        factory.setEnabled(f.getEnabled());
-        result.add(factory);
-      }
-    };
+    BiConsumer<IFactoryAnnotation, Executable> consumer =
+        (f, executable) -> {
+          if (f != null) {
+            ConstructorOrMethod factory = new ConstructorOrMethod(executable);
+            factory.setEnabled(f.getEnabled());
+            result.add(factory);
+          }
+        };
 
     for (Method method : getAvailableMethods(cls)) {
       IFactoryAnnotation f = finder.findAnnotation(method, IFactoryAnnotation.class);
@@ -137,7 +138,6 @@ public final class ClassHelper {
       consumer.accept(f, constructor);
     }
 
-
     return result;
   }
 
@@ -146,19 +146,16 @@ public final class ClassHelper {
    * @return - A {@link Set} of {@link Method} excluding default methods from base class interfaces.
    */
   public static Set<Method> getAvailableMethodsExcludingDefaults(Class<?> clazz) {
-    //First group the methods based on names
-    Map<String, List<Method>> groups = getAvailableMethods(clazz).stream()
-        .collect(Collectors.groupingBy(Method::getName));
-    //Remove any methods that are default methods (which is usually true only with methods in
-    //interfaces that are classified as "default" methods
-    groups.values()
-        .stream()
+    // First group the methods based on names
+    Map<String, List<Method>> groups =
+        getAvailableMethods(clazz).stream().collect(Collectors.groupingBy(Method::getName));
+    // Remove any methods that are default methods (which is usually true only with methods in
+    // interfaces that are classified as "default" methods
+    groups.values().stream()
         .filter(group -> group.size() > 1)
         .forEach(group -> group.removeIf(Method::isDefault));
-    //Wrap them back into a set and return to the caller.
-    return groups.values().stream()
-        .flatMap(Collection::stream)
-        .collect(Collectors.toSet());
+    // Wrap them back into a set and return to the caller.
+    return groups.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
   }
 
   /*

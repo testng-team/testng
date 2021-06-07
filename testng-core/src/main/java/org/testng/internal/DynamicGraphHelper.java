@@ -1,7 +1,12 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import org.testng.DependencyMap;
 import org.testng.ITestNGMethod;
 import org.testng.TestRunner;
@@ -12,12 +17,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.XmlTest;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class DynamicGraphHelper {
 
@@ -36,11 +35,13 @@ public final class DynamicGraphHelper {
     // end up creating cycles when combined with preserve-order.
     final AtomicReference<Boolean> hasDependencies = new AtomicReference<>(false);
     Arrays.stream(methods)
-        .forEach(m -> {
+        .forEach(
+            m -> {
               // Attempt at adding the method instance to our dynamic graph
               // Addition to the graph will fail only when the method is already present.
               // Presence of a method in the graph is determined by its hashCode.
-              // Since addition of the method was a failure lets now try to add it once again by wrapping it
+              // Since addition of the method was a failure lets now try to add it once again by
+              // wrapping it
               // in a wrapper object which is capable of fudging the original hashCode.
               boolean added = result.addNode(m);
               if (!added) {
@@ -50,12 +51,14 @@ public final class DynamicGraphHelper {
               String[] dependentMethods = m.getMethodsDependedUpon();
               Arrays.stream(dependentMethods)
                   .parallel()
-                  .forEach(d -> {
-                    ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
-                    if (m != dm) {
-                      result.addEdge(TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
-                    }
-                  });
+                  .forEach(
+                      d -> {
+                        ITestNGMethod dm = dependencyMap.getMethodDependingOn(d, m);
+                        if (m != dm) {
+                          result.addEdge(
+                              TestRunner.PriorityWeight.dependsOnMethods.ordinal(), m, dm);
+                        }
+                      });
 
               String[] dependentGroups = m.getGroupsDependedUpon();
               if (dependentGroups.length != 0) {
@@ -63,15 +66,18 @@ public final class DynamicGraphHelper {
               }
               Arrays.stream(dependentGroups)
                   .parallel()
-                  .forEach(d -> {
-                    List<ITestNGMethod> dg = dependencyMap.getMethodsThatBelongTo(d, m);
-                    dg.parallelStream()
-                        .forEach(ddm ->
-                            result.addEdge(TestRunner.PriorityWeight.dependsOnGroups.ordinal(), m, ddm)
-                        );
-                  });
-            }
-        );
+                  .forEach(
+                      d -> {
+                        List<ITestNGMethod> dg = dependencyMap.getMethodsThatBelongTo(d, m);
+                        dg.parallelStream()
+                            .forEach(
+                                ddm ->
+                                    result.addEdge(
+                                        TestRunner.PriorityWeight.dependsOnGroups.ordinal(),
+                                        m,
+                                        ddm));
+                      });
+            });
 
     // Preserve order
     // Don't preserve the ordering if we're running in parallel, otherwise the suite will
@@ -112,7 +118,7 @@ public final class DynamicGraphHelper {
   }
 
   private static boolean canGroupByInstances(XmlTest xmlTest) {
-    return xmlTest.getGroupByInstances() && ! xmlTest.getParallel().equals(ParallelMode.INSTANCES);
+    return xmlTest.getGroupByInstances() && !xmlTest.getParallel().equals(ParallelMode.INSTANCES);
   }
 
   private static ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
@@ -127,8 +133,8 @@ public final class DynamicGraphHelper {
       methodsFromClass.put(m.getTestClass().getName(), m);
     }
 
-    final List<XmlClass> classesWithMethods = test.getXmlClasses()
-            .stream()
+    final List<XmlClass> classesWithMethods =
+        test.getXmlClasses().stream()
             .filter(xmlClass -> methodsFromClass.keySet().contains(xmlClass.getName()))
             .collect(Collectors.toList());
 

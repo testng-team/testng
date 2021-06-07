@@ -10,5 +10,4 @@ public class RetryAnalyzer implements IRetryAnalyzer {
     System.out.println("retry()");
     return true;
   }
-
 }

@@ -16,5 +16,4 @@ public class SuiteListener implements ISuiteListener {
   public void onStart(ISuite suite) {
     start++;
   }
-
 }

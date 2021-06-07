@@ -9,12 +9,8 @@ public class SampleTestCase {
 
   @DataProvider
   public Object[][] data() {
-    return new Object[][]{
-        new Object[]{1},
-        new Object[]{2},
-        new Object[]{3},
-        new Object[]{4},
-        new Object[]{5}
+    return new Object[][] {
+      new Object[] {1}, new Object[] {2}, new Object[] {3}, new Object[] {4}, new Object[] {5}
     };
   }
 
@@ -27,5 +23,4 @@ public class SampleTestCase {
   void testSuccess(int i) {
     Assert.assertTrue(true);
   }
-
 }

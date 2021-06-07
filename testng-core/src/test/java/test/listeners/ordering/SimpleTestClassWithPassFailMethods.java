@@ -15,5 +15,4 @@ public class SimpleTestClassWithPassFailMethods {
 
   @Test(dependsOnMethods = "testWillFail")
   public void testWillSkip() {}
-
 }

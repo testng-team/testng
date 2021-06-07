@@ -12,7 +12,7 @@ public class BannerPanel extends BasePanel {
   public void generate(XMLStringBuffer xsb) {
     xsb.push(D, C, "top-banner-root");
     xsb.addRequired(S, "Test results", C, "top-banner-title-font");
-    xsb.addRequired(B,"Switch Retro Theme",I,"button",C,"button");
+    xsb.addRequired(B, "Switch Retro Theme", I, "button", C, "button");
     xsb.addEmptyElement("br");
     int failedCount = getModel().getAllFailedResults().size();
     String testResult = failedCount > 0 ? ", " + pluralize(failedCount, "failed test") : "";

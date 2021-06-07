@@ -6,5 +6,4 @@ public class SimpleTestClassWithPassMethod {
 
   @Test
   public void testWillPass() {}
-
 }

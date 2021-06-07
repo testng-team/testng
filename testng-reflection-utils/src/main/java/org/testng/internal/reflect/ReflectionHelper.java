@@ -1,5 +1,8 @@
 package org.testng.internal.reflect;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -7,10 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.testng.collections.Lists;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 public class ReflectionHelper {
   /**
@@ -107,7 +106,7 @@ public class ReflectionHelper {
 
   private static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
     Set<Class<?>> result = new HashSet<>();
-    while(clazz != null && clazz != Object.class) {
+    while (clazz != null && clazz != Object.class) {
       result.addAll(Arrays.asList(clazz.getInterfaces()));
       clazz = clazz.getSuperclass();
     }

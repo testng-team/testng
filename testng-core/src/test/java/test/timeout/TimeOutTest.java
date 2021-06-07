@@ -1,19 +1,15 @@
 package test.timeout;
 
-import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.testng.internal.thread.ThreadTimeoutException;
-import org.testng.xml.XmlSuite;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.internal.thread.ThreadTimeoutException;
+import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import test.BaseTest;
 import test.timeout.github1493.TestClassSample;
@@ -39,7 +35,8 @@ public class TimeOutTest extends BaseTest {
 
   @DataProvider(name = "parallelModes")
   public Iterator<Object[]> createData() {
-    final Iterator<XmlSuite.ParallelMode> parallelModes = Arrays.asList(XmlSuite.ParallelMode.values()).iterator();
+    final Iterator<XmlSuite.ParallelMode> parallelModes =
+        Arrays.asList(XmlSuite.ParallelMode.values()).iterator();
     return new Iterator<Object[]>() {
       @Override
       public boolean hasNext() {
@@ -48,7 +45,7 @@ public class TimeOutTest extends BaseTest {
 
       @Override
       public Object[] next() {
-        return new Object[]{ parallelModes.next() };
+        return new Object[] {parallelModes.next()};
       }
 
       @Override
@@ -57,7 +54,6 @@ public class TimeOutTest extends BaseTest {
       }
     };
   }
-
 
   @Test(dataProvider = "parallelModes")
   public void timeOutInParallel(XmlSuite.ParallelMode parallelMode) {
@@ -85,8 +81,11 @@ public class TimeOutTest extends BaseTest {
     Assert.assertEquals(failed.size(), 1);
     ITestResult failedResult = failed.iterator().next().get(0);
     Assert.assertTrue(failedResult.getThrowable() instanceof ThreadTimeoutException);
-    Assert.assertEquals(failedResult.getThrowable().getMessage(),
-            String.format("Method %s.testMethod() didn't finish within the time-out 1000", TestClassSample.class.getName()));
+    Assert.assertEquals(
+        failedResult.getThrowable().getMessage(),
+        String.format(
+            "Method %s.testMethod() didn't finish within the time-out 1000",
+            TestClassSample.class.getName()));
   }
 
   @Test(description = "GITHUB-2009")

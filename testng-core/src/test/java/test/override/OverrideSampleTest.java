@@ -5,8 +5,7 @@ import org.testng.annotations.Test;
 public class OverrideSampleTest {
 
   @Test(groups = "goodGroup")
-  public void good() {
-  }
+  public void good() {}
 
   @Test(groups = "badGroup")
   public void bad() {

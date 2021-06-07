@@ -2,9 +2,7 @@ package org.testng.reporters;
 
 import org.testng.ITestResult;
 
-/**
- * An interface that helps add custom xml tags to the TestNG generated xml report.
- */
+/** An interface that helps add custom xml tags to the TestNG generated xml report. */
 public interface ICustomizeXmlReport {
 
   /**

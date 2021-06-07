@@ -1,11 +1,10 @@
 package test.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Simple beforeGroups test: 1 before method and 2 test method

@@ -8,10 +8,8 @@ import org.testng.annotations.Test;
 public class TestClassExamplePoweredByFactoryUsingListener {
 
   @Factory(dataProvider = "getData", dataProviderClass = DataProviderHouse.class)
-  public TestClassExamplePoweredByFactoryUsingListener(int i) {
-  }
+  public TestClassExamplePoweredByFactoryUsingListener(int i) {}
 
   @Test
-  public void test() {
-  }
+  public void test() {}
 }

@@ -1,13 +1,23 @@
 package org.testng.xml;
 
+import static org.testng.internal.Utils.isStringBlank;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Stack;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -22,17 +32,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import static org.testng.internal.Utils.isStringBlank;
 
 /**
  * Suite definition parser utility.
@@ -59,28 +58,32 @@ public class TestNGContentHandler extends DefaultHandler {
   private Map<String, String> m_currentClassParameters = null;
   private Include m_currentInclude;
 
-  //Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
-  private final EntityResolver m_redirectionAwareResolver = (publicId, systemId) -> {
-    URL url = new URL(systemId);
-    InputStream stream = getClass().getResourceAsStream(url.getPath());
-    if (stream == null) {
-      String msg = String.format("Failed to read [%s] from CLASSPATH. "
-          + "Attempting to read from [%s].", url.getPath(), systemId);
-      Logger.getLogger(getClass()).warn(msg);
-      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+  // Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
+  private final EntityResolver m_redirectionAwareResolver =
+      (publicId, systemId) -> {
+        URL url = new URL(systemId);
+        InputStream stream = getClass().getResourceAsStream(url.getPath());
+        if (stream == null) {
+          String msg =
+              String.format(
+                  "Failed to read [%s] from CLASSPATH. " + "Attempting to read from [%s].",
+                  url.getPath(), systemId);
+          Logger.getLogger(getClass()).warn(msg);
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-      int status = conn.getResponseCode();
-      if ((status == HttpURLConnection.HTTP_MOVED_TEMP
-          || status == HttpURLConnection.HTTP_MOVED_PERM
-          || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+          int status = conn.getResponseCode();
+          if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+              || status == HttpURLConnection.HTTP_MOVED_PERM
+              || status == HttpURLConnection.HTTP_SEE_OTHER)) {
 
-        String newUrl = conn.getHeaderField("Location");
-        conn = (HttpURLConnection) new URL(newUrl).openConnection();
-      }
-      stream = conn.getInputStream();
-    }
-    return new InputSource(Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));
-  };
+            String newUrl = conn.getHeaderField("Location");
+            conn = (HttpURLConnection) new URL(newUrl).openConnection();
+          }
+          stream = conn.getInputStream();
+        }
+        return new InputSource(
+            Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));
+      };
 
   enum Location {
     SUITE,
@@ -123,15 +126,16 @@ public class TestNGContentHandler extends DefaultHandler {
       if (is != null) {
         return new InputSource(is);
       }
-      //If the classpath loading of DTD fails, then we try to load it from "https" TestNG site.
+      // If the classpath loading of DTD fails, then we try to load it from "https" TestNG site.
       System.out.println(
           "WARNING: couldn't find in classpath "
               + systemId
               + "\n"
-              + "Fetching it from " + Parser.HTTPS_TESTNG_DTD_URL);
+              + "Fetching it from "
+              + Parser.HTTPS_TESTNG_DTD_URL);
       return m_redirectionAwareResolver.resolveEntity(publicId, Parser.HTTPS_TESTNG_DTD_URL);
     }
-    //If we are here, then we don't know the host from which user is trying to load the dtd
+    // If we are here, then we don't know the host from which user is trying to load the dtd
     if (RuntimeBehavior.useSecuredUrlForDtd() && isUnsecuredUrl(systemId)) {
       throw new TestNGException(RuntimeBehavior.unsecuredUrlDocumentation());
     }
@@ -150,7 +154,7 @@ public class TestNGContentHandler extends DefaultHandler {
       URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8.name()).trim());
       if (url.getProtocol().equals("file")) {
         File file = new File(url.getFile());
-        boolean isDirectory =  file.isDirectory();
+        boolean isDirectory = file.isDirectory();
         boolean fileExists = file.exists();
         return isDirectory || !fileExists;
       }
@@ -260,7 +264,8 @@ public class TestNGContentHandler extends DefaultHandler {
       String objectFactory = attributes.getValue("object-factory");
       if (null != objectFactory && m_loadClasses) {
         try {
-          m_currentSuite.setObjectFactoryClass((Class<? extends ITestObjectFactory>) Class.forName(objectFactory));
+          m_currentSuite.setObjectFactoryClass(
+              (Class<? extends ITestObjectFactory>) Class.forName(objectFactory));
         } catch (Exception e) {
           Utils.log(
               "Parser",
@@ -532,12 +537,12 @@ public class TestNGContentHandler extends DefaultHandler {
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
     if (!m_validate && !m_hasWarn) {
-      String msg = String.format(
-          "It is strongly recommended to add "
-              + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of the suite file [%s]"
-              + " otherwise TestNG may fail or not work as expected.", Parser.HTTPS_TESTNG_DTD_URL,
-          this.m_fileName
-      );
+      String msg =
+          String.format(
+              "It is strongly recommended to add "
+                  + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of the suite file [%s]"
+                  + " otherwise TestNG may fail or not work as expected.",
+              Parser.HTTPS_TESTNG_DTD_URL, this.m_fileName);
       Logger.getLogger(TestNGContentHandler.class).warn(msg);
       m_hasWarn = true;
     }

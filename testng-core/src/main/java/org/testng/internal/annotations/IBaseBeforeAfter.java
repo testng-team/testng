@@ -2,9 +2,7 @@ package org.testng.internal.annotations;
 
 import org.testng.annotations.ITestOrConfiguration;
 
-/**
- * Base interface for IBeforeSuite, IAfterSuite, etc...
- */
+/** Base interface for IBeforeSuite, IAfterSuite, etc... */
 public interface IBaseBeforeAfter extends ITestOrConfiguration {
   /** Whether methods on this class/method are enabled. */
   boolean getEnabled();
@@ -40,7 +38,7 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
 
   /**
    * @return true if this &#64;Configuration method will belong to groups specified in the &#64;Test
-   * annotation on the class (if any).
+   *     annotation on the class (if any).
    */
   boolean getInheritGroups();
 

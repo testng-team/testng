@@ -1,19 +1,16 @@
 package test.thread;
 
+import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import test.SimpleBaseTest;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
- * Attempt to make sure that we are truly running methods in parallel. The best I can think
- * of right now is to run the tests a few times in a row and verify the ordering is never
- * the same.
+ * Attempt to make sure that we are truly running methods in parallel. The best I can think of right
+ * now is to run the tests a few times in a row and verify the ordering is never the same.
  */
 public class TrueParallelTest extends SimpleBaseTest {
 
@@ -35,14 +32,14 @@ public class TrueParallelTest extends SimpleBaseTest {
       List<String> strings = TrueParallelSampleTest.getStrings();
       boolean ii = isInterleaved(strings);
       success = success || ii;
-//      System.out.println(strings + " -> " + ii);
+      //      System.out.println(strings + " -> " + ii);
     }
     Assert.assertTrue(success, "Couldn't find any interleaved test method run");
   }
 
   private boolean isInterleaved(List<String> strings) {
     for (int i = 0; i < strings.size(); i += 2) {
-      if (! strings.get(i).equals(strings.get(i + 1))) {
+      if (!strings.get(i).equals(strings.get(i + 1))) {
         return true;
       }
     }

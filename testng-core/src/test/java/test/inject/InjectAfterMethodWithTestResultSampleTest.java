@@ -1,13 +1,12 @@
 package test.inject;
 
+import java.lang.reflect.Method;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 public class InjectAfterMethodWithTestResultSampleTest {
   static int m_success;

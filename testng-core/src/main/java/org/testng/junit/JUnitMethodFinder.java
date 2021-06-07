@@ -1,5 +1,9 @@
 package org.testng.junit;
 
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -9,11 +13,6 @@ import org.testng.internal.TestNGMethod;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * This class locates all test and configuration methods according to JUnit. It is used to change
@@ -56,12 +55,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
       Method[] allMethods = ReflectionHelper.excludingMain(current);
       for (Method allMethod : allMethods) {
         ITestNGMethod m =
-            new TestNGMethod(
-                objectFactory,
-                allMethod,
-                m_annotationFinder,
-                null,
-                null);
+            new TestNGMethod(objectFactory, allMethod, m_annotationFinder, null, null);
         ConstructorOrMethod method = m.getConstructorOrMethod();
         String methodName = method.getName();
         if (filter.accept(method) && !acceptedMethodNames.contains(methodName)) {

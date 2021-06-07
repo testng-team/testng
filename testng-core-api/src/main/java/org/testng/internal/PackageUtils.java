@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-
 import org.testng.collections.Lists;
 
 /**
@@ -63,7 +62,8 @@ public class PackageUtils {
 
     List<URL> dirs = Lists.newArrayList();
     // go through additional class loaders
-    List<ClassLoader> allClassLoaders = ClassHelper.appendContextualClassLoaders(Lists.newArrayList(classLoaders));
+    List<ClassLoader> allClassLoaders =
+        ClassHelper.appendContextualClassLoaders(Lists.newArrayList(classLoaders));
 
     for (ClassLoader classLoader : allClassLoaders) {
       if (null == classLoader) {

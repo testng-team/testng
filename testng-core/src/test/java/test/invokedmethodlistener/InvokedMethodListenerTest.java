@@ -1,5 +1,6 @@
 package test.invokedmethodlistener;
 
+import java.util.List;
 import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -8,10 +9,7 @@ import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import test.SimpleBaseTest;
-
-import java.util.List;
 
 public class InvokedMethodListenerTest extends SimpleBaseTest {
 
@@ -31,14 +29,14 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
   @Test
   public void withSuccess() {
     MyListener l = new MyListener();
-    run(new Class[]{Success.class}, l);
+    run(new Class[] {Success.class}, l);
     assertMethodCount(l);
   }
 
   @Test
   public void withFailure() {
     MyListener l = new MyListener();
-    run(new Class[] { Failure.class }, l);
+    run(new Class[] {Failure.class}, l);
     assertMethodCount(l);
     Assert.assertEquals(l.getSuiteStatus(), ITestResult.FAILURE);
     Assert.assertTrue(null != l.getSuiteThrowable());
@@ -50,8 +48,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
   }
 
   /**
-   * Fix for:
-   * https://github.com/juherr/testng-googlecode/issues/7
+   * Fix for: https://github.com/juherr/testng-googlecode/issues/7
    * https://github.com/juherr/testng-googlecode/issues/86
    * https://github.com/cbeust/testng/issues/93
    */
@@ -74,8 +71,10 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     Assert.assertTrue(after1.getDate() != after2.getDate());
   }
 
-  @Test(description = "Test methods with expected exceptions should show up as pass" +
-  		" in IInvokedMethodListener's afterInvocation method")
+  @Test(
+      description =
+          "Test methods with expected exceptions should show up as pass"
+              + " in IInvokedMethodListener's afterInvocation method")
   public void testMethodsWithExpectedExceptionsShouldShowUpAsPass() {
     TestNG tng = create(Sample2.class);
     Sample2.Sample2InvokedMethodListener l = new Sample2().new Sample2InvokedMethodListener();
@@ -88,7 +87,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
   @Test(description = "Invoked method does not recognize configuration method")
   public void issue629_InvokedMethodDoesNotRecognizeConfigurationMethod() {
     InvokedMethodNameListener l = new InvokedMethodNameListener();
-    run(new Class[]{Success.class}, l);
+    run(new Class[] {Success.class}, l);
 
     Assert.assertEquals(l.testMethods.size(), 1);
     Assert.assertTrue(l.testMethods.contains("a"));

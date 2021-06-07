@@ -7,7 +7,8 @@ import org.testng.internal.Utils;
 
 public class JUnit4TestMethod extends JUnitTestMethod {
 
-  public JUnit4TestMethod(ITestObjectFactory objectFactory, JUnitTestClass owner, Description desc) {
+  public JUnit4TestMethod(
+      ITestObjectFactory objectFactory, JUnitTestClass owner, Description desc) {
     super(objectFactory, owner, desc.getMethodName(), getMethod(owner.getRealClass(), desc), desc);
   }
 

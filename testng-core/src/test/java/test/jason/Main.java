@@ -12,6 +12,5 @@ public class Main extends MainBase {
   }
 
   @Test(description = "This test is run")
-  public void test1() throws InterruptedException {
-  }
+  public void test1() throws InterruptedException {}
 }

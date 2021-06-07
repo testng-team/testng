@@ -1,5 +1,14 @@
 package org.testng.reporters;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.regex.Pattern;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -8,16 +17,6 @@ import org.testng.collections.Sets;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collection;
-import java.util.Queue;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.regex.Pattern;
 
 /**
  * A JUnit XML report generator (replacing the original JUnitXMLReporter that was based on XML

@@ -1,11 +1,10 @@
 package org.testng.log4testng;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Properties;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 public class LoggerTest {
   /**

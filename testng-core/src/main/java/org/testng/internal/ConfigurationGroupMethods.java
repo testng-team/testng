@@ -1,15 +1,14 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /**
  * This class wraps access to beforeGroups and afterGroups methods, since they are passed around the

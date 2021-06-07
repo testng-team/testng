@@ -31,7 +31,6 @@ public class AbstractBaseTestCase implements IHookable {
     throwAs(t);
   }
 
-
   private Throwable getTestResultException(ITestResult testResult) {
     Throwable testResultException = testResult.getThrowable();
     if (testResultException instanceof InvocationTargetException) {

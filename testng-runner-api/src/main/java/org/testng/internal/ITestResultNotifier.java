@@ -2,7 +2,6 @@ package org.testng.internal;
 
 import java.util.List;
 import java.util.Set;
-
 import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -10,8 +9,8 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 /**
- * An interface defining the notification for @Test results and also <code>@Configuration</code> results.
- *
+ * An interface defining the notification for @Test results and also <code>@Configuration</code>
+ * results.
  */
 public interface ITestResultNotifier {
 

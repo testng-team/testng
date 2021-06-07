@@ -1,9 +1,8 @@
 package org.testng.junit;
 
 import java.lang.reflect.Modifier;
-
-import org.testng.internal.objects.InstanceCreator;
 import org.testng.internal.Utils;
+import org.testng.internal.objects.InstanceCreator;
 
 public final class JUnitTestFinder {
 

@@ -1,11 +1,10 @@
 package org.testng.internal.thread.graph;
 
+import java.util.List;
 import org.testng.ISuite;
 import org.testng.SuiteRunnerWorker;
 import org.testng.collections.Lists;
 import org.testng.internal.invokers.SuiteRunnerMap;
-
-import java.util.List;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 

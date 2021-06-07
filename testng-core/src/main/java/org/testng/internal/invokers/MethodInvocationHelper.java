@@ -1,9 +1,20 @@
 package org.testng.internal.invokers;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -15,32 +26,18 @@ import org.testng.TestNGException;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
-import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.ArrayIterator;
 import org.testng.internal.collections.OneToTwoDimArrayIterator;
 import org.testng.internal.collections.OneToTwoDimIterator;
 import org.testng.internal.collections.Pair;
+import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlSuite;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-/**
- * Collections of helper methods to help deal with invocation of TestNG methods
- */
+/** Collections of helper methods to help deal with invocation of TestNG methods */
 public class MethodInvocationHelper {
 
   protected static Object invokeMethodNoCheckedException(
@@ -167,7 +164,7 @@ public class MethodInvocationHelper {
         Type actualType = contentType.getActualTypeArguments()[0];
         Class<?> type;
         if (actualType instanceof ParameterizedType) {
-          type = (Class<?>)((ParameterizedType) actualType).getActualTypeArguments()[0];
+          type = (Class<?>) ((ParameterizedType) actualType).getActualTypeArguments()[0];
         } else {
           type = (Class<?>) actualType;
         }
@@ -321,17 +318,19 @@ public class MethodInvocationHelper {
     Thread monitorThread = null;
     try {
       Thread currentThread = Thread.currentThread();
-      monitorThread = new Thread(() -> {
-        try {
-          TimeUnit.MILLISECONDS.sleep(realTimeOut);
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
-        if (!finished.get()) {
-          interruptByMonitor.set(true);
-          currentThread.interrupt();
-        }
-      });
+      monitorThread =
+          new Thread(
+              () -> {
+                try {
+                  TimeUnit.MILLISECONDS.sleep(realTimeOut);
+                } catch (InterruptedException e) {
+                  Thread.currentThread().interrupt();
+                }
+                if (!finished.get()) {
+                  interruptByMonitor.set(true);
+                  currentThread.interrupt();
+                }
+              });
       monitorThread.start();
       imr.run();
       notTimedout = System.currentTimeMillis() <= startTime + realTimeOut;
@@ -368,7 +367,7 @@ public class MethodInvocationHelper {
       testResult.setStatus(ITestResult.FAILURE);
     } finally {
       finished.set(true);
-      if (monitorThread != null && monitorThread.isAlive()){
+      if (monitorThread != null && monitorThread.isAlive()) {
         monitorThread.interrupt();
       }
     }

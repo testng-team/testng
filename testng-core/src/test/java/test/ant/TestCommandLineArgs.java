@@ -2,9 +2,8 @@ package test.ant;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-import org.testng.annotations.Test;
-
 import java.io.File;
+import org.testng.annotations.Test;
 
 public class TestCommandLineArgs {
 

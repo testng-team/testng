@@ -1,15 +1,13 @@
 package test.factory;
 
+import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
-
-import java.util.Iterator;
 
 public class FactoryDataProviderTest extends SimpleBaseTest {
 

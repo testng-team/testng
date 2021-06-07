@@ -15,8 +15,6 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
-import org.testng.internal.invokers.InvokedMethodListenerInvoker;
-import org.testng.internal.invokers.InvokedMethodListenerMethod;
 
 class BaseInvoker {
 
@@ -29,9 +27,11 @@ class BaseInvoker {
   /** Class failures must be synced as the Invoker is accessed concurrently */
   protected final Map<Class<?>, Set<Object>> m_classInvocationResults = Maps.newConcurrentMap();
 
-  public BaseInvoker(ITestResultNotifier notifier,
+  public BaseInvoker(
+      ITestResultNotifier notifier,
       Collection<IInvokedMethodListener> invokedMethodListeners,
-      ITestContext testContext, SuiteRunState suiteState,
+      ITestContext testContext,
+      SuiteRunState suiteState,
       IConfiguration configuration) {
     this.m_notifier = notifier;
     this.m_invokedMethodListeners = invokedMethodListeners;
@@ -58,10 +58,12 @@ class BaseInvoker {
       try {
         invoker.invokeListener(currentListener, invokedMethod);
       } catch (SkipException e) {
-        String msg = String.format(
-            "Caught a [%s] exception from one of listeners %s. Will mark [%s()] as SKIPPED.",
-            SkipException.class.getSimpleName(), currentListener.getClass().getName(),
-            invokedMethod.getTestMethod().getQualifiedName());
+        String msg =
+            String.format(
+                "Caught a [%s] exception from one of listeners %s. Will mark [%s()] as SKIPPED.",
+                SkipException.class.getSimpleName(),
+                currentListener.getClass().getName(),
+                invokedMethod.getTestMethod().getQualifiedName());
         Utils.warn(msg);
         testResult.setStatus(ITestResult.SKIP);
         testResult.setThrowable(e);
@@ -100,5 +102,4 @@ class BaseInvoker {
   static void log(int level, String s) {
     Utils.log("Invoker " + Thread.currentThread().hashCode(), level, s);
   }
-
 }

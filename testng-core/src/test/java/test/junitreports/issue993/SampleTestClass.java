@@ -16,14 +16,11 @@ public class SampleTestClass implements ITest {
   }
 
   @Test(dataProvider = "DP")
-  public void Test_001(String param) {
-  }
+  public void Test_001(String param) {}
 
   @DataProvider(name = "DP")
   public Object[][] getData() {
-    return new Object[][]{
-        {null}
-    };
+    return new Object[][] {{null}};
   }
 
   @Override

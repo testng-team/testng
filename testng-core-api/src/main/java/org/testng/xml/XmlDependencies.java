@@ -1,11 +1,10 @@
 package org.testng.xml;
 
-import java.util.Map;
+import static org.testng.collections.CollectionUtils.hasElements;
 
+import java.util.Map;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
-
-import static org.testng.collections.CollectionUtils.hasElements;
 
 public class XmlDependencies {
 

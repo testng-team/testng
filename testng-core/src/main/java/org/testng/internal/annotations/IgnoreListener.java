@@ -1,13 +1,12 @@
 package org.testng.internal.annotations;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Ignore;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.util.Strings;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class IgnoreListener implements IAnnotationTransformer {
 

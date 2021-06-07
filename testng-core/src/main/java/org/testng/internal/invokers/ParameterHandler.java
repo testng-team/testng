@@ -1,5 +1,8 @@
 package org.testng.internal.invokers;
 
+import static org.testng.internal.Parameters.MethodParameters;
+
+import java.util.Map;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -12,17 +15,17 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 
-import static org.testng.internal.Parameters.MethodParameters;
-
-import java.util.Map;
-
 class ParameterHandler {
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
   private int verbose;
 
-  ParameterHandler(ITestObjectFactory objectFactory, IAnnotationFinder finder, DataProviderHolder holder, int verbose) {
+  ParameterHandler(
+      ITestObjectFactory objectFactory,
+      IAnnotationFinder finder,
+      DataProviderHolder holder,
+      int verbose) {
     this.objectFactory = objectFactory;
     this.finder = finder;
     this.holder = holder;
@@ -77,7 +80,8 @@ class ParameterHandler {
       return new ParameterBag(paramHolder);
     } catch (Throwable cause) {
       if (verbose >= 2) {
-        String msg = Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
+        String msg =
+            Utils.longStackTrace(cause.getCause() != null ? cause.getCause() : cause, true);
         if (Strings.isNotNullAndNotEmpty(msg)) {
           Utils.error(msg);
         }

@@ -16,7 +16,8 @@ public class ExceptionAfterMethodTestSample {
 
   @BeforeMethod(alwaysRun = true)
   public void beforeMethod(ITestResult method) {
-    logs.add("Before Method [" + method.getMethod().getMethodName() + "] #" + counter.incrementAndGet());
+    logs.add(
+        "Before Method [" + method.getMethod().getMethodName() + "] #" + counter.incrementAndGet());
   }
 
   @Test(alwaysRun = true, retryAnalyzer = RetryAnalyzer.class)

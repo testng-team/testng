@@ -20,5 +20,4 @@ public class IssueTest extends SimpleBaseTest {
     assertThat(listener.getException()).isInstanceOf(TestClassSample.TestCaseFailedException.class);
     assertThat(testng.getStatus()).isEqualTo(ExitCode.SKIPPED);
   }
-
 }

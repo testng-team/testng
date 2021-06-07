@@ -1,15 +1,14 @@
 package org.testng.reporters.jq;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class NavigatorPanel extends BasePanel {
 

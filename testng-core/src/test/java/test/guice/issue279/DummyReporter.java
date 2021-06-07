@@ -9,14 +9,13 @@ import org.testng.xml.XmlSuite;
 
 @Guice(moduleFactory = TestDIFactory.class)
 public class DummyReporter implements IReporter {
-  @Inject
-  private Greeter greeter;
+  @Inject private Greeter greeter;
 
   private static Greeter instance;
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     instance = greeter;
   }
 

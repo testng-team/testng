@@ -17,8 +17,12 @@ public class SkipMonitoringListener implements IInvokedMethodListener {
 
   @Override
   public void beforeInvocation(IInvokedMethod iInvokedMethod, ITestResult iTestResult) {
-    SkipTest skipTest = iInvokedMethod.getTestMethod().getConstructorOrMethod().getMethod()
-        .getAnnotation(SkipTest.class);
+    SkipTest skipTest =
+        iInvokedMethod
+            .getTestMethod()
+            .getConstructorOrMethod()
+            .getMethod()
+            .getAnnotation(SkipTest.class);
     if (skipTest != null) {
       throw new SkipException("skip");
     }

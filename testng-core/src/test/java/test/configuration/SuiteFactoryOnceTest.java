@@ -1,10 +1,10 @@
 package test.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SuiteFactoryOnceTest extends SimpleBaseTest {
 

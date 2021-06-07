@@ -6,6 +6,6 @@ public class Sample {
 
   @Test
   public void foo() {
-    //purposefully does nothing
+    // purposefully does nothing
   }
 }

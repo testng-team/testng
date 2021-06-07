@@ -13,5 +13,4 @@ public class IssueTest extends SimpleBaseTest {
     testng.toggleFailureIfAllTestsWereSkipped(true);
     testng.run();
   }
-
 }

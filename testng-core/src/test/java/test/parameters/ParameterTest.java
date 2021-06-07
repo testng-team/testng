@@ -1,6 +1,10 @@
 package test.parameters;
 
-import org.testng.ITestNGListener;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -11,12 +15,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterTest extends SimpleBaseTest {
 
@@ -35,16 +33,17 @@ public class ParameterTest extends SimpleBaseTest {
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
     assertThat(listener.getSkippedMethodNames()).isEmpty();
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
             "beforeTest(Cedric)", "testNonExistentParameter(null)",
-            "beforeTest(Cedric)", "testSingleString(Cedric)"
-    );
+            "beforeTest(Cedric)", "testSingleString(Cedric)");
   }
 
   @Test
   public void beforeMethodWithParameters() {
     XmlSuite suite = createXmlSuite("beforeMethodWithParameters");
-    XmlTest test = createXmlTest(suite, "Before with parameter sample", BeforeWithParameterSample.class);
+    XmlTest test =
+        createXmlTest(suite, "Before with parameter sample", BeforeWithParameterSample.class);
     test.addParameter("parameter", "parameter value");
 
     TestNG tng = create(suite);
@@ -56,9 +55,8 @@ public class ParameterTest extends SimpleBaseTest {
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
     assertThat(listener.getSkippedMethodNames()).isEmpty();
-    assertThat(listener.getSucceedMethodNames()).containsExactly(
-            "beforeMethod(parameter value)", "testExample(abc,def)"
-    );
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("beforeMethod(parameter value)", "testExample(abc,def)");
   }
 
   @Test
@@ -96,7 +94,9 @@ public class ParameterTest extends SimpleBaseTest {
     assertThat(listener.getSkippedMethodNames()).isEmpty();
     assertThat(listener.getFailedBeforeInvocationMethodNames()).containsExactly("testMethod");
     Throwable exception = listener.getResult("testMethod").getThrowable();
-    assertThat(exception).isInstanceOf(TestNGException.class).hasCauseInstanceOf(IllegalArgumentException.class);
+    assertThat(exception)
+        .isInstanceOf(TestNGException.class)
+        .hasCauseInstanceOf(IllegalArgumentException.class);
   }
 
   @Test(description = "GITHUB-1061")
@@ -106,10 +106,11 @@ public class ParameterTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
     assertThat(listener.getFailedTests().size()).isEqualTo(2);
-    String[] expectedMsgs = new String[]{
-            "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 1000",
-            "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 3000"
-    };
+    String[] expectedMsgs =
+        new String[] {
+          "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 1000",
+          "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 3000"
+        };
     List<String> actualMsgs = Lists.newArrayList();
     for (ITestResult result : listener.getFailedTests()) {
       actualMsgs.add(result.getThrowable().getMessage());

@@ -1,11 +1,10 @@
 package test.dependent;
 
+import java.io.ByteArrayInputStream;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 import test.TestHelper;
-
-import java.io.ByteArrayInputStream;
 
 public class MissingMethodSampleTest {
 
@@ -17,8 +16,9 @@ public class MissingMethodSampleTest {
 
   public static void main(String[] args) throws Exception {
     TestNG tng = new TestNG();
-    String xml = TestHelper.SUITE_XML_HEADER +
-        "<suite name=\"dgf\" verbose=\"10\"><test name=\"dgf\"><classes>"
+    String xml =
+        TestHelper.SUITE_XML_HEADER
+            + "<suite name=\"dgf\" verbose=\"10\"><test name=\"dgf\"><classes>"
             + "<class name=\"test.dependent.MissingMethodSampleTest\"/>"
             + "</classes></test></suite>";
     System.out.println(xml);

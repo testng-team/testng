@@ -31,7 +31,10 @@ public class TestSuiteContainerWrapper extends TestSetup {
 
     INSTANCE = null;
 
-    System.out.println(_test.countTestCases() + " test cases defined by \""
-        + _test.getName() + "\" were executed.");
+    System.out.println(
+        _test.countTestCases()
+            + " test cases defined by \""
+            + _test.getName()
+            + "\" were executed.");
   }
 }

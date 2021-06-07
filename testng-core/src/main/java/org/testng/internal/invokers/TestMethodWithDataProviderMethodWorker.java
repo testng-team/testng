@@ -1,5 +1,8 @@
 package org.testng.internal.invokers;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -8,13 +11,8 @@ import org.testng.collections.Lists;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.TestResult;
-import org.testng.internal.invokers.ITestInvoker;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITestResult>> {
 
@@ -37,7 +35,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(
-      ITestInvoker testInvoker, ITestNGMethod testMethod,
+      ITestInvoker testInvoker,
+      ITestNGMethod testMethod,
       int parameterIndex,
       Object[] parameterValues,
       Object instance,
@@ -79,12 +78,18 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     try {
       tmpResults.add(
           m_testInvoker.invokeTestMethod(
-              new Builder().usingInstance(m_instance)
-                  .forTestMethod(m_testMethod).withParameterValues(m_parameterValues)
-                  .withParametersIndex(m_parameterIndex).withParameters(m_parameters)
-                  .forTestClass(m_testClass).usingBeforeMethods(m_beforeMethods)
-                  .usingAfterMethods(m_afterMethods).usingGroupMethods(m_groupMethods)
-                  .build(), suite,
+              new Builder()
+                  .usingInstance(m_instance)
+                  .forTestMethod(m_testMethod)
+                  .withParameterValues(m_parameterValues)
+                  .withParametersIndex(m_parameterIndex)
+                  .withParameters(m_parameters)
+                  .forTestClass(m_testClass)
+                  .usingBeforeMethods(m_beforeMethods)
+                  .usingAfterMethods(m_afterMethods)
+                  .usingGroupMethods(m_groupMethods)
+                  .build(),
+              suite,
               failure));
     } finally {
       m_failureCount = failure.count;
@@ -96,15 +101,20 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
 
           m_failureCount =
               m_testInvoker.retryFailed(
-                  new Builder().usingInstance(instance)
-                      .forTestMethod(m_testMethod).withParameterValues(m_parameterValues)
-                      .withParametersIndex(m_parameterIndex).withParameters(m_parameters)
-                      .forTestClass(m_testClass).usingBeforeMethods(m_beforeMethods)
-                      .usingAfterMethods(m_afterMethods).usingGroupMethods(m_groupMethods)
-                      .build(), retryResults,
+                      new Builder()
+                          .usingInstance(instance)
+                          .forTestMethod(m_testMethod)
+                          .withParameterValues(m_parameterValues)
+                          .withParametersIndex(m_parameterIndex)
+                          .withParameters(m_parameters)
+                          .forTestClass(m_testClass)
+                          .usingBeforeMethods(m_beforeMethods)
+                          .usingAfterMethods(m_afterMethods)
+                          .usingGroupMethods(m_groupMethods)
+                          .build(),
+                      retryResults,
                       m_failureCount,
-                      m_testContext
-              )
+                      m_testContext)
                   .count;
           m_testResults.addAll(retryResults);
         }

@@ -10,8 +10,8 @@ import test.SimpleBaseTest;
 public class IssueTest extends SimpleBaseTest {
 
   @Test
-  //We are explicitly not including any assertions here because the intent of this test is to
-  //ensure that there are no exceptions triggered related to circular dependency.
+  // We are explicitly not including any assertions here because the intent of this test is to
+  // ensure that there are no exceptions triggered related to circular dependency.
   public void testEnsureNoCyclicDependencyTriggered() {
     XmlSuite suite = createXmlSuite("sample_suite");
     XmlTest test = createXmlTest(suite, "sample_test");
@@ -24,5 +24,4 @@ public class IssueTest extends SimpleBaseTest {
     TestNG testng = create(suite);
     testng.run();
   }
-
 }

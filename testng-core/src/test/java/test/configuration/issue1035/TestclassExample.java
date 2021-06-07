@@ -13,12 +13,10 @@ public class TestclassExample {
   }
 
   @Test
-  public void test() {
-  }
+  public void test() {}
 
   @AfterClass
-  public void afterClass() {
-  }
+  public void afterClass() {}
 
   private void printer() {
     long threadId = Thread.currentThread().getId();

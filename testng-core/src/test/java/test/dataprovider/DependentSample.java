@@ -7,17 +7,20 @@ public class DependentSample {
 
   @DataProvider(name = "data")
   public Object[][] dp() {
-    return new Object[][]{{"ok"}, {"not ok"}};
+    return new Object[][] {{"ok"}, {"not ok"}};
   }
 
-  @Test(groups = {"a"}, dataProvider = "data")
+  @Test(
+      groups = {"a"},
+      dataProvider = "data")
   public void method1(String s) {
     if (!"ok".equals(s)) {
       throw new RuntimeException("error " + s);
     }
   }
 
-  @Test(groups = {"b"}, dependsOnGroups = {"a"})
-  public void method2() {
-  }
+  @Test(
+      groups = {"b"},
+      dependsOnGroups = {"a"})
+  public void method2() {}
 }

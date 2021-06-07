@@ -1,12 +1,11 @@
 package org.testng.internal.invokers;
 
+import java.util.Arrays;
 import org.testng.IExpectedExceptionsHolder;
 import org.testng.ITestNGMethod;
 import org.testng.TestException;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import java.util.Arrays;
 
 public class ExpectedExceptionsHolder {
 

@@ -9,8 +9,8 @@ public class SimpleTestClassPoweredByFactoryWithFailedMethod {
   @Factory
   public static Object[] create() {
     return new Object[] {
-        new SimpleTestClassPoweredByFactoryWithFailedMethod(),
-        new SimpleTestClassPoweredByFactoryWithFailedMethod(),
+      new SimpleTestClassPoweredByFactoryWithFailedMethod(),
+      new SimpleTestClassPoweredByFactoryWithFailedMethod(),
     };
   }
 
@@ -18,5 +18,4 @@ public class SimpleTestClassPoweredByFactoryWithFailedMethod {
   public void testWillFail() {
     Assert.fail();
   }
-
 }

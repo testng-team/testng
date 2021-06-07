@@ -1,12 +1,11 @@
 package test.annotationtransformer.issue1790;
 
-import org.testng.IAnnotationTransformer;
-import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Sets;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Set;
+import org.testng.IAnnotationTransformer;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.collections.Sets;
 
 public class TransformerImpl implements IAnnotationTransformer {
   private Set<Class<?>> classes = Sets.newHashSet();

@@ -4,9 +4,7 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
 
-/**
- * Listener that calls Reporter.log
- */
+/** Listener that calls Reporter.log */
 public class ReporterLogListener extends TestListenerAdapter {
 
   @Override
@@ -20,7 +18,7 @@ public class ReporterLogListener extends TestListenerAdapter {
     Reporter.log("Listener: onTestFailure");
     super.onTestFailure(result);
   }
-  
+
   @Override
   public void onTestSkipped(ITestResult result) {
     Reporter.log("Listener: onTestSkipped");

@@ -1,5 +1,13 @@
 package org.testng.reporters;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -10,15 +18,6 @@ import org.testng.Reporter;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlSuite;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 /** The main entry for the XML generation operation */
 public class XMLReporter implements IReporter, ICustomizeXmlReport {
@@ -80,9 +79,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
   }
 
   @Override
-  public void addCustomTagsFor(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-
-  }
+  public void addCustomTagsFor(XMLStringBuffer xmlBuffer, ITestResult testResult) {}
 
   public String fileName() {
     return RuntimeBehavior.getDefaultFileNameForXmlReports();

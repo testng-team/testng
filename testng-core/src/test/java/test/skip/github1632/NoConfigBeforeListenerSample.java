@@ -7,19 +7,19 @@ import org.testng.SkipException;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-// Sample from https://github.com/spring-projects/spring-framework/issues/26387#issuecomment-760326643
+// Sample from
+// https://github.com/spring-projects/spring-framework/issues/26387#issuecomment-760326643
 @Listeners(NoConfigBeforeListenerSample.MySkipTestListener.class)
 public class NoConfigBeforeListenerSample {
 
-    @Test
-    void shouldNotBeExecuted() {
-    }
+  @Test
+  void shouldNotBeExecuted() {}
 
-    public static class MySkipTestListener implements IInvokedMethodListener {
+  public static class MySkipTestListener implements IInvokedMethodListener {
 
-        @Override
-        public void beforeInvocation(IInvokedMethod invokedMethod, ITestResult testResult) {
-            throw new SkipException("skip");
-        }
+    @Override
+    public void beforeInvocation(IInvokedMethod invokedMethod, ITestResult testResult) {
+      throw new SkipException("skip");
     }
+  }
 }

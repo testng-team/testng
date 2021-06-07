@@ -3,9 +3,6 @@ package test.configuration.issue2426;
 import java.util.HashMap;
 import java.util.Map;
 import org.testng.IConfigurationListener;
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
-import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 
@@ -38,7 +35,7 @@ public class MyMethodListener implements IConfigurationListener {
       contents.put(BeforeMethod.class, values);
     }
     if (tr.getMethod().isAfterMethodConfiguration()) {
-      contents.put(AfterMethod.class,values);
+      contents.put(AfterMethod.class, values);
     }
   }
 

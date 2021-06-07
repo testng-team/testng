@@ -1,14 +1,13 @@
 package org.testng.xml.internal;
 
+import java.util.List;
+import java.util.Set;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.List;
-import java.util.Set;
 
 /** A utility class to work with {@link XmlSuite} */
 public final class XmlSuiteUtils {

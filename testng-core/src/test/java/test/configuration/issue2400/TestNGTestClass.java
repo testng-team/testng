@@ -37,8 +37,7 @@ public class TestNGTestClass implements TestRunnerCapabilities {
   }
 
   @Test
-  public void testMethod() {
-  }
+  public void testMethod() {}
 
   @AfterMethod
   @Override

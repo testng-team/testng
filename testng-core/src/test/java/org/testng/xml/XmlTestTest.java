@@ -1,16 +1,15 @@
 package org.testng.xml;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import test.SimpleBaseTest;
 import test.junitreports.SimpleTestSample;
-
-import java.util.Collections;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class XmlTestTest extends SimpleBaseTest {
   @Test

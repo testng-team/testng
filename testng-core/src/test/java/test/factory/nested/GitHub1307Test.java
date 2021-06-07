@@ -1,11 +1,11 @@
 package test.factory.nested;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class GitHub1307Test extends SimpleBaseTest {
 

@@ -9,14 +9,9 @@ public class SetUpExceptionTest extends test.BaseTest {
     addClass("test.junit.SetUpExceptionSampleTest");
     setJUnit(true);
     run();
-    String[] passed = {
-    };
-    String[] failed = {
-      "setUp"
-    };
-    String[] skipped = {
-      "testM1", "tearDown"
-    };
+    String[] passed = {};
+    String[] failed = {"setUp"};
+    String[] skipped = {"testM1", "tearDown"};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
     verifyTests("Failed", failed, getFailedTests());

@@ -1,10 +1,9 @@
 package org.testng.xml;
 
-import org.testng.TestNGException;
-import org.xml.sax.SAXException;
-
 import java.io.IOException;
 import java.io.InputStream;
+import org.testng.TestNGException;
+import org.xml.sax.SAXException;
 
 public class SuiteXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
 

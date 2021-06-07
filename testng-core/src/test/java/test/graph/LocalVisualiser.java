@@ -1,9 +1,8 @@
 package test.graph;
 
+import java.util.List;
 import org.testng.IExecutionVisualiser;
 import org.testng.collections.Lists;
-
-import java.util.List;
 
 public class LocalVisualiser implements IExecutionVisualiser {
   private List<String> definitions = Lists.newArrayList();

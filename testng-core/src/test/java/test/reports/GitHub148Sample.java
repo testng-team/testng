@@ -7,7 +7,7 @@ public class GitHub148Sample {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][]{{1}, {2}, {3}};
+    return new Object[][] {{1}, {2}, {3}};
   }
 
   @Test(dataProvider = "dp")

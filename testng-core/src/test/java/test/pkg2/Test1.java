@@ -5,13 +5,8 @@ import org.testng.annotations.Test;
 public class Test1 {
 
   @Test
-  public void method11() {
-
-  }
+  public void method11() {}
 
   @Test
-  public void method12() {
-
-  }
-
+  public void method12() {}
 }

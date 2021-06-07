@@ -1,14 +1,6 @@
 package org.testng.junit;
 
 import java.lang.reflect.Constructor;
-
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.invokers.InvokedMethod;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,18 +9,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.testng.*;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.TestListenerHelper;
+import org.testng.internal.invokers.InvokedMethod;
 
-/**
- * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
- */
+/** A JUnit TestRunner that records/triggers all information/events necessary to TestNG. */
 public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   public static final String SUITE_METHODNAME = "suite";
 
@@ -104,8 +99,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     JUnitTestMethod tm = new JUnit3TestMethod(m_objectFactory, tc, test);
 
     org.testng.internal.TestResult tr =
-        org.testng.internal.TestResult.newEndTimeAwareTestResult(tm, null,
-            tri.m_failure, tri.m_start);
+        org.testng.internal.TestResult.newEndTimeAwareTestResult(
+            tm, null, tri.m_failure, tri.m_start);
 
     if (tri.isFailure()) {
       tr.setStatus(ITestResult.FAILURE);

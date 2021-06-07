@@ -1,11 +1,10 @@
 package test.dataprovider;
 
+import java.util.Collections;
+import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Collections;
-import java.util.Iterator;
 
 public class EmptyDataProviderSample {
 

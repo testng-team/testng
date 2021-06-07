@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Map.Entry;
 import java.util.Objects;
 import org.testng.ITestNGMethod;
@@ -59,8 +58,7 @@ public class MethodInheritance {
   /** Look in map for a class that is a superclass of methodClass */
   private static List<ITestNGMethod> findMethodListSuperClass(
       Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
-    return map.entrySet()
-        .stream()
+    return map.entrySet().stream()
         .parallel()
         .filter(each -> each.getKey().isAssignableFrom(methodClass))
         .map(Entry::getValue)
@@ -71,8 +69,7 @@ public class MethodInheritance {
   /** Look in map for a class that is a subclass of methodClass */
   private static Class<?> findSubClass(
       Map<Class<?>, List<ITestNGMethod>> map, Class<? extends ITestNGMethod> methodClass) {
-    return map.keySet()
-        .stream()
+    return map.keySet().stream()
         .parallel()
         .filter(methodClass::isAssignableFrom)
         .findFirst()
@@ -119,36 +116,37 @@ public class MethodInheritance {
     //
     // Each bucket that has a list bigger than one element gets sorted
     //
-    map.values().parallelStream()
+    map.values()
+        .parallelStream()
         .filter(l -> l.size() > 1)
-        .forEach(l -> {
-          // Sort them
-          sortMethodsByInheritance(l, before);
+        .forEach(
+            l -> {
+              // Sort them
+              sortMethodsByInheritance(l, before);
 
-          /*
-           *  Set methodDependedUpon accordingly
-           *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
-           *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
-           *  of base class. Vice versa for @AfterXXX methods
-           */
+              /*
+               *  Set methodDependedUpon accordingly
+               *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
+               *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
+               *  of base class. Vice versa for @AfterXXX methods
+               */
 
-          for (int i = 0; i < l.size() - 1; i++) {
-            ITestNGMethod m1 = l.get(i);
-            for (int j = i + 1; j < l.size(); j++) {
-              ITestNGMethod m2 = l.get(j);
-              boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
-              if (groupMode) {
-                //Do not resort to adding implicit depends-on if there are groups
-                continue;
+              for (int i = 0; i < l.size() - 1; i++) {
+                ITestNGMethod m1 = l.get(i);
+                for (int j = i + 1; j < l.size(); j++) {
+                  ITestNGMethod m2 = l.get(j);
+                  boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
+                  if (groupMode) {
+                    // Do not resort to adding implicit depends-on if there are groups
+                    continue;
+                  }
+                  if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
+                    Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
+                    m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+                  }
+                }
               }
-              if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
-                Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
-                m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
-              }
-            }
-          }
-
-        });
+            });
   }
 
   private static boolean dependencyExists(
@@ -160,23 +158,21 @@ public class MethodInheritance {
       ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
     ITestNGMethod[] methodsNamed = MethodHelper.findDependedUponMethods(m1, methods);
 
-    boolean match = Arrays.stream(methodsNamed)
-        .parallel()
-        .anyMatch(method -> method.equals(m2));
+    boolean match = Arrays.stream(methodsNamed).parallel().anyMatch(method -> method.equals(m2));
     if (match) {
       return true;
     }
 
     return Arrays.stream(m1.getGroupsDependedUpon())
         .parallel()
-        .anyMatch(group -> {
+        .anyMatch(
+            group -> {
               ITestNGMethod[] methodsThatBelongToGroup =
                   MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
               return Arrays.stream(methodsThatBelongToGroup)
                   .parallel()
                   .anyMatch(method -> method.equals(m2));
-            }
-        );
+            });
   }
 
   private static boolean equalsEffectiveClass(ITestNGMethod m1, ITestNGMethod m2) {

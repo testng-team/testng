@@ -2,9 +2,7 @@ package org.testng.internal.annotations;
 
 import org.testng.annotations.IConfigurationAnnotation;
 
-/**
- * An implementation of IConfiguration
- */
+/** An implementation of IConfiguration */
 public class ConfigurationAnnotation extends TestOrConfiguration
     implements IConfigurationAnnotation,
         IBeforeSuite,

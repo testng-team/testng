@@ -1,5 +1,11 @@
 package org.testng;
 
+import static org.testng.internal.Utils.defaultIfStringEmpty;
+import static org.testng.internal.Utils.isStringEmpty;
+import static org.testng.internal.Utils.isStringNotEmpty;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLClassLoader;
@@ -13,7 +19,6 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -26,21 +31,18 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.ReporterConfig;
 import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.invokers.SuiteRunnerMap;
 import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
+import org.testng.internal.invokers.SuiteRunnerMap;
 import org.testng.internal.invokers.objects.GuiceContext;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
-import org.testng.thread.IExecutorFactory;
-import org.testng.thread.ITestNGThreadPoolExecutor;
-import org.testng.thread.IThreadWorkerFactory;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
@@ -52,6 +54,9 @@ import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
+import org.testng.thread.IExecutorFactory;
+import org.testng.thread.ITestNGThreadPoolExecutor;
+import org.testng.thread.IThreadWorkerFactory;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.Parser;
@@ -60,16 +65,8 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
-
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
-
-import static org.testng.internal.Utils.defaultIfStringEmpty;
-import static org.testng.internal.Utils.isStringEmpty;
-import static org.testng.internal.Utils.isStringNotEmpty;
 
 /**
  * This class is the main entry point for running tests in the TestNG framework. Users can create
@@ -116,7 +113,8 @@ public class TestNG {
   /** The default name for a test launched from the command line */
   public static final String DEFAULT_COMMAND_LINE_TEST_NAME = "Command line test";
 
-  private static final String DEFAULT_THREADPOOL_FACTORY = "org.testng.internal.thread.DefaultThreadPoolExecutorFactory";
+  private static final String DEFAULT_THREADPOOL_FACTORY =
+      "org.testng.internal.thread.DefaultThreadPoolExecutorFactory";
 
   /** The default name of the result's output directory (keep public, used by Eclipse). */
   public static final String DEFAULT_OUTPUTDIR = "test-output";
@@ -153,7 +151,6 @@ public class TestNG {
       m_dataProviderListeners = Maps.newHashMap();
   private final Map<Class<? extends IDataProviderInterceptor>, IDataProviderInterceptor>
       m_dataProviderInterceptors = Maps.newHashMap();
-
 
   private IExecutorFactory m_executorFactory = null;
 
@@ -229,8 +226,8 @@ public class TestNG {
 
   /**
    * @param failIfAllTestsSkipped - Whether TestNG should enable/disable failing when all the tests
-   * were skipped and nothing was run (Mostly when a test is powered by a data provider and when the
-   * data provider itself fails causing all tests to skip).
+   *     were skipped and nothing was run (Mostly when a test is powered by a data provider and when
+   *     the data provider itself fails causing all tests to skip).
    */
   public void toggleFailureIfAllTestsWereSkipped(boolean failIfAllTestsSkipped) {
     this.m_failIfAllTestsSkipped = failIfAllTestsSkipped;
@@ -238,7 +235,7 @@ public class TestNG {
 
   /**
    * @param listeners - An array of fully qualified class names that should be skipped from being
-   * wired in via service loaders.
+   *     wired in via service loaders.
    */
   public void setListenersToSkipFromBeingWiredInViaServiceLoaders(String... listeners) {
     m_listenersToSkipFromBeingWiredIn.addAll(Arrays.asList(listeners));
@@ -264,12 +261,11 @@ public class TestNG {
 
   /**
    * @param useDefaultListeners If true before run(), the default listeners will not be used.
-   *
-   * <ul>
-   *   <li>org.testng.reporters.TestHTMLReporter
-   *   <li>org.testng.reporters.JUnitXMLReporter
-   *   <li>org.testng.reporters.XMLReporter
-   * </ul>
+   *     <ul>
+   *       <li>org.testng.reporters.TestHTMLReporter
+   *       <li>org.testng.reporters.JUnitXMLReporter
+   *       <li>org.testng.reporters.XMLReporter
+   *     </ul>
    *
    * @see org.testng.reporters.TestHTMLReporter
    * @see org.testng.reporters.JUnitXMLReporter
@@ -517,9 +513,8 @@ public class TestNG {
     // the default one
     //
 
-    XmlClass[] xmlClasses = Arrays.stream(classes)
-        .map(clazz -> new XmlClass(clazz, true))
-        .toArray(XmlClass[]::new);
+    XmlClass[] xmlClasses =
+        Arrays.stream(classes).map(clazz -> new XmlClass(clazz, true)).toArray(XmlClass[]::new);
     Map<String, XmlSuite> suites = Maps.newHashMap();
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
@@ -583,7 +578,7 @@ public class TestNG {
    * the specified TestNG suite xml files. If a file is missing, it is ignored.
    *
    * @param suites A list of paths to one more XML files defining the tests. For example:
-   * <pre>
+   *     <pre>
    * TestNG tng = new TestNG();
    * List&lt;String&gt; suites = Lists.newArrayList();
    * suites.add("c:/tests/testng1.xml");
@@ -624,7 +619,8 @@ public class TestNG {
     m_includedGroups = Utils.split(groups, ",");
   }
 
-  private void setTestRunnerFactoryClass(Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
+  private void setTestRunnerFactoryClass(
+      Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
     setTestRunnerFactory(m_objectFactory.newInstance(testRunnerFactoryClass));
   }
 
@@ -1112,6 +1108,7 @@ public class TestNG {
 
   /**
    * This needs to be public for maven2, for now..At least until an alternative mechanism is found.
+   *
    * @return The locally run suites
    */
   public List<ISuite> runSuitesLocally() {
@@ -1158,16 +1155,18 @@ public class TestNG {
     IThreadWorkerFactory<ISuite> factory =
         new SuiteWorkerFactory(
             suiteRunnerMap, 0 /* verbose hasn't been set yet */, getDefaultSuiteName());
-    ITestNGThreadPoolExecutor pooledExecutor = this.getExecutorFactory().newSuiteExecutor(
-            "suites",
-            suiteGraph,
-            factory,
-            m_suiteThreadPoolSize,
-            m_suiteThreadPoolSize,
-            Integer.MAX_VALUE,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(),
-            null);
+    ITestNGThreadPoolExecutor pooledExecutor =
+        this.getExecutorFactory()
+            .newSuiteExecutor(
+                "suites",
+                suiteGraph,
+                factory,
+                m_suiteThreadPoolSize,
+                m_suiteThreadPoolSize,
+                Integer.MAX_VALUE,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                null);
 
     Utils.log("TestNG", 2, "Starting executor for all suites");
     // Run all suites in parallel
@@ -1230,7 +1229,9 @@ public class TestNG {
    * @param xmlSuite XML Suite
    */
   private void populateSuiteGraph(
-      IDynamicGraph<ISuite> suiteGraph /* OUT */, SuiteRunnerMap suiteRunnerMap, XmlSuite xmlSuite) {
+      IDynamicGraph<ISuite> suiteGraph /* OUT */,
+      SuiteRunnerMap suiteRunnerMap,
+      XmlSuite xmlSuite) {
     ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
     if (xmlSuite.getChildSuites().isEmpty()) {
       suiteGraph.addNode(parentSuiteRunner);
@@ -1395,7 +1396,8 @@ public class TestNG {
     if (cla.dependencyInjectorFactoryClass != null) {
       Class<?> clazz = ClassHelper.forName(cla.dependencyInjectorFactoryClass);
       if (clazz != null && IInjectorFactory.class.isAssignableFrom(clazz)) {
-        m_configuration.setInjectorFactory(m_objectFactory.newInstance((Class<IInjectorFactory>) clazz));
+        m_configuration.setInjectorFactory(
+            m_objectFactory.newInstance((Class<IInjectorFactory>) clazz));
       }
     }
     if (cla.threadPoolFactoryClass != null) {
@@ -1491,10 +1493,12 @@ public class TestNG {
     }
 
     if (cla.objectFactory != null) {
-      setObjectFactory((Class<? extends ITestObjectFactory>)ClassHelper.fileToClass(cla.objectFactory));
+      setObjectFactory(
+          (Class<? extends ITestObjectFactory>) ClassHelper.fileToClass(cla.objectFactory));
     }
     if (cla.testRunnerFactory != null) {
-      setTestRunnerFactoryClass((Class<? extends ITestRunnerFactory>) ClassHelper.fileToClass(cla.testRunnerFactory));
+      setTestRunnerFactoryClass(
+          (Class<? extends ITestRunnerFactory>) ClassHelper.fileToClass(cla.testRunnerFactory));
     }
 
     ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);
@@ -1534,6 +1538,7 @@ public class TestNG {
   /**
    * This method is invoked by Maven's Surefire, only remove it once Surefire has been modified to
    * no longer call it.
+   *
    * @param path The path
    * @deprecated
    */
@@ -1596,9 +1601,13 @@ public class TestNG {
     result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
     result.skipFailedInvocationCounts =
         (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
-    result.failIfAllTestsSkipped = Boolean.parseBoolean(
-        cmdLineArgs.getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, Boolean.FALSE).toString());
-    result.spiListenersToSkip = (String) cmdLineArgs.getOrDefault(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, "");
+    result.failIfAllTestsSkipped =
+        Boolean.parseBoolean(
+            cmdLineArgs
+                .getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, Boolean.FALSE)
+                .toString());
+    result.spiListenersToSkip =
+        (String) cmdLineArgs.getOrDefault(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, "");
     String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
     if (parallelMode != null) {
       result.parallelMode = XmlSuite.ParallelMode.getValidParallel(parallelMode);
@@ -1661,7 +1670,8 @@ public class TestNG {
       result.suiteThreadPoolSize = value;
     }
 
-    String dependencyInjectorFactoryClass = (String) cmdLineArgs.get(CommandLineArgs.DEPENDENCY_INJECTOR_FACTORY);
+    String dependencyInjectorFactoryClass =
+        (String) cmdLineArgs.get(CommandLineArgs.DEPENDENCY_INJECTOR_FACTORY);
     if (dependencyInjectorFactoryClass != null) {
       result.dependencyInjectorFactoryClass = dependencyInjectorFactoryClass;
     }
@@ -1931,5 +1941,4 @@ public class TestNG {
   public void setInjectorFactory(IInjectorFactory factory) {
     this.m_configuration.setInjectorFactory(factory);
   }
-
 }

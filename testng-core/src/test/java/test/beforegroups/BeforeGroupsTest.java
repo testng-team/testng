@@ -1,7 +1,12 @@
 package test.beforegroups;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -18,13 +23,7 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.beforegroups.issue118.TestclassSample;
 import test.beforegroups.issue1694.BaseClassWithBeforeGroups;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import test.beforegroups.issue346.SampleTestClass;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class BeforeGroupsTest extends SimpleBaseTest {
   @Test
@@ -71,7 +70,6 @@ public class BeforeGroupsTest extends SimpleBaseTest {
     xmlTest.setName(name);
     xmlTest.setClasses(Collections.singletonList(new XmlClass(SampleTestClass.class)));
     xmlTest.setGroups(groups(group));
-
   }
 
   private static XmlGroups groups(String group) {
@@ -81,6 +79,7 @@ public class BeforeGroupsTest extends SimpleBaseTest {
     xmlGroups.setRun(xmlRun);
     return xmlGroups;
   }
+
   private static void runTest(XmlSuite.ParallelMode mode) throws IOException {
     XmlSuite suite = createXmlSuite("sample_suite");
     String pkg = BaseClassWithBeforeGroups.class.getPackage().getName();

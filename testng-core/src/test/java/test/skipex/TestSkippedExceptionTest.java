@@ -4,10 +4,7 @@ import org.testng.SkipException;
 import org.testng.TimeBombSkipException;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
+/** This class/interface */
 public class TestSkippedExceptionTest {
   @Test
   public void genericSkipException() {

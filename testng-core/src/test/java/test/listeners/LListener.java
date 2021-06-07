@@ -13,7 +13,5 @@ public class LListener implements IInvokedMethodListener {
   }
 
   @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-  }
-
+  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
 }

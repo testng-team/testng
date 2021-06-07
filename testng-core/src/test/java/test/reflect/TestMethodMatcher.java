@@ -1,5 +1,8 @@
 package test.reflect;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -12,10 +15,6 @@ import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Created on 12/24/15
@@ -37,27 +36,18 @@ public class TestMethodMatcher {
 
   @DataProvider
   public Object[][] methodParamPairs() {
-    return new Object[][]{
-      new Object[]{"goodTestIssue122", new Object[]{"3", new String[]{"three", "four"}}},
-      new Object[]{"badTestIssue122", new Object[]{"3", new String[]{"three", "four"}}},
-      new Object[]{"goodTestIssue122", new Object[]{"3", "three", "four"}},
-      new Object[]{"badTestIssue122", new Object[]{"3", "three", "four"}},
-      new Object[]{"mixedArgs", new Object[]{3, true, new String[]{"three"}, "four"}},
-      new Object[]{"mixedArgs", new Object[]{3, true, new String[]{"three"}, new String[]{"four"}}},
-      new Object[]{"potpourri0",
-        new Object[]{
-          getMethod("mixedArgs"),
-          new XmlTestJustForTesting(),
-          3,
-          getMethod("badTestIssue122"),
-          new TestContextJustForTesting(),
-          true,
-          new TestResultJustForTesting(),
-          new String[]{"three"},
-          new String[]{"four"}}
+    return new Object[][] {
+      new Object[] {"goodTestIssue122", new Object[] {"3", new String[] {"three", "four"}}},
+      new Object[] {"badTestIssue122", new Object[] {"3", new String[] {"three", "four"}}},
+      new Object[] {"goodTestIssue122", new Object[] {"3", "three", "four"}},
+      new Object[] {"badTestIssue122", new Object[] {"3", "three", "four"}},
+      new Object[] {"mixedArgs", new Object[] {3, true, new String[] {"three"}, "four"}},
+      new Object[] {
+        "mixedArgs", new Object[] {3, true, new String[] {"three"}, new String[] {"four"}}
       },
-      new Object[]{"potpourri1",
-        new Object[]{
+      new Object[] {
+        "potpourri0",
+        new Object[] {
           getMethod("mixedArgs"),
           new XmlTestJustForTesting(),
           3,
@@ -65,45 +55,71 @@ public class TestMethodMatcher {
           new TestContextJustForTesting(),
           true,
           new TestResultJustForTesting(),
-          new String[]{"three"},
-          new String[]{"four"}}
+          new String[] {"three"},
+          new String[] {"four"}
+        }
+      },
+      new Object[] {
+        "potpourri1",
+        new Object[] {
+          getMethod("mixedArgs"),
+          new XmlTestJustForTesting(),
+          3,
+          getMethod("badTestIssue122"),
+          new TestContextJustForTesting(),
+          true,
+          new TestResultJustForTesting(),
+          new String[] {"three"},
+          new String[] {"four"}
+        }
       },
     };
   }
 
   @DataProvider
   public Object[][] methodParamFailingPairs() {
-    return new Object[][]{
-      new Object[]{"goodTestIssue122", new Object[]{3, "three", "four"}},
-      new Object[]{"badTestIssue122", new Object[]{3, "three", "four"}},
-      new Object[]{"mixedArgs", new Object[]{3, true, "three", "four"}},
+    return new Object[][] {
+      new Object[] {"goodTestIssue122", new Object[] {3, "three", "four"}},
+      new Object[] {"badTestIssue122", new Object[] {3, "three", "four"}},
+      new Object[] {"mixedArgs", new Object[] {3, true, "three", "four"}},
     };
   }
 
-
   @Test(dataProvider = "methodParamPairs")
-  public void testMatcher(final String methodName, final Object[] params,
-                          final ITestContext iTestContext, final ITestResult iTestResult) throws Throwable {
+  public void testMatcher(
+      final String methodName,
+      final Object[] params,
+      final ITestContext iTestContext,
+      final ITestResult iTestResult)
+      throws Throwable {
     final Method method = getMethod(methodName);
-    final MethodMatcher matcher = new DataProviderMethodMatcher(
-      new MethodMatcherContext(method, params, iTestContext, iTestResult));
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(method, params, iTestContext, iTestResult));
     method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
   }
 
   @Test(dataProvider = "methodParamFailingPairs")
-  public void testNegativeCaseMatcher(final String methodName, final Object[] params,
-                                      final ITestContext iTestContext, final ITestResult iTestResult) {
+  public void testNegativeCaseMatcher(
+      final String methodName,
+      final Object[] params,
+      final ITestContext iTestContext,
+      final ITestResult iTestResult) {
     final Method method = getMethod(methodName);
-    final MethodMatcher matcher = new DataProviderMethodMatcher(
-      new MethodMatcherContext(method, params, iTestContext, iTestResult));
+    final MethodMatcher matcher =
+        new DataProviderMethodMatcher(
+            new MethodMatcherContext(method, params, iTestContext, iTestResult));
     Assert.assertFalse(matcher.conforms());
-    assertThatThrownBy(() -> {
-      method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
-    }).isInstanceOf(MethodMatcherException.class)
-            // separate lines are used here to avoid \n vs \r\n if running tests in Windows
-            .hasMessageContaining("has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
-            .hasMessageContaining("Method: ")
-            .hasMessageContaining("Arguments: ");
+    assertThatThrownBy(
+            () -> {
+              method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
+            })
+        .isInstanceOf(MethodMatcherException.class)
+        // separate lines are used here to avoid \n vs \r\n if running tests in Windows
+        .hasMessageContaining(
+            "has no parameters defined but was found to be using a data provider (either explicitly specified or inherited from class level annotation")
+        .hasMessageContaining("Method: ")
+        .hasMessageContaining("Arguments: ");
   }
 
   public void goodTestIssue122(String s, String[] strings) {
@@ -120,10 +136,7 @@ public class TestMethodMatcher {
     Assert.assertEquals(s, "3");
   }
 
-  public void mixedArgs(
-    final int i, final Boolean b,
-    final String[] s1, final String... strings
-  ) {
+  public void mixedArgs(final int i, final Boolean b, final String[] s1, final String... strings) {
     for (String item : strings) {
       log.debug("An item is \"" + item + "\"");
     }
@@ -139,20 +152,19 @@ public class TestMethodMatcher {
   }
 
   public void potpourri0(
-    @NoInjection final Method myMethod1,
-    @NoInjection final XmlTest myXmlTest,
-    final Method currentTestMethod,
-    final int i,
-    final Method myMethod2,
-    final ITestContext iTestContext,
-    @NoInjection final ITestContext myTestContext,
-    final Boolean b,
-    @NoInjection final ITestResult myTestResult,
-    final ITestResult iTestResult,
-    final String[] s1,
-    final XmlTest xmlTest,
-    final String... strings
-  ) {
+      @NoInjection final Method myMethod1,
+      @NoInjection final XmlTest myXmlTest,
+      final Method currentTestMethod,
+      final int i,
+      final Method myMethod2,
+      final ITestContext iTestContext,
+      @NoInjection final ITestContext myTestContext,
+      final Boolean b,
+      @NoInjection final ITestResult myTestResult,
+      final ITestResult iTestResult,
+      final String[] s1,
+      final XmlTest xmlTest,
+      final String... strings) {
     log.debug("MyMethod1 is \"" + myMethod1 + "\"");
     log.debug("MyMethod2 is \"" + myMethod2 + "\"");
     log.debug("CurrentTestMethod is \"" + currentTestMethod + "\"");
@@ -189,20 +201,19 @@ public class TestMethodMatcher {
   }
 
   public void potpourri1(
-    @NoInjection final Method myMethod1,
-    @NoInjection final XmlTest myXmlTest,
-    final Method currentTestMethod,
-    final int i,
-    final Method myMethod2,
-    final ITestContext iTestContext,
-    @NoInjection final ITestContext myTestContext,
-    final Boolean b,
-    @NoInjection final ITestResult myTestResult,
-    final ITestResult iTestResult,
-    final String[] s1,
-    final XmlTest xmlTest,
-    final String[] strings
-  ) {
+      @NoInjection final Method myMethod1,
+      @NoInjection final XmlTest myXmlTest,
+      final Method currentTestMethod,
+      final int i,
+      final Method myMethod2,
+      final ITestContext iTestContext,
+      @NoInjection final ITestContext myTestContext,
+      final Boolean b,
+      @NoInjection final ITestResult myTestResult,
+      final ITestResult iTestResult,
+      final String[] s1,
+      final XmlTest xmlTest,
+      final String[] strings) {
     log.debug("MyMethod1 is \"" + myMethod1 + "\"");
     log.debug("MyMethod2 is \"" + myMethod2 + "\"");
     log.debug("CurrentTestMethod is \"" + currentTestMethod + "\"");
@@ -237,5 +248,4 @@ public class TestMethodMatcher {
     Assert.assertEquals(strings.length, 1);
     Assert.assertEquals(strings[0], "four");
   }
-
 }

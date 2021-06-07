@@ -1,9 +1,8 @@
 package test.objectfactory;
 
+import java.lang.reflect.Constructor;
 import org.testng.ITestObjectFactory;
 import org.testng.internal.objects.InstanceCreator;
-
-import java.lang.reflect.Constructor;
 
 public class ClassObjectFactory implements ITestObjectFactory {
 
@@ -14,5 +13,4 @@ public class ClassObjectFactory implements ITestObjectFactory {
     }
     return object;
   }
-
 }

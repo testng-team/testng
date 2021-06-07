@@ -1,11 +1,10 @@
 package test.inject;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * Test that injection works for data providers.

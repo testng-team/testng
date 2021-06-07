@@ -1,10 +1,9 @@
 package org.testng.xml;
 
+import java.util.*;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-
-import java.util.*;
 
 /** This class describes the tag &lt;test&gt; in testng.xml. */
 public class XmlTest implements Cloneable {

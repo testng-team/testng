@@ -14,39 +14,29 @@ import org.testng.annotations.Test;
 public class SampleTestCase {
 
   @BeforeSuite
-  public void beforeSuite() {
-  }
+  public void beforeSuite() {}
 
   @BeforeTest
-  public void beforeTest() {
-  }
+  public void beforeTest() {}
 
   @BeforeClass
-  public void beforeClass() {
-  }
+  public void beforeClass() {}
 
   @BeforeMethod
-  public void beforeMethod() {
-  }
+  public void beforeMethod() {}
 
   @Test
-  public void testMethod() {
-  }
+  public void testMethod() {}
 
   @AfterMethod
-  public void afterMethod() {
-  }
+  public void afterMethod() {}
 
   @AfterClass
-  public void afterClass() {
-  }
+  public void afterClass() {}
 
   @AfterTest
-  public void afterTest() {
-  }
+  public void afterTest() {}
 
   @AfterSuite
-  public void afterSuite() {
-  }
-
+  public void afterSuite() {}
 }

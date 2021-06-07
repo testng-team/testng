@@ -6,10 +6,8 @@ import org.testng.annotations.Test;
 public class TestClassExamplePoweredByFactory {
 
   @Factory(dataProvider = "getData", dataProviderClass = DataProviderHouse.class)
-  public TestClassExamplePoweredByFactory(int i) {
-  }
+  public TestClassExamplePoweredByFactory(int i) {}
 
   @Test
-  public void test() {
-  }
+  public void test() {}
 }

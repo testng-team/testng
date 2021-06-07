@@ -1,7 +1,6 @@
 package org.testng.internal;
 
 import java.util.Comparator;
-
 import org.testng.ITestNGMethod;
 
 public class TestMethodComparator implements Comparator<ITestNGMethod> {

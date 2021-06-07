@@ -1,15 +1,12 @@
 package test.methodinterceptors;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * An interceptor that removes the method called "two".
- */
+/** An interceptor that removes the method called "two". */
 public class RemoveAMethodInterceptor implements IMethodInterceptor {
 
   @Override
@@ -28,12 +25,21 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
     return result;
   }
 
-  public static void log(IMethodInterceptor listener, List<IMethodInstance> input,
-      List<IMethodInstance> output) {
-    StringBuilder msg = new StringBuilder().append(listener.getClass().getName())
-        .append(" - Input:").append(getMethodNames(input)).append(" ").append(input.size())
-        .append(" methods.").append(" Output:").append(getMethodNames(output)).append(" ")
-        .append(output.size()).append(" methods");
+  public static void log(
+      IMethodInterceptor listener, List<IMethodInstance> input, List<IMethodInstance> output) {
+    StringBuilder msg =
+        new StringBuilder()
+            .append(listener.getClass().getName())
+            .append(" - Input:")
+            .append(getMethodNames(input))
+            .append(" ")
+            .append(input.size())
+            .append(" methods.")
+            .append(" Output:")
+            .append(getMethodNames(output))
+            .append(" ")
+            .append(output.size())
+            .append(" methods");
     log(msg.toString());
   }
 
@@ -46,6 +52,6 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
   }
 
   private static void log(String s) {
-//    System.out.println("[MI2] " + s);
+    //    System.out.println("[MI2] " + s);
   }
 }

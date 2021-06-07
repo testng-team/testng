@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.IExecutionListener;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -9,8 +10,6 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.xml.XmlSuite;
-
-import java.util.List;
 
 public class ExitCodeListener implements ITestListener, IReporter, IExecutionListener {
   private boolean hasTests = false;

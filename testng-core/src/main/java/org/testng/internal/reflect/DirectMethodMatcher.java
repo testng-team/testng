@@ -1,11 +1,11 @@
 package org.testng.internal.reflect;
 
+import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
+import static org.testng.internal.reflect.InjectableParameter.Assistant.NONE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
-import static org.testng.internal.reflect.InjectableParameter.Assistant.NONE;
 
 /**
  * Checks for method argument match with or without filtering injectables.

@@ -5,10 +5,10 @@ import org.testng.ITestResult;
 
 public class MyAnalyzer implements IRetryAnalyzer {
 
-    @Override
-    public boolean retry(ITestResult iTestResult) {
-        TestClassSample.messages.add("retry");
-        TestClassSample.retry = true;
-        return true;
-    }
+  @Override
+  public boolean retry(ITestResult iTestResult) {
+    TestClassSample.messages.add("retry");
+    TestClassSample.retry = true;
+    return true;
+  }
 }

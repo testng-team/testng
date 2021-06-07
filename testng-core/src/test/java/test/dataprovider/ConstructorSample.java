@@ -1,13 +1,12 @@
 package test.dataprovider;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConstructorSample {
 

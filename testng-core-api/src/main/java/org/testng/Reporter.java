@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
@@ -29,7 +28,8 @@ public class Reporter {
   // When tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
-  private static final ThreadLocal<ITestResult> m_currentTestResult = new InheritableThreadLocal<>();
+  private static final ThreadLocal<ITestResult> m_currentTestResult =
+      new InheritableThreadLocal<>();
 
   /** All output logged in a sequential order. */
   private static final List<String> m_output = new Vector<>();
@@ -60,7 +60,10 @@ public class Reporter {
     return m_escapeHtml;
   }
 
-  /** @param escapeHtml If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...). */
+  /**
+   * @param escapeHtml If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;,
+   *     ...).
+   */
   public static void setEscapeHtml(boolean escapeHtml) {
     m_escapeHtml = escapeHtml;
   }
@@ -83,8 +86,7 @@ public class Reporter {
     // Synchronization needed to ensure the line number and m_output are updated atomically.
     int n = getOutput().size();
 
-    List<Integer> lines =
-        m_methodOutputMap.computeIfAbsent(m.id(), k -> Lists.newArrayList());
+    List<Integer> lines = m_methodOutputMap.computeIfAbsent(m.id(), k -> Lists.newArrayList());
 
     // Check if there was already some orphaned output for the current thread.
     if (m_orphanedOutput.get() != null) {
@@ -108,8 +110,8 @@ public class Reporter {
   }
 
   /**
-   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than the
-   * one passed as a parameter. If logToStandardOut is true, the string will also be printed on
+   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than
+   * the one passed as a parameter. If logToStandardOut is true, the string will also be printed on
    * standard out.
    *
    * @param s The message to log
@@ -139,8 +141,8 @@ public class Reporter {
     }
   }
   /**
-   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than the
-   * one passed as a parameter.
+   * Log the passed string to the HTML reports if the current verbosity is equal to or greater than
+   * the one passed as a parameter.
    *
    * @param s The message to log
    * @param level The verbosity of this message

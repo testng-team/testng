@@ -6,8 +6,7 @@ import org.testng.annotations.Test;
 public class TestclassSampleWithFailedMember {
 
   @Test(groups = "A")
-  public void a1() {
-  }
+  public void a1() {}
 
   @Test(groups = "A", dependsOnMethods = "a1")
   public void a2() {
@@ -15,6 +14,5 @@ public class TestclassSampleWithFailedMember {
   }
 
   @AfterGroups(groups = "A")
-  public void afterGroupsMethod() {
-  }
+  public void afterGroupsMethod() {}
 }

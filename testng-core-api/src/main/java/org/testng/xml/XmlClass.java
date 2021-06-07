@@ -1,15 +1,14 @@
 package org.testng.xml;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 /** This class describes the tag <code>&lt;class&gt;</code> in testng.xml. */
 public class XmlClass implements Cloneable {

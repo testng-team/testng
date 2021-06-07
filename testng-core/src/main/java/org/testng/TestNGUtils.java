@@ -1,8 +1,7 @@
 package org.testng;
 
-import org.testng.internal.ClonedMethod;
-
 import java.lang.reflect.Method;
+import org.testng.internal.ClonedMethod;
 
 public class TestNGUtils {
 

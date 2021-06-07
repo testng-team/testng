@@ -16,5 +16,4 @@ public class SequentialSample2Test extends BaseSequentialSample {
   public void f3() {
     addId("SequentialSample2Test.f3()", Thread.currentThread().getId());
   }
-
 }

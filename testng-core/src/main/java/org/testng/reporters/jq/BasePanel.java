@@ -1,8 +1,7 @@
 package org.testng.reporters.jq;
 
-import org.testng.ISuite;
-
 import java.util.List;
+import org.testng.ISuite;
 
 public abstract class BasePanel implements IPanel {
   public static final String C = "class";

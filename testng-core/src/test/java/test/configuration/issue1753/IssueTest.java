@@ -1,13 +1,12 @@
 package test.configuration.issue1753;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import test.SimpleBaseTest;
-
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class IssueTest extends SimpleBaseTest {
   @Test

@@ -1,11 +1,10 @@
 package org.testng.util;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import org.testng.internal.RuntimeBehavior;
-
-import java.text.SimpleDateFormat;
 import java.util.TimeZone;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 
 /** A Utility class that deals with time. */
@@ -26,22 +25,18 @@ public final class TimeUtils {
     return sdf.format(timeInMilliSeconds);
   }
 
-  /**
-   * A sample task to be executed.
-   */
+  /** A sample task to be executed. */
   @FunctionalInterface
   public interface Task {
 
-    /**
-     * The actual work to be executed.
-     */
+    /** The actual work to be executed. */
     void execute();
   }
 
   /**
    * Helper method that can be used to compute the time.
    *
-   * @param msg  - A user friendly message to be shown in the logs.
+   * @param msg - A user friendly message to be shown in the logs.
    * @param task - A {@link Task} that represents the task to be executed.
    */
   public static void computeAndShowTime(String msg, Task task) {

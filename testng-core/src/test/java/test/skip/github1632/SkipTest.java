@@ -8,6 +8,4 @@ import java.lang.annotation.Target;
 
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD, TYPE})
-public @interface SkipTest {
-
-}
+public @interface SkipTest {}

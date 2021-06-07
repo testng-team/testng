@@ -1,11 +1,10 @@
 package org.testng.reporters.jq;
 
+import java.util.List;
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
 
 /** Display the reporter output for each test result. */
 public class ReporterPanel extends BaseMultiSuitePanel {

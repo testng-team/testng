@@ -11,19 +11,17 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.spi.Element;
 import com.google.inject.spi.InjectionPoint;
 import com.google.inject.spi.TypeConverterBinding;
-import org.testng.internal.objects.InstanceCreator;
-
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.testng.internal.objects.InstanceCreator;
 
 public class FakeInjector implements Injector {
 
   private static FakeInjector instance;
 
-  public FakeInjector() {
-  }
+  public FakeInjector() {}
 
   private static void setInstance(FakeInjector i) {
     instance = i;
@@ -34,9 +32,7 @@ public class FakeInjector implements Injector {
   }
 
   @Override
-  public void injectMembers(Object instance) {
-
-  }
+  public void injectMembers(Object instance) {}
 
   @Override
   public <T> MembersInjector<T> getMembersInjector(TypeLiteral<T> typeLiteral) {

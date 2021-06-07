@@ -31,10 +31,19 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
-public class UniversalListener implements IExecutionListener, IAlterSuiteListener,
-    ISuiteListener, ITestListener, IClassListener, IInvokedMethodListener, IDataProviderListener,
-    IReporter, IExecutionVisualiser, IMethodInterceptor, IAnnotationTransformer,
-    IConfigurationListener {
+public class UniversalListener
+    implements IExecutionListener,
+        IAlterSuiteListener,
+        ISuiteListener,
+        ITestListener,
+        IClassListener,
+        IInvokedMethodListener,
+        IDataProviderListener,
+        IReporter,
+        IExecutionVisualiser,
+        IMethodInterceptor,
+        IAnnotationTransformer,
+        IConfigurationListener {
 
   private List<String> messages = Lists.newLinkedList();
 
@@ -59,23 +68,22 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
   }
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     messages.add(
         "org.testng.IReporter.generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory)");
   }
 
   @Override
-  public void beforeDataProviderExecution(IDataProviderMethod dataProviderMethod,
-      ITestNGMethod method, ITestContext iTestContext) {
+  public void beforeDataProviderExecution(
+      IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     messages.add(
         "org.testng.IDataProviderListener.beforeDataProviderExecution(IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext)");
-
   }
 
   @Override
-  public void afterDataProviderExecution(IDataProviderMethod dataProviderMethod,
-      ITestNGMethod method, ITestContext iTestContext) {
+  public void afterDataProviderExecution(
+      IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     messages.add(
         "org.testng.IDataProviderListener.afterDataProviderExecution(IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext)");
   }
@@ -87,8 +95,8 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
   }
 
   @Override
-  public void beforeInvocation(IInvokedMethod method, ITestResult testResult,
-      ITestContext context) {
+  public void beforeInvocation(
+      IInvokedMethod method, ITestResult testResult, ITestContext context) {
     messages.add(
         "org.testng.IInvokedMethodListener.beforeInvocation(IInvokedMethod method, ITestResult testResult, ITestContext context)");
   }
@@ -177,8 +185,8 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
 
   @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-    messages
-        .add("org.testng.ITestListener.onTestFailedButWithinSuccessPercentage(ITestResult result)");
+    messages.add(
+        "org.testng.ITestListener.onTestFailedButWithinSuccessPercentage(ITestResult result)");
   }
 
   @Override
@@ -188,14 +196,16 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
 
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-    String text = "org.testng.IMethodInterceptor.intercept(List<IMethodInstance> methods, ITestContext context)";
+    String text =
+        "org.testng.IMethodInterceptor.intercept(List<IMethodInstance> methods, ITestContext context)";
     messages.add(text);
     return methods;
   }
 
   @Override
   public void transform(IFactoryAnnotation annotation, Method method) {
-    String text = "org.testng.IAnnotationTransformer.transform(IFactoryAnnotation annotation, Method method)";
+    String text =
+        "org.testng.IAnnotationTransformer.transform(IFactoryAnnotation annotation, Method method)";
     if (!messages.contains(text)) {
       messages.add(text);
     }
@@ -203,7 +213,8 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
 
   @Override
   public void transform(IListenersAnnotation annotation, Class testClass) {
-    String text = "org.testng.IAnnotationTransformer.transform(IListenersAnnotation annotation, Class testClass)";
+    String text =
+        "org.testng.IAnnotationTransformer.transform(IListenersAnnotation annotation, Class testClass)";
     if (!messages.contains(text)) {
       messages.add(text);
     }
@@ -211,28 +222,33 @@ public class UniversalListener implements IExecutionListener, IAlterSuiteListene
 
   @Override
   public void transform(IDataProviderAnnotation annotation, Method method) {
-    String text = "org.testng.IAnnotationTransformer.transform(IDataProviderAnnotation annotation, Method method)";
+    String text =
+        "org.testng.IAnnotationTransformer.transform(IDataProviderAnnotation annotation, Method method)";
     if (!messages.contains(text)) {
       messages.add(text);
     }
   }
 
   @Override
-  public void transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor,
+  public void transform(
+      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+    String text =
+        "org.testng.IAnnotationTransformer.transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod)";
+    if (!messages.contains(text)) {
+      messages.add(text);
+    }
+  }
+
+  @Override
+  public void transform(
+      IConfigurationAnnotation annotation,
+      Class testClass,
+      Constructor testConstructor,
       Method testMethod) {
-    String text = "org.testng.IAnnotationTransformer.transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod)";
+    String text =
+        "org.testng.IAnnotationTransformer.transform(IConfigurationAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod)";
     if (!messages.contains(text)) {
       messages.add(text);
     }
   }
-
-  @Override
-  public void transform(IConfigurationAnnotation annotation, Class testClass,
-      Constructor testConstructor, Method testMethod) {
-    String text = "org.testng.IAnnotationTransformer.transform(IConfigurationAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod)";
-    if (!messages.contains(text)) {
-      messages.add(text);
-    }
-  }
-
 }

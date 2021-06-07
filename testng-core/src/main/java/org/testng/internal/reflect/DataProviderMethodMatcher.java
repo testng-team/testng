@@ -36,9 +36,12 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
     if (matchingMatcher != null) {
       return matchingMatcher.getConformingArguments();
     }
-    String msg = String.format("[%s] has no parameters defined but was found to be using a "
-        + "data provider (either explicitly specified or "
-        + "inherited from class level annotation).\n", getContext().getMethod());
+    String msg =
+        String.format(
+            "[%s] has no parameters defined but was found to be using a "
+                + "data provider (either explicitly specified or "
+                + "inherited from class level annotation).\n",
+            getContext().getMethod());
     throw new MethodMatcherException(
         msg + "Data provider mismatch", getContext().getMethod(), getContext().getArguments());
   }

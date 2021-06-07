@@ -9,12 +9,16 @@ import org.testng.xml.XmlSuite;
 
 public class FactoryTest {
 
-  @Test(description = "In non-parallel mode, we should only have one thread id  for the two methods invoked on B")
+  @Test(
+      description =
+          "In non-parallel mode, we should only have one thread id  for the two methods invoked on B")
   public void verifyFactoryNotParallel() {
     runTest(null, 1);
   }
 
-  @Test(description = "In parallel mode 'methods', we should have as many thread id's as there are test methods on B (2).")
+  @Test(
+      description =
+          "In parallel mode 'methods', we should have as many thread id's as there are test methods on B (2).")
   public void verifyFactoryParallelMethods() {
     runTest(XmlSuite.ParallelMode.METHODS, 2);
   }
@@ -26,7 +30,7 @@ public class FactoryTest {
 
   private void runTest(XmlSuite.ParallelMode parallelMode, int expectedThreadIdCount) {
     TestNG tng = new TestNG();
-    tng.setTestClasses(new Class[] { FactorySampleTest.class});
+    tng.setTestClasses(new Class[] {FactorySampleTest.class});
     if (parallelMode != null) {
       tng.setParallel(parallelMode);
     }
@@ -38,7 +42,5 @@ public class FactoryTest {
 
     Assert.assertEquals(tla.getPassedTests().size(), 2);
     Assert.assertEquals(B.m_threadIds.size(), expectedThreadIdCount);
-
   }
-
 }

@@ -15,8 +15,8 @@ public class BaseDistributedTest {
       expected.put(element, element);
     }
 
-    Assert.assertEquals(found.size(), expected.size(),
-        "Verification for " + title + " tests failed:");
+    Assert.assertEquals(
+        found.size(), expected.size(), "Verification for " + title + " tests failed:");
 
     for (Object o : expected.values()) {
       String name = (String) o;
@@ -25,9 +25,9 @@ public class BaseDistributedTest {
         dumpMap("Found", found);
       }
 
-      Assert.assertNotNull(found.get(name),
-              "Expected to find method " + name + " in " + title
-                      + " but didn't find it.");
+      Assert.assertNotNull(
+          found.get(name),
+          "Expected to find method " + name + " in " + title + " but didn't find it.");
     }
   }
 
@@ -39,11 +39,10 @@ public class BaseDistributedTest {
       }
     }
   }
+
   private void ppp(String s) {
     if (m_verbose) {
       System.out.println("[BaseDistributedTest] " + s);
     }
   }
-
-
 }

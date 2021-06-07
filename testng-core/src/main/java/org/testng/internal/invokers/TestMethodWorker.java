@@ -1,5 +1,11 @@
 package org.testng.internal.invokers;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.IMethodInstance;
@@ -12,13 +18,6 @@ import org.testng.collections.Sets;
 import org.testng.internal.*;
 import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.thread.IWorker;
-
-import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * FIXME: reduce contention when this class is used through parallel invocation due to
@@ -167,13 +166,16 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       for (IClassListener listener : m_listeners) {
         listener.onBeforeClass(testClass);
       }
-      ConfigMethodArguments attributes = new Builder()
-          .forTestClass(testClass)
-          .usingConfigMethodsAs(((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance.toString()))
-          .forSuite(m_testContext.getSuite().getXmlSuite())
-          .usingParameters(m_parameters)
-          .usingInstance(instance)
-          .build();
+      ConfigMethodArguments attributes =
+          new Builder()
+              .forTestClass(testClass)
+              .usingConfigMethodsAs(
+                  ((ITestClassConfigInfo) testClass)
+                      .getInstanceBeforeClassMethods(instance.toString()))
+              .forSuite(m_testContext.getSuite().getXmlSuite())
+              .usingParameters(m_parameters)
+              .usingInstance(instance)
+              .build();
       m_configInvoker.invokeConfigurations(attributes);
     }
   }
@@ -208,13 +210,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       listener.onAfterClass(testClass);
     }
     for (Object invokeInstance : invokeInstances) {
-      ConfigMethodArguments attributes = new Builder()
-          .forTestClass(testClass)
-          .usingConfigMethodsAs(testClass.getAfterClassMethods())
-          .forSuite(m_testContext.getSuite().getXmlSuite())
-          .usingParameters(m_parameters)
-          .usingInstance(invokeInstance)
-          .build();
+      ConfigMethodArguments attributes =
+          new Builder()
+              .forTestClass(testClass)
+              .usingConfigMethodsAs(testClass.getAfterClassMethods())
+              .forSuite(m_testContext.getSuite().getXmlSuite())
+              .usingParameters(m_parameters)
+              .usingInstance(invokeInstance)
+              .build();
       m_configInvoker.invokeConfigurations(attributes);
     }
   }
@@ -244,13 +247,14 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   @Override
   public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
     if (m_methodInstances.isEmpty()) {
-        return 0;
+      return 0;
     }
     List<ITestNGMethod> otherTasks = other.getTasks();
     if (otherTasks.isEmpty()) {
-        return 0;
+      return 0;
     }
-    return TestMethodComparator.compareStatic(m_methodInstances.get(0).getMethod(), otherTasks.get(0));
+    return TestMethodComparator.compareStatic(
+        m_methodInstances.get(0).getMethod(), otherTasks.get(0));
   }
 
   /** The priority of a worker is the priority of the first method it's going to run. */
@@ -278,8 +282,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 /** Extends {@code TestMethodWorker} and is used to work on only a single method instance */
 class SingleTestMethodWorker extends TestMethodWorker {
   private static final ConfigurationGroupMethods EMPTY_GROUP_METHODS =
-      new ConfigurationGroupMethods(new TestMethodContainer(() -> new ITestNGMethod[0]),
-          new HashMap<>(), new HashMap<>());
+      new ConfigurationGroupMethods(
+          new TestMethodContainer(() -> new ITestNGMethod[0]), new HashMap<>(), new HashMap<>());
 
   public SingleTestMethodWorker(
       TestInvoker testInvoker,
@@ -289,7 +293,9 @@ class SingleTestMethodWorker extends TestMethodWorker {
       ITestContext testContext,
       List<IClassListener> listeners) {
     super(
-        testInvoker, configInvoker, Collections.singletonList(testMethod),
+        testInvoker,
+        configInvoker,
+        Collections.singletonList(testMethod),
         parameters,
         EMPTY_GROUP_METHODS,
         null,

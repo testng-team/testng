@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class DisabledFactoryTest extends SimpleBaseTest {

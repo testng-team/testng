@@ -1,5 +1,7 @@
 package test.failedreporter;
 
+import java.io.File;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
@@ -15,9 +17,6 @@ import test.failedreporter.issue1297.inheritance.InheritanceFailureSample;
 import test.failedreporter.issue1297.inheritance.InheritancePassSample;
 import test.failedreporter.issue1297.straightforward.AllPassSample;
 import test.failedreporter.issue1297.straightforward.FailureSample;
-
-import java.io.File;
-import java.util.List;
 
 public class FailedReporterTest extends SimpleBaseTest {
   private File mTempDirectory;

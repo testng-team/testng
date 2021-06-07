@@ -25,8 +25,8 @@ public class SimpleCompiler {
     List<CompiledCode> compiledCodes = Lists.newArrayList();
     for (SourceCode source : sources) {
       source.getLocation().delete();
-      CompiledCode compiledCode = new CompiledCode(source.getName(), source.getDirectory(),
-          source.isSkipLoading());
+      CompiledCode compiledCode =
+          new CompiledCode(source.getName(), source.getDirectory(), source.isSkipLoading());
       compiledCodes.add(compiledCode);
     }
     return compiledCodes;
@@ -38,7 +38,5 @@ public class SimpleCompiler {
     } catch (IOException e) {
       throw new TestNGException(e);
     }
-
   }
-
 }

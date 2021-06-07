@@ -1,7 +1,6 @@
 package test.guice;
 
 import com.google.inject.Module;
-
 import org.testng.IModuleFactory;
 import org.testng.ITestContext;
 

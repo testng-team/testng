@@ -1,8 +1,6 @@
 package test.thread;
 
-import java.util.HashMap;
 import java.util.Map;
-
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 
@@ -22,5 +20,4 @@ public class B {
   private static void ppp(String s) {
     System.out.println("[FactoryTest] " + s);
   }
-
 }

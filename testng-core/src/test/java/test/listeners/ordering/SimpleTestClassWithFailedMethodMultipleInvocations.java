@@ -9,5 +9,4 @@ public class SimpleTestClassWithFailedMethodMultipleInvocations {
   public void testWillFail() {
     Assert.fail();
   }
-
 }

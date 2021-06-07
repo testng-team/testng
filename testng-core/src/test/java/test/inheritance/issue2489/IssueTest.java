@@ -1,17 +1,18 @@
 package test.inheritance.issue2489;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import test.SimpleBaseTest;
 import test.inheritance.issue2489.tests.BaseClassA;
 import test.inheritance.issue2489.tests.TestClassA;
-import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
 
@@ -25,21 +26,20 @@ public class IssueTest extends SimpleBaseTest {
     xmlTest.setPackages(Collections.singletonList(xmlPackage));
     TestNG testng = create(xmlSuite);
     testng.run();
-    List<String> expected = Arrays.asList(
-        "beforeSuite_BaseClass_A",
-        "beforeClasses_BaseClass_A",
-        "beforeClass_TestClass_A",
-        "beforeMethod_TestClass_A",
-        "test1_TestClass_A",
-        "afterMethod_TestClass_A",
-        "beforeMethod_TestClass_A",
-        "test2_TestClass_A",
-        "afterMethod_TestClass_A",
-        "afterClass_TestClass_A",
-        "afterClasses_BaseClass_A",
-        "afterSuite_BaseClass_A"
-    );
+    List<String> expected =
+        Arrays.asList(
+            "beforeSuite_BaseClass_A",
+            "beforeClasses_BaseClass_A",
+            "beforeClass_TestClass_A",
+            "beforeMethod_TestClass_A",
+            "test1_TestClass_A",
+            "afterMethod_TestClass_A",
+            "beforeMethod_TestClass_A",
+            "test2_TestClass_A",
+            "afterMethod_TestClass_A",
+            "afterClass_TestClass_A",
+            "afterClasses_BaseClass_A",
+            "afterSuite_BaseClass_A");
     assertThat(BaseClassA.logs).containsExactlyElementsOf(expected);
   }
-
 }

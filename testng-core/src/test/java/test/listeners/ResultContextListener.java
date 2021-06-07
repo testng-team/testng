@@ -5,32 +5,25 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 
 public class ResultContextListener implements ITestListener {
-	
-	public static boolean contextProvided = false;
-	
-	public void onTestStart(ITestResult result) {
-		ITestContext context = result.getTestContext();
-		if (context != null) {
-			contextProvided = true;
-		}
-	}
 
-	public void onTestSuccess(ITestResult result) {
-	}
+  public static boolean contextProvided = false;
 
-	public void onTestFailure(ITestResult result) {
-	}
+  public void onTestStart(ITestResult result) {
+    ITestContext context = result.getTestContext();
+    if (context != null) {
+      contextProvided = true;
+    }
+  }
 
-	public void onTestSkipped(ITestResult result) {
-	}
+  public void onTestSuccess(ITestResult result) {}
 
-	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-	}
+  public void onTestFailure(ITestResult result) {}
 
-	public void onStart(ITestContext context) {
-	}
+  public void onTestSkipped(ITestResult result) {}
 
-	public void onFinish(ITestContext context) {
-	}
+  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {}
 
+  public void onStart(ITestContext context) {}
+
+  public void onFinish(ITestContext context) {}
 }

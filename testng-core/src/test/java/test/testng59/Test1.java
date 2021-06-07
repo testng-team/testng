@@ -4,16 +4,13 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
+/** This class/interface */
 public class Test1 {
-  private boolean m_run= false;
+  private boolean m_run = false;
 
   @Test
   public void test1() {
-    m_run= true;
+    m_run = true;
   }
 
   @AfterClass

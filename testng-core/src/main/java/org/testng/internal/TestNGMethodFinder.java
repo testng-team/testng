@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-
 import org.testng.ITestMethodFinder;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -39,13 +38,16 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   private final IAnnotationFinder annotationFinder;
   private final Comparator<ITestNGMethod> comparator;
 
-  public TestNGMethodFinder(ITestObjectFactory objectFactory, RunInfo runInfo, IAnnotationFinder annotationFinder) {
+  public TestNGMethodFinder(
+      ITestObjectFactory objectFactory, RunInfo runInfo, IAnnotationFinder annotationFinder) {
     this(objectFactory, runInfo, annotationFinder, NO_COMPARISON);
   }
 
   public TestNGMethodFinder(
       ITestObjectFactory objectFactory,
-      RunInfo runInfo, IAnnotationFinder annotationFinder, Comparator<ITestNGMethod> comparator) {
+      RunInfo runInfo,
+      IAnnotationFinder annotationFinder,
+      Comparator<ITestNGMethod> comparator) {
     this.objectFactory = objectFactory;
     this.runInfo = runInfo;
     this.annotationFinder = annotationFinder;
@@ -108,7 +110,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
     return findConfiguration(clazz, AFTER_GROUPS);
   }
 
-  private ITestNGMethod[] findConfiguration(final Class<?> clazz, final MethodType configurationType) {
+  private ITestNGMethod[] findConfiguration(
+      final Class<?> clazz, final MethodType configurationType) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
 
     Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(clazz);
@@ -168,12 +171,16 @@ public class TestNGMethodFinder implements ITestMethodFinder {
           break;
         case BEFORE_GROUPS:
           beforeGroups = configuration.getBeforeGroups();
-          create = shouldCreateBeforeAfterGroup(beforeGroups, annotationFinder, clazz, configuration.getInheritGroups());
+          create =
+              shouldCreateBeforeAfterGroup(
+                  beforeGroups, annotationFinder, clazz, configuration.getInheritGroups());
           isBeforeTestMethod = true;
           break;
         case AFTER_GROUPS:
           afterGroups = configuration.getAfterGroups();
-          create = shouldCreateBeforeAfterGroup(afterGroups, annotationFinder, clazz, configuration.getInheritGroups());
+          create =
+              shouldCreateBeforeAfterGroup(
+                  afterGroups, annotationFinder, clazz, configuration.getInheritGroups());
           isAfterTestMethod = true;
           break;
         default:
@@ -194,8 +201,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
             isBeforeTestMethod,
             isAfterTestMethod,
             beforeGroups,
-            afterGroups
-        ); /* @@@ */
+            afterGroups); /* @@@ */
       }
     }
 
@@ -211,8 +217,8 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         comparator);
   }
 
-  private static boolean shouldCreateBeforeAfterGroup(String[] groups, IAnnotationFinder finder,
-      Class<?> clazz, boolean isInheritGroups) {
+  private static boolean shouldCreateBeforeAfterGroup(
+      String[] groups, IAnnotationFinder finder, Class<?> clazz, boolean isInheritGroups) {
     if (!isInheritGroups) {
       return groups.length > 0;
     }

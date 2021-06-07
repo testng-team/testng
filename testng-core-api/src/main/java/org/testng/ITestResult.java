@@ -70,13 +70,13 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   /**
    * @return - A parameter array that was passed to a factory method (or) an empty object array
-   * otherwise.
+   *     otherwise.
    */
   Object[] getFactoryParameters();
 
   /**
-   * @return The test name if this result's related instance implements ITest or use @Test(testName=...),
-   *            null otherwise.
+   * @return The test name if this result's related instance implements ITest or
+   *     use @Test(testName=...), null otherwise.
    */
   String getTestName();
 
@@ -101,8 +101,8 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   /**
    * @return - The list of either upstream method(s) or configuration method(s) whose failure led to
-   * the current method being skipped. An empty list is returned when the current method is not
-   * a skipped method.
+   *     the current method being skipped. An empty list is returned when the current method is not
+   *     a skipped method.
    */
   default List<ITestNGMethod> getSkipCausedBy() {
     return Collections.emptyList();
@@ -110,7 +110,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   /**
    * @return - A unique id for the current JVM that represents a unique way of identifying a
-   * specific test method's result.
+   *     specific test method's result.
    */
   String id();
 

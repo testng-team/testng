@@ -12,12 +12,12 @@ public class IssueTest extends SimpleBaseTest {
     TestNG testng = create(TestNGTestClass.class);
     testng.run();
     SoftAssert softAssert = new SoftAssert();
-    DataStore.INSTANCE.getTracker()
+    DataStore.INSTANCE
+        .getTracker()
         .forEach(
-            (key, value) -> softAssert.assertEquals(value.get(), 1,
-                "Ensuring " + key + " got invoked only once")
-        );
+            (key, value) ->
+                softAssert.assertEquals(
+                    value.get(), 1, "Ensuring " + key + " got invoked only once"));
     softAssert.assertAll();
   }
-
 }

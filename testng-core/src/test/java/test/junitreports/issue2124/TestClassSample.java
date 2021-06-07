@@ -13,5 +13,4 @@ public class TestClassSample {
     Reporter.log(MESSAGE_1, true);
     Reporter.log(MESSAGE_2, true);
   }
-
 }

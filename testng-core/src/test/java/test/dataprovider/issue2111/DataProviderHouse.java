@@ -6,11 +6,6 @@ public class DataProviderHouse {
 
   @DataProvider
   public static Object[][] getData() {
-    return new Object[][]
-        {
-            {1},
-            {2},
-            {3}
-        };
+    return new Object[][] {{1}, {2}, {3}};
   }
 }

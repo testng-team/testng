@@ -20,10 +20,8 @@ public class SampleTestClass implements ITestListener, ISuiteListener {
   public void beforeClass() {}
 
   @Test(dataProviderClass = SampleDataProvider.class, dataProvider = "dp1master")
-  public <T extends Object> void test1(Class<T> clazz) {
-  }
+  public <T extends Object> void test1(Class<T> clazz) {}
 
   @Test(dataProviderClass = SampleDataProvider.class, dataProvider = "dp1master")
-  public <T extends Object> void test2(Class<T> clazz) {
-  }
+  public <T extends Object> void test2(Class<T> clazz) {}
 }

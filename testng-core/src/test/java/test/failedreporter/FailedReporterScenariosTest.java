@@ -1,16 +1,15 @@
 package test.failedreporter;
 
+import static test.failedreporter.FailedReporterLocalTestClass.WithFailure;
+import static test.failedreporter.FailedReporterLocalTestClass.WithoutFailure;
+
+import java.io.File;
+import java.util.UUID;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
 import test.SimpleBaseTest;
-
-import java.io.File;
-import java.util.UUID;
-
-import static test.failedreporter.FailedReporterLocalTestClass.WithFailure;
-import static test.failedreporter.FailedReporterLocalTestClass.WithoutFailure;
 
 public class FailedReporterScenariosTest extends SimpleBaseTest {
 

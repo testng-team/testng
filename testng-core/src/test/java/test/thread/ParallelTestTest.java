@@ -1,5 +1,13 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -8,56 +16,50 @@ import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.BaseTest;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParallelTestTest extends BaseTest {
 
   @DataProvider
   private static Object[][] verifyParallelDp() {
-    return new Object[][]{
-            // isCommandLine, parallelMode, expectedThreadCount
-            {true,  XmlSuite.ParallelMode.NONE,      1},
-            {false, XmlSuite.ParallelMode.NONE,      1},
-            {true,  XmlSuite.ParallelMode.TESTS,     2},
-            {false, XmlSuite.ParallelMode.TESTS,     2},
-            {true,  XmlSuite.ParallelMode.METHODS,   4},
-            {false, XmlSuite.ParallelMode.METHODS,   4},
-            {true,  XmlSuite.ParallelMode.CLASSES,   2},
-            {false, XmlSuite.ParallelMode.CLASSES,   2},
-            {true,  XmlSuite.ParallelMode.INSTANCES, 4},
-            {false, XmlSuite.ParallelMode.INSTANCES, 4}
+    return new Object[][] {
+      // isCommandLine, parallelMode, expectedThreadCount
+      {true, XmlSuite.ParallelMode.NONE, 1},
+      {false, XmlSuite.ParallelMode.NONE, 1},
+      {true, XmlSuite.ParallelMode.TESTS, 2},
+      {false, XmlSuite.ParallelMode.TESTS, 2},
+      {true, XmlSuite.ParallelMode.METHODS, 4},
+      {false, XmlSuite.ParallelMode.METHODS, 4},
+      {true, XmlSuite.ParallelMode.CLASSES, 2},
+      {false, XmlSuite.ParallelMode.CLASSES, 2},
+      {true, XmlSuite.ParallelMode.INSTANCES, 4},
+      {false, XmlSuite.ParallelMode.INSTANCES, 4}
     };
   }
 
   @Test(dataProvider = "verifyParallelDp")
-  public void verifyParallel(boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
-    verifyExpected(isCommandLine, parallelMode, expectedThreadCount, Test1Test.class, Test2Test.class);
+  public void verifyParallel(
+      boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
+    verifyExpected(
+        isCommandLine, parallelMode, expectedThreadCount, Test1Test.class, Test2Test.class);
   }
 
   @DataProvider
   private static Object[][] verifyParallelWithFactoryDp() {
-    return new Object[][]{
-            // isCommandLine, parallelMode, expectedThreadCount
-            {true,  XmlSuite.ParallelMode.NONE,      1},
-            {false, XmlSuite.ParallelMode.NONE,      1},
-            {true,  XmlSuite.ParallelMode.INSTANCES, 4},
-            {false, XmlSuite.ParallelMode.INSTANCES, 4}
+    return new Object[][] {
+      // isCommandLine, parallelMode, expectedThreadCount
+      {true, XmlSuite.ParallelMode.NONE, 1},
+      {false, XmlSuite.ParallelMode.NONE, 1},
+      {true, XmlSuite.ParallelMode.INSTANCES, 4},
+      {false, XmlSuite.ParallelMode.INSTANCES, 4}
     };
   }
 
   @Test(dataProvider = "verifyParallelWithFactoryDp") // TODO use "verifyParallelDp"
-  public void verifyParallelWithFactory(boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
-    verifyExpected(isCommandLine, parallelMode, expectedThreadCount, ParallelWithFactorySampleTest.class);
+  public void verifyParallelWithFactory(
+      boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount) {
+    verifyExpected(
+        isCommandLine, parallelMode, expectedThreadCount, ParallelWithFactorySampleTest.class);
   }
 
   @Test
@@ -78,7 +80,10 @@ public class ParallelTestTest extends BaseTest {
     classes.add(xmlClass);
   }
 
-  private void verifyExpected(boolean isCommandLine, XmlSuite.ParallelMode parallelMode, int expectedThreadCount,
+  private void verifyExpected(
+      boolean isCommandLine,
+      XmlSuite.ParallelMode parallelMode,
+      int expectedThreadCount,
       Class<?>... classes) {
     XmlSuite xmlSuite = new XmlSuite();
     xmlSuite.setName("ParallelTestTest");

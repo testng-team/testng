@@ -21,10 +21,15 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
 
   public boolean put(K key, V method) {
     AtomicBoolean exists = new AtomicBoolean(true);
-    return m_objects.computeIfAbsent(key, k -> {
-      exists.set(false);
-      return createValue();
-    }).add(method) && exists.get();
+    return m_objects
+            .computeIfAbsent(
+                key,
+                k -> {
+                  exists.set(false);
+                  return createValue();
+                })
+            .add(method)
+        && exists.get();
   }
 
   public C get(K key) {

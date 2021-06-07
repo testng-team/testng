@@ -11,10 +11,8 @@ public class ConfigurationListenerSkipSampleTest {
   }
 
   @BeforeMethod(dependsOnMethods = "bmShouldFail")
-  public void bm() {
-  }
+  public void bm() {}
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 }

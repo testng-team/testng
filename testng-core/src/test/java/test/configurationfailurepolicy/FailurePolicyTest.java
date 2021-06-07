@@ -10,7 +10,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import testhelper.OutputDirectoryPatch;
 
 public class FailurePolicyTest {
@@ -36,7 +35,6 @@ public class FailurePolicyTest {
         3,
         1
       },
-
       new Object[] {new Class[] {ClassWithFailedBeforeMethodAndMultipleInvocations.class}, 4, 0, 4},
       new Object[] {new Class[] {ExtendsClassWithFailedBeforeMethod.class}, 2, 2, 2},
       new Object[] {new Class[] {ExtendsClassWithFailedBeforeClassMethod.class}, 1, 2, 2},
@@ -77,9 +75,8 @@ public class FailurePolicyTest {
 
   @Test
   public void confFailureTestInvolvingGroups() {
-    Class[] classesUnderTest = new Class[]{
-        ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups.class
-    };
+    Class[] classesUnderTest =
+        new Class[] {ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups.class};
 
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();

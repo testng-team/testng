@@ -1,7 +1,6 @@
 package test.dependent;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class DependentAlwaysRunTest extends BaseTest {

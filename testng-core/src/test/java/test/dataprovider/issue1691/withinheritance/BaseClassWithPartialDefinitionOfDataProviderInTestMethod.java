@@ -5,9 +5,9 @@ import org.testng.annotations.Test;
 
 public class BaseClassWithPartialDefinitionOfDataProviderInTestMethod {
 
-    @Test(dataProvider = "hangoutPlaces")
-    public void verifyHangoutPlaces(String place, String city) {
-        Assert.assertNotNull(place);
-        Assert.assertNotNull(city);
-    }
+  @Test(dataProvider = "hangoutPlaces")
+  public void verifyHangoutPlaces(String place, String city) {
+    Assert.assertNotNull(place);
+    Assert.assertNotNull(city);
+  }
 }

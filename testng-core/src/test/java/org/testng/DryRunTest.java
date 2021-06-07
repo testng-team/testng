@@ -1,6 +1,7 @@
 package org.testng;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
 import test.SimpleBaseTest;

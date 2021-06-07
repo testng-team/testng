@@ -1,17 +1,14 @@
 package org.testng.annotations;
 
-import org.testng.IRetryAnalyzer;
-import org.testng.internal.annotations.DisabledRetryAnalyzer;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 
-/**
- * Mark a class or a method as part of the test.
- */
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import org.testng.IRetryAnalyzer;
+import org.testng.internal.annotations.DisabledRetryAnalyzer;
+
+/** Mark a class or a method as part of the test. */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD, TYPE})
 public @interface Test {
@@ -94,7 +91,6 @@ public @interface Test {
    * The name of the data provider for this test method.
    *
    * @see org.testng.annotations.DataProvider
-   *
    * @return the value (default empty)
    */
   String dataProvider() default "";
@@ -175,8 +171,8 @@ public @interface Test {
   Class<? extends IRetryAnalyzer> retryAnalyzer() default DisabledRetryAnalyzer.class;
 
   /**
-   * If true and invocationCount is specified with a value &gt; 1, then all invocations after a failure
-   * will be marked as a SKIP instead of a FAIL.
+   * If true and invocationCount is specified with a value &gt; 1, then all invocations after a
+   * failure will be marked as a SKIP instead of a FAIL.
    *
    * @return the value (default false)
    */
@@ -198,7 +194,7 @@ public @interface Test {
 
   /**
    * @return - An array of {@link CustomAttribute} that represents a set of custom attributes for a
-   * test method.
+   *     test method.
    */
   CustomAttribute[] attributes() default {};
 }

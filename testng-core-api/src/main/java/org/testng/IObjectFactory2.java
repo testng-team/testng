@@ -11,9 +11,7 @@ package org.testng;
 @Deprecated
 public interface IObjectFactory2 extends ITestObjectFactory {
 
-  /**
-   * @deprecated - This interface stands deprecated as of TestNG 7.5.0
-   */
+  /** @deprecated - This interface stands deprecated as of TestNG 7.5.0 */
   @Deprecated
   default Object newInstance(Class<?> cls) {
     return newInstance(cls, new Object[0]);

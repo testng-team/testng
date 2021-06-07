@@ -1,12 +1,9 @@
 package org.testng.internal.annotations;
 
+import java.util.List;
 import org.testng.annotations.IFactoryAnnotation;
 
-import java.util.List;
-
-/**
- * An implementation of IFactory
- */
+/** An implementation of IFactory */
 public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
 
   private String m_dataProvider = null;

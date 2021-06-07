@@ -1,5 +1,7 @@
 package test.methodselectors;
 
+import java.util.Collections;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
@@ -12,14 +14,10 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
-import java.util.Collections;
-import java.util.List;
-
-public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
+public class MethodSelectorInSuiteTest extends SimpleBaseTest {
 
   private TestListenerAdapter m_tla;
 
@@ -45,7 +43,7 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
     tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
-    validate(new String[] { "test2" });
+    validate(new String[] {"test2"});
   }
 
   @Test
@@ -55,17 +53,20 @@ public class MethodSelectorInSuiteTest  extends SimpleBaseTest{
     tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
-    validate(new String[] { "test2" });
+    validate(new String[] {"test2"});
   }
 
   @Test
   public void fileOnCommandLine() {
-    String[] args = new String[] {
-        "-d", OutputDirectoryPatch.getOutputDirectory(),
-        getPathToResource("methodselector-in-xml.xml") };
+    String[] args =
+        new String[] {
+          "-d",
+          OutputDirectoryPatch.getOutputDirectory(),
+          getPathToResource("methodselector-in-xml.xml")
+        };
     TestNG.privateMain(args, m_tla);
 
-    validate(new String[] { "test2" });
+    validate(new String[] {"test2"});
   }
 
   private void validate(String[] expectPassed) {

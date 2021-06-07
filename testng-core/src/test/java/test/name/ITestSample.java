@@ -14,11 +14,13 @@ public class ITestSample implements ITest {
 
   @DataProvider(name = "dp", parallel = true)
   public Object[][] getTests() {
-    return new Object[][]{new Object[]{"test1"},
-                          new Object[]{"test2"},
-                          new Object[]{"test3"},
-                          new Object[]{"test4"},
-                          new Object[]{"test5"}};
+    return new Object[][] {
+      new Object[] {"test1"},
+      new Object[] {"test2"},
+      new Object[] {"test3"},
+      new Object[] {"test4"},
+      new Object[] {"test5"}
+    };
   }
 
   @Test(dataProvider = "dp")

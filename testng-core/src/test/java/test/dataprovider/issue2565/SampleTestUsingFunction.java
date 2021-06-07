@@ -17,11 +17,11 @@ public class SampleTestUsingFunction {
   @DataProvider(name = "dp")
   public Iterator<Function<String, String>> data() {
     List<Function<String, String>> obj = new ArrayList<>();
-    obj.add(text -> {
-      Data.INSTANCE.addDatum(text);
-      return text.toUpperCase();
-    });
+    obj.add(
+        text -> {
+          Data.INSTANCE.addDatum(text);
+          return text.toUpperCase();
+        });
     return obj.iterator();
   }
-
 }

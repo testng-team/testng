@@ -15,6 +15,5 @@ public class TestClassSample implements ITestListener, ISuiteListener {
   }
 
   @Test
-  public void testMethod() {
-  }
+  public void testMethod() {}
 }

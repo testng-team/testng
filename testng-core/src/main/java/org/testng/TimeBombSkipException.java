@@ -29,8 +29,8 @@ public class TimeBombSkipException extends SkipException {
   private DateFormat m_outFormat = sdf;
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format used
-   * for date comparison is <code>yyyy/MM/dd</code>
+   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format
+   * used for date comparison is <code>yyyy/MM/dd</code>
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
@@ -40,8 +40,8 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The
-   * <code>format</code> parameter wiil be used for performing the time comparison.
+   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The <code>
+   * format</code> parameter wiil be used for performing the time comparison.
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
@@ -55,8 +55,8 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the format
-   * <code>yyyy/MM/dd</code>.
+   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the format <code>
+   * yyyy/MM/dd</code>.
    *
    * @param msg exception message
    * @param date time limit after which the SKIP becomes a FAILURE
@@ -80,8 +80,8 @@ public class TimeBombSkipException extends SkipException {
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison and
-   * display.
+   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison
+   * and display.
    *
    * @param msg exception message
    * @param date time limit after which the SKIP becomes a FAILURE
@@ -96,8 +96,8 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format used
-   * for date comparison is <code>yyyy/MM/dd</code>
+   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The format
+   * used for date comparison is <code>yyyy/MM/dd</code>
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
@@ -111,8 +111,8 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The
-   * <code>format</code> parameter wiil be used for performing the time comparison.
+   * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The <code>
+   * format</code> parameter wiil be used for performing the time comparison.
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
@@ -129,8 +129,8 @@ public class TimeBombSkipException extends SkipException {
   }
 
   /**
-   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the format
-   * <code>yyyy/MM/dd</code>.
+   * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the format <code>
+   * yyyy/MM/dd</code>.
    *
    * @param msg exception message
    * @param date time limit after which the SKIP becomes a FAILURE
@@ -160,8 +160,8 @@ public class TimeBombSkipException extends SkipException {
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <code>date</code> in the specified format
-   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison and
-   * display.
+   * <code>inFormat</code>. The <code>outFormat</code> will be used to perform the time comparison
+   * and display.
    *
    * @param msg exception message
    * @param date time limit after which the SKIP becomes a FAILURE

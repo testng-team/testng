@@ -22,7 +22,7 @@ public class FilteringMethodSelector implements IMethodSelector {
     if (ALL.equalsIgnoreCase(whichGroup)) {
       return true;
     }
-    boolean isEqual = Arrays.equals(new String[]{whichGroup}, method.getGroups());
+    boolean isEqual = Arrays.equals(new String[] {whichGroup}, method.getGroups());
     if (context != null) {
       context.setStopped(true);
     }
@@ -30,6 +30,5 @@ public class FilteringMethodSelector implements IMethodSelector {
   }
 
   @Override
-  public void setTestMethods(List<ITestNGMethod> testMethods) {
-  }
+  public void setTestMethods(List<ITestNGMethod> testMethods) {}
 }

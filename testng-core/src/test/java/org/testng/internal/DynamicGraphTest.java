@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.testng.Assert;
 import org.testng.IDynamicGraph;
 import org.testng.IDynamicGraph.Status;

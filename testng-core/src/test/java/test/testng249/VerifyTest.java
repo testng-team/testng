@@ -1,5 +1,7 @@
 package test.testng249;
 
+import java.util.Arrays;
+import java.util.Collections;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -9,11 +11,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 public class VerifyTest extends SimpleBaseTest {
 

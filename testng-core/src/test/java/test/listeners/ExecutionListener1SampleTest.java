@@ -6,5 +6,3 @@ public class ExecutionListener1SampleTest {
   @Test
   public void f() {}
 }
-
-

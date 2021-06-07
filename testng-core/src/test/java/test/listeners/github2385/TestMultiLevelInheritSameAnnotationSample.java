@@ -4,8 +4,6 @@ import org.testng.annotations.Test;
 
 public class TestMultiLevelInheritSameAnnotationSample implements ITestInterfaceSameInherit {
 
-    @Test
-    public void testMultiLevel() {
-
-    }
+  @Test
+  public void testMultiLevel() {}
 }

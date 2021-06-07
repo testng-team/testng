@@ -6,7 +6,6 @@ import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class RetryAnalyzerWithDataProviderTest extends SimpleBaseTest {
@@ -20,10 +19,9 @@ public class RetryAnalyzerWithDataProviderTest extends SimpleBaseTest {
     tng.run();
 
     assertEquals(tla.getPassedTests().size(), 1);
-    assertEquals(tla.getPassedTests().get(0).getParameters(), new String[]{"c"});
+    assertEquals(tla.getPassedTests().get(0).getParameters(), new String[] {"c"});
 
     assertEquals(tla.getFailedTests().size(), 3);
     assertEquals(tla.getSkippedTests().size(), 9);
   }
-
 }

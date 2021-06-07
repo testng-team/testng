@@ -1,8 +1,7 @@
 package test.objectfactory;
 
-import org.testng.internal.objects.ObjectFactoryImpl;
-
 import java.lang.reflect.Constructor;
+import org.testng.internal.objects.ObjectFactoryImpl;
 
 public class LoggingObjectFactory extends ObjectFactoryImpl {
 

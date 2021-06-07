@@ -1,8 +1,7 @@
 package org.testng.internal.invokers;
 
-import org.testng.IDataProviderMethod;
-
 import java.util.Iterator;
+import org.testng.IDataProviderMethod;
 
 /**
  * A simple holder for parameters that contains the parameters and where these came from (data

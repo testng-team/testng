@@ -3,7 +3,6 @@ package test.dependent;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class SampleDependentTest extends SimpleBaseTest {

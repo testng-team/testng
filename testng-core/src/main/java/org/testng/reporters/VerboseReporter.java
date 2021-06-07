@@ -113,9 +113,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
   }
 
   private ITestNGMethod[] resultsToMethods(Collection<ITestResult> results) {
-    return results.stream()
-        .map(ITestResult::getMethod)
-        .toArray(ITestNGMethod[]::new);
+    return results.stream().map(ITestResult::getMethod).toArray(ITestNGMethod[]::new);
   }
 
   /** Print out test summary */

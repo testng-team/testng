@@ -1,5 +1,7 @@
 package test.parameters;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -7,11 +9,8 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ShadowTest extends SimpleBaseTest {
 

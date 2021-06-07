@@ -10,7 +10,5 @@ public class OptionalParameterTest {
   public OptionalParameterTest(@Optional String optional) {}
 
   @Test(description = "GITHUB-564")
-  public void testWithParameterOnlyOptionalAnnotation(@Optional String unUsedParameter) {
-  }
-
+  public void testWithParameterOnlyOptionalAnnotation(@Optional String unUsedParameter) {}
 }

@@ -7,10 +7,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-/**
- * Tests alwaysRun on a before Configuration method. Invoke this test by running group "A"
- *
- */
+/** Tests alwaysRun on a before Configuration method. Invoke this test by running group "A" */
 public class AlwaysRunBefore1 {
   private static boolean m_beforeSuiteSuccess = false;
   private static boolean m_beforeTestSuccess = false;

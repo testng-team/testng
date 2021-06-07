@@ -6,11 +6,10 @@ import org.testng.annotations.Test;
 public class DataProviderInSameClass {
 
   @Test(dataProvider = "dp")
-  public void testMethod(int i) {
-  }
+  public void testMethod(int i) {}
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][]{{1}, {2}};
+    return new Object[][] {{1}, {2}};
   }
 }

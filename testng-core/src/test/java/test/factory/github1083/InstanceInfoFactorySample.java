@@ -1,12 +1,11 @@
 package test.factory.github1083;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IInstanceInfo;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.internal.InstanceInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InstanceInfoFactorySample {
 

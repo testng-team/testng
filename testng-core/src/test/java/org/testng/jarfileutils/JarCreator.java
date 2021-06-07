@@ -1,5 +1,7 @@
 package org.testng.jarfileutils;
 
+import java.io.File;
+import java.io.IOException;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -8,9 +10,6 @@ import org.testng.jarfileutils.org.testng.SampleTest2;
 import org.testng.jarfileutils.org.testng.SampleTest3;
 import org.testng.jarfileutils.org.testng.SampleTest4;
 import org.testng.jarfileutils.org.testng.SampleTest5;
-
-import java.io.File;
-import java.io.IOException;
 
 public class JarCreator {
 

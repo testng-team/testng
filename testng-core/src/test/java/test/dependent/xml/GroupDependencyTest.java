@@ -1,5 +1,8 @@
 package test.dependent.xml;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -8,12 +11,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class GroupDependencyTest extends SimpleBaseTest {
   @DataProvider

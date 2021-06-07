@@ -1,10 +1,9 @@
 package org.testng;
 
+import java.util.List;
 import org.testng.reporters.IReporterConfig;
 import org.testng.reporters.PojoReporterConfig;
 import org.testng.xml.XmlSuite;
-
-import java.util.List;
 
 /**
  * This interface can be implemented by clients to generate a report. Its method generateReport()
@@ -26,10 +25,10 @@ public interface IReporter extends ITestNGListener {
 
   /**
    * Get the reporter configuration object.
-   * <p>
-   * <b>NOTE</b>: Reporter configuration objects must adhere to the JavaBean object conventions,
-   * providing getter and setter methods that conform to standard naming rules. This enables
-   * {@link org.testng.internal.ReporterConfig} to serialize, deserialize, and instantiate the reporter.
+   *
+   * <p><b>NOTE</b>: Reporter configuration objects must adhere to the JavaBean object conventions,
+   * providing getter and setter methods that conform to standard naming rules. This enables {@link
+   * org.testng.internal.ReporterConfig} to serialize, deserialize, and instantiate the reporter.
    *
    * @return reporter configuration object
    */

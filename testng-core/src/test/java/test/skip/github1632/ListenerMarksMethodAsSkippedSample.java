@@ -1,6 +1,5 @@
 package test.skip.github1632;
 
-
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -12,12 +11,10 @@ import org.testng.annotations.Test;
 public class ListenerMarksMethodAsSkippedSample {
 
   @BeforeMethod
-  void beforeMethod() {
-  }
+  void beforeMethod() {}
 
   @Test
-  void shouldNotBeExecuted() {
-  }
+  void shouldNotBeExecuted() {}
 
   public static class MySkipTestListener implements IInvokedMethodListener {
 
@@ -26,6 +23,4 @@ public class ListenerMarksMethodAsSkippedSample {
       testResult.setStatus(ITestResult.SKIP);
     }
   }
-
-
 }

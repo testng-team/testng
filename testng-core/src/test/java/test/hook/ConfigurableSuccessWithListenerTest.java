@@ -1,13 +1,12 @@
 package test.hook;
 
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 @Listeners(ConfigurableListener.class)
 public class ConfigurableSuccessWithListenerTest {

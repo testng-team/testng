@@ -1,12 +1,11 @@
 package org.testng.internal.invokers;
 
+import java.util.Collection;
+import java.util.Map;
 import org.testng.ISuite;
 import org.testng.TestNGException;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
-
-import java.util.Collection;
-import java.util.Map;
 
 public class SuiteRunnerMap {
 

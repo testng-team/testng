@@ -1,12 +1,9 @@
 package org.testng.internal.annotations;
 
+import java.util.List;
 import org.testng.annotations.IDataProviderAnnotation;
 
-import java.util.List;
-
-/**
- * An implementation of IDataProvider.
- */
+/** An implementation of IDataProvider. */
 public class DataProviderAnnotation extends BaseAnnotation implements IDataProviderAnnotation {
 
   private String m_name;

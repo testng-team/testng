@@ -10,6 +10,4 @@ public class Dummy1 extends TestSuite {
     suite.addTestSuite(Dummy3.class);
     return suite;
   }
-
 }
-

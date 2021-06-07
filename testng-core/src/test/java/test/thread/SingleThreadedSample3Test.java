@@ -19,5 +19,4 @@ public class SingleThreadedSample3Test extends BaseSequentialSample {
   public void f3() {
     addId("SingleThreadedSample3Test.f3()", Thread.currentThread().getId());
   }
-
 }

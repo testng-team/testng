@@ -6,7 +6,6 @@ import junit.framework.TestCase;
  * This class
  *
  * @author Cedric Beust, May 5, 2004
- *
  */
 public class JUnitSample2 extends TestCase {
   public static final String EXPECTED = "testSample2ThatSetUpWasRun";
@@ -28,5 +27,4 @@ public class JUnitSample2 extends TestCase {
   public void testSample2ThatSetUpWasRun() {
     assert null != m_field : "setUp() wasn't run";
   }
-
 }

@@ -1,11 +1,10 @@
 package test;
 
-import org.testng.ITestContext;
-import org.testng.annotations.Test;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import org.testng.ITestContext;
+import org.testng.annotations.Test;
 
 public class SerializationTest {
 
@@ -17,7 +16,7 @@ public class SerializationTest {
     oos.close();
   }
 
-  @Test(groups = { "broken", "maven-broken" })
+  @Test(groups = {"broken", "maven-broken"})
   public void testngMethodShouldBeSerializable(ITestContext context) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(out);

@@ -24,9 +24,6 @@ public class IssueTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getTestData() {
-    return new Object[][] {
-        {ChildClassExample.class},
-        {FactorySample.class}
-    };
+    return new Object[][] {{ChildClassExample.class}, {FactorySample.class}};
   }
 }

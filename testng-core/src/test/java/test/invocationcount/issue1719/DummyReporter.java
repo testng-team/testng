@@ -1,13 +1,12 @@
 package test.invocationcount.issue1719;
 
+import java.util.List;
+import java.util.Set;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
-
-import java.util.List;
-import java.util.Set;
 
 public class DummyReporter implements IReporter {
   private Set<ITestResult> failures = Sets.newHashSet();

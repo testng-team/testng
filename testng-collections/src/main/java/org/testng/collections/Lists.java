@@ -55,6 +55,7 @@ public final class Lists {
 
   /**
    * Utility method that merges two lists by applying the provided condition.
+   *
    * @param <T> - The generic type
    * @param l1 - The first list
    * @param condition - The condition that is used to determine if an element is to be added or not.
@@ -66,12 +67,13 @@ public final class Lists {
     List<T> result = newArrayList(l1);
     Arrays.stream(lists)
         .flatMap(Collection::stream)
-        .forEach(eachItem -> {
-          boolean exists = result.stream().anyMatch(e -> condition.test(e, eachItem));
-          if (!exists) {
-            result.add(eachItem);
-          }
-        });
+        .forEach(
+            eachItem -> {
+              boolean exists = result.stream().anyMatch(e -> condition.test(e, eachItem));
+              if (!exists) {
+                result.add(eachItem);
+              }
+            });
     return result;
   }
 }

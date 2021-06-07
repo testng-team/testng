@@ -1,17 +1,16 @@
 package org.testng;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Objects;
-import org.testng.internal.invokers.SuiteRunnerMap;
-import org.testng.internal.Utils;
-import org.testng.thread.IWorker;
-import org.testng.xml.XmlSuite;
-
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.collections.Objects;
+import org.testng.internal.Utils;
+import org.testng.internal.invokers.SuiteRunnerMap;
+import org.testng.thread.IWorker;
+import org.testng.xml.XmlSuite;
 
 /**
  * An {@code IWorker} that is used to encapsulate and run Suite Runners

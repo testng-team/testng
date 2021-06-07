@@ -1,12 +1,10 @@
 package org.testng;
 
 import com.beust.jcommander.Parameter;
-
-import org.testng.collections.Lists;
-import org.testng.xml.XmlSuite;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.collections.Lists;
+import org.testng.xml.XmlSuite;
 
 public class CommandLineArgs {
 
@@ -233,13 +231,15 @@ public class CommandLineArgs {
 
   @Parameter(
       names = LISTENERS_TO_SKIP_VIA_SPI,
-      description = "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
+      description =
+          "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
   public String spiListenersToSkip = "";
 
   public static final String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
 
   @Parameter(
-          names = OVERRIDE_INCLUDED_METHODS,
-          description = "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
+      names = OVERRIDE_INCLUDED_METHODS,
+      description =
+          "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
   public Boolean overrideIncludedMethods = false;
 }

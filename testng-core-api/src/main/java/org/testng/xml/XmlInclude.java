@@ -2,14 +2,13 @@ package org.testng.xml;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 public class XmlInclude {
 

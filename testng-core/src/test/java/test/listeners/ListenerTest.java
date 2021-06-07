@@ -1,11 +1,16 @@
 package test.listeners;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.testng.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.listeners.github1029.Issue1029InvokedMethodListener;
@@ -16,18 +21,11 @@ import test.listeners.github1029.Issue1029SampleTestClassWithOneMethod;
 import test.listeners.github1393.Listener1393;
 import test.listeners.github956.ListenerFor956;
 import test.listeners.github956.TestClassContainer;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import test.listeners.issue1952.TestclassSample;
 import test.listeners.issue2043.SampleTestClass;
 import test.listeners.issue2043.listeners.FailFastListener;
 import test.listeners.issue2055.DynamicTestListener;
 import test.listeners.issue2055.TestClassSample;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 public class ListenerTest extends SimpleBaseTest {
 
@@ -36,8 +34,9 @@ public class ListenerTest extends SimpleBaseTest {
     SimpleListener.m_list = Lists.newArrayList();
   }
 
-  @Test(description = "Ensure that if a listener is present, we get test(), onSuccess()," +
-  		" afterMethod()")
+  @Test(
+      description =
+          "Ensure that if a listener is present, we get test(), onSuccess()," + " afterMethod()")
   public void listenerShouldBeCalledBeforeConfiguration() {
     TestNG tng = create(OrderedListenerSampleTest.class);
     tng.run();
@@ -113,12 +112,8 @@ public class ListenerTest extends SimpleBaseTest {
     MyInvokedMethodListener.beforeInvocation.clear();
     MyInvokedMethodListener.afterInvocation.clear();
     tng.run();
-    assertThat(MyInvokedMethodListener.beforeInvocation).containsOnly(
-            entry("t", 1), entry("s", 1)
-    );
-    assertThat(MyInvokedMethodListener.afterInvocation).containsOnly(
-            entry("t", 1), entry("s", 1)
-    );
+    assertThat(MyInvokedMethodListener.beforeInvocation).containsOnly(entry("t", 1), entry("s", 1));
+    assertThat(MyInvokedMethodListener.afterInvocation).containsOnly(entry("t", 1), entry("s", 1));
   }
 
   @Test(description = "GITHUB-154: MethodInterceptor will be called twice")
@@ -129,15 +124,19 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(interceptor.getCount(), 1);
   }
-  
-  @Test(description = "GITHUB-1863:IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way")
-  public void methodInterceptorShouldBeRunOnceWhenCustomisedListenerImplementsITestListenerAndIMethodInterceptor() {
+
+  @Test(
+      description =
+          "GITHUB-1863:IMethodInterceptor will be invoked twice when listener implements both ITestListener and IMethodInterceptor via eclipse execution way")
+  public void
+      methodInterceptorShouldBeRunOnceWhenCustomisedListenerImplementsITestListenerAndIMethodInterceptor() {
     TestNG tng = create(LSampleTest.class);
-    InterceptorInvokeTwiceSimulateListener interceptor = new InterceptorInvokeTwiceSimulateListener();
+    InterceptorInvokeTwiceSimulateListener interceptor =
+        new InterceptorInvokeTwiceSimulateListener();
     tng.addListener(interceptor);
     tng.run();
     Assert.assertEquals(interceptor.getCount(), 1);
-}
+  }
 
   @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
   public void classListenerShouldWork() {
@@ -150,13 +149,16 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
-    assertThat(MyClassListener.names).containsExactly(
-        "BeforeClass=Derived1",
-          "BeforeMethod=Derived1.t", "AfterMethod=Derived1.t",
-        "AfterClass=Derived1",
-        "BeforeClass=Derived2",
-          "BeforeMethod=Derived2.s", "AfterMethod=Derived2.s",
-        "AfterClass=Derived2");
+    assertThat(MyClassListener.names)
+        .containsExactly(
+            "BeforeClass=Derived1",
+            "BeforeMethod=Derived1.t",
+            "AfterMethod=Derived1.t",
+            "AfterClass=Derived1",
+            "BeforeClass=Derived2",
+            "BeforeMethod=Derived2.s",
+            "AfterMethod=Derived2.s",
+            "AfterClass=Derived2");
   }
 
   @Test
@@ -170,12 +172,14 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
-    assertThat(MyClassListener.names).containsExactly(
-        "BeforeClass=Derived3",
-          "BeforeMethod=Derived3.r", "AfterMethod=Derived3.r",
-          "BeforeMethod=Derived3.r1", "AfterMethod=Derived3.r1",
-        "AfterClass=Derived3"
-    );
+    assertThat(MyClassListener.names)
+        .containsExactly(
+            "BeforeClass=Derived3",
+            "BeforeMethod=Derived3.r",
+            "AfterMethod=Derived3.r",
+            "BeforeMethod=Derived3.r1",
+            "AfterMethod=Derived3.r1",
+            "AfterClass=Derived3");
   }
 
   @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
@@ -187,12 +191,14 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
-    assertThat(MyClassListener.names).containsExactly(
-        "BeforeClass=ClassListenerSample",
-          "BeforeMethod=ClassListenerSample.test", "AfterMethod=ClassListenerSample.test",
-          "BeforeMethod=ClassListenerSample.test2", "AfterMethod=ClassListenerSample.test2",
-        "AfterClass=ClassListenerSample"
-    );
+    assertThat(MyClassListener.names)
+        .containsExactly(
+            "BeforeClass=ClassListenerSample",
+            "BeforeMethod=ClassListenerSample.test",
+            "AfterMethod=ClassListenerSample.test",
+            "BeforeMethod=ClassListenerSample.test2",
+            "AfterMethod=ClassListenerSample.test2",
+            "AfterClass=ClassListenerSample");
   }
 
   @Test
@@ -239,7 +245,9 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(listener.getContext().getPassedTests().size(), 1);
   }
 
-  @Test(description = "GITHUB-1084: Using deprecated addListener methods should not register many times")
+  @Test(
+      description =
+          "GITHUB-1084: Using deprecated addListener methods should not register many times")
   public void listenerRegistration() {
     MultiListener listener = new MultiListener();
     TestNG tng = create(SimpleSample.class);
@@ -260,8 +268,12 @@ public class ListenerTest extends SimpleBaseTest {
 
   @Test
   public void testListenerCallInvocation() {
-    XmlSuite suite = createXmlSuite("suite956", "test956", TestClassContainer.FirstTestClass.class,
-        TestClassContainer.SecondTestClass.class);
+    XmlSuite suite =
+        createXmlSuite(
+            "suite956",
+            "test956",
+            TestClassContainer.FirstTestClass.class,
+            TestClassContainer.SecondTestClass.class);
     TestNG tng = create(suite);
     ListenerFor956 listener = new ListenerFor956();
     tng.addListener(listener);
@@ -282,7 +294,7 @@ public class ListenerTest extends SimpleBaseTest {
     Assert.assertEquals(adapter.getFailedTests().size(), 1);
   }
 
-  @Test(dataProvider = "dp", description ="GITHUB-1029" )
+  @Test(dataProvider = "dp", description = "GITHUB-1029")
   public void ensureXmlTestIsNotNull(Class<?> clazz, XmlSuite.ParallelMode mode) {
     XmlSuite xmlSuite = createXmlSuite("Suite");
     createXmlTest(xmlSuite, "GITHUB-1029-Test", clazz);
@@ -309,12 +321,11 @@ public class ListenerTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][]{
-            {Issue1029SampleTestClassWithFiveMethods.class, XmlSuite.ParallelMode.METHODS},
-            {Issue1029SampleTestClassWithOneMethod.class, XmlSuite.ParallelMode.METHODS},
-            {Issue1029SampleTestClassWithDataDrivenMethod.class, XmlSuite.ParallelMode.METHODS},
-            {Issue1029SampleTestClassWithFiveInstances.class, XmlSuite.ParallelMode.INSTANCES}
-
+    return new Object[][] {
+      {Issue1029SampleTestClassWithFiveMethods.class, XmlSuite.ParallelMode.METHODS},
+      {Issue1029SampleTestClassWithOneMethod.class, XmlSuite.ParallelMode.METHODS},
+      {Issue1029SampleTestClassWithDataDrivenMethod.class, XmlSuite.ParallelMode.METHODS},
+      {Issue1029SampleTestClassWithFiveInstances.class, XmlSuite.ParallelMode.INSTANCES}
     };
   }
 
@@ -322,9 +333,11 @@ public class ListenerTest extends SimpleBaseTest {
   public void runTest() {
     TestNG testng = create(SampleTestClass.class);
     testng.run();
-    assertThat(FailFastListener.msgs).containsExactly("FailFastListener:afterInvocation",
-        "FailFastListener:beforeDataProviderExecution",
-        "FailFastListener:beforeConfiguration");
+    assertThat(FailFastListener.msgs)
+        .containsExactly(
+            "FailFastListener:afterInvocation",
+            "FailFastListener:beforeDataProviderExecution",
+            "FailFastListener:beforeConfiguration");
   }
 
   @Test(description = "GITHUB-2055")
@@ -340,5 +353,4 @@ public class ListenerTest extends SimpleBaseTest {
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(0);
   }
-
 }

@@ -1,10 +1,5 @@
 package org.testng.internal;
 
-import java.util.stream.Collectors;
-import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -12,6 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.testng.TestNGException;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+
 /**
  * Simple graph class to implement topological sort (used to sort methods based on what groups they
  * depend on).
@@ -93,11 +93,13 @@ public class Graph<T> {
     // Clone the list of nodes but only keep those that are
     // not independent.
     //
-    List<Node<T>> nodes2 = getNodes().parallelStream()
-        .filter(n -> !isIndependent(n.getObject()))
-        .map(Node::clone)
-        .sorted(comparator)
-        .collect(Collectors.toList());
+    List<Node<T>> nodes2 =
+        getNodes()
+            .parallelStream()
+            .filter(n -> !isIndependent(n.getObject()))
+            .map(Node::clone)
+            .sorted(comparator)
+            .collect(Collectors.toList());
 
     //
     // Sort the nodes alphabetically to make sure that methods of the same class

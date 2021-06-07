@@ -14,7 +14,8 @@ public class TestClassWithMultipleGroupFailures {
     throw new RuntimeException("simulating a failure");
   }
 
-  @Test(groups = "all", dependsOnGroups = {"p1", "p2"})
+  @Test(
+      groups = "all",
+      dependsOnGroups = {"p1", "p2"})
   public void child() {}
-
 }

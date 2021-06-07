@@ -8,8 +8,7 @@ public class VerifyTestListener implements ITestListener {
   public static int m_count = 0;
 
   @Override
-  public void onFinish(ITestContext context) {
-  }
+  public void onFinish(ITestContext context) {}
 
   @Override
   public void onStart(ITestContext context) {
@@ -17,23 +16,17 @@ public class VerifyTestListener implements ITestListener {
   }
 
   @Override
-  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-  }
+  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {}
 
   @Override
-  public void onTestFailure(ITestResult result) {
-  }
+  public void onTestFailure(ITestResult result) {}
 
   @Override
-  public void onTestSkipped(ITestResult result) {
-  }
+  public void onTestSkipped(ITestResult result) {}
 
   @Override
-  public void onTestStart(ITestResult result) {
-  }
+  public void onTestStart(ITestResult result) {}
 
   @Override
-  public void onTestSuccess(ITestResult result) {
-  }
-
+  public void onTestSuccess(ITestResult result) {}
 }

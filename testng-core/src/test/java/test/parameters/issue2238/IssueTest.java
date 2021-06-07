@@ -1,6 +1,7 @@
 package test.parameters.issue2238;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -48,7 +49,6 @@ public class IssueTest extends SimpleBaseTest {
     runTest(xmlSuite);
   }
 
-
   private void runTest(XmlSuite xmlSuite) {
     System.setProperty("value", "200");
     TestNG testng = create(xmlSuite);
@@ -57,5 +57,4 @@ public class IssueTest extends SimpleBaseTest {
     testng.run();
     assertThat(listener.getFailedTests()).isEmpty();
   }
-
 }

@@ -35,8 +35,8 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     ReasonReporter reporter = new ReasonReporter();
     testng.addListener(reporter);
     testng.run();
-    assertThat(reporter.getSkippedInfo()).containsAnyOf(entry("child", "father,mother"),
-        entry("child", "mother,father"));
+    assertThat(reporter.getSkippedInfo())
+        .containsAnyOf(entry("child", "father,mother"), entry("child", "mother,father"));
   }
 
   @Test(description = "GITHUB-1878")
@@ -85,8 +85,8 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     ReasonReporter reporter = new ReasonReporter();
     testng.addListener(reporter);
     testng.run();
-    assertThat(reporter.getSkippedInfo()).containsAnyOf(entry("child", "father,mother"),
-        entry("child", "mother,father"));
+    assertThat(reporter.getSkippedInfo())
+        .containsAnyOf(entry("child", "father,mother"), entry("child", "mother,father"));
   }
 
   @Test(description = "GITHUB-1878")
@@ -110,5 +110,4 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     testng.run();
     assertThat(reporter.getSkippedInfo()).containsAllEntriesOf(expected);
   }
-
 }

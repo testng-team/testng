@@ -24,7 +24,4 @@ public class ParentTest {
   private void ppp(String string) {
     System.out.println("[Parent] " + string);
   }
-
-
-
 }

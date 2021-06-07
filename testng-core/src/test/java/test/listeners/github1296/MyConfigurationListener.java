@@ -21,10 +21,8 @@ public class MyConfigurationListener implements IConfigurationListener {
   }
 
   @Override
-  public void onConfigurationFailure(ITestResult iTestResult) {
-  }
+  public void onConfigurationFailure(ITestResult iTestResult) {}
 
   @Override
-  public void onConfigurationSkip(ITestResult itr) {
-  }
+  public void onConfigurationSkip(ITestResult itr) {}
 }

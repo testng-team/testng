@@ -1,8 +1,10 @@
 package org.testng.internal;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
-
 import org.testng.IDataProviderMethod;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -14,10 +16,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
 
 /** This class represents a test method. */
 public class TestNGMethod extends BaseTestMethod {
@@ -35,8 +33,7 @@ public class TestNGMethod extends BaseTestMethod {
       Method method,
       IAnnotationFinder finder,
       XmlTest xmlTest,
-      Object instance
-  ) {
+      Object instance) {
     this(objectFactory, method, finder, true, xmlTest, instance);
   }
 
@@ -130,7 +127,8 @@ public class TestNGMethod extends BaseTestMethod {
         .filter(this::methodNameMatcher)
         .map(XmlInclude::getDescription)
         .filter(Objects::nonNull)
-        .findFirst().orElse("");
+        .findFirst()
+        .orElse("");
   }
 
   private boolean classNameMatcher(XmlClass xmlClass) {
@@ -204,9 +202,7 @@ public class TestNGMethod extends BaseTestMethod {
   }
 
   private static ITestNGMethod[] clone(ITestNGMethod[] sources) {
-    return Arrays.stream(sources)
-        .map(ITestNGMethod::clone)
-        .toArray(ITestNGMethod[]::new);
+    return Arrays.stream(sources).map(ITestNGMethod::clone).toArray(ITestNGMethod[]::new);
   }
 
   @Override

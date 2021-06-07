@@ -9,8 +9,7 @@ import org.testng.annotations.Guice;
 @Guice
 public class MyListenerWithoutModuleFactory implements IInvokedMethodListener {
 
-  @Inject
-  private Greeter greeter;
+  @Inject private Greeter greeter;
 
   private static Greeter instance;
 

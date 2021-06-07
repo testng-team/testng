@@ -1,8 +1,7 @@
 package test.justin;
 
-import org.testng.annotations.Test;
-
 import java.text.ParseException;
+import org.testng.annotations.Test;
 
 /**
  * Created Jul 10, 2005
@@ -10,18 +9,15 @@ import java.text.ParseException;
  * @author <a href="mailto:jlee@antwerkz.com">Justin Lee</a>
  */
 public class MonthTest extends BaseTestCase {
-    public MonthTest() {
-    }
+  public MonthTest() {}
 
-    public MonthTest(String name) {
-        super(name);
-    }
+  public MonthTest(String name) {
+    super(name);
+  }
 
-    @Test(groups = {"bean-tests"})
-    public void july2005() throws ParseException {
-    }
+  @Test(groups = {"bean-tests"})
+  public void july2005() throws ParseException {}
 
-    @Test
-    public void weekendDay() throws ParseException {
-    }
+  @Test
+  public void weekendDay() throws ParseException {}
 }

@@ -5,8 +5,8 @@ import org.testng.annotations.Test;
 
 public class SimpleSample {
 
-    @Test
-    public void test() {
-        Assert.assertTrue(true);
-    }
+  @Test
+  public void test() {
+    Assert.assertTrue(true);
+  }
 }

@@ -1,9 +1,8 @@
 package test.tmp;
 
-import org.testng.annotations.Test;
-
 import java.lang.reflect.Method;
 import java.util.Calendar;
+import org.testng.annotations.Test;
 
 public class TimeBombTest {
 
@@ -30,7 +29,4 @@ public class TimeBombTest {
   private void ppp(String string) {
     System.out.println("[TimeBombTest] " + string);
   }
-
 }
-
-

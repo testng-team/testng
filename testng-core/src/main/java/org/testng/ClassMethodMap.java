@@ -1,13 +1,12 @@
 package org.testng;
 
-import org.testng.collections.Maps;
-import org.testng.internal.XmlMethodSelector;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.testng.collections.Maps;
+import org.testng.internal.XmlMethodSelector;
 
 /**
  * This class maintains a map of {@code <Class, List<ITestNGMethod>>}. It is used by TestWorkers to

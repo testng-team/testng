@@ -1,9 +1,8 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.*;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import java.util.List;
 import org.testng.thread.IExecutorFactory;
 
 public interface IConfiguration {

@@ -13,14 +13,14 @@ import org.testng.annotations.Test;
 
 public class ClassSample {
 
-    private final int val;
+  private final int val;
 
-    public ClassSample(int val) {
-        this.val = val;
-    }
+  public ClassSample(int val) {
+    this.val = val;
+  }
 
-    @Test
-    public void checkVal() {
-        Assert.assertTrue(this.val != 0);
-    }
+  @Test
+  public void checkVal() {
+    Assert.assertTrue(this.val != 0);
+  }
 }

@@ -1,22 +1,20 @@
 package org.testng.internal.thread.graph;
 
-import org.testng.IDynamicGraph;
-import org.testng.thread.ITestNGThreadPoolExecutor;
-import org.testng.TestNGException;
-import org.testng.collections.Maps;
-import org.testng.IDynamicGraph.Status;
-import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.thread.TestNGThreadFactory;
-import org.testng.log4testng.Logger;
-
-import javax.annotation.Nonnull;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
+import org.testng.IDynamicGraph;
+import org.testng.IDynamicGraph.Status;
+import org.testng.TestNGException;
+import org.testng.collections.Maps;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.thread.TestNGThreadFactory;
+import org.testng.log4testng.Logger;
+import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 
@@ -25,8 +23,8 @@ import org.testng.thread.IWorker;
  * and a {@code IThreadWorkerFactory} to initialize/create {@code Runnable} wrappers around those
  * tasks
  */
-public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
-    ITestNGThreadPoolExecutor {
+public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor
+    implements ITestNGThreadPoolExecutor {
 
   private final IDynamicGraph<T> m_graph;
   private final IThreadWorkerFactory<T> m_factory;
@@ -64,7 +62,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
     synchronized (m_graph) {
       List<T> freeNodes = m_graph.getFreeNodes();
       if (m_comparator != null) {
-          freeNodes.sort(m_comparator);
+        freeNodes.sort(m_comparator);
       }
       runNodes(freeNodes);
     }
@@ -97,7 +95,7 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor implements
       } else {
         List<T> freeNodes = m_graph.getFreeNodes();
         if (m_comparator != null) {
-            freeNodes.sort(m_comparator);
+          freeNodes.sort(m_comparator);
         }
         handleThreadAffinity(freeNodes);
         runNodes(freeNodes);

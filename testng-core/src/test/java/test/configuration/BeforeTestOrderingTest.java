@@ -1,7 +1,11 @@
 package test.configuration;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -10,14 +14,7 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.TestHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class BeforeTestOrderingTest {
 

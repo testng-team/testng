@@ -2,7 +2,9 @@ package org.testng.reporters;
 
 import static org.testng.internal.Utils.isStringNotBlank;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.testng.ITestContext;
@@ -11,9 +13,6 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /** A simple reporter that collects the results and prints them on standard out. */
 public class TextReporter implements ITestListener {
@@ -100,7 +99,6 @@ public class TextReporter implements ITestListener {
     logExceptions("SKIPPED", skippedTests);
     logExceptions("RETRIED", retriedTests);
 
-
     List<ITestNGMethod> ft = resultsToMethods(context.getFailedTests().getAllResults());
     StringBuilder logBuf = new StringBuilder(LINE);
     logBuf.append("    ").append(m_testName).append("\n");
@@ -112,9 +110,7 @@ public class TextReporter implements ITestListener {
         .append(", Skips: ")
         .append(resultsToMethods(skippedTests).size());
     if (!retriedTests.isEmpty()) {
-      logBuf
-          .append(", Retries: ")
-          .append(resultsToMethods(retriedTests).size());
+      logBuf.append(", Retries: ").append(resultsToMethods(retriedTests).size());
     }
     int confFailures = context.getFailedConfigurations().size();
     int confSkips = context.getSkippedConfigurations().size();

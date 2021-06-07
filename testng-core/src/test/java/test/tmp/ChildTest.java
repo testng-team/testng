@@ -25,7 +25,4 @@ public class ChildTest extends ParentTest {
   private void ppp(String string) {
     System.out.println("[Parent] " + string);
   }
-
-
-
 }

@@ -1,18 +1,15 @@
 package org.testng;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-/**
- * Helper class to keep track of dependencies.
- */
+/** Helper class to keep track of dependencies. */
 public class DependencyMap {
   private final ListMultiMap<String, ITestNGMethod> m_dependencies = Maps.newListMultiMap();
   private final ListMultiMap<String, ITestNGMethod> m_groups = Maps.newListMultiMap();
@@ -30,12 +27,12 @@ public class DependencyMap {
     Set<String> uniqueKeys = m_groups.keySet();
     Pattern pattern = Pattern.compile(group);
 
-    List<ITestNGMethod> result = m_groups.keySet()
-        .stream()
-        .parallel()
-        .filter(k -> pattern.matcher(k).matches())
-        .flatMap(k -> m_groups.get(k).stream())
-        .collect(Collectors.toList());
+    List<ITestNGMethod> result =
+        m_groups.keySet().stream()
+            .parallel()
+            .filter(k -> pattern.matcher(k).matches())
+            .flatMap(k -> m_groups.get(k).stream())
+            .collect(Collectors.toList());
 
     for (String k : uniqueKeys) {
       if (Pattern.matches(group, k)) {
@@ -67,12 +64,15 @@ public class DependencyMap {
     if (l.isEmpty() && fromMethod.ignoreMissingDependencies()) {
       return fromMethod;
     }
-    Optional<ITestNGMethod> found = l.stream()
-        .parallel()
-        .filter(m -> isSameInstance(fromMethod, m)
-            || belongToDifferentClassHierarchy(fromMethod, m)
-            || hasInstance(fromMethod, m))
-        .findFirst();
+    Optional<ITestNGMethod> found =
+        l.stream()
+            .parallel()
+            .filter(
+                m ->
+                    isSameInstance(fromMethod, m)
+                        || belongToDifferentClassHierarchy(fromMethod, m)
+                        || hasInstance(fromMethod, m))
+            .findFirst();
     if (found.isPresent()) {
       return found.get();
     }
@@ -91,7 +91,9 @@ public class DependencyMap {
     Object baseInstance = baseClassMethod.getInstance();
     Object derivedInstance = derivedClassMethod.getInstance();
     boolean result = derivedInstance != null || baseInstance != null;
-    boolean params = null != baseClassMethod.getFactoryMethodParamsInfo() && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
+    boolean params =
+        null != baseClassMethod.getFactoryMethodParamsInfo()
+            && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
 
     if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
       return hasSameParameters(baseClassMethod, derivedClassMethod);
@@ -101,7 +103,9 @@ public class DependencyMap {
 
   private static boolean hasSameParameters(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    return baseClassMethod.getFactoryMethodParamsInfo().getParameters()[0]
+    return baseClassMethod
+        .getFactoryMethodParamsInfo()
+        .getParameters()[0]
         .equals(derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0]);
   }
 
@@ -113,9 +117,10 @@ public class DependencyMap {
     if (!nonNullInstances) {
       return false;
     }
-    if (null != baseClassMethod.getFactoryMethodParamsInfo() && RuntimeBehavior.enforceThreadAffinity()) {
-      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass()) &&
-          hasSameParameters(baseClassMethod, derivedClassMethod);
+    if (null != baseClassMethod.getFactoryMethodParamsInfo()
+        && RuntimeBehavior.enforceThreadAffinity()) {
+      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass())
+          && hasSameParameters(baseClassMethod, derivedClassMethod);
     }
     return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
   }

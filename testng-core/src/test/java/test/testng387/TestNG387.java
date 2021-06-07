@@ -1,14 +1,12 @@
 package test.testng387;
 
+import static org.testng.Assert.assertEqualsNoOrder;
+
+import java.util.List;
 import org.testng.*;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-
 import test.SimpleBaseTest;
-
-import java.util.List;
-
-import static org.testng.Assert.assertEqualsNoOrder;
 
 public class TestNG387 extends SimpleBaseTest {
   @Test(invocationCount = 500)

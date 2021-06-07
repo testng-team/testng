@@ -2,8 +2,8 @@ package org.testng.xml;
 
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
-import org.testng.internal.objects.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.objects.InstanceCreator;
 
 /** A Utility class that helps represent a {@link XmlSuite} and {@link XmlTest} as String. */
 final class XmlWeaver {

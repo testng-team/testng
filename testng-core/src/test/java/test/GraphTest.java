@@ -1,14 +1,13 @@
 package test;
 
 import java.util.Comparator;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.Graph;
 import org.testng.internal.Graph.Node;
 import org.testng.internal.Tarjan;
-
-import java.util.List;
 
 public class GraphTest {
 
@@ -59,12 +58,10 @@ public class GraphTest {
     try {
       g = createCyclicGraph();
       g.topologicalSort();
-    }
-    catch(TestNGException ex) {
+    } catch (TestNGException ex) {
       Tarjan<String> t = new Tarjan<>(g, "1");
       Assert.assertEquals(t.getCycle().size(), 3);
     }
-
   }
 
   private Graph<String> createCyclicGraph() {
@@ -115,15 +112,18 @@ public class GraphTest {
 
       Assert.assertEquals(4, predecessors.size());
       Assert.assertEquals("1", predecessors.get(0));
-      Assert.assertTrue(predecessors.get(1).equals("2.1")
-        || predecessors.get(1).equals("2.2")
-        || predecessors.get(1).equals("2"));
-      Assert.assertTrue(predecessors.get(2).equals("2.1")
-        || predecessors.get(2).equals("2.2")
-        || predecessors.get(2).equals("2"));
-      Assert.assertTrue(predecessors.get(3).equals("2.1")
-        || predecessors.get(3).equals("2.2")
-        || predecessors.get(3).equals("2"));
+      Assert.assertTrue(
+          predecessors.get(1).equals("2.1")
+              || predecessors.get(1).equals("2.2")
+              || predecessors.get(1).equals("2"));
+      Assert.assertTrue(
+          predecessors.get(2).equals("2.1")
+              || predecessors.get(2).equals("2.2")
+              || predecessors.get(2).equals("2"));
+      Assert.assertTrue(
+          predecessors.get(3).equals("2.1")
+              || predecessors.get(3).equals("2.2")
+              || predecessors.get(3).equals("2"));
     }
   }
 

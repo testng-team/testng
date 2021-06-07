@@ -5,7 +5,6 @@ import org.testng.TestListenerAdapter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-
 import test.configuration.ConfigurationListenerSampleTest.MyTLA;
 
 @Listeners(MyTLA.class)

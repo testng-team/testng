@@ -36,8 +36,12 @@ public class FailedInformationOnConsoleReporter implements IReporter {
 
     if (hasFailedConfigs) {
       System.err.println(Strings.repeat("=", 100));
-      System.err.println("::::::Failed Configurations for Suite ::: [" + name + "] ::: Test name ["
-          + ctx.getName() + "]::::::");
+      System.err.println(
+          "::::::Failed Configurations for Suite ::: ["
+              + name
+              + "] ::: Test name ["
+              + ctx.getName()
+              + "]::::::");
       System.err.println(Strings.repeat("=", 100));
       failedConfigs.getAllResults().forEach(FailedInformationOnConsoleReporter::generateReport);
       System.err.println(Strings.repeat("=", 100));
@@ -46,8 +50,12 @@ public class FailedInformationOnConsoleReporter implements IReporter {
 
     if (hasFailedTests) {
       System.err.println(Strings.repeat("=", 100));
-      System.err.println("::::::Failed Tests for Suite ::: [" + name + "] ::: Test name ["
-          + ctx.getName() + "]::::::");
+      System.err.println(
+          "::::::Failed Tests for Suite ::: ["
+              + name
+              + "] ::: Test name ["
+              + ctx.getName()
+              + "]::::::");
       System.err.println(Strings.repeat("=", 100));
       failedTests.getAllResults().forEach(FailedInformationOnConsoleReporter::generateReport);
       System.err.println(Strings.repeat("=", 100));

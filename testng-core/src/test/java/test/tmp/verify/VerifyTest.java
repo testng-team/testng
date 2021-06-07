@@ -16,7 +16,7 @@ public class VerifyTest {
 
   @Verify
   public void verify() {
-//    throw new RuntimeException();
-//    System.out.println("verify()");
+    //    throw new RuntimeException();
+    //    System.out.println("verify()");
   }
 }

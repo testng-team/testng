@@ -1,12 +1,9 @@
 package org.testng.annotations;
 
+import java.util.List;
 import org.testng.internal.annotations.IDataProvidable;
 
-import java.util.List;
-
-/**
- * Encapsulate the @Factory / @testng.factory annotation
- */
+/** Encapsulate the @Factory / @testng.factory annotation */
 public interface IFactoryAnnotation extends IParameterizable, IDataProvidable {
 
   List<Integer> getIndices();

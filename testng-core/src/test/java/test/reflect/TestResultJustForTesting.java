@@ -1,13 +1,12 @@
 package test.reflect;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.testng.IClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-
-import java.util.Set;
 
 /**
  * Created on 12/30/15.
@@ -17,15 +16,14 @@ import java.util.Set;
 public class TestResultJustForTesting implements ITestResult {
 
   private final String id = UUID.randomUUID().toString();
+
   @Override
   public int getStatus() {
     return 0;
   }
 
   @Override
-  public void setStatus(int status) {
-
-  }
+  public void setStatus(int status) {}
 
   @Override
   public ITestNGMethod getMethod() {
@@ -38,9 +36,7 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
-  public void setParameters(Object[] parameters) {
-
-  }
+  public void setParameters(Object[] parameters) {}
 
   @Override
   public IClass getTestClass() {
@@ -53,9 +49,7 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
-  public void setThrowable(Throwable throwable) {
-
-  }
+  public void setThrowable(Throwable throwable) {}
 
   @Override
   public long getStartMillis() {
@@ -68,9 +62,7 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
-  public void setEndMillis(long millis) {
-
-  }
+  public void setEndMillis(long millis) {}
 
   @Override
   public String getName() {
@@ -103,9 +95,7 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
-  public void setTestName(String name) {
-
-  }
+  public void setTestName(String name) {}
 
   @Override
   public boolean wasRetried() {
@@ -113,9 +103,7 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
-  public void setWasRetried(boolean wasRetried) {
-
-  }
+  public void setWasRetried(boolean wasRetried) {}
 
   @Override
   public List<ITestNGMethod> getSkipCausedBy() {
@@ -143,9 +131,7 @@ public class TestResultJustForTesting implements ITestResult {
   }
 
   @Override
-  public void setAttribute(String name, Object value) {
-
-  }
+  public void setAttribute(String name, Object value) {}
 
   @Override
   public Set<String> getAttributeNames() {

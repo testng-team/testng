@@ -2,11 +2,10 @@ package org.testng.xml;
 
 import static org.testng.Assert.assertEquals;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import java.io.File;
 import java.util.List;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class ParserTest {
 

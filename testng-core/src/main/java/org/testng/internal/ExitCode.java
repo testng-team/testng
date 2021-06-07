@@ -1,22 +1,17 @@
 package org.testng.internal;
 
+import java.util.BitSet;
 import org.testng.IResultMap;
 import org.testng.ITestContext;
 
-import java.util.BitSet;
-
 /**
  * |--------------------|---------|-------|------------|------------------------------------------|
- * | FailedWithinSuccess| Skipped | Failed| Status Code| Remarks                                  |
+ * | FailedWithinSuccess| Skipped | Failed| Status Code| Remarks |
  * |--------------------|---------|-------|------------|------------------------------------------|
- * | 0                  | 0       | 0     | 0          | Passed tests                             |
- * | 0                  | 0       | 1     | 1          | Failed tests                             |
- * | 0                  | 1       | 0     | 2          | Skipped tests                            |
- * | 0                  | 1       | 1     | 3          | Skipped/Failed tests                     |
- * | 1                  | 0       | 0     | 4          | FailedWithinSuccess tests                |
- * | 1                  | 0       | 1     | 5          | FailedWithinSuccess/Failed tests         |
- * | 1                  | 1       | 0     | 6          | FailedWithinSuccess/Skipped tests        |
- * | 1                  | 1       | 1     | 7          | FailedWithinSuccess/Skipped/Failed tests |
+ * | 0 | 0 | 0 | 0 | Passed tests | | 0 | 0 | 1 | 1 | Failed tests | | 0 | 1 | 0 | 2 | Skipped tests
+ * | | 0 | 1 | 1 | 3 | Skipped/Failed tests | | 1 | 0 | 0 | 4 | FailedWithinSuccess tests | | 1 | 0
+ * | 1 | 5 | FailedWithinSuccess/Failed tests | | 1 | 1 | 0 | 6 | FailedWithinSuccess/Skipped tests
+ * | | 1 | 1 | 1 | 7 | FailedWithinSuccess/Skipped/Failed tests |
  * |--------------------|---------|-------|------------|------------------------------------------|
  */
 public class ExitCode {

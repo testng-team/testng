@@ -1,9 +1,10 @@
 package test.groups.issue182;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
@@ -24,5 +25,4 @@ public class IssueTest extends SimpleBaseTest {
     expected.put("childTestMethod", Collections.singletonList(MY_GROUP));
     assertThat(listener.getMapping()).containsAllEntriesOf(expected);
   }
-
 }

@@ -6,7 +6,6 @@ import org.testng.annotations.Test;
 public class B extends C {
   public static final String G = "group";
 
-
   @BeforeMethod
   public void bm() {
     System.out.println("B.bm");
@@ -17,4 +16,3 @@ public class B extends C {
     System.out.println("B.btest1");
   }
 }
-

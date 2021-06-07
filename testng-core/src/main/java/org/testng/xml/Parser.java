@@ -1,22 +1,21 @@
 package org.testng.xml;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.Queue;
-import java.util.ArrayDeque;
+import java.util.ServiceLoader;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /** <code>Parser</code> is a parser for a TestNG XML test suite file. */
 @SuppressWarnings("unused")
@@ -26,12 +25,13 @@ public class Parser {
   public static final String TESTNG_DTD = "testng-1.0.dtd";
 
   /** The URL to the deprecated TestNG DTD. */
-  //It has to be public because its being used by TestNG eclipse plugin
+  // It has to be public because its being used by TestNG eclipse plugin
   public static final String OLD_TESTNG_DTD_URL = "https://beust.com/testng/" + TESTNG_DTD;
 
   /** The URL to the TestNG DTD. */
-  //It has to be public because its being used by TestNG eclipse plugin
+  // It has to be public because its being used by TestNG eclipse plugin
   public static final String TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
+
   public static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
   private static final List<String> DOMAINS = Arrays.asList("beust.com", "testng.org");

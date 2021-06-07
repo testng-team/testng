@@ -1,6 +1,5 @@
 package test.dataprovider.issue1691;
 
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

@@ -1,10 +1,8 @@
 package org.testng.internal.objects;
 
+import java.lang.reflect.Constructor;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.internal.objects.InstanceCreator;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Default factory for test creation. Note that if no constructor is found matching the specified
@@ -48,10 +46,10 @@ public class ObjectFactoryImpl implements ITestObjectFactory {
         message = e.getCause().getMessage();
       }
       String error =
-              "Could not create an instance of class "
-                      + declaringClass
-                      + ((message != null) ? (": " + message) : "")
-                      + ".\nPlease make sure it has a constructor that accepts either a String or no parameter.";
+          "Could not create an instance of class "
+              + declaringClass
+              + ((message != null) ? (": " + message) : "")
+              + ".\nPlease make sure it has a constructor that accepts either a String or no parameter.";
       throw new TestNGException(error);
     }
 

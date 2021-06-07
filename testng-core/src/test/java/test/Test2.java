@@ -4,12 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
-/**
- *
- * @author Cedric Beust, May 5, 2004
- *
- */
+/** @author Cedric Beust, May 5, 2004 */
 public class Test2 extends BaseTest {
   private boolean m_initializedCorrectly = false;
 
@@ -19,7 +14,7 @@ public class Test2 extends BaseTest {
   }
 
   // Shouldn't be called
-  @BeforeMethod(groups = { "excludeThisGroup"} )
+  @BeforeMethod(groups = {"excludeThisGroup"})
   public void incorrectSetup() {
     throw new RuntimeException("Should never be run");
   }
@@ -30,13 +25,13 @@ public class Test2 extends BaseTest {
     run();
     String[] passed = {
       "method1",
-      "method2", "method3",
-      "broken", "throwExpectedException1ShouldPass",
+      "method2",
+      "method3",
+      "broken",
+      "throwExpectedException1ShouldPass",
       "throwExpectedException2ShouldPass"
     };
-    String[] failed = {
-        "throwExceptionShouldFail", "verifyLastNameShouldFail"
-    };
+    String[] failed = {"throwExceptionShouldFail", "verifyLastNameShouldFail"};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
@@ -52,19 +47,15 @@ public class Test2 extends BaseTest {
     addClass("test.sample.PartialGroupTest");
     addIncludedGroup("classGroup");
     run();
-    String[] passed = {
-        "testMethodGroup", "testClassGroup"
-      };
-      String[] failed = {
-          "testMethodGroupShouldFail", "testClassGroupShouldFail"
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+    String[] passed = {"testMethodGroup", "testClassGroup"};
+    String[] failed = {"testMethodGroupShouldFail", "testClassGroupShouldFail"};
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
 
-//      ppp("@@@@@@@@@@@@@@@@@@ PASSED TESTS");
-//      for (Object o : getPassedTests().values()) {
-//        ppp("@@@@@@@@@@ PASSED:" + o);
-//      }
+    //      ppp("@@@@@@@@@@@@@@@@@@ PASSED TESTS");
+    //      for (Object o : getPassedTests().values()) {
+    //        ppp("@@@@@@@@@@ PASSED:" + o);
+    //      }
   }
 
   @Test
@@ -73,13 +64,10 @@ public class Test2 extends BaseTest {
     addIncludedGroup("methodGroup");
     run();
     String[] passed = {
-        "testMethodGroup",
-      };
-      String[] failed = {
-         "testMethodGroupShouldFail"
-      };
-      verifyTests("Passed", passed, getPassedTests());
-      verifyTests("Failed", failed, getFailedTests());
+      "testMethodGroup",
+    };
+    String[] failed = {"testMethodGroupShouldFail"};
+    verifyTests("Passed", passed, getPassedTests());
+    verifyTests("Failed", failed, getFailedTests());
   }
-
 }

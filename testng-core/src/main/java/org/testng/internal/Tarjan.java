@@ -1,12 +1,11 @@
 package org.testng.internal;
 
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
 
 /**
  * Implementation of the Tarjan algorithm to find and display a cycle in a graph.

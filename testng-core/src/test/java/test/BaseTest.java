@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.testng.Assert;
 import org.testng.IClassListener;
 import org.testng.IInvokedMethodListener;
@@ -36,12 +35,13 @@ import org.testng.xml.XmlTest;
 
 /**
  * Base class for tests
- * @since  May 5, 2004
+ *
+ * @since May 5, 2004
  */
 public class BaseTest extends BaseDistributedTest {
-  private static final String m_outputDirectory= "test-output-tests";
+  private static final String m_outputDirectory = "test-output-tests";
 
-  private XmlSuite m_suite= null;
+  private XmlSuite m_suite = null;
   private final ITestRunnerFactory m_testRunnerFactory;
   private final IConfiguration m_configuration;
 
@@ -62,11 +62,11 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected void setTestTimeOut(long n) {
-      getTest().setTimeOut(n);
+    getTest().setTimeOut(n);
   }
 
   protected void setSuiteTimeOut(long n) {
-      m_suite.setTimeOut(Long.toString(n));
+    m_suite.setTimeOut(Long.toString(n));
   }
 
   protected void setJUnit(boolean f) {
@@ -77,14 +77,15 @@ public class BaseTest extends BaseDistributedTest {
     getTest().getSuite().setThreadCount(count);
   }
 
-  private Map<Long, XmlTest> m_tests= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_passedTests= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_failedTests= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_skippedTests= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_passedConfigs= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_failedConfigs= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_skippedConfigs= new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_failedButWithinSuccessPercentageTests= new HashMap<>();
+  private Map<Long, XmlTest> m_tests = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_passedTests = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_failedTests = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_skippedTests = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_passedConfigs = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_failedConfigs = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_skippedConfigs = new HashMap<>();
+  private Map<Long, Map<String, List<ITestResult>>> m_failedButWithinSuccessPercentageTests =
+      new HashMap<>();
 
   protected Map<String, List<ITestResult>> getTests(Map<Long, Map<String, List<ITestResult>>> map) {
     return map.computeIfAbsent(getId(), k -> new HashMap<>());
@@ -94,7 +95,8 @@ public class BaseTest extends BaseDistributedTest {
     return m_tests.get(getId());
   }
 
-  protected void setTests(Map<Long, Map<String, List<ITestResult>>> map, Map<String, List<ITestResult>> m) {
+  protected void setTests(
+      Map<Long, Map<String, List<ITestResult>>> map, Map<String, List<ITestResult>> m) {
     map.put(getId(), m);
   }
 
@@ -154,9 +156,9 @@ public class BaseTest extends BaseDistributedTest {
     setTests(m_failedConfigs, m);
   }
 
-
   protected void run() {
-    assert null != getTest() : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
+    assert null != getTest()
+        : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
     setPassedTests(Maps.newHashMap());
     setFailedTests(Maps.newHashMap());
     setSkippedTests(Maps.newHashMap());
@@ -166,14 +168,19 @@ public class BaseTest extends BaseDistributedTest {
     setFailedButWithinSuccessPercentageTests(Maps.newHashMap());
 
     m_suite.setVerbose(m_verbose != null ? m_verbose : 0);
-    SuiteRunner suite = new SuiteRunner(m_configuration,
-        m_suite, m_outputDirectory, m_testRunnerFactory, Systematiser.getComparator());
+    SuiteRunner suite =
+        new SuiteRunner(
+            m_configuration,
+            m_suite,
+            m_outputDirectory,
+            m_testRunnerFactory,
+            Systematiser.getComparator());
 
     suite.run();
   }
 
   protected void addMethodSelector(String className, int priority) {
-    XmlMethodSelector methodSelector= new XmlMethodSelector();
+    XmlMethodSelector methodSelector = new XmlMethodSelector();
     methodSelector.setName(className);
     methodSelector.setPriority(priority);
     getTest().getMethodSelectors().add(methodSelector);
@@ -190,7 +197,7 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected XmlClass addClass(String className) {
-    XmlClass result= new XmlClass(className);
+    XmlClass result = new XmlClass(className);
     getTest().getXmlClasses().add(result);
 
     return result;
@@ -204,7 +211,7 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected void addPackage(String pkgName, String[] included, String[] excluded) {
-    XmlPackage pkg= new XmlPackage();
+    XmlPackage pkg = new XmlPackage();
     pkg.setName(pkgName);
     pkg.getInclude().addAll(Arrays.asList(included));
     pkg.getExclude().addAll(Arrays.asList(excluded));
@@ -212,8 +219,8 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   private XmlClass findClass(String className) {
-    for(XmlClass cl : getTest().getXmlClasses()) {
-      if(cl.getName().equals(className)) {
+    for (XmlClass cl : getTest().getXmlClasses()) {
+      if (cl.getName().equals(className)) {
         return cl;
       }
     }
@@ -222,13 +229,13 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   public void addIncludedMethod(String className, String m) {
-    XmlClass xmlClass= findClass(className);
+    XmlClass xmlClass = findClass(className);
     xmlClass.getIncludedMethods().add(new XmlInclude(m));
     getTest().getXmlClasses().add(xmlClass);
   }
 
   public void addExcludedMethod(String className, String m) {
-    XmlClass xmlClass= findClass(className);
+    XmlClass xmlClass = findClass(className);
     xmlClass.getExcludedMethods().add(m);
     getTest().getXmlClasses().add(xmlClass);
   }
@@ -241,18 +248,18 @@ public class BaseTest extends BaseDistributedTest {
     getTest().addExcludedGroup(g);
   }
 
-  @BeforeMethod(groups= { "init", "initTest" })
+  @BeforeMethod(groups = {"init", "initTest"})
   public void methodSetUp() {
-    m_suite= new XmlSuite();
+    m_suite = new XmlSuite();
     m_suite.setName("Internal_suite");
-    XmlTest xmlTest= new XmlTest(m_suite);
+    XmlTest xmlTest = new XmlTest(m_suite);
     xmlTest.setName("Internal_test_failures_are_expected");
     m_tests.put(getId(), xmlTest);
   }
 
   private void addTest(Map<String, List<ITestResult>> tests, ITestResult t) {
-    List<ITestResult> l = tests
-        .computeIfAbsent(t.getMethod().getMethodName(), k -> new ArrayList<>());
+    List<ITestResult> l =
+        tests.computeIfAbsent(t.getMethod().getMethodName(), k -> new ArrayList<>());
     l.add(t);
   }
 
@@ -297,28 +304,23 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   /**
-   * Used for instanceCount testing, when we need to look inside the
-   * TestResult to count the various SUCCESS/FAIL/FAIL_BUT_OK
+   * Used for instanceCount testing, when we need to look inside the TestResult to count the various
+   * SUCCESS/FAIL/FAIL_BUT_OK
    */
-  protected void verifyResults(Map<String, List<ITestResult>> tests,
-                               int expected,
-                               String message) {
-    if(tests.size() > 0) {
+  protected void verifyResults(Map<String, List<ITestResult>> tests, int expected, String message) {
+    if (tests.size() > 0) {
       Set<String> keys = tests.keySet();
-      Object firstKey= keys.iterator().next();
-      List<ITestResult> passedResult= tests.get(firstKey);
-      int n= passedResult.size();
+      Object firstKey = keys.iterator().next();
+      List<ITestResult> passedResult = tests.get(firstKey);
+      int n = passedResult.size();
       assert n == expected : "Expected " + expected + " " + message + " but found " + n;
-    }
-    else {
-      assert expected == 0 : "Expected " + expected + " " + message + " but found "
-        + tests.size();
+    } else {
+      assert expected == 0 : "Expected " + expected + " " + message + " but found " + tests.size();
     }
   }
 
-  protected static void verifyInstanceNames(Map<String, List<ITestResult>> actual,
-      String[] expected)
-  {
+  protected static void verifyInstanceNames(
+      Map<String, List<ITestResult>> actual, String[] expected) {
     List<String> actualNames = Lists.newArrayList();
     for (Map.Entry<String, List<ITestResult>> es : actual.entrySet()) {
       for (ITestResult tr : es.getValue()) {
@@ -349,10 +351,20 @@ public class BaseTest extends BaseDistributedTest {
     }
 
     @Override
-    public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
-      TestRunner testRunner= new TestRunner(m_baseTest.m_configuration, suite, test, false,
-          listeners, classListeners, Systematiser.getComparator());
+    public TestRunner newTestRunner(
+        ISuite suite,
+        XmlTest test,
+        Collection<IInvokedMethodListener> listeners,
+        List<IClassListener> classListeners) {
+      TestRunner testRunner =
+          new TestRunner(
+              m_baseTest.m_configuration,
+              suite,
+              test,
+              false,
+              listeners,
+              classListeners,
+              Systematiser.getComparator());
 
       testRunner.addListener(new TestHTMLReporter());
       testRunner.addListener(new JUnitXMLReporter());
@@ -374,16 +386,15 @@ public class BaseTest extends BaseDistributedTest {
     verifyTests("Failed", failed, getFailedTests());
     verifyTests("Skipped", skipped, getSkippedTests());
   }
-
 } // BaseTest
 
 ////////////////////////////
 
 class TestListener extends TestListenerAdapter {
-  private static BaseTest m_test= null;
+  private static BaseTest m_test = null;
 
   public TestListener(BaseTest t1) {
-    m_test= t1;
+    m_test = t1;
   }
 
   @Override
@@ -420,5 +431,4 @@ class TestListener extends TestListenerAdapter {
   public void onConfigurationSkip(ITestResult tr) {
     m_test.addSkippedConfig(tr);
   }
-
 } // TestListener

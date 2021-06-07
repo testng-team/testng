@@ -2,7 +2,6 @@ package test.dataprovider;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-
 import org.testng.annotations.DataProvider;
 
 public class FieldInjectionProvider {

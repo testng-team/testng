@@ -20,8 +20,9 @@ public class PriorityTestSample1 {
     log();
   }
 
-  private void log(){
+  private void log() {
     String testname = Reporter.getCurrentTestResult().getTestContext().getName();
-    LogGatheringListener.addLog(testname, PriorityTestSample1.class, Thread.currentThread().getId());
+    LogGatheringListener.addLog(
+        testname, PriorityTestSample1.class, Thread.currentThread().getId());
   }
 }

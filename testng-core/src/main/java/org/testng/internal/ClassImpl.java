@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.util.List;
+import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestContext;
@@ -10,14 +12,11 @@ import org.testng.collections.Objects;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.objects.pojo.DetailedAttributes;
-import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.util.List;
-import java.util.Map;
 
 /** Implementation of an IClass. */
 public class ClassImpl implements IClass {
@@ -119,10 +118,7 @@ public class ClassImpl implements IClass {
       if (create) {
         DetailedAttributes ea = newDetailedAttributes(create, errorMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, null, ea);
-        result =
-            new Object[] {
-                Dispenser.newInstance(m_objectFactory).dispense(attributes)
-            };
+        result = new Object[] {Dispenser.newInstance(m_objectFactory).dispense(attributes)};
       }
     }
     if (m_instances.size() > 0) {

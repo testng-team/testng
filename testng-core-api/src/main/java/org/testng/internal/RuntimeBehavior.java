@@ -34,9 +34,11 @@ public final class RuntimeBehavior {
   }
 
   public static String unsecuredUrlDocumentation() {
-    return "TestNG by default disables loading DTD from unsecured Urls. " +
-            "If you need to explicitly load the DTD from a http url, please do so " +
-            "by using the JVM argument [-D" + TESTNG_USE_UNSECURED_URL + "=true]";
+    return "TestNG by default disables loading DTD from unsecured Urls. "
+        + "If you need to explicitly load the DTD from a http url, please do so "
+        + "by using the JVM argument [-D"
+        + TESTNG_USE_UNSECURED_URL
+        + "=true]";
   }
 
   public static String getDefaultLineSeparator() {
@@ -119,6 +121,7 @@ public final class RuntimeBehavior {
 
   /**
    * Returns the default verbosity level if not specified at the suite level.
+   *
    * @return default XML suite verbosity level, or 1 if property is missing
    */
   public static int getDefaultVerboseLevel() {

@@ -1,16 +1,15 @@
 package test.groups.issue1834;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.Files;
 import test.SimpleBaseTest;
 import test.TestHelper;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class IssueTest extends SimpleBaseTest {
 

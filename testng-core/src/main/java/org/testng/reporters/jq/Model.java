@@ -1,5 +1,9 @@
 package org.testng.reporters.jq;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -10,11 +14,6 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
 import org.testng.internal.Utils;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class Model {
   private ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();

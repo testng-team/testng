@@ -1,5 +1,7 @@
 package org.testng;
 
+import static org.testng.internal.MethodHelper.fixMethodsWithClass;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,21 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.invokers.AbstractParallelWorker;
 import org.testng.internal.Attributes;
 import org.testng.internal.ClassInfoMap;
-import org.testng.internal.invokers.ConfigMethodArguments;
-import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraphHelper;
@@ -32,30 +31,33 @@ import org.testng.internal.GroupsHelper;
 import org.testng.internal.IConfigEavesdropper;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.IContainer;
-import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.invokers.Invoker;
-import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.TestMethodContainer;
-import org.testng.internal.TestMethodComparator;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Systematiser;
 import org.testng.internal.TestListenerHelper;
-import org.testng.internal.invokers.TestMethodWorker;
+import org.testng.internal.TestMethodComparator;
+import org.testng.internal.TestMethodContainer;
 import org.testng.internal.TestNGClassFinder;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.invokers.AbstractParallelWorker;
+import org.testng.internal.invokers.ConfigMethodArguments;
+import org.testng.internal.invokers.ConfigMethodArguments.Builder;
+import org.testng.internal.invokers.IInvoker;
+import org.testng.internal.invokers.Invoker;
+import org.testng.internal.invokers.TestMethodWorker;
+import org.testng.junit.IJUnitTestRunner;
+import org.testng.log4testng.Logger;
 import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
-import org.testng.junit.IJUnitTestRunner;
-import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
@@ -63,14 +65,12 @@ import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlTest;
 
-import javax.annotation.Nonnull;
-
-import static org.testng.internal.MethodHelper.fixMethodsWithClass;
-
 /** This class takes care of running one Test. */
 public class TestRunner
-    implements ITestContext, ITestResultNotifier, IThreadWorkerFactory<ITestNGMethod>,
-    IConfigEavesdropper {
+    implements ITestContext,
+        ITestResultNotifier,
+        IThreadWorkerFactory<ITestNGMethod>,
+        IConfigEavesdropper {
 
   private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
   private static final Logger LOGGER = Logger.getLogger(TestRunner.class);
@@ -169,8 +169,7 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
       Comparator<ITestNGMethod> comparator,
-      DataProviderHolder otherHolder
-  ) {
+      DataProviderHolder otherHolder) {
     this.comparator = comparator;
     this.holder.merge(otherHolder);
     init(
@@ -273,11 +272,11 @@ public class TestRunner
             m_suite.getSuiteState(),
             skipFailedInvocationCounts,
             invokedMethodListeners,
-            classListeners, holder);
+            classListeners,
+            holder);
 
     if (test.getParallel() != null) {
-      log(
-          "Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
+      log("Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
     }
 
     setOutputDirectory(outputDirectory);
@@ -287,8 +286,8 @@ public class TestRunner
   }
 
   /**
-   * Returns all packages to use for the current test. This includes the test from the test
-   * suite. Never returns null.
+   * Returns all packages to use for the current test. This includes the test from the test suite.
+   * Never returns null.
    */
   private List<XmlPackage> getAllPackages() {
     final List<XmlPackage> allPackages = Lists.newArrayList();
@@ -369,7 +368,8 @@ public class TestRunner
     //
 
     ITestNGListenerFactory factory =
-        TestListenerHelper.createListenerFactory(m_objectFactory, m_testClassFinder, listenerFactoryClass, this);
+        TestListenerHelper.createListenerFactory(
+            m_objectFactory, m_testClassFinder, listenerFactoryClass, this);
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
@@ -414,7 +414,8 @@ public class TestRunner
           try {
             s = m_objectFactory.newInstance(selector.getClassName());
           } catch (Exception ex) {
-            throw new TestNGException("Couldn't find method selector : " + selector.getClassName(), ex);
+            throw new TestNGException(
+                "Couldn't find method selector : " + selector.getClassName(), ex);
           }
 
           m_runInfo.addMethodSelector(s, selector.getPriority());
@@ -438,8 +439,7 @@ public class TestRunner
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
     m_testClassFinder =
-        new TestNGClassFinder(
-            classMap, Maps.newHashMap(), m_configuration, this, holder);
+        new TestNGClassFinder(classMap, Maps.newHashMap(), m_configuration, this, holder);
     ITestMethodFinder testMethodFinder =
         new TestNGMethodFinder(m_objectFactory, m_runInfo, m_annotationFinder, comparator);
 
@@ -460,7 +460,8 @@ public class TestRunner
               testMethodFinder,
               m_annotationFinder,
               m_xmlTest,
-              classMap.getXmlClass(ic.getRealClass()), m_testClassFinder.getFactoryCreationFailedMessage());
+              classMap.getXmlClass(ic.getRealClass()),
+              m_testClassFinder.getFactoryCreationFailedMessage());
       m_classMap.put(ic.getRealClass(), tc);
     }
 
@@ -478,7 +479,10 @@ public class TestRunner
     //
     for (ITestClass tc : m_classMap.values()) {
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
-      fixMethodsWithClass(((ITestClassConfigInfo) tc).getAllBeforeClassMethods().toArray(new ITestNGMethod[0]), tc, beforeClassMethods);
+      fixMethodsWithClass(
+          ((ITestClassConfigInfo) tc).getAllBeforeClassMethods().toArray(new ITestNGMethod[0]),
+          tc,
+          beforeClassMethods);
       fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterClassMethods(), tc, afterClassMethods);
@@ -519,8 +523,10 @@ public class TestRunner
             m_excludedMethods,
             comparator);
 
-    m_classMethodMap = new ClassMethodMap(Arrays.asList(testMethodsContainer.getItems()), m_xmlMethodSelector);
-    m_groupMethods = new ConfigurationGroupMethods(testMethodsContainer, beforeGroupMethods, afterGroupMethods);
+    m_classMethodMap =
+        new ClassMethodMap(Arrays.asList(testMethodsContainer.getItems()), m_xmlMethodSelector);
+    m_groupMethods =
+        new ConfigurationGroupMethods(testMethodsContainer, beforeGroupMethods, afterGroupMethods);
 
     m_afterXmlTestMethods =
         MethodHelper.collectAndOrderMethods(
@@ -629,11 +635,12 @@ public class TestRunner
 
   private void invokeTestConfigurations(ITestNGMethod[] testConfigurationMethods) {
     if (null != testConfigurationMethods && testConfigurationMethods.length > 0) {
-      ConfigMethodArguments arguments = new Builder()
-          .usingConfigMethodsAs(testConfigurationMethods)
-          .forSuite(m_xmlTest.getSuite())
-          .usingParameters(m_xmlTest.getAllParameters())
-          .build();
+      ConfigMethodArguments arguments =
+          new Builder()
+              .usingConfigMethodsAs(testConfigurationMethods)
+              .forSuite(m_xmlTest.getSuite())
+              .usingParameters(m_xmlTest.getAllParameters())
+              .build();
       m_invoker.getConfigInvoker().invokeConfigurations(arguments);
     }
   }
@@ -666,7 +673,8 @@ public class TestRunner
               for (XmlInclude inc : includedMethods) {
                 methods.add(inc.getName());
               }
-              IJUnitTestRunner tr = IJUnitTestRunner.createTestRunner(m_objectFactory, TestRunner.this);
+              IJUnitTestRunner tr =
+                  IJUnitTestRunner.createTestRunner(m_objectFactory, TestRunner.this);
               tr.setInvokedMethodListeners(m_invokedMethodListeners);
               try {
                 tr.run(tc, methods.toArray(new String[0]));
@@ -707,11 +715,12 @@ public class TestRunner
   }
 
   private boolean sortOnPriority(ITestNGMethod[] interceptedOrder) {
-    return m_methodInterceptors.size() > 1 ||
-        Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
+    return m_methodInterceptors.size() > 1
+        || Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
   }
 
-  // If any of the test methods specify a priority other than the default, we'll need to be able to sort them.
+  // If any of the test methods specify a priority other than the default, we'll need to be able to
+  // sort them.
   private static BlockingQueue<Runnable> newQueue(boolean needPrioritySort) {
     return needPrioritySort ? new PriorityBlockingQueue<>() : new LinkedBlockingQueue<>();
   }
@@ -729,13 +738,13 @@ public class TestRunner
     // termination from methods that never get invoked).
     ITestNGMethod[] interceptedOrder = intercept(getAllTestMethods());
     AtomicReference<IDynamicGraph<ITestNGMethod>> reference = new AtomicReference<>();
-    TimeUtils.computeAndShowTime("DynamicGraphHelper.createDynamicGraph()",
+    TimeUtils.computeAndShowTime(
+        "DynamicGraphHelper.createDynamicGraph()",
         () -> {
-          IDynamicGraph<ITestNGMethod> ref = DynamicGraphHelper
-              .createDynamicGraph(interceptedOrder, getCurrentXmlTest());
+          IDynamicGraph<ITestNGMethod> ref =
+              DynamicGraphHelper.createDynamicGraph(interceptedOrder, getCurrentXmlTest());
           reference.set(ref);
-        }
-    );
+        });
     IDynamicGraph<ITestNGMethod> graph = reference.get();
 
     graph.setVisualisers(this.visualisers);
@@ -749,16 +758,18 @@ public class TestRunner
         return;
       }
       ITestNGThreadPoolExecutor executor =
-          this.m_configuration.getExecutorFactory().newTestMethodExecutor(
-              "test=" + xmlTest.getName(),
-              graph,
-              this,
-              threadCount,
-              threadCount,
-              0,
-              TimeUnit.MILLISECONDS,
-              newQueue(needPrioritySort),
-              methodComparator);
+          this.m_configuration
+              .getExecutorFactory()
+              .newTestMethodExecutor(
+                  "test=" + xmlTest.getName(),
+                  graph,
+                  this,
+                  threadCount,
+                  threadCount,
+                  0,
+                  TimeUnit.MILLISECONDS,
+                  newQueue(needPrioritySort),
+                  methodComparator);
       executor.run();
       try {
         long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
@@ -787,8 +798,10 @@ public class TestRunner
     while (!freeNodes.isEmpty()) {
       if (needPrioritySort) {
         freeNodes.sort(methodComparator);
-        // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each method.
-        // Future task: To optimize this, we can only update freeNodes after running a test that another test is dependent upon.
+        // Since this is sequential, let's run one at a time and fetch/sort freeNodes after each
+        // method.
+        // Future task: To optimize this, we can only update freeNodes after running a test that
+        // another test is dependent upon.
         freeNodes = freeNodes.subList(0, 1);
       }
       createWorkers(freeNodes).forEach(Runnable::run);
@@ -860,7 +873,9 @@ public class TestRunner
             .testContext(this)
             .listeners(this.m_classListeners.values())
             .build();
-    return AbstractParallelWorker.newWorker(m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances()).createWorkers(args);
+    return AbstractParallelWorker.newWorker(
+            m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances())
+        .createWorkers(args);
   }
 
   //
@@ -1005,7 +1020,7 @@ public class TestRunner
   @Override
   public ITestNGMethod[] getAllTestMethods() {
     if (getTest().isJUnit()) {
-      //This is true only when we are running JUnit mode
+      // This is true only when we are running JUnit mode
       return m_allJunitTestMethods;
     }
     return testMethodsContainer.getItems();
@@ -1075,7 +1090,6 @@ public class TestRunner
     m_skippedTests.addResult(tr);
   }
 
-
   @Override
   public void addFailedTest(ITestNGMethod testMethod, ITestResult result) {
     logFailedTest(result, false /* withinSuccessPercentage */);
@@ -1139,9 +1153,10 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
-    Optional<ITestListener> found = m_testListeners.stream()
-        .filter(iTestListener -> iTestListener.getClass().equals(listener.getClass()))
-        .findAny();
+    Optional<ITestListener> found =
+        m_testListeners.stream()
+            .filter(iTestListener -> iTestListener.getClass().equals(listener.getClass()))
+            .findAny();
     if (found.isPresent()) {
       return;
     }
@@ -1232,16 +1247,17 @@ public class TestRunner
     }
 
     private void removeConfigurationResultAfterExecution(ITestResult itr) {
-      //The remove method of ResultMap removes based on hashCode
-      //So lets find the result based on the method and remove it off.
+      // The remove method of ResultMap removes based on hashCode
+      // So lets find the result based on the method and remove it off.
       m_configsToBeInvoked.getAllResults().removeIf(tr -> tr.getMethod().equals(itr.getMethod()));
     }
   }
 
   void addMethodInterceptor(IMethodInterceptor methodInterceptor) {
-      //avoid to add interceptor twice when the defined listeners implements both ITestListener and IMethodInterceptor.
-      if (!m_methodInterceptors.contains(methodInterceptor)) {
-          m_methodInterceptors.add(methodInterceptor);
+    // avoid to add interceptor twice when the defined listeners implements both ITestListener and
+    // IMethodInterceptor.
+    if (!m_methodInterceptors.contains(methodInterceptor)) {
+      m_methodInterceptors.add(methodInterceptor);
     }
   }
 
@@ -1276,5 +1292,4 @@ public class TestRunner
   public IInjectorFactory getInjectorFactory() {
     return this.m_injectorFactory;
   }
-
 }

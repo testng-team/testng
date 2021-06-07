@@ -1,10 +1,9 @@
 package test.testng285;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 import java.util.HashSet;
 import java.util.Set;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 @Test(singleThreaded = true)
 public class BugBase {
@@ -22,5 +21,4 @@ public class BugBase {
   public void fbase() {
     log(Thread.currentThread().getId());
   }
-
 }

@@ -7,9 +7,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Objects;
-
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -33,7 +31,8 @@ import org.testng.xml.XmlTest;
  */
 public class AnnotationHelper {
   private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
-  private static final String SUFFIX = "Please check if all classes being referred to, in the annotation are available in the classpath.";
+  private static final String SUFFIX =
+      "Please check if all classes being referred to, in the annotation are available in the classpath.";
 
   private static final List<Class<? extends IAnnotation>> ALL_ANNOTATIONS =
       Arrays.asList(
@@ -274,21 +273,27 @@ public class AnnotationHelper {
               continue;
             }
 
-            boolean shouldIgnore = isAnnotationPresent(annotationFinder, m, IIgnoreAnnotation.class);
+            boolean shouldIgnore =
+                isAnnotationPresent(annotationFinder, m, IIgnoreAnnotation.class);
             if (shouldIgnore) {
-              Utils.log("", 2, "Method " + m + ""
-                  + " is being skipped since its been marked to be ignored");
+              Utils.log(
+                  "",
+                  2,
+                  "Method " + m + "" + " is being skipped since its been marked to be ignored");
               continue;
             }
 
-            if (Arrays.stream(m.getAnnotations()).anyMatch(a -> a.annotationType().getName().equals("groovy.transform.Internal"))) {
-              Utils.log("", 2, "Method " + m + " is being skipped since it a Groovy internal method.");
+            if (Arrays.stream(m.getAnnotations())
+                .anyMatch(a -> a.annotationType().getName().equals("groovy.transform.Internal"))) {
+              Utils.log(
+                  "", 2, "Method " + m + " is being skipped since it a Groovy internal method.");
               continue;
             }
 
             String key = createMethodKey(m);
             if (null == vResult.get(key)) {
-              ITestNGMethod tm = new TestNGMethod(objectFactory, m, annotationFinder, xmlTest, null);
+              ITestNGMethod tm =
+                  new TestNGMethod(objectFactory, m, annotationFinder, xmlTest, null);
               vResult.put(key, tm);
             }
           }
@@ -317,9 +322,7 @@ public class AnnotationHelper {
     return null;
   }
 
-  private static boolean isAnnotationPresent(
-      IAnnotationFinder annotationFinder,
-      Method m) {
+  private static boolean isAnnotationPresent(IAnnotationFinder annotationFinder, Method m) {
     for (Class<? extends IAnnotation> a : AnnotationHelper.CONFIGURATION_CLASSES) {
       if (annotationFinder.findAnnotation(m, a) != null) {
         return true;
@@ -370,7 +373,10 @@ public class AnnotationHelper {
     try {
       return clazz.getAnnotation(a);
     } catch (Throwable t) {
-      String msg = "Encountered problems when parsing the annotation on class " + clazz.getCanonicalName() + ". ";
+      String msg =
+          "Encountered problems when parsing the annotation on class "
+              + clazz.getCanonicalName()
+              + ". ";
       msg += SUFFIX;
       throw new TypeNotPresentException(msg, t);
     }
@@ -395,9 +401,10 @@ public class AnnotationHelper {
     try {
       return c.getAnnotation(a);
     } catch (Throwable t) {
-      String msg = "Encountered problems when parsing the annotation on constructor " + c.getName() + ". ";
+      String msg =
+          "Encountered problems when parsing the annotation on constructor " + c.getName() + ". ";
       msg += SUFFIX;
       throw new TypeNotPresentException(msg, t);
     }
   }
- }
+}

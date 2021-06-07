@@ -11,11 +11,8 @@ import org.testng.annotations.Test;
 public class SetUpWithParameterTest {
 
   @BeforeClass
-  public void setUp(String bogusParameter) {
-  }
+  public void setUp(String bogusParameter) {}
 
   @Test
-  public void test() {
-
-  }
+  public void test() {}
 }

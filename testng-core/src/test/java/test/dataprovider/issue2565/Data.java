@@ -11,6 +11,7 @@ public enum Data {
   public void addDatum(String datum) {
     data.add(datum);
   }
+
   public List<String> getData() {
     return data;
   }

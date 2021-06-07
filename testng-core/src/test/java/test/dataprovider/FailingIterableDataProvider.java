@@ -1,9 +1,8 @@
 package test.dataprovider;
 
+import java.util.Iterator;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.util.Iterator;
 
 public class FailingIterableDataProvider {
 

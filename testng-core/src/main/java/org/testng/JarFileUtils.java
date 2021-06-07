@@ -1,6 +1,15 @@
 package org.testng;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.reporters.Files;
@@ -10,16 +19,6 @@ import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 /** A Utility for extracting {@link XmlSuite} from a jar. */
 class JarFileUtils {
@@ -107,14 +106,12 @@ class JarFileUtils {
     }
     return false;
   }
-  
+
   private void delete(File f) throws IOException {
     if (f.isDirectory()) {
-      for (File c : Objects.requireNonNull(f.listFiles()))
-        delete(c);
+      for (File c : Objects.requireNonNull(f.listFiles())) delete(c);
     }
-    if (!f.delete())
-      throw new FileNotFoundException("Failed to delete file: " + f);
+    if (!f.delete()) throw new FileNotFoundException("Failed to delete file: " + f);
   }
 
   private boolean matchesXmlPathInJar(JarEntry je) {

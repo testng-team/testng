@@ -9,21 +9,19 @@ import org.testng.internal.ConstructorOrMethod;
 public abstract class JUnitTestMethod extends BaseTestMethod {
 
   protected JUnitTestMethod(
-          ITestObjectFactory objectFactory,
-          JUnitTestClass owner,
-          ConstructorOrMethod method,
-          Object instance
-  ) {
+      ITestObjectFactory objectFactory,
+      JUnitTestClass owner,
+      ConstructorOrMethod method,
+      Object instance) {
     this(objectFactory, owner, method.getName(), method, instance);
   }
 
   protected JUnitTestMethod(
-          ITestObjectFactory objectFactory,
-          JUnitTestClass owner,
-          String methodName,
-          ConstructorOrMethod method,
-          Object instance
-  ) {
+      ITestObjectFactory objectFactory,
+      JUnitTestClass owner,
+      String methodName,
+      ConstructorOrMethod method,
+      Object instance) {
     super(objectFactory, methodName, method, null, instance);
     setTestClass(owner);
     owner.getTestMethodList().add(this);

@@ -1,7 +1,8 @@
 package test.attributes.issue2346;
 
-import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;

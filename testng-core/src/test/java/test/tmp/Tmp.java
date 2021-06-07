@@ -1,8 +1,7 @@
 package test.tmp;
 
-import org.testng.annotations.Test;
-
 import java.util.Random;
+import org.testng.annotations.Test;
 
 public class Tmp {
 
@@ -12,8 +11,7 @@ public class Tmp {
     try {
       Random r = new Random();
       Thread.sleep(Math.abs(r.nextInt() % 300));
-    }
-    catch (InterruptedException handled) {
+    } catch (InterruptedException handled) {
       Thread.currentThread().interrupt();
       handled.printStackTrace();
     }
@@ -23,5 +21,4 @@ public class Tmp {
   private void ppp(String string) {
     System.out.println("[Tmp] " + string);
   }
-
 }

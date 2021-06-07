@@ -1,7 +1,6 @@
 package testhelper;
 
 import com.sun.management.ThreadMXBean;
-
 import java.lang.management.ManagementFactory;
 
 public class PerformanceUtils {
@@ -13,9 +12,7 @@ public class PerformanceUtils {
     return bean instanceof ThreadMXBean ? (ThreadMXBean) bean : null;
   }
 
-  /**
-   * @return amount of memory (in bytes) allocated by current thread until now
-   */
+  /** @return amount of memory (in bytes) allocated by current thread until now */
   public static long measureAllocatedMemory() {
     if (THREAD_MX_BEAN == null) {
       throw new IllegalStateException("Couldn't get thread MBean");

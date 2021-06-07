@@ -11,14 +11,12 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.testng.*;
 import org.testng.collections.Lists;
-import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.ITestResultNotifier;
-import org.testng.internal.invokers.InvokedMethod;
 import org.testng.internal.TestResult;
+import org.testng.internal.invokers.IInvocationStatus;
+import org.testng.internal.invokers.InvokedMethod;
 
-/**
- * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
- */
+/** A JUnit TestRunner that records/triggers all information/events necessary to TestNG. */
 public class JUnit4TestRunner implements IJUnitTestRunner {
 
   private final ITestObjectFactory objectFactory;
@@ -212,8 +210,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     }
 
     private void runAfterInvocationListeners(ITestResult tr) {
-      InvokedMethod im =
-          new InvokedMethod(tr.getEndMillis(), tr);
+      InvokedMethod im = new InvokedMethod(tr.getEndMillis(), tr);
       for (IInvokedMethodListener l : m_invokeListeners) {
         l.afterInvocation(im, tr);
       }
@@ -233,7 +230,6 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
   private ITestResult createTestResult(ITestObjectFactory objectFactory, Description test) {
     JUnit4TestClass tc = new JUnit4TestClass(test);
     JUnitTestMethod tm = new JUnit4TestMethod(objectFactory, tc, test);
-
 
     TestResult tr = TestResult.newTestResultFor(tm);
 

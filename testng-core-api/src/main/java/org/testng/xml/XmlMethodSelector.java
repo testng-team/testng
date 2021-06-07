@@ -1,13 +1,10 @@
 package org.testng.xml;
 
+import java.util.Properties;
 import org.testng.TestNGException;
 import org.testng.reporters.XMLStringBuffer;
 
-import java.util.Properties;
-
-/**
- * This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml.
- */
+/** This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml. */
 public class XmlMethodSelector {
   // Either this:
   private String m_className;
@@ -84,8 +81,14 @@ public class XmlMethodSelector {
     int result = 1;
     result = prime * result + ((m_className == null) ? 0 : m_className.hashCode());
     if (getScript() != null) {
-      result = prime * result + ((getScript().getExpression() == null) ? 0 : getScript().getExpression().hashCode());
-      result = prime * result + ((getScript().getLanguage() == null) ? 0 : getScript().getLanguage().hashCode());
+      result =
+          prime * result
+              + ((getScript().getExpression() == null)
+                  ? 0
+                  : getScript().getExpression().hashCode());
+      result =
+          prime * result
+              + ((getScript().getLanguage() == null) ? 0 : getScript().getLanguage().hashCode());
     }
     result = prime * result + m_priority;
     return result;
@@ -101,13 +104,18 @@ public class XmlMethodSelector {
       if (other.m_className != null) return XmlSuite.f();
     } else if (!m_className.equals(other.m_className)) return XmlSuite.f();
     if (getScript() == null || getScript().getExpression() == null) {
-      if (other.getScript() != null && other.getScript().getExpression() != null) return XmlSuite.f();
-    } else if (!getScript().getExpression().equals(other.getScript() == null ? null : other.getScript().getExpression())) {
+      if (other.getScript() != null && other.getScript().getExpression() != null)
+        return XmlSuite.f();
+    } else if (!getScript()
+        .getExpression()
+        .equals(other.getScript() == null ? null : other.getScript().getExpression())) {
       return XmlSuite.f();
     }
     if (getScript() == null || getScript().getLanguage() == null) {
       if (other.getScript() != null && other.getScript().getLanguage() != null) return XmlSuite.f();
-    } else if (!getScript().getLanguage().equals(other.getScript() == null ? null : other.getScript().getLanguage())) {
+    } else if (!getScript()
+        .getLanguage()
+        .equals(other.getScript() == null ? null : other.getScript().getLanguage())) {
       return XmlSuite.f();
     }
     if (m_priority != other.m_priority) return XmlSuite.f();

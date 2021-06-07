@@ -6,9 +6,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConstructorOrMethod;
 
-/**
- * A Runnable Method invoker.
- */
+/** A Runnable Method invoker. */
 public class InvokeMethodRunnable implements Callable<Void> {
   private final ITestNGMethod m_method;
   private final Object m_instance;

@@ -2,9 +2,7 @@ package org.testng.thread;
 
 import java.util.List;
 
-/**
- * A factory that creates workers used by {@code GraphThreadPoolExecutor}
- */
+/** A factory that creates workers used by {@code GraphThreadPoolExecutor} */
 public interface IThreadWorkerFactory<T> {
 
   /**

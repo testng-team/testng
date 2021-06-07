@@ -15,8 +15,7 @@ public class SampleTestCaseListener implements ITestListener {
     parameters.addAll(
         Arrays.stream(result.getParameters())
             .mapToInt(each -> (int) each)
-            .collect(ArrayList::new, ArrayList::add, ArrayList::addAll)
-    );
+            .collect(ArrayList::new, ArrayList::add, ArrayList::addAll));
   }
 
   public List<Integer> getParameters() {

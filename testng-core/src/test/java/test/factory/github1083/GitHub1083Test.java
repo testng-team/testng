@@ -1,15 +1,14 @@
 package test.factory.github1083;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Field;
+import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.lang.reflect.Field;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class GitHub1083Test extends SimpleBaseTest {
 

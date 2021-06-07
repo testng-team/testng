@@ -1,12 +1,11 @@
 package org.testng.reporters;
 
-import org.testng.util.Strings;
-
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 import javax.annotation.Nullable;
+import org.testng.util.Strings;
 
 /**
  * Static helpers for XML.

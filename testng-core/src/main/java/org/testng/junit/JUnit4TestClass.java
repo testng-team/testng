@@ -12,7 +12,7 @@ public class JUnit4TestClass extends JUnitTestClass {
   private static Class<?> descriptionToClass(Description test) {
     Class<?> result = test.getTestClass();
     if (result == null) {
-        result = org.testng.internal.ClassHelper.forName(test.getClassName());
+      result = org.testng.internal.ClassHelper.forName(test.getClassName());
     }
     return result;
   }

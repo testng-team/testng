@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
 
 public class ITCaseTwo {
-  private final static Logger log = Logger.getLogger(ITCaseTwo.class);
+  private static final Logger log = Logger.getLogger(ITCaseTwo.class);
 
   @BeforeClass
   public void beforeClassTwo() {

@@ -17,5 +17,4 @@ public class IssueTest extends SimpleBaseTest {
     Throwable t = l.getFailedTests().get(0).getThrowable();
     Assertions.assertThat(t).isInstanceOf(NullPointerException.class);
   }
-
 }

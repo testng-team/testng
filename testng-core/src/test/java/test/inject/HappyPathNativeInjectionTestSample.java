@@ -1,10 +1,9 @@
 package test.inject;
 
+import java.lang.reflect.Method;
 import org.testng.ITestContext;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
 
 public class HappyPathNativeInjectionTestSample {
 

@@ -1,7 +1,6 @@
 package test.superclass;
 
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 
 public class MainTest extends BaseTest {
@@ -10,11 +9,8 @@ public class MainTest extends BaseTest {
   public void baseMethodIsCalledWithMethodTest() {
     addClass("test.superclass.Child1Test");
     run();
-    String[] passed = {
-      "tbase", "t1", "t2", "t3"
-    };
-    String[] failed = {
-    };
+    String[] passed = {"tbase", "t1", "t2", "t3"};
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
@@ -23,14 +19,9 @@ public class MainTest extends BaseTest {
   public void baseMethodIsCalledWithClassTest() {
     addClass("test.superclass.Child2Test");
     run();
-    String[] passed = {
-      "tbase", "t1", "t2", "t3"
-    };
-    String[] failed = {
-    };
+    String[] passed = {"tbase", "t1", "t2", "t3"};
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
-
-
 }

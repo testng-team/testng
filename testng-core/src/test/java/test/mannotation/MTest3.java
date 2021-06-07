@@ -31,7 +31,5 @@ public class MTest3 extends MBase {
   public void enabled2() {}
 
   @BeforeSuite(groups = "method-test3")
-  public void beforeSuite() {
-  }
-
+  public void beforeSuite() {}
 }

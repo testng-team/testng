@@ -3,7 +3,6 @@ package org.testng.xml;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-
 import org.testng.collections.Lists;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;

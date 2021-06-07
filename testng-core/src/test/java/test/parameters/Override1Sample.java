@@ -14,8 +14,7 @@ public class Override1Sample {
     Assert.assertEquals(cls, "InheritedFromClass");
   }
 
-  public void h() {
-  }
+  public void h() {}
 
   @Parameters("a")
   public void f(String p) {

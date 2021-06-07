@@ -19,7 +19,7 @@ public class IssueTest extends SimpleBaseTest {
     SampleTestCaseListener listener = new SampleTestCaseListener();
     testNG.addListener(listener);
     testNG.run();
-    Assertions.assertThat(listener.getParameters()).containsExactlyElementsOf(Arrays.asList(1, 2, 3, 4, 5));
+    Assertions.assertThat(listener.getParameters())
+        .containsExactlyElementsOf(Arrays.asList(1, 2, 3, 4, 5));
   }
-
 }

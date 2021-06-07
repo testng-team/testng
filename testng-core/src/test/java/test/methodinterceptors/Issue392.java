@@ -13,5 +13,4 @@ public class Issue392 {
 
   @Test
   public void test2() {}
-
 }

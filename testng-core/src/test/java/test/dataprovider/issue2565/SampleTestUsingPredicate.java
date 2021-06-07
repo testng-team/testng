@@ -17,11 +17,11 @@ public class SampleTestUsingPredicate {
   @DataProvider(name = "dp")
   public Iterator<Predicate<String>> data() {
     List<Predicate<String>> obj = new ArrayList<>();
-    obj.add(text -> {
-      Data.INSTANCE.addDatum(text);
-      return true;
-    });
+    obj.add(
+        text -> {
+          Data.INSTANCE.addDatum(text);
+          return true;
+        });
     return obj.iterator();
   }
-
 }

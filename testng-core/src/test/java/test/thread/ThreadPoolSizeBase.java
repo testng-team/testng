@@ -14,5 +14,4 @@ public class ThreadPoolSizeBase extends BaseThreadTest {
     log(getClass().getName(), "");
     logThread(n);
   }
-
 }

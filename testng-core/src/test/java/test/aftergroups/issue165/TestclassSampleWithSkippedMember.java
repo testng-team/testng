@@ -11,10 +11,8 @@ public class TestclassSampleWithSkippedMember {
   }
 
   @Test(groups = "A", dependsOnMethods = "a1")
-  public void a2() {
-  }
+  public void a2() {}
 
   @AfterGroups(groups = "A")
-  public void afterGroupsMethod() {
-  }
+  public void afterGroupsMethod() {}
 }

@@ -12,18 +12,18 @@ import test.SimpleBaseTest;
 
 public class MethodSelectionTest extends SimpleBaseTest {
 
-  @DataProvider(name ="dp")
+  @DataProvider(name = "dp")
   public static Object[][] getData() {
     return new Object[][] {
-        // Method name
-        {"$", "$"},
-        {"another_test", "another_test"},
-        {"another$_test", "another$_test"},
-        {"another$_test$", "another$_test$"},
-        // Regex
-        {"another\\$_test\\$$", "another$_test$"},
-        {"\\$.*", new String[]{"$", "$another$_test$"}},
-        {"\\$.*$", new String[]{"$", "$another$_test$"}}
+      // Method name
+      {"$", "$"},
+      {"another_test", "another_test"},
+      {"another$_test", "another$_test"},
+      {"another$_test$", "another$_test$"},
+      // Regex
+      {"another\\$_test\\$$", "another$_test$"},
+      {"\\$.*", new String[] {"$", "$another$_test$"}},
+      {"\\$.*$", new String[] {"$", "$another$_test$"}}
     };
   }
 

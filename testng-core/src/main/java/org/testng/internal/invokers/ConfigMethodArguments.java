@@ -14,9 +14,15 @@ public class ConfigMethodArguments extends MethodArguments {
   private final XmlSuite suite;
   private final ITestResult testMethodResult;
 
-  private ConfigMethodArguments(IClass testClass, ITestNGMethod currentTestMethod,
-      ITestNGMethod[] allMethods, XmlSuite suite, Map<String, String> params,
-      Object[] parameterValues, Object instance, ITestResult testMethodResult) {
+  private ConfigMethodArguments(
+      IClass testClass,
+      ITestNGMethod currentTestMethod,
+      ITestNGMethod[] allMethods,
+      XmlSuite suite,
+      Map<String, String> params,
+      Object[] parameterValues,
+      Object instance,
+      ITestResult testMethodResult) {
     super(instance, currentTestMethod, params, parameterValues);
     this.testClass = testClass;
     this.allMethods = allMethods;
@@ -55,7 +61,6 @@ public class ConfigMethodArguments extends MethodArguments {
   public void setTestClass(IClass testClass) {
     this.testClass = testClass;
   }
-
 
   public static class Builder {
 
@@ -116,8 +121,15 @@ public class ConfigMethodArguments extends MethodArguments {
     }
 
     public ConfigMethodArguments build() {
-      return new ConfigMethodArguments(testClass, currentTestMethod, allMethods, suite, params,
-          parameterValues, instance, testMethodResult);
+      return new ConfigMethodArguments(
+          testClass,
+          currentTestMethod,
+          allMethods,
+          suite,
+          params,
+          parameterValues,
+          instance,
+          testMethodResult);
     }
   }
 }

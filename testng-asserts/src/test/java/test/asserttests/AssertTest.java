@@ -1,29 +1,36 @@
 package test.asserttests;
 
+import static org.testng.Assert.*;
+
+import java.io.IOException;
+import java.util.*;
 import org.testng.Assert;
 import org.testng.Assert.ThrowingRunnable;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Sets;
 
-import java.io.IOException;
-import java.util.*;
-
-import static org.testng.Assert.*;
-
 public class AssertTest {
 
   @Test
   public void noOrderSuccess() {
-    String[] rto1 = { "boolean", "BigInteger", "List",};
-    String[] rto2 = {  "List", "BigInteger", "boolean",};
+    String[] rto1 = {
+      "boolean", "BigInteger", "List",
+    };
+    String[] rto2 = {
+      "List", "BigInteger", "boolean",
+    };
     Assert.assertEqualsNoOrder(rto1, rto2);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void noOrderFailure() {
-    String[] rto1 = { "a", "a", "b",};
-    String[] rto2 = {  "a", "b", "b",};
+    String[] rto1 = {
+      "a", "a", "b",
+    };
+    String[] rto2 = {
+      "a", "b", "b",
+    };
     Assert.assertEqualsNoOrder(rto1, rto2);
   }
 
@@ -124,8 +131,9 @@ public class AssertTest {
     try {
       expectThrows(IOException.class, throwingRunnable(npe));
     } catch (AssertionError error) {
-      assertEquals("Expected IOException to be thrown, but NullPointerException was thrown",
-              error.getMessage());
+      assertEquals(
+          "Expected IOException to be thrown, but NullPointerException was thrown",
+          error.getMessage());
       assertSame(npe, error.getCause());
       return;
     }
@@ -133,8 +141,7 @@ public class AssertTest {
   }
 
   private static ThrowingRunnable nonThrowingRunnable() {
-    return () -> {
-    };
+    return () -> {};
   }
 
   private static ThrowingRunnable throwingRunnable(final Throwable t) {
@@ -150,14 +157,14 @@ public class AssertTest {
 
   @DataProvider
   public Object[][] identicalArraysWithNull() {
-    return new Object[][]{
-            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", null}},
-            { new String[] { "foo", null, "bar"}, new String[] { "foo", null, "bar"}},
-            { new String[] { null, "foo", "bar"}, new String[] { null, "foo", "bar"}}
+    return new Object[][] {
+      {new String[] {"foo", "bar", null}, new String[] {"foo", "bar", null}},
+      {new String[] {"foo", null, "bar"}, new String[] {"foo", null, "bar"}},
+      {new String[] {null, "foo", "bar"}, new String[] {null, "foo", "bar"}}
     };
   }
 
-  @Test(dataProvider="identicalArraysWithNull")
+  @Test(dataProvider = "identicalArraysWithNull")
   public void identicalArraysWithNullValues(String[] actual, String[] expected) {
     assertEquals(actual, expected);
   }
@@ -165,13 +172,13 @@ public class AssertTest {
   @DataProvider
   public Object[][] nonIdenticalArraysWithNull() {
     return new Object[][] {
-            { new String[] { "foo", "bar", null}, new String[] { "foo", "bar", "not-null"}},
-            { new String[] { "foo", "not-null", "bar"}, new String[] { "foo", null, "bar"}},
-            { new String[] { null, "foo", "bar"}, new String[] {" not-null", "foo", "bar"}}
+      {new String[] {"foo", "bar", null}, new String[] {"foo", "bar", "not-null"}},
+      {new String[] {"foo", "not-null", "bar"}, new String[] {"foo", null, "bar"}},
+      {new String[] {null, "foo", "bar"}, new String[] {" not-null", "foo", "bar"}}
     };
   }
 
-  @Test(dataProvider="nonIdenticalArraysWithNull")
+  @Test(dataProvider = "nonIdenticalArraysWithNull")
   public void nonIdenticalarrayWithNullValue(String[] actual, String[] expected) {
     Assert.assertNotEquals(actual, expected);
   }
@@ -314,8 +321,8 @@ public class AssertTest {
   @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
   public void checkArrayEqualsFailsWhenDifferentOrder() {
 
-    String[] array1 = { "a", "b", "c" };
-    String[] array2 = { "a", "c", "b" };
+    String[] array1 = {"a", "b", "c"};
+    String[] array2 = {"a", "c", "b"};
 
     assertEquals(array1, array2);
   }
@@ -323,8 +330,8 @@ public class AssertTest {
   @Test(description = "GITHUB-2540")
   public void checkArrayEqualsNoOrder() {
 
-    String[] array1 = { "a", "b", "c" };
-    String[] array2 = { "a", "c", "b" };
+    String[] array1 = {"a", "b", "c"};
+    String[] array2 = {"a", "c", "b"};
 
     assertEqualsNoOrder(array1, array2);
   }
@@ -332,8 +339,8 @@ public class AssertTest {
   @Test(description = "GITHUB-2540")
   public void checkArrayEquals() {
 
-    String[] array1 = { "a", "b", "c" };
-    String[] array2 = { "a", "b", "c" };
+    String[] array1 = {"a", "b", "c"};
+    String[] array2 = {"a", "b", "c"};
 
     assertEquals(array1, array2);
   }
@@ -341,8 +348,8 @@ public class AssertTest {
   @Test(description = "GITHUB-2540")
   public void checkArrayNotEquals() {
 
-    String[] array1 = { "a", "b", "c" };
-    String[] array2 = { "a", "c", "b" };
+    String[] array1 = {"a", "b", "c"};
+    String[] array2 = {"a", "c", "b"};
 
     assertNotEquals(array1, array2);
   }
@@ -350,8 +357,8 @@ public class AssertTest {
   @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
   public void checkArrayNotEqualsFailsWhenDifferentOrder() {
 
-    String[] array1 = {"a", "b", "c" };
-    String[] array2 = {"a", "b", "c" };
+    String[] array1 = {"a", "b", "c"};
+    String[] array2 = {"a", "b", "c"};
 
     assertNotEquals(array1, array2);
   }

@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import static org.testng.internal.ClassHelper.getAvailableMethods;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -7,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
@@ -22,8 +23,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
-
-import static org.testng.internal.ClassHelper.getAvailableMethods;
 
 /**
  * This class creates an ITestClass from a test class.
@@ -49,7 +48,8 @@ public class TestNGClassFinder extends BaseClassFinder {
       ClassInfoMap cim,
       Map<Class<?>, List<Object>> instanceMap,
       IConfiguration configuration,
-      ITestContext testContext, DataProviderHolder holder) {
+      ITestContext testContext,
+      DataProviderHolder holder) {
     if (instanceMap == null) {
       throw new IllegalArgumentException("instanceMap must not be null");
     }
@@ -161,11 +161,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     Object instance = theseInstances.length != 0 ? theseInstances[0] : null;
     FactoryMethod fm =
         new FactoryMethod(
-            factoryMethod,
-            instance,
-            annotationFinder,
-            m_testContext,
-            objectFactory, holder);
+            factoryMethod, instance, annotationFinder, m_testContext, objectFactory, holder);
     ClassInfoMap moreClasses = new ClassInfoMap();
 
     if (excludeFactory(fm, m_testContext)) {
@@ -200,7 +196,8 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   // TODO use the logic somewhere
-  private ITestObjectFactory createObjectFactory(Set<Class<?>> allClasses, ITestObjectFactory fallback) {
+  private ITestObjectFactory createObjectFactory(
+      Set<Class<?>> allClasses, ITestObjectFactory fallback) {
     for (Class<?> cls : allClasses) {
 
       try {
@@ -218,9 +215,9 @@ public class TestNGClassFinder extends BaseClassFinder {
               "[WARN] Can't link and determine methods of " + cls + "(" + e.getMessage() + ")");
           ms = new Method[0];
         }
-        Set<Method> objectMethods = Arrays.stream(Object.class.getMethods())
-            .collect(Collectors.toSet());
-        ms = Arrays.stream(ms).filter(m-> !objectMethods.contains(m)).toArray(Method[]::new);
+        Set<Method> objectMethods =
+            Arrays.stream(Object.class.getMethods()).collect(Collectors.toSet());
+        ms = Arrays.stream(ms).filter(m -> !objectMethods.contains(m)).toArray(Method[]::new);
         for (Method m : ms) {
 
           IAnnotation a = annotationFinder.findAnnotation(m, IObjectFactoryAnnotation.class);
@@ -277,8 +274,8 @@ public class TestNGClassFinder extends BaseClassFinder {
           for (Method m : getAvailableMethods(cls)) {
             IAnnotation ma = annotationFinder.findAnnotation(cls, m, annotation);
             if (null != ma) {
-              //Don't short circuit. Lets run for all methods across all classes.
-              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+              // Don't short circuit. Lets run for all methods across all classes.
+              // This will in turn ensure that "IgnoreListener" will get called for all the combo.
               result = true;
             }
           }
@@ -286,8 +283,8 @@ public class TestNGClassFinder extends BaseClassFinder {
           // Try on the class
           IAnnotation a = annotationFinder.findAnnotation(cls, annotation);
           if (null != a) {
-            //Don't short circuit. Lets run for all methods across all classes.
-            //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+            // Don't short circuit. Lets run for all methods across all classes.
+            // This will in turn ensure that "IgnoreListener" will get called for all the combo.
             result = true;
           }
 
@@ -295,8 +292,8 @@ public class TestNGClassFinder extends BaseClassFinder {
           for (Constructor<?> ctor : cls.getConstructors()) {
             IAnnotation ca = annotationFinder.findAnnotation(ctor, annotation);
             if (null != ca) {
-              //Don't short circuit. Lets run for all methods across all classes.
-              //This will in turn ensure that "IgnoreListener" will get called for all the combo.
+              // Don't short circuit. Lets run for all methods across all classes.
+              // This will in turn ensure that "IgnoreListener" will get called for all the combo.
               result = true;
             }
           }

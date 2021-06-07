@@ -16,7 +16,6 @@ public class ConcreteTest extends Fixturable {
     ppp("TEST");
   }
 
-
   private static void ppp(String s) {
     System.out.println("[ConcreteTest] " + s);
   }

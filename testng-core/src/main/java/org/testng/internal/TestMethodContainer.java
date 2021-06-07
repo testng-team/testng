@@ -23,12 +23,12 @@ public final class TestMethodContainer implements IContainer<ITestNGMethod> {
 
   public ITestNGMethod[] getItems() {
     if (isCleared()) {
-      //If the cached data was cleared, no longer try to refer to it, but instead
-      //just resort to on-demand computation.
+      // If the cached data was cleared, no longer try to refer to it, but instead
+      // just resort to on-demand computation.
       return supplier.get();
     }
     if (methods == null) {
-      //The first time we are here, methods would be null. So lets lazily initialise it.
+      // The first time we are here, methods would be null. So lets lazily initialise it.
       methods = supplier.get();
     }
     return methods;

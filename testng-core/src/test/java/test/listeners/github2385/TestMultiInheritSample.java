@@ -4,8 +4,6 @@ import org.testng.annotations.Test;
 
 public class TestMultiInheritSample implements ITestClassInterface, ITestInterface {
 
-    @Test
-    public void testMultiInherit() {
-
-    }
+  @Test
+  public void testMultiInherit() {}
 }

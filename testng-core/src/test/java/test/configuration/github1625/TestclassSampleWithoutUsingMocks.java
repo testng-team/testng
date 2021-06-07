@@ -1,11 +1,10 @@
 package test.configuration.github1625;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestclassSampleWithoutUsingMocks {
 

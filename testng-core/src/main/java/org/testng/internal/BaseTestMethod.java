@@ -11,7 +11,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -351,7 +350,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     if (object != null) {
       clazz = object.getClass();
     }
-    ITestOrConfiguration classAnnotation = getAnnotationFinder().findAnnotation(clazz, annotationClass);
+    ITestOrConfiguration classAnnotation =
+        getAnnotationFinder().findAnnotation(clazz, annotationClass);
 
     setGroups(
         getStringArray(
@@ -444,8 +444,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   static StringBuilder stringify(String cls, ConstructorOrMethod method) {
-    StringBuilder result =
-        new StringBuilder(cls).append(".").append(method.getName()).append("(");
+    StringBuilder result = new StringBuilder(cls).append(".").append(method.getName()).append("(");
     return result.append(method.stringifyParameterTypes()).append(")");
   }
 
@@ -470,7 +469,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
 
   private String instanceParameters() {
     IParameterInfo instance = getFactoryMethodParamsInfo();
-    if (instance != null ) {
+    if (instance != null) {
       return ", instance params:" + Arrays.toString(instance.getParameters());
     }
     return "";
@@ -759,8 +758,10 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     if (key != null && key.length != 0 && retryAnalyzer != null) {
       final String keyAsString = getSimpleName() + "#" + getParameterInvocationCount();
       final IRetryAnalyzer currentRetryAnalyzerInMap = m_testMethodToRetryAnalyzer.get(keyAsString);
-      if (currentRetryAnalyzerInMap == null || currentRetryAnalyzerInMap.getClass() != retryAnalyzer.getClass()) {
-        retryAnalyzer = m_testMethodToRetryAnalyzer.compute(
+      if (currentRetryAnalyzerInMap == null
+          || currentRetryAnalyzerInMap.getClass() != retryAnalyzer.getClass()) {
+        retryAnalyzer =
+            m_testMethodToRetryAnalyzer.compute(
                 keyAsString,
                 (s, ra) -> m_objectFactory.newInstance(this.m_retryAnalyzer.getClass()));
       } else {
@@ -769,5 +770,4 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     }
     return retryAnalyzer;
   }
-
 }

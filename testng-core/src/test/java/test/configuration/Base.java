@@ -17,5 +17,4 @@ public class Base {
   public void beforeGroups() {
     m_count++;
   }
-
 }

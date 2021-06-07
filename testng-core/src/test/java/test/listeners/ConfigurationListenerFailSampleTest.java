@@ -11,6 +11,5 @@ public class ConfigurationListenerFailSampleTest {
   }
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 }

@@ -1,28 +1,25 @@
 package org.testng;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.*;
-
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-
-import com.google.common.collect.ImmutableMap;
-
 import testhelper.PerformanceUtils;
 
 public class AssertTest {
   @Test
   public void nullObjectArrayAssertEquals() {
-    Object[] expected= null;
-    Object[] actual= null;
+    Object[] expected = null;
+    Object[] actual = null;
     Assert.assertEquals(actual, expected);
   }
 
   @Test
   public void nullObjectArrayAssertNoOrder() {
-    Object[] expected= null;
-    Object[] actual= null;
+    Object[] expected = null;
+    Object[] actual = null;
     Assert.assertEqualsNoOrder(actual, expected);
   }
 
@@ -42,45 +39,39 @@ public class AssertTest {
 
   @Test
   public void testCollectionAssertEquals() {
-    final Collection<Asymmetric> expected = Sets.newHashSet(
-            new Asymmetric(10, 'a'),
-            new Asymmetric(11, 'b')
-    );
-    final Collection<Asymmetric> actual = Sets.newHashSet(
-            new Asymmetric(10, 'a'),
-            new Asymmetric(11, 'b')
-    );
+    final Collection<Asymmetric> expected =
+        Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Collection<Asymmetric> actual =
+        Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
     Assert.assertEquals(actual, expected);
   }
 
   @Test(description = "GITHUB-2483", expectedExceptions = AssertionError.class)
-  public void testAsymetricNotEquals(){
+  public void testAsymetricNotEquals() {
     AsymetricEquals equalsSame = AsymetricEquals.equalsSame();
     AsymetricEquals equalsAll = AsymetricEquals.equalsAll();
-    //sanity
+    // sanity
     Assert.assertFalse(equalsSame.equals(equalsAll));
     Assert.assertTrue(equalsAll.equals(equalsSame));
-    //actual check
+    // actual check
     Assert.assertNotEquals(equalsSame, equalsAll);
   }
 
   @Test
   public void testListAssertNotEquals() {
-    final Collection<Asymmetric> expected = Lists.newArrayList(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
-    final Collection<Asymmetric> actual = Lists.newArrayList(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
+    final Collection<Asymmetric> expected =
+        Lists.newArrayList(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Collection<Asymmetric> actual =
+        Lists.newArrayList(new Asymmetric(11, 'b'), new Asymmetric(10, 'a'));
     Assert.assertNotEquals(actual, expected);
   }
 
   @Test
   public void testSetAssertEquals() {
-    final Set<Asymmetric> expected = Sets.newHashSet(
-            new Asymmetric(10, 'a'),
-            new Asymmetric(11, 'b')
-    );
-    final Set<Asymmetric> actual = Sets.newHashSet(
-            new Asymmetric(10, 'a'),
-            new Asymmetric(11, 'b')
-    );
+    final Set<Asymmetric> expected =
+        Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
+    final Set<Asymmetric> actual =
+        Sets.newHashSet(new Asymmetric(10, 'a'), new Asymmetric(11, 'b'));
     Assert.assertEquals(actual, expected);
   }
 
@@ -133,9 +124,8 @@ public class AssertTest {
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
-    }
-    catch (AssertionError error) {
-      //do nothing
+    } catch (AssertionError error) {
+      // do nothing
     }
   }
 
@@ -146,17 +136,16 @@ public class AssertTest {
     try {
       Assert.assertEquals(actual, expected);
       Assert.fail("AssertEquals didn't fail");
-    }
-    catch (AssertionError error) {
-      //do nothing
+    } catch (AssertionError error) {
+      // do nothing
     }
   }
 
   /**
    * Testing comparison algorithm using big arrays.
    *
-   * @see <a href="https://github.com/cbeust/testng/issues/1384">Issue #1384 – Huge performance issue between 6.5.2
-   * and 6.11</a>
+   * @see <a href="https://github.com/cbeust/testng/issues/1384">Issue #1384 – Huge performance
+   *     issue between 6.5.2 and 6.11</a>
    */
   @Test
   public void compareLargeArrays() {
@@ -175,7 +164,8 @@ public class AssertTest {
     // assertEquals() with primitive type arrays requires ~65Kb of memory
     // assertEquals() with Object-type requires ~3Mb of memory when comparing 100Kb arrays.
     // choosing 100Kb as a threshold
-    Assert.assertTrue(memoryUsage < 100 * 1024, "Amount of used memory should be approximately 65Kb");
+    Assert.assertTrue(
+        memoryUsage < 100 * 1024, "Amount of used memory should be approximately 65Kb");
   }
 
   @Test
@@ -215,10 +205,24 @@ public class AssertTest {
 
   @Test
   public void compareFloatArrays() {
-    float[] actual = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL, Float.MAX_VALUE,
-            Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
-    float[] expected = {(float) Math.PI, (float) Math.E, Float.MIN_VALUE, Float.MIN_NORMAL, Float.MAX_VALUE,
-            Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+    float[] actual = {
+      (float) Math.PI,
+      (float) Math.E,
+      Float.MIN_VALUE,
+      Float.MIN_NORMAL,
+      Float.MAX_VALUE,
+      Float.POSITIVE_INFINITY,
+      Float.NEGATIVE_INFINITY
+    };
+    float[] expected = {
+      (float) Math.PI,
+      (float) Math.E,
+      Float.MIN_VALUE,
+      Float.MIN_NORMAL,
+      Float.MAX_VALUE,
+      Float.POSITIVE_INFINITY,
+      Float.NEGATIVE_INFINITY
+    };
     Assert.assertEquals(actual, expected);
   }
 
@@ -238,7 +242,7 @@ public class AssertTest {
 
   @Test
   public void compareFloatArraysWithNaNValues() {
-    Assert.assertEquals(new float[] { Float.NaN }, new float[] { Float.NaN });
+    Assert.assertEquals(new float[] {Float.NaN}, new float[] {Float.NaN});
   }
 
   @Test
@@ -248,16 +252,30 @@ public class AssertTest {
 
   @Test
   public void compareDoubleArrays() {
-    double[] actual = {Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL, Double.MAX_VALUE,
-            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
-    double[] expected = {Math.PI, Math.E, Double.MIN_VALUE, Double.MIN_NORMAL, Double.MAX_VALUE,
-            Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+    double[] actual = {
+      Math.PI,
+      Math.E,
+      Double.MIN_VALUE,
+      Double.MIN_NORMAL,
+      Double.MAX_VALUE,
+      Double.POSITIVE_INFINITY,
+      Double.NEGATIVE_INFINITY
+    };
+    double[] expected = {
+      Math.PI,
+      Math.E,
+      Double.MIN_VALUE,
+      Double.MIN_NORMAL,
+      Double.MAX_VALUE,
+      Double.POSITIVE_INFINITY,
+      Double.NEGATIVE_INFINITY
+    };
     Assert.assertEquals(actual, expected);
   }
 
   @Test
   public void compareDoubleArraysWithNaNValues() {
-    Assert.assertEquals(new double[] { Double.NaN }, new double[] { Double.NaN });
+    Assert.assertEquals(new double[] {Double.NaN}, new double[] {Double.NaN});
   }
 
   @Test
@@ -282,13 +300,19 @@ public class AssertTest {
   @SuppressWarnings("serial")
   @Test(expectedExceptions = AssertionError.class)
   public void assertEqualsMapShouldFail() {
-    Map<String, String> mapActual = new HashMap<String, String>() {{
-      put("a","1");
-    }};
-    Map<String, String> mapExpected = new HashMap<String, String>() {{
-      put("a","1");
-      put("b","2");
-    }};
+    Map<String, String> mapActual =
+        new HashMap<String, String>() {
+          {
+            put("a", "1");
+          }
+        };
+    Map<String, String> mapExpected =
+        new HashMap<String, String>() {
+          {
+            put("a", "1");
+            put("b", "2");
+          }
+        };
 
     Assert.assertEquals(mapActual, mapExpected);
   }
@@ -308,14 +332,16 @@ public class AssertTest {
   @Test(expectedExceptions = AssertionError.class)
   public void testAssertEqualsWithActualBrokenEqualsTrue() {
     // BrokenEqualsTrue.equals(Object) always returns true, even for null
-    // However, Assert is not supposed to check equals(Object) implementation, so assertEquals should fail
+    // However, Assert is not supposed to check equals(Object) implementation, so assertEquals
+    // should fail
     Assert.assertEquals(new BrokenEqualsTrue(), null);
   }
 
   @Test(expectedExceptions = AssertionError.class)
   public void testAssertEqualsWithExpectedBrokenEqualsTrue() {
     // BrokenEqualsTrue.equals(Object) always returns true, even for null
-    // However, Assert is not supposed to check equals(Object) implementation, so assertEquals should fail
+    // However, Assert is not supposed to check equals(Object) implementation, so assertEquals
+    // should fail
     Assert.assertEquals(null, new BrokenEqualsTrue());
   }
 
@@ -325,7 +351,9 @@ public class AssertTest {
     Assert.assertEquals(obj, obj);
   }
 
-  @Test(description = "GITHUB-1935", expectedExceptions = AssertionError.class,
+  @Test(
+      description = "GITHUB-1935",
+      expectedExceptions = AssertionError.class,
       expectedExceptionsMessageRegExp = "expected \\[y\\] but found \\[x\\]")
   public void testInequalityMessage() {
     Assert.assertEquals("x", "y");
@@ -382,62 +410,84 @@ public class AssertTest {
     Assert.assertEqualsNoOrder(actual, expected);
   }
 
-  @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
-          expectedExceptionsMessageRegExp = "test expected \\[true\\] but found \\[false\\]")
+  @Test(
+      description = "GITHUB-2080",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "test expected \\[true\\] but found \\[false\\]")
   public void testAssertTrueMessage() {
     Assert.assertTrue(false, "test");
   }
 
-  @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
-          expectedExceptionsMessageRegExp = "test expected \\[false\\] but found \\[true\\]")
+  @Test(
+      description = "GITHUB-2080",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "test expected \\[false\\] but found \\[true\\]")
   public void testAssertFalseMessage() {
     Assert.assertFalse(true, "test");
   }
 
-  @Test(description = "GITHUB-2080", expectedExceptions = AssertionError.class,
+  @Test(
+      description = "GITHUB-2080",
+      expectedExceptions = AssertionError.class,
       expectedExceptionsMessageRegExp = "did not expect \\[x\\] but found \\[x\\]")
   public void testEqualityMessage() {
     Assert.assertNotEquals("x", "x");
   }
 
-  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+  @Test(
+      description = "GITHUB-2118",
+      expectedExceptions = AssertionError.class,
       expectedExceptionsMessageRegExp = "did not expect \\[1.5\\] but found \\[1.5\\]")
   public void testAssertNotEqualsFloat() {
     Assert.assertNotEquals(1.5f, 1.5f, 0.5f);
   }
 
-  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
+  @Test(
+      description = "GITHUB-2118",
+      expectedExceptions = AssertionError.class,
       expectedExceptionsMessageRegExp = "did not expect \\[1.5\\] but found \\[1.5\\]")
   public void testAssertNotEqualsDouble() {
     Assert.assertNotEquals(1.5, 1.5, 0.5);
   }
 
-  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
-      expectedExceptionsMessageRegExp = "did not expect \\[\\[test\\]\\] but found \\[\\[test\\]\\]")
+  @Test(
+      description = "GITHUB-2118",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "did not expect \\[\\[test\\]\\] but found \\[\\[test\\]\\]")
   public void testAssertNotEqualsSet() {
     Set<String> set = new HashSet<>();
     set.add("test");
     Assert.assertNotEquals(set, set);
   }
 
-  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
-      expectedExceptionsMessageRegExp = "did not expect \\[\\[test\\]\\] but found \\[\\[test\\]\\]")
+  @Test(
+      description = "GITHUB-2118",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "did not expect \\[\\[test\\]\\] but found \\[\\[test\\]\\]")
   public void testAssertNotEqualsDeepSet() {
     Set<String> set = new HashSet<>();
     set.add("test");
     Assert.assertNotEqualsDeep(set, set);
   }
 
-  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
-      expectedExceptionsMessageRegExp = "did not expect \\[\\{key=value\\}\\] but found \\[\\{key=value\\}\\]")
+  @Test(
+      description = "GITHUB-2118",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "did not expect \\[\\{key=value\\}\\] but found \\[\\{key=value\\}\\]")
   public void testAssertNotEqualsMap() {
     Map<String, String> map = new HashMap<>();
     map.put("key", "value");
     Assert.assertNotEquals(map, map);
   }
 
-  @Test(description = "GITHUB-2118", expectedExceptions = AssertionError.class,
-      expectedExceptionsMessageRegExp = "did not expect \\[\\{key=value\\}\\] but found \\[\\{key=value\\}\\]")
+  @Test(
+      description = "GITHUB-2118",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "did not expect \\[\\{key=value\\}\\] but found \\[\\{key=value\\}\\]")
   public void testAssertNotEqualsDeepMap() {
     Map<String, String> map = new HashMap<>();
     map.put("key", "value");
@@ -461,14 +511,16 @@ public class AssertTest {
   @Test(description = "GITHUB-2490")
   public void testAssertNotEqualsWithActualBrokenEqualsTrue() {
     // BrokenEqualsTrue.equals(Object) always returns true, even for null
-    // However, Assert is not supposed to check equals(Object) implementation, so assertNotEquals should succeed
+    // However, Assert is not supposed to check equals(Object) implementation, so assertNotEquals
+    // should succeed
     Assert.assertNotEquals(new BrokenEqualsTrue(), null);
   }
 
   @Test(description = "GITHUB-2490")
   public void testAssertNotEqualsWithExpectedBrokenEqualsTrue() {
     // BrokenEqualsTrue.equals(Object) always returns true, even for null
-    // However, Assert is not supposed to check equals(Object) implementation, so assertNotEquals should succeed
+    // However, Assert is not supposed to check equals(Object) implementation, so assertNotEquals
+    // should succeed
     Assert.assertNotEquals(null, new BrokenEqualsTrue());
   }
 
@@ -509,7 +561,7 @@ public class AssertTest {
 
     int integer;
 
-    Contrived(int integer){
+    Contrived(int integer) {
       this.integer = integer;
     }
 
@@ -531,39 +583,39 @@ public class AssertTest {
 
   class Asymmetric extends Contrived {
 
-      char character;
+    char character;
 
-      Asymmetric(int integer, char character) {
-          super(integer);
-          this.character = character;
-      }
+    Asymmetric(int integer, char character) {
+      super(integer);
+      this.character = character;
+    }
 
-      @Override
-      public boolean equals(Object o) {
-          if (this == o) return true;
-          if (!(o instanceof Asymmetric)) return false;
-          if (!super.equals(o)) return false;
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (!(o instanceof Asymmetric)) return false;
+      if (!super.equals(o)) return false;
 
-          Asymmetric that = (Asymmetric) o;
+      Asymmetric that = (Asymmetric) o;
 
-        return character == that.character;
-      }
+      return character == that.character;
+    }
 
-      @Override
-      public int hashCode() {
-          int result = super.hashCode();
-          result = 31 * result + (int) character;
-          return result;
-      }
+    @Override
+    public int hashCode() {
+      int result = super.hashCode();
+      result = 31 * result + (int) character;
+      return result;
+    }
   }
 
   static class AsymetricEquals {
 
-    static AsymetricEquals equalsAll(){
+    static AsymetricEquals equalsAll() {
       return new AsymetricEquals(null);
     }
 
-    static AsymetricEquals equalsSame(){
+    static AsymetricEquals equalsSame() {
       return new AsymetricEquals(new Object());
     }
 
@@ -579,8 +631,7 @@ public class AssertTest {
       if (!(o instanceof AsymetricEquals)) return false;
 
       AsymetricEquals that = (AsymetricEquals) o;
-      if (value == null)
-        return true;
+      if (value == null) return true;
       return value.equals(that.value);
     }
 

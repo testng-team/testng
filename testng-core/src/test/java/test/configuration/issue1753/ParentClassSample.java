@@ -1,10 +1,9 @@
 package test.configuration.issue1753;
 
+import java.lang.reflect.Method;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-
-import java.lang.reflect.Method;
 
 public class ParentClassSample {
   @BeforeMethod(alwaysRun = true)

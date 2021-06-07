@@ -1,11 +1,10 @@
 package test;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InvokedMethodListener implements IInvokedMethodListener {
 
@@ -17,8 +16,7 @@ public class InvokedMethodListener implements IInvokedMethodListener {
   }
 
   @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-  }
+  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
 
   public List<String> getInvokedMethods() {
     return invokedMethods;

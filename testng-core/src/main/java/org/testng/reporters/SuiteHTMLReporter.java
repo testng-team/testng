@@ -2,6 +2,15 @@ package org.testng.reporters;
 
 import static org.testng.internal.Utils.isStringNotEmpty;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -14,16 +23,6 @@ import org.testng.collections.Maps;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class implements an HTML reporter for suites.
@@ -349,7 +348,8 @@ public class SuiteHTMLReporter implements IReporter {
 
       List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
       if (alphabetical) {
-        invokedMethods.sort(Comparator.comparing(o -> getMethodName(o.getTestMethod().getMethodName())));
+        invokedMethods.sort(
+            Comparator.comparing(o -> getMethodName(o.getTestMethod().getMethodName())));
       }
 
       SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");

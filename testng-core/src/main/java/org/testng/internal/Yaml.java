@@ -1,5 +1,11 @@
 package org.testng.internal;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
@@ -15,13 +21,6 @@ import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeId;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
 
 /** YAML support for TestNG. */
 public final class Yaml {
@@ -133,9 +132,7 @@ public final class Yaml {
     return result;
   }
 
-  /**
-   * Convert a XmlTest into YAML
-   */
+  /** Convert a XmlTest into YAML */
   private static void toYaml(StringBuilder result, XmlTest t) {
     String sp2 = Strings.repeat(" ", 2);
     result.append("  ").append("- name: ").append(t.getName()).append("\n");
@@ -172,15 +169,10 @@ public final class Yaml {
     }
 
     if (!t.getXmlDependencyGroups().isEmpty()) {
-      result
-          .append(sp2).append(sp2)
-          .append("xmlDependencyGroups:\n");
-      t
-          .getXmlDependencyGroups()
-          .forEach((k, v) ->
-              result
-                  .append(sp2).append(sp2).append(sp2)
-                  .append(k + ": " + v + "\n"));
+      result.append(sp2).append(sp2).append("xmlDependencyGroups:\n");
+      t.getXmlDependencyGroups()
+          .forEach(
+              (k, v) -> result.append(sp2).append(sp2).append(sp2).append(k + ": " + v + "\n"));
     }
 
     Map<String, List<String>> mg = t.getMetaGroups();
@@ -293,8 +285,7 @@ public final class Yaml {
     }
   }
 
-  private static void toYaml(
-      StringBuilder sb, String sp, Map<String, String> parameters) {
+  private static void toYaml(StringBuilder sb, String sp, Map<String, String> parameters) {
     if (!parameters.isEmpty()) {
       sb.append(sp).append("parameters").append(": ");
       mapToYaml(parameters, sb);

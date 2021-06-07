@@ -1,8 +1,7 @@
 package org.testng.junit;
 
-import org.testng.internal.ConstructorOrMethod;
-
 import java.lang.reflect.Method;
+import org.testng.internal.ConstructorOrMethod;
 
 public class JUnit4ConfigurationMethod extends ConstructorOrMethod {
 

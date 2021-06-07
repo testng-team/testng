@@ -29,12 +29,7 @@ public class IssueTest extends SimpleBaseTest {
   @Test
   public void classWithoutListenerAnnotation() {
     XmlSuite xmlSuite = createXmlSuite("sample_suite");
-    xmlSuite.setListeners(
-        Arrays.asList(
-            MyListener.class.getName(),
-            DummyReporter.class.getName()
-        )
-    );
+    xmlSuite.setListeners(Arrays.asList(MyListener.class.getName(), DummyReporter.class.getName()));
     createXmlTest(xmlSuite, "sample_test", TestClassWithoutListener.class);
     TestNG testng = create(xmlSuite);
     testng.run();
@@ -49,9 +44,7 @@ public class IssueTest extends SimpleBaseTest {
     xmlSuite.setListeners(
         Arrays.asList(
             MyListenerWithoutModuleFactory.class.getName(),
-            DummyReporterWithoutModuleFactory.class.getName()
-        )
-    );
+            DummyReporterWithoutModuleFactory.class.getName()));
     createXmlTest(xmlSuite, "sample_test", TestClassWithoutListener.class);
     TestNG testng = create(xmlSuite);
     testng.run();

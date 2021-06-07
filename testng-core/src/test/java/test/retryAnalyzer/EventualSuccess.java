@@ -1,9 +1,8 @@
 package test.retryAnalyzer;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventualSuccess {
   private static final AtomicBoolean ranYet = new AtomicBoolean(false);

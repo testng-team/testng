@@ -1,14 +1,13 @@
 package org.testng.internal;
 
+import java.util.Comparator;
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Objects;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlTest;
-
-import java.util.Comparator;
-import java.util.List;
 
 public class MethodInstance implements IMethodInstance {
   private final ITestNGMethod m_method;

@@ -4,7 +4,5 @@ import org.testng.annotations.Test;
 import test.dataprovider.issue1691.SampleDataProvider;
 
 @Test(dataProviderClass = SampleDataProvider.class, dataProvider = "busyMalls")
-public class ChildClassHasFullDefinitionOfDataProviderAtClassLevel extends
-    BaseClassWithFullDefinitionOfDataProviderInTestMethod {
-
-}
+public class ChildClassHasFullDefinitionOfDataProviderAtClassLevel
+    extends BaseClassWithFullDefinitionOfDataProviderInTestMethod {}

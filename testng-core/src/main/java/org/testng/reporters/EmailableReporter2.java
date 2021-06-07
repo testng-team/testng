@@ -1,5 +1,8 @@
 package org.testng.reporters;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newBufferedWriter;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -22,9 +24,6 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.newBufferedWriter;
 
 /** Reporter that generates a single-page HTML report of the test results. */
 public class EmailableReporter2 implements IReporter {
@@ -194,8 +193,8 @@ public class EmailableReporter2 implements IReporter {
       }
       boolean testsInParallel = XmlSuite.ParallelMode.TESTS.equals(suiteResult.getParallelMode());
       if (testsInParallel) {
-        Optional<TestResult> maxValue = suiteResult.testResults.stream()
-            .max(Comparator.comparing(TestResult::getDuration));
+        Optional<TestResult> maxValue =
+            suiteResult.testResults.stream().max(Comparator.comparing(TestResult::getDuration));
         if (maxValue.isPresent()) {
           totalDuration = Math.max(totalDuration, maxValue.get().duration);
         }

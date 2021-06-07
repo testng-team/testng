@@ -1,11 +1,10 @@
 package test.invokedmethodlistener;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class InvokedMethodNameListener implements IInvokedMethodListener {
 
@@ -15,8 +14,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener {
   final Set<String> configurationMethodsFromTM = new HashSet<>();
 
   @Override
-  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-  }
+  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
@@ -31,14 +29,14 @@ public class InvokedMethodNameListener implements IInvokedMethodListener {
     if (method.getTestMethod().isTest()) {
       testMethodsFromTM.add(methodName);
     }
-    if (method.getTestMethod().isBeforeMethodConfiguration() ||
-        method.getTestMethod().isAfterMethodConfiguration() ||
-        method.getTestMethod().isBeforeTestConfiguration() ||
-        method.getTestMethod().isAfterTestConfiguration() ||
-        method.getTestMethod().isBeforeClassConfiguration() ||
-        method.getTestMethod().isAfterClassConfiguration() ||
-        method.getTestMethod().isBeforeSuiteConfiguration() ||
-        method.getTestMethod().isAfterSuiteConfiguration()) {
+    if (method.getTestMethod().isBeforeMethodConfiguration()
+        || method.getTestMethod().isAfterMethodConfiguration()
+        || method.getTestMethod().isBeforeTestConfiguration()
+        || method.getTestMethod().isAfterTestConfiguration()
+        || method.getTestMethod().isBeforeClassConfiguration()
+        || method.getTestMethod().isAfterClassConfiguration()
+        || method.getTestMethod().isBeforeSuiteConfiguration()
+        || method.getTestMethod().isAfterSuiteConfiguration()) {
       configurationMethodsFromTM.add(methodName);
     }
   }

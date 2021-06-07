@@ -11,8 +11,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
@@ -91,18 +89,21 @@ public class XmlMethodSelector implements IMethodSelector {
       // If it's a configuration method and no groups were requested, we want it in
       result = true;
     } else if (!includeList.isEmpty() && !m_overrideIncludedMethods) {
-      // Is this method included implicitly and are we not overriding inclusions by group exclusions?
+      // Is this method included implicitly and are we not overriding inclusions by group
+      // exclusions?
       result = true;
     } else { // Include or Exclude groups were specified:
       // Only add this method if it belongs to an included group and not
       // to an excluded group
       boolean noGroupsSpecified = false; /* Explicitly disable logic to consider size for groups */
-      String[] groups = Stream.of(
-          Optional.ofNullable(tm.getBeforeGroups()).orElse(new String[]{}),
-          Optional.ofNullable(tm.getGroups()).orElse(new String[]{}),
-          Optional.ofNullable(tm.getAfterGroups()).orElse(new String[]{})
-      )
-          .flatMap(Arrays::stream).distinct().toArray(String[]::new);
+      String[] groups =
+          Stream.of(
+                  Optional.ofNullable(tm.getBeforeGroups()).orElse(new String[] {}),
+                  Optional.ofNullable(tm.getGroups()).orElse(new String[] {}),
+                  Optional.ofNullable(tm.getAfterGroups()).orElse(new String[] {}))
+              .flatMap(Arrays::stream)
+              .distinct()
+              .toArray(String[]::new);
       boolean isIncludedInGroups = isIncluded(m_includedGroups.values(), noGroupsSpecified, groups);
       boolean isExcludedInGroups = isExcluded(m_excludedGroups.values(), groups);
 

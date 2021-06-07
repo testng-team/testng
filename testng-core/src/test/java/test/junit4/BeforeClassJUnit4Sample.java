@@ -6,18 +6,18 @@ import org.junit.Test;
 
 public class BeforeClassJUnit4Sample {
 
-    @BeforeClass
-    public static void before() {
-        throw new IllegalArgumentException("before failed");
-    }
+  @BeforeClass
+  public static void before() {
+    throw new IllegalArgumentException("before failed");
+  }
 
-    @AfterClass
-    public static void after() {
-        //throw new IllegalArgumentException("after failed");
-    }
+  @AfterClass
+  public static void after() {
+    // throw new IllegalArgumentException("after failed");
+  }
 
-    @Test
-    public void myTest() {
-        System.out.println("yay!");
-    }
+  @Test
+  public void myTest() {
+    System.out.println("yay!");
+  }
 }

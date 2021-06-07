@@ -9,9 +9,11 @@ import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
 
-  @Test(description = "GITHUB-553",
+  @Test(
+      description = "GITHUB-553",
       expectedExceptions = TestNGException.class,
-      expectedExceptionsMessageRegExp = "\\nFound a default constructor and also a Factory method when working with .*")
+      expectedExceptionsMessageRegExp =
+          "\\nFound a default constructor and also a Factory method when working with .*")
   public void testMethod() {
     XmlTest xmltest = createXmlTest("suite", "test", Concrete.class);
     TestNG testng = create(xmltest.getSuite());
@@ -19,5 +21,4 @@ public class IssueTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
   }
-
 }

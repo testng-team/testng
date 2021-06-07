@@ -9,8 +9,10 @@ public class GroupConfigMethodArguments extends Arguments {
 
   private final ConfigurationGroupMethods groupMethods;
 
-  private GroupConfigMethodArguments(ITestNGMethod testMethod,
-      ConfigurationGroupMethods groupMethods, Map<String, String> params,
+  private GroupConfigMethodArguments(
+      ITestNGMethod testMethod,
+      ConfigurationGroupMethods groupMethods,
+      Map<String, String> params,
       Object instance) {
     super(instance, testMethod, params);
     this.groupMethods = groupMethods;

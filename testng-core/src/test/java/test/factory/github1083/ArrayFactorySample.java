@@ -1,10 +1,9 @@
 package test.factory.github1083;
 
-import org.testng.annotations.Factory;
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
 
 public class ArrayFactorySample {
 

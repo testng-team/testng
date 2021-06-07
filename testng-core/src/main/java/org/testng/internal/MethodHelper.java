@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.IMethodInstance;
@@ -30,9 +29,7 @@ import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlTest;
 
-/**
- * Collection of helper methods to help sort and arrange methods.
- */
+/** Collection of helper methods to help sort and arrange methods. */
 public class MethodHelper {
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
       new ConcurrentHashMap<>();
@@ -60,20 +57,23 @@ public class MethodHelper {
       Comparator<ITestNGMethod> comparator) {
     AtomicReference<ITestNGMethod[]> results = new AtomicReference<>();
     List<ITestNGMethod> includedMethods = Lists.newArrayList();
-    TimeUtils.computeAndShowTime("MethodGroupsHelper.collectMethodsByGroup()",
-        () -> MethodGroupsHelper.collectMethodsByGroup(
-            methods.toArray(new ITestNGMethod[0]),
-            forTests,
-            includedMethods,
-            outExcludedMethods,
-            runInfo,
-            finder,
-            unique)
-    );
-    TimeUtils.computeAndShowTime("MethodGroupsHelper.sortMethods()",
-        () -> results.set(sortMethods(forTests, includedMethods, comparator)
-            .toArray(new ITestNGMethod[]{}))
-    );
+    TimeUtils.computeAndShowTime(
+        "MethodGroupsHelper.collectMethodsByGroup()",
+        () ->
+            MethodGroupsHelper.collectMethodsByGroup(
+                methods.toArray(new ITestNGMethod[0]),
+                forTests,
+                includedMethods,
+                outExcludedMethods,
+                runInfo,
+                finder,
+                unique));
+    TimeUtils.computeAndShowTime(
+        "MethodGroupsHelper.sortMethods()",
+        () ->
+            results.set(
+                sortMethods(forTests, includedMethods, comparator)
+                    .toArray(new ITestNGMethod[] {})));
     return results.get();
   }
 
@@ -97,8 +97,7 @@ public class MethodHelper {
    * @param methods list of methods to search for depended upon methods
    * @return list of methods that match the criteria
    */
-  public static ITestNGMethod[] findDependedUponMethods(
-      ITestNGMethod m, ITestNGMethod[] methods) {
+  public static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, ITestNGMethod[] methods) {
 
     String canonicalMethodName = calculateMethodCanonicalName(m);
 
@@ -119,7 +118,9 @@ public class MethodHelper {
           int lastIndex = regexp.lastIndexOf('.');
           String newMethodName;
           if (lastIndex != -1) {
-            String clazzName = (m.getTestClass() != null ? m.getTestClass().getRealClass() : m.getRealClass()).getName();
+            String clazzName =
+                (m.getTestClass() != null ? m.getTestClass().getRealClass() : m.getRealClass())
+                    .getName();
             newMethodName = clazzName + regexp.substring(lastIndex);
             results = matchMethod(methods, newMethodName);
             foundAtLeastAMethod = results.foundAtLeastAMethod;
@@ -213,15 +214,15 @@ public class MethodHelper {
 
     boolean alwaysRun = false;
     if ((configurationAnnotation.getAfterSuite()
-        || configurationAnnotation.getAfterTest()
-        || configurationAnnotation.getAfterTestClass()
-        || configurationAnnotation.getAfterTestMethod()
-        || configurationAnnotation.getBeforeTestMethod()
-        || configurationAnnotation.getBeforeTestClass()
-        || configurationAnnotation.getBeforeTest()
-        || configurationAnnotation.getBeforeSuite()
-        || configurationAnnotation.getBeforeGroups().length != 0
-        || configurationAnnotation.getAfterGroups().length != 0)
+            || configurationAnnotation.getAfterTest()
+            || configurationAnnotation.getAfterTestClass()
+            || configurationAnnotation.getAfterTestMethod()
+            || configurationAnnotation.getBeforeTestMethod()
+            || configurationAnnotation.getBeforeTestClass()
+            || configurationAnnotation.getBeforeTest()
+            || configurationAnnotation.getBeforeSuite()
+            || configurationAnnotation.getBeforeGroups().length != 0
+            || configurationAnnotation.getAfterGroups().length != 0)
         && configurationAnnotation.getAlwaysRun()) {
       alwaysRun = true;
     }
@@ -419,33 +420,39 @@ public class MethodHelper {
     return methodInstances.stream().map(IMethodInstance::getMethod).collect(Collectors.toList());
   }
 
-  public static void dumpInvokedMethodInfoToConsole(
-      ITestNGMethod[] methods, int currentVerbosity) {
+  public static void dumpInvokedMethodInfoToConsole(ITestNGMethod[] methods, int currentVerbosity) {
     if (currentVerbosity < 3) {
       return;
     }
     System.out.println("===== Invoked methods");
-    Arrays.stream(methods).filter(m -> m instanceof IInvocationStatus)
+    Arrays.stream(methods)
+        .filter(m -> m instanceof IInvocationStatus)
         .filter(m -> ((IInvocationStatus) m).getInvocationTime() > 0)
-        .forEach(im -> {
-          if (im.isTest()) {
-            System.out.print("    ");
-          } else if (isConfigurationMethod(im)) {
-            System.out.print("  ");
-          } else {
-            return;
-          }
-          System.out.println("" + im);
-        });
+        .forEach(
+            im -> {
+              if (im.isTest()) {
+                System.out.print("    ");
+              } else if (isConfigurationMethod(im)) {
+                System.out.print("  ");
+              } else {
+                return;
+              }
+              System.out.println("" + im);
+            });
     System.out.println("=====");
   }
 
   private static boolean isConfigurationMethod(ITestNGMethod tm) {
-    return tm.isBeforeSuiteConfiguration() || tm.isAfterSuiteConfiguration() ||
-        tm.isBeforeTestConfiguration() || tm.isAfterTestConfiguration() ||
-        tm.isBeforeClassConfiguration() || tm.isAfterClassConfiguration() ||
-        tm.isBeforeGroupsConfiguration() || tm.isAfterGroupsConfiguration() ||
-        tm.isBeforeMethodConfiguration() || tm.isAfterMethodConfiguration();
+    return tm.isBeforeSuiteConfiguration()
+        || tm.isAfterSuiteConfiguration()
+        || tm.isBeforeTestConfiguration()
+        || tm.isAfterTestConfiguration()
+        || tm.isBeforeClassConfiguration()
+        || tm.isAfterClassConfiguration()
+        || tm.isBeforeGroupsConfiguration()
+        || tm.isAfterGroupsConfiguration()
+        || tm.isBeforeMethodConfiguration()
+        || tm.isAfterMethodConfiguration();
   }
 
   protected static String calculateMethodCanonicalName(Class<?> methodClass, String methodName) {
@@ -458,8 +465,7 @@ public class MethodHelper {
   }
 
   public static void clear(Stream<Method> methods) {
-    methods.filter(Objects::nonNull)
-        .forEach(CANONICAL_NAME_CACHE::remove);
+    methods.filter(Objects::nonNull).forEach(CANONICAL_NAME_CACHE::remove);
   }
 
   public static long calculateTimeOut(ITestNGMethod tm) {

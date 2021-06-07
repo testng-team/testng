@@ -54,5 +54,4 @@ public class MyListener implements IInvokedMethodListener {
   public int getMethodStatus() {
     return methodStatus;
   }
-
 }
