@@ -1,15 +1,13 @@
 package test.listeners;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.IExecutionListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
 
 public class ExecutionListenerTest extends SimpleBaseTest {
 
@@ -35,14 +33,16 @@ public class ExecutionListenerTest extends SimpleBaseTest {
 
   @Test
   public void executionListenerWithoutListener() {
-    runTest(ExecutionListener1SampleTest.class, false /* don't add listener */,
+    runTest(
+        ExecutionListener1SampleTest.class,
+        false /* don't add listener */,
         false /* should not run */);
   }
 
   @Test
   public void executionListenerAnnotation() {
-    runTest(ExecutionListener2SampleTest.class, false /* don't add listener */,
-        true /* should run */);
+    runTest(
+        ExecutionListener2SampleTest.class, false /* don't add listener */, true /* should run */);
   }
 
   private void runTest(Class<?> listenerClass, boolean addListener, boolean expected) {

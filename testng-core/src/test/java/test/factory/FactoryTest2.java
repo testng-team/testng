@@ -1,9 +1,8 @@
 package test.factory;
 
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Test;
 
 public class FactoryTest2 {
   private static List<Integer> numbers = new ArrayList<>();

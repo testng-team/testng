@@ -7,5 +7,5 @@ import org.testng.annotations.Test;
 public class TestClassWithListener {
 
   @Test
-  public void testMethod() { }
+  public void testMethod() {}
 }

@@ -5,9 +5,7 @@ import org.testng.annotations.Test;
 
 @Listeners(ResultContextListener.class)
 public class ResultContextListenerSample {
-	
-	@Test
-	public void f() {
-	}
-	
+
+  @Test
+  public void f() {}
 }

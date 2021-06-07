@@ -5,9 +5,7 @@ import org.testng.IClass;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
 
-/**
- * Represents the elaborate set of attributes required for object creation.
- */
+/** Represents the elaborate set of attributes required for object creation. */
 public class DetailedAttributes {
 
   private Class<?> declaringClass;

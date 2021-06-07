@@ -8,7 +8,6 @@ import org.testng.annotations.Test;
  * Make sure that these test pass when run by the Eclipse plug-in.
  *
  * @author Cedric Beust <cedric@beust.com>
- *
  */
 public class EclipseTest {
 

@@ -1,11 +1,10 @@
 package test.groupinvocation;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class DummyTest {
   private static Map<String, Integer> s_externalClassGroups = new HashMap<>();

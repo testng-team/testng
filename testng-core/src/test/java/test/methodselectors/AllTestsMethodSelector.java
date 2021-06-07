@@ -1,17 +1,15 @@
 package test.methodselectors;
 
+import java.util.List;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
 
-import java.util.List;
-
 public class AllTestsMethodSelector implements IMethodSelector {
 
   @Override
-  public boolean includeMethod(IMethodSelectorContext context,
-      ITestNGMethod method, boolean isTestMethod)
-  {
+  public boolean includeMethod(
+      IMethodSelectorContext context, ITestNGMethod method, boolean isTestMethod) {
     context.setStopped(true);
     return true;
   }
@@ -25,5 +23,4 @@ public class AllTestsMethodSelector implements IMethodSelector {
     // TODO Auto-generated method stub
 
   }
-
 }

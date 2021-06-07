@@ -22,11 +22,9 @@ public class ParameterConstructorTest {
   private long m_long;
   private short m_short;
 
-  @Parameters({ "string", "int", "boolean", "byte", "char", "double",
-      "float", "long", "short"  })
-  public ParameterConstructorTest(String s, int i, boolean bo, byte b, char c,
-      double d, float f, long l, short sh)
-  {
+  @Parameters({"string", "int", "boolean", "byte", "char", "double", "float", "long", "short"})
+  public ParameterConstructorTest(
+      String s, int i, boolean bo, byte b, char c, double d, float f, long l, short sh) {
     m_string = s;
     m_int = i;
     m_boolean = bo;
@@ -50,5 +48,4 @@ public class ParameterConstructorTest {
     assertEquals(46, m_long);
     assertEquals(47, m_short);
   }
-
 }

@@ -5,7 +5,5 @@ import org.testng.annotations.Test;
 public class DataProviderInDifferentClass {
 
   @Test(dataProvider = "dp", dataProviderClass = BaseClassSample.class)
-  public void testMethod(int i) {
-  }
-
+  public void testMethod(int i) {}
 }

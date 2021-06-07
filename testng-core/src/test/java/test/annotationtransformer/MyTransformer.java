@@ -1,12 +1,11 @@
 package test.annotationtransformer;
 
-import org.testng.IAnnotationTransformer;
-import org.testng.annotations.ITestAnnotation;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.IAnnotationTransformer;
+import org.testng.annotations.ITestAnnotation;
 
 public class MyTransformer implements IAnnotationTransformer {
 

@@ -1,11 +1,11 @@
 package test.factory;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Parameters;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 
 public class FactoryTest {
 

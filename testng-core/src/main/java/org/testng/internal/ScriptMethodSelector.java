@@ -1,14 +1,13 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-import org.testng.TestNGException;
-import org.testng.collections.Maps;
-
+import java.lang.reflect.Method;
+import java.util.Map;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-import java.lang.reflect.Method;
-import java.util.Map;
+import org.testng.ITestNGMethod;
+import org.testng.TestNGException;
+import org.testng.collections.Maps;
 
 class ScriptMethodSelector {
 
@@ -29,7 +28,12 @@ class ScriptMethodSelector {
       setContext(engine, groups, tm);
       Object evalResult = engine.eval(expression);
       if (evalResult == null) {
-        String msg = String.format("The " + engine.getFactory().getLanguageName() + " expression [%s] evaluated to null.", expression);
+        String msg =
+            String.format(
+                "The "
+                    + engine.getFactory().getLanguageName()
+                    + " expression [%s] evaluated to null.",
+                expression);
         throw new TestNGException(msg);
       }
       return (Boolean) evalResult;
@@ -40,7 +44,8 @@ class ScriptMethodSelector {
     }
   }
 
-  private static void setContext(ScriptEngine engine, Map<String, String> groups, ITestNGMethod tm) {
+  private static void setContext(
+      ScriptEngine engine, Map<String, String> groups, ITestNGMethod tm) {
     ScriptContext context = engine.getContext();
     Method method = tm.getConstructorOrMethod().getMethod();
     context.setAttribute("method", method, ScriptContext.ENGINE_SCOPE);

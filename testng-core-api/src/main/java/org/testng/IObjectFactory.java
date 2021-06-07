@@ -6,9 +6,7 @@ package org.testng;
  *
  * @see IObjectFactory2
  * @since 5.6
- *
  * @deprecated - This interface stands deprecated as of TestNG 7.5.0
  */
 @Deprecated
-public interface IObjectFactory extends ITestObjectFactory {
-}
+public interface IObjectFactory extends ITestObjectFactory {}

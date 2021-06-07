@@ -1,9 +1,8 @@
 package test.commandline;
 
-import org.testng.annotations.Test;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.testng.annotations.Test;
 
 public class Issue987TestSample {
   public static Map<Long, String> maps = new ConcurrentHashMap<>();

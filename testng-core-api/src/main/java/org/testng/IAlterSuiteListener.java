@@ -1,8 +1,7 @@
 package org.testng;
 
-import org.testng.xml.XmlSuite;
-
 import java.util.List;
+import org.testng.xml.XmlSuite;
 
 /**
  * Implementations of this interface will gain access to the {@link XmlSuite} object and thus let

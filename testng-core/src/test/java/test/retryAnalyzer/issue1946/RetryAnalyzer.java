@@ -17,19 +17,22 @@ public class RetryAnalyzer implements IRetryAnalyzer {
     String prefix = "Attempt #" + retryCount;
     if (retryCount < MAX_RETRY_COUNT) {
       if (result.getParameters().length > 0) {
-        logs.add(prefix  + ". Retry :true  " + prettyMsg(result));
+        logs.add(prefix + ". Retry :true  " + prettyMsg(result));
       }
       retryCount++;
       return true;
     }
-    logs.add(prefix  + ". Retry :false " + prettyMsg(result));
+    logs.add(prefix + ". Retry :false " + prettyMsg(result));
     return false;
   }
 
   private static String prettyMsg(ITestResult result) {
-    return "Test method : " + result.getTestClass().getRealClass().getName() + "." +
-        result.getMethod().getMethodName() + "()" +
-        ", Parameters : " + Arrays.toString(result.getParameters());
+    return "Test method : "
+        + result.getTestClass().getRealClass().getName()
+        + "."
+        + result.getMethod().getMethodName()
+        + "()"
+        + ", Parameters : "
+        + Arrays.toString(result.getParameters());
   }
-
 }

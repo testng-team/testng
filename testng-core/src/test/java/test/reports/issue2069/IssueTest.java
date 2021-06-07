@@ -1,10 +1,11 @@
 package test.reports.issue2069;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -40,5 +41,4 @@ public class IssueTest extends SimpleBaseTest {
     String data = new String(baos.toByteArray(), StandardCharsets.UTF_8);
     assertThat(data).doesNotContain("NullPointerException");
   }
-
 }

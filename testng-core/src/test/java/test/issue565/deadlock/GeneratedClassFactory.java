@@ -11,15 +11,13 @@ public class GeneratedClassFactory {
   public Object[][] ids() {
     Integer[][] params = new Integer[SIZE][1];
     for (int id = 0; id < params.length; id++) {
-      params[id] = new Integer[]{id};
+      params[id] = new Integer[] {id};
     }
     return params;
   }
 
   @Factory(dataProvider = "ids")
   public Object[] generate(int id) {
-    return new Object[]{
-        new GeneratedClassInGroupA(id)
-    };
+    return new Object[] {new GeneratedClassInGroupA(id)};
   }
 }

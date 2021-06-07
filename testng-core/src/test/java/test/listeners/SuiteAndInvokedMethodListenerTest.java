@@ -8,12 +8,11 @@ import org.testng.ISuiteListener;
 import org.testng.ITestResult;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-
 import test.listeners.SuiteAndInvokedMethodListenerTest.MyListener;
 
 /**
- * Make sure that if a listener implements both IInvokedMethodListener
- * and ISuiteListener, both listeners get invoked.
+ * Make sure that if a listener implements both IInvokedMethodListener and ISuiteListener, both
+ * listeners get invoked.
  *
  * @author Cedric Beust <cedric@beust.com>
  */
@@ -24,8 +23,7 @@ public class SuiteAndInvokedMethodListenerTest {
     private static boolean m_before = false;
     private static boolean m_start = false;
 
-    public MyListener() {
-    }
+    public MyListener() {}
 
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult result) {
@@ -33,8 +31,7 @@ public class SuiteAndInvokedMethodListenerTest {
     }
 
     @Override
-    public void afterInvocation(IInvokedMethod method, ITestResult result) {
-    }
+    public void afterInvocation(IInvokedMethod method, ITestResult result) {}
 
     @Override
     public void onStart(ISuite suite) {
@@ -42,9 +39,7 @@ public class SuiteAndInvokedMethodListenerTest {
     }
 
     @Override
-    public void onFinish(ISuite suite) {
-    }
-
+    public void onFinish(ISuite suite) {}
   }
 
   @Test
@@ -52,5 +47,4 @@ public class SuiteAndInvokedMethodListenerTest {
     Assert.assertTrue(MyListener.m_before, "IInvokedMethodListener was not invoked");
     Assert.assertTrue(MyListener.m_start, "ISuiteListener was not invoked");
   }
-
 }

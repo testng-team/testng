@@ -1,7 +1,8 @@
 package test.inheritance;
 
-import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
@@ -23,5 +24,4 @@ public class InheritanceConfigTest extends SimpleBaseTest {
     tng.run();
     assertThat(tng.getStatus()).isEqualTo(0);
   }
-
 }

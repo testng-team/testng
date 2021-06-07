@@ -1,14 +1,13 @@
 package test;
 
-import org.testng.TestNG;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import org.testng.TestNG;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 
 public class TestHelper {
   /*
@@ -16,8 +15,8 @@ public class TestHelper {
    * xml suites generated in the tests.
    */
   public static final String SUITE_XML_HEADER =
-          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                  "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n";
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+          + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.0.dtd\">\n";
 
   public static XmlSuite createSuite(String cls, String suiteName) {
     XmlSuite result = new XmlSuite();

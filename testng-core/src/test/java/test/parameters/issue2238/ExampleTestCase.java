@@ -12,5 +12,4 @@ public class ExampleTestCase {
     int expected = Integer.parseInt(System.getProperty("value"));
     Assert.assertEquals(value, expected);
   }
-
 }

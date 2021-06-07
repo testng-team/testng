@@ -19,28 +19,30 @@ public interface ITestInvoker {
     boolean representsRetriedMethod = false;
   }
 
-  List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
+  List<ITestResult> invokeTestMethods(
+      ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
       Object instance,
       ITestContext context);
 
   ITestResult invokeTestMethod(
-          TestMethodArguments arguments, XmlSuite suite,
-          FailureContext failureContext);
+      TestMethodArguments arguments, XmlSuite suite, FailureContext failureContext);
 
   FailureContext retryFailed(
-      TestMethodArguments arguments, List<ITestResult> result,
+      TestMethodArguments arguments,
+      List<ITestResult> result,
       int failureCount,
       ITestContext testContext);
 
   void runTestResultListener(ITestResult tr);
 
-  default ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable) {
+  default ITestResult registerSkippedTestResult(
+      ITestNGMethod testMethod, long start, Throwable throwable) {
     return registerSkippedTestResult(testMethod, start, throwable, null);
   }
 
-  ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start, Throwable throwable,
-      ITestResult source);
+  ITestResult registerSkippedTestResult(
+      ITestNGMethod testMethod, long start, Throwable throwable, ITestResult source);
 
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
@@ -49,5 +51,4 @@ public interface ITestInvoker {
   default IMethodRunner getRunner() {
     return new MethodRunner();
   }
-
 }

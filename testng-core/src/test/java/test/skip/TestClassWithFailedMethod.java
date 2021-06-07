@@ -10,8 +10,5 @@ public class TestClassWithFailedMethod {
   }
 
   @Test(dependsOnMethods = "parentMethod")
-  public void childMethod() {
-
-  }
-
+  public void childMethod() {}
 }

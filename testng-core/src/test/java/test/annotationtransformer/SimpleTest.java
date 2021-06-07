@@ -15,9 +15,7 @@ public class SimpleTest {
   }
 
   @BeforeMethod
-  public void beforeMethod() {
-
-  }
+  public void beforeMethod() {}
 
   @Test
   public void run() {

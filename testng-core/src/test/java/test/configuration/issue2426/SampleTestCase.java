@@ -16,15 +16,14 @@ public class SampleTestCase {
 
   @DataProvider(name = "constructorArguments")
   public static Object[][] constructorArguments() {
-    return new Object[][]{
-        {1, false},
-        {2, true}
+    return new Object[][] {
+      {1, false},
+      {2, true}
     };
   }
 
   @Factory(dataProvider = "constructorArguments")
-  public SampleTestCase(int number, final boolean bool) {
-  }
+  public SampleTestCase(int number, final boolean bool) {}
 
   @BeforeSuite
   public void beforeSuite() {}

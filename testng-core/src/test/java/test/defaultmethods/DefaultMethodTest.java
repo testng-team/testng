@@ -14,13 +14,13 @@ public class DefaultMethodTest extends SimpleBaseTest {
   @DataProvider
   public Object[][] classes() {
     return new Object[][] {
-            new Object[] { TestA.class },
-            new Object[] { TestB.class },
-            new Object[] { TestC.class }
+      new Object[] {TestA.class}, new Object[] {TestB.class}, new Object[] {TestC.class}
     };
   }
 
-  @Test(description = "Test default methods defined in an interface should be run", dataProvider = "classes")
+  @Test(
+      description = "Test default methods defined in an interface should be run",
+      dataProvider = "classes")
   public void testDefaultShouldRun(Class<?> clazz) {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
@@ -29,7 +29,9 @@ public class DefaultMethodTest extends SimpleBaseTest {
     Assert.assertEquals(testMethods[0].getMethodName(), "defaultMethodTest");
   }
 
-  @Test(description = "Before class default methods defined in an interface should be run", dataProvider = "classes")
+  @Test(
+      description = "Before class default methods defined in an interface should be run",
+      dataProvider = "classes")
   public void beforeClassDefaultShouldRun(Class<?> clazz) {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
@@ -38,7 +40,9 @@ public class DefaultMethodTest extends SimpleBaseTest {
     Assert.assertEquals(beforeClassMethods[0].getMethodName(), "beforeClassRun");
   }
 
-  @Test(description = "After class default methods defined in an interface should be run", dataProvider = "classes")
+  @Test(
+      description = "After class default methods defined in an interface should be run",
+      dataProvider = "classes")
   public void afterClassDefaultShouldRun(Class<?> clazz) {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
@@ -47,7 +51,9 @@ public class DefaultMethodTest extends SimpleBaseTest {
     Assert.assertEquals(afterClassMethods[0].getMethodName(), "afterClassRun");
   }
 
-  @Test(description = "Before method default methods defined in an interface should be run", dataProvider = "classes")
+  @Test(
+      description = "Before method default methods defined in an interface should be run",
+      dataProvider = "classes")
   public void beforeMethodDefaultShouldRun(Class<?> clazz) {
     final ITestClass testClass = runTestWithDefaultMethods(clazz);
 
@@ -56,7 +62,9 @@ public class DefaultMethodTest extends SimpleBaseTest {
     Assert.assertEquals(beforeMethods[0].getMethodName(), "beforeMethodRun");
   }
 
-  @Test(description = "After method default methods defined in an interface should be run", dataProvider = "classes")
+  @Test(
+      description = "After method default methods defined in an interface should be run",
+      dataProvider = "classes")
   public void afterMethodDefaultShouldRun(Class<?> clazz) {
     final ITestClass testClass = runTestWithDefaultMethods(clazz);
 

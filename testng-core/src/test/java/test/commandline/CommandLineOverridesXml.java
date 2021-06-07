@@ -1,16 +1,6 @@
 package test.commandline;
 
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
-import org.testng.annotations.Test;
-import org.testng.jarfileutils.JarCreator;
-import org.testng.xml.XmlSuite;
-
-import test.SimpleBaseTest;
-import test.TestHelper;
-import test.commandline.issue341.LocalLogAggregator;
-import test.commandline.issue341.TestSampleA;
-import test.commandline.issue341.TestSampleB;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +10,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
+import org.testng.jarfileutils.JarCreator;
+import org.testng.xml.XmlSuite;
+import test.SimpleBaseTest;
+import test.TestHelper;
+import test.commandline.issue341.LocalLogAggregator;
+import test.commandline.issue341.TestSampleA;
+import test.commandline.issue341.TestSampleB;
 
 public class CommandLineOverridesXml extends SimpleBaseTest {
 

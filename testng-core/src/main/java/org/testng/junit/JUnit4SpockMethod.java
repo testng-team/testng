@@ -1,9 +1,8 @@
 package org.testng.junit;
 
+import java.lang.reflect.Method;
 import org.junit.runner.Description;
 import org.testng.internal.ConstructorOrMethod;
-
-import java.lang.reflect.Method;
 
 public class JUnit4SpockMethod extends ConstructorOrMethod {
 

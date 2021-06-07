@@ -2,15 +2,11 @@ package test;
 
 import org.testng.annotations.Test;
 
-/**
- * This used to create a StackOverflowError.
- */
+/** This used to create a StackOverflowError. */
 public class StaticTest {
   @Test
-  public void test() {
-  }
+  public void test() {}
 
   @Test
-  public static class InnerStaticClass extends StaticTest {
-  }
+  public static class InnerStaticClass extends StaticTest {}
 }

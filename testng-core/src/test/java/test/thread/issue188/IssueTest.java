@@ -30,15 +30,15 @@ public class IssueTest extends SimpleBaseTest {
       testng.run();
       Set<Long> timestamps = Issue188TestSample.timestamps.keySet();
       if (timestamps.size() == 1) {
-      Assertions.assertThat(Issue188TestSample.timestamps.values().iterator().next())
-          .withFailMessage("Since all tests were started simultaneously,test method count should have been 6")
-          .hasSize(6);
+        Assertions.assertThat(Issue188TestSample.timestamps.values().iterator().next())
+            .withFailMessage(
+                "Since all tests were started simultaneously,test method count should have been 6")
+            .hasSize(6);
       } else {
-        List<Long> keyset = Issue188TestSample.timestamps.keySet().stream()
-            .sorted().collect(Collectors.toList());
-        String allTimeStamps = keyset.stream()
-            .map(Objects::toString)
-            .collect(Collectors.joining(","));
+        List<Long> keyset =
+            Issue188TestSample.timestamps.keySet().stream().sorted().collect(Collectors.toList());
+        String allTimeStamps =
+            keyset.stream().map(Objects::toString).collect(Collectors.joining(","));
         long prev = keyset.get(0);
         for (int i = 1; i < keyset.size(); i++) {
           long current = keyset.get(i);
@@ -46,7 +46,10 @@ public class IssueTest extends SimpleBaseTest {
           Assertions.assertThat(diff)
               .withFailMessage(
                   "Test methods should have started within a lag of max 40 ms but it was "
-                      + diff + " ms [" + allTimeStamps + "]")
+                      + diff
+                      + " ms ["
+                      + allTimeStamps
+                      + "]")
               .isLessThanOrEqualTo(40);
           prev = current;
         }

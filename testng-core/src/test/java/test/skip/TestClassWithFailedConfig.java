@@ -11,7 +11,5 @@ public class TestClassWithFailedConfig {
   }
 
   @Test
-  public void testMethod() {
-  }
-
+  public void testMethod() {}
 }

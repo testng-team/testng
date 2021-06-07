@@ -6,18 +6,17 @@ public class SampleDataProvider {
 
   @DataProvider
   public Object[][] hangoutPlaces() {
-    return new Object[][]{
-        {"Hakuna Matata", "Bangalore"},
-        {"Gem Inn", "Chennai"}
+    return new Object[][] {
+      {"Hakuna Matata", "Bangalore"},
+      {"Gem Inn", "Chennai"}
     };
   }
 
   @DataProvider
   public Object[][] busyMalls() {
-    return new Object[][]{
-        {"Orion Mall", "Bangalore"},
-        {"Phoenix Mall", "Chennai"}
+    return new Object[][] {
+      {"Orion Mall", "Bangalore"},
+      {"Phoenix Mall", "Chennai"}
     };
   }
-
 }

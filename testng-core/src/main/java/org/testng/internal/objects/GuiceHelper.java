@@ -5,12 +5,14 @@ import static java.util.stream.Collectors.toList;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-
 import java.util.function.BiPredicate;
 import java.util.stream.StreamSupport;
 import org.testng.IClass;
@@ -26,21 +28,19 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.annotations.AnnotationHelper;
-
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Stage;
 import org.testng.internal.invokers.objects.GuiceContext;
 
 class GuiceHelper {
   private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
-  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules = Maps.newListMultiMap();
+  private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules =
+      Maps.newListMultiMap();
   private final String parentModule;
   private final String stageString;
   private final String testName;
   private final ITestContext context;
 
-  private static final BiPredicate<Module, Module> CLASS_EQUALITY  = (m,n) -> m.getClass().equals(n.getClass());
+  private static final BiPredicate<Module, Module> CLASS_EQUALITY =
+      (m, n) -> m.getClass().equals(n.getClass());
 
   GuiceHelper(ITestContext context) {
     parentModule = context.getSuite().getParentModule();
@@ -61,8 +61,7 @@ class GuiceHelper {
   }
 
   Injector getInjector(Class<?> cls, IInjectorFactory injectorFactory) {
-    Guice guice =
-        AnnotationHelper.findAnnotationSuperClasses(Guice.class, cls);
+    Guice guice = AnnotationHelper.findAnnotationSuperClasses(Guice.class, cls);
     if (guice == null) {
       return null;
     }
@@ -71,7 +70,8 @@ class GuiceHelper {
     List<Module> classLevelModules = getModules(guice, parentInjector, cls);
 
     // Get an injector with the class's modules + any defined parent module installed
-    // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can conflict
+    // Reuse the previous injector, if any, but don't create a child injector as JIT bindings can
+    // conflict
     Injector injector = getInjector(classLevelModules);
     if (injector == null) {
       injector = createInjector(parentInjector, injectorFactory, classLevelModules);
@@ -90,8 +90,13 @@ class GuiceHelper {
     }
     if (injector == null) {
       Module parentModule = getParentModule();
-      injector = createInjector(null, factory,
-          parentModule == null ? Collections.emptyList() : Collections.singletonList(parentModule));
+      injector =
+          createInjector(
+              null,
+              factory,
+              parentModule == null
+                  ? Collections.emptyList()
+                  : Collections.singletonList(parentModule));
       if (suite != null) {
         suite.setParentInjector(injector);
       }
@@ -129,8 +134,8 @@ class GuiceHelper {
     List<Module> allModules = getGuiceModules(parentModule);
     if (!allModules.isEmpty()) {
       if (allModules.size() > 1) {
-        throw new IllegalStateException("Found more than 1 module associated with the test <"
-            + testName + ">");
+        throw new IllegalStateException(
+            "Found more than 1 module associated with the test <" + testName + ">");
       }
       return allModules.get(0);
     }
@@ -152,16 +157,16 @@ class GuiceHelper {
     }
     Class<?> parentModule = ClassHelper.forName(this.parentModule);
     if (parentModule == null) {
-      throw new TestNGException(
-          "Cannot load parent Guice module class: " + this.parentModule);
+      throw new TestNGException("Cannot load parent Guice module class: " + this.parentModule);
     }
     if (!Module.class.isAssignableFrom(parentModule)) {
       throw new TestNGException("Provided class is not a Guice module: " + parentModule.getName());
     }
-    return (Class<? extends Module>)parentModule;
+    return (Class<? extends Module>) parentModule;
   }
 
-  private Injector createInjector(Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
+  private Injector createInjector(
+      Injector parent, IInjectorFactory injectorFactory, List<Module> moduleInstances) {
     Stage stage = Stage.DEVELOPMENT;
     if (isStringNotEmpty(stageString)) {
       stage = Stage.valueOf(stageString);
@@ -207,8 +212,7 @@ class GuiceHelper {
     private static final List<Module> spiModules = loadModules();
 
     private static List<Module> loadModules() {
-      return StreamSupport
-          .stream(ServiceLoader.load(IModule.class).spliterator(), false)
+      return StreamSupport.stream(ServiceLoader.load(IModule.class).spliterator(), false)
           .map(IModule::getModule)
           .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }

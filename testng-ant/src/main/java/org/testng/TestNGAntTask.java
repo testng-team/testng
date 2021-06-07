@@ -1,5 +1,8 @@
 package org.testng;
 
+import static java.lang.Boolean.TRUE;
+import static org.testng.internal.Utils.isStringNotBlank;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -14,7 +17,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
@@ -40,9 +42,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.ant.AntReporterConfig;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.VerboseReporter;
-
-import static java.lang.Boolean.TRUE;
-import static org.testng.internal.Utils.isStringNotBlank;
 
 /**
  * TestNG settings:
@@ -227,9 +226,9 @@ public class TestNGAntTask extends Task {
   }
 
   /**
-   * @param verbose the flag to log the command line. When verbose is set to true the command line parameters
-   * are stored in a temporary file stored in the user's default temporary file directory. The file
-   * created is prefixed with "testng".
+   * @param verbose the flag to log the command line. When verbose is set to true the command line
+   *     parameters are stored in a temporary file stored in the user's default temporary file
+   *     directory. The file created is prefixed with "testng".
    */
   public void setDumpCommand(boolean verbose) {
     m_dump = verbose;
@@ -855,7 +854,7 @@ public class TestNGAntTask extends Task {
     return retVal;
   }
 
-  /** @return the created (or create) the  <CODE>CommandlineJava</CODE>. */
+  /** @return the created (or create) the <CODE>CommandlineJava</CODE>. */
   protected CommandlineJava getJavaCommand() {
     if (null == m_javaCommand) {
       m_javaCommand = new CommandlineJava();

@@ -6,8 +6,7 @@ import org.testng.annotations.Test;
 public class SampleWithConfiguration {
 
   @BeforeMethod
-  public void passingConfig() {
-  }
+  public void passingConfig() {}
 
   @BeforeMethod(dependsOnMethods = "passingConfig")
   public void failingConfig() {
@@ -15,11 +14,8 @@ public class SampleWithConfiguration {
   }
 
   @BeforeMethod(dependsOnMethods = "failingConfig")
-  public void skippingConfig() {
-  }
+  public void skippingConfig() {}
 
   @Test
-  public void testMethod() {
-  }
-
+  public void testMethod() {}
 }

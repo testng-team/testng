@@ -1,12 +1,11 @@
 package test.hook;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import javax.inject.Named;
 import org.testng.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import javax.inject.Named;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
 public class HookSuccess862Test implements IHookable {
 

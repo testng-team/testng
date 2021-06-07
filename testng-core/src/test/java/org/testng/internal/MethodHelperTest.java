@@ -1,8 +1,8 @@
 package org.testng.internal;
 
 import org.testng.ITestNGMethod;
-import org.testng.Reporter;
 import org.testng.ITestObjectFactory;
+import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -19,7 +19,8 @@ public class MethodHelperTest {
     ConstructorOrMethod constructorOrMethod =
         new ConstructorOrMethod(testClass.getClass().getMethod("dummyMethod"));
     IAnnotationFinder annotationFinder = new JDK15AnnotationFinder(new AnnotationTransformer());
-    ITestNGMethod method = new ConfigurationMethod(
+    ITestNGMethod method =
+        new ConfigurationMethod(
             new ITestObjectFactory() {},
             constructorOrMethod,
             annotationFinder,
@@ -33,7 +34,8 @@ public class MethodHelperTest {
             false,
             new String[0],
             new String[0],
-        Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest(), testClass);
+            Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest(),
+            testClass);
     method.addMethodDependedUpon("dummyDependsOnMethod");
     ITestNGMethod[] methods = new ITestNGMethod[0];
 

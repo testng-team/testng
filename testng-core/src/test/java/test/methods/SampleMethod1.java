@@ -20,12 +20,12 @@ public class SampleMethod1 {
     m_ok4 = true;
   }
 
-  @Test(groups = { "sample1" })
+  @Test(groups = {"sample1"})
   public void shouldRun1() {
     m_ok1 = true;
   }
 
-  @Test(groups = { "sample1" })
+  @Test(groups = {"sample1"})
   public void shouldRun2() {
     m_ok2 = true;
   }
@@ -41,12 +41,11 @@ public class SampleMethod1 {
   }
 
   public static void verify() {
-    assert m_ok1 && m_ok2 && m_ok3 && m_ok4 :
-      "All booleans should be true: " + m_ok1 + " " + m_ok2
-      + " " + m_ok3 + " " + m_ok4;
-  }
-  static private void ppp(String s) {
-    System.out.println("[SampleMethod1] " + s);
+    assert m_ok1 && m_ok2 && m_ok3 && m_ok4
+        : "All booleans should be true: " + m_ok1 + " " + m_ok2 + " " + m_ok3 + " " + m_ok4;
   }
 
+  private static void ppp(String s) {
+    System.out.println("[SampleMethod1] " + s);
+  }
 }

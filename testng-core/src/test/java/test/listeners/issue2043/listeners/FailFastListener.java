@@ -11,22 +11,23 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Sets;
 
-public class FailFastListener implements IInvokedMethodListener, IConfigurationListener,
-    IDataProviderListener {
-	public static final Set<String> msgs = Sets.newHashSet();
-	@Override
-	public synchronized void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-		msgs.add(getClass().getSimpleName() + ":afterInvocation");
-	}
+public class FailFastListener
+    implements IInvokedMethodListener, IConfigurationListener, IDataProviderListener {
+  public static final Set<String> msgs = Sets.newHashSet();
 
-	@Override
-	public void beforeConfiguration(ITestResult testResult) {
-		msgs.add(getClass().getSimpleName() + ":beforeConfiguration");
-	}
+  @Override
+  public synchronized void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+    msgs.add(getClass().getSimpleName() + ":afterInvocation");
+  }
 
-	@Override
-	public void beforeDataProviderExecution(
+  @Override
+  public void beforeConfiguration(ITestResult testResult) {
+    msgs.add(getClass().getSimpleName() + ":beforeConfiguration");
+  }
+
+  @Override
+  public void beforeDataProviderExecution(
       IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
-		msgs.add(getClass().getSimpleName() + ":beforeDataProviderExecution");
-	}
+    msgs.add(getClass().getSimpleName() + ":beforeDataProviderExecution");
+  }
 }

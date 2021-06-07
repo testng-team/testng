@@ -16,5 +16,4 @@ public class FailingSampleTest {
     SimpleListener.m_list.add(4);
     throw new RuntimeException();
   }
-
 }

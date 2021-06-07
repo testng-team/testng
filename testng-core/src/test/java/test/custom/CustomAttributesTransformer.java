@@ -10,11 +10,10 @@ import org.testng.annotations.ITestAnnotation;
 public class CustomAttributesTransformer implements IAnnotationTransformer {
 
   @Override
-  public void transform(ITestAnnotation annotation, Class testClass, Constructor testConstructor,
-      Method testMethod) {
-    CustomAttribute[] attributes = new CustomAttribute[]{
-        new MoreAttribute("sorrow", new String[]{"Coffee", "Tea"})
-    };
+  public void transform(
+      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
+    CustomAttribute[] attributes =
+        new CustomAttribute[] {new MoreAttribute("sorrow", new String[] {"Coffee", "Tea"})};
     annotation.setAttributes(attributes);
   }
 

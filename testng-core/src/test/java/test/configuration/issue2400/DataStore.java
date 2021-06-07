@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public enum DataStore {
-
   INSTANCE;
 
   private Map<String, AtomicInteger> tracker = new HashMap<>();

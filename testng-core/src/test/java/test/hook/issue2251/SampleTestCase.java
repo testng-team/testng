@@ -12,7 +12,7 @@ public class SampleTestCase extends AbstractBaseTestCase {
     }
   }
 
-  @Test(timeOut = 1000000) //removing timeout fixes error output
+  @Test(timeOut = 1000000) // removing timeout fixes error output
   public void testError() throws Exception {
     new NullExObj().toString();
   }

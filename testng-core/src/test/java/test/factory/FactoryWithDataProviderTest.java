@@ -1,5 +1,9 @@
 package test.factory;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
+import java.util.Map;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -9,11 +13,6 @@ import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.factory.issue1770.SampleTestFour;
-
-import java.util.Collections;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class FactoryWithDataProviderTest extends SimpleBaseTest {
 

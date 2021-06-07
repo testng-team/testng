@@ -10,13 +10,13 @@ import org.testng.annotations.Test;
 public class B {
 
   @Test(dependsOnMethods = "fb1")
-  public void fb2() {
-  }
+  public void fb2() {}
 
   @Test(groups = "1")
   public void fb1() {}
 
-  @Test public void fb3() {}
+  @Test
+  public void fb3() {}
 
   @BeforeMethod
   public void beforeMethod() {}

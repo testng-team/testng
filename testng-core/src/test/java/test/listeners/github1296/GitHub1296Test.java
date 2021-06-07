@@ -21,11 +21,9 @@ public class GitHub1296Test extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(MyConfigurationListener.CALLS).hasSize(3)
+    assertThat(MyConfigurationListener.CALLS)
+        .hasSize(3)
         .containsOnly(
-            entry("Test version", 2),
-            entry("Test version 2", 2),
-            entry("Test version 3", 2)
-        );
+            entry("Test version", 2), entry("Test version 2", 2), entry("Test version 3", 2));
   }
 }

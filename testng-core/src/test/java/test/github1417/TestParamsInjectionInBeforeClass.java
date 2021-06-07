@@ -1,12 +1,11 @@
 package test.github1417;
 
-import org.testng.Assert;
-import org.testng.TestNG;
-import org.testng.annotations.Test;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.testng.Assert;
+import org.testng.TestNG;
+import org.testng.annotations.Test;
 
 public class TestParamsInjectionInBeforeClass {
   @Test

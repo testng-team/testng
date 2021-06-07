@@ -3,10 +3,8 @@ package test.privatemethod;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-
 public class PrivateMethodTest {
-  public PrivateMethodTest(String name, int value) {
-  }
+  public PrivateMethodTest(String name, int value) {}
 
   private int privateMethod() {
     return 1;

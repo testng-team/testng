@@ -1,13 +1,12 @@
 package org.testng.xml;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import static test.SimpleBaseTest.getPathToResource;
 
 import java.io.File;
 import java.io.FileInputStream;
-
-import static test.SimpleBaseTest.getPathToResource;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class SuiteXmlParserTest {
 

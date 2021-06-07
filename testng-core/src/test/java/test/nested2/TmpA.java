@@ -22,5 +22,4 @@ public class TmpA {
   public static class NestedAWithInheritedTest extends DummyBase {
     public void nestedWithInheritedTest() {}
   }
-
 }

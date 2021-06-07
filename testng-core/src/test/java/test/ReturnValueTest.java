@@ -1,5 +1,6 @@
 package test;
 
+import java.util.Collections;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -7,8 +8,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.Collections;
 
 public class ReturnValueTest extends SimpleBaseTest {
 
@@ -26,7 +25,7 @@ public class ReturnValueTest extends SimpleBaseTest {
     m_suite.setAllowReturnValues(true);
     runTest(true);
   }
-  
+
   @Test
   public void suiteReturnValueTestShouldNotBeRun() {
     runTest(false);
@@ -37,7 +36,7 @@ public class ReturnValueTest extends SimpleBaseTest {
     m_test.setAllowReturnValues(true);
     runTest(true);
   }
-  
+
   private void runTest(boolean allowed) {
     TestNG tng = create();
     tng.setXmlSuites(Collections.singletonList(m_suite));
@@ -55,5 +54,4 @@ public class ReturnValueTest extends SimpleBaseTest {
       Assert.assertEquals(tla.getSkippedTests().size(), 0);
     }
   }
-  
 }

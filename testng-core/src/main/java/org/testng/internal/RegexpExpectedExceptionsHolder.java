@@ -1,11 +1,10 @@
 package org.testng.internal;
 
+import java.util.regex.Pattern;
 import org.testng.IExpectedExceptionsHolder;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.IAnnotationFinder;
-
-import java.util.regex.Pattern;
 
 /**
  * A class that contains the expected exceptions and the message regular expression.

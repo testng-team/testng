@@ -12,8 +12,8 @@ import test.SimpleBaseTest;
 public class IssueTest extends SimpleBaseTest {
 
   @Test(dataProvider = "testData", description = "GITHUB-1987")
-  public void extractDataProviderInfoWhenDpResidesInSameClass(Class<?> clazz,
-      boolean performInstanceCheck, Class<?> dataProviderClass) {
+  public void extractDataProviderInfoWhenDpResidesInSameClass(
+      Class<?> clazz, boolean performInstanceCheck, Class<?> dataProviderClass) {
     TestNG testng = create(clazz);
     DataProviderTrackingListener listener = new DataProviderTrackingListener();
     testng.addListener(listener);
@@ -30,11 +30,10 @@ public class IssueTest extends SimpleBaseTest {
 
   @DataProvider(name = "testData")
   public Object[][] getTestData() {
-    return new Object[][]{
-        {DataProviderInSameClass.class, true, DataProviderInSameClass.class},
-        {DataProviderInBaseClass.class, true, DataProviderInBaseClass.class},
-        {DataProviderInDifferentClass.class, false, BaseClassSample.class}
+    return new Object[][] {
+      {DataProviderInSameClass.class, true, DataProviderInSameClass.class},
+      {DataProviderInBaseClass.class, true, DataProviderInBaseClass.class},
+      {DataProviderInDifferentClass.class, false, BaseClassSample.class}
     };
   }
-
 }

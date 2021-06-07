@@ -14,7 +14,8 @@ public class CustomListener implements IInvokedMethodListener {
 
     if (method.isTestMethod()) {
 
-      final IRetryAnalyzer currentRetryAnalyzer = method.getTestMethod().getRetryAnalyzer(testResult);
+      final IRetryAnalyzer currentRetryAnalyzer =
+          method.getTestMethod().getRetryAnalyzer(testResult);
 
       if (currentRetryAnalyzer == null || currentRetryAnalyzer instanceof DisabledRetryAnalyzer) {
         method.getTestMethod().setRetryAnalyzerClass(DataProviderRetryAnalyzer.class);

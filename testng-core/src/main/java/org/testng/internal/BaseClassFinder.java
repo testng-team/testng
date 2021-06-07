@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITestClassFinder;
 import org.testng.ITestContext;
@@ -7,8 +8,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
-
-import java.util.Map;
 
 /**
  * This class
@@ -40,7 +39,8 @@ public abstract class BaseClassFinder implements ITestClassFinder {
     return m_classes.computeIfAbsent(
         cls,
         key ->
-            new ClassImpl(context, key, xmlClass, instance, m_classes, annotationFinder, objectFactory));
+            new ClassImpl(
+                context, key, xmlClass, instance, m_classes, annotationFinder, objectFactory));
   }
 
   protected boolean classExists(Class<?> cls) {

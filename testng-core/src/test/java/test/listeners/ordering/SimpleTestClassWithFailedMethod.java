@@ -9,5 +9,4 @@ public class SimpleTestClassWithFailedMethod {
   public void testWillFail() {
     Assert.fail();
   }
-
 }

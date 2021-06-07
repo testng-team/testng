@@ -3,22 +3,20 @@ package test.failures;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.reporters.FailedReporter;
 import org.testng.xml.XmlSuite;
-
 import test.TestHelper;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import test.failures.issue1930.SimpleCliStatus;
 import test.failures.issue1930.TestClassSample;
 
@@ -84,9 +82,9 @@ public class FailuresTest extends BaseFailuresTest {
     testng.run();
     String file = outputDir.getAbsolutePath() + File.separator + FailedReporter.TESTNG_FAILED_XML;
 
-    //First iteration of running failed tests.
+    // First iteration of running failed tests.
     runIteration(outputDir, file);
-    //Second iteration of running failed tests.
+    // Second iteration of running failed tests.
     runIteration(outputDir, file);
   }
 

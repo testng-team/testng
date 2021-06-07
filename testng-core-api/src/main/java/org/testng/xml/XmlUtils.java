@@ -1,10 +1,9 @@
 package org.testng.xml;
 
-import org.testng.internal.Utils;
-import org.testng.reporters.XMLStringBuffer;
-
 import java.util.Map;
 import java.util.Properties;
+import org.testng.internal.Utils;
+import org.testng.reporters.XMLStringBuffer;
 
 public class XmlUtils {
 

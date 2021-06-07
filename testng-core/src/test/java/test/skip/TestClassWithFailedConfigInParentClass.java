@@ -5,7 +5,5 @@ import org.testng.annotations.Test;
 public class TestClassWithFailedConfigInParentClass extends TestClassWithFailedConfig {
 
   @Test
-  public void testMethodInChildClass() {
-  }
-
+  public void testMethodInChildClass() {}
 }

@@ -1,13 +1,12 @@
 package org.testng.internal;
 
-import org.testng.*;
-import org.testng.xml.XmlSuite;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.testng.*;
+import org.testng.xml.XmlSuite;
 
 public class ConsoleReporter implements IReporter {
 

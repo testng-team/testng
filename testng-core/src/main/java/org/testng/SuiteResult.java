@@ -1,10 +1,9 @@
 package org.testng;
 
+import javax.annotation.Nonnull;
 import org.testng.collections.Objects;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
-
-import javax.annotation.Nonnull;
 
 /** This class logs the result of an entire Test Suite (defined by a property file). */
 class SuiteResult implements ISuiteResult, Comparable<ISuiteResult> {

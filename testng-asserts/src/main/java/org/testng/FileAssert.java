@@ -42,8 +42,8 @@ public class FileAssert {
   }
 
   /**
-   * Asserts that a {@code tstvalue} is a proper file. If it isn't, an AssertionError with the
-   * given message is thrown.
+   * Asserts that a {@code tstvalue} is a proper file. If it isn't, an AssertionError with the given
+   * message is thrown.
    *
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
@@ -316,10 +316,10 @@ public class FileAssert {
       if (!path.exists()) {
         return "Nonexistent";
       }
-	  if (path.isDirectory()) {
+      if (path.isDirectory()) {
         return "Directory";
       }
-	  if (path.isFile()) {
+      if (path.isFile()) {
         return "File";
       }
       return "Special File";
@@ -333,18 +333,18 @@ public class FileAssert {
     try {
       if (!path.exists()) {
         return "Nonexistent";
-	  }
+      }
       if (path.canRead() && path.canWrite()) {
         return "Read and Write Access";
-      } 
-	  if (path.canRead()) {
+      }
+      if (path.canRead()) {
         return "Read but not Write Access";
       }
-	  if (path.canWrite()) {
+      if (path.canWrite()) {
         return "Write but not Read Access";
       }
       return "Neither Read nor Write Access";
-	} catch (SecurityException e) {
+    } catch (SecurityException e) {
       return "Unauthorized";
     }
   }

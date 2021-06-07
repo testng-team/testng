@@ -1,16 +1,17 @@
 package test.retryAnalyzer.issue1946;
 
+import static org.testng.Assert.fail;
+
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
-import static org.testng.Assert.fail;
 
 public class TestclassBase {
 
   @DataProvider
   public Object[][] dp() {
-    return new Object[][]{
-        {"param1", "value1"},
-        {"param2", "value2"}
+    return new Object[][] {
+      {"param1", "value1"},
+      {"param2", "value2"}
     };
   }
 
@@ -19,5 +20,4 @@ public class TestclassBase {
     String txt = String.format("%s() Assertion for (%s, %s)", method, username, password);
     fail(txt);
   }
-
 }

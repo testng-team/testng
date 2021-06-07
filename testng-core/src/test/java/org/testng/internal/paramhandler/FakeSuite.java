@@ -1,6 +1,11 @@
 package org.testng.internal.paramhandler;
 
 import com.google.inject.Injector;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -15,12 +20,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class FakeSuite implements ISuite {
 

@@ -18,8 +18,7 @@ public class Base {
   }
 
   @BeforeMethod
-  public void beforeMethod() {
-  }
+  public void beforeMethod() {}
 
   @AfterMethod
   public void afterMethod() {}
@@ -48,9 +47,8 @@ public class Base {
 
   @Test
   public void a() {
-     if (m_fail) {
+    if (m_fail) {
       throw new IllegalArgumentException("Test Method FAILING");
     }
   }
-
 }

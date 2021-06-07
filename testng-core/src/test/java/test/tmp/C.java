@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 public class C {
   @BeforeMethod
   public void cm() {
-//    System.out.println("C.cm");
+    //    System.out.println("C.cm");
   }
 
   @Test(dataProvider = "data")
@@ -16,10 +16,9 @@ public class C {
   }
 
   @DataProvider(name = "data")
-  static public Object[][] data() {
+  public static Object[][] data() {
     return new Object[][] {
-        new Object[] { "Foo" },
-        new Object[] { "Bar" },
+      new Object[] {"Foo"}, new Object[] {"Bar"},
     };
   }
 }

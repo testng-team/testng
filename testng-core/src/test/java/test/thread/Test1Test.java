@@ -15,6 +15,4 @@ public class Test1Test extends BaseSequentialSample {
     ppp("f12");
     addId("Test1Test.f12()", Thread.currentThread().getId());
   }
-
-
 }

@@ -7,5 +7,4 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Internal {
-}
+public @interface Internal {}

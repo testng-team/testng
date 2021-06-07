@@ -1,13 +1,12 @@
 package org.testng;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
 import org.testng.xml.XmlTest;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * Describes a TestNG annotated method and the instance on which it will be invoked.
@@ -113,7 +112,6 @@ public interface ITestNGMethod extends Cloneable {
     return false;
   }
 
-
   /** @return The timeout in milliseconds. */
   long getTimeOut();
 
@@ -190,7 +188,8 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * Which invocation numbers of this method should be used (only applicable if it uses a data
    * provider). If this value is an empty list, use all the values returned from the data provider.
-   * These values are read from the XML file in the <code>&lt;include invocationNumbers="..."&gt;</code> tag.
+   * These values are read from the XML file in the <code>&lt;include invocationNumbers="..."&gt;
+   * </code> tag.
    *
    * @return The list of invocation numbers
    */
@@ -245,7 +244,7 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return - A {@link IParameterInfo} object that represents details about the parameters
-   * associated with the factory method.
+   *     associated with the factory method.
    */
   default IParameterInfo getFactoryMethodParamsInfo() {
     return null;
@@ -253,15 +252,15 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return - An array of {@link CustomAttribute} that represents the custom attributes associated
-   * with a test.
+   *     with a test.
    */
   default CustomAttribute[] getAttributes() {
-    return new CustomAttribute[]{};
+    return new CustomAttribute[] {};
   }
 
   /**
-   * @return - An {@link IDataProviderMethod} for a data provider powered test method and
-   * <code>null</code> otherwise.
+   * @return - An {@link IDataProviderMethod} for a data provider powered test method and <code>null
+   *     </code> otherwise.
    */
   default IDataProviderMethod getDataProviderMethod() {
     return null;

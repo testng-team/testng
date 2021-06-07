@@ -1,23 +1,15 @@
 package org.testng.internal;
 
-/**
- * Represents the ability to retrieve the parameters associated with a factory method.
- */
+/** Represents the ability to retrieve the parameters associated with a factory method. */
 public interface IParameterInfo {
 
-  /**
-   * @return - The actual instance associated with a factory method
-   */
+  /** @return - The actual instance associated with a factory method */
   Object getInstance();
 
-  /**
-   * @return - The actual index of instance associated with a factory method
-   */
+  /** @return - The actual index of instance associated with a factory method */
   int getIndex();
 
-  /**
-   * @return - The parameters associated with the factory method as an array.
-   */
+  /** @return - The parameters associated with the factory method as an array. */
   Object[] getParameters();
 
   static Object embeddedInstance(Object original) {
@@ -26,5 +18,4 @@ public interface IParameterInfo {
     }
     return original;
   }
-
 }

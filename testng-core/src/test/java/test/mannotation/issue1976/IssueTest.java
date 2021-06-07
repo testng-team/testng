@@ -19,13 +19,15 @@ public class IssueTest extends ClassLoader {
   private static final class MyClassLoader extends ClassLoader {
 
     public Class<?> injectByteCode(CompiledCode byteCode) throws ClassNotFoundException {
-      Class<?> clazz = defineClass(byteCode.getName(), byteCode.getByteCode(), 0,
-              byteCode.getByteCode().length);
+      Class<?> clazz =
+          defineClass(byteCode.getName(), byteCode.getByteCode(), 0, byteCode.getByteCode().length);
       return loadClass(clazz.getName());
     }
   }
 
-  @Test(dataProvider = "dp", expectedExceptions = TypeNotPresentException.class,
+  @Test(
+      dataProvider = "dp",
+      expectedExceptions = TypeNotPresentException.class,
       description = "GITHUB-1976")
   public void testMethod(SourceCode... sources) throws IOException, ClassNotFoundException {
     TestNG tng = new TestNG(false);
@@ -46,12 +48,12 @@ public class IssueTest extends ClassLoader {
 
   @DataProvider(name = "dp")
   public Object[][] getTestData() throws IOException {
-    return new Object[][]{
-        {new SourceCode[]{missingTypeAtMethodLevel(), exception1()}},
-        {new SourceCode[]{missingTypeAtClassLevel(), exception2()}},
-        {new SourceCode[]{missingTypeAtConstructor(), dataProvider()}},
-        // TODO fix test {new SourceCode[]{missingTypeAtListenerAnnotation(), listener()}},
-        {new SourceCode[]{missingTypeAtBaseClass(), childClass(), exception3()}},
+    return new Object[][] {
+      {new SourceCode[] {missingTypeAtMethodLevel(), exception1()}},
+      {new SourceCode[] {missingTypeAtClassLevel(), exception2()}},
+      {new SourceCode[] {missingTypeAtConstructor(), dataProvider()}},
+      // TODO fix test {new SourceCode[]{missingTypeAtListenerAnnotation(), listener()}},
+      {new SourceCode[] {missingTypeAtBaseClass(), childClass(), exception3()}},
     };
   }
 
@@ -92,7 +94,6 @@ public class IssueTest extends ClassLoader {
     source += "}\n";
     return new SourceCode("ChildClass", source, dir, false);
   }
-
 
   private static SourceCode exception2() throws IOException {
     String source = "public class AnotherException extends RuntimeException {}";

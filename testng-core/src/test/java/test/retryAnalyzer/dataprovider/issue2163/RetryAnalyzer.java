@@ -1,6 +1,5 @@
 package test.retryAnalyzer.dataprovider.issue2163;
 
-import java.util.Arrays;
 import java.util.List;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;

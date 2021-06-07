@@ -7,7 +7,5 @@ import org.testng.annotations.Test;
 public class TestClassSampleUsingListener {
 
   @Test(dataProvider = "getData", dataProviderClass = DataProviderHouse.class)
-  public void test(int i) {
-  }
-
+  public void test(int i) {}
 }

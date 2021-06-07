@@ -5,15 +5,15 @@ import org.testng.annotations.Test;
 @Test
 public class StaticInitializerTest {
 
-    static {
-      foo();
-    }
+  static {
+    foo();
+  }
 
-    public void testMe() {
-        System.err.println("**** testMe ****");
-    }
+  public void testMe() {
+    System.err.println("**** testMe ****");
+  }
 
-    private static void foo() {
-      throw new RuntimeException("FAILING");
-    }
+  private static void foo() {
+    throw new RuntimeException("FAILING");
+  }
 }

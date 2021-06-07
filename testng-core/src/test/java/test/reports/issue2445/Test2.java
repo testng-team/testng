@@ -9,4 +9,3 @@ public class Test2 {
     Assert.assertEquals("Simulate success", "1", "1");
   }
 }
-

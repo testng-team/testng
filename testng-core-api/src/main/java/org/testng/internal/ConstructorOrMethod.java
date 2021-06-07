@@ -5,9 +5,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-/**
- * Encapsulation of either a method or a constructor.
- */
+/** Encapsulation of either a method or a constructor. */
 public class ConstructorOrMethod {
 
   private Method m_method;
@@ -95,5 +93,4 @@ public class ConstructorOrMethod {
   public String stringifyParameterTypes() {
     return Utils.stringifyTypes(getParameterTypes());
   }
-
 }

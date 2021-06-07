@@ -8,10 +8,8 @@ import org.testng.annotations.Test;
 public class SampleB {
 
   @Inject
-  public SampleB(final Person person) {
-  }
+  public SampleB(final Person person) {}
 
   @Test
-  public void testApp() {
-  }
+  public void testApp() {}
 }

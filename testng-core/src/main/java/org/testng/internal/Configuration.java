@@ -113,7 +113,6 @@ public class Configuration implements IConfiguration {
   @Override
   public void setExecutorFactory(IExecutorFactory factory) {
     this.m_executorFactory = factory;
-
   }
 
   @Override

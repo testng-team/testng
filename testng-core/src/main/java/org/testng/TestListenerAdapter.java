@@ -1,12 +1,11 @@
 package org.testng;
 
-import org.testng.collections.Objects;
-import org.testng.internal.IResultListener2;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.testng.collections.Objects;
+import org.testng.internal.IResultListener2;
 
 /**
  * A simple ITestListener adapter that stores all the tests that were run. You can retrieve these
@@ -90,9 +89,7 @@ public class TestListenerAdapter implements IResultListener2 {
     return new ArrayList<>(m_skippedTests);
   }
 
-  /**
-   * @return Returns the tests that failed due to a timeout
-   */
+  /** @return Returns the tests that failed due to a timeout */
   public Collection<ITestResult> getTimedoutTests() {
     return new ArrayList<>(m_timedOutTests);
   }

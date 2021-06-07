@@ -17,6 +17,7 @@ public class MethodDependenciesSample2 {
 
   private void log() {
     String testname = Reporter.getCurrentTestResult().getTestContext().getName();
-    LogGatheringListener.addLog(testname, MethodDependenciesSample2.class, Thread.currentThread().getId());
+    LogGatheringListener.addLog(
+        testname, MethodDependenciesSample2.class, Thread.currentThread().getId());
   }
 }

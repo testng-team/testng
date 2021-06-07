@@ -3,8 +3,6 @@ package test.configuration;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.List;
-
 public class BeforeMethodWithGroupFiltersSampleTest {
 
   static final String[] EXPECTED_INVOCATIONS = {

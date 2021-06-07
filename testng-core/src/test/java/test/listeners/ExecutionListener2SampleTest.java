@@ -7,5 +7,4 @@ import org.testng.annotations.Test;
 public class ExecutionListener2SampleTest {
   @Test
   public void f() {}
-
 }

@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
@@ -75,7 +74,8 @@ public class FactoryMethod extends BaseTestMethod {
       Object instance,
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
-      ITestObjectFactory objectFactory, DataProviderHolder holder) {
+      ITestObjectFactory objectFactory,
+      DataProviderHolder holder) {
     super(objectFactory, com.getName(), com, annotationFinder, instance);
     this.holder = holder;
     init(instance, annotationFinder, com);
@@ -87,9 +87,14 @@ public class FactoryMethod extends BaseTestMethod {
         instance = ((IParameterInfo) instance).getInstance();
       }
       Class<?> cls = instance.getClass();
-      String msg = "Found a default constructor and also a Factory method when working with "
-          + declaringClass.getName() + ". Root cause: Mismatch between instance/method classes:[" + cls.getName()
-          + "] [" + declaringClass.getName() + "]";
+      String msg =
+          "Found a default constructor and also a Factory method when working with "
+              + declaringClass.getName()
+              + ". Root cause: Mismatch between instance/method classes:["
+              + cls.getName()
+              + "] ["
+              + declaringClass.getName()
+              + "]";
       throw new TestNGException(msg);
     }
     if (instance == null
@@ -117,14 +122,19 @@ public class FactoryMethod extends BaseTestMethod {
     NoOpTestClass tc = new NoOpTestClass();
     tc.setTestClass(declaringClass);
     m_testClass = tc;
-    m_groups = getAllGroups(objectFactory, declaringClass, testContext.getCurrentXmlTest(), annotationFinder);
+    m_groups =
+        getAllGroups(
+            objectFactory, declaringClass, testContext.getCurrentXmlTest(), annotationFinder);
   }
 
   private static String[] getAllGroups(
       ITestObjectFactory objectFactory,
-      Class<?> declaringClass, XmlTest xmlTest, IAnnotationFinder annotationFinder) {
+      Class<?> declaringClass,
+      XmlTest xmlTest,
+      IAnnotationFinder annotationFinder) {
     // Find the groups of the factory => all groups of all test methods
-    ITestMethodFinder testMethodFinder = new TestNGMethodFinder(objectFactory, new RunInfo(()-> xmlTest), annotationFinder);
+    ITestMethodFinder testMethodFinder =
+        new TestNGMethodFinder(objectFactory, new RunInfo(() -> xmlTest), annotationFinder);
     ITestNGMethod[] testMethods = testMethodFinder.getTestMethods(declaringClass, xmlTest);
     Set<String> groups = new HashSet<>();
     for (ITestNGMethod method : testMethods) {
@@ -176,15 +186,17 @@ public class FactoryMethod extends BaseTestMethod {
             testInstances = new Object[] {};
           }
           if (testInstances.length == 0) {
-            this.m_factoryCreationFailedMessage = String
-                .format("The Factory method %s.%s() should have produced at-least one instance.",
+            this.m_factoryCreationFailedMessage =
+                String.format(
+                    "The Factory method %s.%s() should have produced at-least one instance.",
                     com.getDeclaringClass().getName(), com.getName());
           }
           if (indices == null || indices.isEmpty()) {
             final int instancePosition = position;
-            result.addAll(Arrays.stream(testInstances).map(instance ->
-              new ParameterInfo(instance, instancePosition, parameters)
-            ).collect(Collectors.toList()));
+            result.addAll(
+                Arrays.stream(testInstances)
+                    .map(instance -> new ParameterInfo(instance, instancePosition, parameters))
+                    .collect(Collectors.toList()));
           } else {
             for (Integer index : indices) {
               int i = index - position;
@@ -196,7 +208,7 @@ public class FactoryMethod extends BaseTestMethod {
           position += testInstances.length;
         } else {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
-            Object instance  = m_objectFactory.newInstance(com.getConstructor(), parameters);
+            Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
             result.add(new ParameterInfo(instance, position, parameters));
           }
           position++;

@@ -9,11 +9,8 @@ public class SetUpExceptionSampleTest extends TestCase {
     throw new RuntimeException();
   }
 
-  public void testM1() {
-  }
+  public void testM1() {}
 
   @Override
-  protected void tearDown() throws Exception {
-  }
-
+  protected void tearDown() throws Exception {}
 }

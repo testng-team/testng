@@ -12,5 +12,4 @@ public class ReporterLogFailureSample {
     Reporter.log("Log from test_onFailure");
     throw new RuntimeException("Intentionally failed");
   }
-
 }

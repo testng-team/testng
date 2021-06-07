@@ -70,8 +70,8 @@ public interface ITestListener extends ITestNGListener {
   }
 
   /**
-   * Invoked before running all the test methods belonging to the classes inside the &lt;test&gt; tag
-   * and calling all their Configuration methods.
+   * Invoked before running all the test methods belonging to the classes inside the &lt;test&gt;
+   * tag and calling all their Configuration methods.
    *
    * @param context The test context
    */
@@ -80,8 +80,8 @@ public interface ITestListener extends ITestNGListener {
   }
 
   /**
-   * Invoked after all the test methods belonging to the classes inside the &lt;test&gt; tag have run
-   * and all their Configuration methods have been called.
+   * Invoked after all the test methods belonging to the classes inside the &lt;test&gt; tag have
+   * run and all their Configuration methods have been called.
    *
    * @param context The test context
    */

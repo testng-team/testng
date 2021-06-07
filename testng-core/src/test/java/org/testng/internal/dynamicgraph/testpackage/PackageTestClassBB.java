@@ -4,9 +4,9 @@ import org.testng.annotations.Test;
 
 public class PackageTestClassBB {
 
-    @Test
-    public void b1() {}
+  @Test
+  public void b1() {}
 
-    @Test
-    public void b2() {}
+  @Test
+  public void b2() {}
 }

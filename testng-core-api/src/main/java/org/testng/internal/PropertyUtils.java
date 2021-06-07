@@ -1,7 +1,6 @@
 package org.testng.internal;
 
-import org.testng.TestNGException;
-import org.testng.log4testng.Logger;
+import static org.testng.annotations.Parameters.NULL_VALUE;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -9,8 +8,8 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static org.testng.annotations.Parameters.NULL_VALUE;
+import org.testng.TestNGException;
+import org.testng.log4testng.Logger;
 
 /**
  * Utility class for setting JavaBeans-style properties on instances.
@@ -106,7 +105,8 @@ public class PropertyUtils {
     return propDesc.getPropertyType();
   }
 
-  private static PropertyDescriptor getPropertyDescriptor(Class<?> targetClass, String propertyName) {
+  private static PropertyDescriptor getPropertyDescriptor(
+      Class<?> targetClass, String propertyName) {
     PropertyDescriptor result = null;
     if (targetClass == null) {
       LOGGER.warn("Cannot retrieve property " + propertyName + ". Class is null");

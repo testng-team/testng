@@ -3,7 +3,6 @@ package org.testng.internal.annotations;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
-
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IAnnotation;
 import org.testng.internal.ConstructorOrMethod;
@@ -47,14 +46,12 @@ public interface IAnnotationFinder {
    */
   <A extends IAnnotation> A findAnnotation(Constructor<?> cons, Class<A> annotationClass);
 
-
   /**
-   *
    * @param cls - The corresponding class.
    * @param annotationClass - The class on which annotation is to be looked for.
    * @param <A> - The expected {@link IAnnotation} type
-   * @return The annotations on the inherited interfaces. If not found, return the annotations on the declaring
-   *     interface. If not found, return an empty list.
+   * @return The annotations on the inherited interfaces. If not found, return the annotations on
+   *     the declaring interface. If not found, return an empty list.
    */
   <A extends IAnnotation> List<A> findInheritedAnnotations(Class<?> cls, Class<A> annotationClass);
 

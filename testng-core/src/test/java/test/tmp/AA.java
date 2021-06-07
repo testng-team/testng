@@ -21,23 +21,23 @@ public class AA {
   @DataProvider
   public Object[][] dp() {
     return new Object[][] {
-      new Object[] { 42 },
+      new Object[] {42},
     };
   }
 
-//  @BeforeClass
-//  public void bc() {
-//    log("beforeClass");
-//  }
-//
-//  @AfterClass
-//  public void ac() {
-//    log("afterClass");
-//  }
+  //  @BeforeClass
+  //  public void bc() {
+  //    log("beforeClass");
+  //  }
+  //
+  //  @AfterClass
+  //  public void ac() {
+  //    log("afterClass");
+  //  }
 
   @Factory
   public Object[] create() {
-    return new Object[] { new A(), new AA() };
+    return new Object[] {new A(), new AA()};
   }
 
   @Test
@@ -50,21 +50,20 @@ public class AA {
     log("aatest2");
   }
 
-//  @Test(priority = 3)
-  public void atest3() {
-  }
+  //  @Test(priority = 3)
+  public void atest3() {}
 
   public String getTestName() {
     return "This is test A";
   }
 
-//  @Test(groups = "mytest", dependsOnMethods = "g")
-//  public void f() {
-//  }
-//
-//
-//  @AfterMethod
-//  public void after() {
-//  }
+  //  @Test(groups = "mytest", dependsOnMethods = "g")
+  //  public void f() {
+  //  }
+  //
+  //
+  //  @AfterMethod
+  //  public void after() {
+  //  }
 
 }

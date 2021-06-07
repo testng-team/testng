@@ -1,9 +1,8 @@
 package org.testng.internal.reflect;
 
+import java.lang.reflect.Method;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-
-import java.lang.reflect.Method;
 
 /**
  * Input context for MethodMatchers.

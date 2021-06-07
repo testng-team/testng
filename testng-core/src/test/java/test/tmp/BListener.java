@@ -19,5 +19,4 @@ public class BListener extends TestListenerAdapter {
     System.out.println("Failure");
     super.onTestFailure(tr);
   }
-
 }

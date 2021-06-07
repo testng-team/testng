@@ -1,8 +1,8 @@
 package org.testng.internal.invokers;
 
-import static org.testng.internal.invokers.Invoker.SAME_CLASS;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+import static org.testng.internal.invokers.Invoker.SAME_CLASS;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -25,34 +25,31 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.*;
-import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.annotations.AnnotationHelper;
+import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 
 class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
-  /**
-   * Test methods whose configuration methods have failed.
-   */
-  protected final Map<ITestNGMethod, Set<Object>> m_methodInvocationResults = Maps
-      .newConcurrentMap();
+  /** Test methods whose configuration methods have failed. */
+  protected final Map<ITestNGMethod, Set<Object>> m_methodInvocationResults =
+      Maps.newConcurrentMap();
 
   private final boolean m_continueOnFailedConfiguration;
 
   private final Set<ITestNGMethod> m_executedConfigMethods = ConcurrentHashMap.newKeySet();
 
-  /**
-   * Group failures must be synced as the Invoker is accessed concurrently
-   */
+  /** Group failures must be synced as the Invoker is accessed concurrently */
   private final Map<String, Boolean> m_beforegroupsFailures = Maps.newConcurrentMap();
 
-  public ConfigInvoker(ITestResultNotifier notifier,
-                       Collection<IInvokedMethodListener> invokedMethodListeners,
-                       ITestContext testContext,
-                       SuiteRunState suiteState,
-                       IConfiguration configuration) {
+  public ConfigInvoker(
+      ITestResultNotifier notifier,
+      Collection<IInvokedMethodListener> invokedMethodListeners,
+      ITestContext testContext,
+      SuiteRunState suiteState,
+      IConfiguration configuration) {
     super(notifier, invokedMethodListeners, testContext, suiteState, configuration);
     this.m_continueOnFailedConfiguration =
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
@@ -61,7 +58,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   /**
    * @return false if this class has successfully run all its @Configuration method or true if at
-   * least one of these methods failed.
+   *     least one of these methods failed.
    */
   public boolean hasConfigurationFailureFor(
       ITestNGMethod testNGMethod, String[] groups, IClass testClass, Object instance) {
@@ -108,8 +105,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   /**
-   * Filter all the beforeGroups methods and invoke only those that apply to the current test
-   * method
+   * Filter all the beforeGroups methods and invoke only those that apply to the current test method
+   *
    * @param arguments - A {@link GroupConfigMethodArguments} object.
    */
   public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
@@ -121,7 +118,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     String[] groups = arguments.getTestMethod().getGroups();
 
     for (String group : groups) {
-      List<ITestNGMethod> methods = arguments.getGroupMethods().getBeforeGroupMethodsForGroup(group);
+      List<ITestNGMethod> methods =
+          arguments.getGroupMethods().getBeforeGroupMethodsForGroup(group);
       if (methods != null) {
         filteredMethods.addAll(methods);
       }
@@ -132,21 +130,23 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Invoke the right groups methods
     //
     if (beforeMethodsArray.length > 0) {
-      ITestNGMethod[] filteredConfigurations = Arrays.stream(beforeMethodsArray)
-          .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
-          .toArray(ITestNGMethod[]::new);
+      ITestNGMethod[] filteredConfigurations =
+          Arrays.stream(beforeMethodsArray)
+              .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
+              .toArray(ITestNGMethod[]::new);
       if (filteredConfigurations.length == 0) {
         return;
       }
       // don't pass the IClass or the instance as the method may be external
       // the invocation must be similar to @BeforeTest/@BeforeSuite
-      ConfigMethodArguments configMethodArguments = new Builder()
-          .usingConfigMethodsAs(filteredConfigurations)
-          .forSuite(arguments.getSuite())
-          .usingParameters(arguments.getParameters())
-          .usingInstance(arguments.getInstance())
-          .forTestMethod(arguments.getTestMethod())
-          .build();
+      ConfigMethodArguments configMethodArguments =
+          new Builder()
+              .usingConfigMethodsAs(filteredConfigurations)
+              .forSuite(arguments.getSuite())
+              .usingParameters(arguments.getParameters())
+              .usingInstance(arguments.getInstance())
+              .forTestMethod(arguments.getTestMethod())
+              .build();
       invokeConfigurations(configMethodArguments);
     }
 
@@ -177,8 +177,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     Map<String, String> filteredGroups = Maps.newHashMap();
     String[] groups = arguments.getTestMethod().getGroups();
     for (String group : groups) {
-      if (arguments.getGroupMethods().isLastMethodForGroup(group,
-          arguments.getTestMethod())) {
+      if (arguments.getGroupMethods().isLastMethodForGroup(group, arguments.getTestMethod())) {
         filteredGroups.put(group, group);
       }
     }
@@ -204,22 +203,23 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
 
     // Got our afterMethods, invoke them
-    ITestNGMethod[] filteredConfigurations = afterMethods.keySet()
-        .stream()
-        .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
-        .toArray(ITestNGMethod[]::new);
+    ITestNGMethod[] filteredConfigurations =
+        afterMethods.keySet().stream()
+            .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
+            .toArray(ITestNGMethod[]::new);
     if (filteredConfigurations.length == 0) {
       return;
     }
     // don't pass the IClass or the instance as the method may be external
     // the invocation must be similar to @BeforeTest/@BeforeSuite
-    ConfigMethodArguments configMethodArguments = new Builder()
-        .usingConfigMethodsAs(filteredConfigurations)
-        .forSuite(arguments.getSuite())
-        .usingParameters(arguments.getParameters())
-        .usingInstance(arguments.getInstance())
-        .forTestMethod(arguments.getTestMethod())
-        .build();
+    ConfigMethodArguments configMethodArguments =
+        new Builder()
+            .usingConfigMethodsAs(filteredConfigurations)
+            .forSuite(arguments.getSuite())
+            .usingParameters(arguments.getParameters())
+            .usingInstance(arguments.getInstance())
+            .forTestMethod(arguments.getTestMethod())
+            .build();
 
     invokeConfigurations(configMethodArguments);
 
@@ -233,9 +233,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       return;
     }
 
-    ITestNGMethod[] methods = TestNgMethodUtils.filterMethods(arguments.getTestClass(),
-        arguments.getConfigMethods(), SAME_CLASS);
-    Object[] parameters = new Object[]{};
+    ITestNGMethod[] methods =
+        TestNgMethodUtils.filterMethods(
+            arguments.getTestClass(), arguments.getConfigMethods(), SAME_CLASS);
+    Object[] parameters = new Object[] {};
 
     for (ITestNGMethod tm : methods) {
       if (null == arguments.getTestClass()) {
@@ -275,18 +276,22 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true) + " because it is not enabled");
           continue;
         }
-        if (hasConfigurationFailureFor(arguments.getTestMethod(), tm.getGroups() ,
-            arguments.getTestClass(),
-            arguments.getInstance()) && !alwaysRun) {
+        if (hasConfigurationFailureFor(
+                arguments.getTestMethod(),
+                tm.getGroups(),
+                arguments.getTestClass(),
+                arguments.getInstance())
+            && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
-          InvokedMethod invokedMethod =
-              new InvokedMethod(System.currentTimeMillis(), testResult);
+          InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setStatus(ITestResult.SKIP);
           runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
 
           handleConfigurationSkip(
-              tm, testResult, configurationAnnotation,
+              tm,
+              testResult,
+              configurationAnnotation,
               arguments.getTestMethod(),
               arguments.getInstance(),
               arguments.getSuite());
@@ -295,8 +300,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
         log(3, "Invoking " + Utils.detailedMethodName(tm, true));
         if (arguments.getTestMethodResult() != null) {
-          ((TestResult) arguments.getTestMethodResult()).setMethod(
-              arguments.getTestMethod());
+          ((TestResult) arguments.getTestMethodResult()).setMethod(arguments.getTestMethod());
         }
 
         parameters =
@@ -321,8 +325,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         } else {
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
-        copyAttributesFromNativelyInjectedTestResult(parameters,
-            arguments.getTestMethodResult());
+        copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
         runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
         if (testResult.getStatus() == ITestResult.SKIP) {
           Throwable t = testResult.getThrowable();
@@ -332,19 +335,19 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         }
       } catch (Throwable ex) {
         handleConfigurationFailure(
-            ex, tm, testResult, configurationAnnotation,
+            ex,
+            tm,
+            testResult,
+            configurationAnnotation,
             arguments.getTestMethod(),
             arguments.getInstance(),
             arguments.getSuite());
-        copyAttributesFromNativelyInjectedTestResult(parameters,
-            arguments.getTestMethodResult());
+        copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
       }
     } // for methods
   }
 
-  /**
-   * Effectively invokes a configuration method on all passed in instances.
-   */
+  /** Effectively invokes a configuration method on all passed in instances. */
   // TODO: Change this method to be more like invokeMethod() so that we can handle calls to {@code
   // IInvokedMethodListener} better.
   private void invokeConfigurationMethod(
@@ -353,8 +356,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // Mark this method with the current thread id
     tm.setId(ThreadUtil.currentThreadInfo());
 
-    InvokedMethod invokedMethod =
-        new InvokedMethod(System.currentTimeMillis(), testResult);
+    InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
 
     runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
 
@@ -362,13 +364,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       ((IInvocationStatus) tm).setInvokedAt(invokedMethod.getDate());
     }
     if (testResult.getStatus() == ITestResult.SKIP) {
-      //There was a skip marked by the listener invocation.
+      // There was a skip marked by the listener invocation.
       testResult.setEndMillis(System.currentTimeMillis());
       Reporter.setCurrentTestResult(testResult);
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
 
       Reporter.setCurrentTestResult(null);
-      return ;
+      return;
     }
     try {
       Reporter.setCurrentTestResult(testResult);
@@ -417,16 +419,15 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     if (before) {
-      TestListenerHelper.runPreConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
+      TestListenerHelper.runPreConfigurationListeners(
+          tr, tm, m_notifier.getConfigurationListeners());
     } else {
-      TestListenerHelper.runPostConfigurationListeners(tr, tm, m_notifier.getConfigurationListeners());
+      TestListenerHelper.runPostConfigurationListeners(
+          tr, tm, m_notifier.getConfigurationListeners());
     }
-
   }
 
-  /**
-   * Marks the current <code>TestResult</code> as skipped and invokes the listeners.
-   */
+  /** Marks the current <code>TestResult</code> as skipped and invokes the listeners. */
   private void handleConfigurationSkip(
       ITestNGMethod tm,
       ITestResult testResult,
@@ -443,7 +444,6 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private boolean hasConfigFailure(ITestNGMethod currentTestMethod) {
     return currentTestMethod != null && m_methodInvocationResults.containsKey(currentTestMethod);
   }
-
 
   private void handleConfigurationFailure(
       Throwable ite,
@@ -492,13 +492,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return cfg.isFirstTimeOnly();
   }
 
-  /**
-   * @return true if this class or a parent class failed to initialize.
-   */
+  /** @return true if this class or a parent class failed to initialize. */
   private boolean classConfigurationFailed(Class<?> cls, Object instance) {
-    return m_classInvocationResults
-        .entrySet()
-        .stream()
+    return m_classInvocationResults.entrySet().stream()
         .anyMatch(
             classSetEntry -> {
               Set<Object> obj = classSetEntry.getValue();
@@ -506,7 +502,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
               boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(null);
               return c == cls
                   || c.isAssignableFrom(cls)
-                  && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure);
+                      && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure);
             });
   }
 
@@ -627,5 +623,4 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     }
     return set;
   }
-
 }

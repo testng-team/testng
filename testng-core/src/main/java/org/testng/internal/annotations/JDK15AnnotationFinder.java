@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.AfterClass;
@@ -43,9 +42,7 @@ import org.testng.annotations.TestInstance;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.collections.Pair;
 
-/**
- * This class implements IAnnotationFinder with JDK5 annotations
- */
+/** This class implements IAnnotationFinder with JDK5 annotations */
 public class JDK15AnnotationFinder implements IAnnotationFinder {
 
   private final JDK15TagFactory m_tagFactory = new JDK15TagFactory();
@@ -186,7 +183,6 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
   }
 
-
   @Override
   public <A extends IAnnotation> A findAnnotation(Class<?> cls, Class<A> annotationClass) {
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
@@ -226,13 +222,14 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   }
 
   @Override
-  public <A extends IAnnotation> List<A> findInheritedAnnotations(Class<?> cls, Class<A> annotationClass) {
+  public <A extends IAnnotation> List<A> findInheritedAnnotations(
+      Class<?> cls, Class<A> annotationClass) {
     Objects.requireNonNull(cls, "Cannot retrieve annotations from a null class.");
     Objects.requireNonNull(annotationClass, "Cannot work with a null annotation");
     final Class<? extends Annotation> a = m_annotationMap.get(annotationClass);
     if (a == null) {
       throw new IllegalArgumentException(
-              "Java @Annotation class for '" + annotationClass + "' not found.");
+          "Java @Annotation class for '" + annotationClass + "' not found.");
     }
     List<A> annotations = new ArrayList<>();
     if (!a.equals(org.testng.annotations.Listeners.class)) {
@@ -245,9 +242,15 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     return annotations;
   }
 
-  private <A extends IAnnotation> void findSuperInterface(Class<?> cls, Class<?> inter, Class<A> annotationClass, Class<? extends Annotation> a, List<A> annotations) {
+  private <A extends IAnnotation> void findSuperInterface(
+      Class<?> cls,
+      Class<?> inter,
+      Class<A> annotationClass,
+      Class<? extends Annotation> a,
+      List<A> annotations) {
     if (inter.getAnnotation(a) != null) {
-      annotations.add(findAnnotation(
+      annotations.add(
+          findAnnotation(
               cls,
               inter.getAnnotation(a),
               annotationClass,
@@ -275,11 +278,14 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       return null;
     }
 
-    IAnnotation result = m_annotations.computeIfAbsent(p, key -> {
-      IAnnotation obj = m_tagFactory.createTag(cls, testMethod, a, annotationClass);
-      transform(obj, testClass, testConstructor, testMethod, whichClass);
-      return obj;
-    });
+    IAnnotation result =
+        m_annotations.computeIfAbsent(
+            p,
+            key -> {
+              IAnnotation obj = m_tagFactory.createTag(cls, testMethod, a, annotationClass);
+              transform(obj, testClass, testConstructor, testMethod, whichClass);
+              return obj;
+            });
     if (whichClass == null && testClass != null) {
       transform(result, testClass, testConstructor, testMethod, whichClass);
     }

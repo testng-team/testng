@@ -744,9 +744,9 @@ public class Assertion implements IAssertLifecycle {
         });
   }
 
-  /***
-   * Override this method should you want to change
-   * the default way Throwable objects are logged.
+  /**
+   * * Override this method should you want to change the default way Throwable objects are logged.
+   *
    * @param error Throwable of the Assertion
    * @return default throwable formatted message for TestNG
    */

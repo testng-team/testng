@@ -1,5 +1,14 @@
 package test.reports;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import org.testng.*;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -14,16 +23,6 @@ import test.TestHelper;
 import test.reports.issue1756.CustomTestNGReporter;
 import test.reports.issue1756.SampleTestClass;
 import test.simple.SimpleSample;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReportTest extends SimpleBaseTest {
 
@@ -90,7 +89,8 @@ public class ReportTest extends SimpleBaseTest {
     Assert.assertTrue(Files.exists(f2));
   }
 
-  private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName) throws IOException {
+  private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName)
+      throws IOException {
     Path f = outputDir.resolve(Paths.get(suiteName, testName + ".html"));
     Files.deleteIfExists(f);
     return f;
@@ -121,14 +121,15 @@ public class ReportTest extends SimpleBaseTest {
     m_success = false;
     TestNG tng = create(ReporterSample.class);
 
-    ITestListener listener = new TestListenerAdapter() {
-      @Override
-      public void onTestSuccess(ITestResult tr) {
-        super.onTestSuccess(tr);
-        List<String> output = Reporter.getOutput(tr);
-        ReportTest.m_success = (output != null && output.size() > 0);
-      }
-    };
+    ITestListener listener =
+        new TestListenerAdapter() {
+          @Override
+          public void onTestSuccess(ITestResult tr) {
+            super.onTestSuccess(tr);
+            List<String> output = Reporter.getOutput(tr);
+            ReportTest.m_success = (output != null && output.size() > 0);
+          }
+        };
     tng.addListener(listener);
     tng.run();
 
@@ -179,14 +180,23 @@ public class ReportTest extends SimpleBaseTest {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][]{
-        {GitHub1148Sample.class, new String[]{"verifyData(Cedric)"}, new String[]{"verifyData(Anne)"}},
-        {GitHub148Sample.class, new String[]{"testMethod(1)", "testMethod(2)"}, new String[]{"testMethod(3)"}}
+    return new Object[][] {
+      {
+        GitHub1148Sample.class,
+        new String[] {"verifyData(Cedric)"},
+        new String[] {"verifyData(Anne)"}
+      },
+      {
+        GitHub148Sample.class,
+        new String[] {"testMethod(1)", "testMethod(2)"},
+        new String[] {"testMethod(3)"}
+      }
     };
   }
 
   @Test(dataProvider = "dp")
-  public void runFailedTestTwiceShouldBeConsistent(Class<?> testClass, String[] succeedMethods, String[] failedMethods) throws IOException {
+  public void runFailedTestTwiceShouldBeConsistent(
+      Class<?> testClass, String[] succeedMethods, String[] failedMethods) throws IOException {
     Path outputDirectory = TestHelper.createRandomDirectory();
 
     TestNG tng = create(outputDirectory, testClass);
@@ -215,10 +225,12 @@ public class ReportTest extends SimpleBaseTest {
     CustomTestNGReporter reporter = new CustomTestNGReporter();
     testng.addListener(reporter);
     testng.run();
-    assertThat(reporter.getLogs()).containsExactly(SampleTestClass.getUuid(), SampleTestClass.getUuid());
+    assertThat(reporter.getLogs())
+        .containsExactly(SampleTestClass.getUuid(), SampleTestClass.getUuid());
   }
 
-  private static Path checkFailed(Path testngFailedXml, String... failedMethods) throws IOException {
+  private static Path checkFailed(Path testngFailedXml, String... failedMethods)
+      throws IOException {
     Path outputDirectory = TestHelper.createRandomDirectory();
 
     List<XmlSuite> suites = new Parser(Files.newInputStream(testngFailedXml)).parseToList();
@@ -247,26 +259,21 @@ public class ReportTest extends SimpleBaseTest {
 
     @DataProvider
     public static Object[][] dpArrays() {
-      return new Object[][]{
-          {new Item[]{Item.ITEM1}},
-          {new Item[]{Item.ITEM1, Item.ITEM2}}
-      };
+      return new Object[][] {{new Item[] {Item.ITEM1}}, {new Item[] {Item.ITEM1, Item.ITEM2}}};
     }
 
     @Test(dataProvider = "dpArrays")
-    public void testMethod(Item[] strings) {
-    }
+    public void testMethod(Item[] strings) {}
   }
 
   public static class NullParameter {
     @DataProvider
     public static Object[][] nullProvider() {
-      return new Object[][]{{null, "Bazinga!"}};
+      return new Object[][] {{null, "Bazinga!"}};
     }
 
     @Test(dataProvider = "nullProvider")
-    public void testMethod(Object nullReference, String bazinga) {
-    }
+    public void testMethod(Object nullReference, String bazinga) {}
   }
 
   @Test
@@ -295,6 +302,7 @@ public class ReportTest extends SimpleBaseTest {
     tng.run();
     System.setOut(previousOut);
 
-    Assert.assertTrue(systemOutCapture.toString().contains("PASSED: testMethod(null, \"Bazinga!\")"));
+    Assert.assertTrue(
+        systemOutCapture.toString().contains("PASSED: testMethod(null, \"Bazinga!\")"));
   }
 }

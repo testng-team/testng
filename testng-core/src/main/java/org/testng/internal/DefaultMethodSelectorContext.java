@@ -1,9 +1,8 @@
 package org.testng.internal;
 
+import java.util.Map;
 import org.testng.IMethodSelectorContext;
 import org.testng.collections.Maps;
-
-import java.util.Map;
 
 /**
  * Simple implementation of IMethodSelectorContext

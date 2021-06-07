@@ -1,5 +1,10 @@
 package org.testng;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.*;
@@ -7,12 +12,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * This class represents a test class: - The test methods - The configuration methods (test and
@@ -35,11 +34,16 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
-    return beforeClassConfig.values().parallelStream().reduce((a, b) -> {
-      List<ITestNGMethod> methodList = new ArrayList<>(a);
-      methodList.addAll(b);
-      return methodList;
-    }).orElse(Lists.newArrayList());
+    return beforeClassConfig
+        .values()
+        .parallelStream()
+        .reduce(
+            (a, b) -> {
+              List<ITestNGMethod> methodList = new ArrayList<>(a);
+              methodList.addAll(b);
+              return methodList;
+            })
+        .orElse(Lists.newArrayList());
   }
 
   @Override
@@ -160,21 +164,24 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               testMethodFinder.getBeforeTestConfigurationMethods(m_testClass),
               annotationFinder,
               true,
-              this.xmlTest, eachInstance);
+              this.xmlTest,
+              eachInstance);
       m_afterTestConfMethods =
           ConfigurationMethod.createTestConfigurationMethods(
               objectFactory,
               testMethodFinder.getAfterTestConfigurationMethods(m_testClass),
               annotationFinder,
               false,
-              this.xmlTest, eachInstance);
+              this.xmlTest,
+              eachInstance);
       m_beforeClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
               testMethodFinder.getBeforeClassMethods(m_testClass),
               annotationFinder,
               true,
-              xmlTest, eachInstance);
+              xmlTest,
+              eachInstance);
       Object instance = IParameterInfo.embeddedInstance(eachInstance);
       beforeClassConfig.put(instance.toString(), Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
@@ -183,7 +190,8 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               testMethodFinder.getAfterClassMethods(m_testClass),
               annotationFinder,
               false,
-              xmlTest, eachInstance);
+              xmlTest,
+              eachInstance);
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
@@ -204,14 +212,16 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               testMethodFinder.getBeforeTestMethods(m_testClass),
               annotationFinder,
               true,
-              xmlTest, eachInstance);
+              xmlTest,
+              eachInstance);
       m_afterTestMethods =
           ConfigurationMethod.createTestMethodConfigurationMethods(
               objectFactory,
               testMethodFinder.getAfterTestMethods(m_testClass),
               annotationFinder,
               false,
-              xmlTest, eachInstance);
+              xmlTest,
+              eachInstance);
     }
   }
 

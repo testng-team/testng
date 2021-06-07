@@ -41,7 +41,6 @@ public class IssueTest {
   public static class ExampleTestCase {
 
     @Test
-    public void testMethod() {
-    }
+    public void testMethod() {}
   }
 }

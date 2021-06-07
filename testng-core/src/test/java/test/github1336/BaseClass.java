@@ -1,10 +1,9 @@
 package test.github1336;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 
 public class BaseClass {
   private FakeDriver driver;

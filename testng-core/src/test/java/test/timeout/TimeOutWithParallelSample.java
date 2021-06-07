@@ -4,8 +4,8 @@ import org.testng.annotations.Test;
 
 public class TimeOutWithParallelSample {
 
-    @Test(timeOut = 1_000)
-    public void myTestMethod() throws InterruptedException {
-        Thread.sleep(1_500);
-    }
+  @Test(timeOut = 1_000)
+  public void myTestMethod() throws InterruptedException {
+    Thread.sleep(1_500);
+  }
 }

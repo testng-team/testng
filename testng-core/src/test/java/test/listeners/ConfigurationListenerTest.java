@@ -5,12 +5,11 @@ import org.testng.IConfigurationListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class ConfigurationListenerTest extends SimpleBaseTest {
 
-  static public class CL implements IConfigurationListener {
+  public static class CL implements IConfigurationListener {
 
     private static int m_status = 0;
 
@@ -33,7 +32,6 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
     public void onConfigurationSkip(ITestResult itr) {
       m_status += 7;
     }
-
   }
 
   private void runTest(Class<?> cls, int expected) {

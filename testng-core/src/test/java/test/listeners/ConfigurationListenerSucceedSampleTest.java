@@ -9,6 +9,5 @@ public class ConfigurationListenerSucceedSampleTest {
   public void bmShouldSucceed() {}
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 }

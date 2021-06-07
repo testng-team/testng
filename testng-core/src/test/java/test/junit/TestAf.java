@@ -4,7 +4,5 @@ import junit.framework.TestCase;
 
 public class TestAf extends TestCase {
 
-  public void testAf1() {
-
-  }
+  public void testAf1() {}
 }

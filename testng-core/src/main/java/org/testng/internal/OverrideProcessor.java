@@ -1,15 +1,12 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.Collection;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-/**
- * Override the groups included in the XML file with groups specified on the command line.
- */
+/** Override the groups included in the XML file with groups specified on the command line. */
 public class OverrideProcessor implements IPostProcessor {
 
   private final String[] m_groups;

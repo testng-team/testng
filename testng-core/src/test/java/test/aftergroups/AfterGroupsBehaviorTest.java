@@ -27,13 +27,14 @@ public class AfterGroupsBehaviorTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] getData() {
-    return new Object[][]{
-        {TestclassSampleWithSkippedMember.class, "afterGroupsMethod"},
-        {TestclassSampleWithFailedMember.class, "afterGroupsMethod"},
+    return new Object[][] {
+      {TestclassSampleWithSkippedMember.class, "afterGroupsMethod"},
+      {TestclassSampleWithFailedMember.class, "afterGroupsMethod"},
     };
   }
 
-  private static void runTest(Class<?> clazz, String groups, boolean shouldContinue, String expected) {
+  private static void runTest(
+      Class<?> clazz, String groups, boolean shouldContinue, String expected) {
     XmlSuite xmlsuite = createXmlSuite("sample_suite", "sample_test", clazz);
     xmlsuite.addIncludedGroup(groups);
     TestNG testng = create(xmlsuite);
@@ -44,8 +45,5 @@ public class AfterGroupsBehaviorTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
     assertThat(listener.getMessages()).containsExactly(expected);
-
   }
-
-
 }

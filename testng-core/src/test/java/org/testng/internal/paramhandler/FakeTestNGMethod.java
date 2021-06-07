@@ -1,5 +1,10 @@
 package org.testng.internal.paramhandler;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -10,12 +15,6 @@ import org.testng.internal.MethodInstanceTest;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 public class FakeTestNGMethod implements ITestNGMethod {
   private final ConstructorOrMethod consMethod;
@@ -313,12 +312,12 @@ public class FakeTestNGMethod implements ITestNGMethod {
 
   @Override
   public void setPriority(int priority) {}
-  
+
   @Override
   public int getInterceptedPriority() {
     return 0;
   }
-  
+
   @Override
   public void setInterceptedPriority(int priority) {}
 

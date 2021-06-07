@@ -15,12 +15,12 @@ public class SimpleCliStatus implements ITestListener {
 
   @Override
   public void onFinish(ITestContext context) {
-    context.getFailedTests()
+    context
+        .getFailedTests()
         .getAllResults()
         .forEach(
-            result -> failedTests
-                .put(result.getMethod().getMethodName(),
-                    result.getMethod().getInvocationNumbers())
-        );
+            result ->
+                failedTests.put(
+                    result.getMethod().getMethodName(), result.getMethod().getInvocationNumbers()));
   }
 }

@@ -28,21 +28,24 @@ public class ReasonReporter implements IReporter {
   public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites, String outDir) {
     suites.stream()
         .flatMap(suite -> suite.getResults().values().stream())
-        .flatMap(suiteResult -> suiteResult.getTestContext().getSkippedTests().getAllResults().stream())
+        .flatMap(
+            suiteResult -> suiteResult.getTestContext().getSkippedTests().getAllResults().stream())
         .forEach(this::generateReport);
 
     suites.stream()
         .flatMap(iSuite -> iSuite.getAllInvokedMethods().stream())
         .collect(Collectors.toList())
-        .forEach(im -> {
-          results.put(im.getTestMethod().getMethodName(), im.getTestResult().getStatus());
-    });
+        .forEach(
+            im -> {
+              results.put(im.getTestMethod().getMethodName(), im.getTestResult().getStatus());
+            });
   }
 
   public void generateReport(ITestResult result) {
-    String text = result.getSkipCausedBy().stream()
-        .map(ITestNGMethod::getMethodName)
-        .collect(Collectors.joining(","));
+    String text =
+        result.getSkipCausedBy().stream()
+            .map(ITestNGMethod::getMethodName)
+            .collect(Collectors.joining(","));
     skippedInfo.put(result.getMethod().getMethodName(), text);
   }
 }

@@ -13,5 +13,4 @@ public class TestclassSample1 extends TestclassBase {
   public void test2(String username, String password) {
     performTest(username, password);
   }
-
 }

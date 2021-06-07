@@ -1,5 +1,12 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -30,14 +37,6 @@ import org.testng.internal.objects.InstanceCreator;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class DynamicGraphHelperTest extends SimpleBaseTest {
 
@@ -74,16 +73,13 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
   @DataProvider(name = "getDependencyData")
   public Object[][] getDependencyData() {
     return new Object[][] {
-      {HardDependencyTestClassSample.class},
-      {HardDependencyViaGroupsTestClassSample.class}
+      {HardDependencyTestClassSample.class}, {HardDependencyViaGroupsTestClassSample.class}
     };
   }
 
   @DataProvider(name = "getSoftDependencyData")
   public Object[][] getSoftDependencyData() {
-    return new Object[][] {
-      {SoftDependencyTestClassSample.class}
-    };
+    return new Object[][] {{SoftDependencyTestClassSample.class}};
   }
 
   @Test
@@ -139,18 +135,26 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
   @DataProvider
   public Object[][] classesFromPackage() {
     return new Object[][] {
-            {new Class<?>[] {PackageTestClassA.class, PackageTestClassBAbstract.class, PackageTestClassBB.class}},
-            {new Class<?>[] {PackageTestClassA.class, PackageTestClassBB.class}}
+      {
+        new Class<?>[] {
+          PackageTestClassA.class, PackageTestClassBAbstract.class, PackageTestClassBB.class
+        }
+      },
+      {new Class<?>[] {PackageTestClassA.class, PackageTestClassBB.class}}
     };
   }
 
   @Test(dataProvider = "classesFromPackage")
-  public void testCreateDynamicGraphWithPackageWithAbstractClassPreserveOrderTrue(Class<?>[] classes) {
+  public void testCreateDynamicGraphWithPackageWithAbstractClassPreserveOrderTrue(
+      Class<?>[] classes) {
     XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
     xmlTest.setPreserveOrder(true);
     DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
-    assertThat(graph.getFreeNodes().stream().map(ITestNGMethod::getMethodName).collect(Collectors.toList()))
-            .containsExactly("a1", "a2");
+    assertThat(
+            graph.getFreeNodes().stream()
+                .map(ITestNGMethod::getMethodName)
+                .collect(Collectors.toList()))
+        .containsExactly("a1", "a2");
   }
 
   @Test(dataProvider = "classesFromPackage")
@@ -158,8 +162,11 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
     xmlTest.setPreserveOrder(false);
     DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
-    assertThat(graph.getFreeNodes().stream().map(ITestNGMethod::getMethodName).collect(Collectors.toList()))
-                .containsExactly("a1", "a2", "b2", "b1");
+    assertThat(
+            graph.getFreeNodes().stream()
+                .map(ITestNGMethod::getMethodName)
+                .collect(Collectors.toList()))
+        .containsExactly("a1", "a2", "b2", "b1");
   }
 
   private static List<String> extractDestinationInfoFromEdge(Map<ITestNGMethod, Integer> edges) {
@@ -221,7 +228,12 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     } else {
       for (ITestNGMethod each : rawMethods) {
         ITestNGMethod m =
-            new TestNGMethod(new ITestObjectFactory() {}, each.getConstructorOrMethod().getMethod(), finder, xmlTest, object);
+            new TestNGMethod(
+                new ITestObjectFactory() {},
+                each.getConstructorOrMethod().getMethod(),
+                finder,
+                xmlTest,
+                object);
         fixedMethods.add(m);
       }
     }
@@ -241,6 +253,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
 
   private static ITestNGMethod[] methods(
       Class<?> clazz, XmlTest xmlTest, Class<? extends IAnnotation> annotationClass) {
-    return AnnotationHelper.findMethodsWithAnnotation(new ITestObjectFactory() {}, clazz, annotationClass, finder, xmlTest);
+    return AnnotationHelper.findMethodsWithAnnotation(
+        new ITestObjectFactory() {}, clazz, annotationClass, finder, xmlTest);
   }
 }

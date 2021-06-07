@@ -20,5 +20,4 @@ public class SimpleTestClassWithFailedMethodHasRetryAnalyzer {
       return counter++ != 2;
     }
   }
-
 }

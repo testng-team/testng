@@ -1,7 +1,6 @@
 package test.sanitycheck;
 
 import java.util.Collections;
-
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -11,29 +10,23 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 
 public class CheckTestNamesTest extends SimpleBaseTest {
 
-  /**
-   * Child suites and same suite has two tests with same name
-   */
+  /** Child suites and same suite has two tests with same name */
   @Test
   public void checkWithChildSuites() {
     runSuite("sanitycheck/test-a.xml");
   }
 
-  /**
-   * Simple suite with two tests with same name
-   */
+  /** Simple suite with two tests with same name */
   @Test
   public void checkWithoutChildSuites() {
     runSuite("sanitycheck/test1.xml");
   }
 
-  private void runSuite(String suitePath)
-  {
+  private void runSuite(String suitePath) {
     TestListenerAdapter tla = new TestListenerAdapter();
     boolean exceptionRaised = false;
     try {
@@ -50,9 +43,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     Assert.assertTrue(exceptionRaised);
   }
 
-  /**
-   * Simple suite with no two tests with same name
-   */
+  /** Simple suite with no two tests with same name */
   @Test
   public void checkNoError() {
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -64,9 +55,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 2);
   }
 
-  /**
-   * Child suites and tests within different suites have same names
-   */
+  /** Child suites and tests within different suites have same names */
   @Test(enabled = false)
   public void checkNoErrorWtihChildSuites() {
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -78,9 +67,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     Assert.assertEquals(tla.getPassedTests().size(), 4);
   }
 
-  /**
-   * Checks that suites created programmatically also run as expected
-   */
+  /** Checks that suites created programmatically also run as expected */
   @Test
   public void checkTestNamesForProgrammaticSuites() {
     XmlSuite xmlSuite = new XmlSuite();

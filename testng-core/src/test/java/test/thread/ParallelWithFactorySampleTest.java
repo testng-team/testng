@@ -9,10 +9,7 @@ public class ParallelWithFactorySampleTest extends BaseSequentialSample {
 
   @DataProvider
   public static Object[][] dp() {
-    return new Object[][] {
-        new Object[] { 42 },
-        new Object[] { 43 }
-    };
+    return new Object[][] {new Object[] {42}, new Object[] {43}};
   }
 
   @Factory(dataProvider = "dp")
@@ -20,11 +17,9 @@ public class ParallelWithFactorySampleTest extends BaseSequentialSample {
     m_n = n;
   }
 
-
   protected int getN() {
     return m_n;
   }
-
 
   @Test
   public void f1() {

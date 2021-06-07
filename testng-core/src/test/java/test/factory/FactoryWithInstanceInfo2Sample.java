@@ -1,9 +1,8 @@
 package test.factory;
 
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Test;
 
 /** This class is created by FactoryWithInstanceInfo2Sample */
 public class FactoryWithInstanceInfo2Sample {

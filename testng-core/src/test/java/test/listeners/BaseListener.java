@@ -12,27 +12,20 @@ public class BaseListener implements ITestListener {
   }
 
   @Override
-  public void onTestSuccess(ITestResult result) {
-  }
+  public void onTestSuccess(ITestResult result) {}
 
   @Override
-  public void onTestFailure(ITestResult result) {
-  }
+  public void onTestFailure(ITestResult result) {}
 
   @Override
-  public void onTestSkipped(ITestResult result) {
-  }
+  public void onTestSkipped(ITestResult result) {}
 
   @Override
-  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-  }
+  public void onTestFailedButWithinSuccessPercentage(ITestResult result) {}
 
   @Override
-  public void onStart(ITestContext context) {
-  }
+  public void onStart(ITestContext context) {}
 
   @Override
-  public void onFinish(ITestContext context) {
-  }
+  public void onFinish(ITestContext context) {}
 }
-

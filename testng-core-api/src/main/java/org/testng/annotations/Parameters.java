@@ -8,9 +8,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-/**
- * Describes how to pass parameters to a &#64;Test method.
- */
+/** Describes how to pass parameters to a &#64;Test method. */
 @Retention(RUNTIME)
 @Target({METHOD, CONSTRUCTOR, TYPE})
 public @interface Parameters {

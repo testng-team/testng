@@ -1,17 +1,14 @@
 package test.interleavedorder;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 import testhelper.OutputDirectoryPatch;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class InterleavedInvocationTest extends BaseTest {
   public static List<String> LOG = new ArrayList<>();

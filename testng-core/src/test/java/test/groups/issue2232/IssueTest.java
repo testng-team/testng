@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.testng.Reporter;
 import org.testng.TestNG;
@@ -19,12 +20,10 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
-import java.util.Collections;
-
 public class IssueTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2232", invocationCount = 2)
-  //This test case doesn't vet out the fix completely because the bug by itself is very
-  //sporadic and is not easy to reproduce. That is why this test is being executed 10 times
+  // This test case doesn't vet out the fix completely because the bug by itself is very
+  // sporadic and is not easy to reproduce. That is why this test is being executed 10 times
   // to ensure that the issue can be reproduced in one of the executions
   public void ensureNoNPEThrownWhenRunningGroups() throws InterruptedException {
     TestNG testng = create(constructSuite());
@@ -51,10 +50,12 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   @Test(invocationCount = 2, description = "GITHUB-2232")
-  //Ensuring that the bug doesn't surface even when tests are executed via the command line mode
+  // Ensuring that the bug doesn't surface even when tests are executed via the command line mode
   public void commandlineTest() throws IOException, InterruptedException {
-    Path suitefile = Files.write(Files.createTempFile("testng", ".xml"),
-        constructSuite().toXml().getBytes(Charset.defaultCharset()));
+    Path suitefile =
+        Files.write(
+            Files.createTempFile("testng", ".xml"),
+            constructSuite().toXml().getBytes(Charset.defaultCharset()));
     List<String> args = Collections.singletonList(suitefile.toFile().getAbsolutePath());
     int status = exec(Collections.emptyList(), args);
     assertThat(status).isEqualTo(0);

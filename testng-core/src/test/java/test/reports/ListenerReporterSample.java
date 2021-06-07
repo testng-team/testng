@@ -9,15 +9,17 @@ import org.testng.annotations.Test;
 @Listeners(ListenerReporterSample.class)
 public class ListenerReporterSample extends TestListenerAdapter {
 
-    @Override
-    public void onStart (ITestContext testContext) {
-        Reporter.log("foo");
-        super.onStart(testContext);
-    }
+  @Override
+  public void onStart(ITestContext testContext) {
+    Reporter.log("foo");
+    super.onStart(testContext);
+  }
 
-    @Test
-    public void testMethod() {
-        Reporter.log("bar"); // This line is required. Else the log that was triggered from onStart() would never be
-        // persisted at all.
-    }
+  @Test
+  public void testMethod() {
+    Reporter.log(
+        "bar"); // This line is required. Else the log that was triggered from onStart() would never
+    // be
+    // persisted at all.
+  }
 }

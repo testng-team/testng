@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.ITestClass;
@@ -22,9 +21,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 
-/**
- * Collections of helper methods to help deal with test methods
- */
+/** Collections of helper methods to help deal with test methods */
 public class MethodGroupsHelper {
 
   private static final Map<String, Pattern> PATTERN_CACHE = new ConcurrentHashMap<>();
@@ -113,14 +110,18 @@ public class MethodGroupsHelper {
 
   private static boolean isMethodAlreadyNotPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
     Class<?> cls = tm.getConstructorOrMethod().getDeclaringClass();
-    return result.parallelStream()
+    return result
+        .parallelStream()
         .map(ITestNGMethod::getConstructorOrMethod)
         .filter(m -> m.getName().equals(tm.getConstructorOrMethod().getName()))
         .map(ConstructorOrMethod::getDeclaringClass)
         .noneMatch(eachCls -> eachCls.isAssignableFrom(cls) || cls.isAssignableFrom(eachCls));
   }
 
-  /** @return the map of groups and their corresponding methods from the extraction of <code>classes</code>. */
+  /**
+   * @return the map of groups and their corresponding methods from the extraction of <code>classes
+   *     </code>.
+   */
   public static Map<String, List<ITestNGMethod>> findGroupsMethods(
       Collection<ITestClass> classes, boolean before) {
     Map<String, List<ITestNGMethod>> result = Maps.newHashMap();
@@ -128,8 +129,9 @@ public class MethodGroupsHelper {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
         String[] grp = before ? method.getBeforeGroups() : method.getAfterGroups();
-        List<String> groups = Stream.concat(Arrays.stream(grp), Arrays.stream(method.getGroups()))
-            .collect(Collectors.toList());
+        List<String> groups =
+            Stream.concat(Arrays.stream(grp), Arrays.stream(method.getGroups()))
+                .collect(Collectors.toList());
         for (String group : groups) {
           List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> Lists.newArrayList());
           // NOTE(cbeust, 2007/01/23)
@@ -152,10 +154,11 @@ public class MethodGroupsHelper {
       String[] includedGroups,
       Set<String> outGroups,
       Set<ITestNGMethod> outMethods) {
-    Map<ITestNGMethod, ITestNGMethod> runningMethods = includedMethods.stream().collect(Collectors.toMap(m -> m, m -> m));
+    Map<ITestNGMethod, ITestNGMethod> runningMethods =
+        includedMethods.stream().collect(Collectors.toMap(m -> m, m -> m));
 
-    Map<String, String> runningGroups = Arrays.stream(includedGroups)
-        .collect(Collectors.toMap(g -> g, g -> g));
+    Map<String, String> runningGroups =
+        Arrays.stream(includedGroups).collect(Collectors.toMap(g -> g, g -> g));
 
     boolean keepGoing = true;
 
@@ -250,11 +253,9 @@ public class MethodGroupsHelper {
   protected static ITestNGMethod[] findMethodsThatBelongToGroup(
       ITestNGMethod[] methods, String groupRegexp) {
     final Pattern pattern = getPattern(groupRegexp);
-    Predicate<ITestNGMethod> matchingGroups = tm -> Arrays.stream(tm.getGroups())
-        .anyMatch(group -> isMatch(pattern, group));
-    return Arrays.stream(methods)
-        .filter(matchingGroups)
-        .toArray(ITestNGMethod[]::new);
+    Predicate<ITestNGMethod> matchingGroups =
+        tm -> Arrays.stream(tm.getGroups()).anyMatch(group -> isMatch(pattern, group));
+    return Arrays.stream(methods).filter(matchingGroups).toArray(ITestNGMethod[]::new);
   }
 
   private static Boolean isMatch(Pattern pattern, String group) {
@@ -275,5 +276,4 @@ public class MethodGroupsHelper {
     }
     return groupPattern;
   }
-
 }

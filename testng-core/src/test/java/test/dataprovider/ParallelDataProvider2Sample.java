@@ -1,12 +1,11 @@
 package test.dataprovider;
 
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 /** Make sure this class can run without causing a ConcurrentModificationException. */
 public class ParallelDataProvider2Sample {

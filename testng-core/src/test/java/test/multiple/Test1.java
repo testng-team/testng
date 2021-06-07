@@ -10,7 +10,7 @@ public class Test1 {
 
   @Test
   public void f1() {
-//    ppp("INVOKING f1 " + m_count);
+    //    ppp("INVOKING f1 " + m_count);
     assertTrue(m_count < 1, "FAILING");
     m_count++;
   }
@@ -20,9 +20,7 @@ public class Test1 {
     m_count = 0;
   }
 
-
   private static void ppp(String s) {
     System.out.println("[Test1] " + s);
   }
-
 }

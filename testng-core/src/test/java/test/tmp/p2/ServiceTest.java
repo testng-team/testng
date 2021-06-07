@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class ServiceTest {
   @Test(groups = {"group1"})
-    public void service() {
-        assertNotNull(null);
-    }
+  public void service() {
+    assertNotNull(null);
+  }
 }

@@ -16,4 +16,3 @@ public class Dummy3 extends TestCase {
     Assert.assertEquals("test3 assertion", "1", "1");
   }
 }
-

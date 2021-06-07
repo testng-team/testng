@@ -1,15 +1,14 @@
 package org.testng.internal;
 
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.testng.collections.Maps;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.collections.Maps;
 
 public class GroupsHelperTest {
 

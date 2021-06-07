@@ -1,5 +1,7 @@
 package test.annotationtransformer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Set;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.IConfigurationAnnotation;
@@ -7,9 +9,6 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.annotations.ITestAnnotation;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import org.testng.collections.Sets;
 
 public class FactoryTransformer implements IAnnotationTransformer {
@@ -35,10 +34,7 @@ public class FactoryTransformer implements IAnnotationTransformer {
 
   @Override
   public void transform(
-      ITestAnnotation annotation,
-      Class testClass,
-      Constructor testConstructor,
-      Method testMethod) {
+      ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
     logs.add("transform_test");
   }
 

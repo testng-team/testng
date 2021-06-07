@@ -1,14 +1,12 @@
 package test.expectedexceptions;
 
+import java.util.Collection;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 import test.expectedexceptions.github1409.TestClassSample;
-
-import java.util.Collection;
-import java.util.List;
 
 public class ExpectedExceptionsTest extends BaseTest {
 

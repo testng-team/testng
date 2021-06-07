@@ -1,7 +1,6 @@
 package test.hook;
 
 import org.testng.Assert;
-import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;

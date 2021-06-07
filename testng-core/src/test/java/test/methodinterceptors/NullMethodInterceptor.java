@@ -1,11 +1,10 @@
 package test.methodinterceptors;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NullMethodInterceptor implements IMethodInterceptor {
   @Override

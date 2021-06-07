@@ -1,5 +1,8 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -13,14 +16,12 @@ import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import java.util.ArrayList;
 import test.dataprovider.issue1691.DataProviderDefinitionAtClassLevelAndNoTestMethodUsage;
-import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
-import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
-import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevel;
+import test.dataprovider.issue1691.DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel;
 import test.dataprovider.issue1691.DataProviderDefinitionProvidedPartiallyAtClassLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
+import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassWithNoDataProviderInformationInTestMethod;
 import test.dataprovider.issue2565.Data;
 import test.dataprovider.issue2565.SampleTestUsingConsumer;
@@ -28,18 +29,15 @@ import test.dataprovider.issue2565.SampleTestUsingFunction;
 import test.dataprovider.issue2565.SampleTestUsingPredicate;
 import test.dataprovider.issue2565.SampleTestUsingSupplier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class DataProviderTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1691")
   public void testDataProviderInfoIgnored() {
-    InvokedMethodNameListener listener = run(DataProviderDefinitionAtClassLevelAndNoTestMethodUsage.class);
+    InvokedMethodNameListener listener =
+        run(DataProviderDefinitionAtClassLevelAndNoTestMethodUsage.class);
     assertThat(listener.getSucceedMethodNames())
         .containsExactly(
-            "verifyHangoutPlaces(Hakuna Matata,Bangalore)",
-            "verifyHangoutPlaces(Gem Inn,Chennai)"
-        );
+            "verifyHangoutPlaces(Hakuna Matata,Bangalore)", "verifyHangoutPlaces(Gem Inn,Chennai)");
     Throwable throwable = listener.getResult("regularTestMethod").getThrowable();
     assertThat(throwable).isInstanceOf(MethodMatcherException.class);
   }
@@ -49,23 +47,21 @@ public class DataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = run(cls);
     assertThat(listener.getSucceedMethodNames())
         .containsExactly(
-            "verifyHangoutPlaces(Hakuna Matata,Bangalore)",
-            "verifyHangoutPlaces(Gem Inn,Chennai)"
-        );
+            "verifyHangoutPlaces(Hakuna Matata,Bangalore)", "verifyHangoutPlaces(Gem Inn,Chennai)");
   }
 
   @DataProvider
   public Object[][] getClasses() {
-    return new Object[][]{
-        //No inheritance involved
-        {DataProviderDefinitionProvidedPartiallyAtClassLevel.class},
-        {DataProviderDefinitionCompletelyProvidedAtClassLevel.class},
-        {DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel.class},
+    return new Object[][] {
+      // No inheritance involved
+      {DataProviderDefinitionProvidedPartiallyAtClassLevel.class},
+      {DataProviderDefinitionCompletelyProvidedAtClassLevel.class},
+      {DataProviderDefinitionCompletelyProvidedAtClassLevelAndPartiallyAtMethodLevel.class},
 
-        //Involves Inheritance
-        {ChildClassHasPartialDefinitionOfDataProviderAtClassLevel.class},
-        {ChildClassHasFullDefinitionOfDataProviderAtClassLevel.class},
-        {ChildClassWithNoDataProviderInformationInTestMethod.class},
+      // Involves Inheritance
+      {ChildClassHasPartialDefinitionOfDataProviderAtClassLevel.class},
+      {ChildClassHasFullDefinitionOfDataProviderAtClassLevel.class},
+      {ChildClassWithNoDataProviderInformationInTestMethod.class},
     };
   }
 
@@ -240,7 +236,8 @@ public class DataProviderTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-2565", dataProvider = "2565")
-  public void testForFunctionalInterfacesInLazyLoadingDataProviders(Class<?> cls, List<String> expected) {
+  public void testForFunctionalInterfacesInLazyLoadingDataProviders(
+      Class<?> cls, List<String> expected) {
     Data.INSTANCE.clear();
     run(cls);
     List<String> actualList = Data.INSTANCE.getData();
@@ -250,10 +247,10 @@ public class DataProviderTest extends SimpleBaseTest {
   @DataProvider(name = "2565")
   public Object[][] getTestDataFor2565() {
     return new Object[][] {
-        {SampleTestUsingSupplier.class, Arrays.asList("Optimus_Prime", "Megatron")},
-        {SampleTestUsingPredicate.class, Collections.singletonList("IronHide")},
-        {SampleTestUsingFunction.class, Collections.singletonList("Bumble_Bee")},
-        {SampleTestUsingConsumer.class, Collections.singletonList("StarScream")}
+      {SampleTestUsingSupplier.class, Arrays.asList("Optimus_Prime", "Megatron")},
+      {SampleTestUsingPredicate.class, Collections.singletonList("IronHide")},
+      {SampleTestUsingFunction.class, Collections.singletonList("Bumble_Bee")},
+      {SampleTestUsingConsumer.class, Collections.singletonList("StarScream")}
     };
   }
 

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
 import org.testng.Assert;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
@@ -468,7 +467,7 @@ public class MethodInstanceTest {
     }
 
     @Override
-    public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) { }
+    public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {}
 
     @Override
     public boolean skipFailedInvocations() {

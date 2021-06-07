@@ -7,5 +7,4 @@ public class TestClassWithOnlyGlobalConfig {
   public void beforeTest() {
     throw new RuntimeException("simulating a failure");
   }
-
 }

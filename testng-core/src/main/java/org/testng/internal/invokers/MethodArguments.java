@@ -8,8 +8,7 @@ public class MethodArguments extends Arguments {
   protected final Object[] parameterValues;
 
   protected MethodArguments(
-      Object instance, ITestNGMethod tm,
-      Map<String, String> params, Object[] parameterValues) {
+      Object instance, ITestNGMethod tm, Map<String, String> params, Object[] parameterValues) {
     super(instance, tm, params);
     this.parameterValues = parameterValues;
   }
@@ -17,5 +16,4 @@ public class MethodArguments extends Arguments {
   public Object[] getParameterValues() {
     return parameterValues;
   }
-
 }

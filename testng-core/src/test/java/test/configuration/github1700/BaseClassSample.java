@@ -1,11 +1,10 @@
 package test.configuration.github1700;
 
+import java.lang.reflect.Method;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.collections.Lists;
-
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class BaseClassSample {
 

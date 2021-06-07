@@ -1,13 +1,11 @@
 package org.testng;
 
+import com.google.inject.Injector;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlSuite;
-
-import com.google.inject.Injector;
 
 /**
  * Interface defining a Test Suite.
@@ -26,9 +24,7 @@ public interface ISuite extends IAttributes {
   ITestObjectFactory getObjectFactory();
 
   @Deprecated
-  /**
-   * @deprecated - This interface stands deprecated as of TestNG 7.5.0
-   */
+  /** @deprecated - This interface stands deprecated as of TestNG 7.5.0 */
   default IObjectFactory2 getObjectFactory2() {
     return null;
   }

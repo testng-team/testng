@@ -8,5 +8,4 @@ public class TestClassSample {
 
   @Test
   public void testMethodTwo() {}
-
 }

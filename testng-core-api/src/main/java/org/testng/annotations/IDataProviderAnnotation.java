@@ -2,13 +2,9 @@ package org.testng.annotations;
 
 import java.util.List;
 
-/**
- * Encapsulate the @DataProvider / @testng.data-provider annotation
- */
+/** Encapsulate the @DataProvider / @testng.data-provider annotation */
 public interface IDataProviderAnnotation extends IAnnotation {
-  /**
-   * @return The name of this DataProvider.
-   */
+  /** @return The name of this DataProvider. */
   String getName();
 
   void setName(String name);

@@ -1,5 +1,11 @@
 package test.annotationtransformer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.ByteArrayInputStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
@@ -9,22 +15,14 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
-
 import org.testng.xml.XmlTest;
+import test.SimpleBaseTest;
 import test.TestHelper;
 import test.annotationtransformer.issue1790.TestClassSample1;
 import test.annotationtransformer.issue1790.TestClassSample2;
 import test.annotationtransformer.issue1790.TransformerImpl;
-import test.SimpleBaseTest;
 import test.annotationtransformer.issue2312.RetryListener;
 import test.annotationtransformer.issue2312.SampleTestClass;
-
-import java.io.ByteArrayInputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
@@ -191,16 +189,16 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 1);
-    String[] expectedLogs = new String[]{
-        "transform_data_provider",
-        "transform_factory",
-        "transform_test",
-        "transform_config",
-        "transform_listener"
-    };
+    String[] expectedLogs =
+        new String[] {
+          "transform_data_provider",
+          "transform_factory",
+          "transform_test",
+          "transform_config",
+          "transform_listener"
+        };
     assertThat(transformer.getLogs()).containsExactly(expectedLogs);
   }
-
 
   @Test(description = "Test for issue #605")
   public void verifyInvocationCountTransformer() {

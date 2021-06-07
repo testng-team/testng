@@ -1,11 +1,11 @@
 package org.testng.internal.reflect;
 
+import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
 
 /**
  * Checks for array ending method argument match with or without filtering injectables.

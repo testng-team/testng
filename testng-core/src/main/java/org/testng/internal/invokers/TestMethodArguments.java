@@ -13,9 +13,15 @@ public class TestMethodArguments extends MethodArguments {
   private final ITestNGMethod[] afterMethods;
   private final ConfigurationGroupMethods groupMethods;
 
-  private TestMethodArguments(Object instance, ITestNGMethod tm, Object[] parameterValues,
-      int parametersIndex, Map<String, String> params, ITestClass testClass,
-      ITestNGMethod[] beforeMethods, ITestNGMethod[] afterMethods,
+  private TestMethodArguments(
+      Object instance,
+      ITestNGMethod tm,
+      Object[] parameterValues,
+      int parametersIndex,
+      Map<String, String> params,
+      ITestClass testClass,
+      ITestNGMethod[] beforeMethods,
+      ITestNGMethod[] afterMethods,
       ConfigurationGroupMethods groupMethods) {
     super(instance, tm, params, parameterValues);
     this.parametersIndex = parametersIndex;
@@ -115,8 +121,16 @@ public class TestMethodArguments extends MethodArguments {
     }
 
     public TestMethodArguments build() {
-      return new TestMethodArguments(instance, tm, parameterValues, parametersIndex, params,
-          testClass, beforeMethods, afterMethods, groupMethods);
+      return new TestMethodArguments(
+          instance,
+          tm,
+          parameterValues,
+          parametersIndex,
+          params,
+          testClass,
+          beforeMethods,
+          afterMethods,
+          groupMethods);
     }
   }
 }

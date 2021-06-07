@@ -23,43 +23,37 @@ public class IssueTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(listener.getInvokedMethodNames()).containsExactly(
-        "beforeClass",
-        "beforeMethod",
-        "test1",
-        "afterMethod",
-        "beforeMethod",
-        "test2",
-        "afterMethod",
-        "afterClass"
-    );
+    assertThat(listener.getInvokedMethodNames())
+        .containsExactly(
+            "beforeClass",
+            "beforeMethod",
+            "test1",
+            "afterMethod",
+            "beforeMethod",
+            "test2",
+            "afterMethod",
+            "afterClass");
   }
 
   @Test(groups = {"groupM"})
   public static class Sample {
 
     @BeforeClass
-    public void beforeClass() {
-    }
+    public void beforeClass() {}
 
     @BeforeMethod
-    public void beforeMethod() {
-    }
+    public void beforeMethod() {}
 
     @Test(groups = {"groupK"})
-    public void test1() {
-    }
+    public void test1() {}
 
     @Test(groups = {"groupL"})
-    public void test2() {
-    }
+    public void test2() {}
 
     @AfterMethod
-    public void afterMethod() {
-    }
+    public void afterMethod() {}
 
     @AfterClass
-    public void afterClass() {
-    }
+    public void afterClass() {}
   }
 }

@@ -1,6 +1,8 @@
 package org.testng.reporters.jq;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -9,9 +11,6 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.List;
-import java.util.Map;
 import org.testng.xml.XmlSuite;
 
 public class TimesPanel extends BaseMultiSuitePanel {
@@ -57,13 +56,26 @@ public class TimesPanel extends BaseMultiSuitePanel {
       ITestNGMethod m = tr.getMethod();
       long time = tr.getEndMillis() - tr.getStartMillis();
       result
-          .append("data.setCell(").append(index).append(", 0, ").append(index).append(")\n")
-          .append("data.setCell(").append(index).append(", 1, '").append(m.getMethodName())
+          .append("data.setCell(")
+          .append(index)
+          .append(", 0, ")
+          .append(index)
+          .append(")\n")
+          .append("data.setCell(")
+          .append(index)
+          .append(", 1, '")
+          .append(m.getMethodName())
           .append("')\n")
-          .append("data.setCell(").append(index).append(", 2, '")
-          .append(m.getTestClass().getName()).append("')\n")
-          .append("data.setCell(").append(index)
-          .append(", 3, ").append(time).append(");\n");
+          .append("data.setCell(")
+          .append(index)
+          .append(", 2, '")
+          .append(m.getTestClass().getName())
+          .append("')\n")
+          .append("data.setCell(")
+          .append(index)
+          .append(", 3, ")
+          .append(time)
+          .append(");\n");
       Long total = m_totalTime.get(suite.getName());
       if (total == null) {
         total = 0L;
@@ -72,9 +84,15 @@ public class TimesPanel extends BaseMultiSuitePanel {
       index++;
     }
 
-    result.append("window.suiteTableData['").append(suiteToTag(suite)).append("']")
-        .append("= { tableData: data, tableDiv: 'times-div-").append(suiteToTag(suite))
-        .append("'}\n").append("return data;\n").append("}\n");
+    result
+        .append("window.suiteTableData['")
+        .append(suiteToTag(suite))
+        .append("']")
+        .append("= { tableData: data, tableDiv: 'times-div-")
+        .append(suiteToTag(suite))
+        .append("'}\n")
+        .append("return data;\n")
+        .append("}\n");
 
     return result.toString();
   }
@@ -125,12 +143,13 @@ public class TimesPanel extends BaseMultiSuitePanel {
     if (result == null) {
       return 0L;
     }
-    if (! testsInParallel) {
+    if (!testsInParallel) {
       return result;
     }
-    Optional<ITestContext> maxValue = suite.getResults().values().stream()
-        .map(ISuiteResult::getTestContext)
-        .max(Comparator.comparing(TimesPanel::time));
+    Optional<ITestContext> maxValue =
+        suite.getResults().values().stream()
+            .map(ISuiteResult::getTestContext)
+            .max(Comparator.comparing(TimesPanel::time));
     if (maxValue.isPresent()) {
       return time(maxValue.get());
     }
@@ -140,5 +159,4 @@ public class TimesPanel extends BaseMultiSuitePanel {
   private static Long time(ITestContext ctx) {
     return ctx.getEndDate().getTime() - ctx.getStartDate().getTime();
   }
-
 }

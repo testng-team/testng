@@ -1,12 +1,6 @@
 package org.testng;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-import org.testng.jarfileutils.JarCreator;
-import org.testng.xml.IPostProcessor;
-import org.testng.xml.XmlClass;
-import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +12,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import org.testng.jarfileutils.JarCreator;
+import org.testng.xml.IPostProcessor;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 
 public class JarFileUtilsTest {
   private static File jar = null;

@@ -15,7 +15,7 @@ public class IgnoreTest extends SimpleBaseTest {
   @Test
   public void ignore_class_should_not_run_tests() {
     InvokedMethodListener listener = runTest(IgnoreClassSample.class);
-     assertThat(listener.getInvokedMethods()).isEmpty();
+    assertThat(listener.getInvokedMethods()).isEmpty();
   }
 
   @Test

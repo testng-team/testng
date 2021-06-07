@@ -19,5 +19,4 @@ public class TestClassSample {
       super(message);
     }
   }
-
 }

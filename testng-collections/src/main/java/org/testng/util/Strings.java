@@ -1,17 +1,18 @@
 package org.testng.util;
 
-import org.testng.collections.Maps;
-
 import java.util.Map;
+import org.testng.collections.Maps;
 
 public final class Strings {
   private Strings() {
     // Utility class. Defeat instantiation.
   }
 
-  //TODO: When TestNG moves to JDK11 as the default JDK this method needs to be deprecated and removed
-  //because now this method is present in JDK11 as part of the JDK itself.
-  //See https://hg.openjdk.java.net/jdk/jdk/file/fc16b5f193c7/src/java.base/share/classes/java/lang/String.java#l2984
+  // TODO: When TestNG moves to JDK11 as the default JDK this method needs to be deprecated and
+  // removed
+  // because now this method is present in JDK11 as part of the JDK itself.
+  // See
+  // https://hg.openjdk.java.net/jdk/jdk/file/fc16b5f193c7/src/java.base/share/classes/java/lang/String.java#l2984
   public static String repeat(String text, int count) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < count; i++) {

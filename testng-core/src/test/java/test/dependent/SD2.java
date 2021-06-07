@@ -1,9 +1,8 @@
 package test.dependent;
 
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.testng.annotations.Test;
 
 public class SD2 {
   public static List<String> m_log = new ArrayList<>();

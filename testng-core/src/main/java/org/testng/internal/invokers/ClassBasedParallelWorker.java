@@ -1,5 +1,11 @@
 package org.testng.internal.invokers;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
@@ -8,13 +14,6 @@ import org.testng.internal.MethodInstance;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 class ClassBasedParallelWorker extends AbstractParallelWorker {
 
@@ -74,14 +73,13 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
   }
 
   private static boolean shouldRunSequentially(Class<?> c, Set<Class<?>> sequentialClasses) {
-    return sequentialClasses.contains(c) ||
-        sequentialClasses.stream().anyMatch(each -> each.isAssignableFrom(c));
+    return sequentialClasses.contains(c)
+        || sequentialClasses.stream().anyMatch(each -> each.isAssignableFrom(c));
   }
 
   private static List<IMethodInstance> findClasses(
       List<IMethodInstance> methodInstances, Class<?> c) {
-    return methodInstances
-        .stream()
+    return methodInstances.stream()
         .filter(mi -> mi.getMethod().getTestClass().getRealClass() == c)
         .collect(Collectors.toList());
   }
@@ -95,7 +93,9 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
     ITestInvoker testInvoker = invoker.getTestInvoker();
     IConfigInvoker configInvoker = invoker.getConfigInvoker();
     return new TestMethodWorker(
-        testInvoker, configInvoker, findClasses(methodInstances, c),
+        testInvoker,
+        configInvoker,
+        findClasses(methodInstances, c),
         params,
         attributes.getConfigMethods(),
         attributes.getClassMethodMap(),

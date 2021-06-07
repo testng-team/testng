@@ -5,18 +5,14 @@ import org.testng.annotations.Test;
 public class FooTest {
 
   @Test
-  public void a() {
-  }
+  public void a() {}
 
   @Test
-  public void b() {
-  }
+  public void b() {}
 
   @Test
-  public void c() {
-  }
+  public void c() {}
 
   @Test
-  public void d() {
-  }
+  public void d() {}
 }

@@ -1,7 +1,6 @@
 package org.testng.internal.objects;
 
 import java.util.Map;
-
 import org.testng.Assert;
 import org.testng.IClass;
 import org.testng.ITest;
@@ -27,7 +26,8 @@ public class InstanceCreatorTest {
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
     ITestObjectFactory objectFactory = new ObjectFactoryImpl();
     Object object =
-        SimpleObjectDispenser.createInstance(declaringClass, classes, xmlTest, finder, objectFactory, false,"");
+        SimpleObjectDispenser.createInstance(
+            declaringClass, classes, xmlTest, finder, objectFactory, false, "");
     Assert.assertTrue(object instanceof ITest);
     Assert.assertEquals(((ITest) object).getTestName(), GITHUB_1456);
   }

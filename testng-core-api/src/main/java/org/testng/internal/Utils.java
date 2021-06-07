@@ -94,8 +94,8 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir encoding the output as
    * UTF-8. If outDir does not exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <code>null</code> then current directory
-   *     is used.
+   * @param outputDir the output directory (may not exist). If <code>null</code> then current
+   *     directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
@@ -109,8 +109,8 @@ public final class Utils {
    * Writes the content of the sb string to the file named filename in outDir. If outDir does not
    * exist, it is created.
    *
-   * @param outputDir the output directory (may not exist). If <code>null</code> then current directory
-   *     is used.
+   * @param outputDir the output directory (may not exist). If <code>null</code> then current
+   *     directory is used.
    * @param fileName the filename
    * @param sb the file content
    */
@@ -213,8 +213,8 @@ public final class Utils {
   }
 
   /**
-   * Logs the the message to System.out if level is greater than or equal to
-   * getVerbose(). The message is logged as:
+   * Logs the the message to System.out if level is greater than or equal to getVerbose(). The
+   * message is logged as:
    *
    * <pre>
    *     "[cls] msg"
@@ -618,9 +618,6 @@ public final class Utils {
   }
 
   public static String stringifyTypes(Class<?>[] parameterTypes) {
-    return Arrays.stream(parameterTypes)
-        .map(Class::getName)
-        .collect(Collectors.joining(","));
+    return Arrays.stream(parameterTypes).map(Class::getName).collect(Collectors.joining(","));
   }
-
 }

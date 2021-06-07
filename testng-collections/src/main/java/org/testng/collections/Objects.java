@@ -1,8 +1,7 @@
 package org.testng.collections;
 
-import org.testng.util.Strings;
-
 import java.util.List;
+import org.testng.util.Strings;
 
 public final class Objects {
 

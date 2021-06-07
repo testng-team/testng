@@ -9,5 +9,4 @@ public class SimpleTestClassWithPassConfigAndMethod {
 
   @Test
   public void testWillPass() {}
-
 }

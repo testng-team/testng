@@ -1,10 +1,10 @@
 package test.inject;
 
+import static test.inject.NativeInjectionTestSamples.*;
+
 import org.testng.*;
 import org.testng.annotations.*;
 import test.SimpleBaseTest;
-
-import static test.inject.NativeInjectionTestSamples.*;
 
 public class NativeInjectionTest extends SimpleBaseTest {
 

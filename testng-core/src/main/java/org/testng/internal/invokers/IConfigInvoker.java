@@ -13,5 +13,4 @@ public interface IConfigInvoker {
   void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments);
 
   void invokeConfigurations(ConfigMethodArguments arguments);
-
 }

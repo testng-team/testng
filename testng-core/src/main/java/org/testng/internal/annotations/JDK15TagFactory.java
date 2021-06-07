@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.testng.TestNGException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -58,8 +57,7 @@ public class JDK15TagFactory {
       } else if (annotationClass == ITestAnnotation.class) {
         result = createTestTag(cls, a);
       } else if (annotationClass == IIgnoreAnnotation.class) {
-        result = new IIgnoreAnnotation() {
-        };
+        result = new IIgnoreAnnotation() {};
       } else if (annotationClass == IListenersAnnotation.class) {
         result = createListenersTag(a);
       } else if (annotationClass == IBeforeSuite.class
@@ -473,9 +471,7 @@ public class JDK15TagFactory {
     result.setDependsOnGroups(
         join(test.dependsOnGroups(), findInheritedStringArray(cls, "dependsOnGroups")));
     result.setDependsOnMethods(
-        join(
-            test.dependsOnMethods(),
-            findInheritedStringArray(cls, "dependsOnMethods")));
+        join(test.dependsOnMethods(), findInheritedStringArray(cls, "dependsOnMethods")));
     result.setTimeOut(test.timeOut());
     result.setInvocationTimeOut(test.invocationTimeOut());
     result.setInvocationCount(test.invocationCount());

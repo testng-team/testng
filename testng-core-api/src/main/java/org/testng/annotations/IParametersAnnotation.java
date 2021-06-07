@@ -1,8 +1,6 @@
 package org.testng.annotations;
 
-/**
- * Encapsulate the @Parameters / @testng.parameters annotation
- */
+/** Encapsulate the @Parameters / @testng.parameters annotation */
 public interface IParametersAnnotation extends IAnnotation {
   /**
    * The list of variables used to fill the parameters of this method. These variables must be

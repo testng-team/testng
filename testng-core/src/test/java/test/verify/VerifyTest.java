@@ -5,7 +5,6 @@ import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
 
 public class VerifyTest extends SimpleBaseTest {
@@ -44,5 +43,4 @@ public class VerifyTest extends SimpleBaseTest {
     tng.run();
     Assert.assertEquals(VerifyTestListener.m_count, 1);
   }
-
 }

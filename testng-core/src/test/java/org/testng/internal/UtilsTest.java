@@ -1,13 +1,12 @@
 package org.testng.internal;
 
-import java.util.List;
-
-import org.testng.annotations.Test;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.testng.Assert.assertEquals;
 import static org.testng.internal.Utils.join;
+
+import java.util.List;
+import org.testng.annotations.Test;
 
 /**
  * Unit tests for {@link Utils}.

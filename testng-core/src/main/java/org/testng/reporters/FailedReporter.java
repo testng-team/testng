@@ -1,8 +1,15 @@
 package org.testng.reporters;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -23,14 +30,6 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This reporter is responsible for creating testng-failed.xml
@@ -104,7 +103,8 @@ public class FailedReporter implements IReporter {
         }
         methodsToReRun.add(current);
         List<ITestNGMethod> methodsDependedUpon =
-            MethodHelper.getMethodsDependedUpon(current, allTestMethods, Systematiser.getComparator());
+            MethodHelper.getMethodsDependedUpon(
+                current, allTestMethods, Systematiser.getComparator());
 
         for (ITestNGMethod m : methodsDependedUpon) {
           if (m.isTest()) {
@@ -123,7 +123,7 @@ public class FailedReporter implements IReporter {
       Set<ITestNGMethod> relevantConfigs = Sets.newHashSet();
       for (ITestNGMethod m : allTestMethods) {
         if (RuntimeBehavior.isMemoryFriendlyMode()) {
-          //We are doing this because the `m` would not be of type
+          // We are doing this because the `m` would not be of type
           // LiteWeightTestNGMethod and hence the hashCode() and equals()
           // computation would be different.
           m = new LiteWeightTestNGMethod(m);
@@ -183,9 +183,9 @@ public class FailedReporter implements IReporter {
 
     // Store parameters per XmlClass
 
-    Map<String,  Map<String,  String>> classParameters = Maps.newHashMap();
+    Map<String, Map<String, String>> classParameters = Maps.newHashMap();
     for (XmlClass c : srcXmlTest.getClasses()) {
-      classParameters.put(c.getName(),c.getLocalParameters());
+      classParameters.put(c.getName(), c.getLocalParameters());
     }
 
     int index = 0;
@@ -196,35 +196,40 @@ public class FailedReporter implements IReporter {
       // Need to check all the methods, not just @Test ones.
       XmlClass xmlClass = new XmlClass(clazz.getName(), index++, false /* don't load classes */);
 
-      Map<ConstructorOrMethod, List<ITestNGMethod>> group = methodList.stream()
-          .collect(Collectors.groupingBy(ITestNGMethod::getConstructorOrMethod));
+      Map<ConstructorOrMethod, List<ITestNGMethod>> group =
+          methodList.stream().collect(Collectors.groupingBy(ITestNGMethod::getConstructorOrMethod));
 
-      List<XmlInclude> groupedByMethodNames = group.values()
-          .stream()
-          .map(each -> asXmlIncludes(each, srcXmlTest))
-          .map(each -> {
-            if (each.size() > 1) {
-              XmlInclude tmpMethodName = each.get(0);
-              each.stream()
-                  .map(XmlInclude::getInvocationNumbers)
-                  .reduce((a1, a2) -> {
-                    Set<Integer> set = new HashSet<>(a1);
-                    set.addAll(a2);
-                    return new ArrayList<>(set);
-                  }).ifPresent(tmpMethodName::addInvocationNumbers);
-              return Collections.singletonList(tmpMethodName);
-            }
-            return each;
-          })
-          .flatMap(Collection::stream)
-          .collect(Collectors.toList());
+      List<XmlInclude> groupedByMethodNames =
+          group.values().stream()
+              .map(each -> asXmlIncludes(each, srcXmlTest))
+              .map(
+                  each -> {
+                    if (each.size() > 1) {
+                      XmlInclude tmpMethodName = each.get(0);
+                      each.stream()
+                          .map(XmlInclude::getInvocationNumbers)
+                          .reduce(
+                              (a1, a2) -> {
+                                Set<Integer> set = new HashSet<>(a1);
+                                set.addAll(a2);
+                                return new ArrayList<>(set);
+                              })
+                          .ifPresent(tmpMethodName::addInvocationNumbers);
+                      return Collections.singletonList(tmpMethodName);
+                    }
+                    return each;
+                  })
+              .flatMap(Collection::stream)
+              .collect(Collectors.toList());
 
       xmlClass.setIncludedMethods(groupedByMethodNames);
-      xmlClass.setParameters(classParameters.getOrDefault(xmlClass.getName(), classParameters
-              .values()
-              .stream()
-              .flatMap(map -> map.entrySet().stream())
-              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)-> v2))));
+      xmlClass.setParameters(
+          classParameters.getOrDefault(
+              xmlClass.getName(),
+              classParameters.values().stream()
+                  .flatMap(map -> map.entrySet().stream())
+                  .collect(
+                      Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v2))));
       result.add(xmlClass);
     }
 
@@ -258,12 +263,14 @@ public class FailedReporter implements IReporter {
   private static List<XmlInclude> asXmlIncludes(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
     AtomicInteger i = new AtomicInteger(0);
     return methods.stream()
-        .map(m -> {
-          XmlInclude methodName =
-              new XmlInclude(m.getMethodName(), m.getFailedInvocationNumbers(), i.getAndIncrement());
-          methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
-          return methodName;
-        })
+        .map(
+            m -> {
+              XmlInclude methodName =
+                  new XmlInclude(
+                      m.getMethodName(), m.getFailedInvocationNumbers(), i.getAndIncrement());
+              methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
+              return methodName;
+            })
         .collect(Collectors.toList());
   }
 }

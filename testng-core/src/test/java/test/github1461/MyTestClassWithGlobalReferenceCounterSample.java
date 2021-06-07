@@ -5,7 +5,8 @@ import org.testng.log4testng.Logger;
 
 /** we create a test NG class here, which has a global counter, counting all instances. */
 public class MyTestClassWithGlobalReferenceCounterSample {
-  private static final Logger log = Logger.getLogger(MyTestClassWithGlobalReferenceCounterSample.class);
+  private static final Logger log =
+      Logger.getLogger(MyTestClassWithGlobalReferenceCounterSample.class);
 
   /** global counter that keeps track on how many objects are currently on the heap */
   public static int currentNumberOfMyTestObjects = 0;

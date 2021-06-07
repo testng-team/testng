@@ -9,7 +9,6 @@ import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.internal.Parameters;
 import org.testng.internal.PoolService;
-import org.testng.internal.invokers.*;
 import org.testng.internal.invokers.ITestInvoker.FailureContext;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
@@ -17,17 +16,18 @@ import org.testng.xml.XmlSuite;
 public class MethodRunner implements IMethodRunner {
 
   @Override
-  public List<ITestResult> runInSequence(TestMethodArguments arguments,
-                                         ITestInvoker testInvoker,
-                                         ITestContext context,
-                                         AtomicInteger invocationCount,
-                                         FailureContext failure,
-                                         Iterator<Object[]> allParamValues,
-                                         boolean skipFailedInvocationCounts) {
+  public List<ITestResult> runInSequence(
+      TestMethodArguments arguments,
+      ITestInvoker testInvoker,
+      ITestContext context,
+      AtomicInteger invocationCount,
+      FailureContext failure,
+      Iterator<Object[]> allParamValues,
+      boolean skipFailedInvocationCounts) {
     List<ITestResult> result = Lists.newArrayList();
     int parametersIndex = 0;
     Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
-    for (Object[] next: allParameterValues) {
+    for (Object[] next : allParameterValues) {
       if (next == null) {
         // skipped value
         parametersIndex++;
@@ -39,14 +39,15 @@ public class MethodRunner implements IMethodRunner {
 
       List<ITestResult> tmpResults = Lists.newArrayList();
       int tmpResultsIndex = -1;
-      TestMethodArguments tmArguments = new Builder()
-          .usingArguments(arguments)
-          .withParameterValues(parameterValues)
-          .withParametersIndex(parametersIndex)
-          .build();
+      TestMethodArguments tmArguments =
+          new Builder()
+              .usingArguments(arguments)
+              .withParameterValues(parameterValues)
+              .withParametersIndex(parametersIndex)
+              .build();
       try {
-        ITestResult tmpResult = testInvoker
-            .invokeTestMethod(tmArguments, context.getSuite().getXmlSuite(), failure);
+        ITestResult tmpResult =
+            testInvoker.invokeTestMethod(tmArguments, context.getSuite().getXmlSuite(), failure);
         tmpResults.add(tmpResult);
         tmpResultsIndex++;
       } finally {
@@ -65,15 +66,14 @@ public class MethodRunner implements IMethodRunner {
         // If we have a failure, skip all the
         // other invocationCounts
         if (failure.count > 0
-            && (skipFailedInvocationCounts || tmArguments.getTestMethod()
-            .skipFailedInvocations())) {
+            && (skipFailedInvocationCounts
+                || tmArguments.getTestMethod().skipFailedInvocations())) {
           while (invocationCount.getAndDecrement() > 0) {
-            ITestResult r = testInvoker
-                .registerSkippedTestResult(tmArguments.getTestMethod(), System.currentTimeMillis(),
-                    null);
+            ITestResult r =
+                testInvoker.registerSkippedTestResult(
+                    tmArguments.getTestMethod(), System.currentTimeMillis(), null);
             result.add(r);
-            InvokedMethod invokedMethod =
-                new InvokedMethod(System.currentTimeMillis(), r);
+            InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), r);
             testInvoker.invokeListenersForSkippedTestResult(r, invokedMethod);
           }
         }
@@ -84,7 +84,8 @@ public class MethodRunner implements IMethodRunner {
   }
 
   @Override
-  public List<ITestResult> runInParallel(TestMethodArguments arguments,
+  public List<ITestResult> runInParallel(
+      TestMethodArguments arguments,
       ITestInvoker testInvoker,
       ITestContext context,
       AtomicInteger invocationCount,
@@ -108,7 +109,8 @@ public class MethodRunner implements IMethodRunner {
 
       TestMethodWithDataProviderMethodWorker w =
           new TestMethodWithDataProviderMethodWorker(
-              testInvoker, arguments.getTestMethod(),
+              testInvoker,
+              arguments.getTestMethod(),
               parametersIndex,
               parameterValues,
               arguments.getInstance(),

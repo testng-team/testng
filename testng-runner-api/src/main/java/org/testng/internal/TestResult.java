@@ -1,9 +1,14 @@
 package org.testng.internal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.ITest;
@@ -14,12 +19,6 @@ import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
-
-import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
 
 /** This class represents the result of a test. */
 public class TestResult implements ITestResult {
@@ -42,7 +41,7 @@ public class TestResult implements ITestResult {
   private final String id = UUID.randomUUID().toString();
 
   private TestResult() {
-    //defeat instantiation. We have factory methods.
+    // defeat instantiation. We have factory methods.
   }
 
   public static TestResult newEmptyTestResult() {
@@ -60,24 +59,24 @@ public class TestResult implements ITestResult {
     return result;
   }
 
-  public static TestResult newTestResultWithCauseAs(ITestNGMethod method, ITestContext ctx,
-      Throwable t) {
+  public static TestResult newTestResultWithCauseAs(
+      ITestNGMethod method, ITestContext ctx, Throwable t) {
     TestResult result = newEmptyTestResult();
     long time = System.currentTimeMillis();
     result.init(method, ctx, t, time, time);
     return result;
   }
 
-  public static TestResult newEndTimeAwareTestResult(ITestNGMethod method, ITestContext ctx,
-      Throwable t, long start) {
+  public static TestResult newEndTimeAwareTestResult(
+      ITestNGMethod method, ITestContext ctx, Throwable t, long start) {
     TestResult result = newEmptyTestResult();
     long time = System.currentTimeMillis();
     result.init(method, ctx, t, start, time);
     return result;
   }
 
-  public static TestResult newTestResultFrom(TestResult result, ITestNGMethod method,
-      ITestContext ctx, long start) {
+  public static TestResult newTestResultFrom(
+      TestResult result, ITestNGMethod method, ITestContext ctx, long start) {
     TestResult testResult = newEmptyTestResult();
     testResult.setHost(result.getHost());
     testResult.setParameters(result.getParameters());
@@ -117,9 +116,10 @@ public class TestResult implements ITestResult {
       }
       m_name = m_method.getMethodName();
       if (Utils.getVerbose() > 1) {
-        String msg = String.format(
-            "Warning: [%s] implementation on class [%s] returned null. Defaulting to method name",
-            ITest.class.getName(), instance.getClass().getName());
+        String msg =
+            String.format(
+                "Warning: [%s] implementation on class [%s] returned null. Defaulting to method name",
+                ITest.class.getName(), instance.getClass().getName());
         System.err.println(msg);
       }
       return;
@@ -132,11 +132,8 @@ public class TestResult implements ITestResult {
     // Only display toString() if it's been overridden by the user
     m_name = getMethod().getMethodName();
     try {
-      if (!Object.class
-          .getMethod("toString")
-          .equals(instance.getClass().getMethod("toString"))) {
-        m_instanceName =
-            string.startsWith("class ") ? string.substring("class ".length()) : string;
+      if (!Object.class.getMethod("toString").equals(instance.getClass().getMethod("toString"))) {
+        m_instanceName = string.startsWith("class ") ? string.substring("class ".length()) : string;
         m_name = m_name + " on " + m_instanceName;
       }
     } catch (NoSuchMethodException ignore) {
@@ -377,52 +374,61 @@ public class TestResult implements ITestResult {
       return Collections.unmodifiableList(skippedDueTo);
     }
     skipAnalysed = true;
-    //check if there were any config failures
+    // check if there were any config failures
     Set<ITestResult> skippedConfigs = m_context.getFailedConfigurations().getAllResults();
     for (ITestResult skippedConfig : skippedConfigs) {
       if (isGlobalFailure(skippedConfig) || isRelated(skippedConfig)) {
-        //If there's a failure in @BeforeTest/@BeforeSuite/@BeforeClass
-        //then the reason is most often just one method.
+        // If there's a failure in @BeforeTest/@BeforeSuite/@BeforeClass
+        // then the reason is most often just one method.
         skippedDueTo.add(skippedConfig.getMethod());
       }
       if (belongToSameGroup(skippedConfig)) {
-        //If its @BeforeGroups then there's a chance that there could be more than one
-        //method. So lets add everything.
+        // If its @BeforeGroups then there's a chance that there could be more than one
+        // method. So lets add everything.
         skippedDueTo.add(skippedConfig.getMethod());
       }
     }
     if (!skippedDueTo.isEmpty()) {
-      //If we found atleast one skipped due to reason, then its time to return back.
+      // If we found atleast one skipped due to reason, then its time to return back.
       return Collections.unmodifiableList(skippedDueTo);
     }
-    //Looks like we didnt have any configuration failures. So some upstream method perhaps failed.
-    if (m_method.getMethodsDependedUpon().length==0) {
-      //Maybe group dependencies exist ?
-      if (m_method.getGroupsDependedUpon().length==0) {
+    // Looks like we didnt have any configuration failures. So some upstream method perhaps failed.
+    if (m_method.getMethodsDependedUpon().length == 0) {
+      // Maybe group dependencies exist ?
+      if (m_method.getGroupsDependedUpon().length == 0) {
         return Collections.emptyList();
       }
       List<String> upstreamGroups = Arrays.asList(m_method.getGroupsDependedUpon());
-      List<ITestResult> allFailures = Lists.merge(m_context.getFailedTests().getAllResults(),
-          m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
-      skippedDueTo = allFailures.stream()
-          .map(ITestResult::getMethod)
-          .filter(method -> {
-            List<String> currentMethodGroups = Arrays.asList(method.getGroups());
-            List<String> interection = Lists.intersection(upstreamGroups, currentMethodGroups);
-            return !interection.isEmpty();
-          }).collect(Collectors.toList());
+      List<ITestResult> allFailures =
+          Lists.merge(
+              m_context.getFailedTests().getAllResults(),
+              m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
+      skippedDueTo =
+          allFailures.stream()
+              .map(ITestResult::getMethod)
+              .filter(
+                  method -> {
+                    List<String> currentMethodGroups = Arrays.asList(method.getGroups());
+                    List<String> interection =
+                        Lists.intersection(upstreamGroups, currentMethodGroups);
+                    return !interection.isEmpty();
+                  })
+              .collect(Collectors.toList());
 
       return Collections.unmodifiableList(skippedDueTo);
     }
     List<String> upstreamMethods = Arrays.asList(m_method.getMethodsDependedUpon());
 
-    //So we have dependsOnMethod failures
-    List<ITestResult> allfailures = Lists.merge(m_context.getFailedTests().getAllResults(),
-        m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
-    skippedDueTo = allfailures.stream()
-        .map(ITestResult::getMethod)
-        .filter(method -> upstreamMethods.contains(method.getQualifiedName()))
-        .collect(Collectors.toList());
+    // So we have dependsOnMethod failures
+    List<ITestResult> allfailures =
+        Lists.merge(
+            m_context.getFailedTests().getAllResults(),
+            m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
+    skippedDueTo =
+        allfailures.stream()
+            .map(ITestResult::getMethod)
+            .filter(method -> upstreamMethods.contains(method.getQualifiedName()))
+            .collect(Collectors.toList());
     return Collections.unmodifiableList(skippedDueTo);
   }
 
@@ -442,8 +448,8 @@ public class TestResult implements ITestResult {
     }
     Object current = this.getInstance();
     Object thatObject = result.getInstance();
-    return current.getClass().isAssignableFrom(thatObject.getClass()) ||
-        thatObject.getClass().isAssignableFrom(current.getClass());
+    return current.getClass().isAssignableFrom(thatObject.getClass())
+        || thatObject.getClass().isAssignableFrom(current.getClass());
   }
 
   private boolean belongToSameGroup(ITestResult result) {
@@ -452,7 +458,7 @@ public class TestResult implements ITestResult {
       return false;
     }
     String[] mygroups = this.m_method.getGroups();
-    if (mygroups.length == 0 || m.getGroups().length ==0) {
+    if (mygroups.length == 0 || m.getGroups().length == 0) {
       return false;
     }
 

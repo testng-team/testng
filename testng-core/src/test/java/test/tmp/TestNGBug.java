@@ -4,7 +4,7 @@ import org.testng.Reporter;
 import org.testng.annotations.Test;
 
 public class TestNGBug {
-//  @Configuration(beforeTestMethod = true)
+  //  @Configuration(beforeTestMethod = true)
   public void init() {
     ppp("Base.init()");
   }

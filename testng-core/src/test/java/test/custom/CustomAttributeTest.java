@@ -1,10 +1,9 @@
 package test.custom;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import org.testng.IAnnotationTransformer;
 import org.testng.TestNG;
 import org.testng.annotations.CustomAttribute;
@@ -37,5 +36,4 @@ public class CustomAttributeTest extends SimpleBaseTest {
     assertThat(attribute.name()).isEqualTo(key);
     assertThat(attribute.values()).containsAll(values);
   }
-
 }

@@ -2,6 +2,9 @@ package test.github1490;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.IDataProviderMethod;
 import org.testng.TestNG;
@@ -13,10 +16,6 @@ import test.SimpleBaseTest;
 import test.listeners.github1490.DataProviderInfoProvider;
 import test.listeners.github1490.InstanceAwareLocalDataProviderListener;
 import test.listeners.github1490.LocalDataProviderListener;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class VerifyDataProviderListener extends SimpleBaseTest {
 

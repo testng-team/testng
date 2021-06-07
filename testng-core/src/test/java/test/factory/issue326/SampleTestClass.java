@@ -28,15 +28,13 @@ public class SampleTestClass {
 
   @DataProvider
   public static Iterator<Object[]> dp() {
-    List<Object[]> names = Arrays.asList(new Object[]{FREDDY},
-        new Object[]{BARNEY});
+    List<Object[]> names = Arrays.asList(new Object[] {FREDDY}, new Object[] {BARNEY});
     return names.iterator();
   }
 
   @Test
   public void test1() throws InterruptedException {
     printer();
-
   }
 
   @Test

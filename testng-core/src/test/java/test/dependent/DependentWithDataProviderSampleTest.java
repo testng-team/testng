@@ -1,13 +1,12 @@
 package test.dependent;
 
+import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-
-import java.util.List;
 
 public class DependentWithDataProviderSampleTest {
   public static List<String> m_log = Lists.newArrayList();

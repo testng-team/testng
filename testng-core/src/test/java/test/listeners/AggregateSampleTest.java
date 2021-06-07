@@ -6,11 +6,11 @@ import org.testng.annotations.Test;
 @Listeners(L2.class)
 public class AggregateSampleTest extends BaseAggregate {
   static int m_count = 0;
-  static public void incrementCount() {
+
+  public static void incrementCount() {
     m_count++;
   }
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 }

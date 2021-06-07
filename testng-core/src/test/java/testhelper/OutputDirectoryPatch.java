@@ -1,18 +1,19 @@
 package testhelper;
 
 /**
- * <code>OutputDirectoryPatch</code> is a helper class to provide an output directory
- * for TestNG tests that explicitly create an instance of TestNG and do not know the
- * output directory specified for the test.
+ * <code>OutputDirectoryPatch</code> is a helper class to provide an output directory for TestNG
+ * tests that explicitly create an instance of TestNG and do not know the output directory specified
+ * for the test.
  *
  * @author cquezel
  * @since 4.8
  */
 public final class OutputDirectoryPatch {
 
-  /** The default output directory name if none was specified. We should use something
-   * different than "test-output" to make it clear that the output directory
-   * has not been set. */
+  /**
+   * The default output directory name if none was specified. We should use something different than
+   * "test-output" to make it clear that the output directory has not been set.
+   */
   private static final String DEFAULT_OUTPUT_DIRECTORY = "test-output";
 
   /** The name of the System property used to store the output directory. */
@@ -38,10 +39,11 @@ public final class OutputDirectoryPatch {
     if (tmp != null) {
       return tmp;
     }
-//    System.err.println("System property: " + OUTPUT_DIRECTORY_PROPERTY_NAME
-//        + " has not been set. Using default path: " + DEFAULT_OUTPUT_DIRECTORY);
+    //    System.err.println("System property: " + OUTPUT_DIRECTORY_PROPERTY_NAME
+    //        + " has not been set. Using default path: " + DEFAULT_OUTPUT_DIRECTORY);
 
-//    new Throwable("Stack is only to help locate the problem. No excpetion thrown.").printStackTrace(System.err);
+    //    new Throwable("Stack is only to help locate the problem. No excpetion
+    // thrown.").printStackTrace(System.err);
     return DEFAULT_OUTPUT_DIRECTORY;
   }
 }

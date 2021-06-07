@@ -17,8 +17,8 @@ public class ResultExtractor implements IReporter {
   private Map<Object, Object[]> data = Maps.newHashMap();
 
   @Override
-  public void generateReport(List<XmlSuite> xmlSuites, List<ISuite> suites,
-      String outputDirectory) {
+  public void generateReport(
+      List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     suites.forEach(this::process);
   }
 
@@ -28,8 +28,8 @@ public class ResultExtractor implements IReporter {
 
   private void process(ISuiteResult suiteResult) {
     ITestContext ctx = suiteResult.getTestContext();
-    List<IResultMap> resultmaps = Arrays
-        .asList(ctx.getFailedTests(), ctx.getPassedTests(), ctx.getSkippedTests());
+    List<IResultMap> resultmaps =
+        Arrays.asList(ctx.getFailedTests(), ctx.getPassedTests(), ctx.getSkippedTests());
     resultmaps.forEach(this::process);
   }
 

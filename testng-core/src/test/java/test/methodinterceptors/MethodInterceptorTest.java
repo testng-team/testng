@@ -1,5 +1,11 @@
 package test.methodinterceptors;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import javax.xml.parsers.ParserConfigurationException;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
@@ -9,40 +15,31 @@ import org.testng.annotations.Test;
 import org.testng.xml.Parser;
 import org.testng.xml.XmlSuite;
 import org.xml.sax.SAXException;
-
 import test.SimpleBaseTest;
 import test.TestHelper;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 public class MethodInterceptorTest extends SimpleBaseTest {
 
   private String XML =
-    TestHelper.SUITE_XML_HEADER +
-    "<suite name=\"Single\" verbose=\"0\">" +
-    "" +
-    "<listeners>" +
-    "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />" +
-    "</listeners>" +
-    "" +
-    "  <test name=\"Single\" >" +
-    "    <classes>" +
-    "      <class name=\"test.methodinterceptors.FooTest\" />" +
-    "     </classes>" +
-    "  </test>" +
-    "" +
-    "</suite>";
+      TestHelper.SUITE_XML_HEADER
+          + "<suite name=\"Single\" verbose=\"0\">"
+          + ""
+          + "<listeners>"
+          + "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />"
+          + "</listeners>"
+          + ""
+          + "  <test name=\"Single\" >"
+          + "    <classes>"
+          + "      <class name=\"test.methodinterceptors.FooTest\" />"
+          + "     </classes>"
+          + "  </test>"
+          + ""
+          + "</suite>";
 
   @Test
   public void noMethodsShouldRun() {
     TestNG tng = create();
-    tng.setTestClasses(new Class[] { FooTest.class });
+    tng.setTestClasses(new Class[] {FooTest.class});
     testNullInterceptor(tng);
   }
 
@@ -59,12 +56,12 @@ public class MethodInterceptorTest extends SimpleBaseTest {
 
   private void testFast(boolean useInterceptor) {
     TestNG tng = create();
-    tng.setTestClasses(new Class[] { FooTest.class });
+    tng.setTestClasses(new Class[] {FooTest.class});
     if (useInterceptor) {
       tng.setMethodInterceptor(new FastTestsFirstInterceptor());
     }
     TestListenerAdapter tla = new TestListenerAdapter();
-//    tng.setParallel("methods");
+    //    tng.setParallel("methods");
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
@@ -105,8 +102,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
       TestNG tng = create();
       tng.setXmlSuites(xmlSuites);
       testNullInterceptor(tng);
-    }
-    catch(Exception ex) {
+    } catch (Exception ex) {
       ex.printStackTrace();
     }
   }

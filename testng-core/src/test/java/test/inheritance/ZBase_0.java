@@ -1,11 +1,10 @@
 package test.inheritance;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ZBase_0 {
   protected static boolean m_verbose = false;

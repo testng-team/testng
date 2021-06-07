@@ -1,11 +1,10 @@
 package org.testng.internal;
 
-import org.testng.annotations.Test;
+import static java.lang.annotation.ElementType.METHOD;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
+import org.testng.annotations.Test;
 
 public class TestClassSample {
   @Test

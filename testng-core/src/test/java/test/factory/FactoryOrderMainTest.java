@@ -1,15 +1,12 @@
 package test.factory;
 
+import java.util.List;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-
 import test.SimpleBaseTest;
-
-import java.util.List;
 
 public class FactoryOrderMainTest extends SimpleBaseTest {
 

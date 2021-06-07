@@ -1,8 +1,7 @@
 package org.testng.asserts;
 
-import org.testng.collections.Lists;
-
 import java.util.List;
+import org.testng.collections.Lists;
 
 /** Log the messages of all the assertions that get run. */
 public class LoggingAssert extends Assertion {

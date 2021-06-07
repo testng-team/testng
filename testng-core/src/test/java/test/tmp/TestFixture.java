@@ -14,7 +14,7 @@ public class TestFixture {
 
   public int fixtureBeforeTestCallSequence;
 
-  @BeforeTest( groups="fixture")
+  @BeforeTest(groups = "fixture")
   public void beforeTest() {
     fixtureBeforeTestCallSequence = printGlobalCallSequence("TestFixture.beforeTest");
   }
@@ -22,5 +22,4 @@ public class TestFixture {
   public int getSomeRandomValue() {
     return 20;
   }
-
 }

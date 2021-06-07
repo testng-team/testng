@@ -1,5 +1,6 @@
 package test.thread;
 
+import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -7,27 +8,21 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
-import java.util.List;
-
 public class MultiThreadedDependentSampleTest {
 
   public static List<String> m_methods = Lists.newArrayList();
 
   @BeforeClass
-  public void bc() {
-  }
+  public void bc() {}
 
   @AfterClass
-  public void ac() {
-  }
+  public void ac() {}
 
   @BeforeMethod
-  public void bm() {
-  }
+  public void bm() {}
 
   @AfterMethod
-  public void am() {
-  }
+  public void am() {}
 
   @Test(groups = "1")
   public void a1() {
@@ -83,7 +78,7 @@ public class MultiThreadedDependentSampleTest {
     log("c1");
   }
 
-  @Test(dependsOnGroups = { "1" })
+  @Test(dependsOnGroups = {"1"})
   public void d() {
     logThread();
     log("d");
@@ -120,7 +115,7 @@ public class MultiThreadedDependentSampleTest {
   }
 
   private void log(String string) {
-    synchronized(m_methods) {
+    synchronized (m_methods) {
       m_methods.add(string);
     }
   }

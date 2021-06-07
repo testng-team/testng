@@ -3,12 +3,6 @@ package org.testng;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-
-import org.testng.collections.Sets;
-import org.testng.internal.Yaml;
-import org.testng.xml.Parser;
-import org.testng.xml.XmlSuite;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,6 +10,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.testng.collections.Sets;
+import org.testng.internal.Yaml;
+import org.testng.xml.Parser;
+import org.testng.xml.XmlSuite;
 
 /**
  * Convert XML files to YAML and vice versa.

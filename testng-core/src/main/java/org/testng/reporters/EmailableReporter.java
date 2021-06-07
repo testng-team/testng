@@ -1,5 +1,19 @@
 package org.testng.reporters;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.Files.newBufferedWriter;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.IResultMap;
@@ -14,21 +28,6 @@ import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.newBufferedWriter;
 
 /**
  * Reported designed to render self-contained HTML top down view of a testing suite.

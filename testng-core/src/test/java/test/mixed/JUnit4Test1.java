@@ -2,19 +2,12 @@ package test.mixed;
 
 import org.junit.Test;
 
-/**
- *
- * @author lukas
- */
+/** @author lukas */
 public class JUnit4Test1 {
 
-    @Test
-    public void atest() {
+  @Test
+  public void atest() {}
 
-    }
-
-    @Test
-    public void bTest() {
-
-    }
+  @Test
+  public void bTest() {}
 }

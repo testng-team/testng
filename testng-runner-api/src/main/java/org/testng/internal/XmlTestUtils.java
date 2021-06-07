@@ -7,12 +7,10 @@ import org.testng.xml.XmlTest;
 
 final class XmlTestUtils {
 
-  private XmlTestUtils() {
+  private XmlTestUtils() {}
 
-  }
-
-  static Map<String, String> findMethodParameters(XmlTest test, String className,
-      String methodName) {
+  static Map<String, String> findMethodParameters(
+      XmlTest test, String className, String methodName) {
     Map<String, String> result = test.getAllParameters();
     for (XmlClass xmlClass : test.getXmlClasses()) {
       if (xmlClass.getName().equals(className)) {
@@ -28,5 +26,4 @@ final class XmlTestUtils {
 
     return result;
   }
-
 }

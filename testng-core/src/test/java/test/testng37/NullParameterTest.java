@@ -4,10 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
+/** This class/interface */
 public class NullParameterTest {
   @Test
   @Parameters({"notnull", "nullvalue"})

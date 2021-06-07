@@ -21,5 +21,4 @@ public class SampleTestUsingSupplier {
     obj.add(() -> "Megatron");
     return obj.iterator();
   }
-
 }

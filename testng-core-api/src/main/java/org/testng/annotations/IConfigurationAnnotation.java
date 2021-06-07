@@ -1,17 +1,16 @@
 package org.testng.annotations;
 
-/**
- * Encapsulate the @Configuration / @testng.configuration annotation
- */
+/** Encapsulate the @Configuration / @testng.configuration annotation */
 public interface IConfigurationAnnotation extends ITestOrConfiguration {
   /**
-   * @return true if the annotated method will be run after the test class is instantiated and before the
-   * test method is invoked.
+   * @return true if the annotated method will be run after the test class is instantiated and
+   *     before the test method is invoked.
    */
   boolean getBeforeTestClass();
 
   /**
-   * @return true if the annotated method will be run after all the tests in the test class have been run.
+   * @return true if the annotated method will be run after all the tests in the test class have
+   *     been run.
    */
   boolean getAfterTestClass();
 
@@ -36,13 +35,14 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
   /**
    * Used only for after type of configuration methods.
    *
-   * @return true if the configuration method will be run whatever the status of before configuration methods was.
+   * @return true if the configuration method will be run whatever the status of before
+   *     configuration methods was.
    */
   boolean getAlwaysRun();
 
   /**
-   * @return true if this @Configuration method will belong to groups specified in the \@Test annotation on
-   * the class (if any).
+   * @return true if this @Configuration method will belong to groups specified in the \@Test
+   *     annotation on the class (if any).
    */
   boolean getInheritGroups();
 

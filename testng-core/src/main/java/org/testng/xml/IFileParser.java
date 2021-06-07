@@ -1,8 +1,7 @@
 package org.testng.xml;
 
-import org.testng.TestNGException;
-
 import java.io.InputStream;
+import org.testng.TestNGException;
 
 public interface IFileParser<T> {
 

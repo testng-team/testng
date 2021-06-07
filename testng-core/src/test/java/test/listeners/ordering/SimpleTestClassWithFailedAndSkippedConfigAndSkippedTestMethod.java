@@ -16,5 +16,4 @@ public class SimpleTestClassWithFailedAndSkippedConfigAndSkippedTestMethod {
 
   @Test
   public void testWillPass() {}
-
 }

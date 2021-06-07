@@ -17,8 +17,8 @@ public final class StackTraceTools {
   /**
    * @param stack The stack trace
    * @param method The test method
-   * @return topmost position of the test method in the stack, or top of stack if <code>method</code>
-   * is not in it.
+   * @return topmost position of the test method in the stack, or top of stack if <code>method
+   *     </code> is not in it.
    */
   public static int getTestRoot(StackTraceElement[] stack, ITestNGMethod method) {
     if (stack == null || method == null) {
@@ -37,8 +37,8 @@ public final class StackTraceTools {
   /**
    * @param stack The stacktrace
    * @param method The test method
-   * @return topmost position of the test method in the stack, or top of stack if <code>method</code>
-   * is not in it.
+   * @return topmost position of the test method in the stack, or top of stack if <code>method
+   *     </code> is not in it.
    */
   public static StackTraceElement[] getTestNGInstrastructure(
       StackTraceElement[] stack, ITestNGMethod method) {

@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
@@ -14,16 +15,14 @@ import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 
-import java.util.List;
-import org.testng.internal.objects.Dispenser;
-
 /** A helper class that internally houses some of the listener related actions support. */
 public final class TestListenerHelper {
   private TestListenerHelper() {
     // Utility class. Defeat instantiation.
   }
 
-  public static void runPreConfigurationListeners(ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
+  public static void runPreConfigurationListeners(
+      ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
     for (IConfigurationListener icl : listeners) {
       icl.beforeConfiguration(tr);
       try {
@@ -57,7 +56,7 @@ public final class TestListenerHelper {
         case ITestResult.SUCCESS:
           icl.onConfigurationSuccess(tr);
           try {
-          icl.onConfigurationSuccess(tr,tm);
+            icl.onConfigurationSuccess(tr, tm);
           } catch (Exception e) {
             ignoreInternalGradleException(e);
           }
@@ -68,9 +67,9 @@ public final class TestListenerHelper {
     }
   }
 
-  //This method is added because Gradle which builds TestNG seems to be using an older version
-  //of TestNG that doesn't know about the new methods that we added and so it causes
-  //the TestNG build to keep failing.
+  // This method is added because Gradle which builds TestNG seems to be using an older version
+  // of TestNG that doesn't know about the new methods that we added and so it causes
+  // the TestNG build to keep failing.
   private static void ignoreInternalGradleException(Exception e) {
     if (!e.getClass().getPackage().getName().startsWith("org.gradle.internal")) {
       throw new ListenerInvocationException(e);
@@ -111,37 +110,42 @@ public final class TestListenerHelper {
     }
   }
 
-  /** @return all the @Listeners annotations found in the current class and its superclasses and inherited interfaces.  */
+  /**
+   * @return all the @Listeners annotations found in the current class and its superclasses and
+   *     inherited interfaces.
+   */
   @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
     result.listenerClasses = Lists.newArrayList();
 
     while (cls != Object.class) {
-      List<IListenersAnnotation> annotations = finder.findInheritedAnnotations(cls, IListenersAnnotation.class);
+      List<IListenersAnnotation> annotations =
+          finder.findInheritedAnnotations(cls, IListenersAnnotation.class);
       IListenersAnnotation l = finder.findAnnotation(cls, IListenersAnnotation.class);
       if (l != null) {
         annotations.add(l);
       }
-      annotations.forEach(anno -> {
-        Class<? extends ITestNGListener>[] classes = anno.getValue();
-        for (Class<? extends ITestNGListener> c : classes) {
-          result.listenerClasses.add(c);
+      annotations.forEach(
+          anno -> {
+            Class<? extends ITestNGListener>[] classes = anno.getValue();
+            for (Class<? extends ITestNGListener> c : classes) {
+              result.listenerClasses.add(c);
 
-          if (ITestNGListenerFactory.class.isAssignableFrom(c)) {
-            if (result.listenerFactoryClass == null) {
-              result.listenerFactoryClass = (Class<? extends ITestNGListenerFactory>) c;
-            } else {
-              throw new TestNGException(
-                  "Found more than one class implementing "
-                      + "ITestNGListenerFactory:"
-                      + c
-                      + " and "
-                      + result.listenerFactoryClass);
+              if (ITestNGListenerFactory.class.isAssignableFrom(c)) {
+                if (result.listenerFactoryClass == null) {
+                  result.listenerFactoryClass = (Class<? extends ITestNGListenerFactory>) c;
+                } else {
+                  throw new TestNGException(
+                      "Found more than one class implementing "
+                          + "ITestNGListenerFactory:"
+                          + c
+                          + " and "
+                          + result.listenerFactoryClass);
+                }
+              }
             }
-          }
-        }
-      });
+          });
       cls = cls.getSuperclass();
     }
     return result;

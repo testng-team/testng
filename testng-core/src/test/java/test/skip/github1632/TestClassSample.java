@@ -3,7 +3,6 @@ package test.skip.github1632;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-
 public class TestClassSample {
 
   @Test
@@ -11,8 +10,7 @@ public class TestClassSample {
 
   @Test
   @SkipTest
-  public void skippingMethod() {
-  }
+  public void skippingMethod() {}
 
   @Test
   public void failingMethod() {

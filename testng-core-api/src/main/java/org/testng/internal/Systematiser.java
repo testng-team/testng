@@ -1,8 +1,7 @@
 package org.testng.internal;
 
-import org.testng.ITestNGMethod;
-
 import java.util.Comparator;
+import org.testng.ITestNGMethod;
 
 /** Helps determine how should {@link ITestNGMethod} be ordered by TestNG. */
 public final class Systematiser {

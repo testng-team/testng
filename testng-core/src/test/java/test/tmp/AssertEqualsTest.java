@@ -1,12 +1,11 @@
 package test.tmp;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 public class AssertEqualsTest {
 
@@ -20,8 +19,7 @@ public class AssertEqualsTest {
     try {
       int sleepTime = new Random().nextInt(500);
       Thread.sleep(sleepTime);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       log("  *** INTERRUPTED");
     }
     log("end");
@@ -29,7 +27,7 @@ public class AssertEqualsTest {
 
   @Test(threadPoolSize = 10, invocationCount = 10000)
   public void verifyMethodIsThreadSafe() {
-//    foo();
+    //    foo();
   }
 
   @Test(dependsOnMethods = "verifyMethodIsThreadSafe")
@@ -60,8 +58,7 @@ public class AssertEqualsTest {
 
     try {
       Assert.assertEquals(set1, set2, "set1 must equals with set2");
-    }
-    catch (Exception ex) {
+    } catch (Exception ex) {
       ex.printStackTrace();
     }
   }

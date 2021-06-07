@@ -3,10 +3,7 @@ package test.testng109;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
+/** This class/interface */
 public class SkippedTestWithExpectedExceptionTest {
   @BeforeClass
   public void setup() {
@@ -14,14 +11,12 @@ public class SkippedTestWithExpectedExceptionTest {
   }
 
   @Test
-  public void test1()
-  {
-//   empty
+  public void test1() {
+    //   empty
   }
 
-  @Test(expectedExceptions={OutOfMemoryError.class})
-  public void test2()
-  {
-//  empty
+  @Test(expectedExceptions = {OutOfMemoryError.class})
+  public void test2() {
+    //  empty
   }
 }

@@ -12,5 +12,4 @@ public class ThreadPoolSizeTest extends ThreadPoolSizeBase {
   public void verify() {
     verifyThreads(3);
   }
-
 }

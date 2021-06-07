@@ -1,10 +1,12 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
-import org.testng.Reporter;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -20,10 +22,6 @@ import org.testng.internal.listeners.TestClassWithMultipleListenerFactories;
 import org.testng.internal.paramhandler.FakeTestContext;
 import org.testng.xml.XmlClass;
 import test.SimpleBaseTest;
-
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestListenerHelperTest {
 

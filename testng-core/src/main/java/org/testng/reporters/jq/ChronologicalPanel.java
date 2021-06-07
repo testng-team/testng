@@ -1,14 +1,13 @@
 package org.testng.reporters.jq;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.reporters.XMLStringBuffer;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class ChronologicalPanel extends BaseMultiSuitePanel {
 

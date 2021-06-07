@@ -5,18 +5,14 @@ import org.testng.annotations.Test;
 public class TestClassSample {
 
   @Test(groups = {"bat"})
-  public void batTest() {
-  }
+  public void batTest() {}
 
   @Test(groups = {"p1"})
-  public void p1Test() {
-  }
+  public void p1Test() {}
 
   @Test(groups = {"p2"})
-  public void p2Test() {
-  }
+  public void p2Test() {}
 
   @Test(groups = {"bat", "p3"})
-  public void batp3Test() {
-  }
+  public void batp3Test() {}
 }

@@ -13,5 +13,4 @@ public class MainSuite {
 
     return suite;
   }
-
 }

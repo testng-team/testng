@@ -1,18 +1,15 @@
 package test.reflect;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.xml.XmlTest;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Set;
-
-/**
- *
- */
+/** */
 public class TestContextJustForTesting implements ITestContext {
 
   @Override
@@ -111,9 +108,7 @@ public class TestContextJustForTesting implements ITestContext {
   }
 
   @Override
-  public void setAttribute(String name, Object value) {
-
-  }
+  public void setAttribute(String name, Object value) {}
 
   @Override
   public Set<String> getAttributeNames() {

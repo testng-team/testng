@@ -2,7 +2,6 @@ package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.List;
-
 import java.util.function.BiPredicate;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
@@ -21,7 +20,8 @@ import org.testng.internal.ITestResultNotifier;
 public class Invoker implements IInvoker {
 
   /** Predicate to filter methods */
-  static final BiPredicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS = ITestNGMethod::canRunFromClass;
+  static final BiPredicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS =
+      ITestNGMethod::canRunFromClass;
   /** Predicate to filter methods */
   static final BiPredicate<ITestNGMethod, IClass> SAME_CLASS =
       (m, c) -> c == null || m.getTestClass().getName().equals(c.getName());
@@ -36,11 +36,21 @@ public class Invoker implements IInvoker {
       SuiteRunState state,
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
-      List<IClassListener> classListeners, DataProviderHolder holder) {
-    m_configInvoker = new ConfigInvoker(notifier, invokedMethodListeners, testContext, state, configuration);
-    m_testInvoker = new TestInvoker(notifier, testContext, state, configuration,
-        invokedMethodListeners, holder,
-        classListeners, skipFailedInvocationCounts, m_configInvoker);
+      List<IClassListener> classListeners,
+      DataProviderHolder holder) {
+    m_configInvoker =
+        new ConfigInvoker(notifier, invokedMethodListeners, testContext, state, configuration);
+    m_testInvoker =
+        new TestInvoker(
+            notifier,
+            testContext,
+            state,
+            configuration,
+            invokedMethodListeners,
+            holder,
+            classListeners,
+            skipFailedInvocationCounts,
+            m_configInvoker);
   }
 
   public ConfigInvoker getConfigInvoker() {
@@ -50,5 +60,4 @@ public class Invoker implements IInvoker {
   public TestInvoker getTestInvoker() {
     return m_testInvoker;
   }
-
 }

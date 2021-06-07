@@ -11,8 +11,7 @@ import org.testng.annotations.Test;
 public class MyTest {
 
   @BeforeTest
-  public void setUp() {
-  }
+  public void setUp() {}
 
   @Test
   public void test() {
@@ -20,6 +19,5 @@ public class MyTest {
   }
 
   @AfterTest
-  public void tearDown() {
-  }
+  public void tearDown() {}
 }

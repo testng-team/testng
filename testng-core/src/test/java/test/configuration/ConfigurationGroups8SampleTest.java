@@ -1,12 +1,11 @@
 package test.configuration;
 
-import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
 
 /**
  * Run with group "A" and "B" Make sure that only methods and configurations belonging to that group

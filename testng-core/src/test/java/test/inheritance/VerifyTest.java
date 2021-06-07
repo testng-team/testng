@@ -1,9 +1,8 @@
 package test.inheritance;
 
+import java.util.List;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
-
-import java.util.List;
 
 public class VerifyTest {
 

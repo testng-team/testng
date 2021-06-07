@@ -2,7 +2,6 @@ package test.methodselectors;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
 import test.BaseTest;
 import test.methodselectors.issue1985.FilteringMethodSelector;
 import test.methodselectors.issue1985.TestClassSample;
@@ -15,10 +14,9 @@ public class MethodSelectorTest extends BaseTest {
     addMethodSelector("test.methodselectors.AllTestsMethodSelector", -1);
     run();
     String[] passed = {
-        "test1", "test2", "test3",
+      "test1", "test2", "test3",
     };
-    String[] failed = {
-    };
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
@@ -29,10 +27,9 @@ public class MethodSelectorTest extends BaseTest {
     addMethodSelector("test.methodselectors.Test2MethodSelector", -1);
     run();
     String[] passed = {
-        "test2",
+      "test2",
     };
-    String[] failed = {
-    };
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
@@ -44,10 +41,9 @@ public class MethodSelectorTest extends BaseTest {
     addMethodSelector("test.methodselectors.Test2MethodSelector", 5);
     run();
     String[] passed = {
-        "test1", "test2",
+      "test1", "test2",
     };
-    String[] failed = {
-    };
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
@@ -59,10 +55,9 @@ public class MethodSelectorTest extends BaseTest {
     addMethodSelector("test.methodselectors.Test2MethodSelector", 15);
     run();
     String[] passed = {
-        "test2",
+      "test2",
     };
-    String[] failed = {
-    };
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }
@@ -73,11 +68,8 @@ public class MethodSelectorTest extends BaseTest {
     addIncludedGroup("test1");
     addMethodSelector("test.methodselectors.AllTestsMethodSelector", 5);
     run();
-    String[] passed = {
-        "test1", "test2", "test3"
-    };
-    String[] failed = {
-    };
+    String[] passed = {"test1", "test2", "test3"};
+    String[] failed = {};
     verifyTests("Passed", passed, getPassedTests());
     verifyTests("Failed", failed, getFailedTests());
   }

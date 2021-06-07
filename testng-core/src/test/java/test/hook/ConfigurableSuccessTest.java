@@ -1,11 +1,10 @@
 package test.hook;
 
+import java.lang.reflect.Method;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 /** Test harness for {@link IConfigurable} */
 public class ConfigurableSuccessTest extends BaseConfigurable {

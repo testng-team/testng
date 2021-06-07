@@ -2,9 +2,7 @@ package test.verify;
 
 import org.testng.annotations.Test;
 
-/**
- * Same class as VerifySampleTest but without the @Listeners annotation.
- */
+/** Same class as VerifySampleTest but without the @Listeners annotation. */
 public class VerifyNoListenersSampleTest {
 
   @Verify

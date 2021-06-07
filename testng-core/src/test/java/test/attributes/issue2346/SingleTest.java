@@ -10,7 +10,7 @@ public class SingleTest extends BaseTest {
   public void start() {
     fail();
   }
+
   @Test
-  public void test() {
-  }
+  public void test() {}
 }

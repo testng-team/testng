@@ -20,5 +20,4 @@ public class BeforeTestOrdering1Test extends BaseBeforeTestOrdering {
   public void f1() {
     log("f1");
   }
-
 }

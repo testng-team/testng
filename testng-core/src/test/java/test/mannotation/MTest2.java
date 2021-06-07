@@ -3,6 +3,4 @@ package test.mannotation;
 import org.testng.annotations.Test;
 
 @Test(alwaysRun = false)
-public class MTest2 {
-
-}
+public class MTest2 {}

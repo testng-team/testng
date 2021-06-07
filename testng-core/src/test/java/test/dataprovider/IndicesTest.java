@@ -1,5 +1,7 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
@@ -7,8 +9,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class IndicesTest extends SimpleBaseTest {
 
@@ -49,7 +49,7 @@ public class IndicesTest extends SimpleBaseTest {
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
     assertThat(listener.getSucceedMethodNames())
-            .containsExactly("testNameA(3)#testA", "testNameB(3)#testB");
+        .containsExactly("testNameA(3)#testA", "testNameB(3)#testB");
   }
 
   @Test(enabled = false, description = "KO https://github.com/cbeust/testng/issues/1253")
@@ -67,7 +67,6 @@ public class IndicesTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getFailedMethodNames()).isEmpty();
-    assertThat(listener.getSucceedMethodNames())
-            .containsExactly("testNameA(3)#testA");
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testNameA(3)#testA");
   }
 }

@@ -16,8 +16,13 @@ public class Issue188TestSample {
 
   @BeforeMethod
   public void logTime(ITestResult itr) {
-    String txt = Reporter.getCurrentTestResult().getTestContext().getName() + "_" + itr.getMethod().getQualifiedName();
-    timestamps.computeIfAbsent(System.currentTimeMillis(), k-> ConcurrentHashMap.newKeySet()).add(txt);
+    String txt =
+        Reporter.getCurrentTestResult().getTestContext().getName()
+            + "_"
+            + itr.getMethod().getQualifiedName();
+    timestamps
+        .computeIfAbsent(System.currentTimeMillis(), k -> ConcurrentHashMap.newKeySet())
+        .add(txt);
   }
 
   @Test
@@ -37,5 +42,4 @@ public class Issue188TestSample {
       Thread.currentThread().interrupt();
     }
   }
-
 }

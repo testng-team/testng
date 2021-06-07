@@ -1,13 +1,12 @@
 package org.testng.internal;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
-
-import java.util.List;
 import org.testng.xml.XmlTest;
 
 /**
@@ -20,7 +19,7 @@ public class RunInfo {
   private final Set<MethodSelectorDescriptor> m_methodSelectors = new TreeSet<>();
   private final Supplier<XmlTest> xmlTest;
 
-  public RunInfo(Supplier<XmlTest>  xmlTest) {
+  public RunInfo(Supplier<XmlTest> xmlTest) {
     this.xmlTest = xmlTest;
   }
 

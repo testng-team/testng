@@ -25,10 +25,7 @@ public class FactoryAnnotatedConstructorExample {
 
   @DataProvider(name = "dp")
   public static Object[][] getData() {
-    return new Object[][]{
-        {1},
-        {2}
-    };
+    return new Object[][] {{1}, {2}};
   }
 
   @Test

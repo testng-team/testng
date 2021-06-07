@@ -4,7 +4,6 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
-
 import testhelper.OutputDirectoryPatch;
 
 public class TestAfter {
@@ -13,7 +12,7 @@ public class TestAfter {
   public void testAfter() {
     TestNG tng = new TestNG();
     tng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    tng.setTestClasses(new Class[] { TestAfter1.class, TestAfter2.class });
+    tng.setTestClasses(new Class[] {TestAfter1.class, TestAfter2.class});
     tng.run();
     Assert.assertEquals(BaseAfter.m_afterCount, 1);
   }
@@ -27,4 +26,3 @@ public class TestAfter {
 }
 
 /////
-

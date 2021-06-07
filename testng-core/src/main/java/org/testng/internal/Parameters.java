@@ -5,9 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-
 import javax.annotation.Nullable;
-
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
@@ -18,38 +16,35 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.annotations.*;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.invokers.ParameterHolder;
-import org.testng.internal.invokers.ParameterHolder.ParameterOrigin;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
 import org.testng.internal.invokers.MethodInvocationHelper;
+import org.testng.internal.invokers.ParameterHolder;
+import org.testng.internal.invokers.ParameterHolder.ParameterOrigin;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.IObjectDispenser;
+import org.testng.internal.objects.pojo.BasicAttributes;
+import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.reflect.DataProviderMethodMatcher;
 import org.testng.internal.reflect.InjectableParameter;
 import org.testng.internal.reflect.MethodMatcher;
 import org.testng.internal.reflect.MethodMatcherContext;
 import org.testng.internal.reflect.Parameter;
 import org.testng.internal.reflect.ReflectionRecipes;
-import org.testng.internal.objects.Dispenser;
-import org.testng.internal.objects.IObjectDispenser;
-import org.testng.internal.objects.pojo.CreationAttributes;
-import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import org.testng.annotations.*;
 
-/**
- * Methods that bind parameters declared in testng.xml to actual values used to invoke methods.
- */
+/** Methods that bind parameters declared in testng.xml to actual values used to invoke methods. */
 public class Parameters {
-  @Deprecated
-  public static final String NULL_VALUE = org.testng.annotations.Parameters.NULL_VALUE;
+  @Deprecated public static final String NULL_VALUE = org.testng.annotations.Parameters.NULL_VALUE;
 
   private static final List<Class<? extends Annotation>> annotationList =
       Arrays.asList(
@@ -140,7 +135,8 @@ public class Parameters {
   }
 
   /**
-   * Creates the parameters needed for the specified <code>@Configuration</code> <code>Method</code>.
+   * Creates the parameters needed for the specified <code>@Configuration</code> <code>Method</code>
+   * .
    *
    * @param m the configuraton method
    * @param currentTestMethod the current @Test method or <code>null</code> if no @Test is available
@@ -177,8 +173,7 @@ public class Parameters {
   }
 
   private static Class<? extends Annotation> retrieveConfigAnnotation(Method m) {
-    return annotationList
-        .stream()
+    return annotationList.stream()
         .filter(annotation -> m.getAnnotation(annotation) != null)
         .findAny()
         .orElse(null);
@@ -503,7 +498,14 @@ public class Parameters {
 
       if (!Utils.isStringEmpty(dataProviderName)) {
         result =
-            findDataProvider(objectFactory, instance, clazz, finder, dataProviderName, dataProviderClass, context);
+            findDataProvider(
+                objectFactory,
+                instance,
+                clazz,
+                finder,
+                dataProviderName,
+                dataProviderClass,
+                context);
 
         if (null == result) {
           throw new TestNGException(
@@ -533,14 +535,14 @@ public class Parameters {
     // @Test(dataProvider) on a method
     ITestAnnotation result = AnnotationHelper.findTest(finder, m.getMethod());
     if (result != null) {
-      //We may have a class level @Test annotation on which there might have been a data provider defined
+      // We may have a class level @Test annotation on which there might have been a data provider
+      // defined
       // @Test(dataProvider) on a class
       ITestAnnotation classLevel = AnnotationHelper.findTest(finder, clazz.getRealClass());
       if (classLevel == null) {
         return result;
       }
       return merge(result, classLevel);
-
     }
     // @Factory(dataProvider) on a method
     IFactoryAnnotation factory = AnnotationHelper.findFactory(finder, m.getMethod());
@@ -549,17 +551,16 @@ public class Parameters {
     }
     // @Test(dataProvider) on a class
     return AnnotationHelper.findTest(finder, clazz.getRealClass());
-
   }
 
   private static IDataProvidable merge(ITestAnnotation methodLevel, ITestAnnotation classLevel) {
-    //If no data provider information was provided at class level, then exit
+    // If no data provider information was provided at class level, then exit
     if (isDataProviderClassEmpty(classLevel) && isDataProviderNameEmpty(classLevel)) {
       return methodLevel;
     }
 
-    if (Strings.isNullOrEmpty(methodLevel.getDataProvider()) &&
-        Strings.isNotNullAndNotEmpty(classLevel.getDataProvider())) {
+    if (Strings.isNullOrEmpty(methodLevel.getDataProvider())
+        && Strings.isNotNullAndNotEmpty(classLevel.getDataProvider())) {
       methodLevel.setDataProvider(classLevel.getDataProvider());
     }
     if (isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel)) {
@@ -569,7 +570,8 @@ public class Parameters {
   }
 
   private static boolean isDataProviderClassEmpty(ITestAnnotation annotation) {
-    return annotation.getDataProviderClass() == null || Object.class.equals(annotation.getDataProviderClass());
+    return annotation.getDataProviderClass() == null
+        || Object.class.equals(annotation.getDataProviderClass());
   }
 
   private static boolean isDataProviderNameEmpty(ITestAnnotation annotation) {
@@ -663,7 +665,9 @@ public class Parameters {
     // Else, use the deprecated syntax
     //
     else {
-      extraParameters = createParametersForMethod(m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
+      extraParameters =
+          createParametersForMethod(
+              m, types, extraOptionalValues, atName, new String[0], params, xmlSuite);
     }
 
     //
@@ -696,8 +700,7 @@ public class Parameters {
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
       Object fedInstance,
-      DataProviderHolder holder
-  ) {
+      DataProviderHolder holder) {
     return handleParameters(
         objectFactory,
         testMethod,
@@ -726,7 +729,8 @@ public class Parameters {
       XmlSuite xmlSuite,
       IAnnotationFinder annotationFinder,
       Object fedInstance,
-      DataProviderHolder holder, String annotationName) {
+      DataProviderHolder holder,
+      String annotationName) {
     /*
      * Do we have a @DataProvider? If yes, then we have several
      * sets of parameters for this method
@@ -759,14 +763,15 @@ public class Parameters {
 
       Iterator<Object[]> initParams;
       try {
-        initParams = MethodInvocationHelper.invokeDataProvider(
-            dataProviderMethod
-                .getInstance(), /* a test instance or null if the dataprovider is static*/
-            dataProviderMethod.getMethod(),
-            testMethod,
-            methodParams.context,
-            fedInstance,
-            annotationFinder);
+        initParams =
+            MethodInvocationHelper.invokeDataProvider(
+                dataProviderMethod
+                    .getInstance(), /* a test instance or null if the dataprovider is static*/
+                dataProviderMethod.getMethod(),
+                testMethod,
+                methodParams.context,
+                fedInstance,
+                annotationFinder);
       } catch (RuntimeException e) {
         for (IDataProviderListener each : holder.getListeners()) {
           each.onDataProviderFailure(testMethod, methodParams.context, e);
@@ -827,8 +832,10 @@ public class Parameters {
           };
 
       testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
-      for (IDataProviderInterceptor interceptor: holder.getInterceptors()) {
-        filteredParameters = interceptor.intercept(filteredParameters, dataProviderMethod, testMethod, methodParams.context);
+      for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
+        filteredParameters =
+            interceptor.intercept(
+                filteredParameters, dataProviderMethod, testMethod, methodParams.context);
       }
 
       return new ParameterHolder(

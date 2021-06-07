@@ -3,6 +3,11 @@ package org.testng.reporters.jq;
 import static org.testng.reporters.jq.BasePanel.C;
 import static org.testng.reporters.jq.BasePanel.D;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.internal.Utils;
@@ -10,12 +15,6 @@ import org.testng.log4testng.Logger;
 import org.testng.reporters.Files;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
 
 public class Main implements IReporter {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";

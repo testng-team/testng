@@ -20,16 +20,16 @@ public class Captor {
   }
 
   public static void reset() {
-//    System.out.println("@@PHOLSER RESETTING CAPTOR");
+    //    System.out.println("@@PHOLSER RESETTING CAPTOR");
     instance().captives = new ArrayList<>();
   }
 
-  public void capture( String aString ) {
-//    System.out.println("@@PHOLSER CAPTURING " + aString);
-    captives.add( aString );
+  public void capture(String aString) {
+    //    System.out.println("@@PHOLSER CAPTURING " + aString);
+    captives.add(aString);
   }
 
   public List<String> captives() {
-    return Collections.unmodifiableList( captives );
+    return Collections.unmodifiableList(captives);
   }
 }

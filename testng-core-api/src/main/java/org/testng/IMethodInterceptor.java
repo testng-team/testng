@@ -15,9 +15,9 @@ import java.util.List;
  * differently, but it can actually have any size (it can be empty, it can be of the same size as
  * the original list or it can contain more methods).
  *
- * <p>The {@link ITestContext} is passed in the <code>intercept</code> method so that implementers can
- * set user values (using {@link ITestContext#setAttribute(String, Object)}), which they can then
- * look up later while generating the reports.
+ * <p>The {@link ITestContext} is passed in the <code>intercept</code> method so that implementers
+ * can set user values (using {@link ITestContext#setAttribute(String, Object)}), which they can
+ * then look up later while generating the reports.
  *
  * @author cbeust
  */

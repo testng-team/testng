@@ -1,8 +1,8 @@
 package org.testng.internal.invokers;
 
-import static org.testng.internal.invokers.Invoker.CAN_RUN_FROM_CLASS;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+import static org.testng.internal.invokers.Invoker.CAN_RUN_FROM_CLASS;
 import static org.testng.internal.invokers.ParameterHandler.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -54,14 +54,17 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private final List<IClassListener> m_classListeners;
   private final boolean m_skipFailedInvocationCounts;
 
-  public TestInvoker(ITestResultNotifier m_notifier,
-                     ITestContext m_testContext, SuiteRunState m_suiteState,
-                     IConfiguration m_configuration, Collection<IInvokedMethodListener> m_invokedMethodListeners,
-                     DataProviderHolder holder, List<IClassListener> m_classListeners,
-                     boolean m_skipFailedInvocationCounts,
-                     ConfigInvoker invoker) {
-    super(m_notifier, m_invokedMethodListeners, m_testContext, m_suiteState, m_configuration
-    );
+  public TestInvoker(
+      ITestResultNotifier m_notifier,
+      ITestContext m_testContext,
+      SuiteRunState m_suiteState,
+      IConfiguration m_configuration,
+      Collection<IInvokedMethodListener> m_invokedMethodListeners,
+      DataProviderHolder holder,
+      List<IClassListener> m_classListeners,
+      boolean m_skipFailedInvocationCounts,
+      ConfigInvoker invoker) {
+    super(m_notifier, m_invokedMethodListeners, m_testContext, m_suiteState, m_configuration);
     this.holder = holder;
     this.m_classListeners = m_classListeners;
     this.m_skipFailedInvocationCounts = m_skipFailedInvocationCounts;
@@ -73,7 +76,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return m_notifier;
   }
 
-  public List<ITestResult> invokeTestMethods(ITestNGMethod testMethod,
+  public List<ITestResult> invokeTestMethods(
+      ITestNGMethod testMethod,
       ConfigurationGroupMethods groupMethods,
       Object instance,
       ITestContext context) {
@@ -106,16 +110,16 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
       testMethod.incrementCurrentInvocationCount();
-      GroupConfigMethodArguments args = new Builder()
-          .forTestMethod(testMethod)
-          .withGroupConfigMethods(groupMethods)
-          .forInstance(instance)
-          .withParameters(parameters)
-          .build();
+      GroupConfigMethodArguments args =
+          new Builder()
+              .forTestMethod(testMethod)
+              .withGroupConfigMethods(groupMethods)
+              .forInstance(instance)
+              .withParameters(parameters)
+              .build();
       this.invoker.invokeAfterGroupsConfigurations(args);
       return Collections.singletonList(result);
     }
-
 
     // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.
     if (testMethod.getInvocationCount() > 1 && testMethod.getThreadPoolSize() > 1) {
@@ -126,7 +130,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // FIXME: Is this correct?
     boolean onlyOne = testMethod.getThreadPoolSize() > 1 || timeOutInvocationCount > 0;
 
-
     ITestClass testClass = testMethod.getTestClass();
     ITestNGMethod[] beforeMethods =
         TestNgMethodUtils.filterBeforeTestMethods(testClass, CAN_RUN_FROM_CLASS);
@@ -134,15 +137,16 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         TestNgMethodUtils.filterAfterTestMethods(testClass, CAN_RUN_FROM_CLASS);
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
-    TestMethodArguments arguments = new TestMethodArguments.Builder()
-        .usingInstance(instance)
-        .forTestMethod(testMethod)
-        .withParameters(parameters)
-        .forTestClass(testClass)
-        .usingBeforeMethods(beforeMethods)
-        .usingAfterMethods(afterMethods)
-        .usingGroupMethods(groupMethods)
-        .build();
+    TestMethodArguments arguments =
+        new TestMethodArguments.Builder()
+            .usingInstance(instance)
+            .forTestMethod(testMethod)
+            .withParameters(parameters)
+            .forTestClass(testClass)
+            .usingBeforeMethods(beforeMethods)
+            .usingAfterMethods(afterMethods)
+            .usingGroupMethods(groupMethods)
+            .build();
     MethodInvocationAgent agent = new MethodInvocationAgent(arguments, this, context);
     while (invocationCount-- > 0) {
       invocationCount = agent.invoke(invocationCount);
@@ -167,8 +171,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
    * invoking @BeforeGroup, @BeforeMethod, @AfterMethod, @AfterGroup if it is the case for the
    * passed in @Test method.
    */
-  public ITestResult invokeTestMethod(TestMethodArguments arguments,
-      XmlSuite suite, FailureContext failureContext) {
+  public ITestResult invokeTestMethod(
+      TestMethodArguments arguments, XmlSuite suite, FailureContext failureContext) {
     // Mark this method with the current thread id
     arguments.getTestMethod().setId(ThreadUtil.currentThreadInfo());
 
@@ -176,7 +180,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   public FailureContext retryFailed(
-      TestMethodArguments arguments, List<ITestResult> result,
+      TestMethodArguments arguments,
+      List<ITestResult> result,
       int failureCount,
       ITestContext testContext) {
     FailureContext failure = new FailureContext();
@@ -188,31 +193,38 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       int verbose = testContext.getCurrentXmlTest().getVerbose();
       // TODO: This recreates all the parameters every time when we only need
       // one specific set. Should optimize it by only recreating the set needed.
-      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
+      ParameterHandler handler =
+          new ParameterHandler(
+              m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
 
-      ParameterBag bag = handler.createParameters(arguments.getTestMethod(),
-          arguments.getParameters(), allParameters, testContext);
+      ParameterBag bag =
+          handler.createParameters(
+              arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
       ITestResult errorResult = bag.errorResult;
 
-      if (errorResult != null ) {
+      if (errorResult != null) {
         Throwable cause = errorResult.getThrowable();
         String m = errorResult.getMethod().getMethodName();
-        String msg = String.format("Encountered problems when gathering parameter values for [%s]. Root cause: ", m);
+        String msg =
+            String.format(
+                "Encountered problems when gathering parameter values for [%s]. Root cause: ", m);
         throw new DataProviderInvocationException(msg, cause);
       }
       Object[] parameterValues =
-          Parameters.getParametersFromIndex(Objects.requireNonNull(bag.parameterHolder).parameters,
+          Parameters.getParametersFromIndex(
+              Objects.requireNonNull(bag.parameterHolder).parameters,
               arguments.getParametersIndex());
-      if (bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.NATIVE ||
-          bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER) {
+      if (bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.NATIVE
+          || bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER) {
         parameterValues = arguments.getParameterValues();
       }
 
-      TestMethodArguments tma = new TestMethodArguments.Builder()
-          .usingArguments(arguments)
-          .withParameterValues(parameterValues)
-          .withParameters(allParameters)
-          .build();
+      TestMethodArguments tma =
+          new TestMethodArguments.Builder()
+              .usingArguments(arguments)
+              .withParameterValues(parameterValues)
+              .withParameters(allParameters)
+              .build();
 
       result.add(invokeMethod(tma, testContext.getSuite().getXmlSuite(), failure));
     } while (!failure.instances.isEmpty());
@@ -227,8 +239,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ISuite suite = this.m_testContext.getSuite();
     Collection<IDataProviderListener> dpListeners = Sets.newHashSet(this.holder.getListeners());
     if (suite instanceof SuiteRunner) {
-      Collection<IDataProviderListener> listeners = ((SuiteRunner) suite)
-          .getDataProviderListeners();
+      Collection<IDataProviderListener> listeners =
+          ((SuiteRunner) suite).getDataProviderListeners();
       dpListeners.addAll(listeners);
     }
     return dpListeners;
@@ -271,8 +283,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       // Get all the methods that belong to the group depended upon
       for (String element : groups) {
         ITestNGMethod[] methods =
-            MethodGroupsHelper.findMethodsThatBelongToGroup(
-                testMethod, allTestMethods, element);
+            MethodGroupsHelper.findMethodsThatBelongToGroup(testMethod, allTestMethods, element);
         if (methods.length == 0 && !testMethod.ignoreMissingDependencies()) {
           // Group is missing
           return "Method " + testMethod + " depends on nonexistent group \"" + element + "\"";
@@ -315,44 +326,47 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     ITestClass testClass = testMethod.getTestClass();
     Object[] instances = testClass.getInstances(true);
     for (Object instance : instances) {
-      GroupConfigMethodArguments arguments = new GroupConfigMethodArguments.Builder()
-          .forTestMethod(testMethod)
-          .withGroupConfigMethods(groupMethods)
-          .withParameters(parameters)
-          .forInstance(instance)
-          .build();
+      GroupConfigMethodArguments arguments =
+          new GroupConfigMethodArguments.Builder()
+              .forTestMethod(testMethod)
+              .withGroupConfigMethods(groupMethods)
+              .withParameters(parameters)
+              .forInstance(instance)
+              .build();
       invoker.invokeBeforeGroupsConfigurations(arguments);
     }
 
-    long maxTimeOut = workers.parallelStream()
-        .map(IWorker::getTimeOut)
-        .max(Long::compare)
-        .orElse(-1L);
+    long maxTimeOut =
+        workers.parallelStream().map(IWorker::getTimeOut).max(Long::compare).orElse(-1L);
 
     ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut);
 
     //
     // Collect all the TestResults
     //
-    List<ITestResult> result = workers.parallelStream()
-        .filter(tmw -> tmw instanceof TestMethodWorker)
-        .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
-        .collect(Collectors.toList());
+    List<ITestResult> result =
+        workers
+            .parallelStream()
+            .filter(tmw -> tmw instanceof TestMethodWorker)
+            .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
+            .collect(Collectors.toList());
 
     for (Object instance : instances) {
-      GroupConfigMethodArguments arguments = new GroupConfigMethodArguments.Builder()
-          .forTestMethod(testMethod)
-          .withGroupConfigMethods(groupMethods)
-          .withParameters(parameters)
-          .forInstance(instance)
-          .build();
+      GroupConfigMethodArguments arguments =
+          new GroupConfigMethodArguments.Builder()
+              .forTestMethod(testMethod)
+              .withGroupConfigMethods(groupMethods)
+              .withParameters(parameters)
+              .forInstance(instance)
+              .build();
       invoker.invokeAfterGroupsConfigurations(arguments);
     }
 
     return result;
   }
 
-  private boolean failuresPresentInUpstreamDependency(ITestNGMethod testMethod, ITestNGMethod[] methods) {
+  private boolean failuresPresentInUpstreamDependency(
+      ITestNGMethod testMethod, ITestNGMethod[] methods) {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
       Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
@@ -368,26 +382,28 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         return true;
       }
 
-      Optional<ITestResult> found = results.parallelStream()
-          .filter(testResult -> !testResult.isSuccess())
-          .findAny();
+      Optional<ITestResult> found =
+          results.parallelStream().filter(testResult -> !testResult.isSuccess()).findAny();
       if (found.isPresent()) {
         return true;
       }
-
     }
     return false;
   }
 
   /** @return the test results that apply to one of the instances of the testMethod. */
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
-    return results.parallelStream()
-        .filter(r -> {
-          // Keep this instance if 1) It's on a different class or 2) It's on the same class
-          // and on the same instance
-          Object instance = r.getInstance() != null ? r.getInstance() : r.getMethod().getInstance();
-          return r.getTestClass() != method.getTestClass() || instance == method.getInstance();
-        }).collect(Collectors.toSet());
+    return results
+        .parallelStream()
+        .filter(
+            r -> {
+              // Keep this instance if 1) It's on a different class or 2) It's on the same class
+              // and on the same instance
+              Object instance =
+                  r.getInstance() != null ? r.getInstance() : r.getMethod().getInstance();
+              return r.getTestClass() != method.getTestClass() || instance == method.getInstance();
+            })
+        .collect(Collectors.toSet());
   }
 
   /** Invokes a method that has a specified threadPoolSize. */
@@ -409,7 +425,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       clonedMethod.setThreadPoolSize(1);
 
       MethodInstance mi = new MethodInstance(clonedMethod);
-      workers.add(new SingleTestMethodWorker(this, invoker, mi, parameters, testContext, m_classListeners));
+      workers.add(
+          new SingleTestMethodWorker(this, invoker, mi, parameters, testContext, m_classListeners));
     }
 
     return runWorkers(
@@ -439,7 +456,6 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
     runTestResultListener(r);
   }
-
 
   private static void setTestStatus(ITestResult result, int status) {
     // set the test to success as long as the testResult hasn't been changed by the user via
@@ -506,29 +522,34 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     testResult.setParameterIndex(arguments.getParametersIndex());
     testResult.setHost(m_testContext.getHost());
 
-    GroupConfigMethodArguments cfgArgs = new GroupConfigMethodArguments.Builder()
-        .forTestMethod(arguments.getTestMethod())
-        .withGroupConfigMethods(arguments.getGroupMethods())
-        .withParameters(arguments.getParameters())
-        .forInstance(arguments.getInstance())
-        .build();
+    GroupConfigMethodArguments cfgArgs =
+        new GroupConfigMethodArguments.Builder()
+            .forTestMethod(arguments.getTestMethod())
+            .withGroupConfigMethods(arguments.getGroupMethods())
+            .withParameters(arguments.getParameters())
+            .forInstance(arguments.getInstance())
+            .build();
     invoker.invokeBeforeGroupsConfigurations(cfgArgs);
 
     ITestNGMethod[] setupConfigMethods =
-        TestNgMethodUtils.filterSetupConfigurationMethods(arguments.getTestMethod(),
-            arguments.getBeforeMethods());
+        TestNgMethodUtils.filterSetupConfigurationMethods(
+            arguments.getTestMethod(), arguments.getBeforeMethods());
     runConfigMethods(arguments, suite, testResult, setupConfigMethods);
 
     long startTime = System.currentTimeMillis();
     InvokedMethod invokedMethod = new InvokedMethod(startTime, testResult);
 
-    if (!failureContext.representsRetriedMethod && invoker.hasConfigurationFailureFor(
-        arguments.getTestMethod(), arguments.getTestMethod().getGroups() ,
-        arguments.getTestClass(),
-        arguments.getInstance())) {
-      Throwable exception = ExceptionUtils.getExceptionDetails(m_testContext,
-          arguments.getInstance());
-      ITestResult result = registerSkippedTestResult(arguments.getTestMethod(), System.currentTimeMillis(), exception, testResult);
+    if (!failureContext.representsRetriedMethod
+        && invoker.hasConfigurationFailureFor(
+            arguments.getTestMethod(),
+            arguments.getTestMethod().getGroups(),
+            arguments.getTestClass(),
+            arguments.getInstance())) {
+      Throwable exception =
+          ExceptionUtils.getExceptionDetails(m_testContext, arguments.getInstance());
+      ITestResult result =
+          registerSkippedTestResult(
+              arguments.getTestMethod(), System.currentTimeMillis(), exception, testResult);
       result.setParameters(testResult.getParameters());
       TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
@@ -545,9 +566,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Create the ExtraOutput for this method
     //
     try {
-      testResult = TestResult
-          .newTestResultFrom(testResult, arguments.getTestMethod(), m_testContext, System.currentTimeMillis());
-      //Recreate the invoked method object again, because we now have a new test result object
+      testResult =
+          TestResult.newTestResultFrom(
+              testResult, arguments.getTestMethod(), m_testContext, System.currentTimeMillis());
+      // Recreate the invoked method object again, because we now have a new test result object
       invokedMethod = new InvokedMethod(invokedMethod.getDate(), testResult);
 
       testResult.setStatus(ITestResult.STARTED);
@@ -588,18 +610,25 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (MethodHelper.calculateTimeOut(arguments.getTestMethod()) <= 0) {
         if (hookableInstance != null) {
           MethodInvocationHelper.invokeHookable(
-              arguments.getInstance(), arguments.getParameterValues(), hookableInstance, thisMethod, testResult);
+              arguments.getInstance(),
+              arguments.getParameterValues(),
+              hookableInstance,
+              thisMethod,
+              testResult);
         } else {
           // Not a IHookable, invoke directly
-          MethodInvocationHelper.invokeMethod(thisMethod, arguments.getInstance(),
-              arguments.getParameterValues());
+          MethodInvocationHelper.invokeMethod(
+              thisMethod, arguments.getInstance(), arguments.getParameterValues());
         }
         setTestStatus(testResult, ITestResult.SUCCESS);
       } else {
         // Method with a timeout
         MethodInvocationHelper.invokeWithTimeout(
-            arguments.getTestMethod(), arguments.getInstance(),
-            arguments.getParameterValues(), testResult, hookableInstance);
+            arguments.getTestMethod(),
+            arguments.getInstance(),
+            arguments.getParameterValues(),
+            testResult,
+            hookableInstance);
       }
     } catch (InvocationTargetException ite) {
       testResult.setThrowable(ite.getCause());
@@ -624,14 +653,17 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult.setEndMillis(System.currentTimeMillis());
       ExpectedExceptionsHolder expectedExceptionClasses =
           new ExpectedExceptionsHolder(
-              annotationFinder(), arguments.getTestMethod(), new RegexpExpectedExceptionsHolder(annotationFinder(),
-              arguments.getTestMethod()));
+              annotationFinder(),
+              arguments.getTestMethod(),
+              new RegexpExpectedExceptionsHolder(annotationFinder(), arguments.getTestMethod()));
       StatusHolder holder =
-          considerExceptions(arguments.getTestMethod(), testResult, expectedExceptionClasses, failureContext);
+          considerExceptions(
+              arguments.getTestMethod(), testResult, expectedExceptionClasses, failureContext);
       int statusBeforeListenerInvocation = testResult.getStatus();
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       boolean wasResultUnaltered = statusBeforeListenerInvocation == testResult.getStatus();
-      handleInvocationResults(arguments.getTestMethod(), testResult, failureContext, holder, wasResultUnaltered);
+      handleInvocationResults(
+          arguments.getTestMethod(), testResult, failureContext, holder, wasResultUnaltered);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -639,14 +671,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       // that it has parameters, so might have to revisit this if bugs get reported
       // for the case where this method has parameters that don't come from a data
       // provider
-      if (testResult.getThrowable() != null &&
-              (arguments.getParameterValues().length > 0 || testResult.getFactoryParameters().length > 0)) {
+      if (testResult.getThrowable() != null
+          && (arguments.getParameterValues().length > 0
+              || testResult.getFactoryParameters().length > 0)) {
         int parametersIndex = arguments.getParametersIndex();
         if (null != testResult.getMethod().getFactoryMethodParamsInfo()) {
           parametersIndex = testResult.getMethod().getFactoryMethodParamsInfo().getIndex();
         }
-        arguments.getTestMethod()
-                .addFailedInvocationNumber(parametersIndex);
+        arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
       }
 
       //
@@ -658,8 +690,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       collectResults(arguments.getTestMethod(), testResult);
 
-      runAfterGroupsConfigurations(
-          arguments, suite, testResult);
+      runAfterGroupsConfigurations(arguments, suite, testResult);
 
       // Reset the test result last. If we do this too early, Reporter.log()
       // invocations from listeners will be discarded
@@ -669,41 +700,46 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return testResult;
   }
 
-  private void runAfterGroupsConfigurations(TestMethodArguments arguments,
-      XmlSuite suite, TestResult testResult) {
+  private void runAfterGroupsConfigurations(
+      TestMethodArguments arguments, XmlSuite suite, TestResult testResult) {
     ITestNGMethod[] teardownConfigMethods =
-        TestNgMethodUtils.filterTeardownConfigurationMethods(arguments.getTestMethod(),
-            arguments.getAfterMethods());
+        TestNgMethodUtils.filterTeardownConfigurationMethods(
+            arguments.getTestMethod(), arguments.getAfterMethods());
     runConfigMethods(arguments, suite, testResult, teardownConfigMethods);
 
-    GroupConfigMethodArguments grpArgs = new GroupConfigMethodArguments.Builder()
-        .forTestMethod(arguments.getTestMethod())
-        .withGroupConfigMethods(arguments.getGroupMethods())
-        .withParameters(arguments.getParameters())
-        .forInstance(arguments.getInstance())
-        .build();
+    GroupConfigMethodArguments grpArgs =
+        new GroupConfigMethodArguments.Builder()
+            .forTestMethod(arguments.getTestMethod())
+            .withGroupConfigMethods(arguments.getGroupMethods())
+            .withParameters(arguments.getParameters())
+            .forInstance(arguments.getInstance())
+            .build();
 
     invoker.invokeAfterGroupsConfigurations(grpArgs);
   }
 
-  private void runConfigMethods(TestMethodArguments arguments,
-      XmlSuite suite, TestResult testResult, ITestNGMethod[] teardownConfigMethods) {
-    ConfigMethodArguments cfgArgs = new ConfigMethodArguments.Builder()
-        .forTestClass(arguments.getTestClass())
-        .forTestMethod(arguments.getTestMethod())
-        .usingConfigMethodsAs(teardownConfigMethods)
-        .forSuite(suite)
-        .usingParameters(arguments.getParameters())
-        .usingParameterValues(arguments.getParameterValues())
-        .usingInstance(arguments.getInstance())
-        .withResult(testResult)
-        .build();
+  private void runConfigMethods(
+      TestMethodArguments arguments,
+      XmlSuite suite,
+      TestResult testResult,
+      ITestNGMethod[] teardownConfigMethods) {
+    ConfigMethodArguments cfgArgs =
+        new ConfigMethodArguments.Builder()
+            .forTestClass(arguments.getTestClass())
+            .forTestMethod(arguments.getTestMethod())
+            .usingConfigMethodsAs(teardownConfigMethods)
+            .forSuite(suite)
+            .usingParameters(arguments.getParameters())
+            .usingParameterValues(arguments.getParameterValues())
+            .usingInstance(arguments.getInstance())
+            .withResult(testResult)
+            .build();
     invoker.invokeConfigurations(cfgArgs);
   }
 
   @Override
-  public ITestResult registerSkippedTestResult(ITestNGMethod testMethod, long start,
-      Throwable throwable, ITestResult source) {
+  public ITestResult registerSkippedTestResult(
+      ITestNGMethod testMethod, long start, Throwable throwable, ITestResult source) {
     ITestResult result =
         TestResult.newEndTimeAwareTestResult(testMethod, m_testContext, throwable, start);
     if (source != null) {
@@ -773,7 +809,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     private final ITestInvoker invoker;
     private final TestMethodArguments arguments;
 
-    public MethodInvocationAgent(TestMethodArguments arguments, ITestInvoker invoker, ITestContext context) {
+    public MethodInvocationAgent(
+        TestMethodArguments arguments, ITestInvoker invoker, ITestContext context) {
       this.arguments = arguments;
       this.invoker = invoker;
       this.context = context;
@@ -789,14 +826,20 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       Map<String, String> allParameterNames = Maps.newHashMap();
       int verbose = context.getCurrentXmlTest().getVerbose();
-      ParameterHandler handler = new ParameterHandler(m_configuration.getObjectFactory(), annotationFinder(), buildDataProviderHolder(), verbose);
+      ParameterHandler handler =
+          new ParameterHandler(
+              m_configuration.getObjectFactory(),
+              annotationFinder(),
+              buildDataProviderHolder(),
+              verbose);
 
-      ParameterBag bag = handler.createParameters(
-          arguments.getTestMethod(),
-          arguments.getParameters(),
-          allParameterNames,
-          context,
-          arguments.getInstance());
+      ParameterBag bag =
+          handler.createParameters(
+              arguments.getTestMethod(),
+              arguments.getParameters(),
+              allParameterNames,
+              context,
+              arguments.getInstance());
 
       if (bag.hasErrors()) {
         ITestResult tr = bag.errorResult;
@@ -813,25 +856,39 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         return invocationCount.get();
       }
 
-      Iterator<Object[]> allParameterValues = Objects.requireNonNull(bag.parameterHolder).parameters;
+      Iterator<Object[]> allParameterValues =
+          Objects.requireNonNull(bag.parameterHolder).parameters;
 
       try {
 
         IMethodRunner runner = this.invoker.getRunner();
         if (bag.runInParallel()) {
-          List<ITestResult> parallel = runner.runInParallel(arguments,
-              this.invoker, context, invocationCount, failure,
-              allParameterValues, m_skipFailedInvocationCounts);
+          List<ITestResult> parallel =
+              runner.runInParallel(
+                  arguments,
+                  this.invoker,
+                  context,
+                  invocationCount,
+                  failure,
+                  allParameterValues,
+                  m_skipFailedInvocationCounts);
           result.addAll(parallel);
         } else {
-          List<ITestResult> sequential = runner.runInSequence(arguments,
-              this.invoker, context, invocationCount, failure,
-              allParameterValues, m_skipFailedInvocationCounts);
+          List<ITestResult> sequential =
+              runner.runInSequence(
+                  arguments,
+                  this.invoker,
+                  context,
+                  invocationCount,
+                  failure,
+                  allParameterValues,
+                  m_skipFailedInvocationCounts);
           result.addAll(sequential);
         }
       } catch (Throwable cause) {
         ITestResult r =
-            TestResult.newEndTimeAwareTestResult(arguments.getTestMethod(), m_testContext, cause, start);
+            TestResult.newEndTimeAwareTestResult(
+                arguments.getTestMethod(), m_testContext, cause, start);
         r.setStatus(TestResult.FAILURE);
         result.add(r);
         runTestResultListener(r);
@@ -839,6 +896,5 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       } // catch
       return invocationCount.get();
     }
-
   }
 }

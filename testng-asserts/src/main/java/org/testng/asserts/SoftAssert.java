@@ -1,7 +1,6 @@
 package org.testng.asserts;
 
 import java.util.Map;
-
 import org.testng.collections.Maps;
 
 /**

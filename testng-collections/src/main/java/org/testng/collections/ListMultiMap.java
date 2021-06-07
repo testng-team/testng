@@ -13,5 +13,4 @@ public class ListMultiMap<K, V> extends MultiMap<K, V, List<V>> {
   protected List<V> createValue() {
     return Lists.newArrayList();
   }
-
 }

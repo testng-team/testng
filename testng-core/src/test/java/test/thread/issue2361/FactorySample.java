@@ -6,10 +6,6 @@ public class FactorySample {
 
   @Factory
   public static Object[] newInstances() {
-    return new Object[] {
-        new ChildClassExample(),
-        new AnotherChildClassExample()
-    };
+    return new Object[] {new ChildClassExample(), new AnotherChildClassExample()};
   }
-
 }

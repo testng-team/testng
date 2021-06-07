@@ -4,10 +4,7 @@ import org.testng.SkipException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-
-/**
- * This class/interface
- */
+/** This class/interface */
 public class ConfigurationSkippedExceptionTest {
   @BeforeMethod
   public void configurationLevelSkipException() {
@@ -15,6 +12,5 @@ public class ConfigurationSkippedExceptionTest {
   }
 
   @Test
-  public void dummyTest() {
-  }
+  public void dummyTest() {}
 }

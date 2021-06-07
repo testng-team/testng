@@ -11,5 +11,4 @@ public class BaseClassWithFullDefinitionOfDataProviderInTestMethod {
     Assert.assertNotNull(place);
     Assert.assertNotNull(city);
   }
-
 }

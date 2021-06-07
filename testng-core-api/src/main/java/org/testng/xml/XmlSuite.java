@@ -4,13 +4,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.testng.ITestObjectFactory;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.internal.objects.InstanceCreator;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
+import org.testng.internal.objects.InstanceCreator;
 import org.testng.util.Strings;
 
 /** This class describes the tag &lt;suite&gt; in testng.xml. */
@@ -39,8 +38,11 @@ public class XmlSuite implements Cloneable {
       Utils.log(
           XmlSuite.class.getSimpleName(),
           1,
-          "[WARN] 'parallel' value '" + value +
-              "' is no longer valid, defaulting to '" + mode + "'.");
+          "[WARN] 'parallel' value '"
+              + value
+              + "' is no longer valid, defaulting to '"
+              + mode
+              + "'.");
     }
 
     public static XmlSuite.ParallelMode getValidParallel(String parallel) {
@@ -228,8 +230,8 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * @deprecated - This method stands deprecated as of TestNG <code>7.5.0</code>.
-   * Use {@link XmlSuite#getObjectFactoryClass()} instead.
+   * @deprecated - This method stands deprecated as of TestNG <code>7.5.0</code>. Use {@link
+   *     XmlSuite#getObjectFactoryClass()} instead.
    */
   @Deprecated
   public ITestObjectFactory getObjectFactory() {
@@ -403,8 +405,8 @@ public class XmlSuite implements Cloneable {
 
   /**
    * @return the parameters that apply to tests in this suite.<br>
-   * The set of parameters for a suite is appended with parameters from the parent suite. Also, parameters
-   * from this suite override the same named parameters from the parent suite.
+   *     The set of parameters for a suite is appended with parameters from the parent suite. Also,
+   *     parameters from this suite override the same named parameters from the parent suite.
    */
   public Map<String, String> getParameters() {
     return m_parameters;
@@ -706,7 +708,8 @@ public class XmlSuite implements Cloneable {
 
     result = prime * result + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    result = prime * result + ((m_objectFactoryClass == null) ? 0 : m_objectFactoryClass.hashCode());
+    result =
+        prime * result + ((m_objectFactoryClass == null) ? 0 : m_objectFactoryClass.hashCode());
     result = prime * result + ((m_parallel == null) ? 0 : m_parallel.hashCode());
     //    result = prime * result
     //        + ((m_parameters == null) ? 0 : m_parameters.hashCode());

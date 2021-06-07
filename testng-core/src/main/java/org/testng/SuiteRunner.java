@@ -1,16 +1,20 @@
 package org.testng;
 
-import com.google.inject.Injector;
+import static org.testng.internal.Utils.isStringBlank;
 
+import com.google.inject.Injector;
+import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.*;
+import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ConfigMethodArguments;
 import org.testng.internal.invokers.ConfigMethodArguments.Builder;
-import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.InvokedMethod;
@@ -20,12 +24,6 @@ import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.*;
-
-import static org.testng.internal.Utils.isStringBlank;
 
 /**
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one suite. The test
@@ -38,7 +36,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private final Map<String, ISuiteResult> suiteResults =
       Collections.synchronizedMap(Maps.newLinkedHashMap());
   private final List<TestRunner> testRunners = Lists.newArrayList();
-  private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners = Maps.newConcurrentMap();
+  private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners =
+      Maps.newConcurrentMap();
 
   private String outputDir;
   private XmlSuite xmlSuite;
@@ -110,7 +109,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collection<IInvokedMethodListener> invokedMethodListeners,
       Collection<ITestListener> testListeners,
       Collection<IClassListener> classListeners,
-      DataProviderHolder holder, Comparator<ITestNGMethod> comparator) {
+      DataProviderHolder holder,
+      Comparator<ITestNGMethod> comparator) {
     init(
         configuration,
         suite,
@@ -135,7 +135,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collection<IInvokedMethodListener> invokedMethodListener,
       Collection<ITestListener> testListeners,
       Collection<IClassListener> classListeners,
-      DataProviderHolder attribs, Comparator<ITestNGMethod> comparator) {
+      DataProviderHolder attribs,
+      Comparator<ITestNGMethod> comparator) {
     this.holder.merge(attribs);
     this.configuration = configuration;
     xmlSuite = suite;
@@ -147,43 +148,45 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (suite.getObjectFactoryClass() == null) {
       objectFactory = configuration.getObjectFactory();
     } else {
-      boolean create = !configuration.getObjectFactory().getClass().equals(suite.getObjectFactoryClass());
+      boolean create =
+          !configuration.getObjectFactory().getClass().equals(suite.getObjectFactoryClass());
       final ITestObjectFactory suiteObjectFactory;
       if (create) {
-        //Dont keep creating the object factory repeatedly since our current object factory
-        //Was already created based off of a suite level object factory.
+        // Dont keep creating the object factory repeatedly since our current object factory
+        // Was already created based off of a suite level object factory.
         suiteObjectFactory = objectFactory.newInstance(suite.getObjectFactoryClass());
       } else {
         suiteObjectFactory = configuration.getObjectFactory();
       }
-      objectFactory = new ITestObjectFactory() {
-        @Override
-        public <T> T newInstance(Class<T> cls, Object... parameters) {
-          try {
-            return configuration.getObjectFactory().newInstance(cls, parameters);
-          } catch (Exception e) {
-            return suiteObjectFactory.newInstance(cls, parameters);
-          }
-        }
+      objectFactory =
+          new ITestObjectFactory() {
+            @Override
+            public <T> T newInstance(Class<T> cls, Object... parameters) {
+              try {
+                return configuration.getObjectFactory().newInstance(cls, parameters);
+              } catch (Exception e) {
+                return suiteObjectFactory.newInstance(cls, parameters);
+              }
+            }
 
-        @Override
-        public <T> T newInstance(String clsName, Object... parameters) {
-          try {
-            return configuration.getObjectFactory().newInstance(clsName, parameters);
-          } catch (Exception e) {
-            return suiteObjectFactory.newInstance(clsName, parameters);
-          }
-        }
+            @Override
+            public <T> T newInstance(String clsName, Object... parameters) {
+              try {
+                return configuration.getObjectFactory().newInstance(clsName, parameters);
+              } catch (Exception e) {
+                return suiteObjectFactory.newInstance(clsName, parameters);
+              }
+            }
 
-        @Override
-        public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
-          try {
-            return configuration.getObjectFactory().newInstance(constructor, parameters);
-          } catch (Exception e) {
-            return suiteObjectFactory.newInstance(constructor, parameters);
-          }
-        }
-      };
+            @Override
+            public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
+              try {
+                return configuration.getObjectFactory().newInstance(constructor, parameters);
+              } catch (Exception e) {
+                return suiteObjectFactory.newInstance(constructor, parameters);
+              }
+            }
+          };
     }
     // Add our own IInvokedMethodListener
     invokedMethodListeners = Maps.newConcurrentMap();
@@ -229,7 +232,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       }
 
       testRunners.add(tr);
-
     }
   }
 
@@ -353,11 +355,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     //
     if (invoker != null) {
       if (!beforeSuiteMethods.values().isEmpty()) {
-        ConfigMethodArguments arguments = new Builder()
-            .usingConfigMethodsAs(beforeSuiteMethods.values())
-            .forSuite(xmlSuite)
-            .usingParameters(xmlSuite.getParameters())
-            .build();
+        ConfigMethodArguments arguments =
+            new Builder()
+                .usingConfigMethodsAs(beforeSuiteMethods.values())
+                .forSuite(xmlSuite)
+                .usingParameters(xmlSuite.getParameters())
+                .build();
         invoker.getConfigInvoker().invokeConfigurations(arguments);
       }
 
@@ -380,11 +383,12 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // Invoke afterSuite methods
       //
       if (!afterSuiteMethods.values().isEmpty()) {
-        ConfigMethodArguments arguments = new Builder()
-            .usingConfigMethodsAs(afterSuiteMethods.values())
-            .forSuite(xmlSuite)
-            .usingParameters(xmlSuite.getAllParameters())
-            .build();
+        ConfigMethodArguments arguments =
+            new Builder()
+                .usingConfigMethodsAs(afterSuiteMethods.values())
+                .forSuite(xmlSuite)
+                .usingParameters(xmlSuite.getAllParameters())
+                .build();
         invoker.getConfigInvoker().invokeConfigurations(arguments);
       }
     }
@@ -430,7 +434,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
    * Implement <suite parallel="tests">. Since this kind of parallelism happens at the suite level,
    * we need a special code path to execute it. All the other parallelism strategies are implemented
    * at the test level in TestRunner#createParallelWorkers (but since this method deals with just
-   * one &lt;test&gt; tag, it can't implement <suite parallel="tests">, which is why we're doing it here).
+   * one &lt;test&gt; tag, it can't implement <suite parallel="tests">, which is why we're doing it
+   * here).
    */
   private void runInParallelTestMode() {
     List<Runnable> tasks = Lists.newArrayList(testRunners.size());
@@ -439,11 +444,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
 
     ThreadUtil.execute(
-        "tests",
-        tasks,
-        xmlSuite.getThreadCount(),
-        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS)
-    );
+        "tests", tasks, xmlSuite.getThreadCount(), xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS));
   }
 
   private class SuiteWorker implements Runnable {
@@ -503,7 +504,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       this.holder.addInterceptor(interceptor);
     }
     if (listener instanceof ITestListener) {
-      for(TestRunner testRunner : testRunners) {
+      for (TestRunner testRunner : testRunners) {
         testRunner.addTestListener((ITestListener) listener);
       }
     }
@@ -619,8 +620,11 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
 
     @Override
-    public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners,
+    public TestRunner newTestRunner(
+        ISuite suite,
+        XmlTest test,
+        Collection<IInvokedMethodListener> listeners,
+        List<IClassListener> classListeners,
         DataProviderHolder holder) {
       boolean skip = skipFailedInvocationCounts;
       if (!skip) {
@@ -636,7 +640,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
               skip,
               listeners,
               classListeners,
-              comparator, holder);
+              comparator,
+              holder);
 
       if (useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
@@ -692,8 +697,11 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
 
     @Override
-    public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners,
+    public TestRunner newTestRunner(
+        ISuite suite,
+        XmlTest test,
+        Collection<IInvokedMethodListener> listeners,
+        List<IClassListener> classListeners,
         DataProviderHolder holder) {
       TestRunner testRunner = target.newTestRunner(suite, test, listeners, classListeners, holder);
       testRunner.addListener(new TextReporter(testRunner.getName(), TestRunner.getVerbose()));
@@ -772,18 +780,19 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   @Override
   public List<IInvokedMethod> getAllInvokedMethods() {
     return testRunners.stream()
-        .flatMap(tr -> {
-          Set<ITestResult> results = new HashSet<>();
-          results.addAll(tr.getConfigurationsScheduledForInvocation().getAllResults());
-          results.addAll(tr.getPassedConfigurations().getAllResults());
-          results.addAll(tr.getFailedConfigurations().getAllResults());
-          results.addAll(tr.getSkippedConfigurations().getAllResults());
-          results.addAll(tr.getPassedTests().getAllResults());
-          results.addAll(tr.getFailedTests().getAllResults());
-          results.addAll(tr.getFailedButWithinSuccessPercentageTests().getAllResults());
-          results.addAll(tr.getSkippedTests().getAllResults());
-          return results.stream();
-        })
+        .flatMap(
+            tr -> {
+              Set<ITestResult> results = new HashSet<>();
+              results.addAll(tr.getConfigurationsScheduledForInvocation().getAllResults());
+              results.addAll(tr.getPassedConfigurations().getAllResults());
+              results.addAll(tr.getFailedConfigurations().getAllResults());
+              results.addAll(tr.getSkippedConfigurations().getAllResults());
+              results.addAll(tr.getPassedTests().getAllResults());
+              results.addAll(tr.getFailedTests().getAllResults());
+              results.addAll(tr.getFailedButWithinSuccessPercentageTests().getAllResults());
+              results.addAll(tr.getSkippedTests().getAllResults());
+              return results.stream();
+            })
         .filter(tr -> tr.getMethod() instanceof IInvocationStatus)
         .filter(tr -> ((IInvocationStatus) tr.getMethod()).getInvocationTime() > 0)
         .map(tr -> new InvokedMethod(((IInvocationStatus) tr.getMethod()).getInvocationTime(), tr))

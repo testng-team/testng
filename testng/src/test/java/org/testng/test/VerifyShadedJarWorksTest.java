@@ -4,8 +4,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * The test does not look sophisticated, however it still verifies
- * that testng-all.jar works to a certain degree.
+ * The test does not look sophisticated, however it still verifies that testng-all.jar works to a
+ * certain degree.
  */
 public class VerifyShadedJarWorksTest {
   @Test

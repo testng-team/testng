@@ -11,5 +11,4 @@ public class DataProviderDefinitionCompletelyProvidedAtClassLevel {
     Assert.assertNotNull(place);
     Assert.assertNotNull(city);
   }
-
 }

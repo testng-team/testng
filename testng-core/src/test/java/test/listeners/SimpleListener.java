@@ -1,9 +1,8 @@
 package test.listeners;
 
+import java.util.List;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
-
-import java.util.List;
 
 public class SimpleListener extends TestListenerAdapter {
   public static List<Integer> m_list;

@@ -1,9 +1,8 @@
 package org.testng;
 
-import org.testng.xml.XmlTest;
-
 import java.util.Collection;
 import java.util.Date;
+import org.testng.xml.XmlTest;
 
 /**
  * This class defines a test context which contains all the information for a given test run. An

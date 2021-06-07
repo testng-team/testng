@@ -1,13 +1,12 @@
 package test.configuration.issue1753;
 
-import org.testng.*;
-import org.testng.collections.Maps;
-import org.testng.xml.XmlSuite;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.testng.*;
+import org.testng.collections.Maps;
+import org.testng.xml.XmlSuite;
 
 public class LocalReporter implements IReporter {
 
@@ -18,10 +17,7 @@ public class LocalReporter implements IReporter {
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
     suites.forEach(
         suite ->
-            suite
-                .getResults()
-                .values()
-                .stream()
+            suite.getResults().values().stream()
                 .flatMap(iSuiteResult -> extractSkippedResults(iSuiteResult).stream())
                 .forEach(this::extractAttributes));
   }

@@ -1,6 +1,9 @@
 package test.asserttests;
 
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertEqualsDeep;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertNotEqualsDeep;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,11 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertEqualsDeep;
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertNotEqualsDeep;
+import org.testng.annotations.Test;
 
 /** Tests different equality cases for nested collections and arrays. */
 public class ArrayEqualityAssertTest {
@@ -307,8 +306,7 @@ public class ArrayEqualityAssertTest {
   public void arrayInsideArrayAssertEquals() {
     int[][] array = new int[][] {new int[] {42}};
     int[][] arrayCopy = new int[][] {new int[] {42}};
-    assertEquals(
-        array, arrayCopy, "arrays inside arrays are compared by value in assertEquals");
+    assertEquals(array, arrayCopy, "arrays inside arrays are compared by value in assertEquals");
   }
 
   @Test

@@ -35,16 +35,16 @@ public class OverrideTest extends SimpleBaseTest {
   }
 
   private void runTest(String include, String exclude) {
-    File f = createTempFile(
-        TestHelper.SUITE_XML_HEADER
-        + "<suite name=\"S\">"
-        + "  <test name=\"T\">"
-        + "    <classes>"
-        + "      <class name=\"test.override.OverrideSampleTest\" />"
-        + "    </classes>"
-        + "  </test>"
-        + "</suite>"
-        );
+    File f =
+        createTempFile(
+            TestHelper.SUITE_XML_HEADER
+                + "<suite name=\"S\">"
+                + "  <test name=\"T\">"
+                + "    <classes>"
+                + "      <class name=\"test.override.OverrideSampleTest\" />"
+                + "    </classes>"
+                + "  </test>"
+                + "</suite>");
     TestNG tng = create();
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);

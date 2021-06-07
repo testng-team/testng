@@ -1,15 +1,12 @@
 package org.testng;
 
-import org.testng.internal.objects.InstanceCreator;
-import org.testng.log4testng.Logger;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.testng.internal.objects.InstanceCreator;
+import org.testng.log4testng.Logger;
 
-/**
- * Helper methods used by the Eclipse plug-in when converting tests from JUnit.
- */
+/** Helper methods used by the Eclipse plug-in when converting tests from JUnit. */
 @Deprecated
 // TODO move code into eclipse project
 public class ConversionUtils {

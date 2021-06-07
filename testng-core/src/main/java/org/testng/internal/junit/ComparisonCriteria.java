@@ -1,8 +1,7 @@
 package org.testng.internal.junit;
 
-import org.testng.AssertJUnit;
-
 import java.lang.reflect.Array;
+import org.testng.AssertJUnit;
 
 /**
  * Defines criteria for finding two items "equal enough". Concrete subclasses may demand exact

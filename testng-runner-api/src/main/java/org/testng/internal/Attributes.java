@@ -1,10 +1,9 @@
 package org.testng.internal;
 
-import org.testng.IAttributes;
-import org.testng.collections.Maps;
-
 import java.util.Map;
 import java.util.Set;
+import org.testng.IAttributes;
+import org.testng.collections.Maps;
 
 /** Simple implementation of IAttributes. */
 public class Attributes implements IAttributes {

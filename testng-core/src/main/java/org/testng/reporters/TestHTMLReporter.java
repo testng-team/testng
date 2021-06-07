@@ -1,5 +1,12 @@
 package org.testng.reporters;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
@@ -8,14 +15,6 @@ import org.testng.Reporter;
 import org.testng.TestRunner;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /** This class implements an HTML reporter for individual tests. */
 public class TestHTMLReporter implements ITestListener {

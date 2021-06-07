@@ -1,12 +1,11 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
 import org.testng.TestListenerAdapter;
 import org.testng.collections.Lists;
-
-import java.util.List;
 
 public class MethodMultiplyingInterceptor extends TestListenerAdapter
     implements IMethodInterceptor {

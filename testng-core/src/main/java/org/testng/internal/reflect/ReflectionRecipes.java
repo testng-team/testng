@@ -1,16 +1,15 @@
 package org.testng.internal.reflect;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.*;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.NoInjection;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlTest;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * Utility class to handle reflection.
@@ -191,8 +190,8 @@ public final class ReflectionRecipes {
    *
    * <p>Assuming upper case letters denote classes and corresponding lowercase its instances.
    * Classes {A,B,C...}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match or Classes
-   * {A,B,C[]}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match both of the above cases are
-   * equivalent.
+   * {A,B,C[]}, instances {a,b,c1,c2} ==&gt; check for {a,b,{c1,c2}} match both of the above cases
+   * are equivalent.
    *
    * @param classes array of class instances to check against.
    * @param args instances to be verified.

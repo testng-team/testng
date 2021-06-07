@@ -4,9 +4,7 @@ import java.util.Objects;
 import org.testng.ITestContext;
 import org.testng.internal.invokers.objects.GuiceContext;
 
-/**
- * Represents the parameters that are associated with object creation.
- */
+/** Represents the parameters that are associated with object creation. */
 public class CreationAttributes {
 
   private final BasicAttributes basic;
@@ -14,8 +12,7 @@ public class CreationAttributes {
   private final ITestContext context;
   private final GuiceContext suiteContext;
 
-  public CreationAttributes(ITestContext ctx, BasicAttributes basic,
-      DetailedAttributes detailed) {
+  public CreationAttributes(ITestContext ctx, BasicAttributes basic, DetailedAttributes detailed) {
     Objects.requireNonNull(ctx);
     this.basic = basic;
     this.detailed = detailed;

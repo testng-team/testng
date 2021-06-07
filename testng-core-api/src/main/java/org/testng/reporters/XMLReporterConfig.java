@@ -1,9 +1,8 @@
 package org.testng.reporters;
 
-import org.testng.ITestResult;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.testng.ITestResult;
 
 public class XMLReporterConfig implements IReporterConfig {
 

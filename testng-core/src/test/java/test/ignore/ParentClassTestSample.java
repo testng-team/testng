@@ -19,6 +19,5 @@ public class ParentClassTestSample {
     hook();
   }
 
-  protected void hook() {
-  }
+  protected void hook() {}
 }

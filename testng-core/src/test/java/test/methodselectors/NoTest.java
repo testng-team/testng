@@ -1,4 +1,3 @@
 package test.methodselectors;
 
-public @interface NoTest {
-}
+public @interface NoTest {}

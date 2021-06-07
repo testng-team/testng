@@ -1,20 +1,5 @@
 package org.testng.reporters;
 
-import org.testng.IReporter;
-import org.testng.ISuite;
-import org.testng.ISuiteResult;
-import org.testng.ITestContext;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.Reporter;
-import org.testng.collections.ListMultiMap;
-import org.testng.collections.SetMultiMap;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
-import org.testng.internal.Utils;
-import org.testng.xml.XmlSuite;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,6 +15,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestContext;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.collections.ListMultiMap;
+import org.testng.collections.Lists;
+import org.testng.collections.Maps;
+import org.testng.collections.SetMultiMap;
+import org.testng.collections.Sets;
+import org.testng.internal.Utils;
+import org.testng.xml.XmlSuite;
 
 public class JUnitReportReporter implements IReporter {
 

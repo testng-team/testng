@@ -12,19 +12,19 @@ public class GeneratedClassInGroupA {
   }
 
   @BeforeClass(groups = "A")
-  public void init() { }
+  public void init() {}
 
   @Test(groups = "A")
-  public void test1() { }
+  public void test1() {}
 
   @Test(groups = "A", dependsOnMethods = "test4")
-  public void test2() { }
+  public void test2() {}
 
   @Test(groups = "A")
-  public void test3() { }
+  public void test3() {}
 
   @Test(groups = "A", dependsOnMethods = "test3")
-  public void test4() { }
+  public void test4() {}
 
   @Override
   public String toString() {

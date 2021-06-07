@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -66,15 +65,18 @@ public class ConfigurationMethod extends BaseTestMethod {
       String[] afterGroups,
       boolean initialize,
       Object instance) {
-    super(objectFactory, com.getName(), com, annotationFinder,
+    super(
+        objectFactory,
+        com.getName(),
+        com,
+        annotationFinder,
         IParameterInfo.embeddedInstance(instance));
     if (initialize) {
       init();
     }
 
-    this.factoryMethodInfo = (instance instanceof IParameterInfo)
-        ? (IParameterInfo) instance
-        : null;
+    this.factoryMethodInfo =
+        (instance instanceof IParameterInfo) ? (IParameterInfo) instance : null;
 
     m_isBeforeSuiteConfiguration = isBeforeSuite;
     m_isAfterSuiteConfiguration = isAfterSuite;
@@ -114,7 +116,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterMethod,
       String[] beforeGroups,
       String[] afterGroups,
-      XmlTest xmlTest, Object instance) {
+      XmlTest xmlTest,
+      Object instance) {
     this(
         objectFactory,
         com,
@@ -146,12 +149,16 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterClass,
       boolean isBeforeMethod,
       boolean isAfterMethod,
-      XmlTest xmlTest, Object instance) {
+      XmlTest xmlTest,
+      Object instance) {
     List<ITestNGMethod> result = Lists.newArrayList();
     for (ITestNGMethod method : methods) {
       if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
-        String msg = "Detected a static method [" + method.getQualifiedName() + "()]. Static configuration methods can cause "
-            + " unexpected behavior.";
+        String msg =
+            "Detected a static method ["
+                + method.getQualifiedName()
+                + "()]. Static configuration methods can cause "
+                + " unexpected behavior.";
         Logger.getLogger(Configuration.class).warn(msg);
       }
 
@@ -170,7 +177,8 @@ public class ConfigurationMethod extends BaseTestMethod {
               isAfterMethod,
               new String[0],
               new String[0],
-              xmlTest, instance));
+              xmlTest,
+              instance));
     }
 
     return result.toArray(new ITestNGMethod[0]);
@@ -195,7 +203,8 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         false,
         false,
-        null, instance);
+        null,
+        instance);
   }
 
   public static ITestNGMethod[] createTestConfigurationMethods(
@@ -203,7 +212,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      XmlTest xmlTest, Object instance) {
+      XmlTest xmlTest,
+      Object instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -216,7 +226,8 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         false,
         false,
-        xmlTest, instance);
+        xmlTest,
+        instance);
   }
 
   public static ITestNGMethod[] createClassConfigurationMethods(
@@ -224,7 +235,8 @@ public class ConfigurationMethod extends BaseTestMethod {
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
       boolean isBefore,
-      XmlTest xmlTest, Object instance) {
+      XmlTest xmlTest,
+      Object instance) {
     return createMethods(
         objectFactory,
         methods,
@@ -237,7 +249,8 @@ public class ConfigurationMethod extends BaseTestMethod {
         !isBefore,
         false,
         false,
-        xmlTest, instance);
+        xmlTest,
+        instance);
   }
 
   public static ITestNGMethod[] createBeforeConfigurationMethods(
@@ -263,7 +276,8 @@ public class ConfigurationMethod extends BaseTestMethod {
               false,
               isBefore ? methods[i].getBeforeGroups() : new String[0],
               new String[0],
-              null, instance);
+              null,
+              instance);
     }
 
     return result;
@@ -277,21 +291,24 @@ public class ConfigurationMethod extends BaseTestMethod {
       Object instance) {
     return Arrays.stream(methods)
         .parallel()
-        .map(m -> new ConfigurationMethod(
-            objectFactory,
-            m.getConstructorOrMethod(),
-            annotationFinder,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            new String[0],
-            isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
-            null, instance))
+        .map(
+            m ->
+                new ConfigurationMethod(
+                    objectFactory,
+                    m.getConstructorOrMethod(),
+                    annotationFinder,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    new String[0],
+                    isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
+                    null,
+                    instance))
         .toArray(ITestNGMethod[]::new);
   }
 
@@ -314,7 +331,8 @@ public class ConfigurationMethod extends BaseTestMethod {
         false,
         isBefore,
         !isBefore,
-        xmlTest, instance);
+        xmlTest,
+        instance);
   }
 
   /** @return Returns the isAfterClassConfiguration. */
@@ -385,7 +403,8 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   private void init() {
-    IConfigurationAnnotation annotation = AnnotationHelper.findConfiguration(m_annotationFinder, m_method.getMethod());
+    IConfigurationAnnotation annotation =
+        AnnotationHelper.findConfiguration(m_annotationFinder, m_method.getMethod());
     if (annotation != null) {
       m_inheritGroupsFromTestClass = annotation.getInheritGroups();
       setEnabled(annotation.getEnabled());

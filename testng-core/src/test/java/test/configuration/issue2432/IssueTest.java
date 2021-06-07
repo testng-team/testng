@@ -1,9 +1,10 @@
 package test.configuration.issue2432;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
@@ -30,9 +31,13 @@ public class IssueTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     testng.addListener(listener);
     testng.run();
-    List<String> expected = Arrays.asList("prepareConfig", "uploadConfigToDatabase",
-        "verifyConfigurationAfterInstall", "prepareConfigForTest1", "test1");
+    List<String> expected =
+        Arrays.asList(
+            "prepareConfig",
+            "uploadConfigToDatabase",
+            "verifyConfigurationAfterInstall",
+            "prepareConfigForTest1",
+            "test1");
     assertThat(listener.getInvokedMethodNames()).containsExactlyElementsOf(expected);
   }
-
 }

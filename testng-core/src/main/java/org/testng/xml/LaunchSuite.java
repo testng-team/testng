@@ -2,10 +2,6 @@ package org.testng.xml;
 
 import static org.testng.internal.Utils.isStringNotBlank;
 
-import org.testng.collections.Lists;
-import org.testng.log4testng.Logger;
-import org.testng.reporters.XMLStringBuffer;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +11,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.testng.collections.Lists;
+import org.testng.log4testng.Logger;
+import org.testng.reporters.XMLStringBuffer;
 
 /**
  * This class is used to encapsulate a launch. Various synthetic XML files are created depending on

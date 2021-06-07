@@ -1,11 +1,10 @@
 package test.guice;
 
+import com.google.inject.Inject;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
-
-import com.google.inject.Inject;
 
 @Test
 @Guice(modules = GuiceTestModule.class)

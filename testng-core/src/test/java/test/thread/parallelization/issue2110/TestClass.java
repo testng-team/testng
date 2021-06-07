@@ -37,5 +37,4 @@ public class TestClass {
   public void test4() {
     threadIds.add(Thread.currentThread().getId());
   }
-
 }

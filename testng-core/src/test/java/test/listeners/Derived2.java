@@ -4,6 +4,5 @@ import org.testng.annotations.Test;
 
 class Derived2 extends BaseWithListener {
   @Test
-  public void s() {
-  }
+  public void s() {}
 }

@@ -1,5 +1,11 @@
 package org.testng.internal.invokers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderListener;
 import org.testng.ITestContext;
@@ -19,13 +25,6 @@ import org.testng.internal.paramhandler.ParameterizedSampleTestClass;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ParameterHandlerTest extends SimpleBaseTest {
   private ParameterHandler handler;
 
@@ -33,7 +32,8 @@ public class ParameterHandlerTest extends SimpleBaseTest {
   public void beforeClass() {
     Collection<IDataProviderListener> listeners = Collections.emptyList();
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
-    handler = new ParameterHandler(new ITestObjectFactory() {}, finder, new DataProviderHolder(), 0);
+    handler =
+        new ParameterHandler(new ITestObjectFactory() {}, finder, new DataProviderHolder(), 0);
   }
 
   @Test

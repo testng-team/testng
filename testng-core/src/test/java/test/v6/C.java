@@ -22,5 +22,4 @@ public class C {
 
   @AfterSuite
   public void afterSuite() {}
-
 }

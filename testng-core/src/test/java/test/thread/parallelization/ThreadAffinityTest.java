@@ -1,5 +1,7 @@
 package test.thread.parallelization;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -23,8 +25,6 @@ import test.thread.parallelization.issue1773.PriorityTestSample2;
 import test.thread.parallelization.issue2110.TestClass;
 import test.thread.parallelization.issue2321.TestMultipleInstance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class ThreadAffinityTest extends SimpleBaseTest {
   @BeforeClass
   public void setup() {
@@ -47,10 +47,15 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     Map<Class<?>, Set<Long>> map = LogGatheringListener.getLog().get("Test_1");
     SoftAssertions softly = new SoftAssertions();
     Arrays.stream(classes)
-        .forEach(each -> softly.assertThat(map.get(each))
-            .withFailMessage("All tests within " + each.getName()
-                + " should have run in the same thread")
-            .hasSize(1));
+        .forEach(
+            each ->
+                softly
+                    .assertThat(map.get(each))
+                    .withFailMessage(
+                        "All tests within "
+                            + each.getName()
+                            + " should have run in the same thread")
+                    .hasSize(1));
     softly.assertAll();
   }
 
@@ -65,12 +70,13 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     TestNG testng = create(xmlsuite);
     testng.run();
     SoftAssertions softly = new SoftAssertions();
-    for(String test : Arrays.asList("Test_1", "Test_2")) {
+    for (String test : Arrays.asList("Test_1", "Test_2")) {
       Map<Class<?>, Set<Long>> map = LogGatheringListener.getLog().get(test);
       for (Class<?> cls : testClasses) {
-        softly.assertThat(map.get(cls))
-            .withFailMessage("All tests within " + cls.getName()
-                + " should have run in the same thread")
+        softly
+            .assertThat(map.get(cls))
+            .withFailMessage(
+                "All tests within " + cls.getName() + " should have run in the same thread")
             .hasSize(1);
       }
     }
@@ -79,10 +85,7 @@ public class ThreadAffinityTest extends SimpleBaseTest {
 
   @DataProvider(name = "dp2")
   public Object[][] createTestData() {
-    return new Object[][] {
-            {XmlSuite.ParallelMode.NONE},
-            {XmlSuite.ParallelMode.CLASSES}
-    };
+    return new Object[][] {{XmlSuite.ParallelMode.NONE}, {XmlSuite.ParallelMode.CLASSES}};
   }
 
   @DataProvider(name = "dp1")
@@ -115,7 +118,6 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     testng.run();
     assertThat(TestClass.getThreadIds()).hasSize(1);
   }
-
 
   @AfterClass(alwaysRun = true)
   public void teardown() {

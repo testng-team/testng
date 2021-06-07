@@ -15,8 +15,7 @@ public class ResultListener implements IResultListener2 {
   }
 
   @Override
-  public void beforeConfiguration(ITestResult tr) {
-  }
+  public void beforeConfiguration(ITestResult tr) {}
 
   @Override
   public void onTestSuccess(ITestResult result) {

@@ -1,11 +1,10 @@
 package test.dependent;
 
+import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-
-import java.util.List;
 
 public class GroupByInstancesSampleTest {
   private String m_country;

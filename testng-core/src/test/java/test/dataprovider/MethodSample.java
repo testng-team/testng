@@ -1,10 +1,9 @@
 package test.dataprovider;
 
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 public class MethodSample {
 

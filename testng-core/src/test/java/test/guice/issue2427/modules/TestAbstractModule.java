@@ -1,8 +1,8 @@
 package test.guice.issue2427.modules;
 
+import com.google.inject.AbstractModule;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import com.google.inject.AbstractModule;
 
 abstract class TestAbstractModule extends AbstractModule {
   private final AtomicInteger counter;

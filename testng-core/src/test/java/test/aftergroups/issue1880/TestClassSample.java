@@ -12,12 +12,8 @@ public class TestClassSample {
   }
 
   @Test(groups = "123")
-  public void test() {
-
-  }
+  public void test() {}
 
   @AfterGroups(groups = "123", alwaysRun = true)
-  public void after() {
-  }
-
+  public void after() {}
 }

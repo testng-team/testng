@@ -1,13 +1,12 @@
 package test.expectedexceptions;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
 
 /** This class/interface */
 public class ParametersExceptionTest {

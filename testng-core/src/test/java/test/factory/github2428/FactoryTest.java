@@ -7,31 +7,21 @@ import org.testng.annotations.Test;
 
 public class FactoryTest {
 
-    int i;
+  int i;
 
-    @Factory(dataProvider = "dp")
-    public FactoryTest(int i) {
-        this.i = i;
-    }
+  @Factory(dataProvider = "dp")
+  public FactoryTest(int i) {
+    this.i = i;
+  }
 
-    @DataProvider(parallel = true)
-    public static Object[][] dp() {
-        return new Object[][] {
-                {5},
-                {4},
-                {12},
-                {9},
-                {2}
-        };
-    }
+  @DataProvider(parallel = true)
+  public static Object[][] dp() {
+    return new Object[][] {{5}, {4}, {12}, {9}, {2}};
+  }
 
-    @BeforeClass
-    public void beforeClassBody()  {
+  @BeforeClass
+  public void beforeClassBody() {}
 
-    }
-
-    @Test
-    public void testBody() {
-
-    }
+  @Test
+  public void testBody() {}
 }

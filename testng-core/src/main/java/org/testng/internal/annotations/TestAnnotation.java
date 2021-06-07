@@ -4,9 +4,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
 
-/**
- * An implementation of ITest
- */
+/** An implementation of ITest */
 public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
 
   private long m_invocationTimeOut = 0;

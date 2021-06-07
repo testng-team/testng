@@ -1,12 +1,12 @@
 package org.testng.internal.invokers;
 
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
+import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
+
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
-import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 
 /**
  * Hides complexity of calling methods of {@link IInvokedMethodListener}.
@@ -18,7 +18,6 @@ public class InvokedMethodListenerInvoker {
   private final InvokedMethodListenerMethod m_listenerMethod;
   private final ITestContext m_testContext;
   private final ITestResult m_testResult;
-
 
   /**
    * Creates a new invoker instance which can be used to call the specified {@code listenerMethod}
@@ -56,7 +55,7 @@ public class InvokedMethodListenerInvoker {
       listenerInstance.beforeInvocation(invokedMethod, m_testResult);
       listenerInstance.beforeInvocation(invokedMethod, m_testResult, m_testContext);
     }
-    if (this.m_listenerMethod == AFTER_INVOCATION){
+    if (this.m_listenerMethod == AFTER_INVOCATION) {
       listenerInstance.afterInvocation(invokedMethod, m_testResult);
       listenerInstance.afterInvocation(invokedMethod, m_testResult, m_testContext);
     }

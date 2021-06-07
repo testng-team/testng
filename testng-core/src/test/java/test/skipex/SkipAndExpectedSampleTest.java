@@ -8,5 +8,4 @@ public class SkipAndExpectedSampleTest {
   public void a2() {
     throw new SkipException("test");
   }
-
 }

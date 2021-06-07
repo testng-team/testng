@@ -1,12 +1,11 @@
 package org.testng.reporters.jq;
 
+import java.util.List;
 import org.testng.ISuite;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.util.Strings;
-
-import java.util.List;
 
 public class SuitePanel extends BasePanel {
 

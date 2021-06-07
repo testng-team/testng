@@ -5,7 +5,6 @@ import org.testng.Reporter;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
-
 @Listeners(MyExampleListener.class)
 public class TestClassExample {
 
@@ -14,5 +13,4 @@ public class TestClassExample {
     ITestResult result = Reporter.getCurrentTestResult();
     result.setAttribute("file", "issue2171.html");
   }
-
 }
