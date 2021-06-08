@@ -3,9 +3,12 @@ package test.guice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 
+import org.testng.Assert;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.guice.issue2343.Person;
 import test.guice.issue2343.SampleA;
@@ -17,6 +20,8 @@ import test.guice.issue2427.Test2;
 import test.guice.issue2427.modules.TestModuleOne;
 import test.guice.issue2427.modules.TestModuleTwo;
 import test.guice.issue2427.modules.TestParentConfigModule;
+
+import java.util.Collections;
 
 public class GuiceTest extends SimpleBaseTest {
 
@@ -76,5 +81,11 @@ public class GuiceTest extends SimpleBaseTest {
         TestParentConfigModule.counter.get(), 1, "TestParentModule configuration called times");
     assertEquals(TestModuleOne.counter.get(), 1, "TestModuleOne configuration called times");
     assertEquals(TestModuleTwo.counter.get(), 1, "TestModuleTwo configuration called times");
+  }
+
+  @Test
+  public void guiceParentModuleTest() {
+    InvokedMethodNameListener listener = runFromSuite("samples/parent-module-suite.xml");
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testService");
   }
 }

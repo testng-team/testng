@@ -3,7 +3,7 @@
 <suite name="parent-module-suite" parent-module="test.guice.GuiceParentModule">
   <test name="Guice">
     <classes>
-      <class name="test.guice.GuiceParentModuleTest" />
+      <class name="test.guice.GuiceParentModuleSample" />
     </classes>
   </test>
 </suite>

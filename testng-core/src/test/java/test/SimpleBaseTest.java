@@ -10,11 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 import org.testng.Assert;
 import org.testng.ITestNGMethod;
@@ -53,6 +49,19 @@ public class SimpleBaseTest {
 
   public static InvokedMethodNameListener run(XmlSuite... suites) {
     return run(false, suites);
+  }
+
+  public static InvokedMethodNameListener runFromSuite(String... suites) {
+    TestNG tng = create();
+    List<String> testSuites = new ArrayList<>();
+    for (String suite : suites) {
+      testSuites.add(getPathToResource(suite));
+    }
+    tng.setTestSuites(testSuites);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    tng.addListener(listener);
+    tng.run();
+    return listener;
   }
 
   public static InvokedMethodNameListener run(boolean skipConfiguration, XmlSuite... suites) {
