@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 
 @Test
 @Guice(modules = GuiceTestModule.class)
-public class GuiceParentModuleTest {
+public class GuiceParentModuleSample {
   @Inject MySession mySession;
   @Inject MyService myService;
   @Inject ITestContext context;
