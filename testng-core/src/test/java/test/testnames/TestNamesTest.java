@@ -15,7 +15,8 @@ public class TestNamesTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     tng.setTestNames(Collections.singletonList("testGroup2"));
-    tng.setTestSuites(Collections.singletonList(getPathToResource("samples/testnames/upstream-suite.xml")));
+    tng.setTestSuites(
+        Collections.singletonList(getPathToResource("samples/testnames/upstream-suite.xml")));
     tng.addListener((ITestNGListener) tla);
     tng.run();
     Assert.assertEquals(tla.getFailedTests().size(), 0);

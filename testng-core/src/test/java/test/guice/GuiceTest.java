@@ -3,8 +3,6 @@ package test.guice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 
-import org.testng.Assert;
-import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -20,8 +18,6 @@ import test.guice.issue2427.Test2;
 import test.guice.issue2427.modules.TestModuleOne;
 import test.guice.issue2427.modules.TestModuleTwo;
 import test.guice.issue2427.modules.TestParentConfigModule;
-
-import java.util.Collections;
 
 public class GuiceTest extends SimpleBaseTest {
 

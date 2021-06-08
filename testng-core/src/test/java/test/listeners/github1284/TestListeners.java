@@ -32,7 +32,8 @@ public class TestListeners extends SimpleBaseTest {
   public void verifyWithChildSuite() {
     TestNG testNG = create();
     testNG.setTestSuites(
-        Collections.singletonList(getPathToResource("samples/test/listeners/github1284/github1284.xml")));
+        Collections.singletonList(
+            getPathToResource("samples/test/listeners/github1284/github1284.xml")));
     testNG.run();
     Assert.assertEquals(testNG.getStatus(), 0);
   }

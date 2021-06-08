@@ -49,7 +49,8 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
   @Test
   public void xmlXmlSuite() {
     TestNG tng = create();
-    tng.setTestSuites(Collections.singletonList(getPathToResource("samples/methodselector-in-xml.xml")));
+    tng.setTestSuites(
+        Collections.singletonList(getPathToResource("samples/methodselector-in-xml.xml")));
     tng.addListener((ITestNGListener) m_tla);
     tng.run();
 

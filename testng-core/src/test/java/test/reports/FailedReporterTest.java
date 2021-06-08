@@ -61,7 +61,8 @@ public class FailedReporterTest extends SimpleBaseTest {
   public void testParameterPreservationWithFactory() throws IOException {
     final SuiteXmlParser parser = new SuiteXmlParser();
     final String testSuite = "src/test/resources/samples/xml/github2445/test-suite.xml";
-    final String expectedResult = "src/test/resources/samples/xml/github2445/expected-failed-report.xml";
+    final String expectedResult =
+        "src/test/resources/samples/xml/github2445/expected-failed-report.xml";
     final XmlSuite xmlSuite = parser.parse(testSuite, new FileInputStream(testSuite), true);
     final TestNG tng = create(xmlSuite);
 

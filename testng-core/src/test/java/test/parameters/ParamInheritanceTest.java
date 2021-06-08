@@ -23,7 +23,8 @@ public class ParamInheritanceTest extends SimpleBaseTest {
               + " during execution. This test makes sure we dont run into any NPEs")
   public void noNPEInCountingResults() {
     TestNG tng = create();
-    tng.setTestSuites(Arrays.asList(getPathToResource("samples/param-inheritance/parent-suite.xml")));
+    tng.setTestSuites(
+        Arrays.asList(getPathToResource("samples/param-inheritance/parent-suite.xml")));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);

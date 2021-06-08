@@ -35,7 +35,8 @@ public class DuplicateChildSuitesInitializationTest extends SimpleBaseTest {
   @Test
   public void checkDuplicateChildSuites() throws IOException {
     String path =
-        getPathToResource("samples/checksuitesinitialization/parent-suite-with-duplicate-child.xml");
+        getPathToResource(
+            "samples/checksuitesinitialization/parent-suite-with-duplicate-child.xml");
     Parser parser = new Parser(path);
     List<XmlSuite> suites = parser.parseToList();
     XmlSuite rootSuite = suites.get(0);
