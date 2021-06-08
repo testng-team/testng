@@ -137,7 +137,7 @@ public class FailurePolicyTest {
           OutputDirectoryPatch.getOutputDirectory(),
           "-configfailurepolicy",
           "skip",
-          getPathToResource("testng-configfailure.xml")
+          getPathToResource("samples/testng-configfailure.xml")
         };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);
@@ -155,7 +155,7 @@ public class FailurePolicyTest {
           OutputDirectoryPatch.getOutputDirectory(),
           "-configfailurepolicy",
           "continue",
-          getPathToResource("testng-configfailure.xml")
+          getPathToResource("samples/testng-configfailure.xml")
         };
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG.privateMain(argv, tla);

@@ -17,13 +17,13 @@ public class CheckTestNamesTest extends SimpleBaseTest {
   /** Child suites and same suite has two tests with same name */
   @Test
   public void checkWithChildSuites() {
-    runSuite("sanitycheck/test-a.xml");
+    runSuite("samples/sanitycheck/test-a.xml");
   }
 
   /** Simple suite with two tests with same name */
   @Test
   public void checkWithoutChildSuites() {
-    runSuite("sanitycheck/test1.xml");
+    runSuite("samples/sanitycheck/test1.xml");
   }
 
   private void runSuite(String suitePath) {
@@ -48,7 +48,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
   public void checkNoError() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    String testngXmlPath = getPathToResource("sanitycheck/test2.xml");
+    String testngXmlPath = getPathToResource("samples/sanitycheck/test2.xml");
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
@@ -60,7 +60,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
   public void checkNoErrorWtihChildSuites() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    String testngXmlPath = getPathToResource("sanitycheck/test-b.xml");
+    String testngXmlPath = getPathToResource("samples/sanitycheck/test-b.xml");
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();

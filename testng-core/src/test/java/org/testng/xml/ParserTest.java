@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 public class ParserTest {
 
-  private static final String XML_FILE_NAME = "src/test/resources/a.xml";
+  private static final String XML_FILE_NAME = "src/test/resources/samples/a.xml";
 
   @Test(dataProvider = "dp")
   public void testParsing(String file) throws Exception {

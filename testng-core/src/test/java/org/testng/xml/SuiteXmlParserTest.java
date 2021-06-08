@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 
 public class SuiteXmlParserTest {
 
-  private static final File PARENT = new File(getPathToResource("xml"));
+  private static final File PARENT = new File(getPathToResource("samples/xml"));
 
   @DataProvider
   private static Object[][] dp() {

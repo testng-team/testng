@@ -44,11 +44,11 @@ public class JarCreator {
 
   private static String[] getResources() {
     return new String[] {
-      "jarfileutils/testng-tests.xml",
-      "jarfileutils/child.xml",
-      "jarfileutils/child/child.xml",
-      "jarfileutils/child/childofchild/childofchild.xml",
-      "jarfileutils/childofchild/childofchild.xml"
+      "samples/jarfileutils/testng-tests.xml",
+      "samples/jarfileutils/child.xml",
+      "samples/jarfileutils/child/child.xml",
+      "samples/jarfileutils/child/childofchild/childofchild.xml",
+      "samples/jarfileutils/childofchild/childofchild.xml"
     };
   }
 }

@@ -12,7 +12,7 @@ public class ExecutionListenerAndSuiteListenerTest extends SimpleBaseTest {
 
   @Test
   public void executionListenerAndSuiteListenerTest() {
-    String suiteFile = getPathToResource("executionlistenersingletoncheck/parent.xml");
+    String suiteFile = getPathToResource("samples/executionlistenersingletoncheck/parent.xml");
     List<XmlSuite> suites = getSuites(suiteFile);
     TestNG testng = new TestNG();
     testng.setXmlSuites(suites);

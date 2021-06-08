@@ -20,7 +20,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
   @Test
   public void serviceLoaderShouldWork() {
     TestNG tng = create(ServiceLoaderSampleTest.class);
-    URL url = getClass().getClassLoader().getResource("serviceloader.jar");
+    URL url = getClass().getClassLoader().getResource("samples/serviceloader.jar");
     URLClassLoader ucl = URLClassLoader.newInstance(new URL[] {url});
     tng.setServiceLoaderClassLoader(ucl);
     tng.run();
@@ -31,7 +31,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2259")
   public void ensureSpiLoadedListenersCanBeSkipped() {
     TestNG tng = create(ServiceLoaderSampleTest.class);
-    URL url = getClass().getClassLoader().getResource("serviceloader.jar");
+    URL url = getClass().getClassLoader().getResource("samples/serviceloader.jar");
     URLClassLoader ucl = URLClassLoader.newInstance(new URL[] {url});
     tng.setServiceLoaderClassLoader(ucl);
     String dontLoad = "test.serviceloader.TmpSuiteListener";
@@ -48,7 +48,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
   @SuppressWarnings("deprecation")
   public void ensureSpiLoadedListenersCanBeSkipped2() {
     TestNG tng = create(ServiceLoaderSampleTest.class);
-    URL url = getClass().getClassLoader().getResource("serviceloader.jar");
+    URL url = getClass().getClassLoader().getResource("samples/serviceloader.jar");
     URLClassLoader ucl = URLClassLoader.newInstance(new URL[] {url});
     tng.setServiceLoaderClassLoader(ucl);
     String dontLoad = "test.serviceloader.TmpSuiteListener";
@@ -70,7 +70,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     // Since serviceloader.jar doesn't seem to be visible to the current thread's contextual class
     // loader
     // resorting to pushing in a class loader into the current thread that can load the resource
-    URL url = getClass().getClassLoader().getResource("serviceloader.jar");
+    URL url = getClass().getClassLoader().getResource("samples/serviceloader.jar");
     URLClassLoader ucl = URLClassLoader.newInstance(new URL[] {url});
     Thread.currentThread().setContextClassLoader(ucl);
     TestNG tng = create(ServiceLoaderSampleTest.class);

@@ -55,7 +55,7 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
   @Test
   public void ensureThatParallelismAndThreadCountAreRallied() {
     TestNG testng = create();
-    testng.setTestSuites(Collections.singletonList("src/test/resources/987.xml"));
+    testng.setTestSuites(Collections.singletonList("src/test/resources/samples/987.xml"));
     testng.setThreadCount(2);
     testng.setParallel(XmlSuite.ParallelMode.METHODS);
     testng.run();

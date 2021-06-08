@@ -129,7 +129,7 @@ public class CommandLineTest extends SimpleBaseTest {
   public void commandLineTestWithXmlFile() {
     ppp("commandLineTestWithXmlFile()");
     ARG_WITHOUT_CLASSES[5] = "test.methodselectors.NoTest1MethodSelector:5";
-    ARG_WITHOUT_CLASSES[6] = getPathToResource("testng-methodselectors.xml");
+    ARG_WITHOUT_CLASSES[6] = getPathToResource("samples/testng-methodselectors.xml");
     TestNG.privateMain(ARG_WITHOUT_CLASSES, tla);
     String[] passed = {"test2", "test3"};
     String[] failed = {};
@@ -142,7 +142,7 @@ public class CommandLineTest extends SimpleBaseTest {
     ppp("testOverrideExcludedMethodsCommandLineExclusions");
     String[] args =
         new String[] {
-          "src/test/resources/test/methodselectors/sampleTest.xml",
+          "src/test/resources/samples/test/methodselectors/sampleTest.xml",
           "-log",
           "0",
           "-d",
@@ -166,7 +166,7 @@ public class CommandLineTest extends SimpleBaseTest {
     ppp("testOverrideExcludedMethodsSuiteExclusions");
     String[] args =
         new String[] {
-          "src/test/resources/test/methodselectors/sampleTestExclusions.xml",
+          "src/test/resources/samples/test/methodselectors/sampleTestExclusions.xml",
           "-log",
           "0",
           "-d",
