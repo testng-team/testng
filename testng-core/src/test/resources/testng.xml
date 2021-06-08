@@ -993,5 +993,10 @@
       <class name="test.listeners.AlterSuiteListenerTest"/>
     </classes>
   </test>
-</suite>
 
+  <test name="Kotlin">
+    <classes>
+      <class name="org.testng.BasicTest"/>
+    </classes>
+  </test>
+</suite>

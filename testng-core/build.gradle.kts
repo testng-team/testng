@@ -1,6 +1,7 @@
 plugins {
     id("testng.java-library")
     groovy
+    kotlin("jvm") version "1.5.10"
     id("testng.sonarqube")
 }
 
