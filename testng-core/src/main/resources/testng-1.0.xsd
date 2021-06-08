@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified">
+
+    <xsd:annotation>
+        <xsd:documentation>
+            Here is a quick overview of the main parts of this DTD. For more information,
+            refer to the <a href="https://testng.org">main web site</a>.
+
+            A <b>suite</b> is made of <b>tests</b> and <b>parameters</b>.
+
+            A <b>test</b> is made of three parts:
+
+            <ul>
+                <li><b>parameters</b>, which override the suite parameters
+                </li>
+                <li><b>groups</b>, made of two parts
+                </li>
+                <li><b>classes</b>, defining which classes are going to be part of this test run
+                </li>
+            </ul>
+
+            In turn, <b>groups</b> are made of two parts:
+            <ul>
+                <li>Definitions, which allow you to group groups into
+                    bigger groups
+                </li>
+                <li>Runs, which defines the groups that the methods
+                    must belong to in order to be run during this test
+                </li>
+            </ul>
+        </xsd:documentation>
+    </xsd:annotation>
+    <xsd:element name="suite">
+        <xsd:annotation>
+            <xsd:documentation>
+                A suite is the top-level element of a testng.xml file
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="groups" minOccurs="0"/>
+                <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                    <xsd:element ref="listeners"/>
+                    <xsd:element ref="packages"/>
+                    <xsd:element ref="test"/>
+                    <xsd:element ref="parameter"/>
+                    <xsd:element ref="method-selectors"/>
+                    <xsd:element ref="suite-files"/>
+                </xsd:choice>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The name of this suite (as it will appear in the reports)
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="junit" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether to run in JUnit mode.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="verbose" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        How verbose the output on the console will be.
+                        This setting has no impact on the HTML reports.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="parallel" type="parallel" default="none">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether TestNG should use different threads
+                        to run your tests (might speed up the process)
+                        Do not use "true" and "false" values, they are now deprecated.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="parent-module" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A module used to create the parent injector of all guice injectors used in tests of the suite
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="guice-stage" type="suiteGuice-stage" default="DEVELOPMENT">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The stage with which the parent injector is created
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="configfailurepolicy" type="suiteConfigfailurepolicy" default="skip">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether to continue attempting Before/After Class/Methods after they've failed once
+                        or just skip remaining.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="thread-count" type="xsd:string" default="5">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An integer giving the size of the thread pool to use if you set parallel.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="annotations" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If "javadoc", TestNG will look for JavaDoc annotations in your sources,
+                        otherwise it will use JDK5 annotations.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="time-out" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The time to wait in milliseconds before aborting the method (if parallel="methods"),
+                        or the test (parallel="tests")
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="skipfailedinvocationcounts" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether to skip failed invocations.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="data-provider-thread-count" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An integer giving the size of the thread pool to use for parallel data providers.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="object-factory" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        A class that implements IObjectFactory that will be used to instantiate the test objects.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="group-by-instances" type="xsd:boolean" default="false"/>
+            <xsd:attribute name="preserve-order" type="xsd:boolean" default="true"/>
+            <xsd:attribute name="allow-return-values" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If true, tests that return a value will be run as well
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:simpleType name="parallel">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Deprecated
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="true">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Deprecated
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="none"/>
+            <xsd:enumeration value="methods"/>
+            <xsd:enumeration value="tests"/>
+            <xsd:enumeration value="classes"/>
+            <xsd:enumeration value="instances"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="suiteGuice-stage">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DEVELOPMENT"/>
+            <xsd:enumeration value="PRODUCTION"/>
+            <xsd:enumeration value="TOOL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="suiteConfigfailurepolicy">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="skip"/>
+            <xsd:enumeration value="continue"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="suite-files">
+        <xsd:annotation>
+            <xsd:documentation>
+                A list of XML files that contain more suite descriptions
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="suite-file" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="suite-file">
+        <xsd:complexType>
+            <xsd:attribute name="path" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="parameter">
+        <xsd:annotation>
+            <xsd:documentation>
+                Parameters can be defined at the &lt;suite&gt; or at the &lt;test&gt; level.
+                Parameters defined at the &lt;test&gt; level override parameters of the same name in &lt;suite&gt;
+                Parameters are used to link Java method parameters to their actual value, defined here.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="value" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="method-selectors">
+        <xsd:annotation>
+            <xsd:documentation>
+                Method selectors define user classes used to select which methods to run.
+                They need to implement
+                <tt>org.testng.IMethodSelector</tt>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="method-selector" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="method-selector">
+        <xsd:complexType>
+            <xsd:choice>
+                <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xsd:element ref="selector-class"/>
+                </xsd:sequence>
+                <xsd:element ref="script"/>
+            </xsd:choice>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="selector-class">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="priority" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="script">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="xsd:string">
+                    <xsd:attribute name="language" type="xsd:string" use="required"/>
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="test">
+        <xsd:annotation>
+            <xsd:documentation>
+                A test contains parameters and classes.
+                Additionally, you can define additional groups ("groups of groups")
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="method-selectors" minOccurs="0"/>
+                <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="groups" minOccurs="0"/>
+                <xsd:element ref="packages" minOccurs="0"/>
+                <xsd:element ref="classes" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        The name of this test (as it will appear in the reports)
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="junit" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether to run in JUnit mode.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="verbose" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        How verbose the output on the console will be.
+                        This setting has no impact on the HTML reports.
+                        Default value: suite level verbose.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="parallel" type="parallel">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether TestNG should use different threads to run your tests (might speed up the process)
+                        Do not use "true" and "false" values, they are now deprecated.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="thread-count" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        An integer giving the size of the thread pool to be used if parallel mode is used.
+                        Overrides the suite level value.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="annotations" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If "javadoc", TestNG will look for JavaDoc annotations in your sources,
+                        otherwise it will use JDK5 annotations.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="time-out" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        the time to wait in milliseconds before aborting
+                        the method (if parallel="methods"), or the test (if parallel="tests")
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="enabled" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        flag to enable/disable current test. Default value: true
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="skipfailedinvocationcounts" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Whether to skip failed invocations.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="preserve-order" type="xsd:boolean" default="true">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If true, the classes in this tag will be run in the same order as found in the XML file.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="group-by-instances" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="allow-return-values" type="xsd:boolean" default="false">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        If true, tests that return a value will be run as well
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="groups">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines additional groups ("groups of groups") and also which groups to include in this test run
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="define" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="run" minOccurs="0"/>
+                <xsd:element ref="dependencies" minOccurs="0"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="define">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="include">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines which groups to include in the current group of groups
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="description" type="xsd:string"/>
+            <xsd:attribute name="invocation-numbers" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="exclude">
+        <xsd:annotation>
+            <xsd:documentation>
+                Defines which groups to exclude from the current group of groups
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="run">
+        <xsd:annotation>
+            <xsd:documentation>
+                The subtag of groups used to define which groups should be run
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="exclude" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="dependencies">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="group" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="group">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="depends-on" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="classes">
+        <xsd:annotation>
+            <xsd:documentation>
+                The list of classes to include in this test
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="class" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="class">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="methods" minOccurs="0"/>
+                <xsd:element ref="parameter" minOccurs="0"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="packages">
+        <xsd:annotation>
+            <xsd:documentation>
+                The list of packages to include in this test
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="package" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="package">
+        <xsd:annotation>
+            <xsd:documentation>
+                The package description.
+                If the package name ends with .* then subpackages are included too.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="exclude" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="methods">
+        <xsd:annotation>
+            <xsd:documentation>
+                The list of methods to include/exclude from this test
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="exclude" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="listeners">
+        <xsd:annotation>
+            <xsd:documentation>
+                The list of listeners that will be passed to TestNG
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="listener" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="listener">
+        <xsd:complexType>
+            <xsd:attribute name="class-name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
