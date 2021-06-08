@@ -9,9 +9,9 @@
           <class name="test.parameters.InheritFromSuiteChild2" />
       </classes>
   </test>
-  
+
   <suite-files>
-    <suite-file path="./child3-suite.xml"/>
+    <suite-file path="child3-suite.xml"/>
   </suite-files>
 
 </suite>

@@ -21,12 +21,12 @@ public class ParallelSuiteTest extends SimpleBaseTest {
         2,
         null,
         Arrays.asList(
-            getPathToResource("suite-parallel-1.xml"), getPathToResource("suite-parallel-2.xml")));
+            getPathToResource("samples/suite-parallel-1.xml"), getPathToResource("samples/suite-parallel-2.xml")));
   }
 
   @Test
   public void suitesShouldRunInParallel2() {
-    runTest(5, 3, 3, null, Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
+    runTest(5, 3, 3, null, Collections.singletonList(getPathToResource("samples/suite-parallel-0.xml")));
   }
 
   @Test(description = "Number of threads (2) is less than number of suites (3)")
@@ -35,7 +35,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     tng.setSuiteThreadPoolSize(SUITE_THREAD_POOL_SIZE);
-    tng.setTestSuites(Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
+    tng.setTestSuites(Collections.singletonList(getPathToResource("samples/suite-parallel-0.xml")));
     tng.addListener((ITestNGListener) tla);
 
     BaseThreadTest.initThreadLog();
@@ -79,10 +79,10 @@ public class ParallelSuiteTest extends SimpleBaseTest {
         5,
         null,
         Arrays.asList(
-            getPathToResource("parallel-suites/suite-parallel-1.xml"),
-            getPathToResource("parallel-suites/suite-parallel-2.xml"),
-            getPathToResource("parallel-suites/suite-parallel-2-1.xml"),
-            getPathToResource("parallel-suites/suite-parallel-2-2.xml")));
+            getPathToResource("samples/parallel-suites/suite-parallel-1.xml"),
+            getPathToResource("samples/parallel-suites/suite-parallel-2.xml"),
+            getPathToResource("samples/parallel-suites/suite-parallel-2-1.xml"),
+            getPathToResource("samples/parallel-suites/suite-parallel-2-2.xml")));
   }
 
   @Test
@@ -92,7 +92,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
         5,
         7,
         null,
-        Collections.singletonList(getPathToResource("parallel-suites/suite-parallel-0.xml")));
+        Collections.singletonList(getPathToResource("samples/parallel-suites/suite-parallel-0.xml")));
   }
 
   @Test(description = "Number of threads (2) is less than level of suites (3)")
@@ -102,7 +102,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
         2,
         7,
         null,
-        Collections.singletonList(getPathToResource("parallel-suites/suite-parallel-0.xml")));
+        Collections.singletonList(getPathToResource("samples/parallel-suites/suite-parallel-0.xml")));
   }
 
   @Test(
@@ -112,7 +112,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
   public void suitesShouldRunInOrder() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    tng.setTestSuites(Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
+    tng.setTestSuites(Collections.singletonList(getPathToResource("samples/suite-parallel-0.xml")));
     tng.addListener((ITestNGListener) tla);
     BaseThreadTest.initThreadLog();
     tng.run();
@@ -134,6 +134,6 @@ public class ParallelSuiteTest extends SimpleBaseTest {
 
   @Test(description = "Number of threads (1) is less than number of levels of suites (2)")
   public void suitesShouldRun1() {
-    runTest(1, 1, 3, true, Collections.singletonList(getPathToResource("suite-parallel-0.xml")));
+    runTest(1, 1, 3, true, Collections.singletonList(getPathToResource("samples/suite-parallel-0.xml")));
   }
 }

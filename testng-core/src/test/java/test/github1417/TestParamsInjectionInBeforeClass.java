@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 public class TestParamsInjectionInBeforeClass {
   @Test
   public void testMethod() {
-    String suite = "src/test/resources/parametertest/1417.xml";
+    String suite = "src/test/resources/samples/parametertest/1417.xml";
     TestNG testNG = new TestNG();
     testNG.setTestSuites(Collections.singletonList(suite));
     testNG.run();

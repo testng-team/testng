@@ -12,7 +12,7 @@ import test.SimpleBaseTest;
 public class TestNGContentHandlerTest extends SimpleBaseTest {
   @Test
   public void testDescriptionInclusion() throws Exception {
-    final String xml = getPathToResource("xml/simple-suite-with-method-desc.xml");
+    final String xml = getPathToResource("samples/xml/simple-suite-with-method-desc.xml");
     SuiteXmlParser parser = new SuiteXmlParser();
     TestNGContentHandler handler = new TestNGContentHandler(xml, false);
     parser.parse(new FileInputStream(xml), handler);

@@ -16,13 +16,13 @@ import test.SimpleBaseTest;
 public class Github1533Test extends SimpleBaseTest {
   @Test
   public void testScenarioWithChildSuites() {
-    String suiteFile = "src/test/resources/xml/github1533/parent.xml";
+    String suiteFile = "src/test/resources/samples/xml/github1533/parent.xml";
     runTests(suiteFile, 1, 2, "GitHub1533_Suite", "GitHub1533_Parent_Suite");
   }
 
   @Test
   public void testScenarioWithNoChildSuites() {
-    String suiteFile = "src/test/resources/xml/github1533/child.xml";
+    String suiteFile = "src/test/resources/samples/xml/github1533/child.xml";
     runTests(suiteFile, 0, 1, "GitHub1533_Suite");
   }
 

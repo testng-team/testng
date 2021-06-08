@@ -29,7 +29,7 @@ public class CheckSuitesInitializationTest extends SimpleBaseTest {
   public void check() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    String testngXmlPath = getPathToResource("checksuitesinitialization/parent-suite.xml");
+    String testngXmlPath = getPathToResource("samples/checksuitesinitialization/parent-suite.xml");
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener(tla);
     tng.run();

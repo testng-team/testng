@@ -156,7 +156,7 @@ public class JarFileUtilsTest {
   }
 
   private static JarFileUtils newJarFileUtils(List<String> testNames) throws MalformedURLException {
-    return newJarFileUtils("jarfileutils/testng-tests.xml", testNames);
+    return newJarFileUtils("samples/jarfileutils/testng-tests.xml", testNames);
   }
 
   private static JarFileUtils newJarFileUtils(String suiteXmlName, List<String> testNames)

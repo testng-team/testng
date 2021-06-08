@@ -76,7 +76,7 @@ public class TimeOutFromXmlTest extends BaseTest {
 
   @Test
   public void timeOutInParallelTestsFromXml() throws IOException {
-    String file = "src/test/resources/test/timeout/issue575.xml";
+    String file = "src/test/resources/samples/test/timeout/issue575.xml";
     try (FileInputStream stream = new FileInputStream(file)) {
       SuiteXmlParser suiteParser = new SuiteXmlParser();
       XmlSuite suite = suiteParser.parse(file, stream, true);

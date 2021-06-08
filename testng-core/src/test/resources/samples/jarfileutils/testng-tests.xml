@@ -2,7 +2,7 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="testng-tests-suite">
     <suite-files>
-        <suite-file path="./child/child.xml"/>
+        <suite-file path="child/child.xml"/>
     </suite-files>
     <test name="testng-tests-child1">
         <classes>
