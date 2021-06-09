@@ -18,6 +18,7 @@ class XsdValidationTest {
         return loadResource("/samples")
             .walk()
             .filter { it.isFile && it.extension == "xml" }
+            .filter { !it.absolutePath.contains("xml/badWith") }
             .map { arrayOf(it) }
             .iterator()
     }
