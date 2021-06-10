@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4" configfailurepolicy="continue"
+<suite name="SingleSuite" verbose="2" thread-count="4" configfailurepolicy="continue"
     data-provider-thread-count="3">
 
   <parameter name="n" value="42" />
@@ -28,13 +28,13 @@
     </groups>
     <classes>
       <class name="test.listeners.ResultEndMillisTest">
-<!-- 
+<!--
         <methods>
           <include name="withFactory" />
         </methods>
  -->
        </class>
-<!-- 
+<!--
       <class name="test.methodselectors.CommandLineTest">
        <class name="test.inject.NoInjectionTest" />
       <class name="test.tmp.TestFactory" />
