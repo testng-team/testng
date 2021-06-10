@@ -63,7 +63,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1668")
   public void ensureNoExceptionsAreRaisedWhenMethodSelectorsDefinedAtSuiteLevel()
       throws IOException {
-    Parser parser = new Parser("src/test/resources/xml/issue1668.xml");
+    Parser parser = new Parser("src/test/resources/samples/xml/issue1668.xml");
     List<XmlSuite> suites = parser.parseToList();
     XmlSuite xmlsuite = suites.get(0);
     TestNG testNG = create();
@@ -76,7 +76,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-435")
   public void ensureSuiteLevelPackageIsAppliedToAllTests() throws IOException {
-    Parser parser = new Parser("src/test/resources/xml/issue435.xml");
+    Parser parser = new Parser("src/test/resources/samples/xml/issue435.xml");
     List<XmlSuite> suites = parser.parseToList();
     XmlSuite xmlsuite = suites.get(0);
     assertThat(xmlsuite.getTests().get(0).getClasses().size()).isEqualTo(0);
@@ -93,7 +93,7 @@ public class XmlSuiteTest extends SimpleBaseTest {
     StringOutputStream stream = new StringOutputStream();
     try {
       System.setOut(new PrintStream(stream));
-      Parser parser = new Parser("src/test/resources/xml/issue1674.xml");
+      Parser parser = new Parser("src/test/resources/samples/xml/issue1674.xml");
       List<XmlSuite> suites = parser.parseToList();
       XmlSuite xmlsuite = suites.get(0);
       assertThat(xmlsuite.getTests().get(0).getMethodSelectors().size()).isEqualTo(0);

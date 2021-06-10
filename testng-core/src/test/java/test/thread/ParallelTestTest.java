@@ -65,7 +65,7 @@ public class ParallelTestTest extends BaseTest {
   @Test
   public void testParallelModeInheritanceInCommandlineMode() throws FileNotFoundException {
     SuiteXmlParser parser = new SuiteXmlParser();
-    String file = "src/test/resources/1636.xml";
+    String file = "src/test/resources/samples/1636.xml";
     XmlSuite xmlSuite = parser.parse(file, new FileInputStream(file), true);
     TestNG tng = new TestNG();
     tng.setXmlSuites(Collections.singletonList(xmlSuite));

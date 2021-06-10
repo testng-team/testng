@@ -26,7 +26,7 @@ public class JarPackagesTest extends SimpleBaseTest {
 
   @Test
   public void jarWithTestngXml() {
-    TestListenerAdapter tla = init("withtestngxml.jar");
+    TestListenerAdapter tla = init("samples/withtestngxml.jar");
     Assert.assertEquals(tla.getPassedTests().size(), 2);
     String first = tla.getPassedTests().get(0).getName();
     String second = tla.getPassedTests().get(1).getName();
@@ -37,7 +37,7 @@ public class JarPackagesTest extends SimpleBaseTest {
 
   @Test
   public void jarWithoutTestngXml() {
-    TestListenerAdapter tla = init("withouttestngxml.jar");
+    TestListenerAdapter tla = init("samples/withouttestngxml.jar");
     Assert.assertEquals(tla.getPassedTests().size(), 2);
     String first = tla.getPassedTests().get(0).getName();
     String second = tla.getPassedTests().get(1).getName();

@@ -85,7 +85,7 @@ public class EmailableReporterTest extends SimpleBaseTest {
       output.getAbsolutePath(),
       "-reporter",
       clazzName + ":fileName=" + filename,
-      "src/test/resources/1332.xml"
+      "src/test/resources/samples/1332.xml"
     };
     try {
       if (jvm != null) {

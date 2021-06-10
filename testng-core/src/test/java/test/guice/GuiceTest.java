@@ -6,6 +6,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.guice.issue2343.Person;
 import test.guice.issue2343.SampleA;
@@ -76,5 +77,11 @@ public class GuiceTest extends SimpleBaseTest {
         TestParentConfigModule.counter.get(), 1, "TestParentModule configuration called times");
     assertEquals(TestModuleOne.counter.get(), 1, "TestModuleOne configuration called times");
     assertEquals(TestModuleTwo.counter.get(), 1, "TestModuleTwo configuration called times");
+  }
+
+  @Test
+  public void guiceParentModuleTest() {
+    InvokedMethodNameListener listener = runFromSuite("samples/parent-module-suite.xml");
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testService");
   }
 }

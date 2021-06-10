@@ -21,7 +21,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
   public void checkChildSuites() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
+    String testngXmlPath = getPathToResource("samples/sanitycheck/test-s-b.xml");
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
@@ -33,7 +33,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
   public void checkChildSuitesFails() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
-    String testngXmlPath = getPathToResource("sanitycheck/test-s-a.xml");
+    String testngXmlPath = getPathToResource("samples/sanitycheck/test-s-a.xml");
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
@@ -72,7 +72,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
   @Test
   public void checkXmlSuiteAddition() throws IOException {
     TestNG tng = create();
-    String testngXmlPath = getPathToResource("sanitycheck/test-s-b.xml");
+    String testngXmlPath = getPathToResource("samples/sanitycheck/test-s-b.xml");
     Parser parser = new Parser(testngXmlPath);
     tng.setXmlSuites(parser.parseToList());
     tng.initializeSuitesAndJarFile();

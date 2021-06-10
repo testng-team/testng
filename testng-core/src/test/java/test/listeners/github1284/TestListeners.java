@@ -13,7 +13,7 @@ public class TestListeners extends SimpleBaseTest {
     TestNG testNG = create();
     testNG.setTestSuites(
         Collections.singletonList(
-            getPathToResource("test/listeners/github1284/github1284_nolistener.xml")));
+            getPathToResource("samples/test/listeners/github1284/github1284_nolistener.xml")));
     testNG.run();
     Assert.assertEquals(testNG.getStatus(), 0);
   }
@@ -23,7 +23,7 @@ public class TestListeners extends SimpleBaseTest {
     TestNG testNG = create();
     testNG.setTestSuites(
         Collections.singletonList(
-            getPathToResource("test/listeners/github1284/github1284_withlistener.xml")));
+            getPathToResource("samples/test/listeners/github1284/github1284_withlistener.xml")));
     testNG.run();
     Assert.assertEquals(testNG.getStatus(), 0);
   }
@@ -32,7 +32,8 @@ public class TestListeners extends SimpleBaseTest {
   public void verifyWithChildSuite() {
     TestNG testNG = create();
     testNG.setTestSuites(
-        Collections.singletonList(getPathToResource("test/listeners/github1284/github1284.xml")));
+        Collections.singletonList(
+            getPathToResource("samples/test/listeners/github1284/github1284.xml")));
     testNG.run();
     Assert.assertEquals(testNG.getStatus(), 0);
   }

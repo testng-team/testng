@@ -29,7 +29,7 @@ public class MultipleInterceptorsTest extends SimpleBaseTest {
     tng.setTestSuites(
         Collections.singletonList(
             getPathToResource(
-                "/methodinterceptors/multipleinterceptors/multiple-interceptors.xml")));
+                "/samples/methodinterceptors/multipleinterceptors/multiple-interceptors.xml")));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
     tng.run();

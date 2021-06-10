@@ -19,7 +19,7 @@ import test.SimpleBaseTest;
 /** Test that <suite> tags can have g. */
 public class GroupSuiteTest extends SimpleBaseTest {
 
-  private static final File PARENT = new File(getPathToResource("groupinvocation"));
+  private static final File PARENT = new File(getPathToResource("samples/groupinvocation"));
 
   @DataProvider
   private static Object[][] dp() {

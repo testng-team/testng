@@ -66,7 +66,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     try {
       TestNG tng = create();
-      String testngXmlPath = getPathToResource("suite1.xml");
+      String testngXmlPath = getPathToResource("samples/suite1.xml");
       tng.setTestSuites(Collections.singletonList(testngXmlPath));
       tng.addListener((ITestNGListener) tla);
       tng.run();

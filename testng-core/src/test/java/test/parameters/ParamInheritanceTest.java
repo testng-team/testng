@@ -23,7 +23,8 @@ public class ParamInheritanceTest extends SimpleBaseTest {
               + " during execution. This test makes sure we dont run into any NPEs")
   public void noNPEInCountingResults() {
     TestNG tng = create();
-    tng.setTestSuites(Arrays.asList(getPathToResource("param-inheritance/parent-suite.xml")));
+    tng.setTestSuites(
+        Arrays.asList(getPathToResource("samples/param-inheritance/parent-suite.xml")));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
@@ -56,7 +57,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
   @Test(description = "Checks to make sure parameters are inherited and overridden properly")
   public void parameterInheritanceAndOverriding() {
     TestNG tng = create();
-    tng.setTestSuites(Arrays.asList(getPathToResource("parametertest/parent-suite.xml")));
+    tng.setTestSuites(Arrays.asList(getPathToResource("samples/parametertest/parent-suite.xml")));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);

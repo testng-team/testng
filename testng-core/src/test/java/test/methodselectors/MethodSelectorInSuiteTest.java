@@ -49,7 +49,8 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
   @Test
   public void xmlXmlSuite() {
     TestNG tng = create();
-    tng.setTestSuites(Collections.singletonList(getPathToResource("methodselector-in-xml.xml")));
+    tng.setTestSuites(
+        Collections.singletonList(getPathToResource("samples/methodselector-in-xml.xml")));
     tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
@@ -62,7 +63,7 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
         new String[] {
           "-d",
           OutputDirectoryPatch.getOutputDirectory(),
-          getPathToResource("methodselector-in-xml.xml")
+          getPathToResource("samples/methodselector-in-xml.xml")
         };
     TestNG.privateMain(args, m_tla);
 

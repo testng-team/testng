@@ -3,15 +3,21 @@
 <suite name="TestNG" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
-  <suite-files>
-    <suite-file path="./junit-suite.xml" />
-    <suite-file path="./parent-module-suite.xml" />
-    <suite-file path="./188.xml"/>
-  </suite-files>
-
   <listeners>
     <listener class-name="org.testng.internal.ConsoleReporter"/>
   </listeners>
+
+  <test name="188_test">
+    <classes>
+      <class name="test.thread.issue188.IssueTest"/>
+    </classes>
+  </test>
+
+    <test name="Junit via TestNG XML" junit="true">
+        <classes>
+            <class name="test.junit.SetNameTest" />
+        </classes>
+    </test>
 
   <test name="Nopackage">
     <groups>
@@ -828,6 +834,7 @@
       <class name="org.testng.xml.internal.XmlSuiteUtilsTest"/>
       <class name="org.testng.xml.XmlTestTest"/>
       <class name="org.testng.xml.ParserTest"/>
+      <class name="org.testng.xml.XsdValidationTest"/>
     </classes>
   </test>
 

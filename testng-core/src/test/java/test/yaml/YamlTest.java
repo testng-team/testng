@@ -32,9 +32,9 @@ public class YamlTest extends SimpleBaseTest {
   @Test(dataProvider = "dp")
   public void compareFiles(String name) throws IOException {
     Collection<XmlSuite> s1 =
-        new Parser(getPathToResource("yaml" + File.separator + name + ".yaml")).parse();
+        new Parser(getPathToResource("samples/yaml" + File.separator + name + ".yaml")).parse();
     Collection<XmlSuite> s2 =
-        new Parser(getPathToResource("yaml" + File.separator + name + ".xml")).parse();
+        new Parser(getPathToResource("samples/yaml" + File.separator + name + ".xml")).parse();
 
     Assert.assertEquals(s1, s2);
   }
@@ -42,7 +42,7 @@ public class YamlTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1787")
   public void testParameterInclusion() throws IOException {
     SuiteXmlParser parser = new SuiteXmlParser();
-    String file = "src/test/resources/yaml/1787.xml";
+    String file = "src/test/resources/samples/yaml/1787.xml";
     XmlSuite xmlSuite = parser.parse(file, new FileInputStream(file), false);
     StringBuilder yaml = org.testng.internal.Yaml.toYaml(xmlSuite);
     Matcher m = Pattern.compile("parameters:").matcher(yaml.toString());
@@ -60,10 +60,10 @@ public class YamlTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2078")
   public void testXmlDependencyGroups() throws IOException {
-    String actualXmlFile = "src/test/resources/yaml/2078.xml";
+    String actualXmlFile = "src/test/resources/samples/yaml/2078.xml";
     XmlSuite actualXmlSuite =
         new SuiteXmlParser().parse(actualXmlFile, new FileInputStream(actualXmlFile), false);
-    String expectedYamlFile = "src/test/resources/yaml/2078.yaml";
+    String expectedYamlFile = "src/test/resources/samples/yaml/2078.yaml";
     String expectedYaml =
         new String(
             java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
