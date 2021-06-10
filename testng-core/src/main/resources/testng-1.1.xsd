@@ -76,7 +76,6 @@
                     <xsd:documentation>
                         Whether TestNG should use different threads
                         to run your tests (might speed up the process)
-                        Do not use "true" and "false" values, they are now deprecated.
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>
@@ -159,20 +158,6 @@
     </xsd:element>
     <xsd:simpleType name="parallel">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="false">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        Deprecated
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:enumeration>
-            <xsd:enumeration value="true">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        Deprecated
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:enumeration>
             <xsd:enumeration value="none"/>
             <xsd:enumeration value="methods"/>
             <xsd:enumeration value="tests"/>
@@ -304,7 +289,6 @@
                 <xsd:annotation>
                     <xsd:documentation>
                         Whether TestNG should use different threads to run your tests (might speed up the process)
-                        Do not use "true" and "false" values, they are now deprecated.
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:attribute>

@@ -25,7 +25,7 @@ class XsdValidationTest {
 
     @BeforeClass
     fun setUp() {
-        validator = newXsdValidator(loadResource("/testng-1.0.xsd"))
+        validator = newXsdValidator(loadResource("/testng-1.1.xsd"))
     }
 
 
