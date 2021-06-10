@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://testng.org/suite"
+            targetNamespace="http://testng.org/suite"
+            version="1.1"
             elementFormDefault="qualified">
 
     <xsd:annotation>
