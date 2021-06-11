@@ -5,7 +5,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
@@ -395,12 +394,12 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     }
 
     // Keep track of the methods that have started, but not completed execution.
-    Map<String, EventLog> methodsExecuting = new HashMap<>();
+    Map<ClassInstanceMethodKey, EventLog> methodsExecuting = new HashMap<>();
 
     // Keep track of the methods whose start, execute and test method pass events have all been
     // found in the list
     // of logs
-    Map<String, EventLog> methodsCompleted = new HashMap<>();
+    Map<ClassInstanceMethodKey, EventLog> methodsCompleted = new HashMap<>();
 
     // Keep track of the thread IDs for all the methods that are executing and check that all a
     // method's events
@@ -442,12 +441,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
     // Keep track of the current methods that are executing and their thread IDs
     for (EventLog eventLog : eventLogTestMethodListenerStartEvents) {
-      String classAndMethodNameAndInstanceHash =
-          (String) eventLog.getData(CLASS_NAME)
-              + "."
-              + (String) eventLog.getData(METHOD_NAME)
-              + ":"
-              + eventLog.getData(CLASS_INSTANCE).hashCode();
+      ClassInstanceMethodKey classAndMethodNameAndInstanceHash =
+          new ClassInstanceMethodKey(eventLog);
 
       assertNull(
           methodsExecuting.get(classAndMethodNameAndInstanceHash),
@@ -467,12 +462,8 @@ public class BaseParallelizationTest extends SimpleBaseTest {
 
       log.debug("Processing test method event log at index " + i + ": " + eventLog);
 
-      String classAndMethodNameAndInstanceHash =
-          (String) eventLog.getData(CLASS_NAME)
-              + "."
-              + (String) eventLog.getData(METHOD_NAME)
-              + ":"
-              + eventLog.getData(CLASS_INSTANCE).hashCode();
+      ClassInstanceMethodKey classAndMethodNameAndInstanceHash =
+          new ClassInstanceMethodKey(eventLog);
 
       if (eventLog.getEvent() == LISTENER_TEST_METHOD_START) {
         assertTrue(

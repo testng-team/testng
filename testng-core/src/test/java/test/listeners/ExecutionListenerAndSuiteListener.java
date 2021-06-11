@@ -1,5 +1,6 @@
 package test.listeners;
 
+import java.util.Locale;
 import org.testng.IExecutionListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
@@ -19,7 +20,7 @@ public class ExecutionListenerAndSuiteListener implements ISuiteListener, IExecu
 
   @Override
   public void onStart(ISuite suite) {
-    tmp = testString.toUpperCase();
+    tmp = testString.toUpperCase(Locale.ROOT);
   }
 
   @Override

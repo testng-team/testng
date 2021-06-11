@@ -14,7 +14,7 @@ import org.testng.internal.objects.pojo.CreationAttributes;
 class GuiceBasedObjectDispenser implements IObjectDispenser {
 
   private IObjectDispenser dispenser;
-  private static final Map<Integer, GuiceHelper> helpers = new ConcurrentHashMap<>();
+  private static final Map<Object, GuiceHelper> helpers = new ConcurrentHashMap<>();
 
   @Override
   public void setNextDispenser(IObjectDispenser dispenser) {
@@ -33,10 +33,11 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
       ITestContext ctx = attributes.getContext();
       GuiceContext suiteCtx = attributes.getSuiteContext();
       GuiceHelper helper;
+      // TODO: remove unused entries from helpers
       if (ctx == null) {
-        helper = helpers.computeIfAbsent(suiteCtx.hashCode(), k -> new GuiceHelper(suiteCtx));
+        helper = helpers.computeIfAbsent(suiteCtx, k -> new GuiceHelper(suiteCtx));
       } else {
-        helper = helpers.computeIfAbsent(ctx.hashCode(), k -> new GuiceHelper(ctx));
+        helper = helpers.computeIfAbsent(ctx, k -> new GuiceHelper(ctx));
       }
       Injector injector;
       if (ctx == null) {

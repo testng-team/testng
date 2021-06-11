@@ -1,5 +1,4 @@
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.withType
 
 plugins {
     `java-library`
@@ -11,6 +10,14 @@ dependencies {
 
 tasks.withType<Test>().configureEach {
     useTestNG()
+    providers.gradleProperty("testng.test.extra.jvmargs")
+        .forUseAtConfigurationTime()
+        .orNull?.toString()?.trim()
+        ?.takeIf { it.isNotEmpty() }
+        ?.let {
+            // TODO: support quoted arguments
+            jvmArgs(it.split(Regex("\\s+")))
+        }
     systemProperty("test.resources.dir", "build/resources/test")
     fun passProperty(name: String, default: String? = null) {
         val value = System.getProperty(name) ?: default

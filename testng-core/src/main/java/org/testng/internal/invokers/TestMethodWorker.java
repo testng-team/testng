@@ -170,8 +170,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
           new Builder()
               .forTestClass(testClass)
               .usingConfigMethodsAs(
-                  ((ITestClassConfigInfo) testClass)
-                      .getInstanceBeforeClassMethods(instance.toString()))
+                  ((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance))
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
               .usingInstance(instance)

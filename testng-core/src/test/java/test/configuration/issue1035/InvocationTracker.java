@@ -6,12 +6,12 @@ public class InvocationTracker {
 
   private final long time;
   private final long threadId;
-  private final int hashCode;
+  private final Object testInstance;
 
-  public InvocationTracker(long time, long threadId, int hashCode) {
+  public InvocationTracker(long time, long threadId, Object testInstance) {
     this.time = time;
     this.threadId = threadId;
-    this.hashCode = hashCode;
+    this.testInstance = testInstance;
   }
 
   public long getThreadId() {
@@ -22,8 +22,8 @@ public class InvocationTracker {
     return time;
   }
 
-  public int getHashCode() {
-    return hashCode;
+  public Object getTestInstance() {
+    return testInstance;
   }
 
   @Override
@@ -35,11 +35,11 @@ public class InvocationTracker {
       return false;
     }
     InvocationTracker tracker = (InvocationTracker) o;
-    return hashCode == tracker.hashCode;
+    return testInstance == tracker.testInstance;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(hashCode);
+    return Objects.hashCode(testInstance);
   }
 }

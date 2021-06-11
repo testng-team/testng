@@ -21,8 +21,7 @@ public class TestclassExample {
   private void printer() {
     long threadId = Thread.currentThread().getId();
     long time = System.currentTimeMillis();
-    int hashCode = hashCode();
-    InvocationTracker tracker = new InvocationTracker(time, threadId, hashCode);
+    InvocationTracker tracker = new InvocationTracker(time, threadId, this);
     MyFactory.TRACKER.add(tracker);
   }
 }

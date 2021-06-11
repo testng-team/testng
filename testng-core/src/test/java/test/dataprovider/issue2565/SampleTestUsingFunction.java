@@ -3,6 +3,7 @@ package test.dataprovider.issue2565;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -20,7 +21,7 @@ public class SampleTestUsingFunction {
     obj.add(
         text -> {
           Data.INSTANCE.addDatum(text);
-          return text.toUpperCase();
+          return text.toUpperCase(Locale.ROOT);
         });
     return obj.iterator();
   }

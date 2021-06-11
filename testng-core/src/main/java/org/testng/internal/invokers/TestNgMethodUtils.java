@@ -87,10 +87,11 @@ class TestNgMethodUtils {
       String msg;
       if (predicate.test(tm, testClass)
           && (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult))) {
-        msg = "Keeping method " + tm + " for class " + testClass;
+        msg = Utils.getVerbose() < 10 ? "" : "Keeping method " + tm + " for class " + testClass;
         vResult.add(tm);
       } else {
-        msg = "Filtering out method " + tm + " for class " + testClass;
+        msg =
+            Utils.getVerbose() < 10 ? "" : "Filtering out method " + tm + " for class " + testClass;
       }
       Utils.log("Invoker " + Thread.currentThread().hashCode(), 10, msg);
     }

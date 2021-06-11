@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.testng.ITestObjectFactory;
@@ -50,7 +51,7 @@ public class XmlSuite implements Cloneable {
         return ParallelMode.NONE;
       }
       try {
-        return ParallelMode.valueOf(parallel.toUpperCase());
+        return ParallelMode.valueOf(parallel.toUpperCase(Locale.ROOT));
       } catch (IllegalArgumentException e) {
         if ("true".equalsIgnoreCase(parallel)) {
           warnUser("true", METHODS);
@@ -90,7 +91,7 @@ public class XmlSuite implements Cloneable {
         return null;
       }
       try {
-        return XmlSuite.FailurePolicy.valueOf(policy.toUpperCase());
+        return XmlSuite.FailurePolicy.valueOf(policy.toUpperCase(Locale.ROOT));
       } catch (IllegalArgumentException e) {
         return null;
       }
