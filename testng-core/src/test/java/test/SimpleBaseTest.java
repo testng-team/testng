@@ -28,7 +28,6 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlInclude;
@@ -36,6 +35,7 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlRun;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.testng.xml.internal.Parser;
 
 public class SimpleBaseTest {
   // System property specifying where the resources (e.g. xml files) can be found

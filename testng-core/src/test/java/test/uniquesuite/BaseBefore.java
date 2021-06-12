@@ -16,5 +16,4 @@ public class BaseBefore {
   public void incrementAfter() {
     m_afterCount++;
   }
-
 }

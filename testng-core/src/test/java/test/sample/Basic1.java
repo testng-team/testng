@@ -23,5 +23,4 @@ public class Basic1 {
   public void basic1() {
     assert getCount() > 0 : "COUNT WAS NOT INCREMENTED";
   }
-
 }

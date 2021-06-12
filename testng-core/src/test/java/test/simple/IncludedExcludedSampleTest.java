@@ -43,5 +43,4 @@ public class IncludedExcludedSampleTest {
   public void test3() {
     Reporter.log("Child.test3");
   }
-
 }

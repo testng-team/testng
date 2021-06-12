@@ -42,5 +42,4 @@ public class InterleavedInvocationTest extends BaseTest {
     verifyInvocation(number1, LOG, 0);
     verifyInvocation(number2, LOG, 4);
   }
-
 }

@@ -42,5 +42,4 @@ public class SampleDependentMethods3 {
     assert m_oneB : "oneB wasn't run";
     assert m_secondA : "secondA wasn't run";
   }
-
 }

@@ -6,7 +6,7 @@ import java.io.InputStream;
  * <code>Parser</code> is a parser for a TestNG XML test suite file.
  *
  * @deprecated - This class stands deprecated as of TestNG <code>7.5.0</code>. There are no
- * alternatives for this class.
+ *     alternatives for this class.
  */
 @SuppressWarnings("unused")
 @Deprecated

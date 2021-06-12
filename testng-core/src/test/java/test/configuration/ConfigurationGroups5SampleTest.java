@@ -17,8 +17,7 @@ public class ConfigurationGroups5SampleTest {
   private int m_afterCount = 0;
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 
   @Test(groups = "cg5-1")
   public void run1() {

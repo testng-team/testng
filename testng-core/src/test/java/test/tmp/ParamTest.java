@@ -19,5 +19,4 @@ public class ParamTest {
       new Object[] {"Alois", 35},
     };
   }
-
 }

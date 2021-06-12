@@ -3,7 +3,6 @@ package test.inheritance;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.log4testng.Logger;
 
 /**
  * Make sure that configuration inherited methods are invoked in the right order. The funny naming
@@ -29,5 +28,4 @@ public class DChild_2 extends Child_1 {
   public void test() {
     m_methodList.add("test");
   }
-
 }

@@ -176,5 +176,4 @@ public class CommandLineTest extends SimpleBaseTest {
         .describedAs(title)
         .isEqualTo(expected);
   }
-
 }

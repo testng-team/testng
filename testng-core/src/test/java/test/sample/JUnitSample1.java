@@ -30,10 +30,7 @@ public class JUnitSample1 extends TestCase {
     m_field = null;
   }
 
-  public void testSample1_1() {
-  }
+  public void testSample1_1() {}
 
-  public void testSample1_2() {
-  }
-
+  public void testSample1_2() {}
 }

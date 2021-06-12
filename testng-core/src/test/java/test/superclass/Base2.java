@@ -7,14 +7,10 @@ import org.testng.annotations.Test;
 @Test
 public class Base2 {
   @BeforeClass
-  public void bc() {
-  }
+  public void bc() {}
 
   @BeforeMethod
-  public void bm() {
-  }
+  public void bm() {}
 
-  public void tbase() {
-  }
-
+  public void tbase() {}
 }

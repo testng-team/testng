@@ -61,5 +61,4 @@ public class Sample1 extends BaseSample1 {
   public void verifyLastNameShouldFail() {
     Assert.assertEquals("Beust", "", "Expected name Beust, found blah");
   }
-
 }

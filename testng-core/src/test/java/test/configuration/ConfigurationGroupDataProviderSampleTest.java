@@ -35,5 +35,4 @@ public class ConfigurationGroupDataProviderSampleTest {
   public Object[][] input() {
     return new Object[][] {{1, 1}, {2, 2}, {3, 3}};
   }
-
 }

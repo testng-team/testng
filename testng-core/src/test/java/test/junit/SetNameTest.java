@@ -22,5 +22,4 @@ public class SetNameTest extends TestCase {
   public void testBar() {
     Assert.assertEquals("testBar", getName());
   }
-
 }
