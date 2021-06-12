@@ -102,10 +102,6 @@ public class JUnitTest1 extends BaseTest {
         "Expected 2 instances to be created, found " + SetNameTest.m_ctorCount);
   }
 
-  public static void ppp(String s) {
-    System.out.println("[JUnitTest1] " + s);
-  }
-
   @Test
   public void testAbstract() {
     addClass("test.sample.JUnitSample4");

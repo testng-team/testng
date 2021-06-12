@@ -23,7 +23,6 @@ public class ConfigurationTest {
 
   @BeforeSuite
   public void beforeSuite() {
-    ppp("@@@@ BEFORE_SUITE");
     assert !m_afterSuite : "afterSuite shouldn't have run";
     assert !m_beforeClass : "beforeClass shouldn't have run";
     assert !m_afterClass : "afterClass shouldn't have run";
@@ -34,7 +33,6 @@ public class ConfigurationTest {
 
   @BeforeClass
   public void beforeClass() {
-    ppp("@@@@ BEFORE_CLASS");
     assert m_beforeSuite : "beforeSuite should have run";
     assert !m_afterSuite : "afterSuite shouldn't have run";
     assert !m_beforeClass : "beforeClass shouldn't have run";
@@ -46,7 +44,6 @@ public class ConfigurationTest {
 
   @BeforeMethod
   public void beforeMethod() {
-    ppp("@@@@ BEFORE_METHOD");
     assert m_beforeSuite : "beforeSuite should have run";
     assert m_beforeClass : "beforeClass have run";
     assert !m_afterSuite : "afterSuite shouldn't have run";
@@ -58,7 +55,6 @@ public class ConfigurationTest {
 
   @AfterMethod
   public void afterMethod() {
-    ppp("@@@@ AFTER_METHOD");
     assert m_beforeSuite : "beforeSuite should have run";
     assert m_beforeClass : "beforeClass have run";
     assert m_beforeMethod : "beforeMethod should have run";
@@ -70,7 +66,6 @@ public class ConfigurationTest {
 
   @AfterClass
   public void afterClass() {
-    ppp("@@@@ AFTER_CLASS");
     assert m_beforeSuite : "beforeSuite should have run";
     assert m_beforeClass : "beforeClass have run";
     assert m_beforeMethod : "beforeMethod should have run";
@@ -82,19 +77,6 @@ public class ConfigurationTest {
 
   @AfterSuite
   public void afterSuite() {
-    ppp("@@@@ AFTER_SUITE");
-    ppp(
-        m_beforeSuite
-            + " "
-            + m_beforeClass
-            + " "
-            + m_beforeMethod
-            + " "
-            + m_afterMethod
-            + " "
-            + m_afterClass
-            + " "
-            + m_afterSuite);
     assert m_beforeSuite : "beforeSuite should have run";
     assert m_beforeClass : "beforeClass have run";
     assert m_beforeMethod : "beforeMethod should have run";
@@ -106,7 +88,6 @@ public class ConfigurationTest {
 
   @Test
   public void verify() {
-    ppp("@@@@ VERIFY");
     assert m_beforeSuite : "beforeSuite should have run";
     assert m_beforeClass : "beforeClass have run";
     assert m_beforeMethod : "beforeMethod should have run";
@@ -115,9 +96,4 @@ public class ConfigurationTest {
     assert !m_afterMethod : "afterMethod shouldn't have run";
   }
 
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[ConfigurationTest] " + s);
-    }
-  }
 }

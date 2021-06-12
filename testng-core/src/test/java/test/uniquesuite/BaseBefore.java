@@ -17,7 +17,4 @@ public class BaseBefore {
     m_afterCount++;
   }
 
-  private static void ppp(String s) {
-    System.out.println("[Base] " + s);
-  }
 }

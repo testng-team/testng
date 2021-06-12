@@ -14,10 +14,6 @@ public class AllTestsMethodSelector implements IMethodSelector {
     return true;
   }
 
-  private static void ppp(String s) {
-    System.out.println("[MyMethodSelector] " + s);
-  }
-
   @Override
   public void setTestMethods(List<ITestNGMethod> testMethods) {
     // TODO Auto-generated method stub

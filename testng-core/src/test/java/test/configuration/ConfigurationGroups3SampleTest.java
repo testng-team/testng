@@ -48,14 +48,8 @@ public class ConfigurationGroups3SampleTest extends Base3 {
 
   private void log(String s) {
     m_list.add(s);
-    ppp(s);
   }
 
-  private void ppp(String s) {
-    if (false) {
-      System.out.println("[ConfigurationGroups3SampleTest] " + s);
-    }
-  }
 
   public static boolean getF1() {
     return m_f1;

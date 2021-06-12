@@ -10,7 +10,6 @@ public class ParamTest {
   public void f(String s, int n) {
     //    if ("Alois".equals(s)) assert false;
     Reporter.log("CALL " + n);
-    ppp("TEST : " + s);
   }
 
   @DataProvider(name = "dp")
@@ -21,7 +20,4 @@ public class ParamTest {
     };
   }
 
-  private void ppp(String string) {
-    System.err.println("[ParamTest] " + string);
-  }
 }

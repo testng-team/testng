@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.log4testng.Logger;
 
 /**
  * Simple graph class to implement topological sort (used to sort methods based on what groups they
@@ -35,7 +36,7 @@ public class Graph<T> {
   }
 
   public void addNode(T tm) {
-    ppp(() -> "ADDING NODE " + tm + " " + tm.hashCode());
+    log(() -> "ADDING NODE " + tm + " " + tm.hashCode());
     m_nodes.put(tm, new Node<>(tm));
     // Initially, all the nodes are put in the independent list as well
   }
@@ -63,7 +64,7 @@ public class Graph<T> {
       initializeIndependentNodes();
       m_independentNodes.remove(predecessor);
       m_independentNodes.remove(tm);
-      ppp(() -> "  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
+      log(() -> "  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
     }
   }
 
@@ -86,7 +87,7 @@ public class Graph<T> {
   }
 
   public void topologicalSort() {
-    ppp("================ SORTING");
+    log("================ SORTING");
     m_strictlySortedNodes = Lists.newArrayList();
     initializeIndependentNodes();
 
@@ -131,7 +132,7 @@ public class Graph<T> {
       }
     }
 
-    ppp("=============== DONE SORTING");
+    log("=============== DONE SORTING");
     if (m_verbose) {
       dumpSortedNodes();
     }
@@ -171,15 +172,15 @@ public class Graph<T> {
     }
   }
 
-  private static void ppp(String s) {
+  private static void log(String s) {
     if (m_verbose) {
-      System.out.println("[Graph] " + s);
+      Logger.getLogger(Graph.class).debug("[Graph] " + s);
     }
   }
 
-  private static void ppp(Supplier<String> s) {
+  private static void log(Supplier<String> s) {
     if (m_verbose) {
-      System.out.println("[Graph] " + s.get());
+      Logger.getLogger(Graph.class).debug("[Graph] " + s.get());
     }
   }
 
@@ -286,9 +287,9 @@ public class Graph<T> {
       if (null != pred) {
         result = null != m_predecessors.remove(o);
         if (result) {
-          ppp(() -> "  REMOVED PRED " + o + " FROM NODE " + m_object);
+          log(() -> "  REMOVED PRED " + o + " FROM NODE " + m_object);
         } else {
-          ppp(() -> "  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
+          log(() -> "  FAILED TO REMOVE PRED " + o + " FROM NODE " + m_object);
         }
       }
 
@@ -307,7 +308,7 @@ public class Graph<T> {
     }
 
     public void addPredecessor(T tm) {
-      ppp("  ADDING PREDECESSOR FOR " + m_object + " ==> " + tm);
+      log("  ADDING PREDECESSOR FOR " + m_object + " ==> " + tm);
       m_predecessors.put(tm, tm);
     }
 

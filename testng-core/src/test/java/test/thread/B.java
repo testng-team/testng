@@ -17,7 +17,4 @@ public class B {
     m_threadIds.put(id, id);
   }
 
-  private static void ppp(String s) {
-    System.out.println("[FactoryTest] " + s);
-  }
 }

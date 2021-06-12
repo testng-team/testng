@@ -28,10 +28,6 @@ public class BaseOrderMethodTest {
     m_group3[0] = true;
   }
 
-  public static void ppp(String s) {
-    System.out.println("[BaseOrderMethodTest] " + s);
-  }
-
   protected void verifyGroup(int groupNumber, boolean[] group) {
     for (int i = 0; i < group.length; i++) {
       assert group[i]

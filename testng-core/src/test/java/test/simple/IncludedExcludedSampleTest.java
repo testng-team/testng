@@ -44,7 +44,4 @@ public class IncludedExcludedSampleTest {
     Reporter.log("Child.test3");
   }
 
-  private void ppp(String string) {
-    System.out.println("[TestNGBug] " + string);
-  }
 }

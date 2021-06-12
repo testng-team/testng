@@ -17,7 +17,4 @@ public class ConfigurationInheritGroupsSampleTest {
     Assert.assertTrue(m_ok);
   }
 
-  private void ppp(String s) {
-    System.out.println("[ConfigurationInheritGroupsSampleTest] " + s);
-  }
 }

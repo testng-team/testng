@@ -8,15 +8,10 @@ public class ConcreteTest extends Fixturable {
   @BeforeTest
   @AfterGroups("fixture")
   public void beforeFixture() {
-    ppp("BEFORE");
   }
 
   @Test(groups = "fixture")
   public void test() {
-    ppp("TEST");
   }
 
-  private static void ppp(String s) {
-    System.out.println("[ConcreteTest] " + s);
-  }
 }

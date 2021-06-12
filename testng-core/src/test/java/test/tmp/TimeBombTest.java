@@ -3,17 +3,18 @@ package test.tmp;
 import java.lang.reflect.Method;
 import java.util.Calendar;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 
 public class TimeBombTest {
 
   @IgnoreUntil(time = "1022")
   @Test
   public void timeBomb() throws SecurityException, NoSuchMethodException {
-    Method m = TimeBombTest.class.getMethod("timeBomb", new Class[0]);
+    Method m = TimeBombTest.class.getMethod("timeBomb");
     IgnoreUntil t = m.getAnnotation(IgnoreUntil.class);
     long now = Calendar.getInstance().getTimeInMillis();
     long l = parseTime(t.time());
-    ppp("IGNORE:" + (now < l));
+    debug("IGNORE:" + (now < l));
   }
 
   private long parseTime(String string) {
@@ -26,7 +27,7 @@ public class TimeBombTest {
     return result.getTimeInMillis();
   }
 
-  private void ppp(String string) {
-    System.out.println("[TimeBombTest] " + string);
+  private void debug(String string) {
+    Logger.getLogger(getClass()).debug("[TimeBombTest] " + string);
   }
 }

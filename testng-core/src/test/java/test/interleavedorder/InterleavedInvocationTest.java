@@ -43,7 +43,4 @@ public class InterleavedInvocationTest extends BaseTest {
     verifyInvocation(number2, LOG, 4);
   }
 
-  public static void ppp(String s) {
-    System.out.println("[InterleavedTest] " + s);
-  }
 }

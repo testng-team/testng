@@ -24,7 +24,4 @@ public class Basic1 {
     assert getCount() > 0 : "COUNT WAS NOT INCREMENTED";
   }
 
-  private static void ppp(String s) {
-    System.out.println("[Basic1] " + s);
-  }
 }

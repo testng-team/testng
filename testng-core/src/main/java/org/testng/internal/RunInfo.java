@@ -62,10 +62,6 @@ public class RunInfo {
     return result;
   }
 
-  public static void ppp(String s) {
-    System.out.println("[RunInfo] " + s);
-  }
-
   public void setTestMethods(List<ITestNGMethod> testMethods) {
     for (MethodSelectorDescriptor mds : m_methodSelectors) {
       mds.setTestMethods(testMethods);

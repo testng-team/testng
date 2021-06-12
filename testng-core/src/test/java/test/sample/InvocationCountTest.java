@@ -73,7 +73,4 @@ public class InvocationCountTest {
         : "Method should have been invoked 10 times but was invoked " + m_count + " times";
   }
 
-  public static void ppp(String s) {
-    System.out.println("[InvocationCount] " + s);
-  }
 }

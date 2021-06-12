@@ -5,6 +5,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 
 @Test(suiteName = "Exponent suite", testName = "Exponent test")
 public class ExponentTest {
@@ -21,17 +22,17 @@ public class ExponentTest {
 
   @BeforeMethod
   public void setUp() {
-    ppp("BEFORE METHOD");
+    debug("BEFORE METHOD");
   }
 
   @Test(dataProvider = "random")
   public void testExponent(double exponent, double expected) {
-    ppp("COMPARING " + myExpFunction(exponent) + " AND " + expected);
+    debug("COMPARING " + myExpFunction(exponent) + " AND " + expected);
     assertEquals(myExpFunction(exponent), expected);
   }
 
-  private static void ppp(String s) {
-    System.out.println("[ExponentTest] " + s);
+  private void debug(String s) {
+    Logger.getLogger(ExponentTest.class).info("[ExponentTest] " + s);
   }
 
   private double myExpFunction(double exponent) {

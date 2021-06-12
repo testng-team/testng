@@ -13,7 +13,6 @@ public class ConfigurationGroupInvocationCountSampleTest {
       groups = {"twice"},
       value = {"twice"})
   public void a() {
-    ppp("BEFORE()");
     m_list.add(1);
   }
 
@@ -22,7 +21,6 @@ public class ConfigurationGroupInvocationCountSampleTest {
       invocationCount = 3)
   public void b() {
     m_list.add(2);
-    ppp("B()");
   }
 
   @AfterGroups(
@@ -30,12 +28,5 @@ public class ConfigurationGroupInvocationCountSampleTest {
       value = {"twice"})
   public void c() {
     m_list.add(3);
-    ppp("AFTER()");
-  }
-
-  private void ppp(String string) {
-    if (false) {
-      System.out.println("[A] " + string);
-    }
   }
 }

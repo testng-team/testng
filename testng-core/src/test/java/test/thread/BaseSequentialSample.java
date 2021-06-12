@@ -1,25 +1,24 @@
 package test.thread;
 
 import java.util.Map;
+import org.testng.log4testng.Logger;
 
 public class BaseSequentialSample {
 
   protected void addId(String method, long id) {
-    ppp(method + " ID:" + id);
+    debug(method + " ID:" + id);
     getMap().put(id, id);
   }
 
   Map getMap() {
     Map result = Helper.getMap(getClass().getName());
-    ppp("RETURNING MAP " + result + " THIS:" + this);
+    debug("RETURNING MAP " + result + " THIS:" + this);
 
     return result;
   }
 
-  protected void ppp(String s) {
-    if (false) {
-      System.out.println(
+  protected void debug(String s) {
+      Logger.getLogger(getClass()).debug(
           "[" + getClass().getName() + " " + Thread.currentThread().getId() + " " + "] " + s);
-    }
   }
 }

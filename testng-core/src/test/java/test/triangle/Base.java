@@ -27,7 +27,4 @@ public class Base {
     CountCalls.incr();
   }
 
-  private static void ppp(String s) {
-    System.out.println("[Base] " + s);
-  }
 }

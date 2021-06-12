@@ -56,12 +56,6 @@ public class ConfigurationGroups2SampleTest {
 
   private void log(String s) {
     m_list.add(s);
-    ppp(s);
   }
 
-  private void ppp(String s) {
-    if (false) {
-      System.out.println("[ConfigurationGroups2SampleTest] " + s);
-    }
-  }
 }

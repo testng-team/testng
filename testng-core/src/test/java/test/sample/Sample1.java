@@ -62,7 +62,4 @@ public class Sample1 extends BaseSample1 {
     Assert.assertEquals("Beust", "", "Expected name Beust, found blah");
   }
 
-  private static void ppp(String s) {
-    System.out.println("[Test1] " + s);
-  }
 }

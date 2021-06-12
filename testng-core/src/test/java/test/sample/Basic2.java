@@ -20,10 +20,6 @@ public class Basic2 {
     m_afterClass = 0;
   }
 
-  private void ppp(String s) {
-    System.out.println("[Basic2 " + Thread.currentThread().getId() + " ] " + hashCode() + " " + s);
-  }
-
   @AfterClass
   public void checkTestAtClassLevelWasRun() {
     m_afterClass++;
