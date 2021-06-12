@@ -233,6 +233,7 @@ public class XmlSuite implements Cloneable {
   /**
    * @deprecated - This method stands deprecated as of TestNG <code>7.5.0</code>. Use {@link
    *     XmlSuite#getObjectFactoryClass()} instead.
+   * return - A {@link ITestObjectFactory} instance.
    */
   @Deprecated
   public ITestObjectFactory getObjectFactory() {

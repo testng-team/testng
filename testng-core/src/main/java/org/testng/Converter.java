@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import org.testng.collections.Sets;
 import org.testng.internal.Yaml;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlSuite;
 
 /**

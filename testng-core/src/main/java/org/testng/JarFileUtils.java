@@ -15,7 +15,7 @@ import org.testng.internal.Utils;
 import org.testng.reporters.Files;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;

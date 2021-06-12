@@ -3,7 +3,7 @@ package test.dependent;
 import java.io.ByteArrayInputStream;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import test.TestHelper;
 
 public class MissingGroupSampleTest {

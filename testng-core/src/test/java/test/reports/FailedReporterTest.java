@@ -13,7 +13,7 @@ import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;

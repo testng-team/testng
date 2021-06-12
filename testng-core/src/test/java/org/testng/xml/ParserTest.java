@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.xml.internal.Parser;
 
 public class ParserTest {
 
