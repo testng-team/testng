@@ -12,6 +12,7 @@ import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.xml.internal.Parser;
 import test.SimpleBaseTest;
 
 public class XmlSuiteTest extends SimpleBaseTest {

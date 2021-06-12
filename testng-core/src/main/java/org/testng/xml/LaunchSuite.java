@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.internal.Parser;
 
 /**
  * This class is used to encapsulate a launch. Various synthetic XML files are created depending on

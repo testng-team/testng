@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.FailedReporter;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;

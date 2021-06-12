@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.reporters.TextReporter;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;

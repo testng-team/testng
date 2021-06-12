@@ -5,7 +5,7 @@ import static org.testng.Assert.assertEquals;
 import java.io.IOException;
 import java.util.List;
 import org.testng.annotations.Test;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 

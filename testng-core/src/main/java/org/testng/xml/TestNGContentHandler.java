@@ -26,6 +26,7 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
+import org.testng.xml.internal.Parser;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -144,7 +145,7 @@ public class TestNGContentHandler extends DefaultHandler {
 
   private static boolean skipConsideringSystemId(String systemId) {
     return Strings.isNullOrEmpty(systemId)
-        || Parser.isDTDDomainInternallyKnownToTestNG(systemId)
+        || TestNGURLs.isDTDDomainInternallyKnownToTestNG(systemId)
         || isMalformedFileSystemBasedSystemId(systemId);
   }
 

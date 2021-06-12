@@ -28,7 +28,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlGroups;
 import org.testng.xml.XmlInclude;

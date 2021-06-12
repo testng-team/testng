@@ -15,7 +15,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
 import org.testng.reporters.Files;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;

@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import org.testng.TestNGException;
 import org.testng.xml.ISuiteParser;
-import org.testng.xml.Parser;
+import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlSuite;
 
 public class YamlParser implements ISuiteParser {

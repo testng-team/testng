@@ -3,6 +3,7 @@ package org.testng.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import org.testng.TestNGException;
+import org.testng.xml.internal.Parser;
 import org.xml.sax.SAXException;
 
 public class SuiteXmlParser extends XMLParser<XmlSuite> implements ISuiteParser {
