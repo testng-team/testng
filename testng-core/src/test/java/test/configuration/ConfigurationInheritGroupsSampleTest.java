@@ -16,5 +16,4 @@ public class ConfigurationInheritGroupsSampleTest {
   public void test1() {
     Assert.assertTrue(m_ok);
   }
-
 }

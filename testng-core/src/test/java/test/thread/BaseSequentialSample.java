@@ -18,7 +18,7 @@ public class BaseSequentialSample {
   }
 
   protected void debug(String s) {
-      Logger.getLogger(getClass()).debug(
-          "[" + getClass().getName() + " " + Thread.currentThread().getId() + " " + "] " + s);
+    Logger.getLogger(getClass())
+        .debug("[" + getClass().getName() + " " + Thread.currentThread().getId() + " " + "] " + s);
   }
 }

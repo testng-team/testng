@@ -7,8 +7,7 @@ import java.util.List;
 
 final class TestNGURLs {
 
-  private TestNGURLs() {
-  }
+  private TestNGURLs() {}
 
   private static final List<String> DOMAINS = Arrays.asList("beust.com", "testng.org");
 
@@ -20,5 +19,4 @@ final class TestNGURLs {
       return false;
     }
   }
-
 }

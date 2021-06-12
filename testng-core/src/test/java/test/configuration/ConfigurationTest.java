@@ -95,5 +95,4 @@ public class ConfigurationTest {
     assert !m_afterClass : "afterClass shouldn't have run";
     assert !m_afterMethod : "afterMethod shouldn't have run";
   }
-
 }

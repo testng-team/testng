@@ -44,5 +44,4 @@ public class SampleMethod1 {
     assert m_ok1 && m_ok2 && m_ok3 && m_ok4
         : "All booleans should be true: " + m_ok1 + " " + m_ok2 + " " + m_ok3 + " " + m_ok4;
   }
-
 }

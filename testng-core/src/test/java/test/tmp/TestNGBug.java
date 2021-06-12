@@ -5,8 +5,7 @@ import org.testng.annotations.Test;
 
 public class TestNGBug {
   //  @Configuration(beforeTestMethod = true)
-  public void init() {
-  }
+  public void init() {}
 
   @Test
   public void test1() {
@@ -22,5 +21,4 @@ public class TestNGBug {
   public void test3() {
     Reporter.log("Child.test3");
   }
-
 }

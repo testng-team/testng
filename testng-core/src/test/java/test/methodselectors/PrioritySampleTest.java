@@ -5,12 +5,9 @@ import org.testng.annotations.Test;
 public class PrioritySampleTest {
 
   @Test
-  public void alwaysRun() {
-  }
+  public void alwaysRun() {}
 
   @Test
   @NoTest
-  public void neverRun() {
-  }
-
+  public void neverRun() {}
 }

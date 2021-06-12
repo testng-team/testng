@@ -7,11 +7,8 @@ import org.testng.annotations.Test;
 public class ConcreteTest extends Fixturable {
   @BeforeTest
   @AfterGroups("fixture")
-  public void beforeFixture() {
-  }
+  public void beforeFixture() {}
 
   @Test(groups = "fixture")
-  public void test() {
-  }
-
+  public void test() {}
 }

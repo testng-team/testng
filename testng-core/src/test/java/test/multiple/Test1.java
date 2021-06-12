@@ -18,5 +18,4 @@ public class Test1 {
   public void cleanUp() {
     m_count = 0;
   }
-
 }

@@ -72,5 +72,4 @@ public class InvocationCountTest {
     assert 10 == m_count
         : "Method should have been invoked 10 times but was invoked " + m_count + " times";
   }
-
 }

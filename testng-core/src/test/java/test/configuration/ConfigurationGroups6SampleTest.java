@@ -16,8 +16,7 @@ public class ConfigurationGroups6SampleTest {
   private boolean m_run2 = false;
 
   @Test
-  public void f() {
-  }
+  public void f() {}
 
   @Test(groups = "cg6-1")
   public void run1() {
@@ -45,5 +44,4 @@ public class ConfigurationGroups6SampleTest {
     Assert.assertTrue(m_run2, "run2() wasn't run");
     Assert.assertTrue(m_after, "after1() wasn't run");
   }
-
 }

@@ -26,5 +26,4 @@ public class Base {
   public void postAfterTestClass() {
     CountCalls.incr();
   }
-
 }

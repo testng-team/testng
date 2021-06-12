@@ -24,8 +24,7 @@ public class ConfigurationGroups1SampleTest {
   }
 
   @Test(groups = "cg1-a")
-  public void fa() {
-  }
+  public void fa() {}
 
   @Test(groups = "cg1-1")
   public void f1() {
@@ -44,5 +43,4 @@ public class ConfigurationGroups1SampleTest {
   private void log(String s) {
     m_list.add(s);
   }
-
 }

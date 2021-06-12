@@ -6,15 +6,11 @@ import org.testng.annotations.Test;
 
 public class Base1 {
   @BeforeClass
-  public void bc() {
-  }
+  public void bc() {}
 
   @BeforeMethod
-  public void bm() {
-  }
+  public void bm() {}
 
   @Test
-  public void tbase() {
-  }
-
+  public void tbase() {}
 }

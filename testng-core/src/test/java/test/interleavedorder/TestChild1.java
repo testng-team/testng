@@ -13,5 +13,4 @@ public class TestChild1 extends BaseTestClass {
   public void afterTestChildOneClass() {
     InterleavedInvocationTest.LOG.add("afterTestChild1Class");
   }
-
 }

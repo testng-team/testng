@@ -50,7 +50,6 @@ public class ConfigurationGroups3SampleTest extends Base3 {
     m_list.add(s);
   }
 
-
   public static boolean getF1() {
     return m_f1;
   }

@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import org.testng.TestListenerAdapter;
 import org.testng.annotations.Test;
-import org.testng.xml.internal.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.XmlTest;
+import org.testng.xml.internal.Parser;
 
 public class IssueTest {
 

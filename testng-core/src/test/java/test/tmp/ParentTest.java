@@ -7,15 +7,11 @@ import org.testng.annotations.Test;
 public class ParentTest {
 
   @BeforeMethod
-  public void btm1() {
-  }
+  public void btm1() {}
 
   @AfterMethod
-  public void atm1() {
-  }
+  public void atm1() {}
 
   @Test
-  public void t1() {
-  }
-
+  public void t1() {}
 }

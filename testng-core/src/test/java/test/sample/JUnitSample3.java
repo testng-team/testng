@@ -20,5 +20,4 @@ public class JUnitSample3 extends TestCase {
     Assert.assertEquals(m_count, 0);
     m_count++;
   }
-
 }

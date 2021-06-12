@@ -12,5 +12,4 @@ public class BaseTestClass {
   public void testTwo() {
     InterleavedInvocationTest.LOG.add("test2");
   }
-
 }

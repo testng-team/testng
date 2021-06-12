@@ -15,5 +15,4 @@ public class NoTestSelector implements IMethodSelector {
 
   @Override
   public void setTestMethods(List<ITestNGMethod> testMethods) {}
-
 }

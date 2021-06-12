@@ -16,5 +16,4 @@ public class B {
     Long id = Thread.currentThread().getId();
     m_threadIds.put(id, id);
   }
-
 }
