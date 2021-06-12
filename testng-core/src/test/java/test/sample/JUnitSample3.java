@@ -21,7 +21,4 @@ public class JUnitSample3 extends TestCase {
     m_count++;
   }
 
-  private static void ppp(String s) {
-    System.out.println("[JUnitSample3] " + s);
-  }
 }

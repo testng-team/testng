@@ -5,6 +5,7 @@ import java.util.Map;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.collections.Maps;
+import org.testng.log4testng.Logger;
 
 public class BaseDistributedTest {
   private boolean m_verbose = false;
@@ -33,16 +34,16 @@ public class BaseDistributedTest {
 
   protected void dumpMap(String title, Map<?, ?> m) {
     if (m_verbose) {
-      System.out.println("==== " + title);
+      Logger.getLogger(getClass()).info("==== " + title);
       for (Map.Entry<?, ?> entry : m.entrySet()) {
-        ppp(entry.getKey() + "  => " + entry.getValue());
+        log(entry.getKey() + "  => " + entry.getValue());
       }
     }
   }
 
-  private void ppp(String s) {
+  private void log(String s) {
     if (m_verbose) {
-      System.out.println("[BaseDistributedTest] " + s);
+      Logger.getLogger(getClass()).info("[BaseDistributedTest] " + s);
     }
   }
 }

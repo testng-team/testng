@@ -16,7 +16,6 @@ public class ConfigurationGroupIteratorDataProviderSampleTest {
       groups = {"twice"},
       value = {"twice"})
   public void a() {
-    ppp("BEFORE()");
     m_list.add(1);
   }
 
@@ -25,7 +24,6 @@ public class ConfigurationGroupIteratorDataProviderSampleTest {
       dataProvider = "MyData")
   public void b(int a, int b) {
     m_list.add(2);
-    ppp("B()" + a + "," + b);
   }
 
   @AfterGroups(
@@ -33,17 +31,10 @@ public class ConfigurationGroupIteratorDataProviderSampleTest {
       value = {"twice"})
   public void c() {
     m_list.add(3);
-    ppp("AFTER()");
   }
 
   @DataProvider(name = "MyData")
   public Iterator<Object[]> input() {
     return Arrays.asList(new Object[] {1, 1}, new Object[] {2, 2}, new Object[] {3, 3}).iterator();
-  }
-
-  private void ppp(String string) {
-    if (false) {
-      System.out.println("[A] " + string);
-    }
   }
 }

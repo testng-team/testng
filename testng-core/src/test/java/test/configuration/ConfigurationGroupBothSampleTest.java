@@ -19,7 +19,6 @@ public class ConfigurationGroupBothSampleTest {
       groups = {"twice"},
       value = {"twice"})
   public void a() {
-    ppp("BEFORE()");
     addToList(1);
   }
 
@@ -30,7 +29,6 @@ public class ConfigurationGroupBothSampleTest {
       threadPoolSize = 2)
   public void b(int a, int b) {
     addToList(2);
-    ppp("B()" + a + "," + b);
   }
 
   @AfterGroups(
@@ -38,7 +36,6 @@ public class ConfigurationGroupBothSampleTest {
       value = {"twice"})
   public void c() {
     addToList(3);
-    ppp("AFTER()");
   }
 
   @DataProvider(name = "MyData")
@@ -46,9 +43,4 @@ public class ConfigurationGroupBothSampleTest {
     return new Object[][] {{1, 1}, {2, 2}, {3, 3}};
   }
 
-  private void ppp(String string) {
-    if (false) {
-      System.out.println("[A] " + string + " on Thread:" + Thread.currentThread());
-    }
-  }
 }

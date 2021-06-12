@@ -6,7 +6,6 @@ import org.testng.annotations.Test;
 public class TestNGBug {
   //  @Configuration(beforeTestMethod = true)
   public void init() {
-    ppp("Base.init()");
   }
 
   @Test
@@ -24,7 +23,4 @@ public class TestNGBug {
     Reporter.log("Child.test3");
   }
 
-  private void ppp(String string) {
-    System.out.println("[TestNGBug] " + string);
-  }
 }

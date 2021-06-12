@@ -45,7 +45,4 @@ public class SampleMethod1 {
         : "All booleans should be true: " + m_ok1 + " " + m_ok2 + " " + m_ok3 + " " + m_ok4;
   }
 
-  private static void ppp(String s) {
-    System.out.println("[SampleMethod1] " + s);
-  }
 }

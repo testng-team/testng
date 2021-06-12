@@ -14,7 +14,6 @@ public class ConfigurationGroupDataProviderSampleTest {
       groups = {"twice"},
       value = {"twice"})
   public void a() {
-    ppp("BEFORE()");
     m_list.add(1);
   }
 
@@ -23,7 +22,6 @@ public class ConfigurationGroupDataProviderSampleTest {
       dataProvider = "MyData")
   public void b(int a, int b) {
     m_list.add(2);
-    ppp("B()" + a + "," + b);
   }
 
   @AfterGroups(
@@ -31,7 +29,6 @@ public class ConfigurationGroupDataProviderSampleTest {
       value = {"twice"})
   public void c() {
     m_list.add(3);
-    ppp("AFTER()");
   }
 
   @DataProvider(name = "MyData")
@@ -39,9 +36,4 @@ public class ConfigurationGroupDataProviderSampleTest {
     return new Object[][] {{1, 1}, {2, 2}, {3, 3}};
   }
 
-  private void ppp(String string) {
-    if (false) {
-      System.out.println("[A] " + string);
-    }
-  }
 }

@@ -21,19 +21,16 @@ public class ConfigurationGroups1SampleTest {
     Assert.assertFalse(m_before);
     Assert.assertFalse(m_f1);
     m_before = true;
-    log("before1");
   }
 
   @Test(groups = "cg1-a")
   public void fa() {
-    log("fa");
   }
 
   @Test(groups = "cg1-1")
   public void f1() {
     Assert.assertTrue(m_before);
     m_f1 = true;
-    log("f1");
   }
 
   private List<String> m_list = new ArrayList<>();
@@ -46,12 +43,6 @@ public class ConfigurationGroups1SampleTest {
 
   private void log(String s) {
     m_list.add(s);
-    ppp(s);
   }
 
-  private void ppp(String s) {
-    if (false) {
-      System.out.println("[ConfigurationGroups1SampleTest] " + s);
-    }
-  }
 }

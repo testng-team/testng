@@ -8,15 +8,10 @@ import org.testng.annotations.Test;
 
 @Test
 public class DepBugSampleTest {
-  private static List<String> m_log = new ArrayList<>();
+  private static final List<String> m_log = new ArrayList<>();
 
   private static void log(String s) {
-    //    ppp(s);
     m_log.add(s);
-  }
-
-  private static void ppp(String s) {
-    System.out.println("[DepBugSampleTest] " + s);
   }
 
   public static List<String> getLog() {

@@ -366,13 +366,13 @@ public class TestHTMLReporter implements ITestListener {
       if (TestRunner.getVerbose() > 1) {
         Logger.getLogger(TestRunner.class).error(e.getMessage(), e);
       } else {
-        ppp(e.getMessage());
+        log(e.getMessage());
       }
     }
   }
 
-  private static void ppp(String s) {
-    System.out.println("[TestHTMLReporter] " + s);
+  private static void log(String s) {
+    Logger.getLogger(TestHTMLReporter.class).info("[TestHTMLReporter] " + s);
   }
 
   private static class NameComparator implements Comparator<ITestResult> {

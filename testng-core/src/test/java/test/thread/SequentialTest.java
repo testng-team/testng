@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import test.BaseTest;
 
@@ -89,12 +90,10 @@ public class SequentialTest extends BaseTest {
 
     Assert.assertEquals(verifyMap.size(), threadCount);
 
-    ppp("COUNT:" + threadCount + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
+    debug("COUNT:" + threadCount + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
   }
 
-  private static void ppp(String s) {
-    if (false) {
-      System.out.println("[SequentialTest] " + s);
-    }
+  private void debug(String s) {
+    Logger.getLogger(getClass()).debug("[SequentialTest] " + s);
   }
 }

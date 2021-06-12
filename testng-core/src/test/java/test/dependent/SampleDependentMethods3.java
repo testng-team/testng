@@ -43,7 +43,4 @@ public class SampleDependentMethods3 {
     assert m_secondA : "secondA wasn't run";
   }
 
-  public static void ppp(String s) {
-    System.out.println("[SampleDependentMethods] " + s);
-  }
 }

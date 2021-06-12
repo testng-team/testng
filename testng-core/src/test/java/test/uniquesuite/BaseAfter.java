@@ -15,8 +15,4 @@ public class BaseAfter {
   public void incrementAfter() {
     m_afterCount++;
   }
-
-  private static void ppp(String s) {
-    System.out.println("[BaseAfter] " + s);
-  }
 }

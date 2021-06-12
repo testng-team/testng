@@ -88,8 +88,4 @@ public class InvocationAndSuccessPercentageTest extends BaseTest {
         1,
         "failed_but_within_success_percentage_tests");
   }
-
-  public static void ppp(String s) {
-    System.out.println("[Invocation] " + s);
-  }
 }

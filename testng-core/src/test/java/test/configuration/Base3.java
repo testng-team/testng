@@ -14,19 +14,8 @@ public class Base3 {
 
   @BeforeGroups("cg34-1")
   public void anotherBefore1() {
-    log("anotherBefore1");
     Assert.assertFalse(m_before);
     Assert.assertFalse(ConfigurationGroups3SampleTest.getF1());
     m_before = true;
-  }
-
-  private void log(String string) {
-    ppp(string);
-  }
-
-  private void ppp(String s) {
-    if (false) {
-      System.out.println("[Base3] " + s);
-    }
   }
 }

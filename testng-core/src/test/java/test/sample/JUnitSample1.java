@@ -30,16 +30,10 @@ public class JUnitSample1 extends TestCase {
     m_field = null;
   }
 
-  /** */
   public void testSample1_1() {
-    //    ppp("Sample 1_1");
   }
 
   public void testSample1_2() {
-    //    ppp("Sample 1_2");
   }
 
-  private static void ppp(String s) {
-    System.out.println("[JUnitSample1] " + s);
-  }
 }

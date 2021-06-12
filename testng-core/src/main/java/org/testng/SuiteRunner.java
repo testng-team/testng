@@ -573,10 +573,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     return configuration.getAnnotationFinder();
   }
 
-  public static void ppp(String s) {
-    System.out.println("[SuiteRunner] " + s);
-  }
-
   /** The default implementation of {@link ITestRunnerFactory}. */
   private static class DefaultTestRunnerFactory implements ITestRunnerFactory {
     private final ITestListener[] failureGenerators;
