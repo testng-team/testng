@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,6 +25,9 @@ import org.testng.collections.Sets;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.IInvocationStatus;
+import org.testng.internal.objects.Dispenser;
+import org.testng.internal.objects.pojo.BasicAttributes;
+import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
@@ -626,7 +630,6 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   @Override
   public void setRetryAnalyzerClass(Class<? extends IRetryAnalyzer> clazz) {
     m_retryAnalyzerClass = clazz == null ? DisabledRetryAnalyzer.class : clazz;
-    m_retryAnalyzer = m_objectFactory.newInstance(m_retryAnalyzerClass);
   }
 
   @Override
@@ -753,21 +756,39 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {
-    Object[] key = tr.getParameters();
-    IRetryAnalyzer retryAnalyzer = this.m_retryAnalyzer;
-    if (key != null && key.length != 0 && retryAnalyzer != null) {
-      final String keyAsString = getSimpleName() + "#" + getParameterInvocationCount();
-      final IRetryAnalyzer currentRetryAnalyzerInMap = m_testMethodToRetryAnalyzer.get(keyAsString);
-      if (currentRetryAnalyzerInMap == null
-          || currentRetryAnalyzerInMap.getClass() != retryAnalyzer.getClass()) {
-        retryAnalyzer =
-            m_testMethodToRetryAnalyzer.compute(
-                keyAsString,
-                (s, ra) -> m_objectFactory.newInstance(this.m_retryAnalyzer.getClass()));
-      } else {
-        retryAnalyzer = currentRetryAnalyzerInMap;
-      }
+    if (this.m_retryAnalyzerClass.equals(DisabledRetryAnalyzer.class)) {
+      return null;
     }
-    return retryAnalyzer;
+    if (isNotParameterisedTest(tr)) {
+      this.m_retryAnalyzer = computeRetryAnalyzerInstanceToUse(tr);
+      return this.m_retryAnalyzer;
+    }
+    final String keyAsString = getSimpleName() + "#" + getParameterInvocationCount();
+    final IRetryAnalyzer currentRetryAnalyzerInMap = m_testMethodToRetryAnalyzer.get(keyAsString);
+    if (currentRetryAnalyzerInMap != null) {
+      return currentRetryAnalyzerInMap;
+    }
+    BasicAttributes ba = new BasicAttributes(null, this.m_retryAnalyzerClass);
+    CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
+    IRetryAnalyzer instance =
+        (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
+    m_testMethodToRetryAnalyzer.put(keyAsString, instance);
+    return instance;
+  }
+
+  private static boolean isNotParameterisedTest(ITestResult tr) {
+    return Optional.ofNullable(tr.getParameters()).orElse(new Object[0]).length == 0;
+  }
+
+  private IRetryAnalyzer computeRetryAnalyzerInstanceToUse(ITestResult tr) {
+    if (m_retryAnalyzer != null) {
+      return m_retryAnalyzer;
+    }
+    if (m_retryAnalyzerClass.equals(DisabledRetryAnalyzer.class)) {
+      return null;
+    }
+    BasicAttributes ba = new BasicAttributes(null, this.m_retryAnalyzerClass);
+    CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
+    return (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
   }
 }

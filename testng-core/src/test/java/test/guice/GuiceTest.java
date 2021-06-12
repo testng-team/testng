@@ -17,6 +17,10 @@ import test.guice.issue2427.Test2;
 import test.guice.issue2427.modules.TestModuleOne;
 import test.guice.issue2427.modules.TestModuleTwo;
 import test.guice.issue2427.modules.TestParentConfigModule;
+import test.guice.issue2570.GuicePoweredConstructorInjectedRetry;
+import test.guice.issue2570.GuicePoweredConstructorInjectedRetryForDPTest;
+import test.guice.issue2570.GuicePoweredSetterInjectedRetry;
+import test.guice.issue2570.SampleTestClass;
 
 public class GuiceTest extends SimpleBaseTest {
 
@@ -76,5 +80,21 @@ public class GuiceTest extends SimpleBaseTest {
         TestParentConfigModule.counter.get(), 1, "TestParentModule configuration called times");
     assertEquals(TestModuleOne.counter.get(), 1, "TestModuleOne configuration called times");
     assertEquals(TestModuleTwo.counter.get(), 1, "TestModuleTwo configuration called times");
+  }
+
+  @Test(description = "GITHUB-2570")
+  public void ensureRetryAnalyzersAreGuiceAware() {
+    TestNG testng = create(SampleTestClass.class);
+    testng.run();
+    assertThat(GuicePoweredConstructorInjectedRetry.getDragonWarrior())
+        .withFailMessage(
+            "The Retry Analyzer should have been created via Guice constructor injection.")
+        .isEqualTo("Kungfu-Panda");
+    assertThat(GuicePoweredSetterInjectedRetry.getTerminator())
+        .withFailMessage("The Retry Analyzer should have been created via Guice setter injection.")
+        .isEqualTo("Arnold");
+    assertThat(GuicePoweredConstructorInjectedRetryForDPTest.getCounter())
+        .withFailMessage("There should have been 2 retry analyser instances created by Guice")
+        .isEqualTo(2);
   }
 }
