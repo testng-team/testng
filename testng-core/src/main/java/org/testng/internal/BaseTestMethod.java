@@ -343,7 +343,11 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
    */
   @Override
   public int hashCode() {
-    return m_method.hashCode();
+    int hash = m_method.hashCode();
+    if (m_instance != null) {
+      hash = hash * 31 + m_instance.hashCode();
+    }
+    return hash;
   }
 
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
