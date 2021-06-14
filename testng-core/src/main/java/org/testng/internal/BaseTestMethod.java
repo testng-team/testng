@@ -345,7 +345,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   public int hashCode() {
     int hash = m_method.hashCode();
     if (m_instance != null) {
-      hash = hash * 31 + m_instance.hashCode();
+      hash = hash * 31 + System.identityHashCode(m_instance);
     }
     return hash;
   }
