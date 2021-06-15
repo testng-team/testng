@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-849: Performance improvement by fixing hashCode (testn & Vladimir Sitnikov)
 Fixed: GITHUB-2570: Use Guice injector for instantiate IRetryAnalyzer (Krishnan Mahadevan)
 Fix: use proper instances for beforeClass callback when different instances collide on hash codes
 Fixed: Fix parallel and configfailurepolicy parsing in tr_TR locale
