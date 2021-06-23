@@ -5,8 +5,9 @@ plugins {
     kotlin("jvm")
 }
 
-java {
-    withSourcesJar()
+dependencies {
+    testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.5.10"))
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
