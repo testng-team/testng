@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.Assert;
+import org.testng.CliTestNgRunner;
 import org.testng.CommandLineArgs;
 import org.testng.IInjectorFactory;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
+import org.testng.JCommanderCliTestNgRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -27,6 +29,7 @@ public class CommandLineTest {
   /** Test -junit */
   @Test(groups = {"current"})
   public void junitParsing() {
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     String[] argv = {
       "-log",
       "0",
@@ -37,7 +40,7 @@ public class CommandLineTest {
       "test.sample.JUnitSample1"
     };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     List<ITestResult> passed = tla.getPassedTests();
     assertEquals(passed.size(), 2);
@@ -52,13 +55,14 @@ public class CommandLineTest {
   /** Test the absence of -junit */
   @Test(groups = {"current"})
   public void junitParsing2() {
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     String[] argv = {
       "-log", "0",
       "-d", OutputDirectoryPatch.getOutputDirectory(),
       "-testclass", "test.sample.JUnitSample1"
     };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     List<ITestResult> passed = tla.getPassedTests();
     assertEquals(passed.size(), 0);
@@ -67,6 +71,7 @@ public class CommandLineTest {
   /** Test the ability to override the default command line Suite name */
   @Test(groups = {"current"})
   public void suiteNameOverride() {
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     String suiteName = "MySuiteName";
     String[] argv = {
       "-log",
@@ -80,7 +85,7 @@ public class CommandLineTest {
       suiteName
     };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     List<ITestContext> contexts = tla.getTestContexts();
     assertTrue(contexts.size() > 0);
@@ -92,6 +97,7 @@ public class CommandLineTest {
   /** Test the ability to override the default command line test name */
   @Test(groups = {"current"})
   public void testNameOverride() {
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     String testName = "My Test Name";
     String[] argv = {
       "-log",
@@ -105,7 +111,7 @@ public class CommandLineTest {
       testName
     };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     List<ITestContext> contexts = tla.getTestContexts();
     assertTrue(contexts.size() > 0);
@@ -116,7 +122,9 @@ public class CommandLineTest {
 
   @Test
   public void testUseDefaultListenersArgument() {
-    TestNG.privateMain(
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
+    CliTestNgRunner.Main.privateMain(
+        cliRunner,
         new String[] {
           "-log", "0", "-usedefaultlisteners", "false", "-testclass", "test.sample.JUnitSample1"
         },
@@ -125,13 +133,14 @@ public class CommandLineTest {
 
   @Test
   public void testMethodParameter() {
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     String[] argv = {
       "-log", "0",
       "-d", OutputDirectoryPatch.getOutputDirectory(),
       "-methods", "test.sample.Sample2.method1,test.sample.Sample2.method3",
     };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     List<ITestResult> passed = tla.getPassedTests();
     Assert.assertEquals(passed.size(), 2);

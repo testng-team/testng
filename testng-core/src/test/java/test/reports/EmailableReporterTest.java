@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.security.Permission;
+import org.testng.CliTestNgRunner;
 import org.testng.IReporter;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -91,7 +92,7 @@ public class EmailableReporterTest extends SimpleBaseTest {
       if (jvm != null) {
         System.setProperty(jvm, filename);
       }
-      TestNG.main(args);
+      CliTestNgRunner.Main.main(args);
     } catch (SecurityException t) {
       // Gobble Security exception
     } finally {

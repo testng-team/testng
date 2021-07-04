@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.testng.CliTestNgRunner;
+import org.testng.JCommanderCliTestNgRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -76,14 +78,18 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
           "-listener",
           LocalLogAggregator.class.getCanonicalName()
         };
-    TestNG.privateMain(args, null);
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
+    CliTestNgRunner.Main.privateMain(cliRunner, args, null);
     Set<String> logs = LocalLogAggregator.getLogs();
     assertThat(logs).hasSize(2);
   }
 
   @Test(description = "GITHUB-1810")
   public void ensureNoNullPointerExceptionIsThrown() throws IOException {
-    TestNG testng = TestNG.privateMain(new String[] {createTemporarySuiteAndGetItsPath()}, null);
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
+    TestNG testng =
+        CliTestNgRunner.Main.privateMain(
+            cliRunner, new String[] {createTemporarySuiteAndGetItsPath()}, null);
     assertThat(testng.getStatus()).isEqualTo(8);
   }
 

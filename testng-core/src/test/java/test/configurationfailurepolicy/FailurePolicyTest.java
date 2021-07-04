@@ -3,7 +3,9 @@ package test.configurationfailurepolicy;
 import static org.testng.Assert.assertEquals;
 import static test.SimpleBaseTest.getPathToResource;
 
+import org.testng.CliTestNgRunner;
 import org.testng.ITestContext;
+import org.testng.JCommanderCliTestNgRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
@@ -102,8 +104,9 @@ public class FailurePolicyTest {
           "-testclass",
           ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
         };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     verify(tla, 1, 1, 2);
   }
@@ -121,8 +124,9 @@ public class FailurePolicyTest {
           "-testclass",
           ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
         };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     verify(tla, 2, 0, 2);
   }
@@ -139,8 +143,9 @@ public class FailurePolicyTest {
           "skip",
           getPathToResource("testng-configfailure.xml")
         };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     verify(tla, 1, 1, 2);
   }
@@ -157,8 +162,9 @@ public class FailurePolicyTest {
           "continue",
           getPathToResource("testng-configfailure.xml")
         };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     verify(tla, 2, 0, 2);
   }

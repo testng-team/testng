@@ -1,8 +1,9 @@
 package test.mixed;
 
 import org.testng.Assert;
+import org.testng.CliTestNgRunner;
+import org.testng.JCommanderCliTestNgRunner;
 import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.BaseTest;
 import testhelper.OutputDirectoryPatch;
@@ -24,8 +25,9 @@ public class MixedTest extends BaseTest {
       "-testclass",
       "test.mixed.JUnit3Test1,test.mixed.JUnit4Test1,test.mixed.TestNGTest1,test.mixed.TestNGGroups"
     };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     Assert.assertEquals(
         tla.getPassedTests().size(),
@@ -45,8 +47,9 @@ public class MixedTest extends BaseTest {
       "-testclass",
       "test.mixed.JUnit3Test1,test.mixed.JUnit4Test1,test.mixed.TestNGTest1"
     };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     Assert.assertEquals(tla.getPassedTests().size(), 6);
     Assert.assertEquals(tla.getFailedTests().size(), 0);
@@ -63,8 +66,9 @@ public class MixedTest extends BaseTest {
       "-methods",
       "test.mixed.JUnit3Test1.testB,test.mixed.JUnit4Test1.atest,test.mixed.TestNGTest1.tngCustomTest1"
     };
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, argv, tla);
 
     Assert.assertEquals(tla.getPassedTests().size(), 3);
     Assert.assertEquals(tla.getFailedTests().size(), 0);

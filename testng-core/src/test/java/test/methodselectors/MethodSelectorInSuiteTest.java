@@ -3,8 +3,10 @@ package test.methodselectors;
 import java.util.Collections;
 import java.util.List;
 import org.testng.Assert;
+import org.testng.CliTestNgRunner;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
+import org.testng.JCommanderCliTestNgRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
@@ -58,13 +60,14 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
 
   @Test
   public void fileOnCommandLine() {
+    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
     String[] args =
         new String[] {
           "-d",
           OutputDirectoryPatch.getOutputDirectory(),
           getPathToResource("methodselector-in-xml.xml")
         };
-    TestNG.privateMain(args, m_tla);
+    CliTestNgRunner.Main.privateMain(cliRunner, args, m_tla);
 
     validate(new String[] {"test2"});
   }
