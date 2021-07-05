@@ -260,20 +260,10 @@ public class MethodGroupsHelper {
 
   private static Boolean isMatch(Pattern pattern, String group) {
     Pair<String, String> cacheKey = Pair.create(pattern.pattern(), group);
-    Boolean match = MATCH_CACHE.get(cacheKey);
-    if (match == null) {
-      match = pattern.matcher(group).matches();
-      MATCH_CACHE.put(cacheKey, match);
-    }
-    return match;
+    return MATCH_CACHE.computeIfAbsent(cacheKey, k -> pattern.matcher(group).matches());
   }
 
   private static Pattern getPattern(String groupRegexp) {
-    Pattern groupPattern = PATTERN_CACHE.get(groupRegexp);
-    if (groupPattern == null) {
-      groupPattern = Pattern.compile(groupRegexp);
-      PATTERN_CACHE.put(groupRegexp, groupPattern);
-    }
-    return groupPattern;
+    return PATTERN_CACHE.computeIfAbsent(groupRegexp, Pattern::compile);
   }
 }
