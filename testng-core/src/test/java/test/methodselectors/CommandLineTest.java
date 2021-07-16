@@ -1,112 +1,30 @@
 package test.methodselectors;
 
+import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.testng.CliTestNgRunner;
 import org.testng.ITestResult;
-import org.testng.JCommanderCliTestNgRunner;
 import org.testng.TestListenerAdapter;
-import org.testng.annotations.BeforeMethod;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 import testhelper.OutputDirectoryPatch;
 
 public class CommandLineTest extends SimpleBaseTest {
 
-  private final String[] ARG_WITHOUT_CLASSES =
-      new String[] {
-        "-log", "0", "-d", OutputDirectoryPatch.getOutputDirectory(), "-methodselectors", "", ""
-      };
-
-  private final String[] ARG_WITH_GROUPS =
-      new String[] {
-        "-log", "0",
-        "-d", OutputDirectoryPatch.getOutputDirectory(),
-        "-testclass", "test.methodselectors.SampleTest",
-        "-methodselectors", "",
-        "-groups", ""
-      };
-
-  private final String[] ARG_WITHOUT_GROUPS =
-      new String[] {
-        "-log", "0",
-        "-d", OutputDirectoryPatch.getOutputDirectory(),
-        "-testclass", "test.methodselectors.SampleTest",
-        "-methodselectors", "",
-      };
-
-  private TestListenerAdapter tla;
-
-  @BeforeMethod
-  public void setup() {
-    tla = new TestListenerAdapter();
-  }
-
   @Test
-  public void commandLineNegativePriorityAllGroups() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITHOUT_GROUPS[7] = "test.methodselectors.AllTestsMethodSelector:-1";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITHOUT_GROUPS, tla);
-    String[] passed = {"test1", "test2", "test3"};
-    String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
-  }
+  public void multipleSelectors() {
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setVerbose(0);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setTestClasses(new Class<?>[]{test.methodselectors.SampleTest.class});
+    testng.addMethodSelector("test.methodselectors.NoTestSelector", 7);
+    testng.addMethodSelector("test.methodselectors.Test2MethodSelector", 5);
+    testng.setGroups("test1");
+    testng.run();
 
-  @Test
-  public void commandLineNegativePriorityGroup2() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITHOUT_GROUPS[7] = "test.methodselectors.Test2MethodSelector:-1";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITHOUT_GROUPS, tla);
-    String[] passed = {"test2"};
-    String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
-  }
-
-  @Test
-  public void commandLineLessThanPriorityTest1Test() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITH_GROUPS[7] = "test.methodselectors.Test2MethodSelector:5";
-    ARG_WITH_GROUPS[9] = "test1";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITH_GROUPS, tla);
-    String[] passed = {"test1", "test2"};
-    String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
-  }
-
-  @Test
-  public void commandLineGreaterThanPriorityTest1Test2() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITH_GROUPS[7] = "test.methodselectors.Test2MethodSelector:15";
-    ARG_WITH_GROUPS[9] = "test1";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITH_GROUPS, tla);
-    String[] passed = {"test2"};
-    String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
-  }
-
-  @Test
-  public void commandLineLessThanPriorityAllTests() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITH_GROUPS[7] = "test.methodselectors.AllTestsMethodSelector:5";
-    ARG_WITH_GROUPS[9] = "test1";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITH_GROUPS, tla);
-    String[] passed = {"test1", "test2", "test3"};
-    String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
-  }
-
-  @Test
-  public void commandLineMultipleSelectors() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITH_GROUPS[7] =
-        "test.methodselectors.NoTestSelector:7,test.methodselectors.Test2MethodSelector:5";
-    ARG_WITH_GROUPS[9] = "test1";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2"};
     String[] failed = {};
     verifyTests("Passed", passed, tla.getPassedTests());
@@ -115,9 +33,15 @@ public class CommandLineTest extends SimpleBaseTest {
 
   @Test
   public void commandLineNoTest1Selector() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITHOUT_GROUPS[7] = "test.methodselectors.NoTest1MethodSelector:5";
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITHOUT_GROUPS, tla);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setVerbose(0);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setTestClasses(new Class<?>[]{test.methodselectors.SampleTest.class});
+    testng.addMethodSelector("test.methodselectors.NoTest1MethodSelector", 5);
+    testng.run();
+
     String[] passed = {"test2", "test3"};
     String[] failed = {};
     verifyTests("Passed", passed, tla.getPassedTests());
@@ -126,10 +50,17 @@ public class CommandLineTest extends SimpleBaseTest {
 
   @Test
   public void commandLineTestWithXmlFile() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    ARG_WITHOUT_CLASSES[5] = "test.methodselectors.NoTest1MethodSelector:5";
-    ARG_WITHOUT_CLASSES[6] = getPathToResource("testng-methodselectors.xml");
-    CliTestNgRunner.Main.privateMain(cliRunner, ARG_WITHOUT_CLASSES, tla);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setVerbose(0);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.addMethodSelector("test.methodselectors.NoTest1MethodSelector", 5);
+    testng.setTestSuites(Collections.singletonList(
+        getPathToResource("testng-methodselectors.xml")
+    ));
+    testng.run();
+
     String[] passed = {"test2", "test3"};
     String[] failed = {};
     verifyTests("Passed", passed, tla.getPassedTests());
@@ -138,20 +69,17 @@ public class CommandLineTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2407")
   public void testOverrideExcludedMethodsCommandLineExclusions() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    String[] args =
-        new String[] {
-          "src/test/resources/test/methodselectors/sampleTest.xml",
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-excludegroups",
-          "test1",
-          "-overrideincludedmethods"
-        };
-
-    CliTestNgRunner.Main.privateMain(cliRunner, args, tla);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setTestSuites(Collections.singletonList(
+        getPathToResource("test/methodselectors/sampleTest.xml")
+    ));
+    testng.setVerbose(0);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setExcludedGroups("test1");
+    testng.setOverrideIncludedMethods(true);
+    testng.run();
 
     // test1 is excluded, so only test2 is left in the passed list
     String[] passed = {"test2"};
@@ -162,18 +90,16 @@ public class CommandLineTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2407")
   public void testOverrideExcludedMethodsSuiteExclusions() {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    String[] args =
-        new String[] {
-          "src/test/resources/test/methodselectors/sampleTestExclusions.xml",
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-overrideincludedmethods"
-        };
-
-    CliTestNgRunner.Main.privateMain(cliRunner, args, tla);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setTestSuites(Collections.singletonList(
+        getPathToResource("test/methodselectors/sampleTestExclusions.xm")
+    ));
+    testng.setVerbose(0);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setOverrideIncludedMethods(true);
+    testng.run();
 
     String[] passed = {};
     String[] failed = {};

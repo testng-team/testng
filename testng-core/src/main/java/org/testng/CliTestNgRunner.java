@@ -1,7 +1,10 @@
 package org.testng;
 
+import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.log4testng.Logger;
+import java.util.List;
+import java.util.ServiceLoader;
 
 public interface CliTestNgRunner {
 
@@ -21,14 +24,35 @@ public interface CliTestNgRunner {
 
     private static final Logger LOGGER = Logger.getLogger(TestNG.class);
 
+    private static final CliTestNgRunner RUNNER = findRunner();
+
+    private static CliTestNgRunner findRunner() {
+      List<CliTestNgRunner> runners = Lists.newArrayList();
+      ServiceLoader<CliTestNgRunner> runnerLoader = ServiceLoader.load(CliTestNgRunner.class);
+      for (CliTestNgRunner runner : runnerLoader) {
+        runners.add(runner);
+      }
+      if (runners.isEmpty()) {
+        throw new TestNGException("No runner found");
+      }
+      CliTestNgRunner runner = runners.get(0);
+      if (runners.size() > 1) {
+        LOGGER.warn("Too many runners found. Takes the first one: " + runner.getClass());
+      }
+      return runner;
+    }
+
+    public static CliTestNgRunner getRunner() {
+      return RUNNER;
+    }
+
     /**
      * The TestNG entry point for command line execution.
      *
      * @param argv the TestNG command line parameters.
      */
     public static void main(String[] argv) {
-      CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-      TestNG testng = privateMain(cliRunner, argv, null);
+      TestNG testng = privateMain(RUNNER, argv, null);
       System.exit(testng.getStatus());
     }
 
@@ -41,6 +65,10 @@ public interface CliTestNgRunner {
      */
     public static TestNG privateMain(
         CliTestNgRunner cliRunner, String[] argv, ITestListener listener) {
+      if (cliRunner == null) {
+        LOGGER.warn("No runner passed, use the default one: " + RUNNER.getClass());
+        cliRunner = RUNNER;
+      }
       TestNG result = new TestNG();
 
       if (null != listener) {

@@ -1318,8 +1318,7 @@ public class TestNG {
   /** @deprecated */
   @Deprecated
   public static TestNG privateMain(String[] argv, ITestListener listener) {
-    CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
-    return CliTestNgRunner.Main.privateMain(cliRunner, argv, listener);
+    return CliTestNgRunner.Main.privateMain(null, argv, listener);
   }
 
   /** @deprecated */

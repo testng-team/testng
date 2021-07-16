@@ -2,10 +2,10 @@ package org.testng;
 
 import java.util.List;
 import java.util.Map;
-import org.testng.internal.Utils;
+import org.testng.internal.ReporterConfig;
 import org.testng.xml.XmlSuite;
 
-public class SurefireCommandLineArgs implements CommandLineArgs {
+public class SurefireCommandLineArgs extends AbstractCommandLineArgs {
 
   private final Map<String, Object> cmdLineArgs;
 
@@ -54,22 +54,22 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getListener() {
+  protected String[] getListenerValues() {
     Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
     if (listeners instanceof List) {
-      return Utils.join((List<?>) listeners, ",");
+      return ((List<String>) listeners).toArray(new String[0]);
     } else {
-      return (String) listeners;
+      return ((String) listeners).split(",");
     }
   }
 
   @Override
-  public String getMethodSelectors() {
+  protected String getMethodSelectorsValue() {
     return (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
   }
 
   @Override
-  public String getObjectFactory() {
+  protected String getObjectFactoryValue() {
     return (String) cmdLineArgs.get(CommandLineArgs.OBJECT_FACTORY);
   }
 
@@ -80,8 +80,9 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getConfigFailurePolicy() {
-    return (String) cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);
+  public XmlSuite.FailurePolicy getConfigFailurePolicy() {
+    String configFailurePolicy = (String) cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);
+    return XmlSuite.FailurePolicy.getValidPolicy(configFailurePolicy);
   }
 
   @Override
@@ -116,13 +117,18 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getReporter() {
-    return (String) cmdLineArgs.get(CommandLineArgs.REPORTER);
+  public ReporterConfig getReporter() {
+    String reporter = (String) cmdLineArgs.get(CommandLineArgs.REPORTER);
+    return ReporterConfig.deserialize(reporter);
   }
 
   @Override
-  public String useDefaultListeners() {
-    return (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);
+  public Boolean useDefaultListeners() {
+    String useDefaultListeners = (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);
+    if (useDefaultListeners == null) {
+      return null;
+    }
+    return Boolean.valueOf(useDefaultListeners);
   }
 
   @Override
@@ -131,12 +137,12 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getTestClass() {
+  protected String getTestClassValue() {
     return (String) cmdLineArgs.get(CommandLineArgs.TEST_CLASS);
   }
 
   @Override
-  public String getTestNames() {
+  protected String getTestNamesValue() {
     return (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
   }
 
@@ -151,7 +157,7 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getTestRunnerFactory() {
+  protected String getTestRunnerFactoryValue() {
     return (String) cmdLineArgs.get(CommandLineArgs.TEST_RUNNER_FACTORY);
   }
 
@@ -201,7 +207,7 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getDependencyInjectorFactory() {
+  public Class<IInjectorFactory> getDependencyInjectorFactory() {
     return null;
   }
 
@@ -214,7 +220,7 @@ public class SurefireCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public String getSpiListenersToSkip() {
+  protected String getSpiListenersToSkipValue() {
     return (String) cmdLineArgs.getOrDefault(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, "");
   }
 

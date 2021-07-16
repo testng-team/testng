@@ -26,7 +26,6 @@ dependencies {
     api(projects.testngCoreApi)
     // Annotations have to be available on the compile classpath for the proper compilation
     api("com.google.code.findbugs:jsr305:_")
-    api("com.beust:jcommander:_")
 
     "guiceApi"(platform("com.google.inject:guice-bom:_"))
     "guiceApi"("com.google.inject:guice")

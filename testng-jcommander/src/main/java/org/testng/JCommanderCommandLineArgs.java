@@ -8,13 +8,9 @@ import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ReporterConfig;
 import org.testng.internal.Utils;
-import org.testng.log4testng.Logger;
-import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 
-public class JCommanderCommandLineArgs implements CommandLineArgs {
-
-  private static final Logger LOGGER = Logger.getLogger(TestNG.class);
+public class JCommanderCommandLineArgs extends AbstractCommandLineArgs {
 
   @Parameter(description = "The XML suite files to run")
   private List<String> suiteFiles = Lists.newArrayList();
@@ -214,7 +210,7 @@ public class JCommanderCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public List<Class<? extends ITestNGListener>> getListener() {
+  protected String[] getListenerValues() {
     if (listener == null) {
       return null;
     }
@@ -222,50 +218,17 @@ public class JCommanderCommandLineArgs implements CommandLineArgs {
     if (listener.contains(",")) {
       sep = ",";
     }
-    String[] strs = Utils.split(listener, sep);
-    List<Class<? extends ITestNGListener>> classes = Lists.newArrayList();
-
-    for (String cls : strs) {
-      Class<?> clazz = ClassHelper.fileToClass(cls);
-      if (ITestNGListener.class.isAssignableFrom(clazz)) {
-        classes.add((Class<? extends ITestNGListener>) clazz);
-      }
-    }
-
-    return classes;
+    return Utils.split(listener, sep);
   }
 
   @Override
-  public List<XmlMethodSelector> getMethodSelectors() {
-    if (methodSelectors == null) {
-      return null;
-    }
-    String[] strs = Utils.split(methodSelectors, ",");
-    List<XmlMethodSelector> selectors = new ArrayList<>(strs.length);
-    for (String cls : strs) {
-      String[] sel = Utils.split(cls, ":");
-      try {
-        if (sel.length == 2) {
-          XmlMethodSelector selector = new XmlMethodSelector();
-          selector.setName(sel[0]);
-          selector.setPriority(Integer.parseInt(sel[1]));
-          selectors.add(selector);
-        } else {
-          LOGGER.error("Method selector value was not in the format org.example.Selector:4");
-        }
-      } catch (NumberFormatException nfe) {
-        LOGGER.error("Method selector value was not in the format org.example.Selector:4");
-      }
-    }
-    return selectors;
+  protected String getMethodSelectorsValue() {
+    return methodSelectors;
   }
 
   @Override
-  public Class<? extends ITestObjectFactory> getObjectFactory() {
-    if (objectFactory == null) {
-      return null;
-    }
-    return (Class<? extends ITestObjectFactory>) ClassHelper.fileToClass(objectFactory);
+  protected String getObjectFactoryValue() {
+    return objectFactory;
   }
 
   @Override
@@ -317,25 +280,13 @@ public class JCommanderCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public List<Class<?>> getTestClass() {
-    if (testClass == null) {
-      return null;
-    }
-    String[] strClasses = testClass.split(",");
-    List<Class<?>> classes = Lists.newArrayList();
-    for (String c : strClasses) {
-      classes.add(ClassHelper.fileToClass(c));
-    }
-
-    return classes;
+  protected String getTestClassValue() {
+    return testClass;
   }
 
   @Override
-  public List<String> getTestNames() {
-    if (testNames == null) {
-      return null;
-    }
-    return Arrays.asList(testNames.split(","));
+  protected String getTestNamesValue() {
+    return testNames;
   }
 
   @Override
@@ -349,11 +300,8 @@ public class JCommanderCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public Class<? extends ITestRunnerFactory> getTestRunnerFactory() {
-    if (testRunnerFactory == null) {
-      return null;
-    }
-    return (Class<? extends ITestRunnerFactory>) ClassHelper.fileToClass(testRunnerFactory);
+  protected String getTestRunnerFactoryValue() {
+    return testRunnerFactory;
   }
 
   @Override
@@ -410,8 +358,8 @@ public class JCommanderCommandLineArgs implements CommandLineArgs {
   }
 
   @Override
-  public List<String> getSpiListenersToSkip() {
-    return Arrays.asList(spiListenersToSkip.split(","));
+  protected String getSpiListenersToSkipValue() {
+    return spiListenersToSkip;
   }
 
   @Override

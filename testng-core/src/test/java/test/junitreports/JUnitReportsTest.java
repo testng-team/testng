@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
 
-import com.beust.jcommander.internal.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -109,7 +108,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
             add("testRoles004_Post");
           }
         };
-    List<String> actual = Lists.newLinkedList();
+    List<String> actual = new LinkedList<>();
     for (Testcase testcase : suite.getTestcase()) {
       actual.add(testcase.getName().trim());
     }
