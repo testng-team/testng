@@ -39,7 +39,7 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
     XmlClass testClass = new XmlClass(test.methodselectors.SampleTest.class);
     test.setXmlClasses(Collections.singletonList(testClass));
     tng.setXmlSuites(Collections.singletonList(suite));
-    tng.addListener( m_tla);
+    tng.addListener(m_tla);
     tng.run();
 
     validate(new String[] {"test2"});

@@ -1,13 +1,13 @@
 package org.testng;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlMethodSelector;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class AbstractCommandLineArgs implements CommandLineArgs {
 

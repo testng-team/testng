@@ -19,7 +19,7 @@ public class CommandLineTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class<?>[]{test.methodselectors.SampleTest.class});
+    testng.setTestClasses(new Class<?>[] {test.methodselectors.SampleTest.class});
     testng.addMethodSelector("test.methodselectors.NoTestSelector", 7);
     testng.addMethodSelector("test.methodselectors.Test2MethodSelector", 5);
     testng.setGroups("test1");
@@ -38,7 +38,7 @@ public class CommandLineTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class<?>[]{test.methodselectors.SampleTest.class});
+    testng.setTestClasses(new Class<?>[] {test.methodselectors.SampleTest.class});
     testng.addMethodSelector("test.methodselectors.NoTest1MethodSelector", 5);
     testng.run();
 
@@ -56,9 +56,8 @@ public class CommandLineTest extends SimpleBaseTest {
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.addMethodSelector("test.methodselectors.NoTest1MethodSelector", 5);
-    testng.setTestSuites(Collections.singletonList(
-        getPathToResource("testng-methodselectors.xml")
-    ));
+    testng.setTestSuites(
+        Collections.singletonList(getPathToResource("testng-methodselectors.xml")));
     testng.run();
 
     String[] passed = {"test2", "test3"};
@@ -72,9 +71,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
     testng.addListener(tla);
-    testng.setTestSuites(Collections.singletonList(
-        getPathToResource("test/methodselectors/sampleTest.xml")
-    ));
+    testng.setTestSuites(
+        Collections.singletonList(getPathToResource("test/methodselectors/sampleTest.xml")));
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setExcludedGroups("test1");
@@ -93,9 +91,9 @@ public class CommandLineTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
     testng.addListener(tla);
-    testng.setTestSuites(Collections.singletonList(
-        getPathToResource("test/methodselectors/sampleTestExclusions.xm")
-    ));
+    testng.setTestSuites(
+        Collections.singletonList(
+            getPathToResource("test/methodselectors/sampleTestExclusions.xm")));
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setOverrideIncludedMethods(true);

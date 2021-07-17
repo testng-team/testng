@@ -1,10 +1,10 @@
 package org.testng;
 
+import java.util.List;
+import java.util.ServiceLoader;
 import org.testng.collections.Lists;
 import org.testng.internal.ExitCode;
 import org.testng.log4testng.Logger;
-import java.util.List;
-import java.util.ServiceLoader;
 
 public interface CliTestNgRunner {
 

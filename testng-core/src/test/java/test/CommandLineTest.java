@@ -34,7 +34,7 @@ public class CommandLineTest {
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setJUnit(true);
-    testng.setTestClasses(new Class<?>[]{test.sample.JUnitSample1.class});
+    testng.setTestClasses(new Class<?>[] {test.sample.JUnitSample1.class});
     testng.run();
 
     List<ITestResult> passed = tla.getPassedTests();
@@ -55,7 +55,7 @@ public class CommandLineTest {
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setTestClasses(new Class<?>[]{test.sample.JUnitSample1.class});
+    testng.setTestClasses(new Class<?>[] {test.sample.JUnitSample1.class});
     testng.run();
 
     List<ITestResult> passed = tla.getPassedTests();
@@ -73,7 +73,7 @@ public class CommandLineTest {
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setJUnit(true);
-    testng.setTestClasses(new Class<?>[]{test.sample.JUnitSample1.class});
+    testng.setTestClasses(new Class<?>[] {test.sample.JUnitSample1.class});
     testng.setDefaultSuiteName(suiteName);
     testng.run();
 
@@ -95,7 +95,7 @@ public class CommandLineTest {
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setJUnit(true);
-    testng.setTestClasses(new Class<?>[]{test.sample.JUnitSample1.class});
+    testng.setTestClasses(new Class<?>[] {test.sample.JUnitSample1.class});
     testng.setDefaultTestName(testName);
     testng.run();
 
@@ -111,7 +111,7 @@ public class CommandLineTest {
     TestNG testng = new TestNG();
     testng.setVerbose(0);
     testng.setUseDefaultListeners(false);
-    testng.setTestClasses(new Class<?>[]{test.sample.JUnitSample1.class});
+    testng.setTestClasses(new Class<?>[] {test.sample.JUnitSample1.class});
     testng.run();
   }
 
@@ -122,9 +122,8 @@ public class CommandLineTest {
     testng.addListener(tla);
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
-    testng.setCommandLineMethods(Collections.singletonList(
-        "test.sample.Sample2.method1,test.sample.Sample2.method3"
-    ));
+    testng.setCommandLineMethods(
+        Collections.singletonList("test.sample.Sample2.method1,test.sample.Sample2.method3"));
     testng.run();
 
     List<ITestResult> passed = tla.getPassedTests();

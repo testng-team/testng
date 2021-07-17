@@ -2,7 +2,6 @@ package org.testng;
 
 import com.beust.jcommander.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;

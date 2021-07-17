@@ -77,9 +77,8 @@ public class FailurePolicyTest {
 
   @Test
   public void confFailureTestInvolvingGroups() {
-    Class<?>[] classesUnderTest = new Class[]{
-        ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups.class
-    };
+    Class<?>[] classesUnderTest =
+        new Class[] {ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups.class};
 
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
@@ -95,7 +94,7 @@ public class FailurePolicyTest {
 
   @Test
   public void testPolicyAsSkip() {
-    Class<?>[] classesUnderTest = new Class[]{ClassWithFailedBeforeMethodAndMultipleTests.class};
+    Class<?>[] classesUnderTest = new Class[] {ClassWithFailedBeforeMethodAndMultipleTests.class};
 
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
@@ -111,7 +110,7 @@ public class FailurePolicyTest {
 
   @Test
   public void testPolicyAsContinue() {
-    Class<?>[] classesUnderTest = new Class[]{ClassWithFailedBeforeMethodAndMultipleTests.class};
+    Class<?>[] classesUnderTest = new Class[] {ClassWithFailedBeforeMethodAndMultipleTests.class};
 
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
@@ -127,9 +126,8 @@ public class FailurePolicyTest {
 
   @Test
   public void testPolicyAsSkipWithXMLFile() {
-    List<String> suitesUnderTest = Collections.singletonList(
-        getPathToResource("testng-configfailure.xml")
-    );
+    List<String> suitesUnderTest =
+        Collections.singletonList(getPathToResource("testng-configfailure.xml"));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();
@@ -145,9 +143,8 @@ public class FailurePolicyTest {
 
   @Test
   public void testPolicyAsContinueWithXMLFile() {
-    List<String> suitesUnderTest = Collections.singletonList(
-        getPathToResource("testng-configfailure.xml")
-    );
+    List<String> suitesUnderTest =
+        Collections.singletonList(getPathToResource("testng-configfailure.xml"));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG testng = new TestNG();

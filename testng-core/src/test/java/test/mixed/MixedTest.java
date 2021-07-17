@@ -1,12 +1,12 @@
 package test.mixed;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.BaseTest;
 import testhelper.OutputDirectoryPatch;
-import java.util.Arrays;
 
 public class MixedTest extends BaseTest {
 
@@ -20,12 +20,13 @@ public class MixedTest extends BaseTest {
     testng.setMixed(true);
     testng.setGroups("unit");
     testng.setExcludedGroups("ignore");
-    testng.setTestClasses(new Class<?>[]{
-        test.mixed.JUnit3Test1.class,
-        test.mixed.JUnit4Test1.class,
-        test.mixed.TestNGTest1.class,
-        test.mixed.TestNGGroups.class,
-    });
+    testng.setTestClasses(
+        new Class<?>[] {
+          test.mixed.JUnit3Test1.class,
+          test.mixed.JUnit4Test1.class,
+          test.mixed.TestNGTest1.class,
+          test.mixed.TestNGGroups.class,
+        });
     testng.run();
 
     Assert.assertEquals(
@@ -43,11 +44,10 @@ public class MixedTest extends BaseTest {
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setVerbose(0);
     testng.setMixed(true);
-    testng.setTestClasses(new Class<?>[]{
-        test.mixed.JUnit3Test1.class,
-        test.mixed.JUnit4Test1.class,
-        test.mixed.TestNGTest1.class,
-    });
+    testng.setTestClasses(
+        new Class<?>[] {
+          test.mixed.JUnit3Test1.class, test.mixed.JUnit4Test1.class, test.mixed.TestNGTest1.class,
+        });
     testng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 6);
@@ -61,12 +61,12 @@ public class MixedTest extends BaseTest {
     testng.addListener(tla);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setVerbose(0);
-    testng.setCommandLineMethods(Arrays.asList(
-        "test.mixed.JUnit3Test1.test",
-        "test.mixed.JUnit3Test1.testB",
-        "test.mixed.JUnit4Test1.atest",
-        "test.mixed.TestNGTest1.tngCustomTest1"
-    ));
+    testng.setCommandLineMethods(
+        Arrays.asList(
+            "test.mixed.JUnit3Test1.test",
+            "test.mixed.JUnit3Test1.testB",
+            "test.mixed.JUnit4Test1.atest",
+            "test.mixed.TestNGTest1.tngCustomTest1"));
     testng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 3);
