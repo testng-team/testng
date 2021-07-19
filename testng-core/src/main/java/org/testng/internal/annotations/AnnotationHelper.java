@@ -8,13 +8,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
-import org.testng.annotations.IIgnoreAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Maps;
@@ -79,7 +79,7 @@ public class AnnotationHelper {
     return finder.findAnnotation(m, IFactoryAnnotation.class);
   }
 
-  public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Constructor c) {
+  public static IFactoryAnnotation findFactory(IAnnotationFinder finder, Constructor<?> c) {
     return finder.findAnnotation(c, IFactoryAnnotation.class);
   }
 
@@ -219,17 +219,14 @@ public class AnnotationHelper {
       //    Class[] classes = rootClass.getTestClasses();
       Class<?> cls = rootClass;
 
-      //
-      // If the annotation is on the class or superclass, it applies to all public methods
-      // except methods marked with @Configuration
-      //
-
-      //
-      // Otherwise walk through all the methods and keep those
-      // that have the annotation
-      //
-      //    for (Class<?> cls : classes) {
-      while (null != cls) {
+      Predicate<Class<?>> condition =
+          c -> {
+            if (c == null) {
+              return false;
+            }
+            return !Object.class.equals(c);
+          };
+      while (condition.test(cls)) {
         boolean hasClassAnnotation = isAnnotationPresent(annotationFinder, cls, annotationClass);
         Method[] methods = ReflectionHelper.getLocalMethods(cls);
         for (Method m : methods) {
@@ -273,16 +270,6 @@ public class AnnotationHelper {
               continue;
             }
 
-            boolean shouldIgnore =
-                isAnnotationPresent(annotationFinder, m, IIgnoreAnnotation.class);
-            if (shouldIgnore) {
-              Utils.log(
-                  "",
-                  2,
-                  "Method " + m + "" + " is being skipped since its been marked to be ignored");
-              continue;
-            }
-
             if (Arrays.stream(m.getAnnotations())
                 .anyMatch(a -> a.annotationType().getName().equals("groovy.transform.Internal"))) {
               Utils.log(
@@ -291,11 +278,8 @@ public class AnnotationHelper {
             }
 
             String key = createMethodKey(m);
-            if (null == vResult.get(key)) {
-              ITestNGMethod tm =
-                  new TestNGMethod(objectFactory, m, annotationFinder, xmlTest, null);
-              vResult.put(key, tm);
-            }
+            vResult.computeIfAbsent(
+                key, k -> new TestNGMethod(objectFactory, m, annotationFinder, xmlTest, null));
           }
         } // for
         // Now explore the superclass
@@ -360,7 +344,7 @@ public class AnnotationHelper {
    */
   private static String createMethodKey(Method m) {
     StringBuilder result = new StringBuilder(m.getName());
-    for (Class paramClass : m.getParameterTypes()) {
+    for (Class<?> paramClass : m.getParameterTypes()) {
       result.append(' ').append(paramClass.toString());
     }
 
