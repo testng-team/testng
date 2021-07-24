@@ -1,5 +1,9 @@
 package test.reports;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.File;
+import java.lang.reflect.Method;
 import org.testng.CliTestNgRunner;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -9,10 +13,6 @@ import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.EmailableReporter2;
 import test.MySecurityManager;
 import test.SimpleBaseTest;
-import java.io.File;
-import java.lang.reflect.Method;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class EmailableReporterTest extends SimpleBaseTest {
   private SecurityManager manager;
@@ -43,12 +43,12 @@ public class EmailableReporterTest extends SimpleBaseTest {
   public Object[][] getReporterNames(Method method) {
     if (method.getName().toLowerCase().contains("jvmarguments")) {
       return new Object[][] {
-          {EmailableReporter.class.getName(), "emailable.report.name"},
-          {EmailableReporter2.class.getName(), "emailable.report2.name"}
+        {EmailableReporter.class.getName(), "emailable.report.name"},
+        {EmailableReporter2.class.getName(), "emailable.report2.name"}
       };
     }
     return new Object[][] {
-        {EmailableReporter.class.getName()}, {EmailableReporter2.class.getName()}
+      {EmailableReporter.class.getName()}, {EmailableReporter2.class.getName()}
     };
   }
 
@@ -57,11 +57,11 @@ public class EmailableReporterTest extends SimpleBaseTest {
     File output = createDirInTempDir(name);
     String filename = "report" + name + ".html";
     String[] args = {
-        "-d",
-        output.getAbsolutePath(),
-        "-reporter",
-        clazzName + ":fileName=" + filename,
-        "src/test/resources/1332.xml"
+      "-d",
+      output.getAbsolutePath(),
+      "-reporter",
+      clazzName + ":fileName=" + filename,
+      "src/test/resources/1332.xml"
     };
     try {
       if (jvm != null) {

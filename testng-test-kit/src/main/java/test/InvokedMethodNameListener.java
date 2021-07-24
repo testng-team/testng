@@ -146,11 +146,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
       name = testName + "#" + methodName;
     }
     if (result.getParameters().length != 0) {
-      name =
-          name
-              + "("
-              + String.join(",", getParameterNames(result.getParameters()))
-              + ")";
+      name = name + "(" + String.join(",", getParameterNames(result.getParameters())) + ")";
     }
     return name;
   }
