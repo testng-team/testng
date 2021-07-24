@@ -333,17 +333,22 @@ public interface CommandLineArgs {
       tng.addReporter(getReporter());
     }
 
-    if (!getCommandLineMethods().isEmpty()) {
+    if (getCommandLineMethods() != null && !getCommandLineMethods().isEmpty()) {
       tng.setCommandLineMethods(getCommandLineMethods());
     }
 
     if (getSuiteFiles() != null) {
       tng.setTestSuites(getSuiteFiles());
     }
-
-    tng.setSuiteThreadPoolSize(getSuiteThreadPoolSize());
-    tng.setRandomizeSuites(isRandomizeSuites());
-    tng.alwaysRunListeners(alwaysRunListeners());
+    if (getSuiteThreadPoolSize() != null) {
+      tng.setSuiteThreadPoolSize(getSuiteThreadPoolSize());
+    }
+    if (isRandomizeSuites() != null) {
+      tng.setRandomizeSuites(isRandomizeSuites());
+    }
+    if (alwaysRunListeners() != null) {
+      tng.alwaysRunListeners(alwaysRunListeners());
+    }
   }
 
   class ParameterException extends Exception {

@@ -7,6 +7,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -123,7 +124,7 @@ public class CommandLineTest {
     testng.setVerbose(0);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setCommandLineMethods(
-        Collections.singletonList("test.sample.Sample2.method1,test.sample.Sample2.method3"));
+        Arrays.asList("test.sample.Sample2.method1", "test.sample.Sample2.method3"));
     testng.run();
 
     List<ITestResult> passed = tla.getPassedTests();

@@ -7,4 +7,5 @@ dependencies {
 
     implementation(projects.testngCore)
     testImplementation(projects.testngAsserts)
+    testImplementation(projects.testngTestKit)
 }

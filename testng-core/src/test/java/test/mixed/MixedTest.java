@@ -61,6 +61,7 @@ public class MixedTest extends BaseTest {
     testng.addListener(tla);
     testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     testng.setVerbose(0);
+    testng.setMixed(true);
     testng.setCommandLineMethods(
         Arrays.asList(
             "test.mixed.JUnit3Test1.test",

@@ -1,7 +1,7 @@
 package test;
 
-import com.google.common.base.Joiner;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +149,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
       name =
           name
               + "("
-              + Joiner.on(",").useForNull("null").join(getParameterNames(result.getParameters()))
+              + String.join(",", getParameterNames(result.getParameters()))
               + ")";
     }
     return name;
@@ -162,7 +162,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
         result.add("null");
       } else {
         if (parameter instanceof Object[]) {
-          result.add("[" + Joiner.on(",").useForNull("null").join((Object[]) parameter) + "]");
+          result.add("[" + Arrays.toString((Object[]) parameter) + "]");
         } else {
           result.add(parameter.toString());
         }

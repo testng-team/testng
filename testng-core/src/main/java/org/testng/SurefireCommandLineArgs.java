@@ -56,6 +56,9 @@ public class SurefireCommandLineArgs extends AbstractCommandLineArgs {
   @Override
   protected String[] getListenerValues() {
     Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
+    if (listeners == null) {
+      return null;
+    }
     if (listeners instanceof List) {
       return ((List<String>) listeners).toArray(new String[0]);
     } else {

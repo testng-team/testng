@@ -48,38 +48,4 @@ public class IssueTest extends SimpleBaseTest {
     xmltest.setPackages(Collections.singletonList(xmlpackage));
     return xmlsuite;
   }
-
-  @Test(invocationCount = 2, description = "GITHUB-2232")
-  // Ensuring that the bug doesn't surface even when tests are executed via the command line mode
-  public void commandlineTest() throws IOException, InterruptedException {
-    Path suitefile =
-        Files.write(
-            Files.createTempFile("testng", ".xml"),
-            constructSuite().toXml().getBytes(Charset.defaultCharset()));
-    List<String> args = Collections.singletonList(suitefile.toFile().getAbsolutePath());
-    int status = exec(Collections.emptyList(), args);
-    assertThat(status).isEqualTo(0);
-  }
-
-  private int exec(List<String> jvmArgs, List<String> args)
-      throws IOException, InterruptedException {
-
-    String javaHome = System.getProperty("java.home");
-    String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
-    String classpath = System.getProperty("java.class.path");
-    String className = TestNG.class.getName();
-    List<String> command = new ArrayList<>();
-    command.add(javaBin);
-    command.addAll(jvmArgs);
-    command.add("-cp");
-    command.add(classpath);
-    command.add(className);
-    command.addAll(args);
-    Reporter.log("Executing the command " + command, 2, true);
-    ProcessBuilder builder = new ProcessBuilder(command);
-    Process process = builder.inheritIO().start();
-    process.waitFor();
-
-    return process.exitValue();
-  }
 }

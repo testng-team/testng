@@ -38,6 +38,7 @@ dependencies {
     implementation("org.webjars:jquery:_")
 
     testImplementation(projects.testngAsserts)
+    testImplementation(projects.testngTestKit)
     testImplementation("org.codehaus.groovy:groovy-all:_")
     testImplementation("org.spockframework:spock-core:_")
     testImplementation("org.apache-extras.beanshell:bsh:_")
