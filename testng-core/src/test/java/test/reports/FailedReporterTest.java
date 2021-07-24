@@ -6,28 +6,37 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.testng.Assert;
-import org.testng.ITestNGListener;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.testng.xml.internal.Parser;
-import org.xml.sax.SAXException;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 import test.SimpleBaseTest;
+import test.reports.issue2611.TestClassFailsAtBeforeGroupsWithBeforeGroupsSuiteTestSample;
+import test.reports.issue2611.TestClassFailsAtBeforeSuiteWithBeforeGroupsSuiteTestSample;
+import test.reports.issue2611.TestClassFailsAtBeforeTestWithBeforeGroupsSuiteTestSample;
+import test.reports.issue2611.TestClassWithBeforeGroupsSample;
+import test.reports.issue2611.TestClassWithBeforeSuiteSample;
+import test.reports.issue2611.TestClassWithBeforeTestSample;
+import test.reports.issue2611.TestClassWithJustTestMethodsSample;
 
 public class FailedReporterTest extends SimpleBaseTest {
 
   @Test
-  public void failedFile() throws ParserConfigurationException, SAXException, IOException {
+  public void failedFile() throws IOException {
     XmlSuite xmlSuite = createXmlSuite("Suite");
     xmlSuite.getParameters().put("n", "42");
 
@@ -41,7 +50,7 @@ public class FailedReporterTest extends SimpleBaseTest {
 
     Path temp = Files.createTempDirectory("tmp");
     tng.setOutputDirectory(temp.toAbsolutePath().toString());
-    tng.addListener((ITestNGListener) new FailedReporter());
+    tng.addListener(new FailedReporter());
     tng.run();
 
     Collection<XmlSuite> failedSuites =
@@ -80,5 +89,124 @@ public class FailedReporterTest extends SimpleBaseTest {
             .build();
 
     assertThat(myDiff).matches((it) -> !it.hasDifferences(), "!it.hasDifferences()");
+  }
+
+  @Test(dataProvider = "getTestData")
+  public void testToEnsureConfigFailuresAreIncluded(ClassMethodInfo pairA, ClassMethodInfo pairB)
+      throws IOException {
+    XmlSuite xmlSuite = createXmlSuite("kungfu-panda-suite");
+    XmlTest xmlTest =
+        createXmlTest(xmlSuite, "kungfu-panda-test", pairA.getTestClass(), pairB.getTestClass());
+    xmlTest.addIncludedGroup("dragon-warrior");
+    TestNG tng = create(xmlSuite);
+    final Path temp = Files.createTempDirectory("tmp");
+    tng.setOutputDirectory(temp.toAbsolutePath().toString());
+    tng.addListener(new FailedReporter());
+    tng.run();
+    Collection<XmlSuite> failedSuites =
+        new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
+            .parse();
+    XmlSuite failedSuite = failedSuites.iterator().next();
+    assertThat(failedSuite.getName())
+        .withFailMessage("The failed suite should have had the prefix of [Failed suite]")
+        .isEqualTo("Failed suite [kungfu-panda-suite]");
+    XmlTest failedTest = failedSuite.getTests().iterator().next();
+    assertThat(failedTest.getName())
+        .withFailMessage("The failed test should have had the suffix of [(failed)]")
+        .isEqualTo("kungfu-panda-test(failed)");
+    runIncludedMethodsAssertion(
+        failedTest.getClasses(), pairA.getTestClass(), pairA.getTestMethods());
+    runIncludedMethodsAssertion(
+        failedTest.getClasses(), pairB.getTestClass(), pairB.getTestMethods());
+  }
+
+  @DataProvider(name = "getTestData")
+  public Object[][] getTestData() {
+    return new Object[][] {
+      {
+        new ClassMethodInfo(TestClassWithBeforeTestSample.class, "beforeTest", "afterTest"),
+        new ClassMethodInfo(TestClassWithJustTestMethodsSample.class, "test2Method")
+      },
+      {
+        new ClassMethodInfo(TestClassWithBeforeSuiteSample.class, "beforeSuite", "afterSuite"),
+        new ClassMethodInfo(TestClassWithJustTestMethodsSample.class, "test2Method")
+      },
+      {
+        new ClassMethodInfo(TestClassWithBeforeGroupsSample.class, "beforeGroups", "afterGroups"),
+        new ClassMethodInfo(TestClassWithJustTestMethodsSample.class, "test2Method")
+      },
+      {
+        new ClassMethodInfo(
+            TestClassFailsAtBeforeGroupsWithBeforeGroupsSuiteTestSample.class,
+            "beforeGroups",
+            "afterGroups",
+            "beforeTest",
+            "afterTest",
+            "beforeSuite",
+            "afterSuite"),
+        new ClassMethodInfo(TestClassWithJustTestMethodsSample.class, "test2Method")
+      },
+      {
+        new ClassMethodInfo(
+            TestClassFailsAtBeforeSuiteWithBeforeGroupsSuiteTestSample.class,
+            "beforeGroups",
+            "afterGroups",
+            "beforeTest",
+            "afterTest",
+            "beforeSuite",
+            "afterSuite"),
+        new ClassMethodInfo(TestClassWithJustTestMethodsSample.class, "test2Method")
+      },
+      {
+        new ClassMethodInfo(
+            TestClassFailsAtBeforeTestWithBeforeGroupsSuiteTestSample.class,
+            "beforeGroups",
+            "afterGroups",
+            "beforeTest",
+            "afterTest",
+            "beforeSuite",
+            "afterSuite"),
+        new ClassMethodInfo(TestClassWithJustTestMethodsSample.class, "test2Method")
+      }
+    };
+  }
+
+  private static void runIncludedMethodsAssertion(
+      List<XmlClass> failedClasses, Class<?> cls, String... methods) {
+    XmlClass xmlClass =
+        failedClasses.stream()
+            .filter(each -> each.getName().equals(cls.getName()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Failed to locate " + cls.getName()));
+    List<String> includedMethods =
+        xmlClass.getIncludedMethods().stream()
+            .map(XmlInclude::getName)
+            .collect(Collectors.toList());
+    assertThat(includedMethods)
+        .withFailMessage("Included methods test failed for " + cls.getName())
+        .containsExactlyInAnyOrder(methods);
+  }
+
+  public static class ClassMethodInfo {
+    private final Class<?> clazz;
+    private final String[] testMethods;
+
+    public ClassMethodInfo(Class<?> clazz, String... testMethods) {
+      this.clazz = clazz;
+      this.testMethods = testMethods;
+    }
+
+    public Class<?> getTestClass() {
+      return clazz;
+    }
+
+    public String[] getTestMethods() {
+      return testMethods;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("%s->%s", clazz.toString(), Arrays.toString(testMethods));
+    }
   }
 }
