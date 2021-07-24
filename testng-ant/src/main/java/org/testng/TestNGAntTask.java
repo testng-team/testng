@@ -499,7 +499,8 @@ public class TestNGAntTask extends Task {
     List<String> argv = createArguments();
 
     if (!forkJvm) {
-      TestNG tng = TestNG.privateMain(argv.toArray(new String[0]), null);
+      CliTestNgRunner cliRunner = new JCommanderCliTestNgRunner();
+      TestNG tng = CliTestNgRunner.Main.privateMain(cliRunner, argv.toArray(new String[0]), null);
       actOnResult(tng.getStatus(), false);
       return;
     }

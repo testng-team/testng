@@ -4,8 +4,6 @@ import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLClassLoader;
@@ -80,26 +78,9 @@ import org.testng.xml.internal.XmlSuiteUtils;
  *
  * You can also define which groups to include or exclude, assign parameters, etc...
  *
- * <p>The command line parameters are:
- *
- * <UL>
- *   <LI>-d <code>outputdir</code>: specify the output directory
- *   <LI>-testclass <code>class_name</code>: specifies one or several class names
- *   <LI>-testjar <code>jar_name</code>: specifies the jar containing the tests
- *   <LI>-sourcedir <code>src1;src2</code>: ; separated list of source directories (used only when
- *       javadoc annotations are used)
- *   <LI>-target
- *   <LI>-groups
- *   <LI>-testrunfactory
- *   <LI>-listener
- * </UL>
- *
  * <p>Please consult documentation for more details.
  *
  * <p>FIXME: should support more than simple paths for suite xmls
- *
- * @see #usage()
- * @author <a href = "mailto:cedric&#64;beust.com">Cedric Beust</a>
  */
 @SuppressWarnings({"unused", "unchecked", "rawtypes"})
 public class TestNG {
@@ -120,8 +101,6 @@ public class TestNG {
   public static final String DEFAULT_OUTPUTDIR = "test-output";
 
   private static TestNG m_instance;
-
-  private static JCommander m_jCommander;
 
   private List<String> m_commandLineMethods;
   protected List<XmlSuite> m_suites = Lists.newArrayList();
@@ -179,7 +158,9 @@ public class TestNG {
 
   private String m_jarPath;
   /** The path of the testng.xml file inside the jar file */
-  private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
+  public static final String XML_PATH_IN_JAR_DEFAULT = "testng.xml";
+
+  private String m_xmlPathInJar = XML_PATH_IN_JAR_DEFAULT;
 
   private List<String> m_stringSuites = Lists.newArrayList();
 
@@ -238,7 +219,11 @@ public class TestNG {
    *     wired in via service loaders.
    */
   public void setListenersToSkipFromBeingWiredInViaServiceLoaders(String... listeners) {
-    m_listenersToSkipFromBeingWiredIn.addAll(Arrays.asList(listeners));
+    setListenersToSkipFromBeingWiredInViaServiceLoaders(Arrays.asList(listeners));
+  }
+
+  public void setListenersToSkipFromBeingWiredInViaServiceLoaders(List<String> listeners) {
+    m_listenersToSkipFromBeingWiredIn.addAll(listeners);
   }
 
   public int getStatus() {
@@ -409,7 +394,8 @@ public class TestNG {
   /** @param threadCount Define the number of threads in the thread pool. */
   public void setThreadCount(int threadCount) {
     if (threadCount < 1) {
-      exitWithError("Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
+      throw new IllegalArgumentException(
+          "Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
     }
 
     m_threadCount = threadCount;
@@ -433,6 +419,10 @@ public class TestNG {
     m_cmdlineSuites = Lists.newArrayList();
     m_cmdlineSuites.add(suite);
     m_suites.add(suite);
+  }
+
+  public void setCommandLineMethods(List<String> commandLineMethods) {
+    m_commandLineMethods = commandLineMethods;
   }
 
   /**
@@ -619,7 +609,7 @@ public class TestNG {
     m_includedGroups = Utils.split(groups, ",");
   }
 
-  private void setTestRunnerFactoryClass(
+  public void setTestRunnerFactoryClass(
       Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
     setTestRunnerFactory(m_objectFactory.newInstance(testRunnerFactoryClass));
   }
@@ -656,7 +646,7 @@ public class TestNG {
   @Deprecated
   public void addListener(Object listener) {
     if (!(listener instanceof ITestNGListener)) {
-      exitWithError(
+      throw new IllegalArgumentException(
           "Listener "
               + listener
               + " must be one of ITestListener, ISuiteListener, IReporter, "
@@ -1046,12 +1036,10 @@ public class TestNG {
     if (exitCodeListener.noTestsFound()) {
       if (TestRunner.getVerbose() > 1) {
         System.err.println("[TestNG] No tests found. Nothing was run");
-        usage();
       }
     }
 
     m_instance = null;
-    m_jCommander = null;
   }
 
   /**
@@ -1083,13 +1071,6 @@ public class TestNG {
     }
   }
 
-  private static void usage() {
-    if (m_jCommander == null) {
-      m_jCommander = new JCommander(new CommandLineArgs());
-    }
-    m_jCommander.usage();
-  }
-
   private void generateReports(List<ISuite> suiteRunners) {
     for (IReporter reporter : m_reporters.values()) {
       try {
@@ -1114,7 +1095,6 @@ public class TestNG {
   public List<ISuite> runSuitesLocally() {
     if (m_suites.isEmpty()) {
       error("No test suite found. Nothing to run");
-      usage();
       return Collections.emptyList();
     }
 
@@ -1329,194 +1309,22 @@ public class TestNG {
     return m_configuration;
   }
 
-  /**
-   * The TestNG entry point for command line execution.
-   *
-   * @param argv the TestNG command line parameters.
-   */
+  /** @deprecated */
+  @Deprecated
   public static void main(String[] argv) {
-    TestNG testng = privateMain(argv, null);
-    System.exit(testng.getStatus());
+    CliTestNgRunner.Main.main(argv);
   }
 
-  /**
-   * <B>Note</B>: this method is not part of the public API and is meant for internal usage only.
-   *
-   * @param argv The param arguments
-   * @param listener The listener
-   * @return The TestNG instance
-   */
+  /** @deprecated */
+  @Deprecated
   public static TestNG privateMain(String[] argv, ITestListener listener) {
-    TestNG result = new TestNG();
-
-    if (null != listener) {
-      result.addListener(listener);
-    }
-
-    //
-    // Parse the arguments
-    //
-    try {
-      CommandLineArgs cla = new CommandLineArgs();
-
-      m_jCommander = new JCommander(cla);
-      m_jCommander.parse(argv);
-      validateCommandLineParameters(cla);
-      result.configure(cla);
-    } catch (ParameterException ex) {
-      exitWithError(ex.getMessage());
-    }
-
-    //
-    // Run
-    //
-    try {
-      result.run();
-    } catch (TestNGException ex) {
-      if (TestRunner.getVerbose() > 1) {
-        ex.printStackTrace(System.out);
-      } else {
-        error(ex.getMessage());
-      }
-      result.exitCode = ExitCode.newExitCodeRepresentingFailure();
-    }
-
-    return result;
+    return CliTestNgRunner.Main.privateMain(null, argv, listener);
   }
 
-  /**
-   * Configure the TestNG instance based on the command line parameters.
-   *
-   * @param cla The command line parameters
-   */
+  /** @deprecated */
+  @Deprecated
   protected void configure(CommandLineArgs cla) {
-    if (cla.verbose != null) {
-      setVerbose(cla.verbose);
-    }
-    if (cla.dependencyInjectorFactoryClass != null) {
-      Class<?> clazz = ClassHelper.forName(cla.dependencyInjectorFactoryClass);
-      if (clazz != null && IInjectorFactory.class.isAssignableFrom(clazz)) {
-        m_configuration.setInjectorFactory(
-            m_objectFactory.newInstance((Class<IInjectorFactory>) clazz));
-      }
-    }
-    if (cla.threadPoolFactoryClass != null) {
-      setExecutorFactoryClass(cla.threadPoolFactoryClass);
-    }
-    setOutputDirectory(cla.outputDirectory);
-
-    String testClasses = cla.testClass;
-    if (null != testClasses) {
-      String[] strClasses = testClasses.split(",");
-      List<Class<?>> classes = Lists.newArrayList();
-      for (String c : strClasses) {
-        classes.add(ClassHelper.fileToClass(c));
-      }
-
-      setTestClasses(classes.toArray(new Class[0]));
-    }
-
-    setOutputDirectory(cla.outputDirectory);
-
-    if (cla.testNames != null) {
-      setTestNames(Arrays.asList(cla.testNames.split(",")));
-    }
-
-    // Note: can't use a Boolean field here because we are allowing a boolean
-    // parameter with an arity of 1 ("-usedefaultlisteners false")
-    if (cla.useDefaultListeners != null) {
-      setUseDefaultListeners("true".equalsIgnoreCase(cla.useDefaultListeners));
-    }
-
-    setGroups(cla.groups);
-    setExcludedGroups(cla.excludedGroups);
-    setTestJar(cla.testJar);
-    setXmlPathInJar(cla.xmlPathInJar);
-    setJUnit(cla.junit);
-    setMixed(cla.mixed);
-    setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
-    toggleFailureIfAllTestsWereSkipped(cla.failIfAllTestsSkipped);
-    setListenersToSkipFromBeingWiredInViaServiceLoaders(cla.spiListenersToSkip.split(","));
-
-    m_configuration.setOverrideIncludedMethods(cla.overrideIncludedMethods);
-
-    if (cla.parallelMode != null) {
-      setParallel(cla.parallelMode);
-    }
-    if (cla.configFailurePolicy != null) {
-      setConfigFailurePolicy(XmlSuite.FailurePolicy.getValidPolicy(cla.configFailurePolicy));
-    }
-    if (cla.threadCount != null) {
-      setThreadCount(cla.threadCount);
-    }
-    if (cla.dataProviderThreadCount != null) {
-      setDataProviderThreadCount(cla.dataProviderThreadCount);
-    }
-    if (cla.suiteName != null) {
-      setDefaultSuiteName(cla.suiteName);
-    }
-    if (cla.testName != null) {
-      setDefaultTestName(cla.testName);
-    }
-    if (cla.listener != null) {
-      String sep = ";";
-      if (cla.listener.contains(",")) {
-        sep = ",";
-      }
-      String[] strs = Utils.split(cla.listener, sep);
-      List<Class<? extends ITestNGListener>> classes = Lists.newArrayList();
-
-      for (String cls : strs) {
-        Class<?> clazz = ClassHelper.fileToClass(cls);
-        if (ITestNGListener.class.isAssignableFrom(clazz)) {
-          classes.add((Class<? extends ITestNGListener>) clazz);
-        }
-      }
-
-      setListenerClasses(classes);
-    }
-
-    if (null != cla.methodSelectors) {
-      String[] strs = Utils.split(cla.methodSelectors, ",");
-      for (String cls : strs) {
-        String[] sel = Utils.split(cls, ":");
-        try {
-          if (sel.length == 2) {
-            addMethodSelector(sel[0], Integer.parseInt(sel[1]));
-          } else {
-            error("Method selector value was not in the format org.example.Selector:4");
-          }
-        } catch (NumberFormatException nfe) {
-          error("Method selector value was not in the format org.example.Selector:4");
-        }
-      }
-    }
-
-    if (cla.objectFactory != null) {
-      setObjectFactory(
-          (Class<? extends ITestObjectFactory>) ClassHelper.fileToClass(cla.objectFactory));
-    }
-    if (cla.testRunnerFactory != null) {
-      setTestRunnerFactoryClass(
-          (Class<? extends ITestRunnerFactory>) ClassHelper.fileToClass(cla.testRunnerFactory));
-    }
-
-    ReporterConfig reporterConfig = ReporterConfig.deserialize(cla.reporter);
-    if (reporterConfig != null) {
-      addReporter(reporterConfig);
-    }
-
-    if (cla.commandLineMethods.size() > 0) {
-      m_commandLineMethods = cla.commandLineMethods;
-    }
-
-    if (cla.suiteFiles != null) {
-      setTestSuites(cla.suiteFiles);
-    }
-
-    setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
-    setRandomizeSuites(cla.randomizeSuites);
-    alwaysRunListeners(cla.alwaysRunListeners);
+    cla.configure(this);
   }
 
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
@@ -1547,19 +1355,6 @@ public class TestNG {
     // nop
   }
 
-  private static int parseInt(Object value) {
-    if (value == null) {
-      return -1;
-    }
-    if (value instanceof String) {
-      return Integer.parseInt(String.valueOf(value));
-    }
-    if (value instanceof Integer) {
-      return (Integer) value;
-    }
-    throw new IllegalArgumentException("Unable to parse " + value + " as an Integer.");
-  }
-
   /**
    * This method is invoked by Maven's Surefire to configure the runner, do not remove unless you
    * know for sure that Surefire has been updated to use the new configure(CommandLineArgs) method.
@@ -1570,113 +1365,7 @@ public class TestNG {
   @SuppressWarnings({"unchecked"})
   @Deprecated
   public void configure(Map cmdLineArgs) {
-    CommandLineArgs result = new CommandLineArgs();
-
-    int value = parseInt(cmdLineArgs.get(CommandLineArgs.LOG));
-    if (value != -1) {
-      result.verbose = value;
-    }
-    result.outputDirectory = (String) cmdLineArgs.get(CommandLineArgs.OUTPUT_DIRECTORY);
-
-    String testClasses = (String) cmdLineArgs.get(CommandLineArgs.TEST_CLASS);
-    if (null != testClasses) {
-      result.testClass = testClasses;
-    }
-
-    String testNames = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
-    if (testNames != null) {
-      result.testNames = testNames;
-    }
-
-    String useDefaultListeners = (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);
-    if (null != useDefaultListeners) {
-      result.useDefaultListeners = useDefaultListeners;
-    }
-
-    result.groups = (String) cmdLineArgs.get(CommandLineArgs.GROUPS);
-    result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
-    result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
-    result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
-    result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
-    result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
-    result.skipFailedInvocationCounts =
-        (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
-    result.failIfAllTestsSkipped =
-        Boolean.parseBoolean(
-            cmdLineArgs
-                .getOrDefault(CommandLineArgs.FAIL_IF_ALL_TESTS_SKIPPED, Boolean.FALSE)
-                .toString());
-    result.spiListenersToSkip =
-        (String) cmdLineArgs.getOrDefault(CommandLineArgs.LISTENERS_TO_SKIP_VIA_SPI, "");
-    String parallelMode = (String) cmdLineArgs.get(CommandLineArgs.PARALLEL);
-    if (parallelMode != null) {
-      result.parallelMode = XmlSuite.ParallelMode.getValidParallel(parallelMode);
-    }
-
-    value = parseInt(cmdLineArgs.get(CommandLineArgs.THREAD_COUNT));
-    if (value != -1) {
-      result.threadCount = value;
-    }
-
-    // Not supported by Surefire yet
-    value = parseInt(cmdLineArgs.get(CommandLineArgs.DATA_PROVIDER_THREAD_COUNT));
-    if (value != -1) {
-      result.dataProviderThreadCount = value;
-    }
-    String defaultSuiteName = (String) cmdLineArgs.get(CommandLineArgs.SUITE_NAME);
-    if (defaultSuiteName != null) {
-      result.suiteName = defaultSuiteName;
-    }
-
-    String defaultTestName = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAME);
-    if (defaultTestName != null) {
-      result.testName = defaultTestName;
-    }
-
-    Object listeners = cmdLineArgs.get(CommandLineArgs.LISTENER);
-    if (listeners instanceof List) {
-      result.listener = Utils.join((List<?>) listeners, ",");
-    } else {
-      result.listener = (String) listeners;
-    }
-
-    String ms = (String) cmdLineArgs.get(CommandLineArgs.METHOD_SELECTORS);
-    if (null != ms) {
-      result.methodSelectors = ms;
-    }
-
-    String objectFactory = (String) cmdLineArgs.get(CommandLineArgs.OBJECT_FACTORY);
-    if (null != objectFactory) {
-      result.objectFactory = objectFactory;
-    }
-
-    String runnerFactory = (String) cmdLineArgs.get(CommandLineArgs.TEST_RUNNER_FACTORY);
-    if (null != runnerFactory) {
-      result.testRunnerFactory = runnerFactory;
-    }
-
-    String reporterConfigs = (String) cmdLineArgs.get(CommandLineArgs.REPORTER);
-    if (reporterConfigs != null) {
-      result.reporter = reporterConfigs;
-    }
-
-    String failurePolicy = (String) cmdLineArgs.get(CommandLineArgs.CONFIG_FAILURE_POLICY);
-    if (failurePolicy != null) {
-      result.configFailurePolicy = failurePolicy;
-    }
-
-    value = parseInt(cmdLineArgs.get(CommandLineArgs.SUITE_THREAD_POOL_SIZE));
-    if (value != -1) {
-      result.suiteThreadPoolSize = value;
-    }
-
-    String dependencyInjectorFactoryClass =
-        (String) cmdLineArgs.get(CommandLineArgs.DEPENDENCY_INJECTOR_FACTORY);
-    if (dependencyInjectorFactoryClass != null) {
-      result.dependencyInjectorFactoryClass = dependencyInjectorFactoryClass;
-    }
-
-    configure(result);
+    (new SurefireCommandLineArgs(cmdLineArgs)).configure(this);
   }
 
   /** @param testNames Only run the specified tests from the suite. */
@@ -1688,7 +1377,7 @@ public class TestNG {
     m_skipFailedInvocationCounts = skip;
   }
 
-  private void addReporter(ReporterConfig reporterConfig) {
+  public void addReporter(ReporterConfig reporterConfig) {
     IReporter instance = newReporterInstance(reporterConfig);
     if (instance != null) {
       addListener(instance);
@@ -1732,41 +1421,11 @@ public class TestNG {
     m_isMixed = isMixed;
   }
 
-  /**
-   * Double check that the command line parameters are valid.
-   *
-   * @param args The command line to check
-   */
-  protected static void validateCommandLineParameters(CommandLineArgs args) {
-    String testClasses = args.testClass;
-    List<String> testNgXml = args.suiteFiles;
-    String testJar = args.testJar;
-    List<String> methods = args.commandLineMethods;
-
-    if (testClasses == null
-        && testJar == null
-        && (testNgXml == null || testNgXml.isEmpty())
-        && (methods == null || methods.isEmpty())) {
-      throw new ParameterException(
-          "You need to specify at least one testng.xml, one class" + " or one method");
-    }
-
-    String groups = args.groups;
-    String excludedGroups = args.excludedGroups;
-
-    if (testJar == null
-        && (null != groups || null != excludedGroups)
-        && testClasses == null
-        && (testNgXml == null || testNgXml.isEmpty())) {
-      throw new ParameterException("Groups option should be used with testclass option");
-    }
-
-    Boolean junit = args.junit;
-    Boolean mixed = args.mixed;
-    if (junit && mixed) {
-      throw new ParameterException(
-          CommandLineArgs.MIXED + " can't be combined with " + CommandLineArgs.JUNIT);
-    }
+  /** @deprecated */
+  @Deprecated
+  protected static void validateCommandLineParameters(CommandLineArgs args)
+      throws CommandLineArgs.ParameterException {
+    CliTestNgRunner.Main.validateCommandLineParameters(args);
   }
 
   /** @return true if at least one test failed. */
@@ -1784,9 +1443,9 @@ public class TestNG {
     return this.exitCode.hasSkip();
   }
 
+  @Deprecated
   static void exitWithError(String msg) {
     System.err.println(msg);
-    usage();
     System.exit(1);
   }
 
@@ -1938,7 +1597,19 @@ public class TestNG {
     return Lists.newArrayList(serviceLoaderListeners.values());
   }
 
+  public void setInjectorFactory(Class<IInjectorFactory> clazz) {
+    setInjectorFactory(m_objectFactory.newInstance(clazz));
+  }
+
   public void setInjectorFactory(IInjectorFactory factory) {
     this.m_configuration.setInjectorFactory(factory);
+  }
+
+  public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
+    m_configuration.setOverrideIncludedMethods(overrideIncludedMethods);
+  }
+
+  public void setExitCode(ExitCode exitCode) {
+    this.exitCode = exitCode;
   }
 }

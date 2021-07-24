@@ -1,5 +1,6 @@
 package test.mixed;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -7,25 +8,26 @@ import org.testng.annotations.Test;
 import test.BaseTest;
 import testhelper.OutputDirectoryPatch;
 
-/** @author lukas */
 public class MixedTest extends BaseTest {
+
   @Test
   public void mixedWithExcludedGroups() {
-    String[] argv = {
-      "-d",
-      OutputDirectoryPatch.getOutputDirectory(),
-      "-log",
-      "0",
-      "-mixed",
-      "-groups",
-      "unit",
-      "-excludegroups",
-      "ignore",
-      "-testclass",
-      "test.mixed.JUnit3Test1,test.mixed.JUnit4Test1,test.mixed.TestNGTest1,test.mixed.TestNGGroups"
-    };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setVerbose(0);
+    testng.setMixed(true);
+    testng.setGroups("unit");
+    testng.setExcludedGroups("ignore");
+    testng.setTestClasses(
+        new Class<?>[] {
+          test.mixed.JUnit3Test1.class,
+          test.mixed.JUnit4Test1.class,
+          test.mixed.TestNGTest1.class,
+          test.mixed.TestNGGroups.class,
+        });
+    testng.run();
 
     Assert.assertEquals(
         tla.getPassedTests().size(),
@@ -36,17 +38,17 @@ public class MixedTest extends BaseTest {
 
   @Test
   public void mixedClasses() {
-    String[] argv = {
-      "-d",
-      OutputDirectoryPatch.getOutputDirectory(),
-      "-log",
-      "0",
-      "-mixed",
-      "-testclass",
-      "test.mixed.JUnit3Test1,test.mixed.JUnit4Test1,test.mixed.TestNGTest1"
-    };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setVerbose(0);
+    testng.setMixed(true);
+    testng.setTestClasses(
+        new Class<?>[] {
+          test.mixed.JUnit3Test1.class, test.mixed.JUnit4Test1.class, test.mixed.TestNGTest1.class,
+        });
+    testng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 6);
     Assert.assertEquals(tla.getFailedTests().size(), 0);
@@ -54,17 +56,19 @@ public class MixedTest extends BaseTest {
 
   @Test
   public void mixedMethods() {
-    String[] argv = {
-      "-d",
-      OutputDirectoryPatch.getOutputDirectory(),
-      "-mixed",
-      "-log",
-      "0",
-      "-methods",
-      "test.mixed.JUnit3Test1.testB,test.mixed.JUnit4Test1.atest,test.mixed.TestNGTest1.tngCustomTest1"
-    };
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.addListener(tla);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setVerbose(0);
+    testng.setMixed(true);
+    testng.setCommandLineMethods(
+        Arrays.asList(
+            "test.mixed.JUnit3Test1.test",
+            "test.mixed.JUnit3Test1.testB",
+            "test.mixed.JUnit4Test1.atest",
+            "test.mixed.TestNGTest1.tngCustomTest1"));
+    testng.run();
 
     Assert.assertEquals(tla.getPassedTests().size(), 3);
     Assert.assertEquals(tla.getFailedTests().size(), 0);

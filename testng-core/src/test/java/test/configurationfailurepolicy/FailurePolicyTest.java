@@ -3,6 +3,8 @@ package test.configurationfailurepolicy;
 import static org.testng.Assert.assertEquals;
 import static test.SimpleBaseTest.getPathToResource;
 
+import java.util.Collections;
+import java.util.List;
 import org.testng.ITestContext;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -75,7 +77,7 @@ public class FailurePolicyTest {
 
   @Test
   public void confFailureTestInvolvingGroups() {
-    Class[] classesUnderTest =
+    Class<?>[] classesUnderTest =
         new Class[] {ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups.class};
 
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -86,79 +88,72 @@ public class FailurePolicyTest {
     testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.setGroups("group1");
     testng.run();
+
     verify(tla, 1, 3, 1);
   }
 
   @Test
-  public void commandLineTest_policyAsSkip() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "skip",
-          "-testclass",
-          ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
-        };
+  public void testPolicyAsSkip() {
+    Class<?>[] classesUnderTest = new Class[] {ClassWithFailedBeforeMethodAndMultipleTests.class};
+
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setTestClasses(classesUnderTest);
+    testng.addListener(tla);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.SKIP);
+    testng.setVerbose(0);
+    testng.run();
 
     verify(tla, 1, 1, 2);
   }
 
   @Test
-  public void commandLineTest_policyAsContinue() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "continue",
-          "-testclass",
-          ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
-        };
+  public void testPolicyAsContinue() {
+    Class<?>[] classesUnderTest = new Class[] {ClassWithFailedBeforeMethodAndMultipleTests.class};
+
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.setTestClasses(classesUnderTest);
+    testng.addListener(tla);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
+    testng.setVerbose(0);
+    testng.run();
 
     verify(tla, 2, 0, 2);
   }
 
   @Test
-  public void commandLineTestWithXMLFile_policyAsSkip() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "skip",
-          getPathToResource("testng-configfailure.xml")
-        };
+  public void testPolicyAsSkipWithXMLFile() {
+    List<String> suitesUnderTest =
+        Collections.singletonList(getPathToResource("testng-configfailure.xml"));
+
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.setTestSuites(suitesUnderTest);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.addListener(tla);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.SKIP);
+    testng.setVerbose(0);
+    testng.run();
 
     verify(tla, 1, 1, 2);
   }
 
   @Test
-  public void commandLineTestWithXMLFile_policyAsContinue() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "continue",
-          getPathToResource("testng-configfailure.xml")
-        };
+  public void testPolicyAsContinueWithXMLFile() {
+    List<String> suitesUnderTest =
+        Collections.singletonList(getPathToResource("testng-configfailure.xml"));
+
     TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
+    TestNG testng = new TestNG();
+    testng.setTestSuites(suitesUnderTest);
+    testng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
+    testng.addListener(tla);
+    testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
+    testng.setVerbose(0);
+    testng.run();
 
     verify(tla, 2, 0, 2);
   }

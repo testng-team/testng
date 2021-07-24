@@ -21,6 +21,9 @@ java {
             api(platform("com.google.inject:guice-bom:_"))
             api("com.google.inject:guice")
         }
+        create("jcommander") {
+            implementation(projects.testngJcommander)
+        }
         create("junit") {
             implementation(projects.testngRunnerJunit4)
         }
@@ -35,6 +38,7 @@ dependencies {
     // would be selected automatically
     shadedDependencyElements(projects.testngAsserts)
     shadedDependencyElements(projects.testngCore)
+    shadedDependencyElements(projects.testngJcommander)
 }
 
 tasks.mergedJar {

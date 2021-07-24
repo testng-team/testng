@@ -67,23 +67,23 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
   public void ensureParallelismIsHonoredWhenOnlyClassesSpecifiedInJar() throws IOException {
     Class<?>[] classes = new Class<?>[] {TestSampleA.class, TestSampleB.class};
     File jarfile = JarCreator.generateJar(classes);
-    String[] args =
-        new String[] {
-          "-parallel",
-          "classes",
-          "-testjar",
-          jarfile.getAbsolutePath(),
-          "-listener",
-          LocalLogAggregator.class.getCanonicalName()
-        };
-    TestNG.privateMain(args, null);
+
+    TestNG testng = new TestNG();
+    testng.setParallel(XmlSuite.ParallelMode.CLASSES);
+    testng.setTestJar(jarfile.getAbsolutePath());
+    testng.setListenerClasses(Collections.singletonList(LocalLogAggregator.class));
+    testng.run();
+
     Set<String> logs = LocalLogAggregator.getLogs();
     assertThat(logs).hasSize(2);
   }
 
   @Test(description = "GITHUB-1810")
   public void ensureNoNullPointerExceptionIsThrown() throws IOException {
-    TestNG testng = TestNG.privateMain(new String[] {createTemporarySuiteAndGetItsPath()}, null);
+    TestNG testng = new TestNG();
+    testng.setTestSuites(Collections.singletonList(createTemporarySuiteAndGetItsPath()));
+    testng.run();
+
     assertThat(testng.getStatus()).isEqualTo(8);
   }
 

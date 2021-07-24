@@ -1,245 +1,364 @@
 package org.testng;
 
-import com.beust.jcommander.Parameter;
-import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
+import org.testng.internal.ReporterConfig;
+import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 
-public class CommandLineArgs {
+/**
+ * The command line parameters are:
+ *
+ * <UL>
+ *   <LI>-d <code>outputdir</code>: specify the output directory
+ *   <LI>-testclass <code>class_name</code>: specifies one or several class names
+ *   <LI>-testjar <code>jar_name</code>: specifies the jar containing the tests
+ *   <LI>-sourcedir <code>src1;src2</code>: ; separated list of source directories (used only when
+ *       javadoc annotations are used)
+ *   <LI>-target
+ *   <LI>-groups
+ *   <LI>-testrunfactory
+ *   <LI>-listener
+ * </UL>
+ */
+public interface CommandLineArgs {
 
-  @Parameter(description = "The XML suite files to run")
-  public List<String> suiteFiles = Lists.newArrayList();
+  String LOG = "-log";
 
-  public static final String LOG = "-log";
-  public static final String VERBOSE = "-verbose";
+  /** @return The XML suite files to run */
+  List<String> getSuiteFiles();
 
-  @Parameter(
-      names = {LOG, VERBOSE},
-      description = "Level of verbosity")
-  public Integer verbose;
+  String VERBOSE = "-verbose";
 
-  public static final String GROUPS = "-groups";
+  /** @return Level of verbosity */
+  Integer getVerbose();
 
-  @Parameter(names = GROUPS, description = "Comma-separated list of group names to be run")
-  public String groups;
+  String GROUPS = "-groups";
 
-  public static final String EXCLUDED_GROUPS = "-excludegroups";
+  /** @return Comma-separated list of group names to be run */
+  String getGroups();
 
-  @Parameter(
-      names = EXCLUDED_GROUPS,
-      description = "Comma-separated list of group names to " + " exclude")
-  public String excludedGroups;
+  String EXCLUDED_GROUPS = "-excludegroups";
 
-  public static final String OUTPUT_DIRECTORY = "-d";
+  /** @return Comma-separated list of group names to exclude */
+  String getExcludedGroups();
 
-  @Parameter(names = OUTPUT_DIRECTORY, description = "Output directory")
-  public String outputDirectory;
+  String OUTPUT_DIRECTORY = "-d";
 
-  public static final String JUNIT = "-junit";
+  /** @return Output directory */
+  String getOutputDirectory();
 
-  @Parameter(names = JUNIT, description = "JUnit mode")
-  public Boolean junit = Boolean.FALSE;
+  String JUNIT = "-junit";
 
-  public static final String MIXED = "-mixed";
+  /** @return JUnit mode */
+  Boolean isJUnit();
 
-  @Parameter(
-      names = MIXED,
-      description =
-          "Mixed mode - autodetect the type of current test"
-              + " and run it with appropriate runner")
-  public Boolean mixed = Boolean.FALSE;
+  String MIXED = "-mixed";
 
-  public static final String LISTENER = "-listener";
+  /** @return Mixed mode - autodetect the type of current test and run it with appropriate runner */
+  Boolean isMixed();
 
-  @Parameter(
-      names = LISTENER,
-      description =
-          "List of .class files or list of class names"
-              + " implementing ITestListener or ISuiteListener")
-  public String listener;
+  String LISTENER = "-listener";
 
-  public static final String METHOD_SELECTORS = "-methodselectors";
+  /**
+   * @return List of .class files or list of class names implementing ITestListener or
+   *     ISuiteListener
+   */
+  List<Class<? extends ITestNGListener>> getListener();
 
-  @Parameter(
-      names = METHOD_SELECTORS,
-      description = "List of .class files or list of class " + "names implementing IMethodSelector")
-  public String methodSelectors;
+  String METHOD_SELECTORS = "-methodselectors";
 
-  public static final String OBJECT_FACTORY = "-objectfactory";
+  /** @return List of .class files or list of class names implementing IMethodSelector */
+  List<XmlMethodSelector> getMethodSelectors();
 
-  @Parameter(
-      names = OBJECT_FACTORY,
-      description =
-          "List of .class files or list of class " + "names implementing ITestRunnerFactory")
-  public String objectFactory;
+  String OBJECT_FACTORY = "-objectfactory";
 
-  public static final String PARALLEL = "-parallel";
+  /** @return List of .class files or list of class names implementing ITestRunnerFactory */
+  Class<? extends ITestObjectFactory> getObjectFactory();
 
-  @Parameter(names = PARALLEL, description = "Parallel mode (methods, tests or classes)")
-  public XmlSuite.ParallelMode parallelMode;
+  String PARALLEL = "-parallel";
 
-  public static final String CONFIG_FAILURE_POLICY = "-configfailurepolicy";
+  /** @return Parallel mode (methods, tests or classes) */
+  XmlSuite.ParallelMode getParallelMode();
 
-  @Parameter(
-      names = CONFIG_FAILURE_POLICY,
-      description = "Configuration failure policy (skip or continue)")
-  public String configFailurePolicy;
+  String CONFIG_FAILURE_POLICY = "-configfailurepolicy";
 
-  public static final String THREAD_COUNT = "-threadcount";
+  /** @return Configuration failure policy (skip or continue) */
+  XmlSuite.FailurePolicy getConfigFailurePolicy();
 
-  @Parameter(
-      names = THREAD_COUNT,
-      description = "Number of threads to use when running tests " + "in parallel")
-  public Integer threadCount;
+  String THREAD_COUNT = "-threadcount";
 
-  public static final String DATA_PROVIDER_THREAD_COUNT = "-dataproviderthreadcount";
+  /** @return Number of threads to use when running tests in parallel */
+  Integer getThreadCount();
 
-  @Parameter(
-      names = DATA_PROVIDER_THREAD_COUNT,
-      description = "Number of threads to use when " + "running data providers")
-  public Integer dataProviderThreadCount;
+  String DATA_PROVIDER_THREAD_COUNT = "-dataproviderthreadcount";
 
-  public static final String SUITE_NAME = "-suitename";
+  /** @return Number of threads to use when running data providers */
+  Integer getDataProviderThreadCount();
 
-  @Parameter(
-      names = SUITE_NAME,
-      description =
-          "Default name of test suite, if not specified "
-              + "in suite definition file or source code")
-  public String suiteName;
+  String SUITE_NAME = "-suitename";
 
-  public static final String TEST_NAME = "-testname";
+  /**
+   * @return Default name of test suite, if not specified in suite definition file or source code
+   */
+  String getSuiteName();
 
-  @Parameter(
-      names = TEST_NAME,
-      description =
-          "Default name of test, if not specified in suite" + "definition file or source code")
-  public String testName;
+  String TEST_NAME = "-testname";
 
-  public static final String REPORTER = "-reporter";
+  /** @return Default name of test, if not specified in suite definition file or source code */
+  String getTestName();
 
-  @Parameter(names = REPORTER, description = "Extended configuration for custom report listener")
-  public String reporter;
+  String REPORTER = "-reporter";
 
-  public static final String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
+  /** @return Extended configuration for custom report listener */
+  ReporterConfig getReporter();
 
-  @Parameter(names = USE_DEFAULT_LISTENERS, description = "Whether to use the default listeners")
-  public String useDefaultListeners = "true";
+  String USE_DEFAULT_LISTENERS = "-usedefaultlisteners";
 
-  public static final String SKIP_FAILED_INVOCATION_COUNTS = "-skipfailedinvocationcounts";
+  /** @return Whether to use the default listeners */
+  Boolean useDefaultListeners();
 
-  @Parameter(names = SKIP_FAILED_INVOCATION_COUNTS, hidden = true)
-  public Boolean skipFailedInvocationCounts;
+  String SKIP_FAILED_INVOCATION_COUNTS = "-skipfailedinvocationcounts";
 
-  public static final String TEST_CLASS = "-testclass";
+  Boolean skipFailedInvocationCounts();
 
-  @Parameter(names = TEST_CLASS, description = "The list of test classes")
-  public String testClass;
+  String TEST_CLASS = "-testclass";
 
-  public static final String TEST_NAMES = "-testnames";
+  /** @return The list of test classes */
+  List<Class<?>> getTestClass();
 
-  @Parameter(names = TEST_NAMES, description = "The list of test names to run")
-  public String testNames;
+  String TEST_NAMES = "-testnames";
 
-  public static final String TEST_JAR = "-testjar";
+  /** @return The list of test names to run */
+  List<String> getTestNames();
 
-  @Parameter(names = TEST_JAR, description = "A jar file containing the tests")
-  public String testJar;
+  String TEST_JAR = "-testjar";
 
-  public static final String XML_PATH_IN_JAR = "-xmlpathinjar";
-  public static final String XML_PATH_IN_JAR_DEFAULT = "testng.xml";
+  /** @return A jar file containing the tests */
+  String getTestJar();
 
-  @Parameter(
-      names = XML_PATH_IN_JAR,
-      description =
-          "The full path to the xml file inside the jar file (only valid if -testjar was specified)")
-  public String xmlPathInJar = XML_PATH_IN_JAR_DEFAULT;
+  String XML_PATH_IN_JAR = "-xmlpathinjar";
 
-  public static final String TEST_RUNNER_FACTORY = "-testrunfactory";
+  /**
+   * @return The full path to the xml file inside the jar file (only valid if -testjar was
+   *     specified)
+   */
+  String getXmlPathInJar();
 
-  @Parameter(
-      names = {TEST_RUNNER_FACTORY, "-testRunFactory"},
-      description = "The factory used to create tests")
-  public String testRunnerFactory;
+  String TEST_RUNNER_FACTORY = "-testrunfactory";
 
-  public static final String PORT = "-port";
+  /** @return The factory used to create tests */
+  Class<? extends ITestRunnerFactory> getTestRunnerFactory();
 
-  @Parameter(names = PORT, description = "The port")
-  public Integer port;
+  String PORT = "-port";
 
-  public static final String HOST = "-host";
+  /** @return The port */
+  Integer getPort();
 
-  @Parameter(names = HOST, description = "The host", hidden = true)
-  public String host;
+  String HOST = "-host";
 
-  public static final String METHODS = "-methods";
+  /** @return The host */
+  String getHost();
 
-  @Parameter(names = METHODS, description = "Comma separated of test methods")
-  public List<String> commandLineMethods = new ArrayList<>();
+  String METHODS = "-methods";
 
-  public static final String SUITE_THREAD_POOL_SIZE = "-suitethreadpoolsize";
-  public static final Integer SUITE_THREAD_POOL_SIZE_DEFAULT = 1;
+  /** @return Comma separated of test methods */
+  List<String> getCommandLineMethods();
 
-  @Parameter(
-      names = SUITE_THREAD_POOL_SIZE,
-      description = "Size of the thread pool to use" + " to run suites")
-  public Integer suiteThreadPoolSize = SUITE_THREAD_POOL_SIZE_DEFAULT;
+  String SUITE_THREAD_POOL_SIZE = "-suitethreadpoolsize";
+  Integer SUITE_THREAD_POOL_SIZE_DEFAULT = 1;
 
-  public static final String RANDOMIZE_SUITES = "-randomizesuites";
+  /** @return Size of the thread pool to use to run suites */
+  Integer getSuiteThreadPoolSize();
 
-  @Parameter(
-      names = RANDOMIZE_SUITES,
-      hidden = true,
-      description = "Whether to run suites in same order as specified in XML or not")
-  public Boolean randomizeSuites = Boolean.FALSE;
+  String RANDOMIZE_SUITES = "-randomizesuites";
 
-  public static final String DEBUG = "-debug";
+  /** @return Whether to run suites in same order as specified in XML or not */
+  Boolean isRandomizeSuites();
 
-  @Parameter(names = DEBUG, hidden = true, description = "Used to debug TestNG")
-  public Boolean debug = Boolean.FALSE;
+  String DEBUG = "-debug";
 
-  public static final String ALWAYS_RUN_LISTENERS = "-alwaysrunlisteners";
+  /** @return Used to debug TestNG */
+  Boolean isDebug();
 
-  @Parameter(
-      names = ALWAYS_RUN_LISTENERS,
-      description = "Should MethodInvocation Listeners be run even for skipped methods")
-  public Boolean alwaysRunListeners = Boolean.TRUE;
+  String ALWAYS_RUN_LISTENERS = "-alwaysrunlisteners";
 
-  public static final String THREAD_POOL_FACTORY_CLASS = "-threadpoolfactoryclass";
+  /** @return Should MethodInvocation Listeners be run even for skipped methods */
+  Boolean alwaysRunListeners();
 
-  @Parameter(
-      names = THREAD_POOL_FACTORY_CLASS,
-      description = "The threadpool executor factory implementation that TestNG should use.")
-  public String threadPoolFactoryClass;
+  String THREAD_POOL_FACTORY_CLASS = "-threadpoolfactoryclass";
 
-  public static final String DEPENDENCY_INJECTOR_FACTORY = "-dependencyinjectorfactory";
+  /** @return The threadpool executor factory implementation that TestNG should use. */
+  String getThreadPoolFactoryClass();
 
-  @Parameter(
-      names = DEPENDENCY_INJECTOR_FACTORY,
-      description = "The dependency injector factory implementation that TestNG should use.")
-  public String dependencyInjectorFactoryClass;
+  String DEPENDENCY_INJECTOR_FACTORY = "-dependencyinjectorfactory";
 
-  public static final String FAIL_IF_ALL_TESTS_SKIPPED = "-failwheneverythingskipped";
+  /** @return The dependency injector factory implementation that TestNG should use. */
+  Class<IInjectorFactory> getDependencyInjectorFactory();
 
-  @Parameter(
-      names = FAIL_IF_ALL_TESTS_SKIPPED,
-      description = "Should TestNG fail execution if all tests were skipped and nothing was run.")
-  public Boolean failIfAllTestsSkipped = false;
+  String FAIL_IF_ALL_TESTS_SKIPPED = "-failwheneverythingskipped";
 
-  public static final String LISTENERS_TO_SKIP_VIA_SPI = "-spilistenerstoskip";
+  /** @return Should TestNG fail execution if all tests were skipped and nothing was run. */
+  Boolean failIfAllTestsSkipped();
 
-  @Parameter(
-      names = LISTENERS_TO_SKIP_VIA_SPI,
-      description =
-          "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
-  public String spiListenersToSkip = "";
+  String LISTENERS_TO_SKIP_VIA_SPI = "-spilistenerstoskip";
 
-  public static final String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
+  /**
+   * @return Comma separated fully qualified class names of listeners that should be skipped from
+   *     being wired in via Service Loaders.
+   */
+  List<String> getSpiListenersToSkip();
 
-  @Parameter(
-      names = OVERRIDE_INCLUDED_METHODS,
-      description =
-          "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
-  public Boolean overrideIncludedMethods = false;
+  String OVERRIDE_INCLUDED_METHODS = "-overrideincludedmethods";
+
+  /**
+   * @return Comma separated fully qualified class names of listeners that should be skipped from
+   *     being wired in via Service Loaders.
+   */
+  Boolean overrideIncludedMethods();
+
+  default void validate() throws ParameterException {
+    List<Class<?>> testClasses = getTestClass();
+    List<String> testNgXml = getSuiteFiles();
+    String testJar = getTestJar();
+    List<String> methods = getCommandLineMethods();
+
+    if (testClasses == null
+        && testJar == null
+        && (testNgXml == null || testNgXml.isEmpty())
+        && (methods == null || methods.isEmpty())) {
+      throw new ParameterException(
+          "You need to specify at least one testng.xml, one class" + " or one method");
+    }
+
+    String groups = getGroups();
+    String excludedGroups = getExcludedGroups();
+
+    if (testJar == null
+        && (null != groups || null != excludedGroups)
+        && testClasses == null
+        && (testNgXml == null || testNgXml.isEmpty())) {
+      throw new ParameterException("Groups option should be used with testclass option");
+    }
+
+    Boolean junit = isJUnit();
+    Boolean mixed = isMixed();
+    if (junit && mixed) {
+      throw new ParameterException(
+          CommandLineArgs.MIXED + " can't be combined with " + CommandLineArgs.JUNIT);
+    }
+  }
+
+  /**
+   * Configure the TestNG instance based on the command line parameters.
+   *
+   * @param tng The TestNG instance
+   */
+  default void configure(TestNG tng) {
+    if (getVerbose() != null) {
+      tng.setVerbose(getVerbose());
+    }
+    if (getDependencyInjectorFactory() != null) {
+      tng.setInjectorFactory(getDependencyInjectorFactory());
+    }
+    if (getThreadPoolFactoryClass() != null) {
+      tng.setExecutorFactoryClass(getThreadPoolFactoryClass());
+    }
+    tng.setOutputDirectory(getOutputDirectory());
+
+    List<Class<?>> testClasses = getTestClass();
+    if (testClasses != null) {
+      tng.setTestClasses(testClasses.toArray(new Class[0]));
+    }
+
+    tng.setOutputDirectory(getOutputDirectory());
+
+    if (getTestNames() != null) {
+      tng.setTestNames(getTestNames());
+    }
+
+    if (useDefaultListeners() != null) {
+      tng.setUseDefaultListeners(useDefaultListeners());
+    }
+
+    tng.setGroups(getGroups());
+    tng.setExcludedGroups(getExcludedGroups());
+    tng.setTestJar(getTestJar());
+    tng.setXmlPathInJar(getXmlPathInJar());
+    tng.setJUnit(isJUnit());
+    tng.setMixed(isMixed());
+    tng.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
+    tng.toggleFailureIfAllTestsWereSkipped(failIfAllTestsSkipped());
+    tng.setListenersToSkipFromBeingWiredInViaServiceLoaders(getSpiListenersToSkip());
+
+    if (overrideIncludedMethods() != null) {
+      tng.setOverrideIncludedMethods(overrideIncludedMethods());
+    }
+
+    if (getParallelMode() != null) {
+      tng.setParallel(getParallelMode());
+    }
+    if (getConfigFailurePolicy() != null) {
+      tng.setConfigFailurePolicy(getConfigFailurePolicy());
+    }
+    if (getThreadCount() != null) {
+      tng.setThreadCount(getThreadCount());
+    }
+    if (getDataProviderThreadCount() != null) {
+      tng.setDataProviderThreadCount(getDataProviderThreadCount());
+    }
+    if (getSuiteName() != null) {
+      tng.setDefaultSuiteName(getSuiteName());
+    }
+    if (getTestName() != null) {
+      tng.setDefaultTestName(getTestName());
+    }
+    if (getListener() != null) {
+      tng.setListenerClasses(getListener());
+    }
+
+    if (getMethodSelectors() != null) {
+      for (XmlMethodSelector selector : getMethodSelectors()) {
+        tng.addMethodSelector(selector);
+      }
+    }
+
+    if (getObjectFactory() != null) {
+      tng.setObjectFactory(getObjectFactory());
+    }
+    if (getTestRunnerFactory() != null) {
+      tng.setTestRunnerFactoryClass(getTestRunnerFactory());
+    }
+
+    if (getReporter() != null) {
+      tng.addReporter(getReporter());
+    }
+
+    if (getCommandLineMethods() != null && !getCommandLineMethods().isEmpty()) {
+      tng.setCommandLineMethods(getCommandLineMethods());
+    }
+
+    if (getSuiteFiles() != null) {
+      tng.setTestSuites(getSuiteFiles());
+    }
+    if (getSuiteThreadPoolSize() != null) {
+      tng.setSuiteThreadPoolSize(getSuiteThreadPoolSize());
+    }
+    if (isRandomizeSuites() != null) {
+      tng.setRandomizeSuites(isRandomizeSuites());
+    }
+    if (alwaysRunListeners() != null) {
+      tng.alwaysRunListeners(alwaysRunListeners());
+    }
+  }
+
+  class ParameterException extends Exception {
+
+    ParameterException(String message) {
+      super(message);
+    }
+
+    ParameterException(String message, Throwable cause) {
+      super(message, cause);
+    }
+  }
 }

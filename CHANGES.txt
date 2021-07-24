@@ -1,4 +1,5 @@
 Current
+New: Provide an SPI for 3rd party CLI integration (Julien Herr)
 Fixed: GITHUB-2613: Ignored Tests are not retrieved for a mixed test class (test with enabled, disabled and ignored test method) (Krishnan Mahadevan)
 Fixed: GITHUB-849: Performance improvement by fixing hashCode (testn & Vladimir Sitnikov)
 Fixed: GITHUB-2570: Use Guice injector for instantiate IRetryAnalyzer (Krishnan Mahadevan)
