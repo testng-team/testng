@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -44,6 +45,7 @@ public class FailedReporter implements IReporter {
 
   public FailedReporter() {}
 
+  @SuppressWarnings("unused")
   public FailedReporter(XmlSuite xmlSuite) {
     m_xmlSuite = xmlSuite;
   }
@@ -133,9 +135,27 @@ public class FailedReporter implements IReporter {
           getAllApplicableConfigs(relevantConfigs, m.getTestClass());
         }
       }
+      Set<ITestNGMethod> upstreamConfigFailures =
+          Stream.of(
+                  context.getFailedConfigurations().getAllMethods(),
+                  context.getSkippedConfigurations().getAllMethods(),
+                  context.getPassedConfigurations().getAllMethods())
+              .flatMap(Collection::stream)
+              .filter(FailedReporter::isNotClassLevelConfigurationMethod)
+              .collect(Collectors.toSet());
+      result.addAll(upstreamConfigFailures);
       result.addAll(relevantConfigs);
       createXmlTest(context, result, xmlTest);
     }
+  }
+
+  private static boolean isNotClassLevelConfigurationMethod(ITestNGMethod each) {
+    return each.isBeforeSuiteConfiguration()
+        || each.isAfterSuiteConfiguration()
+        || each.isBeforeTestConfiguration()
+        || each.isAfterTestConfiguration()
+        || each.isBeforeGroupsConfiguration()
+        || each.isAfterGroupsConfiguration();
   }
 
   private static void getAllApplicableConfigs(Set<ITestNGMethod> configs, ITestClass iTestClass) {
