@@ -46,6 +46,7 @@ dependencies {
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-api:_")
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-impl-base:_")
     testImplementation("org.xmlunit:xmlunit-assertj:_")
+    testImplementation("commons-io:commons-io:_")
 }
 
 tasks.test {
