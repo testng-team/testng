@@ -17,6 +17,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.testng.SkipException;
 import org.testng.TestNG;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -168,5 +169,10 @@ public class ParallelTestTest extends BaseTest {
     } catch (IOException e) {
       throw new SkipException(String.format("Error writing zip to %s", targetFilePath), e);
     }
+  }
+
+  @AfterMethod
+  private void clearThreadCount() {
+    Github1636Sample.threads.clear();
   }
 }
