@@ -183,7 +183,10 @@ public class FailedReporterTest extends SimpleBaseTest {
             .map(XmlInclude::getName)
             .collect(Collectors.toList());
     assertThat(includedMethods)
-        .withFailMessage("Included methods test failed for " + cls.getName())
+        .withFailMessage(
+            String.format(
+                "Included methods:\n%s\n in class\n%s\n should match\n%s",
+                String.join("\n", includedMethods), cls.getName(), String.join("\n", methods)))
         .containsExactlyInAnyOrder(methods);
   }
 

@@ -133,13 +133,14 @@ public class FailedReporter implements IReporter {
         if (methodsToReRun.contains(m)) {
           result.add(m);
           getAllApplicableConfigs(relevantConfigs, m.getTestClass());
+          getAllGroupApplicableConfigs(context, relevantConfigs, m);
         }
       }
+
       Set<ITestNGMethod> upstreamConfigFailures =
           Stream.of(
                   context.getFailedConfigurations().getAllMethods(),
-                  context.getSkippedConfigurations().getAllMethods(),
-                  context.getPassedConfigurations().getAllMethods())
+                  context.getSkippedConfigurations().getAllMethods())
               .flatMap(Collection::stream)
               .filter(FailedReporter::isNotClassLevelConfigurationMethod)
               .collect(Collectors.toSet());
@@ -167,6 +168,30 @@ public class FailedReporter implements IReporter {
     configs.addAll(Arrays.asList(iTestClass.getAfterTestMethods()));
     configs.addAll(Arrays.asList(iTestClass.getBeforeClassMethods()));
     configs.addAll(Arrays.asList(iTestClass.getAfterClassMethods()));
+  }
+
+  private static void getAllGroupApplicableConfigs(
+      ITestContext context, Set<ITestNGMethod> relevantConfigs, ITestNGMethod m) {
+    context.getPassedConfigurations().getAllMethods().stream()
+        .filter(
+            method ->
+                relevantConfigs.stream()
+                    .map(ITestNGMethod::getConstructorOrMethod)
+                    .map(ConstructorOrMethod::getMethod)
+                    .noneMatch(
+                        configMethod ->
+                            method.getConstructorOrMethod().getMethod().equals(configMethod)))
+        .filter(method -> method.getGroups().length > 0)
+        .filter(
+            method ->
+                context.getPassedTests().getAllMethods().stream()
+                    .map(ITestNGMethod::getInstance)
+                    .noneMatch(i -> i.equals(method.getInstance())))
+        .filter(
+            method ->
+                Arrays.stream(m.getGroups())
+                    .anyMatch(group -> Arrays.asList(method.getGroups()).contains(group)))
+        .forEach(relevantConfigs::add);
   }
 
   /** Generate testng-failed.xml */
