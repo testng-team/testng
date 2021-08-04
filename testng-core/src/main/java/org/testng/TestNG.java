@@ -321,9 +321,8 @@ public class TestNG {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
     }
-    Collection<XmlSuite> allSuites = null;
     try {
-      allSuites = Parser.parse(suitePath, getProcessor());
+      return Parser.parse(suitePath, getProcessor());
     } catch (IOException e) {
       e.printStackTrace(System.out);
     } catch (Exception ex) {
@@ -338,7 +337,7 @@ public class TestNG {
       throw new TestNGException(t);
     }
 
-    return allSuites;
+    return Collections.emptySet();
   }
 
   private Collection<XmlSuite> processCommandLineArgs(Collection<XmlSuite> allSuites) {
@@ -384,8 +383,7 @@ public class TestNG {
     for (String suitePath : m_stringSuites) {
       Collection<XmlSuite> allSuites;
       allSuites = parseSuite(suitePath);
-      allSuites = processCommandLineArgs(allSuites);
-      m_suites.addAll(allSuites);
+      m_suites.addAll(processCommandLineArgs(allSuites));
     }
 
     //
