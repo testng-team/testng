@@ -97,7 +97,7 @@ public class TestRunner
 
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
   private final DataProviderHolder holder = new DataProviderHolder();
 
   private Date m_startDate = new Date();

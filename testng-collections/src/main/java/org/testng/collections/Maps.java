@@ -1,5 +1,6 @@
 package org.testng.collections;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -34,6 +35,10 @@ public class Maps {
 
   public static <K, V> Map<K, V> newLinkedHashMap() {
     return new LinkedHashMap<>();
+  }
+
+  public static <K, V> Map<K, V> synchronizedLinkedHashMap() {
+    return Collections.synchronizedMap(newLinkedHashMap());
   }
 
   public static <K, V> Map<K, V> newHashMap(Map<K, V> parameters) {

@@ -37,7 +37,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collections.synchronizedMap(Maps.newLinkedHashMap());
   private final List<TestRunner> testRunners = Lists.newArrayList();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners =
-      Maps.newConcurrentMap();
+      Maps.newLinkedHashMap();
 
   private String outputDir;
   private XmlSuite xmlSuite;
@@ -45,7 +45,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   private final List<ITestListener> testListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> classListeners =
-      Maps.newConcurrentMap();
+      Maps.newLinkedHashMap();
   private ITestRunnerFactory tmpRunnerFactory;
   private final DataProviderHolder holder = new DataProviderHolder();
 
@@ -137,13 +137,16 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       Collection<IClassListener> classListeners,
       DataProviderHolder attribs,
       Comparator<ITestNGMethod> comparator) {
+    if (comparator == null) {
+      throw new IllegalArgumentException("comparator must not be null");
+    }
     this.holder.merge(attribs);
     this.configuration = configuration;
-    xmlSuite = suite;
+    this.xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
-    tmpRunnerFactory = runnerFactory;
+    this.tmpRunnerFactory = runnerFactory;
     List<IMethodInterceptor> localMethodInterceptors =
-        methodInterceptors != null ? methodInterceptors : Lists.newArrayList();
+        Optional.ofNullable(methodInterceptors).orElse(Lists.newArrayList());
     setOutputDir(outputDir);
     if (suite.getObjectFactoryClass() == null) {
       objectFactory = configuration.getObjectFactory();
@@ -189,11 +192,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
           };
     }
     // Add our own IInvokedMethodListener
-    invokedMethodListeners = Maps.newConcurrentMap();
-    if (invokedMethodListener != null) {
-      for (IInvokedMethodListener listener : invokedMethodListener) {
-        invokedMethodListeners.put(listener.getClass(), listener);
-      }
+    invokedMethodListeners = Maps.synchronizedLinkedHashMap();
+    for (IInvokedMethodListener listener :
+        Optional.ofNullable(invokedMethodListener).orElse(Collections.emptyList())) {
+      invokedMethodListeners.put(listener.getClass(), listener);
     }
     invokedMethodListeners.put(getClass(), this);
 
@@ -201,13 +203,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     if (null != testListeners) {
       this.testListeners.addAll(testListeners);
     }
-    if (null != classListeners) {
-      for (IClassListener classListener : classListeners) {
-        this.classListeners.put(classListener.getClass(), classListener);
-      }
-    }
-    if (comparator == null) {
-      throw new IllegalArgumentException("comparator must not be null");
+    for (IClassListener classListener :
+        Optional.ofNullable(classListeners).orElse(Collections.emptyList())) {
+      this.classListeners.put(classListener.getClass(), classListener);
     }
     ITestRunnerFactory iTestRunnerFactory = buildRunnerFactory(comparator);
 
@@ -254,7 +252,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   private void invokeListeners(boolean start) {
-    for (ISuiteListener sl : listeners.values()) {
+    for (ISuiteListener sl : Lists.newArrayList(listeners.values())) {
       if (start) {
         sl.onStart(this);
       } else {
@@ -466,9 +464,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
 
   /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
   protected void addListener(ISuiteListener reporter) {
-    if (!listeners.containsKey(reporter.getClass())) {
-      listeners.put(reporter.getClass(), reporter);
-    }
+    listeners.putIfAbsent(reporter.getClass(), reporter);
   }
 
   @Override
@@ -491,9 +487,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
     if (listener instanceof IClassListener) {
       IClassListener classListener = (IClassListener) listener;
-      if (!classListeners.containsKey(classListener.getClass())) {
-        classListeners.put(classListener.getClass(), classListener);
-      }
+      classListeners.putIfAbsent(classListener.getClass(), classListener);
     }
     if (listener instanceof IDataProviderListener) {
       IDataProviderListener listenerObject = (IDataProviderListener) listener;
