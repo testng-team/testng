@@ -19,6 +19,14 @@ import test.listeners.github1029.Issue1029SampleTestClassWithFiveInstances;
 import test.listeners.github1029.Issue1029SampleTestClassWithFiveMethods;
 import test.listeners.github1029.Issue1029SampleTestClassWithOneMethod;
 import test.listeners.github1393.Listener1393;
+import test.listeners.github2558.CallHolder;
+import test.listeners.github2558.ClassMethodListenersHolder;
+import test.listeners.github2558.ExecutionListenersHolder;
+import test.listeners.github2558.ReportersHolder;
+import test.listeners.github2558.SuiteAlterListenersHolder;
+import test.listeners.github2558.SuiteListenersHolder;
+import test.listeners.github2558.TestClassSamples;
+import test.listeners.github2558.TestListenersHolder;
 import test.listeners.github956.ListenerFor956;
 import test.listeners.github956.TestClassContainer;
 import test.listeners.issue1952.TestclassSample;
@@ -32,6 +40,7 @@ public class ListenerTest extends SimpleBaseTest {
   @BeforeMethod
   public void bm() {
     SimpleListener.m_list = Lists.newArrayList();
+    CallHolder.clear();
   }
 
   @Test(
@@ -352,5 +361,73 @@ public class ListenerTest extends SimpleBaseTest {
     TestNG testng = create(test.listeners.issue2061.TestClassSample.class);
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(0);
+  }
+
+  @Test(description = "GITHUB-2558")
+  public void ensureInsertionOrderIsHonouredByListeners() {
+    String prefix = "test.listeners.github2558.";
+    String[] expectedOrder =
+        new String[] {
+          prefix + "ExecutionListenersHolder$ExecutionListenerB.onExecutionStart()",
+          prefix + "ExecutionListenersHolder$ExecutionListenerA.onExecutionStart()",
+          prefix + "SuiteAlterListenersHolder$SuiteAlterB.alter()",
+          prefix + "SuiteAlterListenersHolder$SuiteAlterA.alter()",
+          prefix + "SuiteListenersHolder$SuiteListenerB.onStart()",
+          prefix + "SuiteListenersHolder$SuiteListenerA.onStart()",
+          prefix + "TestListenersHolder$TestListenerB.onStart(ctx)",
+          prefix + "TestListenersHolder$TestListenerA.onStart(ctx)",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.beforeInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.beforeInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.afterInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.afterInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.beforeInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.beforeInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.afterInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.afterInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
+          prefix + "TestListenersHolder$TestListenerB.onFinish(ctx)",
+          prefix + "TestListenersHolder$TestListenerA.onFinish(ctx)",
+          prefix + "SuiteListenersHolder$SuiteListenerB.onFinish()",
+          prefix + "SuiteListenersHolder$SuiteListenerA.onFinish()",
+          prefix + "ReportersHolder$ReporterB.generateReport()",
+          prefix + "ReportersHolder$ReporterA.generateReport()",
+          prefix + "ExecutionListenersHolder$ExecutionListenerB.onExecutionFinish()",
+          prefix + "ExecutionListenersHolder$ExecutionListenerA.onExecutionFinish()"
+        };
+    List<Class<?>> listeners =
+        Arrays.asList(
+            ExecutionListenersHolder.ExecutionListenerB.class,
+            SuiteAlterListenersHolder.SuiteAlterB.class,
+            SuiteListenersHolder.SuiteListenerB.class,
+            TestListenersHolder.TestListenerB.class,
+            ClassMethodListenersHolder.ClassMethodListenerB.class,
+            ReportersHolder.ReporterB.class,
+            ExecutionListenersHolder.ExecutionListenerA.class,
+            SuiteAlterListenersHolder.SuiteAlterA.class,
+            SuiteListenersHolder.SuiteListenerA.class,
+            TestListenersHolder.TestListenerA.class,
+            ClassMethodListenersHolder.ClassMethodListenerA.class,
+            ReportersHolder.ReporterA.class);
+
+    XmlSuite xmlSuite = new XmlSuite();
+    xmlSuite.setName("Random_Suite");
+    listeners.forEach(each -> xmlSuite.addListener(each.getName()));
+    createXmlTest(
+        xmlSuite,
+        "random_test",
+        TestClassSamples.TestClassSampleA.class,
+        TestClassSamples.TestClassSampleB.class);
+    TestNG testng = create(xmlSuite);
+    testng.setUseDefaultListeners(false);
+    testng.run();
+    List<String> actual = CallHolder.getCalls();
+    assertThat(actual).containsExactly(expectedOrder);
   }
 }

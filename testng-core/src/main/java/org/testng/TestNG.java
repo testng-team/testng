@@ -141,16 +141,16 @@ public class TestNG {
 
   // These listeners can be overridden from the command line
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners =
-      Maps.newHashMap();
-  private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newHashMap();
+      Maps.newLinkedHashMap();
+  private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newLinkedHashMap();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
-      m_dataProviderListeners = Maps.newHashMap();
+      m_dataProviderListeners = Maps.newLinkedHashMap();
   private final Map<Class<? extends IDataProviderInterceptor>, IDataProviderInterceptor>
-      m_dataProviderInterceptors = Maps.newHashMap();
+      m_dataProviderInterceptors = Maps.newLinkedHashMap();
 
   private IExecutorFactory m_executorFactory = null;
 
@@ -173,7 +173,7 @@ public class TestNG {
   private ITestObjectFactory m_objectFactory = DEFAULT_OBJECT_FACTORY;
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
-      m_invokedMethodListeners = Maps.newHashMap();
+      m_invokedMethodListeners = Maps.newLinkedHashMap();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -190,7 +190,7 @@ public class TestNG {
   protected long m_start;
 
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener>
-      m_alterSuiteListeners = Maps.newHashMap();
+      m_alterSuiteListeners = Maps.newLinkedHashMap();
 
   private boolean m_isInitialized = false;
   private boolean isSuiteInitialized = false;
@@ -198,7 +198,7 @@ public class TestNG {
       new org.testng.internal.ExitCodeListener();
   private ExitCode exitCode;
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
-      m_executionVisualisers = Maps.newHashMap();
+      m_executionVisualisers = Maps.newLinkedHashMap();
 
   /** Default constructor. Setting also usage of default listeners/reporters. */
   public TestNG() {
