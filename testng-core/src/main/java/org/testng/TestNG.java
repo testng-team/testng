@@ -317,32 +317,12 @@ public class TestNG {
     return new OverrideProcessor(m_includedGroups, m_excludedGroups);
   }
 
-  private void parseSuite(String suitePath) {
+  private Collection<XmlSuite> parseSuite(String suitePath) {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("suiteXmlPath: \"" + suitePath + "\"");
     }
     try {
-      Collection<XmlSuite> allSuites = Parser.parse(suitePath, getProcessor());
-
-      for (XmlSuite s : allSuites) {
-        if (this.m_parallelMode != null) {
-          s.setParallel(this.m_parallelMode);
-        }
-        if (this.m_threadCount > 0) {
-          s.setThreadCount(this.m_threadCount);
-        }
-        if (m_testNames == null) {
-          m_suites.add(s);
-          continue;
-        }
-        // If test names were specified, only run these test names
-        TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
-        List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
-        if (!missMatchedTestname.isEmpty()) {
-          throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
-        }
-        m_suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
-      }
+      return Parser.parse(suitePath, getProcessor());
     } catch (IOException e) {
       e.printStackTrace(System.out);
     } catch (Exception ex) {
@@ -356,6 +336,33 @@ public class TestNG {
       }
       throw new TestNGException(t);
     }
+
+    return Collections.emptySet();
+  }
+
+  private Collection<XmlSuite> processCommandLineArgs(Collection<XmlSuite> allSuites) {
+    Collection<XmlSuite> result = new ArrayList<>();
+    for (XmlSuite s : allSuites) {
+      if (this.m_parallelMode != null) {
+        s.setParallel(this.m_parallelMode);
+      }
+      if (this.m_threadCount > 0) {
+        s.setThreadCount(this.m_threadCount);
+      }
+      if (m_testNames == null) {
+        result.add(s);
+        continue;
+      }
+      // If test names were specified, only run these test names
+      TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
+      List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
+      if (!missMatchedTestname.isEmpty()) {
+        throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
+      }
+      result.addAll(testNamesMatcher.getSuitesMatchingTestNames());
+    }
+
+    return result;
   }
 
   public void initializeSuitesAndJarFile() {
@@ -374,7 +381,8 @@ public class TestNG {
     // Parse the suites that were passed on the command line
     //
     for (String suitePath : m_stringSuites) {
-      parseSuite(suitePath);
+      Collection<XmlSuite> allSuites = parseSuite(suitePath);
+      m_suites.addAll(processCommandLineArgs(allSuites));
     }
 
     //
@@ -403,7 +411,8 @@ public class TestNG {
     JarFileUtils utils =
         new JarFileUtils(getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode);
 
-    m_suites.addAll(utils.extractSuitesFrom(jarFile));
+    Collection<XmlSuite> allSuites = utils.extractSuitesFrom(jarFile);
+    m_suites.addAll(processCommandLineArgs(allSuites));
   }
 
   /** @param threadCount Define the number of threads in the thread pool. */

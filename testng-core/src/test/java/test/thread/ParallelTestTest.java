@@ -2,13 +2,22 @@ package test.thread;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import org.apache.commons.io.IOUtils;
+import org.testng.SkipException;
 import org.testng.TestNG;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -73,6 +82,35 @@ public class ParallelTestTest extends BaseTest {
     assertThat(Github1636Sample.threads).hasSize(3);
   }
 
+  @Test
+  public void testJarXmlSuiteObeyCommandLine() {
+    final String file = "build/resources/test/2532.zip";
+    final String suiteFileName = "2532.xml";
+    final int threadCount = 3;
+    zipResource(suiteFileName, file);
+
+    TestNG tng = new TestNG();
+    tng.setXmlPathInJar(suiteFileName);
+    tng.setTestJar(file);
+    tng.setThreadCount(threadCount);
+    tng.setParallel(XmlSuite.ParallelMode.METHODS);
+    tng.run();
+    assertThat(Github1636Sample.threads).hasSize(threadCount);
+  }
+
+  @Test
+  public void testXmlSuiteObeyCommandLine() {
+    final String file = "build/resources/test/2532.xml";
+    final int threadCount = 3;
+
+    TestNG tng = new TestNG();
+    tng.setTestSuites(Collections.singletonList(file));
+    tng.setThreadCount(threadCount);
+    tng.setParallel(XmlSuite.ParallelMode.METHODS);
+    tng.run();
+    assertThat(Github1636Sample.threads).hasSize(threadCount);
+  }
+
   private void createTest(XmlSuite xmlSuite, Class<?> clazz) {
     XmlTest result = new XmlTest(xmlSuite);
     List<XmlClass> classes = result.getXmlClasses();
@@ -114,5 +152,27 @@ public class ParallelTestTest extends BaseTest {
     }
 
     assertThat(mergedMap).hasSize(expectedThreadCount);
+  }
+
+  private void zipResource(String resourceName, String targetFilePath) {
+    InputStream suiteStream = this.getClass().getClassLoader().getResourceAsStream(resourceName);
+    try {
+      File targetFile = new File(targetFilePath);
+      FileOutputStream targetFileStream = new FileOutputStream(targetFile);
+      ZipOutputStream zipSuiteStream = new ZipOutputStream(targetFileStream);
+      zipSuiteStream.putNextEntry(new ZipEntry(resourceName));
+
+      byte[] suiteByteData = IOUtils.toByteArray(suiteStream);
+      zipSuiteStream.write(suiteByteData, 0, suiteByteData.length);
+      zipSuiteStream.closeEntry();
+      zipSuiteStream.close();
+    } catch (IOException e) {
+      throw new SkipException(String.format("Error writing zip to %s", targetFilePath), e);
+    }
+  }
+
+  @AfterMethod
+  private void clearThreadCount() {
+    Github1636Sample.threads.clear();
   }
 }
