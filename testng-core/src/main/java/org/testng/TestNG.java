@@ -381,8 +381,7 @@ public class TestNG {
     // Parse the suites that were passed on the command line
     //
     for (String suitePath : m_stringSuites) {
-      Collection<XmlSuite> allSuites;
-      allSuites = parseSuite(suitePath);
+      Collection<XmlSuite> allSuites = parseSuite(suitePath);
       m_suites.addAll(processCommandLineArgs(allSuites));
     }
 
@@ -412,10 +411,8 @@ public class TestNG {
     JarFileUtils utils =
         new JarFileUtils(getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode);
 
-    Collection<XmlSuite> allSuites;
-    allSuites = utils.extractSuitesFrom(jarFile);
-    allSuites = processCommandLineArgs(allSuites);
-    m_suites.addAll(allSuites);
+    Collection<XmlSuite> allSuites = utils.extractSuitesFrom(jarFile);
+    m_suites.addAll(processCommandLineArgs(allSuites));
   }
 
   /** @param threadCount Define the number of threads in the thread pool. */
