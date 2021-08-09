@@ -849,15 +849,11 @@
       <class name="test.configuration.BaseGroupsTest" />
       <class name="test.configuration.BeforeTestOrderingTest" />
       <class name="test.configuration.ConfigurationTest"/>
-      <class name="test.configuration.ExternalConfigurationClass"/>
       <class name="test.configuration.GroupsTest"/>
-      <class name="test.configuration.MethodCallOrderTest"/>
       <class name="test.configuration.BeforeMethodWithGroupFiltersTest" />
       <class name="test.configuration.AfterMethodWithGroupFiltersTest" />
       <class name="test.configuration.ReflectMethodParametrizedConfigurationMethodTest" />
       <class name="test.configuration.SuiteFactoryOnceTest" />
-      <class name="test.configuration.SuiteTest" />
-      <class name="test.configuration.VerifySuiteTest" />
       <class name="test.configuration.SingleConfigurationTest" />
       <class name="test.configuration.github1625.TestRunnerIssue1625"/>
       <class name="test.configuration.issue1753.IssueTest"/>

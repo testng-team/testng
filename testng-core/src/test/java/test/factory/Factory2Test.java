@@ -1,15 +1,13 @@
 package test.factory;
 
-import org.testng.annotations.Factory;
+import org.testng.annotations.Test;
+import test.configuration.ConfigurationBaseTest;
+import test.factory.sample.Factory2Sample;
+import test.factory.sample.Factory2TestSample;
 
-/**
- * Factory to test that setUp methods are correctly interleaved even when we use similar instances
- * of a same test class.
- */
-public class Factory2Test {
-
-  @Factory()
-  public Object[] createObjects() {
-    return new Object[] {new Factory2Sample(), new Factory2Sample()};
+public class Factory2Test extends ConfigurationBaseTest {
+  @Test
+  public void testFactoryCorrectlyInterleaved() {
+    testConfiguration(Factory2Sample.class, Factory2TestSample.class);
   }
 }

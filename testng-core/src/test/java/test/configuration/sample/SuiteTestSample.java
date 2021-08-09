@@ -1,19 +1,14 @@
-package test.configuration;
+package test.configuration.sample;
 
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+import test.configuration.BaseSuiteTest;
 
-public class SuiteTest extends BaseSuiteTest {
+public class SuiteTestSample extends BaseSuiteTest {
   @BeforeSuite(dependsOnMethods = {"beforeSuiteParent"})
   public void beforeSuiteChild() {
     m_order.add(2);
   }
-
-  //  @AfterSuite(dependsOnMethods={"afterSuiteParent"})
-  //  public void afterSuiteChild(){
-  //    m_order.add(4);
-  //    System.out.println("AFTER SUITE CHILD");
-  //  }
 
   @Test
   public void test1() {

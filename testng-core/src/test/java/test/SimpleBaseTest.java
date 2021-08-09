@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.testng.Assert;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -419,5 +420,14 @@ public class SimpleBaseTest {
       }
     }
     return suites;
+  }
+
+  protected static String getFailedResultMessage(List<ITestResult> testResultList) {
+    String methods =
+        testResultList.stream()
+            .map(ITestResult::getMethod)
+            .map(ITestNGMethod::getQualifiedName)
+            .collect(Collectors.joining("\n"));
+    return String.format("Failed methods should pass:\n %s\n", methods);
   }
 }

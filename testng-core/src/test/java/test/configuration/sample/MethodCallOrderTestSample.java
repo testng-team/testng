@@ -1,4 +1,4 @@
-package test.configuration;
+package test.configuration.sample;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class MethodCallOrderTest {
+public class MethodCallOrderTestSample {
   public static boolean s_beforeSuite;
   public static boolean s_beforeTest;
   public static boolean s_beforeClass;

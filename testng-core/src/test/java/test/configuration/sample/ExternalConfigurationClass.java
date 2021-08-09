@@ -1,4 +1,4 @@
-package test.configuration;
+package test.configuration.sample;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -15,7 +15,7 @@ public class ExternalConfigurationClass {
 
   @BeforeSuite
   public void beforeSuite() {
-    MethodCallOrderTest.s_beforeSuite = true;
+    MethodCallOrderTestSample.s_beforeSuite = true;
   }
 
   @AfterSuite
@@ -27,12 +27,12 @@ public class ExternalConfigurationClass {
 
   @BeforeTest
   public void beforeTest() {
-    assertTrue(MethodCallOrderTest.s_beforeSuite);
-    assertFalse(MethodCallOrderTest.s_beforeTest);
-    assertFalse(MethodCallOrderTest.s_beforeClass);
-    assertFalse(MethodCallOrderTest.s_beforeMethod);
+    assertTrue(MethodCallOrderTestSample.s_beforeSuite);
+    assertFalse(MethodCallOrderTestSample.s_beforeTest);
+    assertFalse(MethodCallOrderTestSample.s_beforeClass);
+    assertFalse(MethodCallOrderTestSample.s_beforeMethod);
 
-    MethodCallOrderTest.s_beforeTest = true;
+    MethodCallOrderTestSample.s_beforeTest = true;
   }
 
   @AfterTest
