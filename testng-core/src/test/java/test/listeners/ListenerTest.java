@@ -380,26 +380,26 @@ public class ListenerTest extends SimpleBaseTest {
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerB.beforeInvocation()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.beforeInvocation()",
-          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.afterInvocation()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.afterInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.afterInvocation()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerB.beforeInvocation()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.beforeInvocation()",
-          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.afterInvocation()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.afterInvocation()",
+          prefix + "ClassMethodListenersHolder$ClassMethodListenerB.afterInvocation()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerB.onBeforeClass()",
           prefix + "ClassMethodListenersHolder$ClassMethodListenerA.onBeforeClass()",
-          prefix + "TestListenersHolder$TestListenerB.onFinish(ctx)",
           prefix + "TestListenersHolder$TestListenerA.onFinish(ctx)",
-          prefix + "SuiteListenersHolder$SuiteListenerB.onFinish()",
+          prefix + "TestListenersHolder$TestListenerB.onFinish(ctx)",
           prefix + "SuiteListenersHolder$SuiteListenerA.onFinish()",
+          prefix + "SuiteListenersHolder$SuiteListenerB.onFinish()",
           prefix + "ReportersHolder$ReporterB.generateReport()",
           prefix + "ReportersHolder$ReporterA.generateReport()",
-          prefix + "ExecutionListenersHolder$ExecutionListenerB.onExecutionFinish()",
-          prefix + "ExecutionListenersHolder$ExecutionListenerA.onExecutionFinish()"
+          prefix + "ExecutionListenersHolder$ExecutionListenerA.onExecutionFinish()",
+          prefix + "ExecutionListenersHolder$ExecutionListenerB.onExecutionFinish()"
         };
     List<Class<?>> listeners =
         Arrays.asList(

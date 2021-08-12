@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-2536: Problems with Nested Test Classes (Krishnan Mahadevan)
+Fixed: GITHUB-2558:Make IExecutionListener, ITestListener, IInvokedMethodListener, IConfigurationListener, ISuiteListener finish method with reverse order (dianny)
 Fixed: GITHUB-2532: Apply commandline switches for suites in jar files (Dzmitry Sankouski).
 Fixed: GITHUB-2558: Make IExecutionListener, ITestListener, IInvokedMethodListener, IConfigurationListener, ISuiteListener execute in the order of insertion (Krishnan Mahadevan)
 Fixed: GITHUB-2611: Config Failures not included in testng-failed.xml when its part of a different test class (Krishnan Mahadevan)

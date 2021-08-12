@@ -28,6 +28,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ISuite;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
+import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
@@ -232,7 +233,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   public void runTestResultListener(ITestResult tr) {
-    TestListenerHelper.runTestListeners(tr, m_notifier.getTestListeners());
+    // For onTestStart method, still run as insert order
+    // but regarding
+    // onTestSkipped/onTestFailedButWithinSuccessPercentage/onTestFailedWithTimeout/onTestFailure/onTestSuccess, it should be reverse order.
+    boolean isFinished = tr.getStatus() != ITestResult.STARTED;
+    List<ITestListener> listeners =
+        isFinished
+            ? Lists.newReversedArrayList(m_notifier.getTestListeners())
+            : m_notifier.getTestListeners();
+    TestListenerHelper.runTestListeners(tr, listeners);
   }
 
   private Collection<IDataProviderListener> dataProviderListeners() {

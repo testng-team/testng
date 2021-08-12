@@ -91,7 +91,7 @@ public class TestRunner
   /** ITestListeners support. */
   private final List<ITestListener> m_testListeners = Lists.newArrayList();
 
-  private final Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private final Set<IConfigurationListener> m_configurationListeners = Sets.newLinkedHashSet();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   private final IConfigurationListener m_confListener = new ConfigurationListener();
@@ -933,10 +933,14 @@ public class TestRunner
    *     finish
    */
   private void fireEvent(boolean isStart) {
-    for (ITestListener itl : m_testListeners) {
-      if (isStart) {
+    if (isStart) {
+      for (ITestListener itl : m_testListeners) {
         itl.onStart(this);
-      } else {
+      }
+
+    } else {
+      List<ITestListener> testListenersReversed = Lists.newReversedArrayList(m_testListeners);
+      for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }
     }

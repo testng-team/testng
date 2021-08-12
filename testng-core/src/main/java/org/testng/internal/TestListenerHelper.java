@@ -35,7 +35,8 @@ public final class TestListenerHelper {
 
   public static void runPostConfigurationListeners(
       ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners) {
-    for (IConfigurationListener icl : listeners) {
+    List<IConfigurationListener> listenersreversed = Lists.newReversedArrayList(listeners);
+    for (IConfigurationListener icl : listenersreversed) {
       switch (tr.getStatus()) {
         case ITestResult.SKIP:
           icl.onConfigurationSkip(tr);

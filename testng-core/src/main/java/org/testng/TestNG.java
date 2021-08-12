@@ -1083,10 +1083,15 @@ public class TestNG {
   }
 
   private void runExecutionListeners(boolean start) {
-    for (IExecutionListener l : m_configuration.getExecutionListeners()) {
-      if (start) {
+    List<IExecutionListener> executionListeners = m_configuration.getExecutionListeners();
+    if (start) {
+      for (IExecutionListener l : executionListeners) {
         l.onExecutionStart();
-      } else {
+      }
+    } else {
+      List<IExecutionListener> executionListenersReversed =
+          Lists.newReversedArrayList(executionListeners);
+      for (IExecutionListener l : executionListenersReversed) {
         l.onExecutionFinish();
       }
     }
