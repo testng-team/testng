@@ -1,6 +1,7 @@
 plugins {
     id("testng.repositories")
     id("com.github.vlsi.stage-vote-release")
+    id("idea")
 }
 
 val String.v: String get() = rootProject.extra["$this.version"] as String
