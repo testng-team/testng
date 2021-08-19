@@ -1,8 +1,6 @@
 package org.testng.internal.objects;
 
 import com.google.inject.Injector;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.testng.ITestContext;
 import org.testng.annotations.Guice;
 import org.testng.internal.annotations.AnnotationHelper;
@@ -14,7 +12,6 @@ import org.testng.internal.objects.pojo.CreationAttributes;
 class GuiceBasedObjectDispenser implements IObjectDispenser {
 
   private IObjectDispenser dispenser;
-  private static final Map<Object, GuiceHelper> helpers = new ConcurrentHashMap<>();
 
   @Override
   public void setNextDispenser(IObjectDispenser dispenser) {
@@ -35,9 +32,13 @@ class GuiceBasedObjectDispenser implements IObjectDispenser {
       GuiceHelper helper;
       // TODO: remove unused entries from helpers
       if (ctx == null) {
-        helper = helpers.computeIfAbsent(suiteCtx, k -> new GuiceHelper(suiteCtx));
+        helper = new GuiceHelper(suiteCtx);
       } else {
-        helper = helpers.computeIfAbsent(ctx, k -> new GuiceHelper(ctx));
+        helper = (GuiceHelper) ctx.getAttribute(GUICE_HELPER);
+        if (helper == null) {
+          helper = new GuiceHelper(ctx);
+          ctx.setAttribute(GUICE_HELPER, helper);
+        }
       }
       Injector injector;
       if (ctx == null) {

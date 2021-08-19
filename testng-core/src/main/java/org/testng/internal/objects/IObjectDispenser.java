@@ -8,6 +8,8 @@ import org.testng.internal.objects.pojo.CreationAttributes;
  */
 public interface IObjectDispenser {
 
+  String GUICE_HELPER = "testng.guice-helper";
+
   Object dispense(CreationAttributes attributes);
 
   /** @param dispenser - The {@link IObjectDispenser} to dispense */
