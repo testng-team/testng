@@ -53,6 +53,7 @@ import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
 import org.testng.internal.invokers.TestMethodWorker;
+import org.testng.internal.objects.IObjectDispenser;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.thread.ITestNGThreadPoolExecutor;
@@ -900,6 +901,7 @@ public class TestRunner
 
     // Invoke listeners
     fireEvent(false /*stop*/);
+    removeAttribute(IObjectDispenser.GUICE_HELPER);
   }
 
   /** Logs the beginning of the {@link #beforeRun()} . */
