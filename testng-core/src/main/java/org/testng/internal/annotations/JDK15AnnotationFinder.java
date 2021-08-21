@@ -192,14 +192,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Annotation annotation = findAnnotationInSuperClasses(cls, a);
     return findAnnotation(
-        cls,
-        annotation,
-        annotationClass,
-        cls,
-        null,
-        null,
-        new Pair<>(annotation, annotationClass),
-        null);
+        cls, annotation, annotationClass, cls, null, null, new Pair<>(annotation, cls), null);
   }
 
   @Override
