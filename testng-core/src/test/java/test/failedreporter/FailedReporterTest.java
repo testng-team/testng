@@ -87,7 +87,7 @@ public class FailedReporterTest extends SimpleBaseTest {
 
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsInvolvingGroupsAtTestLevel() {
-    triggerTest(GroupsSampleBase.class.getPackage().getName(), true, "run");
+    triggerTest(GroupsSampleBase.class.getPackage().getName(), true, DEPENDENT_GROUP);
     String[] substitutions =
         new String[] {GroupsPassSample.class.getName(), GroupsSampleBase.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
@@ -97,7 +97,7 @@ public class FailedReporterTest extends SimpleBaseTest {
 
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsInvolvingGroupsAtSuiteLevel() {
-    triggerTest(GroupsSampleBase.class.getPackage().getName(), false, "run");
+    triggerTest(GroupsSampleBase.class.getPackage().getName(), false, DEPENDENT_GROUP);
     String[] substitutions =
         new String[] {GroupsPassSample.class.getName(), GroupsSampleBase.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);

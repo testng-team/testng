@@ -4,9 +4,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
+import test.failedreporter.FailedReporterTest;
 
 public class GroupsSampleBase {
-  @BeforeTest(groups = "run")
+  @BeforeTest(groups = FailedReporterTest.DEPENDENT_GROUP)
   public void baseBeforeTest() {}
 
   @BeforeClass(alwaysRun = true)
