@@ -8,6 +8,6 @@ import test.factory.sample.Factory2TestSample;
 public class Factory2Test extends ConfigurationBaseTest {
   @Test
   public void testFactoryCorrectlyInterleaved() {
-    testConfiguration(Factory2Sample.class, Factory2TestSample.class);
+    testConfiguration(Factory2TestSample.class);
   }
 }

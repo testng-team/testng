@@ -8,11 +8,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
-/**
- * Test @Configuration
- *
- * @author cbeust
- */
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 public class ConfigurationTestSample {
   private boolean m_beforeSuite = false;
   private boolean m_afterSuite = false;
@@ -23,76 +21,76 @@ public class ConfigurationTestSample {
 
   @BeforeSuite
   public void beforeSuite() {
-    assert !m_afterSuite : "afterSuite shouldn't have run";
-    assert !m_beforeClass : "beforeClass shouldn't have run";
-    assert !m_afterClass : "afterClass shouldn't have run";
-    assert !m_beforeMethod : "beforeMethod shouldn't have run";
-    assert !m_afterMethod : "afterMethod shouldn't have run";
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertFalse(m_beforeClass, "beforeClass shouldn't have run");
+    assertFalse(m_afterClass, "afterClass shouldn't have run");
+    assertFalse(m_beforeMethod, "beforeMethod shouldn't have run");
+    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
     m_beforeSuite = true;
   }
 
   @BeforeClass
   public void beforeClass() {
-    assert m_beforeSuite : "beforeSuite should have run";
-    assert !m_afterSuite : "afterSuite shouldn't have run";
-    assert !m_beforeClass : "beforeClass shouldn't have run";
-    assert !m_afterClass : "afterClass shouldn't have run";
-    assert !m_beforeMethod : "beforeMethod shouldn't have run";
-    assert !m_afterMethod : "afterMethod shouldn't have run";
+    assertTrue(m_beforeSuite, "beforeSuite should have run");
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertFalse(m_beforeClass, "beforeClass shouldn't have run");
+    assertFalse(m_afterClass, "afterClass shouldn't have run");
+    assertFalse(m_beforeMethod, "beforeMethod shouldn't have run");
+    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
     m_beforeClass = true;
   }
 
   @BeforeMethod
   public void beforeMethod() {
-    assert m_beforeSuite : "beforeSuite should have run";
-    assert m_beforeClass : "beforeClass have run";
-    assert !m_afterSuite : "afterSuite shouldn't have run";
-    assert !m_afterClass : "afterClass shouldn't have run";
-    assert !m_beforeMethod : "beforeMethod shouldn't have run";
-    assert !m_afterMethod : "afterMethod shouldn't have run";
+    assertTrue(m_beforeSuite, "beforeSuite should have run");
+    assertTrue(m_beforeClass, "beforeClass have run");
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertFalse(m_afterClass, "afterClass shouldn't have run");
+    assertFalse(m_beforeMethod, "beforeMethod shouldn't have run");
+    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
     m_beforeMethod = true;
   }
 
   @AfterMethod
   public void afterMethod() {
-    assert m_beforeSuite : "beforeSuite should have run";
-    assert m_beforeClass : "beforeClass have run";
-    assert m_beforeMethod : "beforeMethod should have run";
-    assert !m_afterSuite : "afterSuite shouldn't have run";
-    assert !m_afterClass : "afterClass shouldn't have run";
-    assert !m_afterMethod : "afterMethod shouldn't have run";
+    assertTrue(m_beforeSuite, "beforeSuite should have run");
+    assertTrue(m_beforeClass, "beforeClass have run");
+    assertTrue(m_beforeMethod, "beforeMethod should have run");
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertFalse(m_afterClass, "afterClass shouldn't have run");
+    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
     m_afterMethod = true;
   }
 
   @AfterClass
   public void afterClass() {
-    assert m_beforeSuite : "beforeSuite should have run";
-    assert m_beforeClass : "beforeClass have run";
-    assert m_beforeMethod : "beforeMethod should have run";
-    assert m_afterMethod : "afterMethod should have run";
-    assert !m_afterClass : "afterClass shouldn't have run";
-    assert !m_afterSuite : "afterSuite shouldn't have run";
+    assertTrue(m_beforeSuite, "beforeSuite should have run");
+    assertTrue(m_beforeClass, "beforeClass have run");
+    assertTrue(m_beforeMethod, "beforeMethod should have run");
+    assertTrue(m_afterMethod, "afterMethod should have run");
+    assertFalse(m_afterClass, "afterClass shouldn't have run");
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
     m_afterClass = true;
   }
 
   @AfterSuite
   public void afterSuite() {
-    assert m_beforeSuite : "beforeSuite should have run";
-    assert m_beforeClass : "beforeClass have run";
-    assert m_beforeMethod : "beforeMethod should have run";
-    assert m_afterMethod : "afterMethod should have run";
-    assert m_afterClass : "afterClass should have run";
-    assert !m_afterSuite : "afterSuite shouldn't have run";
+    assertTrue(m_beforeSuite, "beforeSuite should have run");
+    assertTrue(m_beforeClass, "beforeClass have run");
+    assertTrue(m_beforeMethod, "beforeMethod should have run");
+    assertTrue(m_afterMethod, "afterMethod should have run");
+    assertTrue(m_afterClass, "afterClass should have run");
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
     m_afterSuite = true;
   }
 
   @Test
   public void verify() {
-    assert m_beforeSuite : "beforeSuite should have run";
-    assert m_beforeClass : "beforeClass have run";
-    assert m_beforeMethod : "beforeMethod should have run";
-    assert !m_afterSuite : "afterSuite shouldn't have run";
-    assert !m_afterClass : "afterClass shouldn't have run";
-    assert !m_afterMethod : "afterMethod shouldn't have run";
+    assertTrue(m_beforeSuite, "beforeSuite should have run");
+    assertTrue(m_beforeClass, "beforeClass have run");
+    assertTrue(m_beforeMethod, "beforeMethod should have run");
+    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertFalse(m_afterClass, "afterClass shouldn't have run");
+    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
   }
 }

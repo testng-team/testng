@@ -54,18 +54,18 @@ public class MethodCallOrderTestSample {
   @AfterMethod
   public void afterMethod() {
     assertFalse(
-        ExternalConfigurationClass.s_afterMethod, "afterTestMethod shouldn't have been run");
-    assertFalse(ExternalConfigurationClass.s_afterClass, "afterTestClass shouldn't have been run");
-    assertFalse(ExternalConfigurationClass.s_afterTest, "afterTest should haven't been run");
+        ExternalConfigurationClassSample.s_afterMethod, "afterTestMethod shouldn't have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterClass, "afterTestClass shouldn't have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterTest, "afterTest should haven't been run");
 
-    ExternalConfigurationClass.s_afterMethod = true;
+    ExternalConfigurationClassSample.s_afterMethod = true;
   }
 
   @AfterClass
   public void afterClass() {
-    assertTrue(ExternalConfigurationClass.s_afterMethod, "afterTestMethod should have been run");
-    assertFalse(ExternalConfigurationClass.s_afterClass, "afterTestClass shouldn't have been run");
-    assertFalse(ExternalConfigurationClass.s_afterTest, "afterTest should haven't been run");
-    ExternalConfigurationClass.s_afterClass = true;
+    assertTrue(ExternalConfigurationClassSample.s_afterMethod, "afterTestMethod should have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterClass, "afterTestClass shouldn't have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterTest, "afterTest should haven't been run");
+    ExternalConfigurationClassSample.s_afterClass = true;
   }
 }
