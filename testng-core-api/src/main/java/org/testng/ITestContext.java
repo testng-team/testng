@@ -35,7 +35,7 @@ public interface ITestContext extends IAttributes {
   IResultMap getFailedButWithinSuccessPercentageTests();
 
   /**
-   * @return A map of all the tests that passed, indexed by their ITextMethor.
+   * @return A map of all the tests that failed, indexed by their ITestNGMethod.
    * @see org.testng.ITestNGMethod
    */
   IResultMap getFailedTests();
