@@ -15,7 +15,7 @@ public class BaseSuiteTestSample {
   }
 
   @AfterSuite
-  public void afterSuiteParent(){
+  public void afterSuiteParent() {
     m_order.add(4);
   }
 }

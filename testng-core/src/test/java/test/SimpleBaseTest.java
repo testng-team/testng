@@ -426,11 +426,10 @@ public class SimpleBaseTest {
   protected static String getFailedResultMessage(List<ITestResult> testResultList) {
     String methods =
         testResultList.stream()
-            .map(r -> new AbstractMap.SimpleEntry<>(
-                    r.getMethod().getQualifiedName(),
-                    r.getThrowable()
-                )
-            )
+            .map(
+                r ->
+                    new AbstractMap.SimpleEntry<>(
+                        r.getMethod().getQualifiedName(), r.getThrowable()))
             .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
             .collect(Collectors.joining("\n"));
     return String.format("Failed methods should pass:\n %s\n", methods);

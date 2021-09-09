@@ -1,12 +1,12 @@
 package test.configuration;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import test.configuration.sample.ConfigurationTestSample;
 import test.configuration.sample.ExternalConfigurationClassSample;
 import test.configuration.sample.MethodCallOrderTestSample;
 import test.configuration.sample.SuiteTestSample;
-import java.util.Arrays;
 
 /**
  * Test @Configuration
