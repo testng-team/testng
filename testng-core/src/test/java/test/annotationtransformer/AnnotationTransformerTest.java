@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.iterable.Extractor;
 import org.testng.Assert;
@@ -12,7 +13,9 @@ import org.testng.IAnnotationTransformer;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.testng.xml.internal.Parser;
@@ -23,6 +26,9 @@ import test.annotationtransformer.issue1790.TestClassSample2;
 import test.annotationtransformer.issue1790.TransformerImpl;
 import test.annotationtransformer.issue2312.RetryListener;
 import test.annotationtransformer.issue2312.SampleTestClass;
+import test.annotationtransformer.issue2536.data.nested.ClassContainer;
+import test.annotationtransformer.issue2536.data.nested.ClassContainer.NonGroupClass3;
+import test.annotationtransformer.issue2536.listeners.ExternalGroupManager;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
@@ -269,5 +275,52 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     myTestNG.run();
     int retried = RetryListener.getExecutionCount();
     assertThat(retried).isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-2536", dataProvider = "getXmlPackages")
+  public void testNestedTestClass_packageIncludesNormalTestClasses(List<XmlPackage> xmlPackages) {
+    ExternalGroupManager groupManager = new ExternalGroupManager();
+    String group = "run-me-dynamically";
+    String container = ClassContainer.class.getName();
+    String inner = NonGroupClass3.class.getSimpleName();
+
+    groupManager.addGroupDefinition(container + "$" + inner, group);
+
+    TestListenerAdapter tla = new TestListenerAdapter();
+
+    XmlSuite xmlSuite = createXmlSuite("2536_suite");
+    XmlTest myTest = createXmlTest(xmlSuite, "2536_test");
+    myTest.addIncludedGroup(group);
+    TestNG testng = create(xmlSuite);
+    testng.addListener(tla);
+    testng.addListener(groupManager);
+
+    myTest.setXmlPackages(xmlPackages);
+
+    testng.run();
+    assertThat(tla.getFailedTests()).withFailMessage("We should have no failed tests").isEmpty();
+
+    assertThat(tla.getPassedTests()).withFailMessage("We should have 2 passed tests").hasSize(2);
+
+    long count =
+        tla.getPassedTests().stream()
+            .filter(m -> m.getInstance().getClass().equals(NonGroupClass3.class))
+            .count();
+
+    assertThat(count)
+        .withFailMessage("We should have tests that only belong to " + NonGroupClass3.class)
+        .isEqualTo(2);
+  }
+
+  @DataProvider
+  public Object[][] getXmlPackages() {
+    return new Object[][] {
+      {Collections.singletonList(new XmlPackage("test.annotationtransformer.issue2536.data.*"))},
+      {
+        Arrays.asList(
+            new XmlPackage("test.annotationtransformer.issue2536.data.normal"),
+            new XmlPackage("test.annotationtransformer.issue2536.data.nested"))
+      }
+    };
   }
 }

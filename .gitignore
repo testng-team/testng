@@ -2,6 +2,8 @@
 .classpath
 .gradle
 .idea
+*.ipr
+*.iws
 *.iml
 .project
 .settings

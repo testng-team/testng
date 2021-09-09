@@ -53,6 +53,7 @@ import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
 import org.testng.internal.invokers.TestMethodWorker;
+import org.testng.internal.objects.IObjectDispenser;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
 import org.testng.thread.ITestNGThreadPoolExecutor;
@@ -90,7 +91,7 @@ public class TestRunner
   /** ITestListeners support. */
   private final List<ITestListener> m_testListeners = Lists.newArrayList();
 
-  private final Set<IConfigurationListener> m_configurationListeners = Sets.newHashSet();
+  private final Set<IConfigurationListener> m_configurationListeners = Sets.newLinkedHashSet();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
 
   private final IConfigurationListener m_confListener = new ConfigurationListener();
@@ -900,6 +901,7 @@ public class TestRunner
 
     // Invoke listeners
     fireEvent(false /*stop*/);
+    removeAttribute(IObjectDispenser.GUICE_HELPER);
   }
 
   /** Logs the beginning of the {@link #beforeRun()} . */
@@ -931,10 +933,14 @@ public class TestRunner
    *     finish
    */
   private void fireEvent(boolean isStart) {
-    for (ITestListener itl : m_testListeners) {
-      if (isStart) {
+    if (isStart) {
+      for (ITestListener itl : m_testListeners) {
         itl.onStart(this);
-      } else {
+      }
+
+    } else {
+      List<ITestListener> testListenersReversed = Lists.newReversedArrayList(m_testListeners);
+      for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }
     }

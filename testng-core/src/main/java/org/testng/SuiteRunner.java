@@ -252,10 +252,13 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   }
 
   private void invokeListeners(boolean start) {
-    for (ISuiteListener sl : Lists.newArrayList(listeners.values())) {
-      if (start) {
+    if (start) {
+      for (ISuiteListener sl : Lists.newArrayList(listeners.values())) {
         sl.onStart(this);
-      } else {
+      }
+    } else {
+      List<ISuiteListener> suiteListenersReversed = Lists.newReversedArrayList(listeners.values());
+      for (ISuiteListener sl : suiteListenersReversed) {
         sl.onFinish(this);
       }
     }
