@@ -11,6 +11,10 @@ import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
+import test.failedreporter.issue1297.depend.PassDependsOnFailureSample;
+import test.failedreporter.issue1297.depend_on_group.GroupDependFailureSample;
+import test.failedreporter.issue1297.depend_on_group.GroupDependPassSample;
+import test.failedreporter.issue1297.depend_on_test.PassDependsOnPassSample;
 import test.failedreporter.issue1297.groups.GroupsPassSample;
 import test.failedreporter.issue1297.groups.GroupsSampleBase;
 import test.failedreporter.issue1297.inheritance.InheritanceFailureSample;
@@ -19,6 +23,8 @@ import test.failedreporter.issue1297.straightforward.AllPassSample;
 import test.failedreporter.issue1297.straightforward.FailureSample;
 
 public class FailedReporterTest extends SimpleBaseTest {
+  public static final String DEPENDENCY_GROUP = "failed";
+  public static final String DEPENDENT_GROUP = "run";
   private File mTempDirectory;
 
   @BeforeMethod
@@ -68,9 +74,22 @@ public class FailedReporterTest extends SimpleBaseTest {
   }
 
   @Test(description = "github-1297")
+  public void testExclusionOfPassedConfigsAmidstInheritanceIndependentOfOrder() {
+    triggerTest(InheritancePassSample.class, InheritanceFailureSample.class);
+    String[] substitutions = new String[] {InheritancePassSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
+    substitutions =
+        new String[] {
+          "newTest2", "baseBeforeTest", "baseAfterClass", "baseBeforeClass", "baseBeforeMethod"
+        };
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+  }
+
+  @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsInvolvingGroupsAtTestLevel() {
-    triggerTest(GroupsSampleBase.class.getPackage().getName(), true);
-    String[] substitutions = new String[] {GroupsPassSample.class.getName()};
+    triggerTest(GroupsSampleBase.class.getPackage().getName(), true, DEPENDENT_GROUP);
+    String[] substitutions =
+        new String[] {GroupsPassSample.class.getName(), GroupsSampleBase.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
     substitutions = new String[] {"baseBeforeTest", "baseBeforeClassAlwaysRun", "newTest2"};
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
@@ -78,22 +97,79 @@ public class FailedReporterTest extends SimpleBaseTest {
 
   @Test(description = "github-1297")
   public void testExclusionOfPassedConfigsInvolvingGroupsAtSuiteLevel() {
-    triggerTest(GroupsSampleBase.class.getPackage().getName(), false);
-    String[] substitutions = new String[] {GroupsPassSample.class.getName()};
+    triggerTest(GroupsSampleBase.class.getPackage().getName(), false, DEPENDENT_GROUP);
+    String[] substitutions =
+        new String[] {GroupsPassSample.class.getName(), GroupsSampleBase.class.getName()};
     runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 0);
     substitutions = new String[] {"baseBeforeTest", "baseBeforeClassAlwaysRun", "newTest2"};
     runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
   }
 
-  private void triggerTest(String packageName, boolean applyGroupSelectionAtTest) {
+  @Test(description = "github-1297")
+  public void testInclusionOfPassedTestsDependOnFailedPackageSuite() {
+    triggerTest(PassDependsOnFailureSample.class.getPackage().getName());
+    String[] substitutions = new String[] {PassDependsOnFailureSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {"newTest1", "newTest2"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+  }
+
+  @Test(description = "github-1297")
+  public void testExclusionOfPassedTestsDependOnPassedTest() {
+    triggerTest(PassDependsOnPassSample.class);
+    String[] substitutions = new String[] {PassDependsOnPassSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {"test1", "test2", "dependsOnTest2"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+    substitutions = new String[] {"dependsOnTest1"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 0);
+  }
+
+  @Test(description = "github-1297")
+  public void testInclusionOfPassedTestsDependOnFailedClassSuite() {
+    triggerTest(PassDependsOnFailureSample.class);
+    String[] substitutions = new String[] {PassDependsOnFailureSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {"newTest1", "newTest2"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+  }
+
+  @Test(description = "github-1297")
+  public void testInclusionOfPassedTestsDependOnFailedGroup() {
+    triggerTest(
+        GroupDependPassSample.class.getPackage().getName(),
+        false,
+        DEPENDENT_GROUP,
+        DEPENDENCY_GROUP);
+    String[] substitutions = new String[] {GroupDependFailureSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {GroupDependPassSample.class.getName()};
+    runAssertions(mTempDirectory, substitutions, "<class name=\"%s\">", 1);
+    substitutions = new String[] {"baseBeforeTest", "baseBeforeClassAlwaysRun"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 2);
+    substitutions = new String[] {"newTest1", "newTest2"};
+    runAssertions(mTempDirectory, substitutions, "<include name=\"%s\"/>", 1);
+  }
+
+  private void triggerTest(
+      String packageName, boolean applyGroupSelectionAtTest, String... groups) {
     final XmlSuite suite = createXmlSuite("1297_suite");
 
     final XmlTest xmlTest = createXmlTestWithPackages(suite, "1297_test", packageName);
     if (applyGroupSelectionAtTest) {
-      createXmlGroups(xmlTest, "run");
+      createXmlGroups(xmlTest, groups);
     } else {
-      createXmlGroups(suite, "run");
+      createXmlGroups(suite, groups);
     }
+    TestNG tng = create(mTempDirectory.toPath(), suite);
+    tng.setUseDefaultListeners(true);
+    tng.run();
+  }
+
+  private void triggerTest(String packageName) {
+    final XmlSuite suite = createXmlSuite("1297_suite");
+
+    createXmlTestWithPackages(suite, "1297_test", packageName);
     TestNG tng = create(mTempDirectory.toPath(), suite);
     tng.setUseDefaultListeners(true);
     tng.run();
@@ -119,8 +195,13 @@ public class FailedReporterTest extends SimpleBaseTest {
     File failed = new File(outputDir, "testng-failed.xml");
     for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
+      Assert.assertTrue(failed.exists(), String.format("File %s not exists", failed.getName()));
       grep(failed, String.format(expectedLine, s), resultLines);
-      Assert.assertEquals(resultLines.size(), expected);
+
+      Assert.assertEquals(
+          resultLines.size(),
+          expected,
+          String.format("Matched lines:\n %s", String.join(",\n", resultLines)));
     }
   }
 }
