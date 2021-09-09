@@ -10,12 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.testng.Assert;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -419,5 +421,18 @@ public class SimpleBaseTest {
       }
     }
     return suites;
+  }
+
+  protected static String getFailedResultMessage(List<ITestResult> testResultList) {
+    String methods =
+        testResultList.stream()
+            .map(r -> new AbstractMap.SimpleEntry<>(
+                    r.getMethod().getQualifiedName(),
+                    r.getThrowable()
+                )
+            )
+            .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
+            .collect(Collectors.joining("\n"));
+    return String.format("Failed methods should pass:\n %s\n", methods);
   }
 }

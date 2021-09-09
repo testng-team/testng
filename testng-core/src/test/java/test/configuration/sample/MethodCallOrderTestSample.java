@@ -1,4 +1,4 @@
-package test.configuration;
+package test.configuration.sample;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class MethodCallOrderTest {
+public class MethodCallOrderTestSample {
   public static boolean s_beforeSuite;
   public static boolean s_beforeTest;
   public static boolean s_beforeClass;
@@ -54,18 +54,18 @@ public class MethodCallOrderTest {
   @AfterMethod
   public void afterMethod() {
     assertFalse(
-        ExternalConfigurationClass.s_afterMethod, "afterTestMethod shouldn't have been run");
-    assertFalse(ExternalConfigurationClass.s_afterClass, "afterTestClass shouldn't have been run");
-    assertFalse(ExternalConfigurationClass.s_afterTest, "afterTest should haven't been run");
+        ExternalConfigurationClassSample.s_afterMethod, "afterTestMethod shouldn't have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterClass, "afterTestClass shouldn't have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterTest, "afterTest should haven't been run");
 
-    ExternalConfigurationClass.s_afterMethod = true;
+    ExternalConfigurationClassSample.s_afterMethod = true;
   }
 
   @AfterClass
   public void afterClass() {
-    assertTrue(ExternalConfigurationClass.s_afterMethod, "afterTestMethod should have been run");
-    assertFalse(ExternalConfigurationClass.s_afterClass, "afterTestClass shouldn't have been run");
-    assertFalse(ExternalConfigurationClass.s_afterTest, "afterTest should haven't been run");
-    ExternalConfigurationClass.s_afterClass = true;
+    assertTrue(ExternalConfigurationClassSample.s_afterMethod, "afterTestMethod should have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterClass, "afterTestClass shouldn't have been run");
+    assertFalse(ExternalConfigurationClassSample.s_afterTest, "afterTest should haven't been run");
+    ExternalConfigurationClassSample.s_afterClass = true;
   }
 }
