@@ -33,3 +33,9 @@ include(":testng-test-osgi")
 
 enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+for (project in rootProject.children) {
+    project.apply {
+        buildFileName = "${project.name}-build.gradle.kts"
+    }
+}

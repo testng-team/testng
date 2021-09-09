@@ -10,6 +10,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
@@ -54,7 +55,14 @@ class BaseInvoker {
 
     InvokedMethodListenerInvoker invoker =
         new InvokedMethodListenerInvoker(listenerMethod, testResult, testResult.getTestContext());
-    for (IInvokedMethodListener currentListener : m_invokedMethodListeners) {
+    // For BEFORE_INVOCATION method, still run as insert order, but regarding AFTER_INVOCATION, it
+    // should be reverse order
+    boolean isAfterInvocation = InvokedMethodListenerMethod.AFTER_INVOCATION == listenerMethod;
+    Collection<IInvokedMethodListener> listeners =
+        isAfterInvocation
+            ? Lists.newReversedArrayList(m_invokedMethodListeners)
+            : m_invokedMethodListeners;
+    for (IInvokedMethodListener currentListener : listeners) {
       try {
         invoker.invokeListener(currentListener, invokedMethod);
       } catch (SkipException e) {

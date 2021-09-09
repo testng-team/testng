@@ -15,9 +15,6 @@ import junit.framework.TestListener;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 import org.testng.*;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
-import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.TestListenerHelper;
@@ -86,8 +83,15 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     }
 
     org.testng.internal.TestResult tr = recordResults(test, tri);
-
-    TestListenerHelper.runTestListeners(tr, m_parentRunner.getTestListeners());
+    // For onTestStart method, still run as insert order
+    // but regarding
+    // onTestSkipped/onTestFailedButWithinSuccessPercentage/onTestFailedWithTimeout/onTestFailure/onTestSuccess, it should be reverse order.
+    boolean isFinished = tr.getStatus() != ITestResult.STARTED;
+    List<ITestListener> listeners =
+        isFinished
+            ? Lists.newReversedArrayList(m_parentRunner.getTestListeners())
+            : m_parentRunner.getTestListeners();
+    TestListenerHelper.runTestListeners(tr, listeners);
   }
 
   public void setInvokedMethodListeners(Collection<IInvokedMethodListener> listeners) {

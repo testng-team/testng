@@ -1,4 +1,4 @@
-package test.factory;
+package test.factory.sample;
 
 import static org.testng.Assert.assertEquals;
 
