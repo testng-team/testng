@@ -121,24 +121,28 @@ public class AssertTest {
   public void oneNullMapAssertEquals() {
     Map<?, ?> expected = Maps.newHashMap();
     Map<?, ?> actual = null;
+    boolean failed = true;
     try {
       Assert.assertEquals(actual, expected);
-      Assert.fail("AssertEquals didn't fail");
+      failed = false;
     } catch (AssertionError error) {
       // do nothing
     }
+    Assert.assertTrue(failed, "assertEquals did not fail");
   }
 
   @Test
   public void oneNullSetAssertEquals() {
     Set<?> expected = null;
     Set<?> actual = Sets.newHashSet();
+    boolean failed = true;
     try {
       Assert.assertEquals(actual, expected);
-      Assert.fail("AssertEquals didn't fail");
+      failed = false;
     } catch (AssertionError error) {
       // do nothing
     }
+    Assert.assertTrue(failed, "assertEquals did not fail");
   }
 
   /**
