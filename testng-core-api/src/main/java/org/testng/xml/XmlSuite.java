@@ -417,15 +417,10 @@ public class XmlSuite implements Cloneable {
   /** @return The parameters defined in this suite and all its XmlTests. */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
-    for (Map.Entry<String, String> entry : m_parameters.entrySet()) {
-      result.put(entry.getKey(), entry.getValue());
-    }
+    result.putAll(m_parameters);
 
     for (XmlTest test : getTests()) {
-      Map<String, String> tp = test.getLocalParameters();
-      for (Map.Entry<String, String> entry : tp.entrySet()) {
-        result.put(entry.getKey(), entry.getValue());
-      }
+      result.putAll(test.getLocalParameters());
     }
 
     return result;
@@ -657,14 +652,6 @@ public class XmlSuite implements Cloneable {
   }
 
   public List<String> getListeners() {
-    if (m_parentSuite != null) {
-      List<String> listeners = m_parentSuite.getListeners();
-      for (String listener : listeners) {
-        if (!m_listeners.contains(listener)) {
-          m_listeners.add(listener);
-        }
-      }
-    }
     return m_listeners;
   }
 
