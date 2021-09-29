@@ -1795,7 +1795,7 @@ public class Assert {
   }
 
   private static String getNotEqualReason(Set<?> actual, Set<?> expected) {
-    if (actual == expected) { // We don't use Arrays.equals here because order is checked
+    if (actual == expected) {
       return null;
     }
 
@@ -1807,7 +1807,7 @@ public class Assert {
     if (!Objects.equals(actual, expected)) {
       return "Sets differ: expected " + expected + " but got " + actual;
     }
-    return getNotEqualReason(actual.iterator(), expected.iterator());
+    return null;
   }
 
   /**

@@ -373,8 +373,8 @@ public class AssertTest {
     assertNotEquals(iterator1, iterator2);
   }
 
-  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
-  public void checkSetEqualsFailsWhenDifferentOrder() {
+  @Test(description = "GITHUB-2643")
+  public void checkSetEqualsWhenDifferentOrder() {
 
     Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
     Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
@@ -400,8 +400,8 @@ public class AssertTest {
     assertEquals(set1, set2);
   }
 
-  @Test(description = "GITHUB-2540")
-  public void checkSetNotEquals() {
+  @Test(description = "GITHUB-2643", expectedExceptions = AssertionError.class)
+  public void checkSetNotEqualsFailsWhenDifferentOrder() {
 
     Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
     Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
@@ -409,13 +409,31 @@ public class AssertTest {
     assertNotEquals(set1, set2);
   }
 
-  @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
-  public void checkSetNotEqualsFailsWhenDifferentOrder() {
+  @Test(description = "GITHUB-2643", expectedExceptions = AssertionError.class)
+  public void checkSetNotEqualsFailsWhenSameOrder() {
 
     Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
     Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
 
     assertNotEquals(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2643")
+  public void checkSetNotEqualsWhenNotSameSets() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+
+    assertNotEquals(set1, set2);
+  }
+
+  @Test(description = "GITHUB-2643", expectedExceptions = AssertionError.class)
+  public void checkSetEqualsFailsWhenNotSameSets() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "b"));
+
+    assertEquals(set1, set2);
   }
 
   @Test(description = "GITHUB-2540", expectedExceptions = AssertionError.class)
