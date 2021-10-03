@@ -194,7 +194,7 @@
       <class name="test.listeners.issue2220.IssueTest"/>
       <class name="test.listeners.issue2328.IssueTest"/>
       <class name="test_result.ResultStatusTest"/>
-      <class name="test_result.issue1590.IssueTest"/>
+      <class name="test_result.TestResultTest"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
       <class name="test.testng1396.ParallelByInstancesInterceptorTest"/>
       <class name="test.github1417.TestParamsInjectionInBeforeClass"/>
