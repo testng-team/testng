@@ -9,10 +9,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class TestclassSample {
-  static int startStatus;
-  static int endStatus;
-  static long startTimestamp;
-  static long endTimestamp;
+  public static int startStatus;
+  public static int endStatus;
+  public static long startTimestamp;
+  public static long endTimestamp;
 
   @BeforeClass
   public void beforeClass(ITestContext context) throws InterruptedException {
