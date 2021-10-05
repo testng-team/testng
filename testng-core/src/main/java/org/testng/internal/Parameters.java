@@ -800,12 +800,13 @@ public class Parameters {
             public boolean hasNext() {
               if (index == 0 && !parameters.hasNext() && !hasWarn) {
                 hasWarn = true;
-                Utils.log(
-                    "",
-                    2,
-                    "Warning: the data provider '"
-                        + dataProviderMethod.getName()
-                        + "' returned an empty array or iterator, so this test is not doing anything");
+                String msg =
+                    String.format(
+                        "The test method '%s' will be skipped since its "
+                            + "data provider '%s' "
+                            + "returned an empty array or iterator. ",
+                        testMethod.getQualifiedName(), dataProviderMethod.getName());
+                Utils.warn(msg);
               }
               return parameters.hasNext();
             }

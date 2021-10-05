@@ -240,7 +240,7 @@ public final class Utils {
   }
 
   public static void warn(String warnMsg) {
-    LOG.warn("[Warning] " + warnMsg);
+    LOG.warn(warnMsg);
   }
 
   /* Tokenize the string using the separator. */
