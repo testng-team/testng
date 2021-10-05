@@ -878,7 +878,7 @@ public class Assert {
   }
 
   /**
-   * Asserts that two chars are equal. If they are not, an AssertionFailedError, with the given
+   * Asserts that two chars are equal. If they are not, an AssertionError, with the given
    * message, is thrown.
    *
    * @param actual the actual value
@@ -900,7 +900,7 @@ public class Assert {
   }
 
   /**
-   * Asserts that two shorts are equal. If they are not, an AssertionFailedError, with the given
+   * Asserts that two shorts are equal. If they are not, an AssertionError, with the given
    * message, is thrown.
    *
    * @param actual the actual value
@@ -922,7 +922,7 @@ public class Assert {
   }
 
   /**
-   * Asserts that two ints are equal. If they are not, an AssertionFailedError, with the given
+   * Asserts that two ints are equal. If they are not, an AssertionError, with the given
    * message, is thrown.
    *
    * @param actual the actual value
@@ -953,7 +953,7 @@ public class Assert {
   }
 
   /**
-   * Asserts that an object isn't null. If it is, an AssertionFailedError, with the given message,
+   * Asserts that an object isn't null. If it is, an AssertionError, with the given message,
    * is thrown.
    *
    * @param object the assertion object
@@ -980,7 +980,7 @@ public class Assert {
   }
 
   /**
-   * Asserts that an object is null. If it is not, an AssertionFailedError, with the given message,
+   * Asserts that an object is null. If it is not, an AssertionError, with the given message,
    * is thrown.
    *
    * @param object the assertion object
@@ -993,7 +993,7 @@ public class Assert {
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they do not, an AssertionFailedError,
+   * Asserts that two objects refer to the same object. If they do not, an AssertionError,
    * with the given message, is thrown.
    *
    * @param actual the actual value
