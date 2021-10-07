@@ -12,6 +12,106 @@ import org.testng.collections.Sets;
 
 public class AssertTest {
 
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedDouble() {
+    Double a = 3.14;
+    double b = 3.14;
+    Double deltaA = 0.1;
+    double deltaB = 0.1;
+    assertEquals(a, b, deltaA);
+    assertEquals(a, b, deltaB);
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedFloat() {
+    Float a = 3.1f;
+    float b = 3.1f;
+    Float deltaA = 0.1f;
+    float deltaB = 0.1f;
+    assertEquals(a, b, deltaA);
+    assertEquals(a, b, deltaB);
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedLong() {
+    Long a = 3L;
+    long b = 3L;
+    Long deltaA = 1L;
+    long deltaB = 1L;
+    assertEquals(a, b, deltaA);
+    assertEquals(a, b, deltaB);
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedBoolean() {
+    Boolean a = true;
+    boolean b = true;
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedByte() {
+    Byte a = Byte.valueOf("3");
+    byte b = (byte) 3;
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedChar() {
+    Character a = 'a';
+    char b = 'a';
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedShort() {
+    Short a = Short.valueOf("3");
+    short b = (short) 3;
+    Short deltaA = Short.valueOf("3");
+    short deltaB = (short) 1;
+    assertEquals(a, b, deltaA);
+    assertEquals(a, b, deltaB);
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
+  @Test(description = "GITHUB-2652")
+  public void assertEqualsBoxedUnboxedInteger() {
+    Integer a = 3;
+    int b = 3;
+    Integer deltaA = 1;
+    int deltaB = 1;
+    assertEquals(a, b, deltaA);
+    assertEquals(a, b, deltaB);
+    assertEquals(a, b);
+    assertEquals(a, b, "");
+    assertEquals(b, a);
+    assertEquals(b, a, "");
+  }
+
   @Test
   public void noOrderSuccess() {
     String[] rto1 = {

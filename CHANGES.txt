@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2653: Assert methods requires casting since TestNg 7.0 for mixed boxed and unboxed primitives in assertEquals.
 Fixed: GITHUB-2563: Skip test if its data provider provides no data (Krishnan Mahadevan)
 Fixed: GITHUB-2535: TestResult.getEndMillis() returns 0 for skipped configuration - after upgrading testng to 7.0 + (Krishnan Mahadevan)
 Fixed: GITHUB-2638: "[WARN] Ignoring duplicate listener" appears when running .xml suite with <listeners> and <suite-files> (Krishnan Mahadevan)
