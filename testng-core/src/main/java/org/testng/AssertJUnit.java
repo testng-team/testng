@@ -71,8 +71,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two objects are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two objects are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -126,8 +126,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two doubles are equal concerning a delta. If they are not an AssertionError
-   * is thrown with the given message. If the expected value is infinity then the delta value is
+   * Asserts that two doubles are equal concerning a delta. If they are not an AssertionError is
+   * thrown with the given message. If the expected value is infinity then the delta value is
    * ignored.
    *
    * @param message The message
@@ -162,8 +162,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two floats are equal concerning a delta. If they are not an AssertionError
-   * is thrown with the given message. If the expected value is infinity then the delta value is
+   * Asserts that two floats are equal concerning a delta. If they are not an AssertionError is
+   * thrown with the given message. If the expected value is infinity then the delta value is
    * ignored.
    *
    * @param message The message
@@ -197,8 +197,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two longs are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two longs are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -219,8 +219,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two booleans are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two booleans are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -241,8 +241,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two bytes are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two bytes are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -263,8 +263,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two chars are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two chars are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -285,8 +285,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two shorts are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two shorts are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -307,8 +307,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two ints are equal. If they are not an AssertionError is thrown with the
-   * given message.
+   * Asserts that two ints are equal. If they are not an AssertionError is thrown with the given
+   * message.
    *
    * @param message The message
    * @param expected The expected value
@@ -338,8 +338,7 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that an object isn't null. If it is an AssertionError is thrown with the given
-   * message.
+   * Asserts that an object isn't null. If it is an AssertionError is thrown with the given message.
    *
    * @param message The message
    * @param object The actual object
@@ -369,8 +368,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they are not an AssertionError is
-   * thrown with the given message.
+   * Asserts that two objects refer to the same object. If they are not an AssertionError is thrown
+   * with the given message.
    *
    * @param message The message
    * @param expected The expected value
@@ -384,8 +383,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they are not the same an
-   * AssertionError is thrown.
+   * Asserts that two objects refer to the same object. If they are not the same an AssertionError
+   * is thrown.
    *
    * @param expected The expected value
    * @param actual The actual value
@@ -395,8 +394,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they are not an AssertionError is
-   * thrown with the given message.
+   * Asserts that two objects refer to the same object. If they are not an AssertionError is thrown
+   * with the given message.
    *
    * @param message The message
    * @param expected The expected value
@@ -409,8 +408,8 @@ public class AssertJUnit extends ArrayAsserts {
   }
 
   /**
-   * Asserts that two objects refer to the same object. If they are not the same an
-   * AssertionError is thrown.
+   * Asserts that two objects refer to the same object. If they are not the same an AssertionError
+   * is thrown.
    *
    * @param expected The expected value
    * @param actual The actual value

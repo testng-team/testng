@@ -38,7 +38,7 @@ Don't worry if the CI fails because it is the expected behavior.
 This pull request will be a perfect start to find the fix :)
 
 ### How to create a pull request?
-Refer our [Contributing](./CONTRIBUTING.md) section for detailed set of steps.
+Refer our [Contributing](.github/CONTRIBUTING.md) section for detailed set of steps.
 
 ### We encourage pull requests that:
 
