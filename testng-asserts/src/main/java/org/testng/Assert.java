@@ -2073,7 +2073,7 @@ public class Assert {
   }
 
   public static void assertNotEquals(float actual, float expected, float delta, String message) {
-    if (areEqual(actual, expected)) {
+    if (areEqual(actual, expected, delta)) {
       Assert.fail(format(actual, expected, message, false));
     }
   }
