@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2658: Inheritance + dependsOnMethods (Krishnan Mahadevan)
 Fixed: GITHUB-2664: Order for DependsOnGroups has changed after TestNg 7.4.0 (Krishnan Mahadevan)
 Fixed: GITHUB-2501: TestNG 7.4.0 throws an exception "sun.net.www.protocol.file.FileURLConnection cannot be cast to java.net.HttpURLConnection" when xml file contain "ENTITY SYSTEM" grammer (Krishnan Mahadevan)
 Fixed: GITHUB-2693: TestNG ignores 'dataproviderthreadcount' CLA (Krishnan Mahadevan)
