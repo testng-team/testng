@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,8 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.beforegroups.issue118.TestclassSample;
 import test.beforegroups.issue1694.BaseClassWithBeforeGroups;
+import test.beforegroups.issue2229.AnotherTestClassSample;
+import test.beforegroups.issue2229.TestClassSample;
 import test.beforegroups.issue346.SampleTestClass;
 
 public class BeforeGroupsTest extends SimpleBaseTest {
@@ -63,6 +66,38 @@ public class BeforeGroupsTest extends SimpleBaseTest {
     expected.put(TEST_1, Collections.singletonList("beforeGroups:" + TEST_1 + TEST_1));
     expected.put(TEST_2, Collections.singletonList("afterGroups:" + TEST_2 + TEST_2));
     assertThat(SampleTestClass.logs).isEqualTo(expected);
+  }
+
+  @Test(description = "GITHUB-2229")
+  public void ensureBeforeGroupsAreInvokedByDefaultEvenWithoutGrouping() {
+    TestNG testng = create(TestClassSample.class, AnotherTestClassSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(0);
+    List<String> expectedLogs =
+        Arrays.asList(
+            "TestA",
+            "TestB",
+            "TestC",
+            "beforeGroupA",
+            "testGroupA1",
+            "testGroupA2",
+            "testGroupA3",
+            "afterGroupA",
+            "beforeGroupB",
+            "testGroupB",
+            "afterGroupB");
+    assertThat(TestClassSample.logs).containsExactlyElementsOf(expectedLogs);
+    expectedLogs =
+        Arrays.asList(
+            "beforeGroups1",
+            "test1_testGroup1",
+            "beforeGroups2",
+            "test2_testGroup2",
+            "test3_testGroup1",
+            "afterGroups1",
+            "test4_testGroup2",
+            "afterGroups2");
+    assertThat(AnotherTestClassSample.logs).containsExactlyElementsOf(expectedLogs);
   }
 
   private static void createXmlTest(XmlSuite xmlSuite, String name, String group) {

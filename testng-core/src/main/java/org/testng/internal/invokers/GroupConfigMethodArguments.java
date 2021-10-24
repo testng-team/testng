@@ -34,10 +34,6 @@ public class GroupConfigMethodArguments extends Arguments {
     return instance;
   }
 
-  public boolean isGroupFilteringDisabled() {
-    return getTestMethod().getXmlTest().isGroupFilteringDisabled();
-  }
-
   public static class Builder {
 
     private ITestNGMethod testMethod;
