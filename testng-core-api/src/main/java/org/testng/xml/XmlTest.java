@@ -4,6 +4,7 @@ import java.util.*;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.RuntimeBehavior;
 
 /** This class describes the tag &lt;test&gt; in testng.xml. */
 public class XmlTest implements Cloneable {
@@ -115,6 +116,9 @@ public class XmlTest implements Cloneable {
   }
 
   public boolean isGroupFilteringDisabled() {
+    if (RuntimeBehavior.isNewGroupBehaviorDisabled()) {
+      return false;
+    }
     return getIncludedGroups().isEmpty() && getExcludedGroups().isEmpty();
   }
 

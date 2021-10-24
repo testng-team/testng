@@ -14,6 +14,7 @@ public final class RuntimeBehavior {
   private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
   public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
   public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
+  public static final String TESTNG_DISABLE_NEW_GROUP_BEHAVIOR = "testng.disable.new.group.beavhor";
 
   private RuntimeBehavior() {}
 
@@ -126,5 +127,15 @@ public final class RuntimeBehavior {
    */
   public static int getDefaultVerboseLevel() {
     return Integer.getInteger(TESTNG_DEFAULT_VERBOSE, 1);
+  }
+
+  /**
+   * Property to disable new behavior for groups. In Pull request #2167 Before/AfterGroups will no
+   * longer run if they are not added i the group filter in the suite.
+   *
+   * @return true if new group behavior is disabled.
+   */
+  public static boolean isNewGroupBehaviorDisabled() {
+    return Boolean.parseBoolean(System.getProperty(TESTNG_DISABLE_NEW_GROUP_BEHAVIOR, "false"));
   }
 }
