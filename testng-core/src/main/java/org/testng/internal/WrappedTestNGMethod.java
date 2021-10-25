@@ -345,6 +345,16 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   }
 
   @Override
+  public int getClassHierarchyPriority() {
+    return testNGMethod.getClassHierarchyPriority();
+  }
+
+  @Override
+  public void setClassHierarchyPriority(int priority) {
+    testNGMethod.setClassHierarchyPriority(priority);
+  }
+
+  @Override
   public XmlTest getXmlTest() {
     return testNGMethod.getXmlTest();
   }

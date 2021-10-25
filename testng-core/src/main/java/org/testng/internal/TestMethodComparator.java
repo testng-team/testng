@@ -16,6 +16,12 @@ public class TestMethodComparator implements Comparator<ITestNGMethod> {
       return prePriDiff;
     }
 
+    int prePriDiff2 =
+        Integer.compare(o1.getClassHierarchyPriority(), o2.getClassHierarchyPriority());
+    if (prePriDiff2 != 0) {
+      return prePriDiff2;
+    }
+
     int priDiff = Integer.compare(o1.getPriority(), o2.getPriority());
     if (priDiff != 0) {
       return priDiff;

@@ -77,4 +77,11 @@ public @interface BeforeClass {
    * @return the value (default 0)
    */
   long timeOut() default 0;
+
+  /**
+   * The scheduling priority. Lower priorities will be scheduled first.
+   *
+   * @return the value (default 0)
+   */
+  int priority() default 0;
 }

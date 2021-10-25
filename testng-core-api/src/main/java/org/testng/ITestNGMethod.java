@@ -220,6 +220,10 @@ public interface ITestNGMethod extends Cloneable {
 
   void setInterceptedPriority(int priority);
 
+  int getClassHierarchyPriority();
+
+  void setClassHierarchyPriority(int priority);
+
   /** @return the XmlTest this method belongs to. */
   XmlTest getXmlTest();
 
