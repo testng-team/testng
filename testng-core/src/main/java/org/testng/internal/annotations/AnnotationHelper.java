@@ -197,6 +197,7 @@ public class AnnotationHelper {
     result.setGroups(bs.getGroups());
     result.setInheritGroups(bs.getInheritGroups());
     result.setTimeOut(bs.getTimeOut());
+    result.setPriority(bs.getPriority());
   }
 
   public static List<Class<? extends IAnnotation>> getAllAnnotations() {

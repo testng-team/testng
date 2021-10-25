@@ -289,16 +289,17 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
-      if (XmlTest.isGroupBasedExecution(xmlTest)) {
-        String[] groupsDependedUpon = m.getGroupsDependedUpon();
-        if (groupsDependedUpon.length > 0) {
-          for (String group : groupsDependedUpon) {
-            ITestNGMethod[] methodsThatBelongToGroup =
-                MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
-            predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
-          }
+      // Should not be part of this commit. just added until GITHUB-2664 is solved.
+      // if (XmlTest.isGroupBasedExecution(xmlTest)) {
+      String[] groupsDependedUpon = m.getGroupsDependedUpon();
+      if (groupsDependedUpon.length > 0) {
+        for (String group : groupsDependedUpon) {
+          ITestNGMethod[] methodsThatBelongToGroup =
+              MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+          predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
         }
       }
+      // }
 
       for (ITestNGMethod predecessor : predecessors) {
         result.addPredecessor(m, predecessor);
