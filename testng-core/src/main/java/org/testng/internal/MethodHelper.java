@@ -27,7 +27,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.util.TimeUtils;
-import org.testng.xml.XmlTest;
 
 /** Collection of helper methods to help sort and arrange methods. */
 public class MethodHelper {
@@ -259,11 +258,7 @@ public class MethodHelper {
 
     Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
 
-    XmlTest xmlTest = null;
     for (ITestNGMethod m : methods) {
-      if (xmlTest == null) {
-        xmlTest = m.getXmlTest();
-      }
       result.addNode(m);
 
       List<ITestNGMethod> predecessors = Lists.newArrayList();
@@ -289,14 +284,13 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
-      if (XmlTest.isGroupBasedExecution(xmlTest)) {
-        String[] groupsDependedUpon = m.getGroupsDependedUpon();
-        if (groupsDependedUpon.length > 0) {
-          for (String group : groupsDependedUpon) {
-            ITestNGMethod[] methodsThatBelongToGroup =
-                MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
-            predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
-          }
+      // Should not be part of this commit. just added until GITHUB-2664 is solved.
+      String[] groupsDependedUpon = m.getGroupsDependedUpon();
+      if (groupsDependedUpon.length > 0) {
+        for (String group : groupsDependedUpon) {
+          ITestNGMethod[] methodsThatBelongToGroup =
+              MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+          predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
         }
       }
 

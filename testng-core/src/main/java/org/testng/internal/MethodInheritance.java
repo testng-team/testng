@@ -10,7 +10,6 @@ import java.util.Objects;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.xml.XmlTest;
 
 public class MethodInheritance {
 
@@ -135,14 +134,13 @@ public class MethodInheritance {
                 ITestNGMethod m1 = l.get(i);
                 for (int j = i + 1; j < l.size(); j++) {
                   ITestNGMethod m2 = l.get(j);
-                  boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
-                  if (groupMode) {
-                    // Do not resort to adding implicit depends-on if there are groups
-                    continue;
-                  }
                   if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
                     Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
-                    m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+                    if (m1.getPriority() == 0
+                        && m2.getPriority() == 0
+                        && m1.getPriority() >= m2.getPriority()) {
+                      m2.setPriority(m2.getPriority() + 1);
+                    }
                   }
                 }
               }
