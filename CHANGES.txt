@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2643: assertEquals(Set,Set) now ignores ordering as it did before. (Elis Edlund)
 Fixed: GITHUB-2653: Assert methods requires casting since TestNg 7.0 for mixed boxed and unboxed primitives in assertEquals.
 Fixed: GITHUB-2229: Restore @BeforeGroups and @AfterGroups Annotations functionality (Krishnan Mahadevan)
 Fixed: GITHUB-2563: Skip test if its data provider provides no data (Krishnan Mahadevan)
