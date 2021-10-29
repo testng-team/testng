@@ -125,24 +125,30 @@ public class MethodInheritance {
               sortMethodsByInheritance(l, before);
 
               /*
-               *  Set methodDependedUpon accordingly
-               *  E.g. Base class can have multiple @BeforeClass methods. Need to ensure
-               *  that @BeforeClass methods in derived class depend on all @BeforeClass methods
-               *  of base class. Vice versa for @AfterXXX methods
+               * Set methodDependedUpon accordingly
+               * E.g. Base class can have multiple @BeforeClass methods. Need to ensure
+               * that @BeforeClass methods in derived class depend on all @BeforeClass methods
+               * of base class. Vice versa for @AfterXXX methods
                */
 
               for (int i = 0; i < l.size() - 1; i++) {
                 ITestNGMethod m1 = l.get(i);
                 for (int j = i + 1; j < l.size(); j++) {
                   ITestNGMethod m2 = l.get(j);
-                  boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
-                  if (groupMode) {
-                    // Do not resort to adding implicit depends-on if there are groups
-                    continue;
-                  }
-                  if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
-                    Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
-                    m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+                  if (RuntimeBehavior.isSecondSortEnabled()) {
+                    if (!equalsEffectiveClass(m1, m2)) {
+                      if (m1.getClassHierarchyPriority() >= m2.getClassHierarchyPriority()) {
+                        m2.setClassHierarchyPriority(m2.getClassHierarchyPriority() + 1);
+                      }
+                    }
+                  } else {
+                    if (XmlTest.isGroupBasedExecution(m2.getXmlTest())) {
+                      continue;
+                    }
+                    if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
+                      Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
+                      m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+                    }
                   }
                 }
               }

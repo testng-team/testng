@@ -21,6 +21,7 @@ import org.testng.log4testng.Logger;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
+
   private static final boolean m_verbose = false;
   private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
@@ -46,6 +47,9 @@ public class Graph<T> {
   }
 
   public boolean isIndependent(T object) {
+    if (RuntimeBehavior.isSecondSortEnabled()) {
+      return false;
+    }
     return m_independentNodes.containsKey(object);
   }
 
@@ -141,12 +145,15 @@ public class Graph<T> {
   private void initializeIndependentNodes() {
     if (null == m_independentNodes) {
       List<Node<T>> list = Lists.newArrayList(m_nodes.values());
+      m_independentNodes = Maps.newLinkedHashMap();
+      if (RuntimeBehavior.isSecondSortEnabled()) {
+        return;
+      }
       // Ideally, we should not have to sort this. However, due to a bug where it treats all the
       // methods as
       // dependent nodes.
       list.sort(comparator);
 
-      m_independentNodes = Maps.newLinkedHashMap();
       for (Node<T> node : list) {
         m_independentNodes.put(node.getObject(), node);
       }
@@ -246,6 +253,7 @@ public class Graph<T> {
   // class Node
   //
   public static class Node<T> {
+
     private final T m_object;
     private final Map<T, T> m_predecessors = Maps.newHashMap();
 

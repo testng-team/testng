@@ -31,6 +31,7 @@ import org.testng.xml.XmlTest;
 
 /** Collection of helper methods to help sort and arrange methods. */
 public class MethodHelper {
+
   private static final Map<ITestNGMethod[], Graph<ITestNGMethod>> GRAPH_CACHE =
       new ConcurrentHashMap<>();
   private static final Map<Method, String> CANONICAL_NAME_CACHE = new ConcurrentHashMap<>();
@@ -258,7 +259,6 @@ public class MethodHelper {
     //
 
     Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
-
     XmlTest xmlTest = null;
     for (ITestNGMethod m : methods) {
       if (xmlTest == null) {
@@ -289,7 +289,18 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
-      if (XmlTest.isGroupBasedExecution(xmlTest)) {
+      if (!RuntimeBehavior.isSecondSortEnabled()) {
+        if (XmlTest.isGroupBasedExecution(xmlTest)) {
+          String[] groupsDependedUpon = m.getGroupsDependedUpon();
+          if (groupsDependedUpon.length > 0) {
+            for (String group : groupsDependedUpon) {
+              ITestNGMethod[] methodsThatBelongToGroup =
+                  MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+              predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
+            }
+          }
+        }
+      } else {
         String[] groupsDependedUpon = m.getGroupsDependedUpon();
         if (groupsDependedUpon.length > 0) {
           for (String group : groupsDependedUpon) {
@@ -299,7 +310,6 @@ public class MethodHelper {
           }
         }
       }
-
       for (ITestNGMethod predecessor : predecessors) {
         result.addPredecessor(m, predecessor);
       }
@@ -308,7 +318,6 @@ public class MethodHelper {
     result.topologicalSort();
     sequentialList.addAll(result.getStrictlySortedNodes());
     parallelList.addAll(result.getIndependentNodes());
-
     return result;
   }
 
@@ -495,6 +504,7 @@ public class MethodHelper {
   }
 
   private static class MatchResults {
+
     private final List<ITestNGMethod> matchedMethods = Lists.newArrayList();
     private boolean foundAtLeastAMethod = false;
   }

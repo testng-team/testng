@@ -127,4 +127,14 @@ public final class RuntimeBehavior {
   public static int getDefaultVerboseLevel() {
     return Integer.getInteger(TESTNG_DEFAULT_VERBOSE, 1);
   }
+
+  /**
+   * If enabled we will do a extra sort which will improve the ordering of the methods, but might
+   * take a bit longer time.
+   *
+   * @return true if enabled
+   */
+  public static boolean isSecondSortEnabled() {
+    return Boolean.parseBoolean(System.getProperty("testng.second.sort.enabled", "true"));
+  }
 }

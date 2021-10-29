@@ -11,14 +11,21 @@ public class TestMethodComparator implements Comparator<ITestNGMethod> {
   }
 
   public static int compareStatic(ITestNGMethod o1, ITestNGMethod o2) {
-    int prePriDiff = Integer.compare(o1.getInterceptedPriority(), o2.getInterceptedPriority());
-    if (prePriDiff != 0) {
-      return prePriDiff;
+    int interceptedPriorityDiff =
+        Integer.compare(o1.getInterceptedPriority(), o2.getInterceptedPriority());
+    if (interceptedPriorityDiff != 0) {
+      return interceptedPriorityDiff;
     }
 
-    int priDiff = Integer.compare(o1.getPriority(), o2.getPriority());
-    if (priDiff != 0) {
-      return priDiff;
+    int priorityDiff = Integer.compare(o1.getPriority(), o2.getPriority());
+    if (priorityDiff != 0) {
+      return priorityDiff;
+    }
+
+    int classHierarchyPriorityDiff =
+        Integer.compare(o1.getClassHierarchyPriority(), o2.getClassHierarchyPriority());
+    if (classHierarchyPriorityDiff != 0) {
+      return classHierarchyPriorityDiff;
     }
 
     return o1.getMethodName().compareTo(o2.getMethodName());

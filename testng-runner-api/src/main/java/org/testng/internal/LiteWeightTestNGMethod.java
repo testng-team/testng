@@ -30,6 +30,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final List<String> methodsDependedUpon = new LinkedList<>();
   private int priority;
   private int interceptedPriority;
+  private int classHierarchyPriority;
   private final XmlTest xmlTest;
   private final String qualifiedName;
   private final boolean isBeforeTestConfiguration;
@@ -83,6 +84,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     }
     priority = iTestNGMethod.getPriority();
     interceptedPriority = iTestNGMethod.getInterceptedPriority();
+    classHierarchyPriority = iTestNGMethod.getClassHierarchyPriority();
     xmlTest = iTestNGMethod.getXmlTest();
     qualifiedName = iTestNGMethod.getQualifiedName();
     isBeforeTestConfiguration = iTestNGMethod.isBeforeTestConfiguration();
@@ -473,6 +475,16 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   @Override
   public void setInterceptedPriority(int priority) {
     this.interceptedPriority = priority;
+  }
+
+  @Override
+  public int getClassHierarchyPriority() {
+    return interceptedPriority;
+  }
+
+  @Override
+  public void setClassHierarchyPriority(int priority) {
+    this.classHierarchyPriority = priority;
   }
 
   @Override
