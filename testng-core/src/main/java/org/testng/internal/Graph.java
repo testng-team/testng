@@ -26,11 +26,6 @@ public class Graph<T> {
   private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
 
-  //  A map of nodes that are not the predecessors of any node
-  // (not needed for the algorithm but convenient to calculate
-  // the parallel/sequential lists in TestNG).
-  private Map<T, Node<T>> m_independentNodes = null;
-
   public Graph(Comparator<Node<T>> comparator) {
     this.comparator = comparator;
   }
@@ -45,10 +40,6 @@ public class Graph<T> {
     return findNode(node).getPredecessors().keySet();
   }
 
-  public boolean isIndependent(T object) {
-    return m_independentNodes.containsKey(object);
-  }
-
   private Node<T> findNode(T object) {
     return m_nodes.get(object);
   }
@@ -60,11 +51,6 @@ public class Graph<T> {
     } else {
       node.addPredecessor(predecessor);
       addNeighbor(tm, predecessor);
-      // Remove these two nodes from the independent list
-      initializeIndependentNodes();
-      m_independentNodes.remove(predecessor);
-      m_independentNodes.remove(tm);
-      log(() -> "  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
     }
   }
 
@@ -76,11 +62,6 @@ public class Graph<T> {
     return m_nodes.values();
   }
 
-  /** @return All the nodes that don't have any order with each other. */
-  public Set<T> getIndependentNodes() {
-    return m_independentNodes.keySet();
-  }
-
   /** @return All the nodes that have an order with each other, sorted in one of the valid sorts. */
   public List<T> getStrictlySortedNodes() {
     return m_strictlySortedNodes;
@@ -89,7 +70,6 @@ public class Graph<T> {
   public void topologicalSort() {
     log("================ SORTING");
     m_strictlySortedNodes = Lists.newArrayList();
-    initializeIndependentNodes();
 
     //
     // Clone the list of nodes but only keep those that are
@@ -98,7 +78,6 @@ public class Graph<T> {
     List<Node<T>> nodes2 =
         getNodes()
             .parallelStream()
-            .filter(n -> !isIndependent(n.getObject()))
             .map(Node::clone)
             .sorted(comparator)
             .collect(Collectors.toList());
@@ -135,21 +114,6 @@ public class Graph<T> {
     log("=============== DONE SORTING");
     if (m_verbose) {
       dumpSortedNodes();
-    }
-  }
-
-  private void initializeIndependentNodes() {
-    if (null == m_independentNodes) {
-      List<Node<T>> list = Lists.newArrayList(m_nodes.values());
-      // Ideally, we should not have to sort this. However, due to a bug where it treats all the
-      // methods as
-      // dependent nodes.
-      list.sort(comparator);
-
-      m_independentNodes = Maps.newLinkedHashMap();
-      for (Node<T> node : list) {
-        m_independentNodes.put(node.getObject(), node);
-      }
     }
   }
 

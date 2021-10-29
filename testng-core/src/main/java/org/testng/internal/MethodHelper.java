@@ -27,7 +27,6 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.util.TimeUtils;
-import org.testng.xml.XmlTest;
 
 /** Collection of helper methods to help sort and arrange methods. */
 public class MethodHelper {
@@ -244,7 +243,6 @@ public class MethodHelper {
   private static Graph<ITestNGMethod> topologicalSort(
       ITestNGMethod[] methods,
       List<ITestNGMethod> sequentialList,
-      List<ITestNGMethod> parallelList,
       final Comparator<ITestNGMethod> comparator) {
     Graph<ITestNGMethod> result =
         new Graph<>((o1, o2) -> comparator.compare(o1.getObject(), o2.getObject()));
@@ -259,11 +257,8 @@ public class MethodHelper {
 
     Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
 
-    XmlTest xmlTest = null;
     for (ITestNGMethod m : methods) {
-      if (xmlTest == null) {
-        xmlTest = m.getXmlTest();
-      }
+
       result.addNode(m);
 
       List<ITestNGMethod> predecessors = Lists.newArrayList();
@@ -289,14 +284,12 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
-      if (XmlTest.isGroupBasedExecution(xmlTest)) {
-        String[] groupsDependedUpon = m.getGroupsDependedUpon();
-        if (groupsDependedUpon.length > 0) {
-          for (String group : groupsDependedUpon) {
-            ITestNGMethod[] methodsThatBelongToGroup =
-                MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
-            predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
-          }
+      String[] groupsDependedUpon = m.getGroupsDependedUpon();
+      if (groupsDependedUpon.length > 0) {
+        for (String group : groupsDependedUpon) {
+          ITestNGMethod[] methodsThatBelongToGroup =
+              MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+          predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
         }
       }
 
@@ -307,7 +300,6 @@ public class MethodHelper {
 
     result.topologicalSort();
     sequentialList.addAll(result.getStrictlySortedNodes());
-    parallelList.addAll(result.getIndependentNodes());
 
     return result;
   }
@@ -376,7 +368,7 @@ public class MethodHelper {
       MethodInheritance.fixMethodInheritance(allMethodsArray, before);
     }
 
-    topologicalSort(allMethodsArray, sl, pl, comparator);
+    topologicalSort(allMethodsArray, sl, comparator);
 
     List<ITestNGMethod> result = Lists.newArrayList();
     result.addAll(sl);
@@ -391,7 +383,7 @@ public class MethodHelper {
     if (g == null) {
       List<ITestNGMethod> parallelList = Lists.newArrayList();
       List<ITestNGMethod> sequentialList = Lists.newArrayList();
-      g = topologicalSort(methods, sequentialList, parallelList, comparator);
+      g = topologicalSort(methods, sequentialList, comparator);
       GRAPH_CACHE.put(methods, g);
     }
 

@@ -30,6 +30,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
   private final List<String> methodsDependedUpon = new LinkedList<>();
   private int priority;
   private int interceptedPriority;
+  private int classHierarchyPriority;
   private final XmlTest xmlTest;
   private final String qualifiedName;
   private final boolean isBeforeTestConfiguration;

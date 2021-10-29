@@ -16,7 +16,7 @@ import org.testng.xml.XmlTest;
  * generates a unique hashcode that is different from the original {@link ITestNGMethod} instance
  * that it wraps.
  */
-public class WrappedTestNGMethod implements ITestNGMethod {
+public class WrappedTestNGMethod implements ITestNGMethod, IClassHierarchyPriority {
   private final ITestNGMethod testNGMethod;
   private final int multiplicationFactor = new Random().nextInt();
 
@@ -342,6 +342,16 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   @Override
   public void setInterceptedPriority(int priority) {
     testNGMethod.setInterceptedPriority(priority);
+  }
+
+  @Override
+  public int getClassHierarchyPriority() {
+    return ((IClassHierarchyPriority) testNGMethod).getClassHierarchyPriority();
+  }
+
+  @Override
+  public void setClassHierarchyPriority(int priority) {
+    ((IClassHierarchyPriority) testNGMethod).setClassHierarchyPriority(priority);
   }
 
   @Override

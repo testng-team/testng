@@ -42,8 +42,6 @@ public class GraphTest {
     Assert.assertTrue("2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i)));
     i++;
     Assert.assertEquals("3", l.get(i));
-
-    Assert.assertEquals(1, g.getIndependentNodes().size());
   }
 
   @Test(expectedExceptions = org.testng.TestNGException.class)

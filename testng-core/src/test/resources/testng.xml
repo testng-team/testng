@@ -13,6 +13,12 @@
     <listener class-name="org.testng.internal.ConsoleReporter"/>
   </listeners>
 
+  <test name="Issue2664Test">
+   <classes>
+      <class name="test.configuration.issue2664.Issue2664Test"/>
+    </classes>
+  </test>
+
   <test name="Nopackage">
     <groups>
       <run>

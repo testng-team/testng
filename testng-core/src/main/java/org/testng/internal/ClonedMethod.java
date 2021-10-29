@@ -327,7 +327,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setPriority(int priority) {
-    // ignored
+    throw new UnsupportedOperationException("This method should never be called.");
   }
 
   @Override
@@ -337,7 +337,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setInterceptedPriority(int priority) {
-    // ignored
+    throw new UnsupportedOperationException("This method should never be called.");
   }
 
   @Override

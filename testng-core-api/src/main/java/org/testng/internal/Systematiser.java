@@ -10,6 +10,7 @@ public final class Systematiser {
 
   private static final Comparator<ITestNGMethod> COMPARE_INSTANCES =
       Comparator.comparingInt(ITestNGMethod::getPriority)
+          .thenComparing(method -> ((IClassHierarchyPriority) method).getClassHierarchyPriority())
           .thenComparing(method -> method.getRealClass().getName())
           .thenComparing(ITestNGMethod::getMethodName)
           .thenComparing(Object::toString)

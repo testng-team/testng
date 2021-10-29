@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Objects;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.xml.XmlTest;
 
 public class MethodInheritance {
 
@@ -135,43 +133,16 @@ public class MethodInheritance {
                 ITestNGMethod m1 = l.get(i);
                 for (int j = i + 1; j < l.size(); j++) {
                   ITestNGMethod m2 = l.get(j);
-                  boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
-                  if (groupMode) {
-                    // Do not resort to adding implicit depends-on if there are groups
-                    continue;
-                  }
-                  if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
-                    Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
-                    m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
+                  if (!equalsEffectiveClass(m1, m2)) {
+                    if (((IClassHierarchyPriority) m1).getClassHierarchyPriority()
+                        >= ((IClassHierarchyPriority) m2).getClassHierarchyPriority()) {
+                      ((IClassHierarchyPriority) m2)
+                          .setClassHierarchyPriority(
+                              ((IClassHierarchyPriority) m2).getClassHierarchyPriority() + 1);
+                    }
                   }
                 }
               }
-            });
-  }
-
-  private static boolean dependencyExists(
-      ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
-    return internalDependencyExists(m1, m2, methods) || internalDependencyExists(m2, m1, methods);
-  }
-
-  private static boolean internalDependencyExists(
-      ITestNGMethod m1, ITestNGMethod m2, ITestNGMethod[] methods) {
-    ITestNGMethod[] methodsNamed = MethodHelper.findDependedUponMethods(m1, methods);
-
-    boolean match = Arrays.stream(methodsNamed).parallel().anyMatch(method -> method.equals(m2));
-    if (match) {
-      return true;
-    }
-
-    return Arrays.stream(m1.getGroupsDependedUpon())
-        .parallel()
-        .anyMatch(
-            group -> {
-              ITestNGMethod[] methodsThatBelongToGroup =
-                  MethodGroupsHelper.findMethodsThatBelongToGroup(m1, methods, group);
-              return Arrays.stream(methodsThatBelongToGroup)
-                  .parallel()
-                  .anyMatch(method -> method.equals(m2));
             });
   }
 
