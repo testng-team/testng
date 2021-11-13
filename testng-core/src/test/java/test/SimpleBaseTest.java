@@ -155,6 +155,12 @@ public class SimpleBaseTest {
     return suite;
   }
 
+  protected static XmlSuite createXmlSuite(String suiteName, Map<String, String> params) {
+    XmlSuite suite = createXmlSuite(suiteName);
+    suite.setParameters(params);
+    return suite;
+  }
+
   protected static XmlTest createXmlTestWithPackages(
       XmlSuite suite, String name, String... packageName) {
     XmlTest result = createXmlTest(suite, name);

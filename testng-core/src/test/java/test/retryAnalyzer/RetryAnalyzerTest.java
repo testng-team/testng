@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -26,6 +28,7 @@ import test.retryAnalyzer.github1600.Github1600TestSample;
 import test.retryAnalyzer.github1706.DataDrivenSample;
 import test.retryAnalyzer.github1706.NativeInjectionSample;
 import test.retryAnalyzer.github1706.ParameterInjectionSample;
+import test.retryAnalyzer.github2669.RetryTestSample;
 import test.retryAnalyzer.issue1241.GitHub1241Sample;
 import test.retryAnalyzer.issue1538.TestClassSampleWithTestMethodDependencies;
 import test.retryAnalyzer.issue1697.DatadrivenSample;
@@ -238,6 +241,20 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     TestNG testng = create(xmlsuite);
     testng.run();
     assertThat(test.retryAnalyzer.dataprovider.issue2163.RetryAnalyzer.logs).hasSize(21);
+  }
+
+  @Test(description = "GITHUB-2669")
+  public void testFailedRetryWithParameters() {
+    Map<String, String> params = new HashMap<>();
+    params.put("id", "1111");
+    params.put("name", "qa");
+    params.put("age", "30");
+    XmlSuite suite = createXmlSuite("GITHUB_2669", params);
+
+    createXmlTest(suite, "2669_Test", RetryTestSample.class);
+    TestNG testng = create(suite);
+    testng.run();
+    Assert.assertEquals(RetryTestSample.count, 3);
   }
 
   private ITestResult runAssertions(Set<ITestResult> results, String methodName) {
