@@ -211,15 +211,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 "Encountered problems when gathering parameter values for [%s]. Root cause: ", m);
         throw new DataProviderInvocationException(msg, cause);
       }
-      Object[] parameterValues =
-          Parameters.getParametersFromIndex(
-              Objects.requireNonNull(bag.parameterHolder).parameters,
-              arguments.getParametersIndex());
-      if (bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.NATIVE
-          || bag.parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER) {
-        parameterValues = arguments.getParameterValues();
-      }
-
+      Object[] parameterValues = arguments.getParameterValues();
       TestMethodArguments tma =
           new TestMethodArguments.Builder()
               .usingArguments(arguments)
