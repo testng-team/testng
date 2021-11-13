@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Converter" parallel="false">
+  
+    <test name="AnnotationConverter">
+    <parameter name="source-directory" value="src/test/sample" />
+    <classes>
+    <class name="test.converter.AnnotationConverterTest" />
+    </classes>
+    </test>
+
+
+</suite>
+

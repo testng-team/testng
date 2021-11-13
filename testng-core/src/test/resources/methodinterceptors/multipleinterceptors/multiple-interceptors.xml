@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Multiple interceptors">
+  
+    <listeners>
+        <listener class-name="test.methodinterceptors.multipleinterceptors.FirstInterceptor"/>
+        <listener class-name="test.methodinterceptors.multipleinterceptors.SecondInterceptor"/>
+        <listener class-name="test.methodinterceptors.multipleinterceptors.ThirdInterceptor"/>
+    </listeners>
+  
+    <test name="MultipleInterceptors:Tests" preserve-order="true">
+        <classes>
+            <class name="test.methodinterceptors.multipleinterceptors.FooTest"/>
+        </classes>
+    </test>
+</suite>

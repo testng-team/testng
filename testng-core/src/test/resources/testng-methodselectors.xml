@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Sample Suite">
+  <test name="Sample">
+    <classes>
+      <class name="test.methodselectors.SampleTest" />
+    </classes>
+  </test>
+</suite>

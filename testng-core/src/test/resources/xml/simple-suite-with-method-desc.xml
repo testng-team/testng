@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Sample-suite">
+    <test name="Sample-test">
+        <classes>
+            <class name="test.xml.TestNGContentHandlerTest$LocalTestClass">
+                <methods>
+                    <include name="helloWorld" description="simple-description"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="issue2445" parallel="methods" thread-count="15" configfailurepolicy="continue">
+    <parameter name="suiteParamKey" value="suiteParamValue"/>
+    <test name="factory-failed-reporter-npe-check">
+        <parameter name="testParamKey" value="testParamKey"/>
+        <classes>
+            <class name="test.reports.issue2445.FailureTestFactory"/>
+        </classes>
+    </test>
+</suite>

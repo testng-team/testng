@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Timeout Tests">
+
+  <test name="TimeoutTest" time-out="1000">
+      <classes>
+          <class name="test.timeout.TestTimeOutSampleTest">
+              <methods>
+                <include name="timeoutTest"/>
+              </methods>
+          </class>
+      </classes>
+  </test>
+
+  <test name="NoTimeoutTest">
+      <classes>
+          <class name="test.timeout.TestTimeOutSampleTest">
+              <methods>
+                <include name="timeoutTest"/>
+              </methods>
+          </class>
+      </classes>
+  </test>
+    
+</suite>

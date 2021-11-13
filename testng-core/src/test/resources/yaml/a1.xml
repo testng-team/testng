@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SingleSuite" verbose="2" parallel="false" thread-count="4" configfailurepolicy="continue"
+    data-provider-thread-count="3">
+
+  <parameter name="n" value="42" />
+
+  <listeners>
+    <listener class-name="test.methodinterceptors.FastTestsFirstInterceptor" />
+    <listener class-name="test.invokedmethodlistener.MyListener" />
+  </listeners>
+
+  <packages>
+    <package name="test.testng355.org.apache.tapestry5">
+      <include name="Foo"/>
+      <include name="Foo2"/>
+      <exclude name="Bar"/>
+    </package>
+    <package name="test.testng355.org.apache.tapestry5.dom" />
+  </packages>
+
+  <test name="Regression2" verbose="2">
+    <parameter name="count" value="10"/>
+    <groups>
+      <run>
+        <exclude name="broken" />
+      </run>
+    </groups>
+    <classes>
+      <class name="test.listeners.ResultEndMillisTest">
+<!-- 
+        <methods>
+          <include name="withFactory" />
+        </methods>
+ -->
+       </class>
+<!-- 
+      <class name="test.methodselectors.CommandLineTest">
+       <class name="test.inject.NoInjectionTest" />
+      <class name="test.tmp.TestFactory" />
+      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.tmp.B" />
+      <class name="test.thread.MultiThreadedDependentTest" />
+      <class name="test.thread.FactoryTest" />
+      <class name="test.tmp.B" />
+      <class name="test.failedreporter.FailedReporterTest" />
+        <methods>
+          <include name="verifyIPAddress" invocationNumbers="0 2" />
+        </methods>
+      </class>
+ -->
+    </classes>
+  </test>
+
+</suite>
+

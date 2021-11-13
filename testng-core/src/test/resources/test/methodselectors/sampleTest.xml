@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Groups run">
+    <test name="External group invocation">
+        <classes>
+            <class name="test.methodselectors.SampleTest">
+                <methods>
+                    <include name="test1" />
+                    <include name="test2" />
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

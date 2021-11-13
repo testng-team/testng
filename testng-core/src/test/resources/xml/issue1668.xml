@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="1668_Suite" parallel="false">
+    <method-selectors>
+        <method-selector>
+            <script language="beanshell">
+                <![CDATA[
+                whatTest = System.getProperty("testToRun");
+                if (whatTest == void || whatTest.trim().isEmpty()) return true;
+                whatTest.contains(testngMethod.getXmlTest().getName());
+                ]]>
+            </script>
+        </method-selector>
+    </method-selectors>
+    <test name="1668_Test1">
+        <classes>
+            <class name="org.testng.xml.issue1668.TestClassSample"/>
+        </classes>
+    </test>
+</suite>

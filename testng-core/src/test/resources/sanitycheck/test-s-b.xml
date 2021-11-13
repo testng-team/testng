@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SanityCheck suites root">
+  <suite-files>
+    <suite-file path="./test-s-2.xml"/>
+    <suite-file path="./test-s-3.xml"/>
+  </suite-files>
+</suite>

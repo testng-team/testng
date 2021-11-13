@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="1417_suite">
+
+    <test name="1417_test">
+        <classes>
+            <class name="test.github1417.TestClassSample">
+                <parameter name="browsername" value="firefox"/>
+            </class>
+            <class name="test.github1417.AnotherTestClassSample">
+                <parameter name="browsername" value="chrome"/>
+            </class>
+        </classes>
+    </test>
+
+    <test name="1417_test_regular">
+        <parameter name="browsername" value="safari"/>
+        <classes>
+            <class name="test.github1417.YetAnotherTestClassSample"/>
+        </classes>
+    </test>
+
+</suite>
+

@@ -1,4 +1,3 @@
-[![Build Status](https://img.shields.io/travis/cbeust/testng.svg)](https://travis-ci.org/cbeust/testng)
 [![Maven Central](https://img.shields.io/maven-central/v/org.testng/testng.svg)](https://maven-badges.herokuapp.com/maven-central/org.testng/testng)
 [![License](https://img.shields.io/github/license/cbeust/testng.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Sonarqube tech debt](https://img.shields.io/sonar/https/sonarqube.com/org.testng:testng/tech_debt.svg?label=Sonarqube%20tech%20debt)](https://sonarqube.com/dashboard/index?id=org.testng:testng)
@@ -39,7 +38,7 @@ Don't worry if the CI fails because it is the expected behavior.
 This pull request will be a perfect start to find the fix :)
 
 ### How to create a pull request?
-Refer our [Contributing](./CONTRIBUTING.md) section for detailed set of steps.
+Refer our [Contributing](.github/CONTRIBUTING.md) section for detailed set of steps.
 
 ### We encourage pull requests that:
 

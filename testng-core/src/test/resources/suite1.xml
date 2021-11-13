@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite 1">
+
+  <test name="Suite 1 Tests">
+    <classes>
+      <class name="test.xml.XmlVerifyTest">
+         <methods>
+            <include name="simple"/>
+         </methods>
+      </class>
+    </classes>
+  </test>
+  <suite-files>
+   <suite-file path="./suite1-1.xml" />
+   <suite-file path="./suite1-2.xml" />
+  </suite-files>
+</suite>

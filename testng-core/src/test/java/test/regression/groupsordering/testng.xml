@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Groups ordering regression" verbose="2">
+  <test name="Class Run">
+		<classes>
+			<class name="test.regression.groupsordering.A" />
+			<class name="test.regression.groupsordering.B" />
+		</classes>
+  </test>
+	
+	<test name="Groups Run">
+		<groups>
+			<run>
+				<include name="a" />
+			</run>
+		</groups>
+		<classes>
+			<class name="test.regression.groupsordering.A" />
+			<class name="test.regression.groupsordering.B" />
+		</classes>
+	</test>
+</suite>

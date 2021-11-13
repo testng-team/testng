@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="My_Suite">
+    <test name="My_test">
+        <groups>
+            <dependencies>
+                <group name="c" depends-on="a  b"/>
+                <group name="z" depends-on="c"/>
+            </dependencies>
+        </groups>
+        <packages>
+            <package name="test.yaml"/>
+        </packages>
+    </test>
+</suite>

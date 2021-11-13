@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="JUnit Convert suite" parallel="false" thread-count="2" annotations="javadoc">
+   <parameter name="inputDir" value="./test/src/test/convert"/>
+   <test name="JUnit Convert">
+     <classes>
+       <class name="test.convert.JUnitConverterTest"/>
+     </classes>
+   </test>
+</suite>

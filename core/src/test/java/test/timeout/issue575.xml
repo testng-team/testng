@@ -1,9 +1,0 @@
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-
-<suite name="TestNG test" parallel="tests">
-    <test name="Test TestNG" >
-        <classes>
-            <class name="test.timeout.TimeOutSampleTest" />
-        </classes>
-    </test>
-</suite>

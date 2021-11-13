@@ -1,0 +1,26 @@
+name: Publish Snapshot
+
+# Trigger this workflow whenever code is pushed to "master" branch.defaults:
+# We would like to publish to maven central for both snapshot and release versions.
+on:
+  push:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Gradle wrapper validation
+      uses: gradle/wrapper-validation-action@v1
+
+    - name: Publish to GitHub
+      run: |
+        ./gradlew -PghNexusUsername=${{ secrets.SONATYPE_USER }} -PghNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Pgh publish

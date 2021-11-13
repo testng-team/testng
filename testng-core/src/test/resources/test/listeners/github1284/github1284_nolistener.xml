@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Github 1284 suite with no listener">
+    <test name="Github 1284 Test No listener" preserve-order="true">
+        <classes>
+            <class name="test.listeners.github1284.Sample1284">
+                <methods>
+                    <include name="testWithNoListener"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,44 @@
+root = true
+
+[*]
+max_line_length = 100
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+
+[{*.sh,gradlew}]
+end_of_line = lf
+
+[{*.bat,*.cmd}]
+end_of_line = crlf
+
+[*.md]
+# Trailing space means "paragraph continues" in markdown
+trim_trailing_whitespace = false
+
+[*.java]
+indent_size = 2
+ij_continuation_indent_size = 4
+# Doc: https://youtrack.jetbrains.com/issue/IDEA-170643#focus=streamItem-27-3708697.0-0
+# $ means "static"
+ij_java_wrap_long_lines = true
+ij_java_wrap_comments = true
+ij_java_imports_layout = $*,|,*
+ij_java_use_single_class_imports = true
+# Below does not seem to work as of 2021.1.1 even though
+# https://youtrack.jetbrains.com/issue/IDEA-225733 is resolved
+wildcard_import_limit = 999
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+ij_java_class_count_to_use_import_on_demand = 999
+ij_java_names_count_to_use_import_on_demand = 999
+
+[*.js]
+indent_size = 2
+
+[*.xml]
+indent_size = 2
+
+[{*.yml,*.yaml}]
+indent_size = 2

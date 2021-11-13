@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suitename from xml" parallel="false" thread-count="2">
+  
+  <test name="TestName">
+    <classes>
+      <class name="NoPackageTest" />
+    </classes>
+  </test>
+</suite>

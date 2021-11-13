@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="188_suite">
+  <test name="188_test">
+    <classes>
+      <class name="test.thread.issue188.IssueTest"/>
+    </classes>
+  </test>
+</suite>

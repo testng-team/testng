@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="TEQ Test">
+    <parameter name="suiteLevel" value="suiteValue"/>
+    <test name="TeqInit Test">
+        <parameter name="testLevel" value="testValue"/>
+        <classes>
+            <class name="rationale.emotions.yamlissue.IssueTest">
+                <methods>
+                    <include name="configureTeq">
+                        <parameter name="teqUid" value="Teq1"/>
+                    </include>
+                    <include name="initTraffic">
+                        <parameter name="teqUid" value="Teq2"/>
+                    </include>
+                    <include name="setProtSwitchCriteria">
+                        <parameter name="teqUid" value="Teq3"/>
+                    </include>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

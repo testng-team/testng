@@ -1,7 +1,0 @@
-<suite name="Child Suite 2">
-  <test name="Test">
-    <classes>
-      <class name="test.parameters.Sample"/>
-    </classes>
-  </test>
-</suite>

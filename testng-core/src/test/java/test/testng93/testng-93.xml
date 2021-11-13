@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Bugtest" verbose="1">
+    <test name="Single test">
+        <groups>
+            <run>
+                <include name="group1"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="test.testng93.SingleTestTest">
+                <methods>
+                    <include name="theFirstActualTest"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SanityCheck tests 1">
+  <test name="SanityCheck:Tests" preserve-order="true">
+    <classes>
+      <class name="test.sanitycheck.SampleTest1"/>
+      <class name="test.sanitycheck.SampleTest3"/>
+    </classes>
+  </test>
+  <test name="SanityCheck:Tests:Another" preserve-order="true">
+    <classes>
+      <class name="test.sanitycheck.SampleTest2"/>
+    </classes>
+  </test>
+  <test name="SanityCheck:Tests">
+    <parameter name="foo" value="bar"/>
+    <classes>
+      <class name="test.sanitycheck.SampleTest3"/>
+    </classes>
+  </test>
+</suite>
