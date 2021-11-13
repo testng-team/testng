@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.testng.IConfigurable;
@@ -32,6 +34,7 @@ import org.testng.internal.collections.OneToTwoDimArrayIterator;
 import org.testng.internal.collections.OneToTwoDimIterator;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
+import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.ThreadExecutionException;
 import org.testng.internal.thread.ThreadTimeoutException;
 import org.testng.internal.thread.ThreadUtil;
@@ -286,7 +289,7 @@ public class MethodInvocationHelper {
       throws InterruptedException, ThreadExecutionException {
     if (ThreadUtil.isTestNGThread()
         && testResult.getTestContext().getCurrentXmlTest().getParallel()
-            != XmlSuite.ParallelMode.TESTS) {
+        != XmlSuite.ParallelMode.TESTS) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).
       invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
@@ -390,13 +393,17 @@ public class MethodInvocationHelper {
     boolean finished = exec.awaitTermination(realTimeOut, TimeUnit.MILLISECONDS);
 
     if (!finished) {
-      exec.shutdownNow();
       ThreadTimeoutException exception =
           new ThreadTimeoutException(
               "Method "
                   + tm.getQualifiedName()
                   + "() didn't finish within the time-out "
                   + realTimeOut);
+      StackTraceElement[] realStackTrace = getRunningMethodStackTrace(exec);
+      if (realStackTrace != null)
+        exception.setStackTrace(realStackTrace);
+      //shutdown after getting real stacktrace from thread
+      exec.shutdownNow();
       testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
     } else {
@@ -415,6 +422,21 @@ public class MethodInvocationHelper {
 
       testResult.setStatus(ITestResult.SUCCESS); // if no exception till here then SUCCESS.
     }
+  }
+
+  private static StackTraceElement[] getRunningMethodStackTrace(ExecutorService exec) {
+    if (!(exec instanceof ThreadPoolExecutor))
+      return null;
+    ThreadFactory threadFactory = ((ThreadPoolExecutor) exec).getThreadFactory();
+
+    if (!(threadFactory instanceof TestNGThreadFactory))
+      return null;
+    TestNGThreadFactory testNGThreadFactory = (TestNGThreadFactory) threadFactory;
+
+    Collection<Thread> threads = testNGThreadFactory.getRunningThreads();
+    if (threads.size() == 1)
+      return threads.iterator().next().getStackTrace();
+    return null;
   }
 
   protected static void invokeConfigurable(

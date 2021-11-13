@@ -1,19 +1,32 @@
 package org.testng.internal.thread;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.WeakHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class TestNGThreadFactory implements ThreadFactory {
 
   private final AtomicInteger threadNumber = new AtomicInteger(1);
   private final String name;
+  private final WeakHashMap<Thread, Object> threads = new WeakHashMap<>();
 
   public TestNGThreadFactory(String name) {
     this.name = ThreadUtil.THREAD_NAME + "-" + name + "-";
   }
 
+  public Collection<Thread> getRunningThreads() {
+    return threads.keySet().stream()
+        .filter(Thread::isAlive)
+        .collect(Collectors.toList());
+  }
+
   @Override
   public Thread newThread(Runnable r) {
-    return new Thread(r, name + threadNumber.getAndIncrement());
+    Thread thread = new Thread(r, name + threadNumber.getAndIncrement());
+    threads.put(thread, null);
+    return thread;
   }
 }
