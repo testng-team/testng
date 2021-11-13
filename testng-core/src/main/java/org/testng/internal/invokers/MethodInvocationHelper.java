@@ -289,7 +289,7 @@ public class MethodInvocationHelper {
       throws InterruptedException, ThreadExecutionException {
     if (ThreadUtil.isTestNGThread()
         && testResult.getTestContext().getCurrentXmlTest().getParallel()
-        != XmlSuite.ParallelMode.TESTS) {
+            != XmlSuite.ParallelMode.TESTS) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).
       invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
@@ -400,9 +400,8 @@ public class MethodInvocationHelper {
                   + "() didn't finish within the time-out "
                   + realTimeOut);
       StackTraceElement[] realStackTrace = getRunningMethodStackTrace(exec);
-      if (realStackTrace != null)
-        exception.setStackTrace(realStackTrace);
-      //shutdown after getting real stacktrace from thread
+      if (realStackTrace != null) exception.setStackTrace(realStackTrace);
+      // shutdown after getting real stacktrace from thread
       exec.shutdownNow();
       testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
@@ -425,17 +424,14 @@ public class MethodInvocationHelper {
   }
 
   private static StackTraceElement[] getRunningMethodStackTrace(ExecutorService exec) {
-    if (!(exec instanceof ThreadPoolExecutor))
-      return null;
+    if (!(exec instanceof ThreadPoolExecutor)) return null;
     ThreadFactory threadFactory = ((ThreadPoolExecutor) exec).getThreadFactory();
 
-    if (!(threadFactory instanceof TestNGThreadFactory))
-      return null;
+    if (!(threadFactory instanceof TestNGThreadFactory)) return null;
     TestNGThreadFactory testNGThreadFactory = (TestNGThreadFactory) threadFactory;
 
     Collection<Thread> threads = testNGThreadFactory.getRunningThreads();
-    if (threads.size() == 1)
-      return threads.iterator().next().getStackTrace();
+    if (threads.size() == 1) return threads.iterator().next().getStackTrace();
     return null;
   }
 

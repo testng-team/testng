@@ -1,7 +1,6 @@
 package org.testng.internal.thread;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.WeakHashMap;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,9 +17,7 @@ public class TestNGThreadFactory implements ThreadFactory {
   }
 
   public Collection<Thread> getRunningThreads() {
-    return threads.keySet().stream()
-        .filter(Thread::isAlive)
-        .collect(Collectors.toList());
+    return threads.keySet().stream().filter(Thread::isAlive).collect(Collectors.toList());
   }
 
   @Override
