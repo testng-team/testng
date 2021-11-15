@@ -436,11 +436,14 @@ public class MethodInvocationHelper {
     }
     TestNGThreadFactory testNGThreadFactory = (TestNGThreadFactory) threadFactory;
 
+    StackTraceElement[] stackTrace = null;
     Collection<Thread> threads = testNGThreadFactory.getRunningThreads();
     if (threads.size() == 1) {
-      return threads.iterator().next().getStackTrace();
+      stackTrace = threads.iterator().next().getStackTrace();
+    } else if (threads.size() > 1) {
+      Utils.warn("Cannot resolve stacktrace from multiple threads");
     }
-    return null;
+    return stackTrace;
   }
 
   protected static void invokeConfigurable(
