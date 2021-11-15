@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2672: Log real stacktrace when test times out. (cdalexndr)
 Fixed: GITHUB-2669: A failed retry with ITestContext will lose the ITestContext. (Nan Liang)
 Fixed: GITHUB-2643: assertEquals(Set,Set) now ignores ordering as it did before. (Elis Edlund)
 Fixed: GITHUB-2653: Assert methods requires casting since TestNg 7.0 for mixed boxed and unboxed primitives in assertEquals.
