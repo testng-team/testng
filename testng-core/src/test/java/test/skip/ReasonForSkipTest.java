@@ -5,13 +5,16 @@ import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
 import java.util.Map;
+import org.testng.CommandLineArgs;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
+import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.skip.github1967.TestClassSample;
+import test.skip.issue2674.ConfigAwareTestNG;
 
 public class ReasonForSkipTest extends SimpleBaseTest {
 
@@ -101,6 +104,31 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     expected.put("test2min", ITestResult.SKIP);
     expected.put("setup", ITestResult.FAILURE);
     assertThat(actual).containsAllEntriesOf(expected);
+  }
+
+  @Test(description = "GITHUB-2674")
+  public void ensureUpstreamFailuresTriggerSkipsForAllDataProviderValues() {
+    TestNG testng = create(test.skip.issue2674.TestClassSample.class);
+    testng.setReportAllDataDrivenTestsAsSkipped(true);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getSkippedMethodNames())
+        .containsExactly("test2(iPhone,13)", "test2(iPhone-Pro,12)");
+  }
+
+  @Test(description = "GITHUB-2674")
+  public void ensureUpstreamFailuresTriggerSkipsForAllDataProviderValuesViaCmdLineArgs() {
+    CommandLineArgs cli = new CommandLineArgs();
+    cli.includeAllDataDrivenTestsWhenSkipping = true;
+    ConfigAwareTestNG testng = new ConfigAwareTestNG();
+    testng.setTestClasses(new Class<?>[] {test.skip.issue2674.TestClassSample.class});
+    testng.configure(cli);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getSkippedMethodNames())
+        .containsExactly("test2(iPhone,13)", "test2(iPhone-Pro,12)");
   }
 
   private static void runTest(Map<String, String> expected, Class<?>... clazz) {

@@ -49,4 +49,10 @@ public interface IConfiguration {
   boolean getOverrideIncludedMethods();
 
   void setOverrideIncludedMethods(boolean overrideIncludedMethods);
+
+  default void setReportAllDataDrivenTestsAsSkipped(boolean reportAllDataDrivenTestsAsSkipped) {}
+
+  default boolean getReportAllDataDrivenTestsAsSkipped() {
+    return false;
+  }
 }
