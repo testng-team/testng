@@ -7,6 +7,7 @@ import static org.testng.internal.invokers.ParameterHandler.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.DataProviderInvocationException;
@@ -37,6 +39,7 @@ import org.testng.SuiteRunState;
 import org.testng.SuiteRunner;
 import org.testng.TestException;
 import org.testng.TestNGException;
+import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -104,12 +107,48 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       //
       // Not okToProceed. Test is being skipped
       //
-      ITestResult result =
-          registerSkippedTestResult(
-              testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
-      m_notifier.addSkippedTest(testMethod, result);
-      InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), result);
-      invokeListenersForSkippedTestResult(result, invokedMethod);
+      List<ITestResult> results = new ArrayList<>();
+      Consumer<ITestResult> resultProcessor =
+          result -> {
+            m_notifier.addSkippedTest(testMethod, result);
+            InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), result);
+            invokeListenersForSkippedTestResult(result, invokedMethod);
+          };
+      boolean reportAllDataDrivenTestsAsSkipped =
+          m_configuration.getReportAllDataDrivenTestsAsSkipped();
+      if (reportAllDataDrivenTestsAsSkipped && testMethod.isDataDriven()) {
+        ParameterHandler handler =
+            new ParameterHandler(
+                m_configuration.getObjectFactory(),
+                annotationFinder(),
+                buildDataProviderHolder(),
+                1);
+
+        ParameterBag bag =
+            handler.createParameters(
+                testMethod, Maps.newHashMap(), Maps.newHashMap(), context, instance);
+        Iterator<Object[]> allParamValues = Objects.requireNonNull(bag.parameterHolder).parameters;
+        Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
+        for (Object[] next : allParameterValues) {
+          if (next == null) {
+            continue;
+          }
+          Method m = testMethod.getConstructorOrMethod().getMethod();
+          Object[] parameterValues = Parameters.injectParameters(next, m, context);
+          ITestResult result =
+              registerSkippedTestResult(
+                  testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
+          result.setParameters(parameterValues);
+          resultProcessor.accept(result);
+          results.add(result);
+        }
+      } else {
+        ITestResult result =
+            registerSkippedTestResult(
+                testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
+        resultProcessor.accept(result);
+        results.add(result);
+      }
       testMethod.incrementCurrentInvocationCount();
       GroupConfigMethodArguments args =
           new Builder()
@@ -119,7 +158,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               .withParameters(parameters)
               .build();
       this.invoker.invokeAfterGroupsConfigurations(args);
-      return Collections.singletonList(result);
+      return Collections.unmodifiableList(results);
     }
 
     // For invocationCount > 1 and threadPoolSize > 1 run this method in its own pool thread.

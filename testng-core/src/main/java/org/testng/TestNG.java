@@ -582,6 +582,14 @@ public class TestNG {
     m_selectors.add(selector);
   }
 
+  public void setReportAllDataDrivenTestsAsSkipped(boolean reportAllDataDrivenTestsAsSkipped) {
+    this.m_configuration.setReportAllDataDrivenTestsAsSkipped(reportAllDataDrivenTestsAsSkipped);
+  }
+
+  public boolean getReportAllDataDrivenTestsAsSkipped() {
+    return this.m_configuration.getReportAllDataDrivenTestsAsSkipped();
+  }
+
   /**
    * Set the suites file names to be run by this TestNG object. This method tries to load and parse
    * the specified TestNG suite xml files. If a file is missing, it is ignored.
@@ -1404,6 +1412,7 @@ public class TestNG {
    * @param cla The command line parameters
    */
   protected void configure(CommandLineArgs cla) {
+    setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
     if (cla.verbose != null) {
       setVerbose(cla.verbose);
     }
@@ -1613,6 +1622,10 @@ public class TestNG {
     result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
     result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
     result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
+    Object tmpValue = cmdLineArgs.get(CommandLineArgs.INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING);
+    if (tmpValue != null) {
+      result.includeAllDataDrivenTestsWhenSkipping = Boolean.parseBoolean(tmpValue.toString());
+    }
     result.skipFailedInvocationCounts =
         (Boolean) cmdLineArgs.get(CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS);
     result.failIfAllTestsSkipped =

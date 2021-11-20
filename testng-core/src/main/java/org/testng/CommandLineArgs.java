@@ -242,4 +242,13 @@ public class CommandLineArgs {
       description =
           "Comma separated fully qualified class names of listeners that should be skipped from being wired in via Service Loaders.")
   public Boolean overrideIncludedMethods = false;
+
+  public static final String INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING =
+      "-includeAllDataDrivenTestsWhenSkipping";
+
+  @Parameter(
+      names = INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING,
+      description =
+          "Should TestNG report all iterations of a data driven test as individual skips, in-case of upstream failures.")
+  public Boolean includeAllDataDrivenTestsWhenSkipping = false;
 }

@@ -33,6 +33,8 @@ public class Configuration implements IConfiguration {
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
   private boolean overrideIncludedMethods = false;
 
+  private boolean includeAllDataDrivenTestsWhenSkipping;
+
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
   }
@@ -143,5 +145,15 @@ public class Configuration implements IConfiguration {
   @Override
   public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
     this.overrideIncludedMethods = overrideIncludedMethods;
+  }
+
+  @Override
+  public void setReportAllDataDrivenTestsAsSkipped(boolean reportAllDataDrivenTestsAsSkipped) {
+    this.includeAllDataDrivenTestsWhenSkipping = reportAllDataDrivenTestsAsSkipped;
+  }
+
+  @Override
+  public boolean getReportAllDataDrivenTestsAsSkipped() {
+    return this.includeAllDataDrivenTestsWhenSkipping;
   }
 }
