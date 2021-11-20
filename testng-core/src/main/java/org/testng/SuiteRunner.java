@@ -155,6 +155,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
           !configuration.getObjectFactory().getClass().equals(suite.getObjectFactoryClass());
       final ITestObjectFactory suiteObjectFactory;
       if (create) {
+        if (objectFactory == null) {
+          objectFactory = configuration.getObjectFactory();
+        }
         // Dont keep creating the object factory repeatedly since our current object factory
         // Was already created based off of a suite level object factory.
         suiteObjectFactory = objectFactory.newInstance(suite.getObjectFactoryClass());
@@ -166,27 +169,27 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
             @Override
             public <T> T newInstance(Class<T> cls, Object... parameters) {
               try {
-                return configuration.getObjectFactory().newInstance(cls, parameters);
-              } catch (Exception e) {
                 return suiteObjectFactory.newInstance(cls, parameters);
+              } catch (Exception e) {
+                return configuration.getObjectFactory().newInstance(cls, parameters);
               }
             }
 
             @Override
             public <T> T newInstance(String clsName, Object... parameters) {
               try {
-                return configuration.getObjectFactory().newInstance(clsName, parameters);
-              } catch (Exception e) {
                 return suiteObjectFactory.newInstance(clsName, parameters);
+              } catch (Exception e) {
+                return configuration.getObjectFactory().newInstance(clsName, parameters);
               }
             }
 
             @Override
             public <T> T newInstance(Constructor<T> constructor, Object... parameters) {
               try {
-                return configuration.getObjectFactory().newInstance(constructor, parameters);
-              } catch (Exception e) {
                 return suiteObjectFactory.newInstance(constructor, parameters);
+              } catch (Exception e) {
+                return configuration.getObjectFactory().newInstance(constructor, parameters);
               }
             }
           };

@@ -39,6 +39,7 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.internal.invokers.SuiteRunnerMap;
 import org.testng.internal.invokers.objects.GuiceContext;
+import org.testng.internal.objects.DefaultTestObjectFactory;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
@@ -169,7 +170,7 @@ public class TestNG {
 
   private final Set<XmlMethodSelector> m_selectors = Sets.newLinkedHashSet();
 
-  private static final ITestObjectFactory DEFAULT_OBJECT_FACTORY = new ITestObjectFactory() {};
+  private static final ITestObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultTestObjectFactory();
   private ITestObjectFactory m_objectFactory = DEFAULT_OBJECT_FACTORY;
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>

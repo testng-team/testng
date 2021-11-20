@@ -207,7 +207,7 @@
       <class name="test.factory.issue1924.IssueTest"/>
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
-      <class name="test.objectfactory.github1827.GitHub1827Test"/>
+      <class name="test.objectfactory.ObjectFactoryTest"/>
       <class name="test.github1490.VerifyDataProviderListener"/>
       <class name="test.listeners.issue2456.IssueTest"/>
       <class name="test.methodselection.MethodSelectionTest"/>
@@ -432,7 +432,6 @@
       <class name="test.factory.FactoryIntegrationTest" />
       <class name="test.factory.EmptyFactoryDataProviderTest" />
 
-      <class name="test.factory.github1131.GitHub1131Test" />
       <class name="test.factory.nested.GitHub1307Test"/>
 
     </classes>
