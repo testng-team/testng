@@ -10,6 +10,7 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.objects.DefaultTestObjectFactory;
 import org.testng.internal.objects.Dispenser;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
@@ -94,7 +95,11 @@ public class ClassImpl implements IClass {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
       } else {
-        IObjectDispenser dispenser = Dispenser.newInstance(m_objectFactory);
+        ITestObjectFactory factory = m_objectFactory;
+        if (factory instanceof DefaultTestObjectFactory) {
+          factory = m_testContext.getSuite().getObjectFactory();
+        }
+        IObjectDispenser dispenser = Dispenser.newInstance(factory);
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
@@ -118,7 +123,11 @@ public class ClassImpl implements IClass {
       if (create) {
         DetailedAttributes ea = newDetailedAttributes(create, errorMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, null, ea);
-        result = new Object[] {Dispenser.newInstance(m_objectFactory).dispense(attributes)};
+        result =
+            new Object[] {
+              Dispenser.newInstance(m_testContext.getSuite().getObjectFactory())
+                  .dispense(attributes)
+            };
       }
     }
     if (m_instances.size() > 0) {

@@ -240,7 +240,7 @@ public class TestRunner
     m_host = suite.getHost();
     m_testClassesFromXml = test.getXmlClasses();
     m_injectorFactory = m_configuration.getInjectorFactory();
-    m_objectFactory = m_configuration.getObjectFactory();
+    m_objectFactory = suite.getObjectFactory();
     setVerbose(test.getVerbose());
 
     boolean preserveOrder = test.getPreserveOrder();
