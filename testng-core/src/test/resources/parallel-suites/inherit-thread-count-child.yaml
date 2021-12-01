@@ -1,0 +1,7 @@
+name: Child suite
+
+tests:
+  - name: Tests
+    classes:
+      - test.thread.Sample2
+      - test.thread.Sample1

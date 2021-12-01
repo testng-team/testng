@@ -9,7 +9,7 @@
   </test>
 
   <suite-files>
-    <suite-file path="./suite-parallel-2-1.xml" />
     <suite-file path="./suite-parallel-2-2.xml" />
+    <suite-file path="./suite-parallel-2-1.xml" />
   </suite-files>
 </suite>
