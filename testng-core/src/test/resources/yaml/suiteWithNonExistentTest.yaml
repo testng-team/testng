@@ -1,0 +1,5 @@
+name: My_Suite
+tests:
+  - name: My_test
+    classes:
+      - this.class.does.not.Exists
