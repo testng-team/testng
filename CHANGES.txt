@@ -1,5 +1,5 @@
 Current
-New: Yaml parser: implement loadClasses flag (Dzmitry Sankouski)
+Fixed: GITHUB-2689: Yaml parser: implement loadClasses flag (Dzmitry Sankouski)
 Fixed: GITHUB-2676: NPE is triggered when working with ITestObjectFactory (Krishnan Mahadevan)
 Fixed: GITHUB-2674: Run onTestSkipped for each value from data provider (Krishnan Mahadevan)
 Fixed: GITHUB-2672: Log real stacktrace when test times out. (cdalexndr)

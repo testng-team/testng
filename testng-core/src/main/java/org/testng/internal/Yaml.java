@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.testng.TestNGException;
+import org.testng.internal.objects.InstanceCreator;
 import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -378,13 +379,13 @@ public final class Yaml {
                           nodeTuple ->
                               ((ScalarNode) nodeTuple.getKeyNode()).getValue().equals("name"))
                       .findFirst()
-                      .orElseThrow(RuntimeException::new)
+                      .orElseThrow(() -> new TestNGException("Node 'name' not found"))
                       .getValueNode();
           className = ((ScalarNode) valueNode).getValue();
         } else {
           className = ((ScalarNode) node).getValue();
         }
-        return c.newInstance(className, loadClasses);
+        return InstanceCreator.newInstance(c, className, loadClasses);
       } catch (Exception e) {
         throw new TestNGException("Failed to instantiate class", e);
       }

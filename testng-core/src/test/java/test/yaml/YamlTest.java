@@ -72,7 +72,7 @@ public class YamlTest extends SimpleBaseTest {
     assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualToNormalizingNewlines(expectedYaml);
   }
 
-  @Test
+  @Test(description = "GITHUB-2689")
   public void testLoadClassesFlag() throws IOException {
     YamlParser yamlParser = new YamlParser();
     String yamlSuiteFile = "src/test/resources/yaml/suiteWithNonExistentTest.yaml";
