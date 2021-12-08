@@ -1260,9 +1260,8 @@ public class TestNG {
       SuiteRunnerMap suiteRunnerMap,
       XmlSuite xmlSuite) {
     ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
-    if (xmlSuite.getChildSuites().isEmpty()) {
-      suiteGraph.addNode(parentSuiteRunner);
-    } else {
+    suiteGraph.addNode(parentSuiteRunner);
+    if (!xmlSuite.getChildSuites().isEmpty()) {
       for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
         suiteGraph.addEdge(0, parentSuiteRunner, suiteRunnerMap.get(childSuite));
         populateSuiteGraph(suiteGraph, suiteRunnerMap, childSuite);
