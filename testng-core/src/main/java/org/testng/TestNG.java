@@ -343,12 +343,8 @@ public class TestNG {
   private Collection<XmlSuite> processCommandLineArgs(Collection<XmlSuite> allSuites) {
     Collection<XmlSuite> result = new ArrayList<>();
     for (XmlSuite s : allSuites) {
-      if (this.m_parallelMode != null) {
-        s.setParallel(this.m_parallelMode);
-      }
-      if (this.m_threadCount > 0) {
-        s.setThreadCount(this.m_threadCount);
-      }
+      processParallelModeCommandLineArgs(s);
+      s.getChildSuites().forEach(this::processParallelModeCommandLineArgs);
       if (m_testNames == null) {
         result.add(s);
         continue;
@@ -363,6 +359,15 @@ public class TestNG {
     }
 
     return result;
+  }
+
+  private void processParallelModeCommandLineArgs(XmlSuite suite) {
+    if (this.m_parallelMode != null) {
+      suite.setParallel(this.m_parallelMode);
+    }
+    if (this.m_threadCount > 0) {
+      suite.setThreadCount(this.m_threadCount);
+    }
   }
 
   public void initializeSuitesAndJarFile() {
