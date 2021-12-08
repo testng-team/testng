@@ -13,7 +13,7 @@ public class YamlParser implements ISuiteParser {
   public XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
       throws TestNGException {
     try {
-      return Yaml.parse(filePath, is);
+      return Yaml.parse(filePath, is, loadClasses);
     } catch (FileNotFoundException e) {
       throw new TestNGException(e);
     }

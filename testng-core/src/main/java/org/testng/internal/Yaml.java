@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.testng.TestNGException;
+import org.testng.internal.objects.InstanceCreator;
 import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -27,7 +29,8 @@ public final class Yaml {
 
   private Yaml() {}
 
-  public static XmlSuite parse(String filePath, InputStream is) throws FileNotFoundException {
+  public static XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
+      throws FileNotFoundException {
     Constructor constructor = new TestNGConstructor(XmlSuite.class);
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
@@ -45,6 +48,9 @@ public final class Yaml {
       testDescription.addPropertyParameters("method-selectors", XmlMethodSelector.class);
       constructor.addTypeDescription(testDescription);
     }
+
+    TypeDescription xmlClassDescription = new XmlClassTypeDescriptor(loadClasses);
+    constructor.addTypeDescription(xmlClassDescription);
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(constructor);
     if (is == null) {
@@ -344,6 +350,44 @@ public final class Yaml {
           return XmlSuite.FailurePolicy.getValidPolicy(failurePolicy);
         }
         return super.construct(node);
+      }
+    }
+  }
+
+  private static class XmlClassTypeDescriptor extends TypeDescription {
+
+    private final boolean loadClasses;
+
+    public XmlClassTypeDescriptor(boolean loadClasses) {
+      super(XmlClass.class);
+      this.loadClasses = loadClasses;
+    }
+
+    @Override
+    public Object newInstance(Node node) {
+      String className;
+
+      try {
+        java.lang.reflect.Constructor<?> c =
+            XmlClass.class.getDeclaredConstructor(String.class, boolean.class);
+        c.setAccessible(true);
+        if (node instanceof MappingNode) {
+          Node valueNode =
+              ((MappingNode) node)
+                  .getValue().stream()
+                      .filter(
+                          nodeTuple ->
+                              ((ScalarNode) nodeTuple.getKeyNode()).getValue().equals("name"))
+                      .findFirst()
+                      .orElseThrow(() -> new TestNGException("Node 'name' not found"))
+                      .getValueNode();
+          className = ((ScalarNode) valueNode).getValue();
+        } else {
+          className = ((ScalarNode) node).getValue();
+        }
+        return InstanceCreator.newInstance(c, className, loadClasses);
+      } catch (Exception e) {
+        throw new TestNGException("Failed to instantiate class", e);
       }
     }
   }

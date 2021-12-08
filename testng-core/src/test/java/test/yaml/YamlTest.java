@@ -14,6 +14,7 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
+import org.testng.internal.YamlParser;
 import org.testng.reporters.Files;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
@@ -21,6 +22,7 @@ import org.testng.xml.internal.Parser;
 import test.SimpleBaseTest;
 
 public class YamlTest extends SimpleBaseTest {
+  public static final String CLASS_NOT_FOUND_MESSAGE = "Cannot find class in classpath";
 
   @DataProvider
   public Object[][] dp() {
@@ -68,5 +70,27 @@ public class YamlTest extends SimpleBaseTest {
         new String(
             java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
     assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualToNormalizingNewlines(expectedYaml);
+  }
+
+  @Test(description = "GITHUB-2689")
+  public void testLoadClassesFlag() throws IOException {
+    YamlParser yamlParser = new YamlParser();
+    String yamlSuiteFile = "src/test/resources/yaml/suiteWithNonExistentTest.yaml";
+
+    try {
+      yamlParser.parse(yamlSuiteFile, new FileInputStream(yamlSuiteFile), false);
+    } catch (Throwable throwable) {
+      Throwable rootCause = getRootCause(throwable);
+      String rootCauseMessage = rootCause.getMessage();
+      if (rootCauseMessage.contains(CLASS_NOT_FOUND_MESSAGE)) {
+        throw new AssertionError("TestNG shouldn't attempt to load test class", throwable);
+      }
+
+      throw new AssertionError("Yaml parser failed to parse suite", throwable);
+    }
+  }
+
+  private Throwable getRootCause(Throwable throwable) {
+    return throwable.getCause() != null ? getRootCause(throwable.getCause()) : throwable;
   }
 }
