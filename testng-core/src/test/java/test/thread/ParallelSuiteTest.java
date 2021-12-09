@@ -53,10 +53,11 @@ public class ParallelSuiteTest extends SimpleBaseTest {
 
   @Test
   public void suitesShouldRunInParallel4() {
+    final int TOTAL_SUITE_COUNT_INCLUDING_DUPLICATES = 8;
     runTest(
         10,
-        5,
-        5,
+        TOTAL_SUITE_COUNT_INCLUDING_DUPLICATES,
+        TOTAL_SUITE_COUNT_INCLUDING_DUPLICATES,
         null,
         Arrays.asList(
             getPathToParallelResource("suite-parallel-1.xml"),
