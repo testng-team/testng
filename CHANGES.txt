@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2684: AfterGroups config annotation does not consider retries for tests (Roman Morskyi)
 Fixed: GITHUB-2689: Yaml parser: implement loadClasses flag (Dzmitry Sankouski)
 Fixed: GITHUB-2676: NPE is triggered when working with ITestObjectFactory (Krishnan Mahadevan)
 Fixed: GITHUB-2674: Run onTestSkipped for each value from data provider (Krishnan Mahadevan)
