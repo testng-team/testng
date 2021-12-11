@@ -259,7 +259,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-2684")
-  public void testAfterGroupsInvokedAfterRetriedMethod() {
+  public void testAfterConfigurationsInvokedAfterRetriedMethod() {
     XmlSuite xmlSuite = createXmlSuite("2684_suite");
     createXmlTest(xmlSuite, "2684_test", SampleTestClassWithGroupConfigs.class);
     createXmlGroups(xmlSuite, "2684_group");
@@ -268,8 +268,23 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
 
-    assertThat(listener.getInvokedMethodNames())
-        .containsExactly("beforeGroups", "testMethod", "testMethod", "afterGroups");
+    String[] expected = {
+      "beforeSuite",
+      "beforeTest",
+      "beforeClass",
+      "beforeGroups",
+      "beforeMethod",
+      "testMethod",
+      "afterMethod",
+      "beforeMethod",
+      "testMethod",
+      "afterMethod",
+      "afterGroups",
+      "afterClass",
+      "afterTest",
+      "afterSuite"
+    };
+    assertThat(listener.getInvokedMethodNames()).containsExactly(expected);
   }
 
   private ITestResult runAssertions(Set<ITestResult> results, String methodName) {
