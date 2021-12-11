@@ -37,6 +37,7 @@ import test.retryAnalyzer.issue1697.SampleTestclass;
 import test.retryAnalyzer.issue1946.RetryAnalyzer;
 import test.retryAnalyzer.issue1946.TestclassSample1;
 import test.retryAnalyzer.issue1946.TestclassSample2;
+import test.retryAnalyzer.issue2684.SampleTestClassWithGroupConfigs;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
   @Test
@@ -255,6 +256,20 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     TestNG testng = create(suite);
     testng.run();
     Assert.assertEquals(RetryTestSample.count, 3);
+  }
+
+  @Test(description = "GITHUB-2684")
+  public void testAfterGroupsInvokedAfterRetriedMethod() {
+    XmlSuite xmlSuite = createXmlSuite("2684_suite");
+    createXmlTest(xmlSuite, "2684_test", SampleTestClassWithGroupConfigs.class);
+    createXmlGroups(xmlSuite, "2684_group");
+    TestNG testng = create(xmlSuite);
+    InvokedMethodNameListener listener = new InvokedMethodNameListener();
+    testng.addListener(listener);
+    testng.run();
+
+    assertThat(listener.getInvokedMethodNames())
+        .containsExactly("beforeGroups", "testMethod", "testMethod", "afterGroups");
   }
 
   private ITestResult runAssertions(Set<ITestResult> results, String methodName) {
