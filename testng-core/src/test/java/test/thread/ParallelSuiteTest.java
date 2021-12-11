@@ -187,7 +187,9 @@ public class ParallelSuiteTest extends SimpleBaseTest {
             + expectedThreadCount
             + " actual:"
             + BaseThreadTest.getThreadCount());
-    Assert.assertEquals(BaseThreadTest.getSuitesMap().keySet().size(), expectedSuiteCount,
+    Assert.assertEquals(
+        BaseThreadTest.getSuitesMap().keySet().size(),
+        expectedSuiteCount,
         "Suite count is incorrect");
   }
 

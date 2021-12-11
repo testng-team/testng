@@ -344,7 +344,6 @@ public class TestNG {
     Collection<XmlSuite> result = new ArrayList<>();
     for (XmlSuite s : allSuites) {
       processParallelModeCommandLineArgs(s);
-      s.getChildSuites().forEach(this::processParallelModeCommandLineArgs);
       if (m_testNames == null) {
         result.add(s);
         continue;
@@ -367,6 +366,9 @@ public class TestNG {
     }
     if (this.m_threadCount > 0) {
       suite.setThreadCount(this.m_threadCount);
+    }
+    if (suite.getChildSuites() != null) {
+      suite.getChildSuites().forEach(this::processParallelModeCommandLineArgs);
     }
   }
 
