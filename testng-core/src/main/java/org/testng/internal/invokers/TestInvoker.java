@@ -508,34 +508,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private static class StatusHolder {
 
     boolean handled = false;
+    int originalStatus;
     int status;
   }
 
-  private void handleInvocationResults(
+  private void handleInvocationResult(
       ITestNGMethod testMethod,
       ITestResult testResult,
       FailureContext failure,
       StatusHolder holder,
-      boolean wasResultUnaltered) {
-    //
-    // Go through all the results and create a TestResult for each of them
-    //
-    List<ITestResult> resultsToRetry = Lists.newArrayList();
-
-    Throwable ite = testResult.getThrowable();
-    int status =
-        computeTestStatusComparingTestResultAndStatusHolder(testResult, holder, wasResultUnaltered);
-    boolean handled = holder.handled;
-    IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer(testResult);
-
-    boolean willRetry =
-        retryAnalyzer != null
-            && status == ITestResult.FAILURE
-            && failure.instances != null
-            && retryAnalyzer.retry(testResult);
+      boolean willRetry) {
 
     if (willRetry) {
-      resultsToRetry.add(testResult);
       Object instance = testResult.getInstance();
       if (!failure.instances.contains(instance)) {
         failure.instances.add(instance);
@@ -543,15 +527,28 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult.setStatus(ITestResult.SKIP);
       testResult.setWasRetried(true);
     } else {
-      testResult.setStatus(status);
-      if (status == ITestResult.FAILURE && !handled) {
+      testResult.setStatus(holder.status);
+      if (holder.status == ITestResult.FAILURE && !holder.handled) {
         int count = failure.count++;
         if (testMethod.isDataDriven()) {
           count = 0;
         }
-        handleException(ite, testMethod, testResult, count);
+        handleException(testResult.getThrowable(), testMethod, testResult, count);
       }
     }
+  }
+
+  private boolean shouldRetryTestMethod(
+      ITestNGMethod testMethod,
+      ITestResult testResult,
+      FailureContext failure,
+      StatusHolder holder) {
+    IRetryAnalyzer retryAnalyzer = testMethod.getRetryAnalyzer(testResult);
+
+    return retryAnalyzer != null
+        && holder.status == ITestResult.FAILURE
+        && failure.instances != null
+        && retryAnalyzer.retry(testResult);
   }
 
   // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.
@@ -597,7 +594,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       testResult.setMethod(arguments.getTestMethod());
       invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
-      runAfterGroupsConfigurations(arguments, suite, testResult);
+      runAfterConfigurations(arguments, suite, testResult);
+      runAfterGroupsConfigurations(arguments);
 
       return result;
     }
@@ -699,11 +697,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       StatusHolder holder =
           considerExceptions(
               arguments.getTestMethod(), testResult, expectedExceptionClasses, failureContext);
-      int statusBeforeListenerInvocation = testResult.getStatus();
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
-      boolean wasResultUnaltered = statusBeforeListenerInvocation == testResult.getStatus();
-      handleInvocationResults(
-          arguments.getTestMethod(), testResult, failureContext, holder, wasResultUnaltered);
+      updateStatusHolderAccordingToTestResult(testResult, holder);
+      boolean willRetryMethod =
+          shouldRetryTestMethod(arguments.getTestMethod(), testResult, failureContext, holder);
+      handleInvocationResult(
+          arguments.getTestMethod(), testResult, failureContext, holder, willRetryMethod);
 
       // If this method has a data provider and just failed, memorize the number
       // at which it failed.
@@ -730,7 +729,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
       collectResults(arguments.getTestMethod(), testResult);
 
-      runAfterGroupsConfigurations(arguments, suite, testResult);
+      runAfterConfigurations(arguments, suite, testResult);
+      if (!willRetryMethod) {
+        runAfterGroupsConfigurations(arguments);
+      }
 
       // Reset the test result last. If we do this too early, Reporter.log()
       // invocations from listeners will be discarded
@@ -740,13 +742,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return testResult;
   }
 
-  private void runAfterGroupsConfigurations(
+  private void runAfterConfigurations(
       TestMethodArguments arguments, XmlSuite suite, TestResult testResult) {
     ITestNGMethod[] teardownConfigMethods =
         TestNgMethodUtils.filterTeardownConfigurationMethods(
             arguments.getTestMethod(), arguments.getAfterMethods());
     runConfigMethods(arguments, suite, testResult, teardownConfigMethods);
+  }
 
+  private void runAfterGroupsConfigurations(TestMethodArguments arguments) {
     GroupConfigMethodArguments grpArgs =
         new GroupConfigMethodArguments.Builder()
             .forTestMethod(arguments.getTestMethod())
@@ -795,50 +799,51 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private StatusHolder considerExceptions(
       ITestNGMethod tm,
-      ITestResult testresult,
+      ITestResult testResult,
       ExpectedExceptionsHolder exceptionsHolder,
       FailureContext failure) {
     StatusHolder holder = new StatusHolder();
-    holder.status = testresult.getStatus();
+    int status = testResult.getStatus();
     holder.handled = false;
 
-    Throwable ite = testresult.getThrowable();
-    if (holder.status == ITestResult.FAILURE && ite != null) {
+    Throwable ite = testResult.getThrowable();
+    if (status == ITestResult.FAILURE && ite != null) {
 
       //  Invocation caused an exception, see if the method was annotated with @ExpectedException
       if (exceptionsHolder != null) {
         if (exceptionsHolder.isExpectedException(ite)) {
-          testresult.setStatus(ITestResult.SUCCESS);
-          holder.status = ITestResult.SUCCESS;
+          testResult.setStatus(ITestResult.SUCCESS);
+          status = ITestResult.SUCCESS;
         } else {
           if (isSkipExceptionAndSkip(ite)) {
-            holder.status = ITestResult.SKIP;
+            status = ITestResult.SKIP;
           } else {
-            testresult.setThrowable(exceptionsHolder.wrongException(ite));
-            holder.status = ITestResult.FAILURE;
+            testResult.setThrowable(exceptionsHolder.wrongException(ite));
+            status = ITestResult.FAILURE;
           }
         }
       } else {
-        handleException(ite, tm, testresult, failure.count++);
+        handleException(ite, tm, testResult, failure.count++);
         holder.handled = true;
-        holder.status = testresult.getStatus();
+        status = testResult.getStatus();
       }
-    } else if (holder.status != ITestResult.SKIP && exceptionsHolder != null) {
+    } else if (status != ITestResult.SKIP && exceptionsHolder != null) {
       TestException exception = exceptionsHolder.noException(tm);
       if (exception != null) {
-        testresult.setThrowable(exception);
-        holder.status = ITestResult.FAILURE;
+        testResult.setThrowable(exception);
+        status = ITestResult.FAILURE;
       }
     }
+    holder.originalStatus = testResult.getStatus();
+    holder.status = status;
     return holder;
   }
 
-  private static int computeTestStatusComparingTestResultAndStatusHolder(
-      ITestResult testResult, StatusHolder holder, boolean wasResultUnaltered) {
-    if (wasResultUnaltered) {
-      return holder.status;
+  private static void updateStatusHolderAccordingToTestResult(
+      ITestResult testResult, StatusHolder holder) {
+    if (holder.originalStatus != testResult.getStatus()) {
+      holder.status = testResult.getStatus();
     }
-    return testResult.getStatus();
   }
 
   private class MethodInvocationAgent {
