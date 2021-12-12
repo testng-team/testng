@@ -344,12 +344,7 @@ public class TestNG {
   private Collection<XmlSuite> processCommandLineArgs(Collection<XmlSuite> allSuites) {
     Collection<XmlSuite> result = new ArrayList<>();
     for (XmlSuite s : allSuites) {
-      if (this.m_parallelMode != null) {
-        s.setParallel(this.m_parallelMode);
-      }
-      if (this.m_threadCount > 0) {
-        s.setThreadCount(this.m_threadCount);
-      }
+      processParallelModeCommandLineArgs(s);
       if (m_testNames == null) {
         result.add(s);
         continue;
@@ -364,6 +359,18 @@ public class TestNG {
     }
 
     return result;
+  }
+
+  private void processParallelModeCommandLineArgs(XmlSuite suite) {
+    if (this.m_parallelMode != null) {
+      suite.setParallel(this.m_parallelMode);
+    }
+    if (this.m_threadCount > 0) {
+      suite.setThreadCount(this.m_threadCount);
+    }
+    if (suite.getChildSuites() != null) {
+      suite.getChildSuites().forEach(this::processParallelModeCommandLineArgs);
+    }
   }
 
   public void initializeSuitesAndJarFile() {
@@ -1256,9 +1263,8 @@ public class TestNG {
       SuiteRunnerMap suiteRunnerMap,
       XmlSuite xmlSuite) {
     ISuite parentSuiteRunner = suiteRunnerMap.get(xmlSuite);
-    if (xmlSuite.getChildSuites().isEmpty()) {
-      suiteGraph.addNode(parentSuiteRunner);
-    } else {
+    suiteGraph.addNode(parentSuiteRunner);
+    if (!xmlSuite.getChildSuites().isEmpty()) {
       for (XmlSuite childSuite : xmlSuite.getChildSuites()) {
         suiteGraph.addEdge(0, parentSuiteRunner, suiteRunnerMap.get(childSuite));
         populateSuiteGraph(suiteGraph, suiteRunnerMap, childSuite);

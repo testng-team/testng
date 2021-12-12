@@ -50,6 +50,7 @@ tests:
       - test.thread.ThreadPoolSizeTest
       - test.thread.SequentialTest
       - test.thread.ParallelTestTest
+      - test.thread.ParallelSuiteTest
       - test.thread.FactoryTest
       - test.thread.DataProviderThreadPoolSizeTest
       - test.thread.MultiThreadedDependentTest

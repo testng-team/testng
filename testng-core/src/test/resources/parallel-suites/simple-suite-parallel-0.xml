@@ -3,8 +3,8 @@
 <suite name="Suite Parallel 0">
 
   <suite-files>
-    <suite-file path="./suite-parallel-1.xml" />
-    <suite-file path="./suite-parallel-2.xml" />
+    <suite-file path="simple-suite-parallel-1.xml" />
+    <suite-file path="simple-suite-parallel-2.xml" />
   </suite-files>
 
   <test name="Test0">
