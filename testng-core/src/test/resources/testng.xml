@@ -994,4 +994,10 @@
       <class name="org.testng.BasicTest"/>
     </classes>
   </test>
+
+  <test name="GITHUB-2685">
+    <classes>
+      <class name="test.listeners.issue2685.InterruptedInListenerTest"/>
+    </classes>
+  </test>
 </suite>

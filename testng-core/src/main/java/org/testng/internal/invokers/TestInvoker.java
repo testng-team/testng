@@ -689,6 +689,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     } finally {
       // Set end time ASAP
       testResult.setEndMillis(System.currentTimeMillis());
+      cleanInterruptStatus();
       ExpectedExceptionsHolder expectedExceptionClasses =
           new ExpectedExceptionsHolder(
               annotationFinder(),
@@ -740,6 +741,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
 
     return testResult;
+  }
+
+  private static void cleanInterruptStatus() {
+    if (Thread.currentThread().isInterrupted()) {
+      Thread.interrupted();
+    }
   }
 
   private void runAfterConfigurations(
