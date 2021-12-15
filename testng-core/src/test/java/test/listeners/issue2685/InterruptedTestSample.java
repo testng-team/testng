@@ -2,7 +2,7 @@ package test.listeners.issue2685;
 
 import org.testng.annotations.Test;
 
-public class SampleInterruptedTest {
+public class InterruptedTestSample {
 
   @Test(timeOut = 100)
   public void failedTest() {

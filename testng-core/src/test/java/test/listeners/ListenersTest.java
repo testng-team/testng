@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -17,6 +18,8 @@ import test.SimpleBaseTest;
 import test.listeners.issue2638.DummyInvokedMethodListener;
 import test.listeners.issue2638.TestClassASample;
 import test.listeners.issue2638.TestClassBSample;
+import test.listeners.issue2685.InterruptedTestSample;
+import test.listeners.issue2685.SampleTestFailureListener;
 
 public class ListenersTest extends SimpleBaseTest {
 
@@ -39,6 +42,19 @@ public class ListenersTest extends SimpleBaseTest {
     assertThat(DummyInvokedMethodListener.getMethods("Inner_Suite2"))
         .containsExactly(expected.get("Inner_Suite2"));
     DummyInvokedMethodListener.reset();
+  }
+
+  @Test(description = "GITHUB-2685")
+  public void testThreadIsNotInterruptedInListener() {
+    XmlSuite xmlSuite = createXmlSuite("2685_suite");
+    xmlSuite.setParallel(XmlSuite.ParallelMode.CLASSES);
+    createXmlTest(xmlSuite, "2685_test", InterruptedTestSample.class);
+    TestNG testng = create(xmlSuite);
+    SampleTestFailureListener listener = new SampleTestFailureListener();
+    testng.addListener(listener);
+    testng.run();
+
+    Assertions.assertThat(listener.getInterruptedMethods()).isEmpty();
   }
 
   @DataProvider(name = "suiteProvider")
