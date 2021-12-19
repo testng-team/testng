@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-2501: TestNG 7.4.0 throws an exception "sun.net.www.protocol.file.FileURLConnection cannot be cast to java.net.HttpURLConnection" when xml file contain "ENTITY SYSTEM" grammer (Krishnan Mahadevan)
+Fixed: GITHUB-2693: TestNG ignores 'dataproviderthreadcount' CLA (Krishnan Mahadevan)
 Fixed: GITHUB-2685: TestInvoker should clear Thread.interrupted flag before calling ITestListeners (Roman Morskyi)
 Fixed: GITHUB-2684: AfterGroups config annotation does not consider retries for tests (Roman Morskyi)
 Fixed: GITHUB-2689: Yaml parser: implement loadClasses flag (Dzmitry Sankouski)
