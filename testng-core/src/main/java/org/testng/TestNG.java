@@ -1299,6 +1299,10 @@ public class TestNG {
       xmlSuite.setConfigFailurePolicy(m_configFailurePolicy);
     }
 
+    if (null != m_dataProviderThreadCount) {
+      xmlSuite.setDataProviderThreadCount(m_dataProviderThreadCount);
+    }
+
     Set<XmlMethodSelector> selectors = Sets.newHashSet();
     for (XmlTest t : xmlSuite.getTests()) {
       for (Map.Entry<String, Integer> ms : m_methodDescriptors.entrySet()) {
