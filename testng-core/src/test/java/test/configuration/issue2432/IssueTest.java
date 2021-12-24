@@ -34,9 +34,9 @@ public class IssueTest extends SimpleBaseTest {
     List<String> expected =
         Arrays.asList(
             "prepareConfig",
+            "prepareConfigForTest1",
             "uploadConfigToDatabase",
             "verifyConfigurationAfterInstall",
-            "prepareConfigForTest1",
             "test1");
     assertThat(listener.getInvokedMethodNames()).containsExactlyElementsOf(expected);
   }

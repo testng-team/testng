@@ -10,7 +10,6 @@ import java.util.Objects;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.xml.XmlTest;
 
 public class MethodInheritance {
 
@@ -135,18 +134,32 @@ public class MethodInheritance {
                 ITestNGMethod m1 = l.get(i);
                 for (int j = i + 1; j < l.size(); j++) {
                   ITestNGMethod m2 = l.get(j);
-                  boolean groupMode = XmlTest.isGroupBasedExecution(m2.getXmlTest());
-                  if (groupMode) {
-                    // Do not resort to adding implicit depends-on if there are groups
-                    continue;
-                  }
-                  if (!equalsEffectiveClass(m1, m2) && !dependencyExists(m1, m2, methods)) {
+                  boolean notEffectivelyEqual = !equalsEffectiveClass(m1, m2);
+                  boolean upstreamHierarchy = hasUpstreamHierarchy(m1, m2);
+                  boolean shouldConsider =
+                      before ? notEffectivelyEqual && upstreamHierarchy : notEffectivelyEqual;
+                  boolean hasGroupDependencies =
+                      m2.getGroupsDependedUpon().length == 0
+                          && m1.getGroupsDependedUpon().length == 0;
+
+                  if (shouldConsider
+                      && !dependencyExists(m1, m2, methods)
+                      && hasGroupDependencies) {
                     Utils.log("MethodInheritance", 4, m2 + " DEPENDS ON " + m1);
                     m2.addMethodDependedUpon(MethodHelper.calculateMethodCanonicalName(m1));
                   }
                 }
               }
             });
+  }
+
+  private static boolean hasUpstreamHierarchy(ITestNGMethod m1, ITestNGMethod m2) {
+    Class<?> c1 = m1.getRealClass();
+    Class<?> c2 = m2.getRealClass();
+    if (c1.equals(c2)) {
+      return false;
+    }
+    return c1.isAssignableFrom(c2);
   }
 
   private static boolean dependencyExists(
