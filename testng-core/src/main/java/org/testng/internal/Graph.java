@@ -21,7 +21,7 @@ import org.testng.log4testng.Logger;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
-  private static final boolean m_verbose = false;
+  private static final boolean m_verbose = true;
   private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
@@ -154,11 +154,11 @@ public class Graph<T> {
   }
 
   private void dumpSortedNodes() {
-    System.out.println("====== SORTED NODES");
+    log("====== SORTED NODES");
     for (T n : m_strictlySortedNodes) {
-      System.out.println("              " + n);
+      log("              " + n);
     }
-    System.out.println("====== END SORTED NODES");
+    log("====== END SORTED NODES");
   }
 
   /**
