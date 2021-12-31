@@ -1,127 +1,193 @@
 package test.hook;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import org.assertj.core.api.SoftAssertions;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import org.testng.ITestResult;
+import org.testng.Reporter;
+import org.testng.TestNG;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import test.BaseTest;
+import test.SimpleBaseTest;
+import test.hook.samples.ConfigurableFailureSample;
+import test.hook.samples.ConfigurableSuccessSample;
+import test.hook.samples.ConfigurableSuccessWithListenerSample;
+import test.hook.samples.HookFailureSample;
+import test.hook.samples.HookSuccessDynamicParametersSample;
+import test.hook.samples.HookSuccessSample;
+import test.hook.samples.HookSuccessTimeoutSample;
+import test.hook.samples.HookSuccessWithListenerSample;
 
-/**
- * Because IHookable and IConfigurable are global, it's safer to run them in a sub-TestNG object,
- * otherwise they will be run for your entire test suite...
- *
- * @author cbeust
- */
-public class HookableTest extends BaseTest {
+public class HookableTest extends SimpleBaseTest {
 
-  @BeforeMethod
-  public void bm() {
-    HookSuccessTest.m_hook = false;
-    HookSuccessTest.m_testWasRun = false;
-    HookSuccessTest.m_parameter = null;
-    HookSuccess599Test.m_hook = false;
-    HookSuccess599Test.m_testWasRun = false;
-    HookSuccess599Test.m_parameter = null;
-    HookFailureTest.m_hook = false;
-    HookFailureTest.m_testWasRun = false;
-    HookListener.m_hook = false;
-    BaseConfigurable.m_hookCount = 0;
-    BaseConfigurable.m_bc = false;
-    BaseConfigurable.m_bm = false;
-    BaseConfigurable.m_bs = false;
-    BaseConfigurable.m_bt = false;
-    BaseConfigurable.m_methodName = null;
-    ConfigurableListener.m_hookCount = 0;
-    ConfigurableListener.m_methodName = null;
-    ConfigurableSuccessWithListenerTest.m_bc = false;
-    ConfigurableSuccessWithListenerTest.m_bm = false;
+  public static final String HOOK_INVOKED_ATTRIBUTE = "hook";
+  public static final String HOOK_METHOD_INVOKED_ATTRIBUTE = "hookMethod";
+  public static final String HOOK_METHOD_PARAMS_ATTRIBUTE = "hookParamAttribute";
+
+  @Test(dataProvider = "getTestClasses")
+  public void hookSuccess(Class<?> clazz, String flow, boolean assertAttributes) {
+    Reporter.log("Running scenario " + flow, true);
+    TestNG tng = create(clazz);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getPassedMethodNames()).contains("verify");
+    if (!assertAttributes) {
+      return;
+    }
+    SoftAssertions assertions = new SoftAssertions();
+    listener
+        .getPassed()
+        .forEach(
+            each -> {
+              assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+              assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNotNull();
+              Object[] parameters = (Object[]) each.getAttribute(HOOK_METHOD_PARAMS_ATTRIBUTE);
+              assertions.assertThat(parameters).hasSize(1);
+              assertions.assertThat(parameters[0]).isInstanceOf(UUID.class);
+            });
+    assertions.assertAll();
   }
 
-  @Test
-  public void hookSuccess() {
-    addClass(HookSuccessTest.class);
-    run();
-
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
-    Assert.assertTrue(HookSuccessTest.m_hook);
-    Assert.assertTrue(HookSuccessTest.m_testWasRun);
-    Assert.assertEquals(HookSuccessTest.m_parameter, "foo");
-  }
-
-  @Test(description = "https://github.com/cbeust/testng/issues/599")
-  public void issue599() {
-    addClass(HookSuccess599Test.class);
-    run();
-
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
-    Assert.assertTrue(HookSuccess599Test.m_hook);
-    Assert.assertTrue(HookSuccess599Test.m_testWasRun);
-    Assert.assertEquals(HookSuccess599Test.m_parameter, "foo");
-  }
-
-  @Test(description = "https://github.com/cbeust/testng/pull/862")
-  public void issue862() {
-    addClass(HookSuccess862Test.class);
-    run();
-
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
+  @DataProvider(name = "getTestClasses")
+  public Object[][] getTestClasses() {
+    return new Object[][] {
+      {HookSuccessSample.class, "Happy Flow", true},
+      {HookSuccessTimeoutSample.class, "With Timeouts (GITHUB-599)", true},
+      {HookSuccessDynamicParametersSample.class, "With Dynamic Parameters (GITHUB-862)", false}
+    };
   }
 
   @Test
   public void hookSuccessWithListener() {
-    addClass(HookSuccessWithListenerTest.class);
-    run();
-
-    verifyTests("Passed", new String[] {"verify"}, getPassedTests());
-    Assert.assertTrue(HookListener.m_hook);
+    TestNG tng = create(HookSuccessWithListenerSample.class);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getPassedMethodNames()).contains("verify");
+    assertThat(listener.getPassed().get(0).getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
   }
 
   @Test
   public void hookFailure() {
-    addClass(HookFailureTest.class);
-    run();
-
-    // To investigate: TestNG still thinks the test passed since it can't know whether
-    // the hook ended up invoking the test or not.
-    //    verifyTests("Passed", new String[] { }, getPassedTests());
-    Assert.assertTrue(HookFailureTest.m_hook);
-    Assert.assertFalse(HookFailureTest.m_testWasRun);
+    TestNG tng = create(HookFailureSample.class);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getPassedMethodNames()).isNotNull();
+    SoftAssertions assertions = new SoftAssertions();
+    listener
+        .getInvoked()
+        .forEach(
+            each -> {
+              assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+              assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
+            });
+    assertions.assertAll();
   }
 
-  @Test
-  public void configurableSuccess() {
-    addClass(ConfigurableSuccessTest.class);
-    run();
-
-    Assert.assertEquals(BaseConfigurable.m_hookCount, 4);
-    Assert.assertTrue(BaseConfigurable.m_bc);
-    Assert.assertTrue(BaseConfigurable.m_bm);
-    Assert.assertTrue(BaseConfigurable.m_bs);
-    Assert.assertTrue(BaseConfigurable.m_bt);
-    Assert.assertEquals(BaseConfigurable.m_methodName, "hookWasRun");
+  @Test(dataProvider = "getConfigClasses")
+  public void configurableSuccess(Class<?> clazz, String flow) {
+    Reporter.log("Running scenario " + flow, true);
+    TestNG tng = create(clazz);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getPassedConfigs()).hasSize(4);
+    assertThat(listener.getPassedConfigNames()).contains("bs", "bt", "bc", "bm");
+    SoftAssertions assertions = new SoftAssertions();
+    listener
+        .getPassedConfigs()
+        .forEach(
+            each -> {
+              assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+              Object[] parameters = (Object[]) each.getAttribute(HOOK_METHOD_PARAMS_ATTRIBUTE);
+              if (parameters != null && parameters.length != 0) {
+                assertions.assertThat(parameters).hasSize(1);
+                assertions.assertThat(parameters[0]).isInstanceOf(Method.class);
+                String methodName = ((Method) parameters[0]).getName();
+                assertions.assertThat(methodName).isEqualTo("hookWasRun");
+              }
+            });
+    assertions.assertAll();
   }
 
-  @Test
-  public void configurableSuccessWithListener() {
-    addClass(ConfigurableSuccessWithListenerTest.class);
-    run();
-
-    Assert.assertEquals(ConfigurableListener.m_hookCount, 4);
-    Assert.assertTrue(ConfigurableSuccessWithListenerTest.m_bs);
-    Assert.assertTrue(ConfigurableSuccessWithListenerTest.m_bt);
-    Assert.assertTrue(ConfigurableSuccessWithListenerTest.m_bc);
-    Assert.assertTrue(ConfigurableSuccessWithListenerTest.m_bm);
-    Assert.assertEquals(ConfigurableListener.m_methodName, "hookWasRun");
+  @DataProvider(name = "getConfigClasses")
+  public Object[][] getConfigClasses() {
+    return new Object[][] {
+      {ConfigurableSuccessSample.class, "IConfigurable as test class"},
+      {ConfigurableSuccessWithListenerSample.class, "IConfigurable as listener"},
+    };
   }
 
   @Test
   public void configurableFailure() {
-    addClass(ConfigurableFailureTest.class);
-    run();
+    TestNG tng = create(ConfigurableFailureSample.class);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getPassedConfigNames()).containsExactly("bs", "bt", "bc", "bm");
+    assertThat(listener.getPassedConfigs()).hasSize(4);
+    SoftAssertions assertions = new SoftAssertions();
+    listener
+        .getPassedConfigs()
+        .forEach(
+            each -> {
+              assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+              assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
+            });
+    assertions.assertAll();
+  }
 
-    Assert.assertEquals(BaseConfigurable.m_hookCount, 4);
-    Assert.assertFalse(BaseConfigurable.m_bc);
-    Assert.assertFalse(BaseConfigurable.m_bm);
-    Assert.assertFalse(BaseConfigurable.m_bs);
-    Assert.assertFalse(BaseConfigurable.m_bt);
+  public static class TestResultsCollector implements IInvokedMethodListener {
+    private final List<ITestResult> passed = new ArrayList<>();
+    private final List<ITestResult> invoked = new ArrayList<>();
+    private final List<ITestResult> passedConfigs = new ArrayList<>();
+
+    @Override
+    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+      invoked.add(testResult);
+      if (testResult.isSuccess()) {
+        if (method.isTestMethod()) {
+          passed.add(testResult);
+        }
+        if (method.isConfigurationMethod()) {
+          passedConfigs.add(testResult);
+        }
+      }
+    }
+
+    public List<ITestResult> getPassedConfigs() {
+      return passedConfigs;
+    }
+
+    public List<ITestResult> getPassed() {
+      return passed;
+    }
+
+    public List<ITestResult> getInvoked() {
+      return invoked;
+    }
+
+    public List<String> getPassedMethodNames() {
+      return asString(passed);
+    }
+
+    public List<String> getPassedConfigNames() {
+      return asString(passedConfigs);
+    }
+
+    private static List<String> asString(List<ITestResult> list) {
+      return list.stream()
+          .map(each -> each.getMethod().getMethodName())
+          .collect(Collectors.toList());
+    }
   }
 }
