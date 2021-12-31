@@ -1,13 +1,16 @@
-package test.hook;
+package test.hook.samples;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import javax.inject.Named;
-import org.testng.*;
+import org.testng.Assert;
+import org.testng.IHookCallBack;
+import org.testng.IHookable;
+import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class HookSuccess862Test implements IHookable {
+public class HookSuccessDynamicParametersSample implements IHookable {
 
   @Override
   public void run(IHookCallBack callBack, ITestResult testResult) {
