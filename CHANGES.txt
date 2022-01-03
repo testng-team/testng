@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2701: Bump gradle version to 7.3.3 to support java17 build (ZhangJian He)
 Fixed: GITHUB-2646: Streamline Logging Across TestNG (Krishnan Mahadevan)
 Fixed: GITHUB-2658: Inheritance + dependsOnMethods (Krishnan Mahadevan)
 Fixed: GITHUB-2664: Order for DependsOnGroups has changed after TestNg 7.4.0 (Krishnan Mahadevan)
