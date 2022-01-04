@@ -49,6 +49,14 @@ dependencies {
     testImplementation("commons-io:commons-io:_")
 }
 
+tasks.compileTestGroovy {
+    dependsOn(tasks.compileTestKotlin)
+    classpath += files(tasks.compileTestKotlin)
+}
+tasks.compileTestKotlin {
+    classpath = sourceSets.test.get().compileClasspath
+}
+
 tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
     (testFramework.options as TestNGOptions).apply {
