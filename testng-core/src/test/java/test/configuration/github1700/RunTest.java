@@ -1,6 +1,6 @@
 package test.configuration.github1700;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.TestNG;
 import org.testng.annotations.Test;
