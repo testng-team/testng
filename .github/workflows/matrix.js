@@ -8,28 +8,25 @@ matrix.addAxis({
   title: x => x.version + ', ' + x.group,
   values: [
     // Zulu
-    {group: 'Zulu', version: '8', distribution: 'zulu', jit: 'hotspot'},
     {group: 'Zulu', version: '11', distribution: 'zulu', jit: 'hotspot'},
-    {group: 'Zulu', version: '16', distribution: 'zulu', jit: 'hotspot'},
+    {group: 'Zulu', version: '17', distribution: 'zulu', jit: 'hotspot'},
 
     // Adopt
-    {group: 'Adopt Hotspot', version: '8', distribution: 'adopt-hotspot', jit: 'hotspot'},
     {group: 'Adopt Hotspot', version: '11', distribution: 'adopt-hotspot', jit: 'hotspot'},
-    {group: 'Adopt Hotspot', version: '16', distribution: 'adopt-hotspot', jit: 'hotspot'},
+    {group: 'Adopt Hotspot', version: '17', distribution: 'adopt-hotspot', jit: 'hotspot'},
 
     // Adopt OpenJ9
     // TODO: Replace these hard coded versions with something that dynamically picks the most recent
-    {group: 'Adopt OpenJ9', version: '8', distribution: 'adopt-openj9', jit: 'openj9'},
     {group: 'Adopt OpenJ9', version: '11', distribution: 'adopt-openj9', jit: 'openj9'},
-    {group: 'Adopt OpenJ9', version: '16', distribution: 'adopt-openj9', jit: 'openj9'},
+    {group: 'Adopt OpenJ9', version: '17', distribution: 'adopt-openj9', jit: 'openj9'},
 
     // Amazon Corretto
     {
       group: 'Corretto',
-      version: '8',
+      version: '17',
       jit: 'hotspot',
       distribution: 'jdkfile',
-      url: 'https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz'
+      url: 'https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz'
     },
     {
       group: 'Corretto',
@@ -48,32 +45,25 @@ matrix.addAxis({
     },
     {
       group: 'Microsoft',
-      version: '16',
+      version: '17',
       jit: 'hotspot',
       distribution: 'jdkfile',
-      url: 'https://aka.ms/download-jdk/microsoft-jdk-16.0.1.9.1-linux-x64.tar.gz'
+      url: 'https://aka.ms/download-jdk/microsoft-jdk-17.0.1.12.1-linux-x64.tar.gz'
     },
     // Liberica
     {
       group: 'Liberica',
-      version: '8',
+      version: '17',
       jit: 'hotspot',
       distribution: 'jdkfile',
-      url: 'https://download.bell-sw.com/java/8u292+10/bellsoft-jdk8u292+10-linux-amd64.tar.gz'
+      url: 'https://download.bell-sw.com/java/17.0.1+12/bellsoft-jdk17.0.1+12-linux-amd64.tar.gz'
     },
     {
       group: 'Liberica',
       version: '11',
       jit: 'hotspot',
       distribution: 'jdkfile',
-      url: 'https://download.bell-sw.com/java/11.0.11+9/bellsoft-jdk11.0.11+9-linux-amd64.tar.gz'
-    },
-    {
-      group: 'Liberica',
-      version: '16',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://download.bell-sw.com/java/16.0.1+9/bellsoft-jdk16.0.1+9-linux-amd64.tar.gz'
+      url: 'https://download.bell-sw.com/java/11.0.13+8/bellsoft-jdk11.0.13+8-linux-amd64.tar.gz'
     },
   ]
 });
@@ -122,8 +112,8 @@ matrix.generateRow({hash: {value: 'same'}});
 // Ensure at least one windows and at least one linux job is present (macos is almost the same as linux)
 matrix.generateRow({os: 'windows-latest'});
 matrix.generateRow({os: 'ubuntu-latest'});
-// Ensure there will be at least one job with Java 8
-matrix.generateRow({jdk: {version: 8}});
+// Ensure there will be at least one job with Java 17
+matrix.generateRow({jdk: {version: 17}});
 // Ensure there will be at least one job with Java 11
 matrix.generateRow({jdk: {version: 11}});
 const include = matrix.generateRows(process.env.MATRIX_JOBS || 5);
@@ -144,14 +134,12 @@ include.forEach(v => {
     // so it might reveal missing synchronization in TestNG code
     v.name += ', stress JIT';
     jvmArgs.push('-XX:+UnlockDiagnosticVMOptions');
-    if (v.jdk.version >= 8) {
-      // Randomize instruction scheduling in GCM
-      // share/opto/c2_globals.hpp
-      jvmArgs.push('-XX:+StressGCM');
-      // Randomize instruction scheduling in LCM
-      // share/opto/c2_globals.hpp
-      jvmArgs.push('-XX:+StressLCM');
-    }
+    // Randomize instruction scheduling in GCM
+    // share/opto/c2_globals.hpp
+    jvmArgs.push('-XX:+StressGCM');
+    // Randomize instruction scheduling in LCM
+    // share/opto/c2_globals.hpp
+    jvmArgs.push('-XX:+StressLCM');
     if (v.jdk.version >= 16) {
       // Randomize worklist traversal in IGVN
       // share/opto/c2_globals.hpp
