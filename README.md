@@ -7,6 +7,7 @@ Documentation available at [TestNG's main web site](https://testng.org).
 
 ### Release Notes
 
+* [7.5](https://groups.google.com/g/testng-users/c/ESLiK8xSomc)
 * [7.4.0](https://groups.google.com/g/testng-users/c/dwSJ04qeu8k)
 * [7.3.0](https://groups.google.com/forum/#!topic/testng-users/a81uaZvtEZI)
 * [7.1.0](https://groups.google.com/forum/#!topic/testng-users/84bYPJ1rjno)
@@ -23,10 +24,11 @@ If you posted on both sites, please provide the link to the other question to av
 Before posting the issue, try to reproduce the issue in [a shell window](https://testng.org/doc/documentation-main.html#running-testng).
 
 If the problem does not exist with the shell, first check if the issue exists on the bugtracker of the runner, and open an issue there first:
-* Eclipse: https://github.com/cbeust/testng-eclipse/issues
-* IntelliJ: [https://youtrack.jetbrains.com/issues](https://youtrack.jetbrains.com/issues?q=Subsystem:%20%7BJava.%20Tests.%20TestNG%7D)
-* Maven: https://issues.apache.org/jira/browse/SUREFIRE
-* Gradle: https://issues.gradle.org/projects/GRADLE
+
+* Eclipse	:[Issues Page](https://github.com/cbeust/testng-eclipse/issues)
+* IntelliJ:[Issues Page](https://youtrack.jetbrains.com/issues?q=Subsystem:%20%7BJava.%20Tests.%20TestNG%7D)
+* Maven	:[Issues Page](https://issues.apache.org/jira/browse/SUREFIRE)
+* Gradle	:[Issues Page](https://issues.gradle.org/projects/GRADLE)
 
 ### Which version are you using?
 Always make sure your issue is happening on the latest TestNG version. Bug reports occurring on older versions will not be looked at quickly.
