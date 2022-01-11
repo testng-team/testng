@@ -66,47 +66,49 @@ class JarFileUtils {
   }
 
   private boolean testngXmlExistsInJar(File jarFile, List<String> classes) throws IOException {
-    try (JarFile jf = new JarFile(jarFile)) {
-      Enumeration<JarEntry> entries = jf.entries();
-      File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
-      String suitePath = null;
-      while (entries.hasMoreElements()) {
-        JarEntry je = entries.nextElement();
-        String jeName = je.getName();
-        if (Parser.canParse(jeName.toLowerCase())) {
-          InputStream inputStream = jf.getInputStream(je);
-          File copyFile = new File(file, jeName);
-          Files.copyFile(inputStream, copyFile);
-          if (matchesXmlPathInJar(je)) {
-            suitePath = copyFile.toString();
+      boolean foundTestngXml = false;
+      try (JarFile jf = new JarFile(jarFile)) {
+          Enumeration<JarEntry> entries = jf.entries();
+          File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
+          file.deleteOnExit();
+          String suitePath = null;
+          while (entries.hasMoreElements()) {
+              JarEntry je = entries.nextElement();
+              String jeName = je.getName();
+              if (Parser.canParse(jeName.toLowerCase())){ 
+                  InputStream  inputStream = jf.getInputStream(je);
+                  File copyFile = new File(file, jeName);
+                  Files.copyFile(inputStream, copyFile);
+                  if (matchesXmlPathInJar(je)) {
+                      suitePath = copyFile.toString();
+                  }
+              } else if (isJavaClass(je)) {
+                  classes.add(constructClassName(je));
+              }
           }
-        } else if (isJavaClass(je)) {
-          classes.add(constructClassName(je));
-        }
-      }
-      if (Strings.isNullOrEmpty(suitePath)) {
-        return false;
-      }
-      Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor);
-      delete(file);
-      for (XmlSuite suite : parsedSuites) {
-        // If test names were specified, only run these test names
-        if (testNames != null) {
-          TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
-          List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
-          if (!missMatchedTestname.isEmpty()) {
-            throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
+          if (Strings.isNullOrEmpty(suitePath)) {
+              return foundTestngXml;
           }
-          suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
-        } else {
-          suites.add(suite);
-        }
-        return true;
+          Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor);
+          delete(file);
+          for (XmlSuite suite : parsedSuites) {
+              // If test names were specified, only run these test names
+              if (testNames != null) {
+                TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
+                List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
+                if (!missMatchedTestname.isEmpty()) {
+                  throw new TestNGException("The test(s) <" + missMatchedTestname+ "> cannot be found.");
+                }
+                suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
+              } else {
+                suites.add(suite);
+              }
+              return true;
+            }
       }
-    }
-    return false;
+      return foundTestngXml;
   }
-
+  
   private void delete(File f) throws IOException {
     if (f.isDirectory()) {
       for (File c : Objects.requireNonNull(f.listFiles())) delete(c);
