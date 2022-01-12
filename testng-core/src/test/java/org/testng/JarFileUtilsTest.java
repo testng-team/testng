@@ -55,7 +55,7 @@ public class JarFileUtilsTest {
   @Test(
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
-          "\nThe test\\(s\\) <\\[testng-tests-child11\\]> cannot be found.")
+          "\nThe test\\(s\\) <\\[testng-tests-child11\\]> cannot be found in suite.")
   public void testWithInvalidTestNames() throws MalformedURLException {
     JarFileUtils utils = newJarFileUtils(Collections.singletonList("testng-tests-child11"));
     runTest(
@@ -80,6 +80,23 @@ public class JarFileUtilsTest {
           "org.testng.jarfileutils.org.testng.SampleTest3"
         },
         "Jar suite");
+  }
+
+  /**
+   * Test to ensure that exception is not thrown. Ensure that GITHUB-2709 can not happen again.
+   *
+   * @throws MalformedURLException
+   */
+  @Test
+  public void ensureThatExceptionAreNotThrown() throws MalformedURLException {
+    TestNG testNg = new TestNG(false);
+    List<String> testNames =
+        Arrays.asList("testng-tests-child2", "testng-tests-child4", "testng-tests-child5", "dummy");
+    testNg.setTestNames(testNames);
+    testNg.setXmlPathInJar(jar.getAbsolutePath());
+    testNg.setTestJar(jar.getAbsolutePath());
+    testNg.initializeSuitesAndJarFile();
+    Assert.assertEquals(testNg.m_suites.size(), 1);
   }
 
   @Test
