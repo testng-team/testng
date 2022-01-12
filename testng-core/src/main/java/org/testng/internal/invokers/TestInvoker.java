@@ -40,6 +40,7 @@ import org.testng.SuiteRunState;
 import org.testng.SuiteRunner;
 import org.testng.TestException;
 import org.testng.TestNGException;
+import org.testng.TestNotInvokedException;
 import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -660,28 +661,40 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
               ? (IHookable) arguments.getInstance()
               : m_configuration.getHookable();
 
+      boolean willfullyIgnored = false;
+      boolean usesHookableInstance = hookableInstance != null;
       if (MethodHelper.calculateTimeOut(arguments.getTestMethod()) <= 0) {
-        if (hookableInstance != null) {
-          MethodInvocationHelper.invokeHookable(
-              arguments.getInstance(),
-              arguments.getParameterValues(),
-              hookableInstance,
-              thisMethod,
-              testResult);
+        if (usesHookableInstance) {
+          willfullyIgnored =
+              !MethodInvocationHelper.invokeHookable(
+                  arguments.getInstance(),
+                  arguments.getParameterValues(),
+                  hookableInstance,
+                  thisMethod,
+                  testResult);
         } else {
           // Not a IHookable, invoke directly
           MethodInvocationHelper.invokeMethod(
               thisMethod, arguments.getInstance(), arguments.getParameterValues());
         }
-        setTestStatus(testResult, ITestResult.SUCCESS);
+        if (!willfullyIgnored) {
+          setTestStatus(testResult, ITestResult.SUCCESS);
+        }
       } else {
         // Method with a timeout
-        MethodInvocationHelper.invokeWithTimeout(
-            arguments.getTestMethod(),
-            arguments.getInstance(),
-            arguments.getParameterValues(),
-            testResult,
-            hookableInstance);
+        willfullyIgnored =
+            !MethodInvocationHelper.invokeWithTimeout(
+                arguments.getTestMethod(),
+                arguments.getInstance(),
+                arguments.getParameterValues(),
+                testResult,
+                hookableInstance);
+      }
+      boolean testStatusRemainedUnchanged = testResult.isNotRunning();
+      if (usesHookableInstance && willfullyIgnored && testStatusRemainedUnchanged) {
+        TestNotInvokedException tn = new TestNotInvokedException(arguments.tm);
+        testResult.setThrowable(tn);
+        setTestStatus(testResult, ITestResult.FAILURE);
       }
     } catch (InvocationTargetException ite) {
       testResult.setThrowable(ite.getCause());

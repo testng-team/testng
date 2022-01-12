@@ -1,5 +1,6 @@
 package org.testng;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.testng.internal.thread.ThreadTimeoutException;
@@ -113,6 +114,27 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    *     specific test method's result.
    */
   String id();
+
+  /**
+   * @return - <code>true</code> if the current test result is either {@link ITestResult#STARTED} or
+   *     {@link ITestResult#CREATED}
+   */
+  default boolean isNotRunning() {
+    return getStatus() == STARTED || getStatus() == CREATED;
+  }
+
+  /**
+   * @return - A list of all user facing statuses viz.,
+   *     <ul>
+   *       <li>{@link ITestResult#SUCCESS}
+   *       <li>{@link ITestResult#SUCCESS_PERCENTAGE_FAILURE}
+   *       <li>{@link ITestResult#FAILURE}
+   *       <li>{@link ITestResult#SKIP}
+   *     </ul>
+   */
+  static List<String> finalStatuses() {
+    return Arrays.asList("SUCCESS", "FAILURE", "SKIP", "SUCCESS_PERCENTAGE_FAILURE");
+  }
 
   /**
    * @param result - The test result of a method
