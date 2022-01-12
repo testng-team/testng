@@ -484,11 +484,8 @@ public class MethodHelper {
       String thisMethodName = thisMethod.getName();
       String methodName = usePackage ? calculateMethodCanonicalName(method) : thisMethodName;
       Pair<String, String> cacheKey = Pair.create(regexp, methodName);
-      Boolean match = MATCH_CACHE.get(cacheKey);
-      if (match == null) {
-        match = pattern.matcher(methodName).matches();
-        MATCH_CACHE.put(cacheKey, match);
-      }
+      boolean match =
+          MATCH_CACHE.computeIfAbsent(cacheKey, key -> pattern.matcher(methodName).matches());
       if (match) {
         results.matchedMethods.add(method);
         results.foundAtLeastAMethod = true;
