@@ -10,7 +10,7 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.issue1456.TestClassSample;
+import org.testng.internal.samples.classhelper.issue1456.TestClassSample;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
