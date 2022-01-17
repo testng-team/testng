@@ -93,10 +93,7 @@ class JarFileUtils {
         // If test names were specified, only run these test names
         if (testNames != null) {
           TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
-          List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
-          if (!missMatchedTestname.isEmpty()) {
-            throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
-          }
+          testNamesMatcher.validateMissMatchedTestNames();
           suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
         } else {
           suites.add(suite);

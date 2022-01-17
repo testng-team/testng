@@ -43,11 +43,13 @@ public final class TestNamesMatcher {
     return cloneSuites;
   }
 
-  public List<String> getMissMatchedTestNames() {
+  public void validateMissMatchedTestNames() {
     List<String> tmpTestNames = Lists.newArrayList();
     tmpTestNames.addAll(testNames);
     tmpTestNames.removeIf(matchedTestNames::contains);
-    return tmpTestNames;
+    if (!tmpTestNames.isEmpty()) {
+      throw new TestNGException("The test(s) <" + tmpTestNames + "> cannot be found in suite.");
+    }
   }
 
   public List<XmlTest> getMatchedTests() {

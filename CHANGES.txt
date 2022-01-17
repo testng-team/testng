@@ -1,5 +1,6 @@
 Current
 7.6.0
+Fixed: GITHUB-2709: Testnames not working together with suites in suite (Martin Aldrin)
 Fixed: GITHUB-2637: Upgrade to JDK11 as the minimum JDK requirements(Krishnan Mahadevan)
 
 7.5
