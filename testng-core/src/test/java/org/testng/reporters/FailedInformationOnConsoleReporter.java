@@ -9,7 +9,6 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.internal.Utils;
-import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 
 public class FailedInformationOnConsoleReporter implements IReporter {
@@ -35,30 +34,30 @@ public class FailedInformationOnConsoleReporter implements IReporter {
     }
 
     if (hasFailedConfigs) {
-      System.err.println(Strings.repeat("=", 100));
+      System.err.println("=".repeat(100));
       System.err.println(
           "::::::Failed Configurations for Suite ::: ["
               + name
               + "] ::: Test name ["
               + ctx.getName()
               + "]::::::");
-      System.err.println(Strings.repeat("=", 100));
+      System.err.println("=".repeat(100));
       failedConfigs.getAllResults().forEach(FailedInformationOnConsoleReporter::generateReport);
-      System.err.println(Strings.repeat("=", 100));
+      System.err.println("=".repeat(100));
       System.err.println("\n\n");
     }
 
     if (hasFailedTests) {
-      System.err.println(Strings.repeat("=", 100));
+      System.err.println("=".repeat(100));
       System.err.println(
           "::::::Failed Tests for Suite ::: ["
               + name
               + "] ::: Test name ["
               + ctx.getName()
               + "]::::::");
-      System.err.println(Strings.repeat("=", 100));
+      System.err.println("=".repeat(100));
       failedTests.getAllResults().forEach(FailedInformationOnConsoleReporter::generateReport);
-      System.err.println(Strings.repeat("=", 100));
+      System.err.println("=".repeat(100));
       System.err.println("\n\n");
     }
   }
@@ -76,6 +75,6 @@ public class FailedInformationOnConsoleReporter implements IReporter {
     builder.append("\nException:\n");
     builder.append(Utils.shortStackTrace(throwable, false));
     builder.append("\n\n");
-    System.err.println(builder.toString());
+    System.err.println(builder);
   }
 }

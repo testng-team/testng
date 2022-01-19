@@ -5,20 +5,22 @@ import org.testng.annotations.Test
 
 class StringsTest {
     @Test
-    fun joinEmptyArray() {
-        val emptyArray = arrayOf<String>()
-        assertThat(Strings.join(",", emptyArray)).isEmpty()
+    fun testValueOf() {
+        val input = mapOf(
+            Pair("skill", "Kung-Fu"),
+            Pair("expertise-level", "Master"),
+            Pair("name", "Po")
+        )
+        val expected = "Kung-Fu Master Po"
+        val actual = Strings.valueOf(input)
+        assertThat(actual).isEqualTo(expected)
     }
 
     @Test
-    fun joinArrayWithOneElement() {
-        val array = arrayOf("one")
-        assertThat(Strings.join(",", array)).isEqualTo("one")
-    }
-
-    @Test
-    fun joinArrayWithTwoElements() {
-        val array = arrayOf("one", "two")
-        assertThat(Strings.join(",", array)).isEqualTo("one,two")
+    fun testEscapeHtml() {
+        val input = "&<>"
+        val expected = "&amp;&lt;&gt;"
+        val actual = Strings.escapeHtml(input)
+        assertThat(actual).isEqualTo(expected)
     }
 }
