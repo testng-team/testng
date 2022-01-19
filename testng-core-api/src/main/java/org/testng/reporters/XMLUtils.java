@@ -3,9 +3,9 @@ package org.testng.reporters;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import javax.annotation.Nullable;
-import org.testng.util.Strings;
 
 /**
  * Static helpers for XML.
@@ -121,7 +121,7 @@ public final class XMLUtils {
         .append("</")
         .append(tag)
         .append(">")
-        .append(Strings.getValueOrEmpty(comment))
+        .append(Optional.ofNullable(comment).orElse(""))
         .append(EOL);
   }
 

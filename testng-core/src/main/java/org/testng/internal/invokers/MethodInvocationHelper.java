@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -18,6 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -309,6 +311,12 @@ public class MethodInvocationHelper {
       ITestResult testResult,
       IHookable hookable) {
 
+    Consumer<Throwable> failureMarker =
+        t -> {
+          testResult.setThrowable(t);
+          testResult.setStatus(ITestResult.FAILURE);
+        };
+
     InvokeMethodRunnable imr =
         new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
     long startTime = System.currentTimeMillis();
@@ -339,29 +347,27 @@ public class MethodInvocationHelper {
       if (notTimedout) {
         testResult.setStatus(ITestResult.SUCCESS);
       } else {
-        testResult.setThrowable(new ThreadTimeoutException(tm, realTimeOut));
-        testResult.setStatus(ITestResult.FAILURE);
+        failureMarker.accept(new ThreadTimeoutException(tm, realTimeOut));
       }
       return wasInvoked;
+    } catch (TestNotInvokedException e) {
+      failureMarker.accept(e.getCause());
+      return wasInvoked;
     } catch (Exception ex) {
-      if (notTimedout && !interruptByMonitor.get()) {
-        Throwable e = ex.getCause();
+      Throwable e = ex.getCause();
+      boolean wasTimedOut = !(notTimedout && !interruptByMonitor.get());
+      if (wasTimedOut) {
+        e = new ThreadTimeoutException(tm, realTimeOut);
+      } else {
         if (e instanceof TestNGRuntimeException) {
           e = e.getCause();
         }
-        testResult.setThrowable(e);
-      } else {
-        if (!(ex instanceof TestNotInvokedException)) {
-          testResult.setThrowable(new ThreadTimeoutException(tm, realTimeOut));
-        }
       }
-      testResult.setStatus(ITestResult.FAILURE);
+      failureMarker.accept(e);
       return wasInvoked;
     } finally {
       finished.set(true);
-      if (monitorThread != null && monitorThread.isAlive()) {
-        monitorThread.interrupt();
-      }
+      Optional.ofNullable(monitorThread).filter(Thread::isAlive).ifPresent(Thread::interrupt);
     }
   }
 

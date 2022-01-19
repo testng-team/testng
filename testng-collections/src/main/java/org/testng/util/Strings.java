@@ -1,6 +1,8 @@
 package org.testng.util;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.testng.collections.Maps;
 
 public final class Strings {
@@ -13,29 +15,29 @@ public final class Strings {
   // because now this method is present in JDK11 as part of the JDK itself.
   // See
   // https://hg.openjdk.java.net/jdk/jdk/file/fc16b5f193c7/src/java.base/share/classes/java/lang/String.java#l2984
+  /** @deprecated - This method stands deprecated as of TestNG <code>7.6.0</code> */
+  @Deprecated
   public static String repeat(String text, int count) {
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < count; i++) {
-      builder.append(text);
-    }
-    return builder.toString();
+    return text.repeat(count);
   }
 
   public static boolean isNullOrEmpty(String string) {
-    return string == null || string.trim().isEmpty();
+    return Optional.ofNullable(string).orElse("").trim().isEmpty();
   }
 
   public static boolean isNotNullAndNotEmpty(String string) {
-    return !(isNullOrEmpty(string));
+    return !isNullOrEmpty(string);
   }
 
   /**
    * @param string - The input String.
    * @return - Returns an empty string if the input String is <code>null</code> (or) empty, else it
    *     returns back the input string.
+   * @deprecated - This method stands deprecated as of TestNG <code>7.6.0</code>
    */
+  @Deprecated
   public static String getValueOrEmpty(String string) {
-    return isNotNullAndNotEmpty(string) ? string : "";
+    return Optional.ofNullable(string).orElse("");
   }
 
   private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();
@@ -55,22 +57,12 @@ public final class Strings {
   }
 
   public static String valueOf(Map<?, ?> m) {
-    StringBuilder result = new StringBuilder();
-    for (Object o : m.values()) {
-      result.append(o).append(" ");
-    }
-
-    return result.toString();
+    return m.values().stream().map(Object::toString).collect(Collectors.joining(" "));
   }
 
+  /** @deprecated - This is deprecated of TestNG <code>7.6.0</code> */
+  @Deprecated
   public static String join(String delimiter, String[] parts) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < parts.length - 1; i++) {
-      sb.append(parts[i]).append(delimiter);
-    }
-    if (parts.length > 0) {
-      sb.append(parts[parts.length - 1]);
-    }
-    return sb.toString();
+    return String.join(delimiter, parts);
   }
 }
