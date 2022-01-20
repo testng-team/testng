@@ -20,8 +20,6 @@ import org.testng.xml.XmlSuite
 import org.testng.xml.XmlTest
 import kotlin.reflect.KClass
 
-typealias TestData = Array<Array<Any>>
-
 class ClassHelperTest {
 
     private val defaultMethods = listOf("announcer", "announcer", "inheritable", "inheritable")
@@ -44,7 +42,7 @@ class ClassHelperTest {
     }
 
     @DataProvider(name = "testDataProvider")
-    fun testDataProvider(): TestData {
+    fun testDataProvider(): test.TestData {
         return arrayOf(
             arrayOf("FindClassInSameTest", TestClassSample::class, 1, TestClassSample::class),
             arrayOf(
@@ -73,7 +71,7 @@ class ClassHelperTest {
     }
 
     @DataProvider(name = "scenariosData")
-    fun scenariosData(): TestData {
+    fun scenariosData(): test.TestData {
         return arrayOf(
             arrayOf("AllAvailableMethods", defaultMethods, LittlePandaSample::class),
             arrayOf(
@@ -111,7 +109,7 @@ class ClassHelperTest {
     }
 
     @DataProvider(name = "data")
-    fun getTestData(): TestData {
+    fun getTestData(): test.TestData {
         return arrayOf(
             arrayOf(MickJaggerSample::class, 1, MickJaggerSample::class.java.name + ".dance"),
             arrayOf(

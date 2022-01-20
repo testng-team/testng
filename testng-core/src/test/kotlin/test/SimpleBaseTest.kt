@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
+public typealias TestData = Array<Array<Any>>
+
 open class SimpleBaseTest {
 
     companion object {
