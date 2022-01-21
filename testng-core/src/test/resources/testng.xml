@@ -133,8 +133,7 @@
       <class name="test.failedreporter.FailedReporterTest" />
       <class name="test.failedreporter.issue2517.DataProviderWithFactoryFailedReporterTest" />
       <class name="test.failedreporter.issue2521.DataProviderWithFactoryMultiFailedReporterTest" />
-      <class name="test.attributes.AttributeTest"/>
-      <class name="test.attributes.issue2346.IssueTest"/>
+      <class name="test.attributes.AttributesTest"/>
       <class name="test.verify.VerifyTest"/>
       <class name="test.abstractconfmethod.C" />
       <class name="test.preserveorder.PreserveOrderTest" />
@@ -956,12 +955,6 @@
   <test name="Default method tests">
     <classes>
       <class name="test.defaultmethods.DefaultMethodTest"/>
-    </classes>
-  </test>
-
-  <test name="Custom attributes tests">
-    <classes>
-      <class name="test.custom.CustomAttributeTest"/>
     </classes>
   </test>
 

@@ -65,7 +65,7 @@ tests:
       - test.regression.BeforeTestFailingTest
       - test.testng285.TestNG285Test
       - test.failedreporter.FailedReporterTest
-      - test.attributes.AttributeTest
+      - test.attributes.AttributesTest
       - test.verify.VerifyTest
       - test.abstractconfmethod.C
       - test.issue78.NonPublicClassTest
