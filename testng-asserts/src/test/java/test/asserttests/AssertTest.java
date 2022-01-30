@@ -301,6 +301,24 @@ public class AssertTest {
     assertEqualsNoOrder(collection1, collection2);
   }
 
+  @Test(expectedExceptions = AssertionError.class)
+  public void checkCollectionEqualsNoOrderCollection1SizeGreater() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c", "d"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEqualsNoOrder(collection1, collection2);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void checkCollectionEqualsNoOrderCollection2SizeGreater() {
+
+    Collection<String> collection1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Collection<String> collection2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b", "d"));
+
+    assertEqualsNoOrder(collection1, collection2);
+  }
+
   @Test(description = "GITHUB-2540")
   public void checkCollectionEquals() {
 
@@ -346,6 +364,24 @@ public class AssertTest {
     assertEqualsNoOrder(iterator1, iterator2);
   }
 
+  @Test(expectedExceptions = AssertionError.class)
+  public void checkIteratorEqualsNoOrderIterator1SizeGreater() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c", "d"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b"))).iterator();
+
+    assertEqualsNoOrder(iterator1, iterator2);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void checkIteratorEqualsNoOrderIterator2SizeGreater() {
+
+    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
+    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b", "d"))).iterator();
+
+    assertEqualsNoOrder(iterator1, iterator2);
+  }
+
   @Test(description = "GITHUB-2540")
   public void checkIteratorEquals() {
 
@@ -387,6 +423,24 @@ public class AssertTest {
 
     Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
     Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEqualsNoOrder(set1, set2);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void checkSetEqualsNoOrderSet1SizeGreater() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c", "d"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b"));
+
+    assertEqualsNoOrder(set1, set2);
+  }
+
+  @Test(expectedExceptions = AssertionError.class)
+  public void checkSetEqualsNoOrderSet2SizeGreater() {
+
+    Set<String> set1 = new LinkedHashSet<>(Arrays.asList("a", "b", "c"));
+    Set<String> set2 = new LinkedHashSet<>(Arrays.asList("a", "c", "b", "d"));
 
     assertEqualsNoOrder(set1, set2);
   }
