@@ -1669,8 +1669,22 @@ public class Assert {
     }
   }
 
+  /**
+   * Asserts that two collection contain the same elements in no particular order. If they do not,
+   * an {@code AssertionError}, with the given message, is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
   public static void assertEqualsNoOrder(
       Collection<?> actual, Collection<?> expected, String message) {
+    if (actual.size() != expected.size()) {
+      failAssertNoEqual(
+          "Collections do not have the same size: " + actual.size() + " != " + expected.size(),
+          message);
+    }
+
     List<?> actualCollection = Lists.newArrayList(actual);
     actualCollection.removeAll(expected);
     if (!actualCollection.isEmpty()) {
@@ -1679,9 +1693,28 @@ public class Assert {
     }
   }
 
+  /**
+   * Asserts that two iterators contain the same elements in no particular order. If they do not, an
+   * {@code AssertionError}, with the given message, is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
   public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected, String message) {
     List<?> actualCollection = Lists.newArrayList(actual);
-    actualCollection.removeAll(Lists.newArrayList(expected));
+    List<?> expectedCollection = Lists.newArrayList(expected);
+
+    if (actualCollection.size() != expectedCollection.size()) {
+      failAssertNoEqual(
+          "Iterators do not have the same size: "
+              + +actualCollection.size()
+              + " != "
+              + expectedCollection.size(),
+          message);
+    }
+
+    actualCollection.removeAll(expectedCollection);
     if (!actualCollection.isEmpty()) {
       failAssertNoEqual(
           "Iterators not equal: expected: "
@@ -1734,10 +1767,24 @@ public class Assert {
     assertEqualsNoOrder(actual, expected, null);
   }
 
+  /**
+   * Asserts that two collection contain the same elements in no particular order. If they do not,
+   * an {@code AssertionError} is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
   public static void assertEqualsNoOrder(Collection<?> actual, Collection<?> expected) {
     assertEqualsNoOrder(actual, expected, null);
   }
 
+  /**
+   * Asserts that two iterators contain the same elements in no particular order. If they do not, an
+   * {@code AssertionError} is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
   public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected) {
     assertEqualsNoOrder(actual, expected, null);
   }
