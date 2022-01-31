@@ -367,7 +367,8 @@ public class AssertTest {
   @Test(expectedExceptions = AssertionError.class)
   public void checkIteratorEqualsNoOrderIterator1SizeGreater() {
 
-    Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c", "d"))).iterator();
+    Iterator<String> iterator1 =
+        (new LinkedHashSet<>(Arrays.asList("a", "b", "c", "d"))).iterator();
     Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b"))).iterator();
 
     assertEqualsNoOrder(iterator1, iterator2);
@@ -377,7 +378,8 @@ public class AssertTest {
   public void checkIteratorEqualsNoOrderIterator2SizeGreater() {
 
     Iterator<String> iterator1 = (new LinkedHashSet<>(Arrays.asList("a", "b", "c"))).iterator();
-    Iterator<String> iterator2 = (new LinkedHashSet<>(Arrays.asList("a", "c", "b", "d"))).iterator();
+    Iterator<String> iterator2 =
+        (new LinkedHashSet<>(Arrays.asList("a", "c", "b", "d"))).iterator();
 
     assertEqualsNoOrder(iterator1, iterator2);
   }
