@@ -56,6 +56,6 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
 
   @Test
   public void shouldSkip() {
-    runTest(ConfigurationListenerSkipSampleTest.class, 1 + 5 + 7); // fail + skip
+    runTest(ConfigurationListenerSkipSampleTest.class, 1 + 1 + 5 + 7); // fail + skip
   }
 }
