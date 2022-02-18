@@ -277,6 +277,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
+          runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setEndMillis(testResult.getStartMillis());
           testResult.setStatus(ITestResult.SKIP);

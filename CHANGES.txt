@@ -1,5 +1,6 @@
 Current
 7.6.0
+Fixed: GITHUB-2729: beforeConfiguration() listener method should be invoked for skipped configurations as well(Nan Liang)
 Fixed: assertEqualsNoOrder for Collection and Iterators size check was missing (Adam Kaczmarek)
 Fixed: GITHUB-2709: Testnames not working together with suites in suite (Martin Aldrin)
 Fixed: GITHUB-2704: IHookable and IConfigurable callback discrepancy (Krishnan Mahadevan)
