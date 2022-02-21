@@ -495,6 +495,15 @@ public class Parameters {
     if (dp != null) {
       String dataProviderName = dp.getDataProvider();
       Class<?> dataProviderClass = dp.getDataProviderClass();
+      boolean isDynamicDataProvider =
+          dataProviderClass == null && !dp.getDataProviderDynamicClass().isEmpty();
+      if (isDynamicDataProvider) {
+        try {
+          dataProviderClass = new DataProviderLoader().loadClazz(dp.getDataProviderDynamicClass());
+        } catch (ClassNotFoundException e) {
+          throw new TestNGException("Dynamic data provider class %s not found", e);
+        }
+      }
 
       if (!Utils.isStringEmpty(dataProviderName)) {
         result =
@@ -505,6 +514,7 @@ public class Parameters {
                 finder,
                 dataProviderName,
                 dataProviderClass,
+                isDynamicDataProvider,
                 context);
 
         if (null == result) {
@@ -566,12 +576,20 @@ public class Parameters {
     if (isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel)) {
       methodLevel.setDataProviderClass(classLevel.getDataProviderClass());
     }
+    if (isDynamicDataProviderClassEmpty(methodLevel)
+        && !isDynamicDataProviderClassEmpty(classLevel)) {
+      methodLevel.setDataProviderDynamicClass(classLevel.getDataProviderDynamicClass());
+    }
     return methodLevel;
   }
 
   private static boolean isDataProviderClassEmpty(ITestAnnotation annotation) {
     return annotation.getDataProviderClass() == null
         || Object.class.equals(annotation.getDataProviderClass());
+  }
+
+  private static boolean isDynamicDataProviderClassEmpty(ITestAnnotation annotation) {
+    return annotation.getDataProviderDynamicClass().isEmpty();
   }
 
   private static boolean isDataProviderNameEmpty(ITestAnnotation annotation) {
@@ -586,6 +604,7 @@ public class Parameters {
       IAnnotationFinder finder,
       String name,
       Class<?> dataProviderClass,
+      boolean isDynamicDataProvider,
       ITestContext context) {
     IDataProviderMethod result = null;
 
@@ -620,7 +639,12 @@ public class Parameters {
         if (result != null) {
           throw new TestNGException("Found two providers called '" + name + "' on " + cls);
         }
-        result = new DataProviderMethod(instanceToUse, m, dp);
+
+        if (isDynamicDataProvider) {
+          result = new DataProviderMethodRemovable(instanceToUse, m, dp);
+        } else {
+          result = new DataProviderMethod(instanceToUse, m, dp);
+        }
       }
     }
 
@@ -837,6 +861,14 @@ public class Parameters {
         filteredParameters =
             interceptor.intercept(
                 filteredParameters, dataProviderMethod, testMethod, methodParams.context);
+      }
+
+      if (dataProviderMethod instanceof DataProviderMethodRemovable) {
+        ((DataProviderMethodRemovable) dataProviderMethod).setMethod(null);
+        ((DataProviderMethodRemovable) dataProviderMethod).setInstance(null);
+        if (testMethod instanceof TestNGMethod) {
+          ((TestNGMethod) testMethod).setDataProviderMethod(null);
+        }
       }
 
       return new ParameterHolder(

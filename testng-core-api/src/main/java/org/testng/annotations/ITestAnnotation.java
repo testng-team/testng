@@ -72,6 +72,10 @@ public interface ITestAnnotation extends ITestOrConfiguration, IDataProvidable {
 
   void setDataProviderClass(Class<?> v);
 
+  String getDataProviderDynamicClass();
+
+  void setDataProviderDynamicClass(String v);
+
   void setRetryAnalyzer(Class<? extends IRetryAnalyzer> c);
 
   Class<? extends IRetryAnalyzer> getRetryAnalyzerClass();

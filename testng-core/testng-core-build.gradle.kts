@@ -46,6 +46,9 @@ dependencies {
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-api:_")
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-impl-base:_")
     testImplementation("org.xmlunit:xmlunit-assertj:_")
+    testImplementation("in.jlibs:jlibs-core:_")
+    testImplementation("org.gridkit.jvmtool:heaplib:_")
+    testImplementation("org.gridkit.lab:jvm-attach-api:_")
     testImplementation("commons-io:commons-io:_")
 }
 

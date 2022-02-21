@@ -484,6 +484,7 @@ public class JDK15TagFactory {
     result.setDataProviderClass(
         findInherited(
             test.dataProviderClass(), cls, Test.class, "dataProviderClass", DEFAULT_CLASS));
+    result.setDataProviderDynamicClass(test.dataProviderDynamicClass());
     result.setAlwaysRun(test.alwaysRun());
     result.setDescription(
         findInherited(test.description(), cls, Test.class, "description", DEFAULT_STRING));

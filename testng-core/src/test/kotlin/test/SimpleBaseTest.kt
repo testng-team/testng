@@ -1,5 +1,6 @@
 package test
 
+import com.sun.management.HotSpotDiagnosticMXBean
 import org.assertj.core.api.Assertions.assertThat
 import org.testng.*
 import org.testng.annotations.ITestAnnotation
@@ -10,6 +11,7 @@ import org.testng.internal.annotations.JDK15AnnotationFinder
 import org.testng.xml.*
 import org.testng.xml.internal.Parser
 import java.io.*
+import java.lang.management.ManagementFactory
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.Path
@@ -28,7 +30,7 @@ open class SimpleBaseTest {
         fun run(vararg testClasses: Class<*>) = run(false, *testClasses)
 
         @JvmStatic
-        private fun run(skipConfiguration: Boolean, tng: TestNG) =
+        fun run(skipConfiguration: Boolean, tng: TestNG) =
             InvokedMethodNameListener(skipConfiguration).apply {
                 tng.addListener(this)
                 tng.run()
@@ -381,6 +383,26 @@ open class SimpleBaseTest {
                 }
                 .collect(Collectors.joining("\n"))
             return "Failed methods should pass: \n $methods"
+        }
+
+        @JvmStatic
+        fun saveMemDump(path: String) {
+            val jvmName = System.getProperty("java.vm.name")
+            val isHotSpot = jvmName.contains("hotspot", true)
+            if (!isHotSpot) {
+                throw SkipException("Taking memory dump is not implemented for $jvmName JVM")
+            }
+            try {
+                val server = ManagementFactory.getPlatformMBeanServer()
+                val mxBean = ManagementFactory.newPlatformMXBeanProxy(
+                    server,
+                    "com.sun.management:type=HotSpotDiagnostic",
+                    HotSpotDiagnosticMXBean::class.java
+                )
+                mxBean.dumpHeap(path, true)
+            } catch (e: IOException) {
+                throw TestNGException("Failed to save memory dump", e)
+            }
         }
     }
 
