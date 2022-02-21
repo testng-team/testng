@@ -8,8 +8,8 @@ import org.testng.annotations.IDataProviderAnnotation;
 /** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
 class DataProviderMethod implements IDataProviderMethod {
 
-  private final Object instance;
-  private final Method method;
+  protected Object instance;
+  protected Method method;
   private final IDataProviderAnnotation annotation;
 
   DataProviderMethod(Object instance, Method method, IDataProviderAnnotation annotation) {

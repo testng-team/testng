@@ -992,6 +992,7 @@
   <test name="Kotlin">
     <classes>
       <class name="org.testng.BasicTest"/>
+      <class name="org.testng.dataprovider.DynamicDataProviderLoadingTest" />
     </classes>
   </test>
 </suite>
