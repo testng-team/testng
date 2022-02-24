@@ -784,6 +784,7 @@
   <test name="ConfigFailurePolicy">
     <classes>
       <class name="test.configurationfailurepolicy.FailurePolicyTest" />
+      <class name="test.configurationfailurepolicy.FailureContinuePolicyTest"></class>
     </classes>
   </test>
 

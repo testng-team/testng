@@ -597,7 +597,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             arguments.getTestMethod(),
             arguments.getTestMethod().getGroups(),
             arguments.getTestClass(),
-            arguments.getInstance())) {
+            arguments.getInstance())
+        && suite.getConfigFailurePolicy() == XmlSuite.FailurePolicy.SKIP) {
       Throwable exception =
           ExceptionUtils.getExceptionDetails(m_testContext, arguments.getInstance());
       ITestResult result =
