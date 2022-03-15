@@ -67,11 +67,11 @@ public class TestRunnerTest {
     public void some() {}
   }
 
-  public static class FooListener extends FailFastListener {}
+  public static class FooListener implements IConfigurationListener {}
 
-  public static class BarListener extends FailFastListener {}
+  public static class BarListener implements IConfigurationListener {}
 
-  public static class ZooListener extends FailFastListener {}
+  public static class ZooListener implements IConfigurationListener {}
 
   private <T> List<Class<?>> classesOf(List<T> values, int limit) {
     return values.stream().limit(limit).map(Object::getClass).collect(Collectors.toList());
