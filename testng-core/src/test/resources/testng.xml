@@ -927,6 +927,12 @@
     </classes>
   </test>
 
+  <test name="TestRunner_unit_tests">
+    <classes>
+      <class name="org.testng.TestRunnerTest"/>
+    </classes>
+  </test>
+
   <!--This test depends on System properties. So its intentionally being run at the end
   because the toggling of the system property will affect other tests -->
   <test name = "RunAtLast">

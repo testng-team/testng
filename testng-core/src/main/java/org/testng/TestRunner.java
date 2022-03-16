@@ -345,7 +345,7 @@ public class TestRunner
     // Find all the listener factories and collect all the listeners requested in a
     // @Listeners annotation.
     //
-    Set<Class<? extends ITestNGListener>> listenerClasses = Sets.newHashSet();
+    Set<Class<? extends ITestNGListener>> listenerClasses = Sets.newLinkedHashSet();
     Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
 
     for (IClass cls : getTestClasses()) {
