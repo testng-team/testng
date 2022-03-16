@@ -14,7 +14,6 @@ import org.testng.internal.objects.DefaultTestObjectFactory;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-import test.listeners.issue2043.listeners.FailFastListener;
 
 public class TestRunnerTest {
   @Test
