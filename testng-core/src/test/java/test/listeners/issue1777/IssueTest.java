@@ -28,7 +28,7 @@ public class IssueTest extends SimpleBaseTest {
             "before_test_method: test1",
             "after_test_method: test1",
             "after_test_method: test1",
-            "testSkipped_test_method: test1",
+            "testSuccess_test_method: test1",
             "testStart_test_method: test2",
             "before_test_method: test2",
             "before_test_method: test2",
