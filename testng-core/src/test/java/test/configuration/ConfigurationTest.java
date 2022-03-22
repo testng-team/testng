@@ -2,7 +2,9 @@ package test.configuration;
 
 import java.util.Arrays;
 import org.testng.Assert;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
+import test.configuration.issue2743.SuiteRunnerIssueTestSample;
 import test.configuration.sample.ConfigurationTestSample;
 import test.configuration.sample.ExternalConfigurationClassSample;
 import test.configuration.sample.MethodCallOrderTestSample;
@@ -28,5 +30,13 @@ public class ConfigurationTest extends ConfigurationBaseTest {
   public void testSuite() {
     testConfiguration(SuiteTestSample.class);
     Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), SuiteTestSample.m_order);
+  }
+
+  @Test
+  public void testSuiteRunnerWithDefaultConfiguration() {
+    TestNG testNG = create(SuiteRunnerIssueTestSample.class);
+    testNG.run();
+
+    Assert.assertEquals(testNG.getStatus(), 0);
   }
 }

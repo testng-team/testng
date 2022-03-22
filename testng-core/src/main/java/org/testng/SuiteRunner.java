@@ -18,6 +18,7 @@ import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.InvokedMethod;
+import org.testng.internal.objects.ObjectFactoryImpl;
 import org.testng.internal.thread.ThreadUtil;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
@@ -148,6 +149,9 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     List<IMethodInterceptor> localMethodInterceptors =
         Optional.ofNullable(methodInterceptors).orElse(Lists.newArrayList());
     setOutputDir(outputDir);
+    if (configuration.getObjectFactory() == null) {
+      configuration.setObjectFactory(new ObjectFactoryImpl());
+    }
     if (suite.getObjectFactoryClass() == null) {
       objectFactory = configuration.getObjectFactory();
     } else {
