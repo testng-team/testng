@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
 import org.testng.IConfigurable;
 import org.testng.IInvokedMethodListener;
@@ -276,6 +277,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             && !alwaysRun) {
           log(3, "Skipping " + Utils.detailedMethodName(tm, true));
           InvokedMethod invokedMethod = new InvokedMethod(System.currentTimeMillis(), testResult);
+          runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setEndMillis(testResult.getStartMillis());
           testResult.setStatus(ITestResult.SKIP);
@@ -374,15 +376,24 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         testResult.setStatus(ITestResult.SUCCESS);
         return;
       }
-      if (configurableInstance != null) {
-        MethodInvocationHelper.invokeConfigurable(
-            targetInstance, params, configurableInstance, method.getMethod(), testResult);
+      boolean willfullyIgnored = false;
+      boolean usesConfigurableInstance = configurableInstance != null;
+      if (usesConfigurableInstance) {
+        willfullyIgnored =
+            !MethodInvocationHelper.invokeConfigurable(
+                targetInstance, params, configurableInstance, method.getMethod(), testResult);
       } else {
         MethodInvocationHelper.invokeMethodConsideringTimeout(
             tm, method, targetInstance, params, testResult);
       }
+      boolean testStatusRemainedUnchanged = testResult.isNotRunning();
+      if (usesConfigurableInstance && willfullyIgnored && testStatusRemainedUnchanged) {
+        throw new ConfigurationNotInvokedException(tm);
+      }
       testResult.setStatus(ITestResult.SUCCESS);
-    } catch (InvocationTargetException | IllegalAccessException ex) {
+    } catch (ConfigurationNotInvokedException
+        | InvocationTargetException
+        | IllegalAccessException ex) {
       throwConfigurationFailure(testResult, ex);
       testResult.setStatus(ITestResult.FAILURE);
       throw ex;

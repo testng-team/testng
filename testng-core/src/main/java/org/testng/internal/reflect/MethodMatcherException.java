@@ -2,6 +2,7 @@ package org.testng.internal.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import org.testng.TestNGException;
 

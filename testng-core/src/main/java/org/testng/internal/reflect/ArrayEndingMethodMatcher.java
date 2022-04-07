@@ -3,6 +3,7 @@ package org.testng.internal.reflect;
 import static org.testng.internal.reflect.InjectableParameter.Assistant.ALL_INJECTS;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

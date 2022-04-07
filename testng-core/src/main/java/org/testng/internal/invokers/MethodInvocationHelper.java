@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -17,6 +18,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -25,6 +28,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
+import org.testng.TestNotInvokedException;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
@@ -235,7 +239,7 @@ public class MethodInvocationHelper {
     return parameters;
   }
 
-  protected static void invokeHookable(
+  protected static boolean invokeHookable(
       final Object testInstance,
       final Object[] parameters,
       final IHookable hookable,
@@ -243,12 +247,14 @@ public class MethodInvocationHelper {
       final ITestResult testResult)
       throws Throwable {
     final Throwable[] error = new Throwable[1];
+    AtomicReference<Boolean> wasCalled = new AtomicReference<>(false);
 
     IHookCallBack callback =
         new IHookCallBack() {
           @Override
           public void runTestMethod(ITestResult tr) {
             try {
+              wasCalled.set(true);
               invokeMethod(thisMethod, testInstance, parameters);
               error[0] = null;
               tr.setThrowable(null);
@@ -267,6 +273,7 @@ public class MethodInvocationHelper {
     if (error[0] != null) {
       throw error[0];
     }
+    return wasCalled.get();
   }
 
   /**
@@ -279,7 +286,7 @@ public class MethodInvocationHelper {
     invokeWithTimeout(tm, instance, parameterValues, testResult, null);
   }
 
-  protected static void invokeWithTimeout(
+  protected static boolean invokeWithTimeout(
       ITestNGMethod tm,
       Object instance,
       Object[] parameterValues,
@@ -291,18 +298,24 @@ public class MethodInvocationHelper {
             != XmlSuite.ParallelMode.TESTS) {
       // We are already running in our own executor, don't create another one (or we will
       // lose the time out of the enclosing executor).
-      invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
+      return invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
     } else {
-      invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult, hookable);
+      return invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult, hookable);
     }
   }
 
-  private static void invokeWithTimeoutWithNoExecutor(
+  private static boolean invokeWithTimeoutWithNoExecutor(
       ITestNGMethod tm,
       Object instance,
       Object[] parameterValues,
       ITestResult testResult,
       IHookable hookable) {
+
+    Consumer<Throwable> failureMarker =
+        t -> {
+          testResult.setThrowable(t);
+          testResult.setStatus(ITestResult.FAILURE);
+        };
 
     InvokeMethodRunnable imr =
         new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
@@ -312,6 +325,7 @@ public class MethodInvocationHelper {
     AtomicBoolean finished = new AtomicBoolean(false);
     AtomicBoolean interruptByMonitor = new AtomicBoolean(false);
     Thread monitorThread = null;
+    boolean wasInvoked = false;
     try {
       Thread currentThread = Thread.currentThread();
       monitorThread =
@@ -328,34 +342,36 @@ public class MethodInvocationHelper {
                 }
               });
       monitorThread.start();
-      imr.run();
+      wasInvoked = imr.run();
       notTimedout = System.currentTimeMillis() <= startTime + realTimeOut;
       if (notTimedout) {
         testResult.setStatus(ITestResult.SUCCESS);
       } else {
-        testResult.setThrowable(new ThreadTimeoutException(tm, realTimeOut));
-        testResult.setStatus(ITestResult.FAILURE);
+        failureMarker.accept(new ThreadTimeoutException(tm, realTimeOut));
       }
+      return wasInvoked;
+    } catch (TestNotInvokedException e) {
+      failureMarker.accept(e.getCause());
+      return wasInvoked;
     } catch (Exception ex) {
-      if (notTimedout && !interruptByMonitor.get()) {
-        Throwable e = ex.getCause();
+      Throwable e = ex.getCause();
+      boolean wasTimedOut = !(notTimedout && !interruptByMonitor.get());
+      if (wasTimedOut) {
+        e = new ThreadTimeoutException(tm, realTimeOut);
+      } else {
         if (e instanceof TestNGRuntimeException) {
           e = e.getCause();
         }
-        testResult.setThrowable(e);
-      } else {
-        testResult.setThrowable(new ThreadTimeoutException(tm, realTimeOut));
       }
-      testResult.setStatus(ITestResult.FAILURE);
+      failureMarker.accept(e);
+      return wasInvoked;
     } finally {
       finished.set(true);
-      if (monitorThread != null && monitorThread.isAlive()) {
-        monitorThread.interrupt();
-      }
+      Optional.ofNullable(monitorThread).filter(Thread::isAlive).ifPresent(Thread::interrupt);
     }
   }
 
-  private static void invokeWithTimeoutWithNewExecutor(
+  private static boolean invokeWithTimeoutWithNewExecutor(
       ITestNGMethod tm,
       Object instance,
       Object[] parameterValues,
@@ -366,7 +382,7 @@ public class MethodInvocationHelper {
 
     InvokeMethodRunnable imr =
         new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);
-    Future<Void> future = exec.submit(imr);
+    Future<Boolean> future = exec.submit(imr);
     exec.shutdown();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
     boolean finished = exec.awaitTermination(realTimeOut, TimeUnit.MILLISECONDS);
@@ -381,21 +397,19 @@ public class MethodInvocationHelper {
       exec.shutdownNow();
       testResult.setThrowable(exception);
       testResult.setStatus(ITestResult.FAILURE);
+      return false;
     } else {
       Utils.log(
           "Invoker " + Thread.currentThread().hashCode(),
           3,
           "Method " + tm.getMethodName() + " completed within the time-out " + tm.getTimeOut());
-
-      // We don't need the result from the future but invoking get() on it
-      // will trigger the exception that was thrown, if any
-      try {
-        future.get();
-      } catch (ExecutionException e) {
-        throw new ThreadExecutionException(e.getCause());
-      }
-
+    }
+    try {
+      boolean flag = future.get();
       testResult.setStatus(ITestResult.SUCCESS); // if no exception till here then SUCCESS.
+      return flag;
+    } catch (ExecutionException e) {
+      throw new ThreadExecutionException(e.getCause());
     }
   }
 
@@ -420,7 +434,7 @@ public class MethodInvocationHelper {
     return stackTrace;
   }
 
-  protected static void invokeConfigurable(
+  protected static boolean invokeConfigurable(
       final Object instance,
       final Object[] parameters,
       final IConfigurable configurableInstance,
@@ -428,12 +442,14 @@ public class MethodInvocationHelper {
       final ITestResult testResult)
       throws Throwable {
     final Throwable[] error = new Throwable[1];
+    AtomicReference<Boolean> wasCalled = new AtomicReference<>(false);
 
     IConfigureCallBack callback =
         new IConfigureCallBack() {
           @Override
           public void runConfigurationMethod(ITestResult tr) {
             try {
+              wasCalled.set(true);
               invokeMethod(thisMethod, instance, parameters);
               error[0] = null;
               tr.setThrowable(null);
@@ -452,5 +468,6 @@ public class MethodInvocationHelper {
     if (error[0] != null) {
       throw error[0];
     }
+    return wasCalled.get();
   }
 }

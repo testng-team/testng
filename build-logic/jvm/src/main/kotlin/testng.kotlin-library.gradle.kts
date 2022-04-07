@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.6.20"))
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    testImplementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

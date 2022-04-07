@@ -351,10 +351,7 @@ public class TestNG {
       }
       // If test names were specified, only run these test names
       TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
-      List<String> missMatchedTestname = testNamesMatcher.getMissMatchedTestNames();
-      if (!missMatchedTestname.isEmpty()) {
-        throw new TestNGException("The test(s) <" + missMatchedTestname + "> cannot be found.");
-      }
+      testNamesMatcher.validateMissMatchedTestNames();
       result.addAll(testNamesMatcher.getSuitesMatchingTestNames());
     }
 
@@ -420,7 +417,8 @@ public class TestNG {
         new JarFileUtils(getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode);
 
     Collection<XmlSuite> allSuites = utils.extractSuitesFrom(jarFile);
-    m_suites.addAll(processCommandLineArgs(allSuites));
+    allSuites.forEach(this::processParallelModeCommandLineArgs);
+    m_suites.addAll(allSuites);
   }
 
   /** @param threadCount Define the number of threads in the thread pool. */

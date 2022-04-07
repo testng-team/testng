@@ -15,8 +15,12 @@ tasks.withType<JavaCompile>().configureEach {
     inputs.property("java.vm.version", System.getProperty("java.vm.version"))
     options.apply {
         encoding = "UTF-8"
-        compilerArgs.add("-Xlint:deprecation")
-        compilerArgs.add("-Werror")
+        //We still are NOT compatible with JDK17 in terms of deprecation.
+        // But let's not fail builds for that reason
+        if (JavaVersion.current() != JavaVersion.VERSION_17) {
+            compilerArgs.add("-Xlint:deprecation")
+            compilerArgs.add("-Werror")
+        }
     }
 }
 

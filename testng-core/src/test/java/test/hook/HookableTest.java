@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.IInvokedMethod;
@@ -17,12 +18,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 import test.hook.samples.ConfigurableFailureSample;
+import test.hook.samples.ConfigurableFailureWithStatusAlteredSample;
 import test.hook.samples.ConfigurableSuccessSample;
 import test.hook.samples.ConfigurableSuccessWithListenerSample;
 import test.hook.samples.HookFailureSample;
+import test.hook.samples.HookFailureWithStatusAlteredSample;
 import test.hook.samples.HookSuccessDynamicParametersSample;
 import test.hook.samples.HookSuccessSample;
 import test.hook.samples.HookSuccessTimeoutSample;
+import test.hook.samples.HookSuccessTimeoutWithDataProviderSample;
 import test.hook.samples.HookSuccessWithListenerSample;
 
 public class HookableTest extends SimpleBaseTest {
@@ -49,9 +53,11 @@ public class HookableTest extends SimpleBaseTest {
             each -> {
               assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
               assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNotNull();
-              Object[] parameters = (Object[]) each.getAttribute(HOOK_METHOD_PARAMS_ATTRIBUTE);
-              assertions.assertThat(parameters).hasSize(1);
-              assertions.assertThat(parameters[0]).isInstanceOf(UUID.class);
+              if (each.getMethod().isDataDriven()) {
+                Object[] parameters = (Object[]) each.getAttribute(HOOK_METHOD_PARAMS_ATTRIBUTE);
+                assertions.assertThat(parameters).hasSize(1);
+                assertions.assertThat(parameters[0]).isInstanceOf(UUID.class);
+              }
             });
     assertions.assertAll();
   }
@@ -60,7 +66,12 @@ public class HookableTest extends SimpleBaseTest {
   public Object[][] getTestClasses() {
     return new Object[][] {
       {HookSuccessSample.class, "Happy Flow", true},
-      {HookSuccessTimeoutSample.class, "With Timeouts (GITHUB-599)", true},
+      {
+        HookSuccessTimeoutWithDataProviderSample.class,
+        "DataProvider Test With Timeouts (GITHUB-599)",
+        true
+      },
+      {HookSuccessTimeoutSample.class, "Regular test With Timeouts (GITHUB-599)", true},
       {HookSuccessDynamicParametersSample.class, "With Dynamic Parameters (GITHUB-862)", false}
     };
   }
@@ -81,16 +92,32 @@ public class HookableTest extends SimpleBaseTest {
     TestResultsCollector listener = new TestResultsCollector();
     tng.addListener(listener);
     tng.run();
-    assertThat(listener.getPassedMethodNames()).isNotNull();
-    SoftAssertions assertions = new SoftAssertions();
-    listener
-        .getInvoked()
-        .forEach(
-            each -> {
-              assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
-              assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
-            });
-    assertions.assertAll();
+    assertThat(listener.getPassedMethodNames()).isEmpty();
+    assertThat(listener.getFailedTests()).hasSize(1);
+    ITestResult failedTestResult = listener.getFailedTests().get(0);
+    assertThat(failedTestResult.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+    assertThat(failedTestResult.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
+  }
+
+  @Test
+  public void hookFailureWithStatusAltered() {
+    TestNG tng = create(HookFailureWithStatusAlteredSample.class);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getPassedMethodNames()).hasSize(1);
+    Consumer<List<ITestResult>> verifier =
+        list -> {
+          SoftAssertions assertions = new SoftAssertions();
+          list.forEach(
+              each -> {
+                assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+                assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
+              });
+          assertions.assertAll();
+        };
+    verifier.accept(listener.getPassed());
+    verifier.accept(listener.getInvoked());
   }
 
   @Test(dataProvider = "getConfigClasses")
@@ -133,6 +160,29 @@ public class HookableTest extends SimpleBaseTest {
     TestResultsCollector listener = new TestResultsCollector();
     tng.addListener(listener);
     tng.run();
+    assertThat(listener.getPassedConfigNames()).isEmpty();
+    assertThat(listener.getFailedConfigs()).hasSize(1);
+    ITestResult failedConfigResult = listener.getFailedConfigs().get(0);
+    assertThat(failedConfigResult.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNotNull();
+    assertThat(failedConfigResult.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
+    assertThat(listener.getSkippedConfigs()).hasSize(3);
+    SoftAssertions assertions = new SoftAssertions();
+    listener
+        .getSkippedConfigs()
+        .forEach(
+            each -> {
+              assertions.assertThat(each.getAttribute(HOOK_INVOKED_ATTRIBUTE)).isNull();
+              assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
+            });
+    assertions.assertAll();
+  }
+
+  @Test
+  public void configurableFailureWithStatusAltered() {
+    TestNG tng = create(ConfigurableFailureWithStatusAlteredSample.class);
+    TestResultsCollector listener = new TestResultsCollector();
+    tng.addListener(listener);
+    tng.run();
     assertThat(listener.getPassedConfigNames()).containsExactly("bs", "bt", "bc", "bm");
     assertThat(listener.getPassedConfigs()).hasSize(4);
     SoftAssertions assertions = new SoftAssertions();
@@ -168,12 +218,32 @@ public class HookableTest extends SimpleBaseTest {
       return passedConfigs;
     }
 
+    public List<ITestResult> getFailedConfigs() {
+      return invoked.stream()
+          .filter(each -> each.getStatus() == ITestResult.FAILURE)
+          .collect(Collectors.toList());
+    }
+
+    public List<ITestResult> getSkippedConfigs() {
+      return invoked.stream()
+          .filter(each -> !each.getMethod().isTest())
+          .filter(each -> each.getStatus() == ITestResult.SKIP)
+          .collect(Collectors.toList());
+    }
+
     public List<ITestResult> getPassed() {
       return passed;
     }
 
     public List<ITestResult> getInvoked() {
       return invoked;
+    }
+
+    public List<ITestResult> getFailedTests() {
+      return invoked.stream()
+          .filter(each -> each.getMethod().isTest())
+          .filter(each -> each.getStatus() == ITestResult.FAILURE)
+          .collect(Collectors.toList());
     }
 
     public List<String> getPassedMethodNames() {

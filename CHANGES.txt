@@ -1,4 +1,14 @@
 Current
+7.6.0
+Fixed: GITHUB-2743: SuiteRunner could not be initial by default Configuration (Nan Liang)
+Fixed: GITHUB-2729: beforeConfiguration() listener method should be invoked for skipped configurations as well(Nan Liang)
+Fixed: assertEqualsNoOrder for Collection and Iterators size check was missing (Adam Kaczmarek)
+Fixed: GITHUB-2709: Testnames not working together with suites in suite (Martin Aldrin)
+Fixed: GITHUB-2704: IHookable and IConfigurable callback discrepancy (Krishnan Mahadevan)
+Fixed: GITHUB-2637: Upgrade to JDK11 as the minimum JDK requirements (Krishnan Mahadevan)
+Fixed: GITHUB-2734: Keep the initial order of listeners (Andrei Solntsev)
+
+7.5
 Fixed: GITHUB-2701: Bump gradle version to 7.3.3 to support java17 build (ZhangJian He)
 Fixed: GITHUB-2646: Streamline Logging Across TestNG (Krishnan Mahadevan)
 Fixed: GITHUB-2658: Inheritance + dependsOnMethods (Krishnan Mahadevan)

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import org.testng.TestNGException;
 import org.testng.internal.objects.InstanceCreator;
-import org.testng.util.Strings;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
@@ -140,7 +139,7 @@ public final class Yaml {
 
   /** Convert a XmlTest into YAML */
   private static void toYaml(StringBuilder result, XmlTest t) {
-    String sp2 = Strings.repeat(" ", 2);
+    String sp2 = " ".repeat(2);
     result.append("  ").append("- name: ").append(t.getName()).append("\n");
 
     maybeAdd(result, sp2, "junit", t.isJUnit(), XmlSuite.DEFAULT_JUNIT);

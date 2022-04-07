@@ -1,8 +1,8 @@
 package org.testng.internal.reflect;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -151,7 +151,7 @@ public final class ReflectionRecipes {
     if (method == null) {
       return new Parameter[] {};
     }
-    return getParameters(method.getParameterTypes(), method.getParameterAnnotations());
+    return method.getParameters();
   }
 
   /**
@@ -164,16 +164,7 @@ public final class ReflectionRecipes {
     if (constructor == null) {
       return new Parameter[] {};
     }
-    return getParameters(constructor.getParameterTypes(), constructor.getParameterAnnotations());
-  }
-
-  private static Parameter[] getParameters(
-      Class<?>[] parametersTypes, final Annotation[][] parametersAnnotations) {
-    final Parameter[] parameters = new Parameter[parametersTypes.length];
-    for (int i = 0; i < parametersTypes.length; i++) {
-      parameters[i] = new Parameter(i, parametersTypes[i], parametersAnnotations[i]);
-    }
-    return parameters;
+    return constructor.getParameters();
   }
 
   /**
