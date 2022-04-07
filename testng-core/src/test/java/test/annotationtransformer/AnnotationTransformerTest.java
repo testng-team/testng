@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.assertj.core.api.iterable.Extractor;
+import java.util.function.Function;
 import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestResult;
@@ -32,7 +32,7 @@ import test.annotationtransformer.issue2536.listeners.ExternalGroupManager;
 
 public class AnnotationTransformerTest extends SimpleBaseTest {
 
-  private static final Extractor<ITestResult, String> NAME_EXTRACTOR = ITestResult::getName;
+  private static final Function<ITestResult, String> NAME_EXTRACTOR = ITestResult::getName;
 
   /**
    * Make sure that without a transformer in place, a class-level annotation invocationCount is

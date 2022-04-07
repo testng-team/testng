@@ -6,12 +6,12 @@ plugins {
 }
 
 dependencies {
-    testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.5.10"))
+    testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.6.20"))
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
