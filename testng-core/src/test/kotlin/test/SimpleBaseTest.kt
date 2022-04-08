@@ -14,7 +14,6 @@ import java.nio.file.FileVisitResult
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
-import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
@@ -386,21 +385,13 @@ open class SimpleBaseTest {
     }
 
     class TestNGFileVisitor : SimpleFileVisitor<Path>() {
-        @Throws(IOException::class)
-        override fun visitFile(
-            file: Path,
-            attrs: BasicFileAttributes
-        ): FileVisitResult {
-            Files.delete(file)
-            return FileVisitResult.CONTINUE
-        }
 
         @Throws(IOException::class)
         override fun postVisitDirectory(
             dir: Path,
             exc: IOException?
         ): FileVisitResult {
-            Files.delete(dir)
+            dir.toFile().deleteRecursively()
             return FileVisitResult.CONTINUE
         }
     }
