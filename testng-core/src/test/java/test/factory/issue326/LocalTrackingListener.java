@@ -10,18 +10,13 @@ import org.testng.collections.Maps;
 
 public class LocalTrackingListener implements IInvokedMethodListener {
 
-  private Map<String, List<Statistics>> results = Maps.newConcurrentMap();
-  private Map<String, Long> threadIds = Maps.newConcurrentMap();
+  private final Map<String, List<Statistics>> results = Maps.newConcurrentMap();
+  private final Map<String, Long> threadIds = Maps.newConcurrentMap();
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
     String key = testResult.getInstance().toString();
-    if (!results.containsKey(key)) {
-      results.put(key, Lists.newArrayList());
-    }
-    results
-        .get(key)
-        .add(new Statistics(testResult.getMethod().getMethodName(), testResult.getStartMillis()));
+    results.computeIfAbsent(key, k -> Lists.newArrayList()).add(new Statistics(testResult));
     if (!threadIds.containsKey(key)) {
       Long threadId = Long.parseLong(testResult.getAttribute(SampleTestClass.THREAD_ID).toString());
       threadIds.put(key, threadId);
@@ -39,6 +34,10 @@ public class LocalTrackingListener implements IInvokedMethodListener {
   static class Statistics {
     String methodName;
     long startTimeInMs;
+
+    public Statistics(ITestResult testResult) {
+      this(testResult.getMethod().getMethodName(), testResult.getStartMillis());
+    }
 
     public Statistics(String methodName, long startTimeInMs) {
       this.methodName = methodName;
