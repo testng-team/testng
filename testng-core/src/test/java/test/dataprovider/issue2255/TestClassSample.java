@@ -12,9 +12,9 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
-public class SampleTestCase extends SimpleBaseTest {
+public class TestClassSample extends SimpleBaseTest {
 
-  static final List<Integer> data = new ArrayList<>();
+  public static final List<Integer> data = new ArrayList<>();
   private static final AtomicInteger counter = new AtomicInteger(0);
 
   @BeforeMethod

@@ -924,7 +924,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (bag.hasErrors()) {
         ITestResult tr = bag.errorResult;
         Throwable throwable = Objects.requireNonNull(tr).getThrowable();
-        if (throwable instanceof TestNGException) {
+        boolean bubbleUpFailures =
+            m_configuration.isPropagateDataProviderFailureAsTestFailure()
+                || bag.isBubbleUpFailures();
+
+        if (throwable instanceof TestNGException || bubbleUpFailures) {
           tr.setStatus(ITestResult.FAILURE);
           m_notifier.addFailedTest(arguments.getTestMethod(), tr);
         } else {
