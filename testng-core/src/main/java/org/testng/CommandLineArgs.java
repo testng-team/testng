@@ -251,4 +251,12 @@ public class CommandLineArgs {
       description =
           "Should TestNG report all iterations of a data driven test as individual skips, in-case of upstream failures.")
   public Boolean includeAllDataDrivenTestsWhenSkipping = false;
+
+  public static final String PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE =
+      "-propagateDataProviderFailureAsTestFailure";
+
+  @Parameter(
+      names = PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE,
+      description = "Should TestNG consider failures in Data Providers  as test failures.")
+  public Boolean propagateDataProviderFailureAsTestFailure = false;
 }

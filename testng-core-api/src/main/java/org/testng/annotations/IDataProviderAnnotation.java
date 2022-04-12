@@ -21,4 +21,10 @@ public interface IDataProviderAnnotation extends IAnnotation {
   List<Integer> getIndices();
 
   void setIndices(List<Integer> indices);
+
+  /** Have TestNG consider failures in data provider methods as test failures. */
+  void propagateFailureAsTestFailure();
+
+  /** @return - <code>true</code>If data provider failures should be propagated as test failures */
+  boolean isPropagateFailureAsTestFailure();
 }

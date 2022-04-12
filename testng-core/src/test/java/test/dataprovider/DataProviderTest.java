@@ -7,13 +7,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.Assert;
+import org.testng.IDataProviderMethod;
+import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.reflect.MethodMatcherException;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.dataprovider.issue1691.DataProviderDefinitionAtClassLevelAndNoTestMethodUsage;
@@ -23,6 +29,12 @@ import test.dataprovider.issue1691.DataProviderDefinitionProvidedPartiallyAtClas
 import test.dataprovider.issue1691.withinheritance.ChildClassHasFullDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassHasPartialDefinitionOfDataProviderAtClassLevel;
 import test.dataprovider.issue1691.withinheritance.ChildClassWithNoDataProviderInformationInTestMethod;
+import test.dataprovider.issue1987.BaseClassSample;
+import test.dataprovider.issue1987.DataProviderInBaseClassSample;
+import test.dataprovider.issue1987.DataProviderInDifferentClassSample;
+import test.dataprovider.issue1987.DataProviderInSameClassSample;
+import test.dataprovider.issue1987.DataProviderTrackingListener;
+import test.dataprovider.issue2504.SampleTestCaseListener;
 import test.dataprovider.issue2565.Data;
 import test.dataprovider.issue2565.SampleTestUsingConsumer;
 import test.dataprovider.issue2565.SampleTestUsingFunction;
@@ -405,5 +417,98 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.run();
     assertThat(tla.getFailedTests()).size().isEqualTo(1);
     assertThat(tla.getSkippedTests()).size().isEqualTo(2);
+  }
+
+  @Test(description = "GITHUB-217", expectedExceptions = TestNGException.class)
+  public void ensureTestNGThrowsExceptionWhenAllTestsAreSkipped() {
+    TestNG testng = create(test.dataprovider.issue217.TestClassSample.class);
+    testng.toggleFailureIfAllTestsWereSkipped(true);
+    testng.run();
+  }
+
+  @Test(description = "GITHUB-217")
+  public void ensureTestNGFailsDueToDataProviderFailure() {
+    TestNG testng = create(test.dataprovider.issue217.TestClassSample.class);
+    testng.propagateDataProviderFailureAsTestFailure();
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-217")
+  public void ensureTestNGFailsDueToDataProviderFailure2() {
+    TestNG testng = create(test.dataprovider.issue217.AnotherTestClassSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-2255")
+  public void ensureDataProviderValuesAreVisibleToConfigMethods() {
+    TestNG testNG = create(test.dataprovider.issue2255.TestClassSample.class);
+    testNG.run();
+    assertThat(test.dataprovider.issue2255.TestClassSample.data).containsExactly(100, 200);
+  }
+
+  @Test(dataProvider = "testData", description = "GITHUB-1987")
+  public void extractDataProviderInfoWhenDpResidesInSameClass(
+      Class<?> clazz, boolean performInstanceCheck, Class<?> dataProviderClass) {
+    TestNG testng = create(clazz);
+    DataProviderTrackingListener listener = new DataProviderTrackingListener();
+    testng.addListener(listener);
+    testng.run();
+    ITestNGMethod method = listener.getResult().getMethod();
+    IDataProviderMethod dpm = method.getDataProviderMethod();
+    assertThat(dpm).isNotNull();
+    if (performInstanceCheck) {
+      assertThat(dpm.getInstance()).isEqualTo(method.getInstance());
+    }
+    assertThat(dpm.getMethod().getName()).isEqualTo("getData");
+    assertThat(dpm.getInstance().getClass()).isEqualTo(dataProviderClass);
+  }
+
+  @DataProvider(name = "testData")
+  public Object[][] getTestData() {
+    return new Object[][] {
+      {DataProviderInSameClassSample.class, true, DataProviderInSameClassSample.class},
+      {DataProviderInBaseClassSample.class, true, DataProviderInBaseClassSample.class},
+      {DataProviderInDifferentClassSample.class, false, BaseClassSample.class}
+    };
+  }
+
+  @Test(description = "GITHUB-2267")
+  public void ensureDynamicRetryAnalyzersAreHonouredForDataDrivenTest() {
+    TestNG testng = create(test.dataprovider.issue2267.TestClassSample.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+    assertThat(tla.getFailedTests()).size().isEqualTo(1);
+    assertThat(tla.getSkippedTests()).size().isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-2327")
+  public void ensureDataProviderParametersAreAlwaysAvailableForListeners() {
+    TestNG testng = create(test.dataprovider.issue2327.TestClassSample.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+
+    assertThat(tla.getSkippedTests().size()).isEqualTo(2);
+    SoftAssertions assertions = new SoftAssertions();
+
+    for (ITestResult skippedTest : tla.getSkippedTests()) {
+      assertions.assertThat(skippedTest.getParameters()).isNotEmpty();
+    }
+    assertions.assertAll();
+  }
+
+  @Test(description = "GITHUB-2504")
+  public void ensureParametersCopiedOnConfigFailures() {
+    XmlTest xmltest = createXmlTest("2504_suite", "2504_test");
+    xmltest.setXmlClasses(
+        Collections.singletonList(new XmlClass(test.dataprovider.issue2504.TestClassSample.class)));
+    TestNG testNG = create(Collections.singletonList(xmltest.getSuite()));
+    SampleTestCaseListener listener = new SampleTestCaseListener();
+    testNG.addListener(listener);
+    testNG.run();
+    assertThat(listener.getParameters()).containsExactlyElementsOf(Arrays.asList(1, 2, 3, 4, 5));
   }
 }

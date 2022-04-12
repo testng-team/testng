@@ -9,6 +9,7 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   private String m_name;
   private boolean m_parallel;
   private List<Integer> m_indices;
+  private boolean m_bubbleUpFailures = false;
 
   @Override
   public boolean isParallel() {
@@ -38,5 +39,15 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   @Override
   public void setIndices(List<Integer> indices) {
     m_indices = indices;
+  }
+
+  @Override
+  public void propagateFailureAsTestFailure() {
+    m_bubbleUpFailures = true;
+  }
+
+  @Override
+  public boolean isPropagateFailureAsTestFailure() {
+    return m_bubbleUpFailures;
   }
 }

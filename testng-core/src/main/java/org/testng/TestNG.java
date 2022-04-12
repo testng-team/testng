@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -594,6 +595,14 @@ public class TestNG {
 
   public boolean getReportAllDataDrivenTestsAsSkipped() {
     return this.m_configuration.getReportAllDataDrivenTestsAsSkipped();
+  }
+
+  public void propagateDataProviderFailureAsTestFailure() {
+    this.m_configuration.propagateDataProviderFailureAsTestFailure();
+  }
+
+  public boolean isPropagateDataProviderFailureAsTestFailure() {
+    return this.m_configuration.isPropagateDataProviderFailureAsTestFailure();
   }
 
   /**
@@ -1421,6 +1430,8 @@ public class TestNG {
    * @param cla The command line parameters
    */
   protected void configure(CommandLineArgs cla) {
+    Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
+        .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
     if (cla.verbose != null) {
       setVerbose(cla.verbose);

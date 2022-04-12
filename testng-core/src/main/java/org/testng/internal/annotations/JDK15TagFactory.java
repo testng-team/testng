@@ -424,6 +424,9 @@ public class JDK15TagFactory {
     }
     result.setParallel(c.parallel());
     result.setIndices(Ints.asList(c.indices()));
+    if (c.propagateFailureAsTestFailure()) {
+      result.propagateFailureAsTestFailure();
+    }
 
     return result;
   }

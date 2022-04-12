@@ -3,7 +3,9 @@ package org.testng.internal.invokers;
 import static org.testng.internal.Parameters.MethodParameters;
 
 import java.util.Map;
+import java.util.Optional;
 import org.testng.DataProviderHolder;
+import org.testng.IDataProviderMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -88,7 +90,12 @@ class ParameterHandler {
       }
 
       ITestResult result = TestResult.newTestResultWithCauseAs(testMethod, testContext, cause);
-      return new ParameterBag(result);
+
+      boolean bubbleUpFailure =
+          Optional.ofNullable(testMethod.getDataProviderMethod())
+              .map(IDataProviderMethod::propagateFailureAsTestFailure)
+              .orElse(false);
+      return new ParameterBag(result, bubbleUpFailure);
     }
   }
 
@@ -99,15 +106,17 @@ class ParameterHandler {
   static class ParameterBag {
     final ParameterHolder parameterHolder;
     final ITestResult errorResult;
+    boolean bubbleUpFailures = false;
 
     ParameterBag(ParameterHolder parameterHolder) {
       this.parameterHolder = parameterHolder;
       this.errorResult = null;
     }
 
-    ParameterBag(ITestResult errorResult) {
+    ParameterBag(ITestResult errorResult, boolean bubbleUpFailures) {
       this.parameterHolder = null;
       this.errorResult = errorResult;
+      this.bubbleUpFailures = bubbleUpFailures;
     }
 
     boolean hasErrors() {
@@ -118,6 +127,10 @@ class ParameterHandler {
       return ((parameterHolder != null)
           && (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
               && parameterHolder.dataProviderHolder.isParallel()));
+    }
+
+    boolean isBubbleUpFailures() {
+      return bubbleUpFailures;
     }
   }
 }
