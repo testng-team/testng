@@ -1,14 +1,19 @@
 package org.testng.internal;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.log4testng.Logger;
 
 /**
  * This class wraps access to beforeGroups and afterGroups methods, since they are passed around the
@@ -21,8 +26,8 @@ public class ConfigurationGroupMethods {
   /** The list of beforeGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_beforeGroupsMethods;
 
-  private final Set<String> beforeGroupsThatHaveAlreadyRun =
-      Collections.newSetFromMap(new ConcurrentHashMap<>());
+  private final Map<String, CountDownLatch> beforeGroupsThatHaveAlreadyRun =
+      new ConcurrentHashMap<>();
   private final Set<String> afterGroupsThatHaveAlreadyRun =
       Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -102,9 +107,17 @@ public class ConfigurationGroupMethods {
     return result;
   }
 
-  public List<ITestNGMethod> getBeforeGroupMethodsForGroup(String group) {
+  public List<ITestNGMethod> getBeforeGroupMethodsForGroup(String[] groups) {
+    if (groups.length == 0) {
+      return Collections.emptyList();
+    }
+
     synchronized (beforeGroupsThatHaveAlreadyRun) {
-      return retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, group);
+      return Arrays.stream(groups)
+          .map(t -> retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, t))
+          .filter(Objects::nonNull)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toList());
     }
   }
 
@@ -117,6 +130,7 @@ public class ConfigurationGroupMethods {
   public void removeBeforeGroups(String[] groups) {
     for (String group : groups) {
       m_beforeGroupsMethods.remove(group);
+      beforeGroupsThatHaveAlreadyRun.get(group).countDown();
     }
   }
 
@@ -124,6 +138,21 @@ public class ConfigurationGroupMethods {
     for (String group : groups) {
       m_afterGroupsMethods.remove(group);
     }
+  }
+
+  private static List<ITestNGMethod> retrieve(
+      Map<String, CountDownLatch> tracker, Map<String, List<ITestNGMethod>> map, String group) {
+    if (tracker.containsKey(group)) {
+      try {
+        tracker.get(group).await();
+      } catch (InterruptedException handled) {
+        Logger.getLogger(ConfigurationGroupMethods.class).error(handled.getMessage(), handled);
+        Thread.currentThread().interrupt();
+      }
+      return Collections.emptyList();
+    }
+    tracker.put(group, new CountDownLatch(1));
+    return map.get(group);
   }
 
   private static List<ITestNGMethod> retrieve(
