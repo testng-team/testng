@@ -25,4 +25,9 @@ public interface IDataProviderMethod {
 
   /** @return Which indices to run from this data provider, default: all. */
   List<Integer> getIndices();
+
+  /** @return Whether failures in data providers should be treated as test failures */
+  default boolean propagateFailureAsTestFailure() {
+    return false;
+  }
 }

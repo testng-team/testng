@@ -1,5 +1,6 @@
 Current
 7.6.0
+Fixed: GITHUB-217: Configure TestNG to fail when there's a failure in data provider (Krishnan Mahadevan)
 Fixed: GITHUB-2743: SuiteRunner could not be initial by default Configuration (Nan Liang)
 Fixed: GITHUB-2729: beforeConfiguration() listener method should be invoked for skipped configurations as well(Nan Liang)
 Fixed: assertEqualsNoOrder for Collection and Iterators size check was missing (Adam Kaczmarek)

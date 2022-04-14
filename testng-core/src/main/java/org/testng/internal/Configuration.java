@@ -35,6 +35,8 @@ public class Configuration implements IConfiguration {
 
   private boolean includeAllDataDrivenTestsWhenSkipping;
 
+  private boolean propagateDataProviderFailureAsTestFailure;
+
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
   }
@@ -155,5 +157,15 @@ public class Configuration implements IConfiguration {
   @Override
   public boolean getReportAllDataDrivenTestsAsSkipped() {
     return this.includeAllDataDrivenTestsWhenSkipping;
+  }
+
+  @Override
+  public void propagateDataProviderFailureAsTestFailure() {
+    this.propagateDataProviderFailureAsTestFailure = true;
+  }
+
+  @Override
+  public boolean isPropagateDataProviderFailureAsTestFailure() {
+    return propagateDataProviderFailureAsTestFailure;
   }
 }

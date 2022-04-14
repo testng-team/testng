@@ -3,7 +3,7 @@ package test.dataprovider.issue1987;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class DataProviderInSameClass {
+public class DataProviderInSameClassSample {
 
   @Test(dataProvider = "dp")
   public void testMethod(int i) {}

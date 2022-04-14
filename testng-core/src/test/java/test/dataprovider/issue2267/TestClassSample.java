@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 @Listeners(CustomListener.class)
-public class SampleTestCase extends SimpleBaseTest {
+public class TestClassSample extends SimpleBaseTest {
 
   @DataProvider(name = "dp")
   public Object[][] dp() {

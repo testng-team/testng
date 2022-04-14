@@ -42,4 +42,9 @@ class DataProviderMethod implements IDataProviderMethod {
   public List<Integer> getIndices() {
     return annotation.getIndices();
   }
+
+  @Override
+  public boolean propagateFailureAsTestFailure() {
+    return annotation.isPropagateFailureAsTestFailure();
+  }
 }

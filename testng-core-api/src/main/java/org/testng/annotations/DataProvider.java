@@ -48,4 +48,11 @@ public @interface DataProvider {
    * @return the value
    */
   int[] indices() default {};
+
+  /**
+   * Helps TestNG decide if it should treat data provider failures as test failures.
+   *
+   * @return the value
+   */
+  boolean propagateFailureAsTestFailure() default false;
 }

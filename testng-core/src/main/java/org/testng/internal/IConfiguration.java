@@ -55,4 +55,8 @@ public interface IConfiguration {
   default boolean getReportAllDataDrivenTestsAsSkipped() {
     return false;
   }
+
+  void propagateDataProviderFailureAsTestFailure();
+
+  boolean isPropagateDataProviderFailureAsTestFailure();
 }
