@@ -22,7 +22,6 @@ import org.testng.Reporter;
 import org.testng.SuiteRunState;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.*;
@@ -111,18 +110,14 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    * @param arguments - A {@link GroupConfigMethodArguments} object.
    */
   public void invokeBeforeGroupsConfigurations(GroupConfigMethodArguments arguments) {
-    List<ITestNGMethod> filteredMethods = Lists.newArrayList();
     String[] groups = arguments.getTestMethod().getGroups();
 
-    for (String group : groups) {
-      List<ITestNGMethod> methods =
-          arguments.getGroupMethods().getBeforeGroupMethodsForGroup(group);
-      if (methods != null) {
-        filteredMethods.addAll(methods);
-      }
-    }
+    ITestNGMethod[] beforeMethodsArray =
+        arguments
+            .getGroupMethods()
+            .getBeforeGroupMethodsForGroup(groups)
+            .toArray(new ITestNGMethod[0]);
 
-    ITestNGMethod[] beforeMethodsArray = filteredMethods.toArray(new ITestNGMethod[0]);
     //
     // Invoke the right groups methods
     //
@@ -131,20 +126,19 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           Arrays.stream(beforeMethodsArray)
               .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
               .toArray(ITestNGMethod[]::new);
-      if (filteredConfigurations.length == 0) {
-        return;
+      if (filteredConfigurations.length != 0) {
+        // don't pass the IClass or the instance as the method may be external
+        // the invocation must be similar to @BeforeTest/@BeforeSuite
+        ConfigMethodArguments configMethodArguments =
+            new Builder()
+                .usingConfigMethodsAs(filteredConfigurations)
+                .forSuite(arguments.getSuite())
+                .usingParameters(arguments.getParameters())
+                .usingInstance(arguments.getInstance())
+                .forTestMethod(arguments.getTestMethod())
+                .build();
+        invokeConfigurations(configMethodArguments);
       }
-      // don't pass the IClass or the instance as the method may be external
-      // the invocation must be similar to @BeforeTest/@BeforeSuite
-      ConfigMethodArguments configMethodArguments =
-          new Builder()
-              .usingConfigMethodsAs(filteredConfigurations)
-              .forSuite(arguments.getSuite())
-              .usingParameters(arguments.getParameters())
-              .usingInstance(arguments.getInstance())
-              .forTestMethod(arguments.getTestMethod())
-              .build();
-      invokeConfigurations(configMethodArguments);
     }
 
     //

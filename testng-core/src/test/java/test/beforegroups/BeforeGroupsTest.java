@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -26,6 +27,8 @@ import test.beforegroups.issue118.TestclassSample;
 import test.beforegroups.issue1694.BaseClassWithBeforeGroups;
 import test.beforegroups.issue2229.AnotherTestClassSample;
 import test.beforegroups.issue2229.TestClassSample;
+import test.beforegroups.issue2359.ListenerAdapter;
+import test.beforegroups.issue2359.SampleFor2359;
 import test.beforegroups.issue346.SampleTestClass;
 
 public class BeforeGroupsTest extends SimpleBaseTest {
@@ -98,6 +101,28 @@ public class BeforeGroupsTest extends SimpleBaseTest {
             "test4_testGroup2",
             "afterGroups2");
     assertThat(AnotherTestClassSample.logs).containsExactlyElementsOf(expectedLogs);
+  }
+
+  @Test
+  public void ensureBeforeGroupIsRunBeforeFirstTestInParallelMethodLaunch() {
+    TestNG tng = new TestNG();
+
+    tng.setTestClasses(new Class[] {SampleFor2359.class});
+
+    // bug only exists when running parallel by instances with this flag set to false
+    tng.setParallel(XmlSuite.ParallelMode.METHODS);
+    tng.setThreadCount(3);
+
+    ListenerAdapter adapter = new ListenerAdapter();
+    tng.addListener(adapter);
+
+    tng.run();
+
+    ITestResult beforeGroup = adapter.getPassedConfiguration().iterator().next();
+    adapter
+        .getPassedTests()
+        .forEach(
+            t -> assertThat(t.getStartMillis()).isGreaterThanOrEqualTo(beforeGroup.getEndMillis()));
   }
 
   private static void createXmlTest(XmlSuite xmlSuite, String name, String group) {
