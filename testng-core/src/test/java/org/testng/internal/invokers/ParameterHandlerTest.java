@@ -2,6 +2,8 @@ package org.testng.internal.invokers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
@@ -62,7 +64,8 @@ public class ParameterHandlerTest extends SimpleBaseTest {
     ParameterHandler.ParameterBag params = invokeParameterCreation(testNGMethod);
     assertThat(params.parameterHolder).isNotNull();
     assertThat(params.parameterHolder.origin).isEqualByComparingTo(origin);
-    assertThat(params.parameterHolder.parameters.toString()).hasToString("bar");
+    Iterator<Object[]> iterators = params.parameterHolder.parameters;
+    assertThat(iterators).toIterable().containsAll(Collections.singletonList(new Object[] {"bar"}));
   }
 
   private ParameterHandler.ParameterBag invokeParameterCreation(ITestNGMethod method) {
