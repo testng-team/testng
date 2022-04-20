@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -15,10 +18,13 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.internal.MethodInstance;
+import org.testng.internal.WrappedTestNGMethod;
 import org.testng.reporters.RuntimeBehavior;
 import org.w3c.dom.Document;
 import test.SimpleBaseTest;
 import test.reports.issue2171.TestClassExample;
+import test.simple.SimpleSample;
 
 public class XmlReporterTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1566")
@@ -64,15 +70,44 @@ public class XmlReporterTest extends SimpleBaseTest {
     assertThat(data.trim()).isEqualTo("issue2171.html");
   }
 
+  @Test
+  public void ensureReportGenerationWhenTestMethodIsWrappedWithWrappedTestNGMethod() {
+    File file =
+        runTest(
+            SimpleSample.class,
+            testng ->
+                testng.setMethodInterceptor(
+                    (methods, context) ->
+                        methods.stream()
+                            .flatMap(
+                                t ->
+                                    Stream.of(
+                                        t,
+                                        new MethodInstance(new WrappedTestNGMethod(t.getMethod()))))
+                            .collect(Collectors.toList())));
+    assertThat(file.exists()).isTrue();
+  }
+
   private static File runTest(Class<?> clazz) {
-    return runTest(clazz, RuntimeBehavior.FILE_NAME);
+    return runTest(clazz, RuntimeBehavior.FILE_NAME, null);
+  }
+
+  private static File runTest(Class<?> clazz, Consumer<TestNG> customizer) {
+    return runTest(clazz, RuntimeBehavior.FILE_NAME, customizer);
   }
 
   private static File runTest(Class<?> clazz, String fileName) {
+    return runTest(clazz, fileName, null);
+  }
+
+  private static File runTest(Class<?> clazz, String fileName, Consumer<TestNG> customizer) {
     String suiteName = UUID.randomUUID().toString();
     File fileLocation = createDirInTempDir(suiteName);
     TestNG testng = create(fileLocation.toPath(), clazz);
     testng.setUseDefaultListeners(true);
+    if (customizer != null) {
+      customizer.accept(testng);
+    }
     testng.run();
     return new File(fileLocation, fileName);
   }
