@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import org.testng.ITestNGMethod;
+import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.log4testng.Logger;
@@ -57,37 +59,84 @@ public class ConfigurationGroupMethods {
     return m_afterGroupsMethods;
   }
 
+  public List<ITestNGMethod> getBeforeGroupMethodsForGroup(String[] groups) {
+    if (groups.length == 0) {
+      return Collections.emptyList();
+    }
+
+    synchronized (beforeGroupsThatHaveAlreadyRun) {
+      return Arrays.stream(groups)
+          .map(t -> retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, t))
+          .filter(Objects::nonNull)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toList());
+    }
+  }
+
+  public List<ITestNGMethod> getAfterGroupMethods(ITestNGMethod testMethod) {
+    if (testMethod.hasMoreInvocation() || testMethod.getGroups().length == 0) {
+      return Collections.emptyList();
+    }
+
+    Set<String> methodGroups = new HashSet<>(Arrays.asList(testMethod.getGroups()));
+
+    synchronized (afterGroupsThatHaveAlreadyRun) {
+      if (m_afterGroupsMap == null) {
+        m_afterGroupsMap = initializeAfterGroupsMap();
+      }
+
+      return methodGroups.stream()
+          .filter(t -> isLastMethodForGroup(t, testMethod))
+          .map(t -> retrieve(afterGroupsThatHaveAlreadyRun, m_afterGroupsMethods, t))
+          .filter(Objects::nonNull)
+          .flatMap(Collection::stream)
+          .filter(
+              afterGroupMethod -> {
+                String[] afterGroupMethodGroups = afterGroupMethod.getAfterGroups();
+                if (afterGroupMethodGroups.length == 1
+                    || methodGroups.containsAll(Arrays.asList(afterGroupMethodGroups))) {
+                  return true;
+                }
+                return Arrays.stream(afterGroupMethodGroups)
+                    .allMatch(
+                        t ->
+                            methodGroups.contains(t)
+                                || !CollectionUtils.hasElements(m_afterGroupsMap.get(t)));
+              })
+          .collect(Collectors.toList());
+    }
+  }
+
+  public void removeBeforeGroups(String[] groups) {
+    for (String group : groups) {
+      m_beforeGroupsMethods.remove(group);
+      beforeGroupsThatHaveAlreadyRun.get(group).countDown();
+    }
+  }
+
+  public void removeAfterGroups(Collection<String> groups) {
+    for (String group : groups) {
+      m_afterGroupsMethods.remove(group);
+    }
+  }
+
   /**
    * @param group The group name
    * @param method The test method
    * @return true if the passed method is the last to run for the group. This method is used to
    *     figure out when is the right time to invoke afterGroups methods.
    */
-  public boolean isLastMethodForGroup(String group, ITestNGMethod method) {
+  private boolean isLastMethodForGroup(String group, ITestNGMethod method) {
+    List<ITestNGMethod> methodsInGroup = m_afterGroupsMap.get(group);
 
-    // If we have more invocation to do, this is not the last one yet
-    if (method.hasMoreInvocation()) {
-      return false;
+    if (null == methodsInGroup || methodsInGroup.isEmpty()) {
+      return true;
     }
 
-    // This Mutex ensures that this edit check runs sequentially for one ITestNGMethod
-    // method at a time because this object is being shared between all the ITestNGMethod objects.
-    synchronized (this) {
-      if (m_afterGroupsMap == null) {
-        m_afterGroupsMap = initializeAfterGroupsMap();
-      }
+    methodsInGroup.remove(method);
 
-      List<ITestNGMethod> methodsInGroup = m_afterGroupsMap.get(group);
-
-      if (null == methodsInGroup || methodsInGroup.isEmpty()) {
-        return false;
-      }
-
-      methodsInGroup.remove(method);
-
-      // Note:  == is not good enough here as we may work with ITestNGMethod clones
-      return methodsInGroup.isEmpty();
-    }
+    // Note:  == is not good enough here as we may work with ITestNGMethod clones
+    return methodsInGroup.isEmpty();
   }
 
   private Map<String, List<ITestNGMethod>> initializeAfterGroupsMap() {
@@ -105,39 +154,6 @@ public class ConfigurationGroupMethods {
     }
 
     return result;
-  }
-
-  public List<ITestNGMethod> getBeforeGroupMethodsForGroup(String[] groups) {
-    if (groups.length == 0) {
-      return Collections.emptyList();
-    }
-
-    synchronized (beforeGroupsThatHaveAlreadyRun) {
-      return Arrays.stream(groups)
-          .map(t -> retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, t))
-          .filter(Objects::nonNull)
-          .flatMap(Collection::stream)
-          .collect(Collectors.toList());
-    }
-  }
-
-  public List<ITestNGMethod> getAfterGroupMethodsForGroup(String group) {
-    synchronized (afterGroupsThatHaveAlreadyRun) {
-      return retrieve(afterGroupsThatHaveAlreadyRun, m_afterGroupsMethods, group);
-    }
-  }
-
-  public void removeBeforeGroups(String[] groups) {
-    for (String group : groups) {
-      m_beforeGroupsMethods.remove(group);
-      beforeGroupsThatHaveAlreadyRun.get(group).countDown();
-    }
-  }
-
-  public void removeAfterGroups(Collection<String> groups) {
-    for (String group : groups) {
-      m_afterGroupsMethods.remove(group);
-    }
   }
 
   private static List<ITestNGMethod> retrieve(
