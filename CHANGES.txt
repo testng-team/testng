@@ -11,7 +11,7 @@ Fixed: GITHUB-2637: Upgrade to JDK11 as the minimum JDK requirements (Krishnan M
 Fixed: GITHUB-2734: Keep the initial order of listeners (Andrei Solntsev)
 Fixed: GITHUB-2359: Testng @BeforeGroups is running in parallel with testcases in the group (Anton Velma)
 Fixed: Possible StringIndexOutOfBoundsException in XmlReporter (Anton Velma)
-Fixed: AfterGroups methods could be invoked before all tests for defined groups in case of multiple groups for AfterGroups method (Anton Velma)
+Fixed: GITHUB-2754: @AfterGroups is executed for each "finished" group when it has multiple groups defined (Anton Velma)
 
 7.5
 Fixed: GITHUB-2701: Bump gradle version to 7.3.3 to support java17 build (ZhangJian He)
