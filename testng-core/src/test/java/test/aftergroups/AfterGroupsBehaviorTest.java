@@ -46,6 +46,7 @@ public class AfterGroupsBehaviorTest extends SimpleBaseTest {
 
     tng.run();
 
+    assertThat(adapter.getPassedConfiguration()).hasSize(1);
     ITestResult afterGroup = adapter.getPassedConfiguration().iterator().next();
     adapter
         .getPassedTests()

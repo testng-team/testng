@@ -90,21 +90,23 @@ public class ConfigurationGroupMethods {
           .map(t -> retrieve(afterGroupsThatHaveAlreadyRun, m_afterGroupsMethods, t))
           .filter(Objects::nonNull)
           .flatMap(Collection::stream)
-          .filter(
-              afterGroupMethod -> {
-                String[] afterGroupMethodGroups = afterGroupMethod.getAfterGroups();
-                if (afterGroupMethodGroups.length == 1
-                    || methodGroups.containsAll(Arrays.asList(afterGroupMethodGroups))) {
-                  return true;
-                }
-                return Arrays.stream(afterGroupMethodGroups)
-                    .allMatch(
-                        t ->
-                            methodGroups.contains(t)
-                                || !CollectionUtils.hasElements(m_afterGroupsMap.get(t)));
-              })
+          .filter(t -> isAfterGroupAllowedToRunAfterTestMethod(t, methodGroups))
           .collect(Collectors.toList());
     }
+  }
+
+  private boolean isAfterGroupAllowedToRunAfterTestMethod(
+      ITestNGMethod afterGroupMethod, Set<String> testMethodGroups) {
+    String[] afterGroupMethodGroups = afterGroupMethod.getAfterGroups();
+    if (afterGroupMethodGroups.length == 1
+        || testMethodGroups.containsAll(Arrays.asList(afterGroupMethodGroups))) {
+      return true;
+    }
+    return Arrays.stream(afterGroupMethodGroups)
+        .allMatch(
+            t ->
+                testMethodGroups.contains(t)
+                    || !CollectionUtils.hasElements(m_afterGroupsMap.get(t)));
   }
 
   public void removeBeforeGroups(String[] groups) {
