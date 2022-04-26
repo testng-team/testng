@@ -19,6 +19,7 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private String m_testName = "";
   private boolean m_singleThreaded = false;
   private Class<?> m_dataProviderClass = null;
+  private String m_dataProviderDynamicClass = null;
   private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
   private boolean m_skipFailedInvocations = false;
   private boolean m_ignoreMissingDependencies = false;
@@ -64,6 +65,16 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   @Override
   public void setDataProviderClass(Class<?> dataProviderClass) {
     m_dataProviderClass = dataProviderClass;
+  }
+
+  @Override
+  public String getDataProviderDynamicClass() {
+    return m_dataProviderDynamicClass;
+  }
+
+  @Override
+  public void setDataProviderDynamicClass(String v) {
+    m_dataProviderDynamicClass = v;
   }
 
   @Override

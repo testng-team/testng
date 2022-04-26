@@ -48,7 +48,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
   private final JDK15TagFactory m_tagFactory = new JDK15TagFactory();
   private final Map<Class<? extends IAnnotation>, Class<? extends Annotation>> m_annotationMap =
       new ConcurrentHashMap<>();
-  private final Map<Pair<Annotation, ?>, IAnnotation> m_annotations = new ConcurrentHashMap<>();
+  private final Map<String, IAnnotation> m_annotations = new ConcurrentHashMap<>();
 
   private final IAnnotationTransformer m_transformer;
 
@@ -273,7 +273,7 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
 
     IAnnotation result =
         m_annotations.computeIfAbsent(
-            p,
+            p.toString(),
             key -> {
               IAnnotation obj = m_tagFactory.createTag(cls, testMethod, a, annotationClass);
               transform(obj, testClass, testConstructor, testMethod, whichClass);

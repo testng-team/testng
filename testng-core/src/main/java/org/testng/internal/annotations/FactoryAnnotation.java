@@ -8,6 +8,7 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
 
   private String m_dataProvider = null;
   private Class<?> m_dataProviderClass;
+  private String m_dataProviderDynamicClass;
   private boolean m_enabled = true;
   private List<Integer> m_indices;
 
@@ -28,6 +29,16 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
   @Override
   public Class<?> getDataProviderClass() {
     return m_dataProviderClass;
+  }
+
+  @Override
+  public String getDataProviderDynamicClass() {
+    return m_dataProviderDynamicClass;
+  }
+
+  @Override
+  public void setDataProviderDynamicClass(String v) {
+    m_dataProviderDynamicClass = v;
   }
 
   @Override

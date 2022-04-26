@@ -373,4 +373,9 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   public int hashCode() {
     return multiplicationFactor * testNGMethod.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return testNGMethod.toString();
+  }
 }

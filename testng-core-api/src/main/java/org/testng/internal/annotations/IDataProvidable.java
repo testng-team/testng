@@ -9,4 +9,8 @@ public interface IDataProvidable {
   Class<?> getDataProviderClass();
 
   void setDataProviderClass(Class<?> v);
+
+  String getDataProviderDynamicClass();
+
+  void setDataProviderDynamicClass(String v);
 }
