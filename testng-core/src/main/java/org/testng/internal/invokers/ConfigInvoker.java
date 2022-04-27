@@ -7,7 +7,7 @@ import static org.testng.internal.invokers.Invoker.SAME_CLASS;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +24,17 @@ import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
-import org.testng.internal.*;
+import org.testng.internal.ClassHelper;
+import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.IConfiguration;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.MethodHelper;
+import org.testng.internal.Parameters;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.TestListenerHelper;
+import org.testng.internal.TestResult;
+import org.testng.internal.Utils;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.thread.ThreadUtil;
@@ -159,59 +169,30 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       return;
     }
 
-    // See if the currentMethod is the last method in any of the groups
-    // it belongs to
-    Map<String, String> filteredGroups = Maps.newHashMap();
-    String[] groups = arguments.getTestMethod().getGroups();
-    for (String group : groups) {
-      if (arguments.getGroupMethods().isLastMethodForGroup(group, arguments.getTestMethod())) {
-        filteredGroups.put(group, group);
-      }
-    }
-
-    if (filteredGroups.isEmpty()) {
-      return;
-    }
-
-    // The list of afterMethods to run
-    Map<ITestNGMethod, ITestNGMethod> afterMethods = Maps.newHashMap();
-
-    // Now filteredGroups contains all the groups for which we need to run the afterGroups
-    // method.  Find all the methods that correspond to these groups and invoke them.
-    for (String g : filteredGroups.values()) {
-      List<ITestNGMethod> methods = arguments.getGroupMethods().getAfterGroupMethodsForGroup(g);
-      // Note:  should put them in a map if we want to make sure the same afterGroups
-      // doesn't get run twice
-      if (methods != null) {
-        for (ITestNGMethod m : methods) {
-          afterMethods.put(m, m);
-        }
-      }
-    }
-
     // Got our afterMethods, invoke them
+    Set<String> filteredGroups = new HashSet<>();
     ITestNGMethod[] filteredConfigurations =
-        afterMethods.keySet().stream()
+        arguments.getGroupMethods().getAfterGroupMethods(arguments.getTestMethod()).stream()
+            .peek(t -> filteredGroups.addAll(Arrays.asList(t.getGroups())))
             .filter(ConfigInvoker::isGroupLevelConfigurationMethod)
             .toArray(ITestNGMethod[]::new);
-    if (filteredConfigurations.length == 0) {
-      return;
-    }
-    // don't pass the IClass or the instance as the method may be external
-    // the invocation must be similar to @BeforeTest/@BeforeSuite
-    ConfigMethodArguments configMethodArguments =
-        new Builder()
-            .usingConfigMethodsAs(filteredConfigurations)
-            .forSuite(arguments.getSuite())
-            .usingParameters(arguments.getParameters())
-            .usingInstance(arguments.getInstance())
-            .forTestMethod(arguments.getTestMethod())
-            .build();
+    if (filteredConfigurations.length != 0) {
+      // don't pass the IClass or the instance as the method may be external
+      // the invocation must be similar to @BeforeTest/@BeforeSuite
+      ConfigMethodArguments configMethodArguments =
+          new Builder()
+              .usingConfigMethodsAs(filteredConfigurations)
+              .forSuite(arguments.getSuite())
+              .usingParameters(arguments.getParameters())
+              .usingInstance(arguments.getInstance())
+              .forTestMethod(arguments.getTestMethod())
+              .build();
 
-    invokeConfigurations(configMethodArguments);
+      invokeConfigurations(configMethodArguments);
+    }
 
     // Remove the groups so they don't get run again
-    arguments.getGroupMethods().removeAfterGroups(filteredGroups.keySet());
+    arguments.getGroupMethods().removeAfterGroups(filteredGroups);
   }
 
   public void invokeConfigurations(ConfigMethodArguments arguments) {

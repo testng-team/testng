@@ -2,6 +2,7 @@ package test.aftergroups;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -12,6 +13,8 @@ import test.aftergroups.issue165.TestclassSampleWithFailedMember;
 import test.aftergroups.issue165.TestclassSampleWithSkippedMember;
 import test.aftergroups.issue1880.LocalConfigListener;
 import test.aftergroups.issue1880.TestClassSample;
+import test.aftergroups.samples.MultipleGroupsSample;
+import test.beforegroups.issue2359.ListenerAdapter;
 
 public class AfterGroupsBehaviorTest extends SimpleBaseTest {
 
@@ -31,6 +34,24 @@ public class AfterGroupsBehaviorTest extends SimpleBaseTest {
       {TestclassSampleWithSkippedMember.class, "afterGroupsMethod"},
       {TestclassSampleWithFailedMember.class, "afterGroupsMethod"},
     };
+  }
+
+  @Test
+  public void ensureAfterGroupsInvokedAfterAllTestsWhenMultipleGroupsDefined() {
+    TestNG tng = new TestNG();
+    tng.setTestClasses(new Class[] {MultipleGroupsSample.class});
+
+    ListenerAdapter adapter = new ListenerAdapter();
+    tng.addListener(adapter);
+
+    tng.run();
+
+    assertThat(adapter.getPassedConfiguration()).hasSize(1);
+    ITestResult afterGroup = adapter.getPassedConfiguration().iterator().next();
+    adapter
+        .getPassedTests()
+        .forEach(
+            t -> assertThat(t.getEndMillis()).isLessThanOrEqualTo(afterGroup.getStartMillis()));
   }
 
   private static void runTest(
