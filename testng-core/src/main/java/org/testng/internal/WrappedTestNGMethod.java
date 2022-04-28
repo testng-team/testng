@@ -366,7 +366,7 @@ public class WrappedTestNGMethod implements ITestNGMethod {
 
   @Override
   public boolean equals(Object o) {
-    return testNGMethod.equals(o);
+    return o == this || (o instanceof ITestNGMethod && testNGMethod.equals(o));
   }
 
   @Override
