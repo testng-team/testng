@@ -4,12 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.security.Permission;
 import org.testng.IReporter;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.reporters.EmailableReporter;
@@ -17,19 +14,6 @@ import org.testng.reporters.EmailableReporter2;
 import test.SimpleBaseTest;
 
 public class EmailableReporterTest extends SimpleBaseTest {
-  private SecurityManager manager;
-
-  @BeforeClass(alwaysRun = true)
-  public void setup() {
-    manager = System.getSecurityManager();
-    System.setSecurityManager(new MySecurityManager(manager));
-  }
-
-  @AfterClass(alwaysRun = true)
-  public void cleanup() {
-    System.setSecurityManager(manager);
-  }
-
   @Test(dataProvider = "getReporterInstances", priority = 1)
   public void testReportsNameCustomizationViaRunMethodInvocationAndJVMArguments(
       IReporter reporter, String jvm) {
@@ -132,24 +116,5 @@ public class EmailableReporterTest extends SimpleBaseTest {
 
     File actual = new File(output.getAbsolutePath(), filename);
     assertThat(actual).exists();
-  }
-
-  public static class MySecurityManager extends SecurityManager {
-
-    private SecurityManager baseSecurityManager;
-
-    MySecurityManager(SecurityManager baseSecurityManager) {
-      this.baseSecurityManager = baseSecurityManager;
-    }
-
-    @Override
-    public void checkPermission(Permission permission) {
-      if (permission.getName().startsWith("exitVM")) {
-        throw new SecurityException("System exit not allowed");
-      }
-      if (baseSecurityManager != null) {
-        baseSecurityManager.checkPermission(permission);
-      }
-    }
   }
 }

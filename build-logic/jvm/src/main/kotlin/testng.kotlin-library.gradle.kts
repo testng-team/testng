@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.6.10"))
+    testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:1.6.20"))
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
 

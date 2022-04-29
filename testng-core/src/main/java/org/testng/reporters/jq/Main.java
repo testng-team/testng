@@ -20,7 +20,7 @@ public class Main implements IReporter {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES =
       new String[] {
-        "jquery.min.js",
+        "jquery-3.6.0.min.js",
         "testng-reports.css",
         "testng-reports.js",
         "testng-reports1.css",
@@ -103,11 +103,7 @@ public class Main implements IReporter {
 
   private InputStream load(String fileName) {
     String path;
-    if (fileName.equals("jquery.min.js")) {
-      path = "/META-INF/resources/webjars/jquery/3.5.1/jquery.min.js";
-    } else {
-      path = Main.TESTNG_RESOURCE_PREFIX + fileName;
-    }
+    path = Main.TESTNG_RESOURCE_PREFIX + fileName;
     return getClass().getResourceAsStream(path);
   }
 }
