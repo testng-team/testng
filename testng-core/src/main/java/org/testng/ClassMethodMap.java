@@ -51,7 +51,8 @@ public class ClassMethodMap {
   public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
     Collection<ITestNGMethod> l = classMap.get(instance);
     if (l == null) {
-      throw new AssertionError("l should not be null");
+      throw new IllegalStateException(
+          "Could not find any methods associated with test class instance " + instance);
     }
     l.remove(m);
     // It's the last method of this class if all the methods remaining in the list belong to a

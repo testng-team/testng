@@ -127,7 +127,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       try {
         invokeTestMethods(testMethod, testMthdInst.getInstance());
       } finally {
-        invokeAfterClassMethods(testMethod.getTestClass(), testMthdInst);
+        synchronized (testMethod.getInstance()) {
+          invokeAfterClassMethods(testMethod.getTestClass(), testMthdInst);
+        }
       }
     }
   }
