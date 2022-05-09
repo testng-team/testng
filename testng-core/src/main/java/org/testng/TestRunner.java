@@ -17,12 +17,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
+import org.testng.internal.ClassBasedWrapper;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.DefaultListenerFactory;
@@ -374,11 +376,7 @@ public class TestRunner
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
-      if (IClassListener.class.isAssignableFrom(c) && m_classListeners.containsKey(c)) {
-        continue;
-      }
       ITestNGListener listener = factory.createListener(c);
-
       addListener(listener);
     }
   }
@@ -1119,20 +1117,11 @@ public class TestRunner
 
   @Override
   public List<IConfigurationListener> getConfigurationListeners() {
-    List<IConfigurationListener> listeners = Lists.newArrayList(m_configurationListeners);
-    for (IConfigurationListener each : this.m_configuration.getConfigurationListeners()) {
-      boolean duplicate = false;
-      for (IConfigurationListener listener : listeners) {
-        if (each.getClass().equals(listener.getClass())) {
-          duplicate = true;
-          break;
-        }
-      }
-      if (!duplicate) {
-        listeners.add(each);
-      }
-    }
-    return Lists.newArrayList(listeners);
+    return m_configurationListeners.stream()
+        .map(ClassBasedWrapper::wrap)
+        .distinct()
+        .map(ClassBasedWrapper::unWrap)
+        .collect(Collectors.toUnmodifiableList());
   }
 
   private void logFailedTest(ITestResult tr, boolean withinSuccessPercentage) {
@@ -1170,7 +1159,6 @@ public class TestRunner
   }
 
   public void addListener(ITestNGListener listener) {
-    // TODO a listener may be added many times if it implements many interfaces
     if (listener instanceof IMethodInterceptor) {
       m_methodInterceptors.add((IMethodInterceptor) listener);
     }
@@ -1180,9 +1168,7 @@ public class TestRunner
     }
     if (listener instanceof IClassListener) {
       IClassListener classListener = (IClassListener) listener;
-      if (!m_classListeners.containsKey(classListener.getClass())) {
-        m_classListeners.put(classListener.getClass(), classListener);
-      }
+      m_classListeners.putIfAbsent(classListener.getClass(), classListener);
     }
     if (listener instanceof IConfigurationListener) {
       addConfigurationListener((IConfigurationListener) listener);

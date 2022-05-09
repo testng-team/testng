@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
@@ -20,6 +21,8 @@ import test.listeners.issue2638.TestClassASample;
 import test.listeners.issue2638.TestClassBSample;
 import test.listeners.issue2685.InterruptedTestSample;
 import test.listeners.issue2685.SampleTestFailureListener;
+import test.listeners.issue2752.ListenerSample;
+import test.listeners.issue2752.TestClassSample;
 
 public class ListenersTest extends SimpleBaseTest {
 
@@ -65,6 +68,42 @@ public class ListenersTest extends SimpleBaseTest {
       new Object[] {getNestedSuitesViaXmlFilesWithListenerInChildSuite(), getExpectations()},
       new Object[] {getNestedSuitesViaApisWithListenerInChildSuite(), getExpectations()}
     };
+  }
+
+  @Test(description = "GITHUB-2752")
+  public void testWiringInOfListenersInMultipleTestTagsWithNoListenerInSuite() {
+    setupTest(false);
+    List<String> expected =
+        Arrays.asList(
+            "onStart", "onBeforeClass", "onTestStart", "onTestSuccess", "onAfterClass", "onFinish");
+    Map<String, List<String>> logs = ListenerSample.getLogs();
+    assertThat(logs.get("Xml_Test_1")).containsAll(expected);
+    assertThat(logs.get("Xml_Test_2")).containsAll(expected);
+  }
+
+  @Test(description = "GITHUB-2752")
+  public void testWiringInOfListenersInMultipleTestTagsWithListenerInSuite() {
+    setupTest(true);
+    List<String> expected =
+        Arrays.asList(
+            "onStart", "onBeforeClass", "onTestStart", "onTestSuccess", "onAfterClass", "onFinish");
+    Map<String, List<String>> logs = ListenerSample.getLogs();
+    assertThat(logs.get("Xml_Test_1")).containsAll(expected);
+    assertThat(logs.get("Xml_Test_2")).containsAll(expected);
+  }
+
+  private void setupTest(boolean addExplicitListener) {
+    TestNG testng = new TestNG();
+    XmlSuite xmlSuite = createXmlSuite("Xml_Suite");
+    createXmlTest(xmlSuite, "Xml_Test_1", TestClassSample.class);
+    createXmlTest(xmlSuite, "Xml_Test_2", TestClassSample.class);
+    testng.setXmlSuites(Collections.singletonList(xmlSuite));
+    testng.setVerbose(2);
+    if (addExplicitListener) {
+      ListenerSample listener = new ListenerSample();
+      testng.addListener(listener);
+    }
+    testng.run();
   }
 
   private static Map<String, String[]> getExpectations() {
