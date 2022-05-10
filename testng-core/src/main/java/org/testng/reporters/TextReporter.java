@@ -50,7 +50,7 @@ public class TextReporter implements ITestListener {
 
       logResult(
           "FAILED CONFIGURATION",
-          Utils.detailedMethodName(tr.getMethod(), false),
+          Utils.detailedMethodName(tr.getMethod()),
           tr.getMethod().getDescription(),
           stackTrace,
           tr.getParameters(),
@@ -61,7 +61,7 @@ public class TextReporter implements ITestListener {
     for (ITestResult tr : results) {
       logResult(
           "SKIPPED CONFIGURATION",
-          Utils.detailedMethodName(tr.getMethod(), false),
+          Utils.detailedMethodName(tr.getMethod()),
           tr.getMethod().getDescription(),
           null,
           tr.getParameters(),
@@ -129,7 +129,7 @@ public class TextReporter implements ITestListener {
   private void logResult(String status, ITestResult tr, String stackTrace) {
     logResult(
         status,
-        tr.getName(),
+        tr.getMethod().getQualifiedName(),
         tr.getMethod().getDescription(),
         stackTrace,
         tr.getParameters(),
