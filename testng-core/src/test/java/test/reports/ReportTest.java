@@ -301,8 +301,10 @@ public class ReportTest extends SimpleBaseTest {
     System.setOut(new PrintStream(systemOutCapture));
     tng.run();
     System.setOut(previousOut);
+    String actual = systemOutCapture.toString();
 
     Assert.assertTrue(
-        systemOutCapture.toString().contains("PASSED: testMethod(null, \"Bazinga!\")"));
+        actual.contains(
+            "PASSED: test.reports.ReportTest$NullParameter.testMethod(null, \"Bazinga!\")"));
   }
 }

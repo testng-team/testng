@@ -455,6 +455,14 @@ public final class Utils {
     return tempName + (fqn ? method.toString() : method.getMethodName());
   }
 
+  public static String detailedMethodName(ITestNGMethod method) {
+    String tempName = annotationFormFor(method);
+    if (!tempName.isEmpty()) {
+      tempName += " ";
+    }
+    return tempName + method.getQualifiedName();
+  }
+
   /**
    * Given a TestNG method, returns the corresponding annotation based on the method type
    *
