@@ -142,6 +142,7 @@
       <class name="test.CountTest" />
       <class name="test.EclipseTest" />
       <class name="test.ReporterApiTest" />
+      <class name="org.testng.reporters.TextReporterTest"/>
       <class name="test.reports.UniqueReporterInjectionTest"/>
       <class name="test.junitreports.JUnitReportsTest"/>
       <class name="test.abstractmethods.AbstractTest" />

@@ -1,8 +1,11 @@
 package org.testng.reporters.jq;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.testng.ISuite;
 import org.testng.ITestResult;
+import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.util.Strings;
@@ -45,7 +48,7 @@ public class SuitePanel extends BasePanel {
   }
 
   private void generateClassPanel(
-      Class c, List<ITestResult> results, XMLStringBuffer xsb, String status, ISuite suite) {
+      Class<?> c, List<ITestResult> results, XMLStringBuffer xsb, String status, ISuite suite) {
     xsb.push(D, C, "suite-" + suiteToTag(suite) + "-class-" + status);
     xsb.push(D, C, "main-panel-header rounded-window-top");
 
@@ -72,21 +75,25 @@ public class SuitePanel extends BasePanel {
 
     // Parameters?
     if (tr.getParameters().length > 0) {
-      StringBuilder sb = new StringBuilder();
-      boolean first = true;
-      for (Object p : tr.getParameters()) {
-        if (!first) sb.append(", ");
-        first = false;
-        sb.append(Utils.toString(p));
-      }
-      xsb.addOptional(S, "(" + sb.toString() + ")", C, "parameters");
+      String text =
+          Arrays.stream(tr.getParameters()).map(Utils::toString).collect(Collectors.joining(","));
+      xsb.addOptional(S, "(" + text + ")", C, "parameters");
+    }
+
+    CustomAttribute[] attributes = tr.getMethod().getAttributes();
+    if (attributes != null && attributes.length > 0) {
+      String text =
+          Arrays.stream(attributes)
+              .map(
+                  attribute ->
+                      "{ " + attribute.name() + ", " + Arrays.toString(attribute.values()) + " }")
+              .collect(Collectors.joining(", "));
+      xsb.addOptional(S, Utils.escapeHtml("(" + text + ")"), C, "parameters");
     }
 
     // Exception?
     if (tr.getStatus() != ITestResult.SUCCESS && tr.getThrowable() != null) {
-      StringBuilder stackTrace = new StringBuilder();
-      stackTrace.append(Utils.shortStackTrace(tr.getThrowable(), true));
-      xsb.addOptional(D, stackTrace.toString() + "\n", C, "stack-trace");
+      xsb.addOptional(D, Utils.shortStackTrace(tr.getThrowable(), true) + "\n", C, "stack-trace");
     }
 
     // Description?

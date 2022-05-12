@@ -1,19 +1,21 @@
 package org.testng.reporters;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.testng.IDataProviderMethod;
 import org.testng.IResultMap;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.annotations.CustomAttribute;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -65,7 +67,7 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    Set<ITestResult> testResults = Sets.newHashSet();
+    Set<ITestResult> testResults = Sets.newLinkedHashSet();
     ITestContext testContext = suiteResult.getTestContext();
     addAllTestResults(testResults, testContext.getPassedTests());
     addAllTestResults(testResults, testContext.getFailedTests());
@@ -78,18 +80,13 @@ public class XMLSuiteResultWriter {
     xmlBuffer.pop();
   }
 
-  @SuppressWarnings("unchecked")
   private void addAllTestResults(Set<ITestResult> testResults, IResultMap resultMap) {
     if (resultMap != null) {
       // Sort the results chronologically before adding them
-      List<ITestResult> allResults = new ArrayList<>(resultMap.getAllResults());
-
-      new ArrayList(allResults)
-          .sort(
-              (Comparator<ITestResult>)
-                  (o1, o2) -> (int) (o1.getStartMillis() - o2.getStartMillis()));
-
-      testResults.addAll(allResults);
+      testResults.addAll(
+          resultMap.getAllResults().stream()
+              .sorted((o1, o2) -> (int) (o1.getStartMillis() - o2.getStartMillis()))
+              .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
   }
 
@@ -158,6 +155,7 @@ public class XMLSuiteResultWriter {
     if (config.isGenerateTestResultAttributes()) {
       addTestResultAttributes(xmlBuffer, testResult);
     }
+    addTestMethodCustomAttributes(xmlBuffer, testResult);
     customizer.addCustomTagsFor(xmlBuffer, testResult);
     xmlBuffer.pop();
   }
@@ -349,5 +347,25 @@ public class XMLSuiteResultWriter {
       }
       xmlBuffer.pop();
     }
+  }
+
+  private void addTestMethodCustomAttributes(XMLStringBuffer xmlBuffer, ITestResult testResult) {
+    CustomAttribute[] attributes = testResult.getMethod().getAttributes();
+    if (attributes == null || attributes.length == 0) {
+      return;
+    }
+    xmlBuffer.push(XMLReporterConfig.TAG_CUSTOM_ATTRIBUTES);
+    for (CustomAttribute attribute : attributes) {
+      xmlBuffer.push(XMLReporterConfig.TAG_CUSTOM_ATTRIBUTE);
+      Properties properties = new Properties();
+      properties.setProperty(XMLReporterConfig.TAG_CUSTOM_ATTRIBUTE_VALUE, attribute.name());
+      xmlBuffer.push(XMLReporterConfig.TAG_CUSTOM_ATTRIBUTE_NAME, properties);
+      xmlBuffer.pop();
+      xmlBuffer.push(XMLReporterConfig.TAG_CUSTOM_ATTRIBUTE_VALUE);
+      xmlBuffer.addCDATA(Arrays.toString(attribute.values()));
+      xmlBuffer.pop();
+      xmlBuffer.pop();
+    }
+    xmlBuffer.pop();
   }
 }

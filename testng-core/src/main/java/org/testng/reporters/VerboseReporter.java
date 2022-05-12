@@ -2,11 +2,13 @@ package org.testng.reporters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
 
 /**
@@ -231,6 +233,17 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
         sb.append(tm.getSuccessPercentage());
         sb.append("%");
       }
+    }
+    CustomAttribute[] attributes = tm.getAttributes();
+    if ((st != Status.STARTED) && (attributes != null && attributes.length != 0)) {
+      String text =
+          "Test Attributes: "
+              + Arrays.stream(attributes)
+                  .map(
+                      attribute ->
+                          "<" + attribute.name() + ", " + Arrays.toString(attribute.values()) + ">")
+                  .collect(Collectors.joining(","));
+      sb.append("\n").append(text);
     }
     log(sb.toString());
   }

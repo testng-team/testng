@@ -1,6 +1,7 @@
 Current
 7.6.0
 Fixed: GITHUB-2741: Show fully qualified name of the test instead of just the function name for better readability of test output.(Krishnan Mahadevan)
+Fixed: GITHUB-2725: Honour custom attribute values in TestNG default reports (Krishnan Mahadevan)
 Fixed: GITHUB-2726: @AfterClass config method is executed for EACH @Test method when parallel == methods (Krishnan Mahadevan)
 Fixed: GITHUB-2752: TestListener is being lost when implenting both IClassListener and ITestListener (Krishnan Mahadevan)
 New:   GITHUB-2724: DataProvider: possibility to unload dataprovider class, when done with it (Dzmitry Sankouski)

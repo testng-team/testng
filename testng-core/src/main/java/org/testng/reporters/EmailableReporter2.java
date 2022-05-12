@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.annotations.CustomAttribute;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -445,15 +447,12 @@ public class EmailableReporter2 implements IReporter {
 
     writer.print("<table class=\"result\">");
 
-    boolean hasRows = false;
-
     // Write test parameters (if any)
     Object[] parameters = result.getParameters();
+    boolean hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
     int parameterCount = (parameters == null ? 0 : parameters.length);
-    hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
-    parameters = result.getParameters();
-    parameterCount = (parameters == null ? 0 : parameters.length);
     hasRows = dumpParametersInfo("Parameter", result.getParameters());
+    dumpAttributesInfo("Attribute(s)", result.getMethod().getAttributes());
 
     // Write reporter messages (if any)
     List<String> reporterMessages = Reporter.getOutput(result);
@@ -527,6 +526,27 @@ public class EmailableReporter2 implements IReporter {
     }
     writer.print("</tr>");
     return true;
+  }
+
+  private void dumpAttributesInfo(String prefix, CustomAttribute[] attributes) {
+    int parameterCount = (attributes == null ? 0 : attributes.length);
+    if (parameterCount == 0) {
+      return;
+    }
+    writer.print("<tr class=\"param\">");
+    writer.print(String.format("<th colspan=3>%s</th>", prefix));
+    writer.print("</tr>");
+    writer.print("<tr class=\"param stripe\">");
+    writer.print("<th>#</th><th>Name</th><th>Value(s)</th>");
+    writer.print("</tr>");
+    int i = 1;
+    for (CustomAttribute attribute : attributes) {
+      writer.print("<tr>");
+      writer.print("<td>" + String.format("%02d.", (i++)) + "</td>");
+      writer.print("<td>" + attribute.name() + "</td>");
+      writer.print("<td>" + Utils.escapeHtml(Arrays.toString(attribute.values())) + "</td>");
+      writer.print("</tr>");
+    }
   }
 
   protected void writeReporterMessages(List<String> reporterMessages) {
