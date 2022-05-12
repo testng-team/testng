@@ -12,12 +12,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
+import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestOrConfiguration;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -466,9 +468,27 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
         .append(", instance:")
         .append(getInstance())
         .append(instanceParameters())
+        .append(customAttributes())
         .append("]");
 
     return result.toString();
+  }
+
+  private String customAttributes() {
+    CustomAttribute[] attributes = getAttributes();
+    if (attributes == null || attributes.length == 0) {
+      return "";
+    }
+    return ", attributes: "
+        + Arrays.stream(this.getAttributes())
+            .map(
+                attribute ->
+                    "<name: "
+                        + attribute.name()
+                        + ", value:"
+                        + Arrays.toString(attribute.values())
+                        + ">")
+            .collect(Collectors.joining(", "));
   }
 
   public String getSimpleName() {

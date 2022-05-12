@@ -2,6 +2,7 @@ package org.testng.reporters;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -13,6 +14,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestRunner;
+import org.testng.annotations.CustomAttribute;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 
@@ -67,6 +69,7 @@ public class TestHTMLReporter implements ITestListener {
         .append("</b></td></tr>\n")
         .append("<tr>")
         .append("<td><b>Test method</b></td>\n")
+        .append("<td><b>Attribute(s)</b></td>\n")
         .append("<td width=\"30%\"><b>Exception</b></td>\n")
         .append("<td width=\"10%\"><b>Time (seconds)</b></td>\n")
         .append("<td><b>Instance</b></td>\n")
@@ -129,7 +132,7 @@ public class TestHTMLReporter implements ITestListener {
       //
       {
         List<String> output = Reporter.getOutput(tr);
-        if (null != output && output.size() > 0) {
+        if (!output.isEmpty()) {
           pw.append("<br/>");
           // Method name
           String divId = "Output-" + tr.hashCode();
@@ -155,6 +158,35 @@ public class TestHTMLReporter implements ITestListener {
       }
 
       pw.append("</td>\n");
+
+      // Custom attributes
+      CustomAttribute[] attributes = tr.getMethod().getAttributes();
+      if (attributes != null && attributes.length > 0) {
+        pw.append("<td>");
+        String divId = "attributes-" + tr.hashCode();
+        pw.append("\n<a href=\"#")
+            .append(divId)
+            .append("\"")
+            .append(" onClick='toggleBox(\"")
+            .append(divId)
+            .append("\", this, \"Show attributes\", \"Hide attributes\");'>")
+            .append("Show attributes</a>\n")
+            .append("\n<a href=\"#")
+            .append(divId)
+            .append("\"></a>");
+        pw.append("<div class='log' id=\"").append(divId).append("\">\n");
+        Arrays.stream(attributes)
+            .map(
+                attribute ->
+                    "name: " + attribute.name() + ", value:" + Arrays.toString(attribute.values()))
+            .forEach(
+                line -> {
+                  pw.append(Utils.escapeHtml(line));
+                  pw.append("<br>");
+                });
+        pw.append("</div>");
+        pw.append("</td>");
+      }
 
       // Exception
       tw = tr.getThrowable();

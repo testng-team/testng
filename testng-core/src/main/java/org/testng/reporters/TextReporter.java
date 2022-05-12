@@ -3,6 +3,7 @@ package org.testng.reporters;
 import static org.testng.internal.Utils.isStringNotBlank;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.annotations.CustomAttribute;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
@@ -52,6 +54,7 @@ public class TextReporter implements ITestListener {
           "FAILED CONFIGURATION",
           Utils.detailedMethodName(tr.getMethod()),
           tr.getMethod().getDescription(),
+          tr.getMethod().getAttributes(),
           stackTrace,
           tr.getParameters(),
           tr.getMethod().getParameterTypes());
@@ -63,6 +66,7 @@ public class TextReporter implements ITestListener {
           "SKIPPED CONFIGURATION",
           Utils.detailedMethodName(tr.getMethod()),
           tr.getMethod().getDescription(),
+          tr.getMethod().getAttributes(),
           null,
           tr.getParameters(),
           tr.getMethod().getParameterTypes());
@@ -131,6 +135,7 @@ public class TextReporter implements ITestListener {
         status,
         tr.getMethod().getQualifiedName(),
         tr.getMethod().getDescription(),
+        tr.getMethod().getAttributes(),
         stackTrace,
         tr.getParameters(),
         tr.getMethod().getParameterTypes());
@@ -158,6 +163,7 @@ public class TextReporter implements ITestListener {
       String status,
       String name,
       String description,
+      CustomAttribute[] attributes,
       String stackTrace,
       Object[] params,
       Class<?>[] paramTypes) {
@@ -194,6 +200,16 @@ public class TextReporter implements ITestListener {
         msg.append(" ");
       }
       msg.append(description);
+    }
+    if (attributes != null && attributes.length != 0) {
+      msg.append("\nTest Attributes: ");
+      String testAttributes =
+          Arrays.stream(attributes)
+              .map(
+                  attribute ->
+                      "<" + attribute.name() + ", " + Arrays.toString(attribute.values()) + ">")
+              .collect(Collectors.joining(", "));
+      msg.append(testAttributes).append("\n");
     }
     if (!Utils.isStringEmpty(stackTrace)) {
       msg.append("\n").append(stackTrace);

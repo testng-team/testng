@@ -26,6 +26,11 @@ public class XMLReporterConfig implements IReporterConfig {
   public static final String TAG_ATTRIBUTES = "attributes";
   public static final String TAG_ATTRIBUTE = "attribute";
 
+  public static final String TAG_CUSTOM_ATTRIBUTES = "custom-attributes";
+  public static final String TAG_CUSTOM_ATTRIBUTE = "custom-attribute";
+  public static final String TAG_CUSTOM_ATTRIBUTE_NAME = "name";
+  public static final String TAG_CUSTOM_ATTRIBUTE_VALUE = "value";
+
   public static final String ATTR_URL = "url";
   public static final String ATTR_NAME = "name";
   public static final String ATTR_STATUS = "status";

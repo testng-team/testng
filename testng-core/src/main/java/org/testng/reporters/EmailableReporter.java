@@ -24,6 +24,7 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+import org.testng.annotations.CustomAttribute;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -285,6 +286,22 @@ public class EmailableReporter implements IReporter {
       m_out.print("<tr class=\"param stripe\">");
       for (Object p : parameters) {
         m_out.println("<td>" + Utils.escapeHtml(Utils.toString(p)) + "</td>");
+      }
+      m_out.println("</tr>");
+    }
+    CustomAttribute[] attributes = ans.getMethod().getAttributes();
+    boolean hasCustomAttributes = attributes != null && attributes.length != 0;
+    if (hasCustomAttributes) {
+      tableStart("result", null);
+      m_out.print("<tr class=\"param\">");
+      for (int x = 1; x <= attributes.length; x++) {
+        m_out.print("<th>Attribute #" + x + "</th>");
+      }
+      m_out.println("</tr>");
+      m_out.print("<tr class=\"param stripe\">");
+      for (CustomAttribute p : attributes) {
+        String text = String.format("name=%s, value= %s", p.name(), Arrays.toString(p.values()));
+        m_out.println("<td>" + Utils.escapeHtml(text) + "</td>");
       }
       m_out.println("</tr>");
     }
