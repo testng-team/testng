@@ -4,12 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import org.testng.IDataProviderInterceptor;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.reporters.Files;
 import test.SimpleBaseTest;
 import test.TestHelper;
 import test.dataprovider.issue2111.CountingListener;
@@ -61,7 +62,7 @@ public class InterceptorTest extends SimpleBaseTest {
             + "</suite>";
     xml = String.format(xml, testClass.getName());
     File suiteFile = File.createTempFile("testng", ".xml");
-    Files.writeFile(xml, suiteFile);
+    Files.write(suiteFile.toPath(), xml.getBytes(StandardCharsets.UTF_8));
     TestNG testng = create();
     testng.setTestSuites(Collections.singletonList(suiteFile.getAbsolutePath()));
     CountingListener counter = new CountingListener();

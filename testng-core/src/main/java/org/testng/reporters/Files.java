@@ -14,9 +14,16 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
-public class Files {
+public final class Files {
 
+  private Files() {
+    // defeat instantiation
+  }
+
+  /** @deprecated - This method stands deprecated as of TestNG <code>7.6.0</code> */
+  @Deprecated
   public static String readFile(File f) throws IOException {
     try (InputStream is = new FileInputStream(f)) {
       return readFile(is);
@@ -24,16 +31,13 @@ public class Files {
   }
 
   public static String readFile(InputStream is) throws IOException {
-    StringBuilder result = new StringBuilder();
-    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-    String line = br.readLine();
-    while (line != null) {
-      result.append(line).append("\n");
-      line = br.readLine();
-    }
-    return result.toString();
+    return new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
+        .lines()
+        .collect(Collectors.joining("\n"));
   }
 
+  /** @deprecated - This method stands deprecated as of TestNG <code>7.6.0</code> */
+  @Deprecated
   public static void writeFile(String string, File f) throws IOException {
     f.getParentFile().mkdirs();
     try (FileWriter fw = new FileWriter(f);
@@ -42,6 +46,8 @@ public class Files {
     }
   }
 
+  /** @deprecated - This method stands deprecated as of TestNG <code>7.6.0</code> */
+  @Deprecated
   public static void copyFile(InputStream from, File to) throws IOException {
     if (!to.getParentFile().exists()) {
       to.getParentFile().mkdirs();
@@ -57,6 +63,8 @@ public class Files {
     }
   }
 
+  /** @deprecated - This method stands deprecated as of TestNG <code>7.6.0</code> */
+  @Deprecated
   public static String streamToString(InputStream is) throws IOException {
     if (is != null) {
       Writer writer = new StringWriter();

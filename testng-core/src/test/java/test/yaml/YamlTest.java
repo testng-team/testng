@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -15,7 +16,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
 import org.testng.internal.YamlParser;
-import org.testng.reporters.Files;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
@@ -55,7 +55,7 @@ public class YamlTest extends SimpleBaseTest {
     assertThat(count).isEqualTo(5);
     File newSuite = File.createTempFile("suite", ".xml");
     newSuite.deleteOnExit();
-    Files.writeFile(yaml.toString(), newSuite);
+    Files.write(newSuite.toPath(), yaml.toString().getBytes(StandardCharsets.UTF_8));
     assertThat(parser.parse(newSuite.getAbsolutePath(), new FileInputStream(file), false))
         .isEqualTo(xmlSuite);
   }
