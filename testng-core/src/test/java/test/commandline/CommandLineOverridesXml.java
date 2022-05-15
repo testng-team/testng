@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -89,8 +90,8 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
 
   private static String createTemporarySuiteAndGetItsPath() throws IOException {
     Path file = Files.createTempFile("testng", ".xml");
-    org.testng.reporters.Files.writeFile(
-        buildSuiteContentThatRefersToInvalidTestClass(), file.toFile());
+    Files.write(
+        file, buildSuiteContentThatRefersToInvalidTestClass().getBytes(StandardCharsets.UTF_8));
     return file.toFile().getAbsolutePath();
   }
 

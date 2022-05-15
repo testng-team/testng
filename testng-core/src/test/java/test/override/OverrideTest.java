@@ -2,13 +2,14 @@ package test.override;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
-import org.testng.reporters.Files;
 import test.SimpleBaseTest;
 import test.TestHelper;
 
@@ -26,7 +27,7 @@ public class OverrideTest extends SimpleBaseTest {
 
       // Delete temp file when program exits.
       result.deleteOnExit();
-      Files.writeFile(content, result);
+      Files.write(result.toPath(), content.getBytes(StandardCharsets.UTF_8));
 
       return result;
     } catch (IOException e) {

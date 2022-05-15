@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -12,7 +13,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
-import org.testng.reporters.Files;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
@@ -76,7 +76,7 @@ class JarFileUtils {
         if (Parser.canParse(jeName.toLowerCase())) {
           InputStream inputStream = jf.getInputStream(je);
           File copyFile = new File(file, jeName);
-          Files.copyFile(inputStream, copyFile);
+          Files.copy(inputStream, copyFile.toPath());
           if (matchesXmlPathInJar(je)) {
             suitePath = copyFile.toString();
           }

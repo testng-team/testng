@@ -90,7 +90,7 @@ public class Main implements IReporter {
             if (is == null) {
               throw new AssertionError("Couldn't find resource: " + fileName);
             }
-            Files.copyFile(is, new File(outputDirectory, fileName));
+            java.nio.file.Files.copy(is, new File(outputDirectory, fileName).toPath());
           }
         }
         all = Files.readFile(header);
@@ -102,8 +102,7 @@ public class Main implements IReporter {
   }
 
   private InputStream load(String fileName) {
-    String path;
-    path = Main.TESTNG_RESOURCE_PREFIX + fileName;
+    String path = Main.TESTNG_RESOURCE_PREFIX + fileName;
     return getClass().getResourceAsStream(path);
   }
 }

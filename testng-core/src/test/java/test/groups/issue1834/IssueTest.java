@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.reporters.Files;
 import test.SimpleBaseTest;
 import test.TestHelper;
 
@@ -16,7 +17,7 @@ public class IssueTest extends SimpleBaseTest {
   @Test(description = "GITHUB-1834")
   public void ensureDependenciesDefinedInSuiteAreHonored() throws IOException {
     File file = File.createTempFile("1834", ".xml");
-    Files.writeFile(asSuite(), file);
+    Files.write(file.toPath(), asSuite().getBytes(StandardCharsets.UTF_8));
     TestNG testng = create();
     testng.setTestSuites(Collections.singletonList(file.getAbsolutePath()));
     OutputGatheringListener listener = new OutputGatheringListener();
