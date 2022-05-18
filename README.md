@@ -6,7 +6,7 @@
 Documentation available at [TestNG's main web site](https://testng.org).
 
 ### Release Notes
-
+* [7.6.0](https://groups.google.com/g/testng-users/c/BAFB1vk-kok)
 * [7.5](https://groups.google.com/g/testng-users/c/ESLiK8xSomc)
 * [7.4.0](https://groups.google.com/g/testng-users/c/dwSJ04qeu8k)
 * [7.3.0](https://groups.google.com/forum/#!topic/testng-users/a81uaZvtEZI)
