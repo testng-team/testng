@@ -5,8 +5,8 @@ import static org.testng.Assert.assertTrue;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.testhelper.OutputDirectoryPatch;
 import test.SimpleBaseTest;
-import testhelper.OutputDirectoryPatch;
 
 public class AlwaysRunTest extends SimpleBaseTest {
 

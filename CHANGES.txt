@@ -1,4 +1,7 @@
 Current
+
+7.6.1
+Fixed: GITHUB-2761: Exception: ERROR java.nio.file.NoSuchFileException: /tmp/testngXmlPathInJar-15086412835569336174 (Krishnan Mahadevan)
 7.6.0
 Fixed: GITHUB-2741: Show fully qualified name of the test instead of just the function name for better readability of test output.(Krishnan Mahadevan)
 Fixed: GITHUB-2725: Honour custom attribute values in TestNG default reports (Krishnan Mahadevan)

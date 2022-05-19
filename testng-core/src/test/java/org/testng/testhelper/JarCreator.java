@@ -1,4 +1,4 @@
-package org.testng.jarfileutils;
+package org.testng.testhelper;
 
 import java.io.File;
 import java.io.IOException;

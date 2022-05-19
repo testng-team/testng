@@ -76,6 +76,7 @@ class JarFileUtils {
         if (Parser.canParse(jeName.toLowerCase())) {
           InputStream inputStream = jf.getInputStream(je);
           File copyFile = new File(file, jeName);
+          copyFile.getParentFile().mkdirs();
           Files.copy(inputStream, copyFile.toPath());
           if (matchesXmlPathInJar(je)) {
             suitePath = copyFile.toString();

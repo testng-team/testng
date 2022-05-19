@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
-import testhelper.OutputDirectoryPatch;
+import org.testng.testhelper.OutputDirectoryPatch;
 
 public class TestAfter {
 

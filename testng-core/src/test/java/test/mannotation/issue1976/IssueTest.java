@@ -8,22 +8,14 @@ import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-import testhelper.CompiledCode;
-import testhelper.SimpleCompiler;
-import testhelper.SourceCode;
+import org.testng.testhelper.CompiledCode;
+import org.testng.testhelper.SimpleCompiler;
+import org.testng.testhelper.SourceCode;
+import org.testng.testhelper.TestNGSimpleClassLoader;
 
 public class IssueTest extends ClassLoader {
 
   private static final File dir = SimpleCompiler.createTempDir();
-
-  private static final class MyClassLoader extends ClassLoader {
-
-    public Class<?> injectByteCode(CompiledCode byteCode) throws ClassNotFoundException {
-      Class<?> clazz =
-          defineClass(byteCode.getName(), byteCode.getByteCode(), 0, byteCode.getByteCode().length);
-      return loadClass(clazz.getName());
-    }
-  }
 
   @Test(
       dataProvider = "dp",
@@ -31,7 +23,7 @@ public class IssueTest extends ClassLoader {
       description = "GITHUB-1976")
   public void testMethod(SourceCode... sources) throws IOException, ClassNotFoundException {
     TestNG tng = new TestNG(false);
-    MyClassLoader classLoader = new MyClassLoader();
+    TestNGSimpleClassLoader classLoader = new TestNGSimpleClassLoader();
     tng.addClassLoader(classLoader);
     List<CompiledCode> byteCodes = SimpleCompiler.compileSourceCode(sources);
     List<Class<?>> classes = Lists.newArrayList();

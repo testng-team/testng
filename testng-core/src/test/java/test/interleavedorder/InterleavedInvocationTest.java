@@ -7,8 +7,8 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import org.testng.testhelper.OutputDirectoryPatch;
 import test.BaseTest;
-import testhelper.OutputDirectoryPatch;
 
 public class InterleavedInvocationTest extends BaseTest {
   public static List<String> LOG = new ArrayList<>();

@@ -6,11 +6,11 @@ import static org.testng.Assert.assertTrue;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.testhelper.OutputDirectoryPatch;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.conffailure.github990.AbstractBaseSample;
 import test.conffailure.github990.ChildClassSample;
-import testhelper.OutputDirectoryPatch;
 
 /**
  * Test various cases where the @Configuration methods fail

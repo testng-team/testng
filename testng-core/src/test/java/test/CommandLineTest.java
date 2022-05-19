@@ -19,8 +19,8 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.IConfiguration;
+import org.testng.testhelper.OutputDirectoryPatch;
 import test.sample.JUnitSample1;
-import testhelper.OutputDirectoryPatch;
 
 public class CommandLineTest {
 

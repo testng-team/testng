@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.jarfileutils.JarCreator;
+import org.testng.testhelper.JarCreator;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;

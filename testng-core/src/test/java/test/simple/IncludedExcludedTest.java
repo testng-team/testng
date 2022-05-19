@@ -11,8 +11,8 @@ import org.testng.ITestNGMethod;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.testhelper.OutputDirectoryPatch;
 import org.testng.xml.XmlSuite;
-import testhelper.OutputDirectoryPatch;
 
 public class IncludedExcludedTest {
 
