@@ -1,4 +1,4 @@
-package testhelper;
+package org.testng.testhelper;
 
 /**
  * <code>OutputDirectoryPatch</code> is a helper class to provide an output directory for TestNG

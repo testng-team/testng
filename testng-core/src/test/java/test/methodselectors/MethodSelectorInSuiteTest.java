@@ -10,12 +10,12 @@ import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.testhelper.OutputDirectoryPatch;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
-import testhelper.OutputDirectoryPatch;
 
 public class MethodSelectorInSuiteTest extends SimpleBaseTest {
 

@@ -1,4 +1,4 @@
-package testhelper;
+package org.testng.testhelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,22 @@ public class CompiledCode {
   private final String name;
 
   public CompiledCode(String name, File directory, boolean skipLoading) throws IOException {
+    this("", name, directory, skipLoading);
+  }
+
+  public CompiledCode(String packageName, String name, File directory, boolean skipLoading)
+      throws IOException {
     this.skipLoading = skipLoading;
-    this.name = name;
-    File classFile = new File(directory, name + Kind.CLASS.extension);
+    if (packageName != null && !packageName.trim().isEmpty()) {
+      this.name = packageName + "." + name;
+    } else {
+      this.name = name;
+    }
+    String location = name;
+    if (packageName != null && !packageName.trim().isEmpty()) {
+      location = packageName.replaceAll("\\Q.\\E", "/") + "/" + name;
+    }
+    File classFile = new File(directory, location + Kind.CLASS.extension);
     this.byteCode = Files.readAllBytes(classFile.toPath());
   }
 

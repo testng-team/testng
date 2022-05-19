@@ -90,7 +90,9 @@ public class Main implements IReporter {
             if (is == null) {
               throw new AssertionError("Couldn't find resource: " + fileName);
             }
-            java.nio.file.Files.copy(is, new File(outputDirectory, fileName).toPath());
+            File fileToCopy = new File(outputDirectory, fileName);
+            fileToCopy.getParentFile().mkdirs();
+            java.nio.file.Files.copy(is, fileToCopy.toPath());
           }
         }
         all = Files.readFile(header);

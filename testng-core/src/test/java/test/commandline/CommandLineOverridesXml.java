@@ -14,7 +14,7 @@ import java.util.Set;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.jarfileutils.JarCreator;
+import org.testng.testhelper.JarCreator;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.TestHelper;

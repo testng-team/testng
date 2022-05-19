@@ -4,8 +4,8 @@ import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.testhelper.OutputDirectoryPatch;
 import test.BaseTest;
-import testhelper.OutputDirectoryPatch;
 
 /** @author lukas */
 public class MixedTest extends BaseTest {

@@ -6,9 +6,9 @@ import java.io.File;
 import java.util.List;
 import org.testng.*;
 import org.testng.annotations.Test;
-import testhelper.CompiledCode;
-import testhelper.SimpleCompiler;
-import testhelper.SourceCode;
+import org.testng.testhelper.CompiledCode;
+import org.testng.testhelper.SimpleCompiler;
+import org.testng.testhelper.SourceCode;
 
 public class JUnitTestClassLoader extends ClassLoader {
 

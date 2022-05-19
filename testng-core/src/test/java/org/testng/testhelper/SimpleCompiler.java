@@ -1,4 +1,4 @@
-package testhelper;
+package org.testng.testhelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,18 @@ public class SimpleCompiler {
     List<CompiledCode> compiledCodes = Lists.newArrayList();
     for (SourceCode source : sources) {
       source.getLocation().delete();
-      CompiledCode compiledCode =
-          new CompiledCode(source.getName(), source.getDirectory(), source.isSkipLoading());
+      CompiledCode compiledCode;
+      if (source.hasPackageName()) {
+        compiledCode =
+            new CompiledCode(
+                source.getPackageName(),
+                source.getName(),
+                source.getDirectory(),
+                source.isSkipLoading());
+      } else {
+        compiledCode =
+            new CompiledCode(source.getName(), source.getDirectory(), source.isSkipLoading());
+      }
       compiledCodes.add(compiledCode);
     }
     return compiledCodes;
