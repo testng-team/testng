@@ -109,32 +109,32 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   public void run() {
     this.currentThreadId = Thread.currentThread().getId();
     if (RuntimeBehavior.enforceThreadAffinity()
-        && doesTaskHavePreRequistes()
+        && doesTaskHavePreRequisites()
         && currentThreadId != threadIdToRunOn) {
       completed = false;
       return;
     }
 
-    for (IMethodInstance testMthdInst : m_methodInstances) {
-      ITestNGMethod testMethod = testMthdInst.getMethod();
+    for (IMethodInstance testMethdInstance : m_methodInstances) {
+      ITestNGMethod testMethod = testMethdInstance.getMethod();
       if (canInvokeBeforeClassMethods()) {
         synchronized (testMethod.getInstance()) {
-          invokeBeforeClassMethods(testMethod.getTestClass(), testMthdInst);
+          invokeBeforeClassMethods(testMethod.getTestClass(), testMethdInstance);
         }
       }
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMthdInst.getInstance());
+        invokeTestMethods(testMethod, testMethdInstance.getInstance());
       } finally {
         synchronized (testMethod.getInstance()) {
-          invokeAfterClassMethods(testMethod.getTestClass(), testMthdInst);
+          invokeAfterClassMethods(testMethod.getTestClass(), testMethdInstance);
         }
       }
     }
   }
 
-  private boolean doesTaskHavePreRequistes() {
+  private boolean doesTaskHavePreRequisites() {
     return threadIdToRunOn != -1;
   }
 

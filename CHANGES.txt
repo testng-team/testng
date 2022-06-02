@@ -1322,7 +1322,7 @@ Added: comand line support for setting parallel mode, suite and test names
 Eclipse plug-in
 Added: Support for configuring per project usedefaultlisteners
 Added: Contextual drop-down menu on failures tab of the TestNG view to enable running/debugging method failure only
-Added: Suppport for configuring per project TestNG jar usage (project provided one or plugin provided one)
+Added: Support for configuring per project TestNG jar usage (project provided one or plugin provided one)
 
 ===========================================================================
 5.2

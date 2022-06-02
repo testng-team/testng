@@ -13,7 +13,7 @@ import java.util.Date;
  * a time trigger.
  *
  * <p>By default the time format is yyyy/MM/dd (according to {@code SimpleDateFormat}). You can
- * customize this by using the specialized constructors. Suppported date formats are according to
+ * customize this by using the specialized constructors. Supported date formats are according to
  * the {@code SimpleDateFormat}.
  *
  * @since 5.6
@@ -41,7 +41,7 @@ public class TimeBombSkipException extends SkipException {
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The <code>
-   * format</code> parameter wiil be used for performing the time comparison.
+   * format</code> parameter will be used for performing the time comparison.
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE
@@ -112,7 +112,7 @@ public class TimeBombSkipException extends SkipException {
 
   /**
    * Creates a {@code TimeBombedSkipException} using the <code>expirationDate</code>. The <code>
-   * format</code> parameter wiil be used for performing the time comparison.
+   * format</code> parameter will be used for performing the time comparison.
    *
    * @param msg exception message
    * @param expirationDate time limit after which the SKIP becomes a FAILURE

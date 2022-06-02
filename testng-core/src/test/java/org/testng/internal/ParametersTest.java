@@ -5,7 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.internal.Parameters.FilterOutInJectedTypesResult;
+import org.testng.internal.Parameters.FilterOutInjectedTypesResult;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.xml.XmlTest;
 
@@ -19,8 +19,8 @@ public class ParametersTest {
       XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
     JDK15AnnotationFinder finder = new JDK15AnnotationFinder(null);
     Method curMethod = new Object() {}.getClass().getEnclosingMethod();
-    FilterOutInJectedTypesResult filterOutResult =
-        org.testng.internal.Parameters.filterOutInJectedTypesFromOptionalValues(
+    FilterOutInjectedTypesResult filterOutResult =
+        org.testng.internal.Parameters.filterOutInjectedTypesFromOptionalValues(
             curMethod.getParameterTypes(), finder.findOptionalValues(curMethod));
     Assert.assertEquals(filterOutResult.getOptionalValues()[0], "optionaltestdata");
     Assert.assertEquals(filterOutResult.getParameterTypes()[0], String.class);

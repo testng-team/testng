@@ -234,8 +234,8 @@ public class Parameters {
       XmlSuite xmlSuite) {
     List<Object> vResult = Lists.newArrayList();
     if (optionalValues.length != parameterNames.length) {
-      FilterOutInJectedTypesResult filterOutResult =
-          filterOutInJectedTypesFromOptionalValues(parameterTypes, optionalValues);
+      FilterOutInjectedTypesResult filterOutResult =
+          filterOutInjectedTypesFromOptionalValues(parameterTypes, optionalValues);
       optionalValues = filterOutResult.getOptionalValues();
       parameterTypes = filterOutResult.getParameterTypes();
     }
@@ -277,9 +277,9 @@ public class Parameters {
    *
    * @param parameterTypes - The parameter types to be used
    * @param optionalValues - The optional values to be considered.
-   * @return FilterOutInJectedTypesResult
+   * @return FilterOutInjectedTypesResult
    */
-  static FilterOutInJectedTypesResult filterOutInJectedTypesFromOptionalValues(
+  static FilterOutInjectedTypesResult filterOutInjectedTypesFromOptionalValues(
       Class<?>[] parameterTypes, String[] optionalValues) {
     List<Class<?>> typeList = Lists.newArrayList(parameterTypes);
     List<String> optionalValueList = Lists.newArrayList(optionalValues);
@@ -293,16 +293,16 @@ public class Parameters {
         typeIterator.remove();
       }
     }
-    return new FilterOutInJectedTypesResult(
+    return new FilterOutInjectedTypesResult(
         typeList.toArray(new Class<?>[0]), optionalValueList.toArray(new String[0]));
   }
 
   /** Store the result of parameterTypes and optionalValues after filter out injected types */
-  static final class FilterOutInJectedTypesResult {
+  static final class FilterOutInjectedTypesResult {
     private final Class<?>[] parameterTypes;
     private final String[] optionalValues;
 
-    private FilterOutInJectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
+    private FilterOutInjectedTypesResult(Class<?>[] parameterTypes, String[] optionalValues) {
       this.parameterTypes = parameterTypes;
       this.optionalValues = optionalValues;
     }
@@ -790,7 +790,7 @@ public class Parameters {
         initParams =
             MethodInvocationHelper.invokeDataProvider(
                 dataProviderMethod
-                    .getInstance(), /* a test instance or null if the dataprovider is static*/
+                    .getInstance(), /* a test instance or null if the data provider is static*/
                 dataProviderMethod.getMethod(),
                 testMethod,
                 methodParams.context,

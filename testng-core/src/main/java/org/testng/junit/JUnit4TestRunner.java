@@ -22,9 +22,9 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
   private final ITestObjectFactory objectFactory;
   private final ITestResultNotifier m_parentRunner;
   private final List<ITestListener> m_listeners;
-  private List<ITestNGMethod> m_methods = Lists.newArrayList();
+  private final List<ITestNGMethod> m_methods = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
-  private Map<Description, ITestResult> m_findedMethods = new WeakHashMap<>();
+  private final Map<Description, ITestResult> m_foundMethods = new WeakHashMap<>();
 
   public JUnit4TestRunner(ITestObjectFactory objectFactory, ITestResultNotifier tr) {
     this.objectFactory = objectFactory;
@@ -80,7 +80,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                   if (methods.length == 0) {
                     if (description.getTestClass() != null) {
                       ITestResult tr = createTestResult(objectFactory, description);
-                      m_findedMethods.put(description, tr);
+                      m_foundMethods.put(description, tr);
                     }
                     // run everything
                     return true;
@@ -89,7 +89,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
                     Pattern p = Pattern.compile(m);
                     if (p.matcher(description.getMethodName()).matches()) {
                       ITestResult tr = createTestResult(objectFactory, description);
-                      m_findedMethods.put(description, tr);
+                      m_foundMethods.put(description, tr);
                       return true;
                     }
                   }
@@ -113,7 +113,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     @Override
     public void testAssumptionFailure(Failure failure) {
       notified.add(failure.getDescription());
-      ITestResult tr = m_findedMethods.get(failure.getDescription());
+      ITestResult tr = m_foundMethods.get(failure.getDescription());
       validate(tr, failure.getDescription());
       runAfterInvocationListeners(tr);
       tr.setStatus(TestResult.SKIP);
@@ -135,7 +135,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         return;
       }
       notified.add(failure.getDescription());
-      ITestResult tr = m_findedMethods.get(failure.getDescription());
+      ITestResult tr = m_foundMethods.get(failure.getDescription());
       if (tr == null) {
         // Not a test method, should be a config
         tr = createTestResult(objectFactory, failure.getDescription());
@@ -163,7 +163,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     @Override
     public void testFinished(Description description) throws Exception {
-      ITestResult tr = m_findedMethods.get(description);
+      ITestResult tr = m_foundMethods.get(description);
       validate(tr, description);
       runAfterInvocationListeners(tr);
       if (!notified.contains(description)) {
@@ -181,7 +181,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     public void testIgnored(Description description) throws Exception {
       if (!notified.contains(description)) {
         notified.add(description);
-        ITestResult tr = m_findedMethods.get(description);
+        ITestResult tr = m_foundMethods.get(description);
         validate(tr, description);
         runAfterInvocationListeners(tr);
         tr.setStatus(TestResult.SKIP);
@@ -202,7 +202,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
 
     @Override
     public void testStarted(Description description) throws Exception {
-      ITestResult tr = m_findedMethods.get(description);
+      ITestResult tr = m_foundMethods.get(description);
       validate(tr, description);
       for (ITestListener l : m_listeners) {
         l.onTestStart(tr);

@@ -75,7 +75,7 @@ public class Reporter {
     }
 
     if (m == null) {
-      // Persist the output temporarily into a Threadlocal String list.
+      // Persist the output temporarily into a ThreadLocal String list.
       if (m_orphanedOutput.get() == null) {
         m_orphanedOutput.set(new ArrayList<>());
       }

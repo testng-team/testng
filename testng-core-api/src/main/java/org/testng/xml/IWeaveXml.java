@@ -1,6 +1,6 @@
 package org.testng.xml;
 
-/** Represents the capabilities of a XML serialiser (As string) */
+/** Represents the capabilities of a XML serializer (As string) */
 public interface IWeaveXml {
   /**
    * Helps represent the contents of {@link XmlSuite} as a String.
