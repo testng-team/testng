@@ -11,7 +11,7 @@ public class BeforeGroupTest {
       groups = {"NewUser"},
       value = {"NewUser"})
   public void preNewUser(ITestContext itc) {
-    System.out.println("BEFOREGROUPS perfroming pre groups init");
+    System.out.println("BEFOREGROUPS performing pre groups init");
     //    m_inj = Guice.createInjector(new JUnitModule(), new RequestModule(),
     //        new GenericModule(), new SecurityModule());
     //    itc.setAttribute("injector", m_inj);
