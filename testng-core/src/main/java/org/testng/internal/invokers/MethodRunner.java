@@ -51,11 +51,11 @@ public class MethodRunner implements IMethodRunner {
         tmpResults.add(tmpResult);
         tmpResultsIndex++;
       } finally {
-        boolean lastSucces = false;
+        boolean lastSuccess = false;
         if (tmpResultsIndex >= 0) {
-          lastSucces = (tmpResults.get(tmpResultsIndex).getStatus() == ITestResult.SUCCESS);
+          lastSuccess = (tmpResults.get(tmpResultsIndex).getStatus() == ITestResult.SUCCESS);
         }
-        if (failure.instances.isEmpty() || lastSucces) {
+        if (failure.instances.isEmpty() || lastSuccess) {
           result.addAll(tmpResults);
         } else {
           List<ITestResult> retryResults = Lists.newArrayList();
