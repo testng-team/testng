@@ -13,8 +13,8 @@ import java.util.Date;
  * a time trigger.
  *
  * <p>By default the time format is yyyy/MM/dd (according to {@code SimpleDateFormat}). You can
- * customize this by using the specialized constructors. Supported date formats are according to
- * the {@code SimpleDateFormat}.
+ * customize this by using the specialized constructors. Supported date formats are according to the
+ * {@code SimpleDateFormat}.
  *
  * @since 5.6
  */
