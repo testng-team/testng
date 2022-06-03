@@ -72,9 +72,9 @@ public @interface AfterSuite {
 
   /**
    * The maximum number of milliseconds this method should take. If it hasn't returned after this
-   * time, this method will fail and it will cause test methods depending on it to be skipped.
+   * time, this method will fail, and it will cause test methods depending on it to be skipped.
    *
-   * @return the valude (default 0)
+   * @return the value (default 0)
    */
   long timeOut() default 0;
 }

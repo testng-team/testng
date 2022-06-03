@@ -47,9 +47,9 @@ public class AssertTest {
   }
 
   @Test(description = "GITHUB-2483", expectedExceptions = AssertionError.class)
-  public void testAsymetricNotEquals() {
-    AsymetricEquals equalsSame = AsymetricEquals.equalsSame();
-    AsymetricEquals equalsAll = AsymetricEquals.equalsAll();
+  public void testAsymmetricNotEquals() {
+    AsymmetricEquals equalsSame = AsymmetricEquals.equalsSame();
+    AsymmetricEquals equalsAll = AsymmetricEquals.equalsAll();
     // sanity
     Assert.assertFalse(equalsSame.equals(equalsAll));
     Assert.assertTrue(equalsAll.equals(equalsSame));
@@ -617,28 +617,28 @@ public class AssertTest {
     }
   }
 
-  static class AsymetricEquals {
+  static class AsymmetricEquals {
 
-    static AsymetricEquals equalsAll() {
-      return new AsymetricEquals(null);
+    static AsymmetricEquals equalsAll() {
+      return new AsymmetricEquals(null);
     }
 
-    static AsymetricEquals equalsSame() {
-      return new AsymetricEquals(new Object());
+    static AsymmetricEquals equalsSame() {
+      return new AsymmetricEquals(new Object());
     }
 
     Object value;
 
-    private AsymetricEquals(Object value) {
+    private AsymmetricEquals(Object value) {
       this.value = value;
     }
 
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof AsymetricEquals)) return false;
+      if (!(o instanceof AsymmetricEquals)) return false;
 
-      AsymetricEquals that = (AsymetricEquals) o;
+      AsymmetricEquals that = (AsymmetricEquals) o;
       if (value == null) return true;
       return value.equals(that.value);
     }

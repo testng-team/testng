@@ -14,7 +14,7 @@ final class XmlWeaver {
 
   private static IWeaveXml getInstance() {
     if (testMode) {
-      // Donot resort to caching when running Unit tests for TestNG, because we have to check
+      // Do not resort to caching when running Unit tests for TestNG, because we have to check
       // both implementations. If we cache the instance, then its not possible to do that.
       return attemptDefaultImplementationInstantiation();
     }

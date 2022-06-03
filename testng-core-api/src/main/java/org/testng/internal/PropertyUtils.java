@@ -89,7 +89,7 @@ public class PropertyUtils {
     }
 
     Object realValue = convertType(propClass, value, name);
-    // TODO: Here the property desc is serched again
+    // TODO: Here the property desc is searched again
     setPropertyRealValue(instance, name, realValue);
   }
 
@@ -130,7 +130,7 @@ public class PropertyUtils {
   public static void setPropertyRealValue(Object instance, String name, Object value) {
     if (instance == null) {
       LOGGER.warn(
-          "Cannot set property " + name + " with value " + value + ". Targe instance is null");
+          "Cannot set property " + name + " with value " + value + ". Target instance is null");
       return;
     }
 

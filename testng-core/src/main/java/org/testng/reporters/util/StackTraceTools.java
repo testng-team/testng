@@ -40,7 +40,7 @@ public final class StackTraceTools {
    * @return topmost position of the test method in the stack, or top of stack if <code>method
    *     </code> is not in it.
    */
-  public static StackTraceElement[] getTestNGInstrastructure(
+  public static StackTraceElement[] getTestNGInfrastructure(
       StackTraceElement[] stack, ITestNGMethod method) {
     if (method == null || stack == null) {
       return new StackTraceElement[] {};

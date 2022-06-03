@@ -158,10 +158,10 @@ class SuiteResultCounts {
     for (ISuiteResult isr : tempSuiteResult) {
       ITestContext ctx = isr.getTestContext();
       int passes = ctx.getPassedTests().size();
-      Map<String, Integer> seggregated = seggregateSkippedTests(ctx);
-      int skipped = seggregated.get(SKIPPED);
+      Map<String, Integer> segregated = seggregateSkippedTests(ctx);
+      int skipped = segregated.get(SKIPPED);
       m_skipped += skipped;
-      int retried = seggregated.get(RETRIED);
+      int retried = segregated.get(RETRIED);
       m_retries += retried;
       int failed =
           ctx.getFailedTests().size() + ctx.getFailedButWithinSuccessPercentageTests().size();

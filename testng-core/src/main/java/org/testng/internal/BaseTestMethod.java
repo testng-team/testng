@@ -374,13 +374,13 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   protected void initBeforeAfterGroups(
       Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     String[] groupsAtMethodLevel =
-        calculateGroupsTouseConsideringValuesAndGroupValues(annotationClass, groups);
+        calculateGroupsToUseConsideringValuesAndGroupValues(annotationClass, groups);
     // @BeforeGroups and @AfterGroups annotation cannot be used at Class level. So its always null
     setGroups(getStringArray(groupsAtMethodLevel, null));
     initRestOfGroupDependencies(annotationClass);
   }
 
-  private String[] calculateGroupsTouseConsideringValuesAndGroupValues(
+  private String[] calculateGroupsToUseConsideringValuesAndGroupValues(
       Class<? extends ITestOrConfiguration> annotationClass, String[] groups) {
     if (groups == null || groups.length == 0) {
       ITestOrConfiguration annotation =

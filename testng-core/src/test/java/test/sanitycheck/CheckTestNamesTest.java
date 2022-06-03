@@ -57,7 +57,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
 
   /** Child suites and tests within different suites have same names */
   @Test(enabled = false)
-  public void checkNoErrorWtihChildSuites() {
+  public void checkNoErrorWithChildSuites() {
     TestListenerAdapter tla = new TestListenerAdapter();
     TestNG tng = create();
     String testngXmlPath = getPathToResource("sanitycheck/test-b.xml");
