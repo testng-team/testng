@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Publish to Maven Central
+name: Release TestNG to Maven Central
 
 # Trigger this workflow whenever code is pushed to "master" branch.defaults:
 # We would like to publish to maven central for both snapshot and release versions.
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release_candidate:
-        description: The release candidate number
+        description: The release candidate number that was already published
         required: true
         default: '1'
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -37,8 +37,4 @@ jobs:
     # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
     - name: Publish Release Candidate
       run: |
-        ./gradlew -PghGitSourceUsername=cbeust -PghGitSourcePassword=${{ secrets.GITHUB_TOKEN }} -PghDryRun -PghNexusUsername=${{ secrets.SONATYPE_USER }} -PghNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Prc=${{ github.event.inputs.release_candidate }} prepareVote
-
-    - name: Display next step
-      run: |
-        echo "Now run 'release-maven-central.yml' workflow using the same Release Candidate Number (rc #)"
+        ./gradlew -PghGitSourceUsername=cbeust -PghGitSourcePassword=${{ secrets.GITHUB_TOKEN }} -PghDryRun -PghNexusUsername=${{ secrets.SONATYPE_USER }} -PghNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Prc=${{ github.event.inputs.release_candidate }} publishDist
