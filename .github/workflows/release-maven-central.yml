@@ -39,8 +39,8 @@ jobs:
         gpg --list-secret-keys --keyid-format LONG
         ls -l $HOME/.gnupg
 
-     - name: Create Nexus.txt with staging repository details
-       run: |
+    - name: Create Nexus.txt with staging repository details
+      run: |
          echo ${{ github.event.inputs.staging_repository_id }} > build/stagingRepositories/nexus.txt
 
     # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
