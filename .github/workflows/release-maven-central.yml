@@ -11,6 +11,9 @@ on:
         description: The release candidate number that was already published
         required: true
         default: '1'
+      staging_repository_id:
+        description: The staging repository ID obtained from workflow run logs of "publish-maven-central.yml" for e.g., (orgtestng-1082)
+        required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -35,6 +38,10 @@ jobs:
         gpg --export-secret-keys >$HOME/.gnupg/secring.gpg
         gpg --list-secret-keys --keyid-format LONG
         ls -l $HOME/.gnupg
+
+     - name: Create Nexus.txt with staging repository details
+       run: |
+         echo ${{ github.event.inputs.staging_repository_id }} > build/stagingRepositories/nexus.txt
 
     # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
     - name: Publish Release Candidate
