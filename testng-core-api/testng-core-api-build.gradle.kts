@@ -10,7 +10,7 @@ java {
 
 dependencies {
     api(projects.testngCollections)
-    api("com.google.code.findbugs:jsr305:_")
+    api("com.github.spotbugs:spotbugs:_")
     "guiceApi"(platform("com.google.inject:guice-bom:_"))
     "guiceApi"("com.google.inject:guice")
 
