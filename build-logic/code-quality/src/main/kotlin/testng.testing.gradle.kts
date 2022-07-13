@@ -11,7 +11,6 @@ dependencies {
 tasks.withType<Test>().configureEach {
     useTestNG()
     providers.gradleProperty("testng.test.extra.jvmargs")
-        .forUseAtConfigurationTime()
         .orNull?.toString()?.trim()
         ?.takeIf { it.isNotEmpty() }
         ?.let {

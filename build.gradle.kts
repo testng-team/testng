@@ -30,7 +30,7 @@ println("Building testng $buildVersion")
  */
 
 fun property(name: String) =
-    providers.gradleProperty(name).forUseAtConfigurationTime()
+    providers.gradleProperty(name)
 
 releaseParams {
     tlp.set(property("github.repository"))
