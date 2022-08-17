@@ -2224,6 +2224,22 @@ public class Assert {
   }
 
   /**
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed.
+   * If it does not throw an exception, an {@link AssertionError} is thrown. If it throws the wrong
+   * type of exception, an {@code AssertionError} is thrown describing the mismatch; the exception
+   * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
+   *
+   * @param message fail message
+   * @param throwableClass the expected type of the exception
+   * @param <T> the expected type of the exception
+   * @param runnable A function that is expected to throw an exception when invoked
+   */
+  public static <T extends Throwable> void assertThrows(
+      String message, Class<T> throwableClass, ThrowingRunnable runnable) {
+    expectThrows(message, throwableClass, runnable);
+  }
+
+  /**
    * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed
    * and returns the exception. If {@code runnable} does not throw an exception, an {@link
    * AssertionError} is thrown. If it throws the wrong type of exception, an {@code AssertionError}
@@ -2238,6 +2254,24 @@ public class Assert {
    */
   public static <T extends Throwable> T expectThrows(
       Class<T> throwableClass, ThrowingRunnable runnable) {
+    return expectThrows(null, throwableClass, runnable);
+  }
+
+  /**
+   * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed
+   * and returns the exception. If {@code runnable} does not throw an exception, an {@link
+   * AssertionError} is thrown. If it throws the wrong type of exception, an {@code AssertionError}
+   * is thrown describing the mismatch; the exception that was actually thrown can be obtained by
+   * calling {@link AssertionError#getCause}.
+   *
+   * @param message fail message
+   * @param throwableClass the expected type of the exception
+   * @param <T> the expected type of the exception
+   * @param runnable A function that is expected to throw an exception when invoked
+   * @return The exception thrown by {@code runnable}
+   */
+  public static <T extends Throwable> T expectThrows(
+      String message, Class<T> throwableClass, ThrowingRunnable runnable) {
     try {
       runnable.run();
     } catch (Throwable t) {
@@ -2249,12 +2283,12 @@ public class Assert {
                 "Expected %s to be thrown, but %s was thrown",
                 throwableClass.getSimpleName(), t.getClass().getSimpleName());
 
-        throw new AssertionError(mismatchMessage, t);
+        throw new AssertionError(message != null ? message : mismatchMessage, t);
       }
     }
-    String message =
+    String nothingThrownMessage =
         String.format(
             "Expected %s to be thrown, but nothing was thrown", throwableClass.getSimpleName());
-    throw new AssertionError(message);
+    throw new AssertionError(message != null ? message : nothingThrownMessage);
   }
 }

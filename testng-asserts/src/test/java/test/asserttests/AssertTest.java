@@ -240,6 +240,33 @@ public class AssertTest {
     fail();
   }
 
+  @Test
+  public void expectThrowsWithErrorMessageProvidedByClientUponTypeMismatch() {
+    NullPointerException npe = new NullPointerException();
+    String messageProvidedByClient = "Client's message";
+
+    try {
+      expectThrows(messageProvidedByClient, IOException.class, throwingRunnable(npe));
+    } catch (AssertionError error) {
+      assertEquals(messageProvidedByClient, error.getMessage());
+      return;
+    }
+    fail();
+  }
+
+  @Test
+  public void expectThrowsWithErrorMessageProvidedByClientWhenNothingWasThrown() {
+    String messageProvidedByClient = "Client's message";
+
+    try {
+      expectThrows(messageProvidedByClient, Throwable.class, nonThrowingRunnable());
+    } catch (AssertionError error) {
+      assertEquals(messageProvidedByClient, error.getMessage());
+      return;
+    }
+    fail();
+  }
+
   private static ThrowingRunnable nonThrowingRunnable() {
     return () -> {};
   }
