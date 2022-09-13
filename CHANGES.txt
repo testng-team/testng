@@ -1,6 +1,7 @@
 Current
 New: Ability to provide custom error message for assertThrows\expectThrows methods (Anatolii Yuzhakov)
 Fixed: GITHUB-2780: Use SpotBugs instead of abandoned FindBugs
+Fixed: GITHUB-2801: JUnitReportReporter is too slow
 
 7.6.1
 Fixed: GITHUB-2761: Exception: ERROR java.nio.file.NoSuchFileException: /tmp/testngXmlPathInJar-15086412835569336174 (Krishnan Mahadevan)
