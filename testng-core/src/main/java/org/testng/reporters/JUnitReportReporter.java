@@ -60,6 +60,8 @@ public class JUnitReportReporter implements IReporter {
       }
     }
 
+    final String hostname = getHostName();
+
     for (Map.Entry<Class<?>, Set<ITestResult>> entry : results.entrySet()) {
       Class<?> cls = entry.getKey();
       Properties p1 = new Properties();
@@ -116,10 +118,8 @@ public class JUnitReportReporter implements IReporter {
       p1.setProperty(XMLConstants.ATTR_NAME, cls.getName());
       p1.setProperty(XMLConstants.ATTR_TESTS, Integer.toString(testCount + ignored));
       p1.setProperty(XMLConstants.ATTR_TIME, "" + formatTime(totalTime));
-      try {
-        p1.setProperty(XMLConstants.ATTR_HOSTNAME, InetAddress.getLocalHost().getHostName());
-      } catch (UnknownHostException e) {
-        // ignore
+      if (hostname != null) {
+        p1.setProperty(XMLConstants.ATTR_HOSTNAME, hostname);
       }
 
       //
@@ -157,6 +157,15 @@ public class JUnitReportReporter implements IReporter {
     List<ITestResult> sortedResults = new ArrayList<>(results);
     sortedResults.sort(Comparator.comparingInt(o -> o.getMethod().getPriority()));
     return Collections.unmodifiableList(sortedResults);
+  }
+
+  private static String getHostName() {
+    try {
+      return InetAddress.getLocalHost().getHostName();
+    } catch (UnknownHostException e) {
+      // ignore
+      return null;
+    }
   }
 
   private static int getDisabledTestCount(Set<ITestNGMethod> methods) {
