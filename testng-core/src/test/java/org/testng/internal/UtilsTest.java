@@ -2,6 +2,7 @@ package org.testng.internal;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.internal.Utils.join;
 
@@ -40,5 +41,24 @@ public class UtilsTest {
   public void createEmptyStringWhenJoiningEmptyListWithJoinStrings() {
     List<String> emptyList = emptyList();
     assertEquals("", Utils.join(emptyList, ","));
+  }
+
+  @Test
+  public void buildStackTraceShouldBeFailsafe() {
+    // e.g. mocks of Exception classes may throw exception on exception.toString()
+    RuntimeException ex = new ThrowingException();
+    String stackTrace = Utils.longStackTrace(ex, true);
+
+    assertThat(stackTrace)
+        .contains("org.testng.internal.UtilsTest$ThrowingException")
+        .contains("java.lang.IllegalStateException: message not available");
+  }
+
+  // exception which cannot be printed
+  private static class ThrowingException extends RuntimeException {
+    @Override
+    public String getMessage() {
+      throw new IllegalStateException("message not available");
+    }
   }
 }

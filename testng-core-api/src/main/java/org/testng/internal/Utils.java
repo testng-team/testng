@@ -333,7 +333,13 @@ public final class Utils {
   private static String buildStackTrace(Throwable t, boolean toHtml, StackTraceType type) {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
-    t.printStackTrace(pw);
+    try {
+      t.printStackTrace(pw);
+    } catch (Throwable e) {
+      // failsafe in case if printStackTrace throws exception
+      pw.println(t.getClass().getName());
+      e.printStackTrace(pw);
+    }
     pw.flush();
     String stackTrace = sw.getBuffer().toString();
     if (type == StackTraceType.SHORT && !isTooVerbose()) {
