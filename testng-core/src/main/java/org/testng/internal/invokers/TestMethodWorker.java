@@ -207,9 +207,6 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       invokeInstances.add(inst);
     }
 
-    for (IClassListener listener : m_listeners) {
-      listener.onAfterClass(testClass);
-    }
     for (Object invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes =
           new Builder()
@@ -220,6 +217,10 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
               .usingInstance(invokeInstance)
               .build();
       m_configInvoker.invokeConfigurations(attributes);
+    }
+    
+    for (IClassListener listener : m_listeners) {
+      listener.onAfterClass(testClass);
     }
   }
 
