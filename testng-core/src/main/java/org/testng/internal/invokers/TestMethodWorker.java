@@ -218,7 +218,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
               .build();
       m_configInvoker.invokeConfigurations(attributes);
     }
-    
+
     for (IClassListener listener : m_listeners) {
       listener.onAfterClass(testClass);
     }
