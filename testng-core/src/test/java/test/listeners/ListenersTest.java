@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -90,6 +91,35 @@ public class ListenersTest extends SimpleBaseTest {
     Map<String, List<String>> logs = ListenerSample.getLogs();
     assertThat(logs.get("Xml_Test_1")).containsAll(expected);
     assertThat(logs.get("Xml_Test_2")).containsAll(expected);
+  }
+
+  @Test(description = "GITHUB-2796")
+  public void testCorrectOrderOfOnBeforeClassAndOnAfterClass() {
+    setupTest(true);
+    Map<String, Long> logs = ListenerSample.getTimeLogs();
+    logs.putAll(TestClassSample.getTimeLogs());
+    List<String> expectedOrder =
+        Arrays.asList(
+            "onStart",
+            "onBeforeClass",
+            "beforeClass",
+            "onTestStart",
+            "onTestSuccess",
+            "afterClass",
+            "onAfterClass",
+            "onFinish");
+    SoftAssertions softly = new SoftAssertions();
+    for (int i = 0; i < expectedOrder.size() - 1; i++) {
+      String curLog = expectedOrder.get(i);
+      String nextLog = expectedOrder.get(i + 1);
+      softly
+          .assertThat(logs.get(curLog))
+          .withFailMessage(
+              "Expected the time stamp from %s (%d)" + "to be before the time stamp from %s (%d)",
+              curLog, logs.get(curLog), nextLog, logs.get(nextLog))
+          .isLessThan(logs.get(nextLog));
+    }
+    softly.assertAll();
   }
 
   private void setupTest(boolean addExplicitListener) {
