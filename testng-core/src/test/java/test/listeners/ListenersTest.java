@@ -100,14 +100,10 @@ public class ListenersTest extends SimpleBaseTest {
     logs.putAll(TestClassSample.getTimeLogs());
     List<String> expectedOrder =
         Arrays.asList(
-            "onStart",
             "onBeforeClass",
             "beforeClass",
-            "onTestStart",
-            "onTestSuccess",
             "afterClass",
-            "onAfterClass",
-            "onFinish");
+            "onAfterClass");
     SoftAssertions softly = new SoftAssertions();
     for (int i = 0; i < expectedOrder.size() - 1; i++) {
       String curLog = expectedOrder.get(i);
