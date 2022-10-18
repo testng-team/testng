@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -95,27 +94,17 @@ public class ListenersTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2796")
   public void testCorrectOrderOfOnBeforeClassAndOnAfterClass() {
-    setupTest(true);
-    Map<String, Long> logs = ListenerSample.getTimeLogs();
-    logs.putAll(TestClassSample.getTimeLogs());
-    List<String> expectedOrder =
-        Arrays.asList(
-            "onBeforeClass",
-            "beforeClass",
-            "afterClass",
-            "onAfterClass");
-    SoftAssertions softly = new SoftAssertions();
-    for (int i = 0; i < expectedOrder.size() - 1; i++) {
-      String curLog = expectedOrder.get(i);
-      String nextLog = expectedOrder.get(i + 1);
-      softly
-          .assertThat(logs.get(curLog))
-          .withFailMessage(
-              "Expected the time stamp from %s (%d)" + "to be before the time stamp from %s (%d)",
-              curLog, logs.get(curLog), nextLog, logs.get(nextLog))
-          .isLessThan(logs.get(nextLog));
-    }
-    softly.assertAll();
+    TestNG testng = new TestNG();
+    XmlSuite xmlSuite = createXmlSuite("Xml_Suite");
+    createXmlTest(xmlSuite, "Xml_Test_1", test.listeners.issue2796.TestClassSample.class);
+    testng.setXmlSuites(Collections.singletonList(xmlSuite));
+    testng.setVerbose(2);
+    testng.run();
+
+    String[] logs = test.listeners.issue2796.TestClassSample.TestLogAppender.getLogs().toArray(String[]::new);
+    String[] expectedOrder =
+        new String[]{"onBeforeClass", "beforeClass", "afterClass", "onAfterClass"};
+    assertThat(logs).containsExactly(expectedOrder);
   }
 
   private void setupTest(boolean addExplicitListener) {
