@@ -19,8 +19,7 @@ public class TestClassSample {
   }
 
   @Test
-  public void testMethod() {
-  }
+  public void testMethod() {}
 
   @AfterClass
   public void afterClass() {

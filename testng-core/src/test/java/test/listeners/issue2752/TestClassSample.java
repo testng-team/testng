@@ -8,9 +8,8 @@ import org.testng.annotations.Test;
 public class TestClassSample {
 
   @Test
-  public void testMethod() throws InterruptedException {
-  }
+  public void testMethod() {}
 
   @BeforeClass
-  public void beforeClass() throws InterruptedException {}
+  public void beforeClass() {}
 }

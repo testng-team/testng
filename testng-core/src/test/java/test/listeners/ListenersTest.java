@@ -101,9 +101,10 @@ public class ListenersTest extends SimpleBaseTest {
     testng.setVerbose(2);
     testng.run();
 
-    String[] logs = test.listeners.issue2796.TestClassSample.TestLogAppender.getLogs().toArray(String[]::new);
+    String[] logs =
+        test.listeners.issue2796.TestClassSample.TestLogAppender.getLogs().toArray(String[]::new);
     String[] expectedOrder =
-        new String[]{"onBeforeClass", "beforeClass", "afterClass", "onAfterClass"};
+        new String[] {"onBeforeClass", "beforeClass", "afterClass", "onAfterClass"};
     assertThat(logs).containsExactly(expectedOrder);
   }
 
