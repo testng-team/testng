@@ -21,7 +21,6 @@ import org.testng.log4testng.Logger;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
-  private static final boolean m_verbose = true;
   private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
   private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
@@ -59,17 +58,12 @@ public class Graph<T> {
       throw new TestNGException("Non-existing node: " + tm);
     } else {
       node.addPredecessor(predecessor);
-      addNeighbor(tm, predecessor);
       // Remove these two nodes from the independent list
       initializeIndependentNodes();
       m_independentNodes.remove(predecessor);
       m_independentNodes.remove(tm);
       log(() -> "  REMOVED " + predecessor + " FROM INDEPENDENT OBJECTS");
     }
-  }
-
-  private void addNeighbor(T tm, T predecessor) {
-    findNode(tm).addNeighbor(findNode(predecessor));
   }
 
   private Collection<Node<T>> getNodes() {
@@ -133,9 +127,7 @@ public class Graph<T> {
     }
 
     log("=============== DONE SORTING");
-    if (m_verbose) {
-      dumpSortedNodes();
-    }
+    dumpSortedNodes();
   }
 
   private void initializeIndependentNodes() {
@@ -173,15 +165,11 @@ public class Graph<T> {
   }
 
   private static void log(String s) {
-    if (m_verbose) {
-      Logger.getLogger(Graph.class).debug("[Graph] " + s);
-    }
+    log(() -> s);
   }
 
   private static void log(Supplier<String> s) {
-    if (m_verbose) {
-      Logger.getLogger(Graph.class).debug("[Graph] " + s.get());
-    }
+    Logger.getLogger(Graph.class).debug("[Graph] " + s.get());
   }
 
   private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
@@ -251,12 +239,6 @@ public class Graph<T> {
 
     public Node(T tm) {
       m_object = tm;
-    }
-
-    private final Set<Node<T>> m_neighbors = new HashSet<>();
-
-    public void addNeighbor(Node<T> neighbor) {
-      m_neighbors.add(neighbor);
     }
 
     @Override
