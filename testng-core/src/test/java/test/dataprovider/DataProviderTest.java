@@ -43,6 +43,12 @@ import test.dataprovider.issue2565.SampleTestUsingSupplier;
 
 public class DataProviderTest extends SimpleBaseTest {
 
+  @Test(description = "GITHUB-2800")
+  public void testDataProviderFromAbstractClassWhenCoupledWithFactories() {
+    InvokedMethodNameListener listener = run(test.dataprovider.issue2800.TestClassGenerator.class);
+    assertThat(listener.getSucceedMethodNames()).containsExactly("hi", "hi");
+  }
+
   @Test(description = "GITHUB-1691")
   public void testDataProviderInfoIgnored() {
     InvokedMethodNameListener listener =

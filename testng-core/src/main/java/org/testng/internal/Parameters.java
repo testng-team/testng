@@ -610,7 +610,8 @@ public class Parameters {
 
     Class<?> cls = clazz.getRealClass();
     boolean shouldBeStatic = false;
-    if (dataProviderClass != null) {
+    boolean isDataProviderClassAbstract = Modifier.isAbstract(cls.getModifiers());
+    if (dataProviderClass != null && !isDataProviderClassAbstract) {
       cls = dataProviderClass;
       shouldBeStatic = true;
     }
