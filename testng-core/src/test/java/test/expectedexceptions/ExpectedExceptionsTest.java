@@ -1,12 +1,17 @@
 package test.expectedexceptions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collection;
 import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestResult;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.internal.ExitCode;
 import test.BaseTest;
-import test.expectedexceptions.github1409.TestClassSample;
+import test.expectedexceptions.issue2788.TestClassSample;
+import test.expectedexceptions.issue2788.TestClassSample.Local;
 
 public class ExpectedExceptionsTest extends BaseTest {
 
@@ -17,6 +22,15 @@ public class ExpectedExceptionsTest extends BaseTest {
         new String[] {"shouldPass"},
         new String[] {"shouldFail1", "shouldFail2", "shouldFail3"},
         new String[] {});
+  }
+
+  @Test(description = "GITHUB-2788")
+  public void expectedExceptionsWithProperStatusPassedToListener() {
+    TestNG testng = new TestNG();
+    testng.setTestClasses(new Class[] {TestClassSample.class});
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(ExitCode.FAILED);
+    assertThat(Local.getInstance().isPass()).isFalse();
   }
 
   @Test
@@ -31,7 +45,7 @@ public class ExpectedExceptionsTest extends BaseTest {
   @Test
   public void expectedExceptionsMessage() {
     getFailedTests().clear();
-    addClass(TestClassSample.class);
+    addClass(test.expectedexceptions.github1409.TestClassSample.class);
     run();
     Collection<List<ITestResult>> failedTests = getFailedTests().values();
     Assert.assertFalse(failedTests.isEmpty());

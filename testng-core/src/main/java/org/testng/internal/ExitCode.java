@@ -19,7 +19,7 @@ public class ExitCode {
   public static final int HAS_NO_TEST = 8;
   private static final int FAILED_WITHIN_SUCCESS = 4;
   public static final int SKIPPED = 2;
-  private static final int FAILED = 1;
+  public static final int FAILED = 1;
   private static final int SIZE = 3;
 
   private final BitSet exitCodeBits;

@@ -726,6 +726,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       StatusHolder holder =
           considerExceptions(
               arguments.getTestMethod(), testResult, expectedExceptionClasses, failureContext);
+      // After considering exceptions, the test status may have gotten updated.
+      // So lets update our test status with the latest status obtained from StatusHolder
+      testResult.setStatus(holder.status);
       runInvokedMethodListeners(AFTER_INVOCATION, invokedMethod, testResult);
       updateStatusHolderAccordingToTestResult(testResult, holder);
       boolean willRetryMethod =
