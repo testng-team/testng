@@ -58,7 +58,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   private boolean m_enabled;
 
   private final String m_methodName;
-  // If a depended group is not found
+  // If a depends on group is not found
   private String m_missingGroup;
   private String m_description = null;
   protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
@@ -449,10 +449,6 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
     return m_annotationFinder;
   }
 
-  protected IClass getIClass() {
-    return m_testClass;
-  }
-
   static StringBuilder stringify(String cls, ConstructorOrMethod method) {
     StringBuilder result = new StringBuilder(cls).append(".").append(method.getName()).append("(");
     return result.append(method.stringifyParameterTypes()).append(")");
@@ -788,16 +784,13 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
       return this.m_retryAnalyzer;
     }
     final String keyAsString = getSimpleName() + "#" + getParameterInvocationCount();
-    final IRetryAnalyzer currentRetryAnalyzerInMap = m_testMethodToRetryAnalyzer.get(keyAsString);
-    if (currentRetryAnalyzerInMap != null) {
-      return currentRetryAnalyzerInMap;
-    }
-    BasicAttributes ba = new BasicAttributes(null, this.m_retryAnalyzerClass);
-    CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
-    IRetryAnalyzer instance =
-        (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
-    m_testMethodToRetryAnalyzer.put(keyAsString, instance);
-    return instance;
+    return m_testMethodToRetryAnalyzer.computeIfAbsent(
+        keyAsString,
+        key -> {
+          BasicAttributes ba = new BasicAttributes(null, this.m_retryAnalyzerClass);
+          CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
+          return (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
+        });
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {
