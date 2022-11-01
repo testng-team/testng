@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -22,7 +23,6 @@ import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.retryAnalyzer.dataprovider.issue2163.TestClassPoweredByDataProviderSample;
 import test.retryAnalyzer.github1519.MyListener;
-import test.retryAnalyzer.github1519.TestClassSample;
 import test.retryAnalyzer.github1600.Github1600Listener;
 import test.retryAnalyzer.github1600.Github1600TestSample;
 import test.retryAnalyzer.github1706.DataDrivenSample;
@@ -38,8 +38,20 @@ import test.retryAnalyzer.issue1946.RetryAnalyzer;
 import test.retryAnalyzer.issue1946.TestclassSample1;
 import test.retryAnalyzer.issue1946.TestclassSample2;
 import test.retryAnalyzer.issue2684.SampleTestClassWithGroupConfigs;
+import test.retryAnalyzer.issue2798.HashCodeAwareRetryAnalyzer;
+import test.retryAnalyzer.issue2798.TestClassSample;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-2798")
+  public void ensureNoDuplicateRetryAnalyzerInstancesAreCreated() {
+    create(TestClassSample.class).run();
+    Map<Integer, Long> collected =
+        HashCodeAwareRetryAnalyzer.hashCodes.stream()
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    assertThat(collected.keySet()).hasSize(1);
+  }
+
   @Test
   public void testInvocationCounts() {
     TestNG tng = create(InvocationCountTest.class);
@@ -61,10 +73,10 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
 
   @Test
   public void testIfRetryIsInvokedBeforeListener() {
-    TestNG tng = create(TestClassSample.class);
+    TestNG tng = create(test.retryAnalyzer.github1519.TestClassSample.class);
     tng.addListener(new MyListener());
     tng.run();
-    assertThat(TestClassSample.messages)
+    assertThat(test.retryAnalyzer.github1519.TestClassSample.messages)
         .containsExactly("afterInvocation", "retry", "afterInvocation");
   }
 
