@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2308: StringIndexOutOfBoundsException in findClassesInPackage - Surefire/Maven - JDK 11 fails (Krishnan Mahadevan)
 Fixed: GITHUB:2788: TestResult.isSuccess() is TRUE when test fails due to expectedExceptions (Krishnan Mahadevan)
 Fixed: GITHUB-2800: Running Test Classes with Inherited @Factory and @DataProvider Annotated Non-Static Methods Fail (Krishnan Mahadevan)
 New: Ability to provide custom error message for assertThrows\expectThrows methods (Anatolii Yuzhakov)
