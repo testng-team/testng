@@ -1,8 +1,9 @@
 package org.testng.internal;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -25,7 +26,6 @@ import org.testng.collections.Lists;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
-  private static final String UTF_8 = "UTF-8";
   private static final String PACKAGE_UTILS = PackageUtils.class.getSimpleName();
   private static String[] testClassPaths;
 
@@ -34,11 +34,6 @@ public class PackageUtils {
 
   private PackageUtils() {
     // Utility class. Defeat instantiation.
-  }
-
-  /** Add a class loader to the searchable loaders. */
-  public static void addClassLoader(final ClassLoader loader) {
-    classLoaders.add(loader);
   }
 
   /**
@@ -96,6 +91,9 @@ public class PackageUtils {
         while (entries.hasMoreElements()) {
           JarEntry entry = entries.nextElement();
           String name = entry.getName();
+          if (name.startsWith("module-info") || name.startsWith("META-INF")) {
+            continue;
+          }
           if (name.charAt(0) == '/') {
             name = name.substring(1);
           }
@@ -183,11 +181,7 @@ public class PackageUtils {
     }
 
     String fileName = "";
-    try {
-      fileName = URLDecoder.decode(url.getFile(), UTF_8);
-    } catch (UnsupportedEncodingException ueex) {
-      // ignore. should never happen
-    }
+    fileName = URLDecoder.decode(url.getFile(), UTF_8);
 
     for (String classpathFrag : classpathFragments) {
       String path = classpathFrag + lastFragment;
