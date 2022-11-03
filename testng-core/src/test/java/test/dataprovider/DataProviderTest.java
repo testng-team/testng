@@ -40,8 +40,53 @@ import test.dataprovider.issue2565.SampleTestUsingConsumer;
 import test.dataprovider.issue2565.SampleTestUsingFunction;
 import test.dataprovider.issue2565.SampleTestUsingPredicate;
 import test.dataprovider.issue2565.SampleTestUsingSupplier;
+import test.dataprovider.issue2819.DataProviderListenerForRetryAwareTests;
+import test.dataprovider.issue2819.SimpleRetry;
+import test.dataprovider.issue2819.TestClassSample;
+import test.dataprovider.issue2819.TestClassUsingDataProviderRetrySample;
+import test.dataprovider.issue2819.TestClassWithMultipleRetryImplSample;
 
 public class DataProviderTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-2819")
+  public void testDataProviderCanBeRetriedOnFailures() {
+    TestNG testng = create(TestClassUsingDataProviderRetrySample.class);
+    DataProviderListenerForRetryAwareTests listener = new DataProviderListenerForRetryAwareTests();
+    testng.addListener(listener);
+    testng.run();
+    // Without retrying itself we would have already invoked the listener once.
+    assertThat(listener.getBeforeInvocations()).isEqualTo(3);
+    assertThat(listener.getFailureInvocations()).isEqualTo(2);
+    assertThat(listener.getAfterInvocations()).isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-2819")
+  public void testDataProviderCanBeRetriedViaAnnotationTransformer() {
+    TestNG testng = create(TestClassSample.class);
+    TestClassSample.EnableRetryForDataProvider transformer =
+        new TestClassSample.EnableRetryForDataProvider();
+    DataProviderListenerForRetryAwareTests listener = new DataProviderListenerForRetryAwareTests();
+    testng.addListener(transformer);
+    testng.addListener(listener);
+    testng.run();
+    // Without retrying itself we would have already invoked the listener once.
+    assertThat(listener.getBeforeInvocations()).isEqualTo(3);
+    assertThat(listener.getFailureInvocations()).isEqualTo(2);
+    assertThat(listener.getAfterInvocations()).isEqualTo(1);
+  }
+
+  @Test(description = "GITHUB-2819")
+  public void testDataProviderRetryInstancesAreUniqueForEachDataDrivenTest() {
+    TestNG testng = create(TestClassWithMultipleRetryImplSample.class);
+    DataProviderListenerForRetryAwareTests listener = new DataProviderListenerForRetryAwareTests();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(SimpleRetry.getHashCodes()).hasSize(2);
+    // Without retrying itself we would have already invoked the listener once.
+    assertThat(listener.getBeforeInvocations()).isEqualTo(6);
+    assertThat(listener.getFailureInvocations()).isEqualTo(4);
+    assertThat(listener.getAfterInvocations()).isEqualTo(2);
+  }
 
   @Test(description = "GITHUB-2800")
   public void testDataProviderFromAbstractClassWhenCoupledWithFactories() {

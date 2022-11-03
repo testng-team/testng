@@ -5,6 +5,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import org.testng.IRetryDataProvider;
 
 /**
  * Mark a method as supplying data for a test method.
@@ -55,4 +56,11 @@ public @interface DataProvider {
    * @return the value
    */
   boolean propagateFailureAsTestFailure() default false;
+
+  /**
+   * @return - An Class which implements {@link IRetryDataProvider} and which can be used to retry a
+   *     data provider.
+   */
+  Class<? extends IRetryDataProvider> retryUsing() default
+      IRetryDataProvider.DisableDataProviderRetries.class;
 }

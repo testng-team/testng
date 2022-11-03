@@ -30,4 +30,12 @@ public interface IDataProviderMethod {
   default boolean propagateFailureAsTestFailure() {
     return false;
   }
+
+  /**
+   * @return - An Class which implements {@link IRetryDataProvider} and which can be used to retry a
+   *     data provider.
+   */
+  default Class<? extends IRetryDataProvider> retryUsing() {
+    return IRetryDataProvider.DisableDataProviderRetries.class;
+  }
 }
