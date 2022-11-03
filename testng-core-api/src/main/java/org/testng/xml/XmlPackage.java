@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.testng.collections.Lists;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
+import org.testng.internal.protocols.UnhandledIOException;
 import org.testng.reporters.XMLStringBuffer;
 
 /** This class describes the tag <code>&lt;package&gt;</code> in testng.xml. */
@@ -70,7 +71,7 @@ public class XmlPackage {
       for (String className : classes) {
         result.add(new XmlClass(className, index++, false /* don't load classes */));
       }
-    } catch (IOException ioex) {
+    } catch (IOException | UnhandledIOException ioex) {
       Utils.log("XmlPackage", 1, ioex.getMessage());
     }
 
