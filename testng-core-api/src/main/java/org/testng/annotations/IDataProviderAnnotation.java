@@ -1,6 +1,7 @@
 package org.testng.annotations;
 
 import java.util.List;
+import org.testng.IRetryDataProvider;
 
 /** Encapsulate the @DataProvider / @testng.data-provider annotation */
 public interface IDataProviderAnnotation extends IAnnotation {
@@ -27,4 +28,16 @@ public interface IDataProviderAnnotation extends IAnnotation {
 
   /** @return - <code>true</code>If data provider failures should be propagated as test failures */
   boolean isPropagateFailureAsTestFailure();
+
+  /**
+   * @param retry - A Class that implements {@link IRetryDataProvider} and which can be used to
+   *     retry a data provider.
+   */
+  void setRetryUsing(Class<? extends IRetryDataProvider> retry);
+
+  /**
+   * @return - An Class which implements {@link IRetryDataProvider} and which can be used to retry a
+   *     data provider.
+   */
+  Class<? extends IRetryDataProvider> retryUsing();
 }

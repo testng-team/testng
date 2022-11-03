@@ -1,6 +1,7 @@
 package org.testng.internal.annotations;
 
 import java.util.List;
+import org.testng.IRetryDataProvider;
 import org.testng.annotations.IDataProviderAnnotation;
 
 /** An implementation of IDataProvider. */
@@ -10,6 +11,7 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   private boolean m_parallel;
   private List<Integer> m_indices;
   private boolean m_bubbleUpFailures = false;
+  private Class<? extends IRetryDataProvider> retryUsing;
 
   @Override
   public boolean isParallel() {
@@ -49,5 +51,15 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   @Override
   public boolean isPropagateFailureAsTestFailure() {
     return m_bubbleUpFailures;
+  }
+
+  @Override
+  public void setRetryUsing(Class<? extends IRetryDataProvider> retry) {
+    this.retryUsing = retry;
+  }
+
+  @Override
+  public Class<? extends IRetryDataProvider> retryUsing() {
+    return retryUsing;
   }
 }

@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.testng.IDataProviderMethod;
+import org.testng.IRetryDataProvider;
 import org.testng.annotations.IDataProviderAnnotation;
 
 /** Represents an @{@link org.testng.annotations.DataProvider} annotated method. */
@@ -46,5 +47,10 @@ class DataProviderMethod implements IDataProviderMethod {
   @Override
   public boolean propagateFailureAsTestFailure() {
     return annotation.isPropagateFailureAsTestFailure();
+  }
+
+  @Override
+  public Class<? extends IRetryDataProvider> retryUsing() {
+    return annotation.retryUsing();
   }
 }

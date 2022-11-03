@@ -417,17 +417,17 @@ public class JDK15TagFactory {
   private IAnnotation createDataProviderTag(Method method, Annotation a) {
     DataProviderAnnotation result = new DataProviderAnnotation();
     DataProvider c = (DataProvider) a;
+    String name = c.name();
     if (c.name().isEmpty()) {
-      result.setName(method.getName());
-    } else {
-      result.setName(c.name());
+      name = method.getName();
     }
+    result.setName(name);
     result.setParallel(c.parallel());
     result.setIndices(Ints.asList(c.indices()));
     if (c.propagateFailureAsTestFailure()) {
       result.propagateFailureAsTestFailure();
     }
-
+    result.setRetryUsing(c.retryUsing());
     return result;
   }
 

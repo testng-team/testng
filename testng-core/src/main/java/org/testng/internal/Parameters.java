@@ -6,11 +6,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.*;
-import javax.annotation.Nullable;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
+import org.testng.IRetryDataProvider;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -147,7 +147,7 @@ public class Parameters {
       Method m,
       Map<String, String> params,
       Object[] parameterValues,
-      @Nullable ITestNGMethod currentTestMethod,
+      ITestNGMethod currentTestMethod,
       IAnnotationFinder finder,
       XmlSuite xmlSuite,
       ITestContext ctx,
@@ -618,34 +618,33 @@ public class Parameters {
 
     for (Method m : ClassHelper.getAvailableMethods(cls)) {
       IDataProviderAnnotation dp = finder.findAnnotation(m, IDataProviderAnnotation.class);
-      if (null != dp && name.equals(getDataProviderName(dp, m))) {
-        Object instanceToUse;
-        if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
-          IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
-          BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
-          CreationAttributes attributes = new CreationAttributes(context, basic, null);
-          instanceToUse = dispenser.dispense(attributes);
-        } else {
-          instanceToUse = instance;
+      boolean proceed = null != dp && name.equals(getDataProviderName(dp, m));
+      if (!proceed) {
+        continue;
+      }
+      Object instanceToUse = instance;
+      if (shouldBeStatic && (m.getModifiers() & Modifier.STATIC) == 0) {
+        IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
+        BasicAttributes basic = new BasicAttributes(clazz, dataProviderClass);
+        CreationAttributes attributes = new CreationAttributes(context, basic, null);
+        instanceToUse = dispenser.dispense(attributes);
+      }
+      // Not a static method but no instance exists, then create new one if possible
+      if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
+        try {
+          instanceToUse = objectFactory.newInstance(cls);
+        } catch (TestNGException ignored) {
         }
-        // Not a static method but no instance exists, then create new one if possible
-        if ((m.getModifiers() & Modifier.STATIC) == 0 && instanceToUse == null) {
-          try {
-            instanceToUse = objectFactory.newInstance(cls);
-          } catch (TestNGException e) {
-            instanceToUse = null;
-          }
-        }
+      }
 
-        if (result != null) {
-          throw new TestNGException("Found two providers called '" + name + "' on " + cls);
-        }
+      if (result != null) {
+        throw new TestNGException("Found two providers called '" + name + "' on " + cls);
+      }
 
-        if (isDynamicDataProvider) {
-          result = new DataProviderMethodRemovable(instanceToUse, m, dp);
-        } else {
-          result = new DataProviderMethod(instanceToUse, m, dp);
-        }
+      if (isDynamicDataProvider) {
+        result = new DataProviderMethodRemovable(instanceToUse, m, dp);
+      } else {
+        result = new DataProviderMethod(instanceToUse, m, dp);
       }
     }
 
@@ -780,31 +779,46 @@ public class Parameters {
         String n = "param" + i;
         allParameterNames.put(n, n);
       }
-
-      for (IDataProviderListener dataProviderListener : holder.getListeners()) {
-        dataProviderListener.beforeDataProviderExecution(
-            dataProviderMethod, testMethod, methodParams.context);
+      Class<?> retryClass = dataProviderMethod.retryUsing();
+      boolean shouldRetry = !retryClass.equals(IRetryDataProvider.DisableDataProviderRetries.class);
+      IRetryDataProvider retry = null;
+      if (shouldRetry) {
+        IObjectDispenser dispenser = Dispenser.newInstance(objectFactory);
+        BasicAttributes basic = new BasicAttributes(testMethod.getTestClass(), retryClass);
+        CreationAttributes attributes = new CreationAttributes(methodParams.context, basic, null);
+        retry = (IRetryDataProvider) dispenser.dispense(attributes);
       }
 
-      Iterator<Object[]> initParams;
-      try {
-        initParams =
-            MethodInvocationHelper.invokeDataProvider(
-                dataProviderMethod
-                    .getInstance(), /* a test instance or null if the data provider is static*/
-                dataProviderMethod.getMethod(),
-                testMethod,
-                methodParams.context,
-                fedInstance,
-                annotationFinder);
-      } catch (RuntimeException e) {
-        for (IDataProviderListener each : holder.getListeners()) {
-          each.onDataProviderFailure(testMethod, methodParams.context, e);
+      Iterator<Object[]> initParams = null;
+      do {
+
+        for (IDataProviderListener dataProviderListener : holder.getListeners()) {
+          dataProviderListener.beforeDataProviderExecution(
+              dataProviderMethod, testMethod, methodParams.context);
         }
-        throw e;
-      }
 
-      final Iterator<Object[]> parameters = initParams;
+        try {
+          initParams =
+              MethodInvocationHelper.invokeDataProvider(
+                  dataProviderMethod
+                      .getInstance(), /* a test instance or null if the data provider is static*/
+                  dataProviderMethod.getMethod(),
+                  testMethod,
+                  methodParams.context,
+                  fedInstance,
+                  annotationFinder);
+          shouldRetry = false;
+        } catch (RuntimeException e) {
+          for (IDataProviderListener each : holder.getListeners()) {
+            each.onDataProviderFailure(testMethod, methodParams.context, e);
+          }
+          if (shouldRetry) {
+            shouldRetry = retry.retry(dataProviderMethod);
+          } else {
+            throw e;
+          }
+        }
+      } while (shouldRetry);
 
       for (IDataProviderListener dataProviderListener : holder.getListeners()) {
         dataProviderListener.afterDataProviderExecution(
@@ -817,45 +831,7 @@ public class Parameters {
       allIndices.addAll(dataProviderMethod.getIndices());
 
       Iterator<Object[]> filteredParameters =
-          new Iterator<Object[]>() {
-            int index = 0;
-            boolean hasWarn = false;
-
-            @Override
-            public boolean hasNext() {
-              if (index == 0 && !parameters.hasNext() && !hasWarn) {
-                hasWarn = true;
-                String msg =
-                    String.format(
-                        "The test method '%s' will be skipped since its "
-                            + "data provider '%s' "
-                            + "returned an empty array or iterator. ",
-                        testMethod.getQualifiedName(), dataProviderMethod.getName());
-                Utils.warn(msg);
-              }
-              return parameters.hasNext();
-            }
-
-            @Override
-            public Object[] next() {
-              testMethod.setParameterInvocationCount(index);
-              Object[] next = parameters.next();
-              if (next == null) {
-                throw new TestNGException("Parameters must not be null");
-              }
-              if (!allIndices.isEmpty() && !allIndices.contains(index)) {
-                // Skip parameters
-                next = null;
-              }
-              index++;
-              return next;
-            }
-
-            @Override
-            public void remove() {
-              throw new UnsupportedOperationException("remove");
-            }
-          };
+          new FilteredParameters(initParams, testMethod, dataProviderMethod.getName(), allIndices);
 
       testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
       for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
@@ -917,18 +893,6 @@ public class Parameters {
         new MethodMatcherContext(method, parameterValues, context, null);
     final MethodMatcher matcher = new DataProviderMethodMatcher(matcherContext);
     return matcher.getConformingArguments();
-  }
-
-  public static Object[] getParametersFromIndex(Iterator<Object[]> parametersValues, int index) {
-    while (parametersValues.hasNext()) {
-      Object[] parameters = parametersValues.next();
-
-      if (index == 0) {
-        return parameters;
-      }
-      index--;
-    }
-    return null;
   }
 
   /** A parameter passing helper class. */
