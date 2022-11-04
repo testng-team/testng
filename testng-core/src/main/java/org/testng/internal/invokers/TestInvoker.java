@@ -691,7 +691,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 hookableInstance);
       }
       boolean testStatusRemainedUnchanged = testResult.isNotRunning();
-      if (usesHookableInstance && willfullyIgnored && testStatusRemainedUnchanged) {
+      boolean throwException = !RuntimeBehavior.ignoreCallbackInvocationSkips();
+      if (throwException
+          && usesHookableInstance
+          && willfullyIgnored
+          && testStatusRemainedUnchanged) {
         TestNotInvokedException tn = new TestNotInvokedException(arguments.tm);
         testResult.setThrowable(tn);
         setTestStatus(testResult, ITestResult.FAILURE);
