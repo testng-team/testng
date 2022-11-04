@@ -362,7 +362,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             tm, method, targetInstance, params, testResult);
       }
       boolean testStatusRemainedUnchanged = testResult.isNotRunning();
-      if (usesConfigurableInstance && willfullyIgnored && testStatusRemainedUnchanged) {
+      boolean throwException = !RuntimeBehavior.ignoreCallbackInvocationSkips();
+      if (throwException
+          && usesConfigurableInstance
+          && willfullyIgnored
+          && testStatusRemainedUnchanged) {
         throw new ConfigurationNotInvokedException(tm);
       }
       testResult.setStatus(ITestResult.SUCCESS);

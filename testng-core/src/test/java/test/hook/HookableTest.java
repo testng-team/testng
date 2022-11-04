@@ -16,7 +16,9 @@ import org.testng.Reporter;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.RuntimeBehavior;
 import test.SimpleBaseTest;
+import test.hook.samples.CallBackSample;
 import test.hook.samples.ConfigurableFailureSample;
 import test.hook.samples.ConfigurableFailureWithStatusAlteredSample;
 import test.hook.samples.ConfigurableSuccessSample;
@@ -194,6 +196,28 @@ public class HookableTest extends SimpleBaseTest {
               assertions.assertThat(each.getAttribute(HOOK_METHOD_INVOKED_ATTRIBUTE)).isNull();
             });
     assertions.assertAll();
+  }
+
+  @Test(description = "GITHUB-2818", dataProvider = "callback")
+  public void tesFailuresFromCallbackInvocationSkipsCanBeDisabledViaJVMArgs(
+      Class<?> cls, int expected) {
+    try {
+      System.setProperty(RuntimeBehavior.IGNORE_CALLBACK_INVOCATION_SKIPS, "true");
+      TestNG testng = create(cls);
+      testng.run();
+      int status = testng.getStatus();
+      assertThat(status).isEqualTo(expected);
+    } finally {
+      System.setProperty(RuntimeBehavior.IGNORE_CALLBACK_INVOCATION_SKIPS, "");
+    }
+  }
+
+  @DataProvider(name = "callback")
+  public Object[][] getCallBackClasses() {
+    return new Object[][] {
+      {CallBackSample.ConfigCallBackSkipTestCase.class, 0},
+      {CallBackSample.TestCallBackSkipTestCase.class, 1},
+    };
   }
 
   public static class TestResultsCollector implements IInvokedMethodListener {
