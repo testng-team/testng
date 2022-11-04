@@ -42,6 +42,7 @@ import test.dataprovider.issue2565.SampleTestUsingPredicate;
 import test.dataprovider.issue2565.SampleTestUsingSupplier;
 import test.dataprovider.issue2819.DataProviderListenerForRetryAwareTests;
 import test.dataprovider.issue2819.SimpleRetry;
+import test.dataprovider.issue2819.TestClassFailingRetrySample;
 import test.dataprovider.issue2819.TestClassSample;
 import test.dataprovider.issue2819.TestClassUsingDataProviderRetrySample;
 import test.dataprovider.issue2819.TestClassWithMultipleRetryImplSample;
@@ -86,6 +87,17 @@ public class DataProviderTest extends SimpleBaseTest {
     assertThat(listener.getBeforeInvocations()).isEqualTo(6);
     assertThat(listener.getFailureInvocations()).isEqualTo(4);
     assertThat(listener.getAfterInvocations()).isEqualTo(2);
+  }
+
+  @Test(description = "GITHUB-2819")
+  public void testDataProviderRetryAbortsGracefullyWhenNoRetryAtFirstTime() {
+    TestNG testng = create(TestClassFailingRetrySample.class);
+    DataProviderListenerForRetryAwareTests listener = new DataProviderListenerForRetryAwareTests();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getBeforeInvocations()).isEqualTo(1);
+    assertThat(listener.getFailureInvocations()).isEqualTo(1);
+    assertThat(listener.getAfterInvocations()).isEqualTo(0);
   }
 
   @Test(description = "GITHUB-2800")

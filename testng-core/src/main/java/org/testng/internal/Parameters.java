@@ -790,6 +790,7 @@ public class Parameters {
       }
 
       Iterator<Object[]> initParams = null;
+      RuntimeException thrownException;
       do {
 
         for (IDataProviderListener dataProviderListener : holder.getListeners()) {
@@ -808,17 +809,30 @@ public class Parameters {
                   fedInstance,
                   annotationFinder);
           shouldRetry = false;
+          thrownException = null;
         } catch (RuntimeException e) {
           for (IDataProviderListener each : holder.getListeners()) {
             each.onDataProviderFailure(testMethod, methodParams.context, e);
           }
           if (shouldRetry) {
             shouldRetry = retry.retry(dataProviderMethod);
+            thrownException = e;
           } else {
             throw e;
           }
         }
       } while (shouldRetry);
+
+      if (thrownException != null) {
+        // The only time when this will be true is when the following happens:
+        // 1. A Retry was involved with the data provider
+        // 2. The retry mechanism immediately returned false and thus causing
+        // a retry to not happen
+        // 3. Since a retry was not recommended the while loop would have exited but
+        // we still should have been failing the test since the data provider invocation
+        // failed.
+        throw thrownException;
+      }
 
       for (IDataProviderListener dataProviderListener : holder.getListeners()) {
         dataProviderListener.afterDataProviderExecution(
