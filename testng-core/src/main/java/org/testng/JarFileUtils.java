@@ -1,7 +1,6 @@
 package org.testng;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -112,7 +111,11 @@ class JarFileUtils {
     if (f.isDirectory()) {
       for (File c : Objects.requireNonNull(f.listFiles())) delete(c);
     }
-    if (!f.delete()) throw new FileNotFoundException("Failed to delete file: " + f);
+
+    /** * Provide better logging for files temp that fail to be cleaned up. */
+    if (!Files.deleteIfExists(f.toPath())) {
+      Utils.log("TestNG", 2, "Failed to delete non-existent temp file: " + f.getPath());
+    }
   }
 
   private boolean matchesXmlPathInJar(JarEntry je) {
