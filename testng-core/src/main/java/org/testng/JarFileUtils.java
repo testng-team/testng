@@ -111,7 +111,11 @@ class JarFileUtils {
     if (f.isDirectory()) {
       for (File c : Objects.requireNonNull(f.listFiles())) delete(c);
     }
-    Files.delete(f.toPath());
+
+    /** * Provide better logging for files temp that fail to be cleaned up. */
+    if (!Files.deleteIfExists(f.toPath())) {
+      Utils.log("TestNG", 2, "Failed to delete non-existent temp file: " + f.getPath());
+    }
   }
 
   private boolean matchesXmlPathInJar(JarEntry je) {
