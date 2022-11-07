@@ -26,3 +26,4 @@ z_build
 .DS_Store
 outputDir/
 **/Version.java
+**/bin/
