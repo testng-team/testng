@@ -92,7 +92,8 @@ public class Main implements IReporter {
             }
             File fileToCopy = new File(outputDirectory, fileName);
             fileToCopy.getParentFile().mkdirs();
-            java.nio.file.Files.copy(is, fileToCopy.toPath());
+            java.nio.file.Files.copy(
+                is, fileToCopy.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
           }
         }
         all = Files.readFile(header);
