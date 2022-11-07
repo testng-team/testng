@@ -1,6 +1,7 @@
 Current
-Fixed: GITHUB-2825: JarFileUtils.delete(File f) throw actual exception (instead of FileNotFound) when file cannot be deleted (Steven Jubb)
-Fixed: GITHUB2818: Add configuration key for callback discrepancy behavior (Krishnan Mahadevan)
+Fixed: GITHUB-2770: FileAlreadyExistsException when report is generated (melloware)
+Fixed: GITHUB-2825: Programically Loading TestNG Suite from JAR File Fails to Delete Temporary Copy of Suite File (Steven Jubb)
+Fixed: GITHUB-2818: Add configuration key for callback discrepancy behavior (Krishnan Mahadevan)
 Fixed: GITHUB-2819: Ability to retry a data provider in case of failures (Krishnan Mahadevan)
 Fixed: GITHUB-2308: StringIndexOutOfBoundsException in findClassesInPackage - Surefire/Maven - JDK 11 fails (Krishnan Mahadevan)
 Fixed: GITHUB:2788: TestResult.isSuccess() is TRUE when test fails due to expectedExceptions (Krishnan Mahadevan)
