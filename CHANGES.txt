@@ -9,7 +9,8 @@ Fixed: GITHUB-2800: Running Test Classes with Inherited @Factory and @DataProvid
 New: Ability to provide custom error message for assertThrows\expectThrows methods (Anatolii Yuzhakov)
 Fixed: GITHUB-2780: Use SpotBugs instead of abandoned FindBugs
 Fixed: GITHUB-2801: JUnitReportReporter is too slow
-Fixed: GITHUB-2807: buildStackTrace should be fail-safe
+Fixed: GITHUB-2807: buildStackTrace should be fail-safe (Sergey Chernov)
+Fixed: GITHUB-2830: TestHTMLReporter parameter toString should be fail-safe (Sergey Chernov)
 Fixed: GITHUB-2798: Parallel executions coupled with retry analyzer results in duplicate retry analyzer instances being created (Krishnan Mahadevan)
 
 7.6.1

@@ -123,7 +123,20 @@ public class TestHTMLReporter implements ITestListener {
           if (j > 0) {
             pw.append(", ");
           }
-          pw.append(parameters[j] == null ? "null" : parameters[j].toString());
+          if (parameters[j] == null) {
+            pw.append("null");
+          } else {
+            String parameterToString;
+            try {
+              parameterToString = parameters[j].toString();
+            } catch (RuntimeException | Error e) {
+              log(e.toString());
+              // failover in case parameter toString() cannot be evaluated
+              parameterToString =
+                  parameters[j].getClass().getName() + "@" + System.identityHashCode(parameters[j]);
+            }
+            pw.append(parameterToString);
+          }
         }
       }
 
