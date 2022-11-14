@@ -15,11 +15,6 @@ matrix.addAxis({
     {group: 'Adopt Hotspot', version: '11', distribution: 'adopt-hotspot', jit: 'hotspot'},
     {group: 'Adopt Hotspot', version: '17', distribution: 'adopt-hotspot', jit: 'hotspot'},
 
-    // Adopt OpenJ9
-    // TODO: Replace these hard coded versions with something that dynamically picks the most recent
-    {group: 'Adopt OpenJ9', version: '11', distribution: 'adopt-openj9', jit: 'openj9'},
-    {group: 'Adopt OpenJ9', version: '17', distribution: 'adopt-openj9', jit: 'openj9'},
-
     // Amazon Corretto
     {
       group: 'Corretto',
@@ -34,6 +29,36 @@ matrix.addAxis({
       jit: 'hotspot',
       distribution: 'jdkfile',
       url: 'https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz'
+    },
+    //DragonWell
+    {
+      group: 'DragonWell',
+      version: '11',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/alibaba/dragonwell11/releases/download/dragonwell-standard-11.0.16.12_jdk-11.0.16-ga/Alibaba_Dragonwell_Standard_11.0.16.12.8_x64_linux.tar.gz'
+    },
+    {
+      group: 'DragonWell',
+      version: '17',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/alibaba/dragonwell17/releases/download/dragonwell-standard-17.0.4.0.4%2B8_jdk-17.0.4-ga/Alibaba_Dragonwell_Standard_17.0.4.0.4%2B8_x64_linux.tar.gz'
+    },
+    //GraalVM
+    {
+      group: 'GraalVM',
+      version: '11',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.3.0/graalvm-ce-java11-linux-amd64-22.3.0.tar.gz'
+    },
+    {
+      group: 'GraalVM',
+      version: '17',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.3.0/graalvm-ce-java17-linux-amd64-22.3.0.tar.gz'
     },
     // Microsoft
     {
@@ -64,6 +89,36 @@ matrix.addAxis({
       jit: 'hotspot',
       distribution: 'jdkfile',
       url: 'https://download.bell-sw.com/java/11.0.13+8/bellsoft-jdk11.0.13+8-linux-amd64.tar.gz'
+    },
+    // SapMachine
+    {
+      group: 'SapMachine',
+      version: '11',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/SAP/SapMachine/releases/download/sapmachine-11.0.17/sapmachine-jdk-11.0.17_linux-x64_bin.tar.gz'
+    },
+    {
+      group: 'SapMachine',
+      version: '17',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/SAP/SapMachine/releases/download/sapmachine-17.0.5/sapmachine-jdk-17.0.5_linux-x64_bin.tar.gz'
+    },
+    //Semeru
+    {
+      group: 'Semeru',
+      version: '11',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jdk_x64_linux_11.0.17_8_openj9-0.35.0.tar.gz'
+    },
+    {
+      group: 'Semeru',
+      version: '17',
+      jit: 'hotspot',
+      distribution: 'jdkfile',
+      url: 'https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.5%2B8_openj9-0.35.0/ibm-semeru-open-jdk_x64_linux_17.0.5_8_openj9-0.35.0.tar.gz'
     },
   ]
 });
