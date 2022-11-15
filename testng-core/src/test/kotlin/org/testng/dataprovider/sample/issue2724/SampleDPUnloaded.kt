@@ -3,7 +3,7 @@ package org.testng.dataprovider.sample.issue2724
 import jlibs.core.lang.RuntimeUtil
 import org.testng.annotations.AfterClass
 import org.testng.annotations.Test
-import test.SimpleBaseTest
+import org.testng.dataprovider.DynamicDataProviderLoadingTest
 
 class SampleDPUnloaded {
     @Suppress("UNUSED_PARAMETER")
@@ -18,6 +18,6 @@ class SampleDPUnloaded {
     @AfterClass
     fun afterTest() {
         RuntimeUtil.gc(10)
-        SimpleBaseTest.saveMemDump(System.getProperty("memdump.path"))
+        DynamicDataProviderLoadingTest.saveMemDump(System.getProperty("memdump.path"))
     }
 }
