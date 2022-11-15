@@ -83,4 +83,5 @@ tasks.test {
             "-Dtestng.org.ops4j.pax.url.mvn.localRepository=file:${paxLocalCacheRepository.get().asFile.absolutePath}@id=pax-repo"
         )
     })
+    ignoreFailures = true
 }
