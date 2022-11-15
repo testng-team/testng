@@ -169,7 +169,7 @@ public class Graph<T> {
   }
 
   private static void log(Supplier<String> s) {
-    Logger.getLogger(Graph.class).debug("[Graph] " + s.get());
+    Logger.getLogger(Graph.class).trace("[Graph] " + s.get());
   }
 
   private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
