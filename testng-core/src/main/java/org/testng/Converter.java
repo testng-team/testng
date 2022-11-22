@@ -65,7 +65,7 @@ public class Converter {
           if (file.endsWith(".xml")) {
             File newFile = new File(m_outputDirectory, baseName + ".yaml");
             writeFile(newFile, Yaml.toYaml(suite).toString());
-          } else if (file.endsWith(".yaml")) {
+          } else if (file.endsWith(".yaml") || file.endsWith(".yml")) {
             File newFile = new File(m_outputDirectory, baseName + ".xml");
             writeFile(newFile, suite.toXml());
           } else {
