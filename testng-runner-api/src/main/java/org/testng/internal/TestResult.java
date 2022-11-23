@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.testng.IAttributes;
@@ -427,9 +428,22 @@ public class TestResult implements ITestResult {
     skippedDueTo =
         allfailures.stream()
             .map(ITestResult::getMethod)
-            .filter(method -> upstreamMethods.contains(method.getQualifiedName()))
+            .filter(method -> matches(upstreamMethods, method))
             .collect(Collectors.toList());
     return Collections.unmodifiableList(skippedDueTo);
+  }
+
+  private static boolean matches(List<String> upstreamMethods, ITestNGMethod method) {
+    if (upstreamMethods.contains(method.getQualifiedName())
+        || upstreamMethods.contains(method.getMethodName())) {
+      return true;
+    }
+    return upstreamMethods.stream()
+        .map(Pattern::compile)
+        .anyMatch(
+            each ->
+                each.matcher(method.getQualifiedName()).matches()
+                    || each.matcher(method.getMethodName()).matches());
   }
 
   public String id() {

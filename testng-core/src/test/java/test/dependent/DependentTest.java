@@ -11,6 +11,7 @@ import org.testng.Assert;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite.ParallelMode;
@@ -22,13 +23,110 @@ import test.dependent.github1380.GitHub1380Sample;
 import test.dependent.github1380.GitHub1380Sample2;
 import test.dependent.github1380.GitHub1380Sample3;
 import test.dependent.github1380.GitHub1380Sample4;
+import test.dependent.issue141.ErrorScenarioNestedSample;
+import test.dependent.issue141.MultipleMatchesTestClassSample;
+import test.dependent.issue141.NestedTestClassSample;
+import test.dependent.issue141.NestedTestClassSample2;
+import test.dependent.issue141.SimpleSample;
+import test.dependent.issue141.SkipReasoner;
+import test.dependent.issue141.TestClassSample;
 import test.dependent.issue2658.FailingClassSample;
 import test.dependent.issue2658.PassingClassSample;
 import test.dependent.issue893.DependencyTrackingListener;
 import test.dependent.issue893.MultiLevelDependenciesTestClassSample;
-import test.dependent.issue893.TestClassSample;
 
 public class DependentTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsAcrossClasses() {
+    TestNG testng =
+        create(test.dependent.issue141.ASample.class, test.dependent.issue141.BSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("b", "bb", "a");
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\ntest.dependent.issue141.SimpleSample.testMethod\\(\\) "
+              + "depends on nonexistent method test.dependent.issue141.BSample.*")
+  public void ensureDependsOnMethodsHonoursRegexPatternsAcrossClassesErrorCondition() {
+    TestNG testng = create(SimpleSample.class, test.dependent.issue141.BSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nMethod \"test.dependent.issue141.ErrorScenarioNestedSample.a\\(\\)\" "
+              + "depends on nonexistent "
+              + "method \"test.dependent.issue141.ErrorScenarioNestedSample\\$InnerTestClass"
+              + ".rambo.*")
+  public void ensureDependsOnMethodsHonoursRegexPatternsNestedClassesErrorCondition() {
+    TestNG testng = create(ErrorScenarioNestedSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+  }
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsUniqueMatch() {
+    TestNG testng = create(TestClassSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("test_C6390323", "randomTest");
+  }
+
+  @Test(description = "GITHUB-141")
+  public void ensureDependsOnMethodsHonoursRegexPatternsDuplicateMatches() {
+    TestNG testng = create(MultipleMatchesTestClassSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    SkipReasoner reasoner = new SkipReasoner();
+    testng.addListener(listener);
+    testng.addListener(reasoner);
+    testng.run();
+    assertThat(listener.getPassedNames()).containsExactly("test_C6390324");
+    assertThat(listener.getFailedNames()).containsExactly("test_C6390323");
+    assertThat(listener.getSkippedNames()).containsExactly("randomTest");
+    assertThat(reasoner.getUpstreamFailures()).containsExactly("test_C6390323");
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nMethod \"test.dependent.issue141.NestedTestClassSample\\$FirstSample.randomTest\\(\\)\" "
+              + "depends on nonexistent method .*")
+  public void ensureDependsOnMethodsHonoursRegexPatternsDuplicateMatchesNestedClasses() {
+    TestNG testng = create(NestedTestClassSample.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    SkipReasoner reasoner = new SkipReasoner();
+    testng.addListener(listener);
+    testng.addListener(reasoner);
+    testng.run();
+  }
+
+  @Test(
+      description = "GITHUB-141",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nMethod \"test.dependent.issue141.NestedTestClassSample2.randomTest\\(\\)\" depends on "
+              + "nonexistent method .*")
+  public void ensureDependsOnMethodsHonourRegexPatternsNestedClasses() {
+    TestNG testng = create(NestedTestClassSample2.class);
+    MethodNameCollector listener = new MethodNameCollector();
+    SkipReasoner reasoner = new SkipReasoner();
+    testng.addListener(listener);
+    testng.addListener(reasoner);
+    testng.run();
+  }
 
   @Test
   public void simpleSkip() {
@@ -241,7 +339,7 @@ public class DependentTest extends SimpleBaseTest {
   public Object[][] getTestData() {
     return new Object[][] {
       {
-        TestClassSample.class,
+        test.dependent.issue893.TestClassSample.class,
         "independentTest",
         new String[] {"anotherDependentTest", "dependentTest"}
       },
@@ -273,7 +371,11 @@ public class DependentTest extends SimpleBaseTest {
   @DataProvider(name = "getUpstreamTestData")
   public Object[][] getUpstreamTestData() {
     return new Object[][] {
-      {TestClassSample.class, "dependentTest", new String[] {"independentTest"}},
+      {
+        test.dependent.issue893.TestClassSample.class,
+        "dependentTest",
+        new String[] {"independentTest"}
+      },
       {MultiLevelDependenciesTestClassSample.class, "father", new String[] {"grandFather"}},
       {MultiLevelDependenciesTestClassSample.class, "child", new String[] {"father", "mother"}},
       {MultiLevelDependenciesTestClassSample.class, "grandFather", new String[] {}}
