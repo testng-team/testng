@@ -94,10 +94,18 @@ public class MethodHelper {
    * Finds TestNG methods that the specified TestNG method depends upon
    *
    * @param m TestNG method
-   * @param methods list of methods to search for depended upon methods
+   * @param incoming list of methods to search for depended upon methods
    * @return list of methods that match the criteria
    */
-  public static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, ITestNGMethod[] methods) {
+  public static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, ITestNGMethod[] incoming) {
+    ITestNGMethod[] methods =
+        Arrays.stream(incoming)
+            .filter(each -> !each.equals(m))
+            .filter(each -> Objects.isNull(each.getRealClass().getEnclosingClass()))
+            .toArray(ITestNGMethod[]::new);
+    if (methods.length == 0) {
+      return new ITestNGMethod[] {};
+    }
 
     String canonicalMethodName = calculateMethodCanonicalName(m);
 
@@ -163,6 +171,7 @@ public class MethodHelper {
     if (regExp == null) {
       return null;
     }
+    regExp = regExp.replace("\\$", "$");
     int lastDot = regExp.lastIndexOf('.');
     String className, methodName;
     if (lastDot == -1) {

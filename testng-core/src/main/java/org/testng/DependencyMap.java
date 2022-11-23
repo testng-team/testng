@@ -1,5 +1,7 @@
 package org.testng;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -7,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
+import org.testng.internal.MethodHelper;
 import org.testng.internal.RuntimeBehavior;
 
 /** Helper class to keep track of dependencies. */
@@ -55,6 +58,13 @@ public class DependencyMap {
   public ITestNGMethod getMethodDependingOn(String methodName, ITestNGMethod fromMethod) {
     List<ITestNGMethod> l = m_dependencies.get(methodName);
     if (l.isEmpty()) {
+      ITestNGMethod[] array =
+          m_dependencies.values().stream()
+              .flatMap(Collection::stream)
+              .toArray(ITestNGMethod[]::new);
+      l = Arrays.asList(MethodHelper.findDependedUponMethods(fromMethod, array));
+    }
+    if (l.isEmpty()) {
       // Try to fetch dependencies by using the test class in the method name.
       // This is usually needed in scenarios wherein a child class overrides a base class method.
       // So the dependency name needs to be adjusted to use the test class name instead of using the
@@ -78,7 +88,11 @@ public class DependencyMap {
     }
 
     throw new TestNGException(
-        "Method \"" + fromMethod + "\" depends on nonexistent method \"" + methodName + "\"");
+        "Method \""
+            + fromMethod.getQualifiedName()
+            + "()\" depends on nonexistent method \""
+            + methodName
+            + "\"");
   }
 
   private static boolean belongToDifferentClassHierarchy(
