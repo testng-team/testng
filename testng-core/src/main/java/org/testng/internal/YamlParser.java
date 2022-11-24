@@ -21,6 +21,7 @@ public class YamlParser implements ISuiteParser {
 
   @Override
   public boolean accept(String fileName) {
-    return Parser.hasFileScheme(fileName) && fileName.endsWith(".yaml");
+    return Parser.hasFileScheme(fileName)
+        && (fileName.endsWith(".yaml") || fileName.endsWith(".yml"));
   }
 }
