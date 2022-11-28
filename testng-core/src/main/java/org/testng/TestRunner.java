@@ -24,6 +24,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
+import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ClassBasedWrapper;
 import org.testng.internal.ClassInfoMap;
 import org.testng.internal.ConfigurationGroupMethods;
@@ -745,6 +746,17 @@ public class TestRunner
           reference.set(ref);
         });
     IDynamicGraph<ITestNGMethod> graph = reference.get();
+
+    for (ITestNGMethod each : interceptedOrder) {
+      if (each instanceof BaseTestMethod) {
+        // We don't want our users to change this vital info. That is why the setter is NOT
+        // being exposed via the interface, and so we resort to an "instanceof" check.
+        Set<ITestNGMethod> downstream = Sets.newHashSet(graph.getDependenciesFor(each));
+        ((BaseTestMethod) each).setDownstreamDependencies(downstream);
+        Set<ITestNGMethod> upstream = Sets.newHashSet(graph.getUpstreamDependenciesFor(each));
+        ((BaseTestMethod) each).setUpstreamDependencies(upstream);
+      }
+    }
 
     graph.setVisualisers(this.visualisers);
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.

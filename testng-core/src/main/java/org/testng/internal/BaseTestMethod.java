@@ -70,6 +70,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   private long m_invocationTimeOut = 0L;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
+  private final Set<ITestNGMethod> downstreamDependencies = Sets.newHashSet();
+  private final Set<ITestNGMethod> upstreamDependencies = Sets.newHashSet();
   private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
   private long m_timeOut = 0;
 
@@ -174,6 +176,38 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   @Override
   public String[] getMethodsDependedUpon() {
     return m_methodsDependedUpon;
+  }
+
+  @Override
+  public Set<ITestNGMethod> downstreamDependencies() {
+    return Collections.unmodifiableSet(downstreamDependencies);
+  }
+
+  @Override
+  public Set<ITestNGMethod> upstreamDependencies() {
+    return Collections.unmodifiableSet(upstreamDependencies);
+  }
+
+  public void setDownstreamDependencies(Set<ITestNGMethod> methods) {
+    if (!downstreamDependencies.isEmpty()) {
+      downstreamDependencies.clear();
+    }
+    Set<ITestNGMethod> toAdd = methods;
+    if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      toAdd = methods.stream().map(LiteWeightTestNGMethod::new).collect(Collectors.toSet());
+    }
+    downstreamDependencies.addAll(toAdd);
+  }
+
+  public void setUpstreamDependencies(Set<ITestNGMethod> methods) {
+    if (!upstreamDependencies.isEmpty()) {
+      upstreamDependencies.clear();
+    }
+    Set<ITestNGMethod> toAdd = methods;
+    if (RuntimeBehavior.isMemoryFriendlyMode()) {
+      toAdd = methods.stream().map(LiteWeightTestNGMethod::new).collect(Collectors.toSet());
+    }
+    upstreamDependencies.addAll(toAdd);
   }
 
   /** {@inheritDoc} */

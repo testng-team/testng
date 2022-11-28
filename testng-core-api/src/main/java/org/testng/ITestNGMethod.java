@@ -2,6 +2,7 @@ package org.testng;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ConstructorOrMethod;
@@ -70,6 +71,24 @@ public interface ITestNGMethod extends Cloneable {
    *     class.
    */
   String[] getMethodsDependedUpon();
+
+  /**
+   * @return - The set of methods that are dependent on the current method. This information can
+   *     help in deciding what other TestNG methods will be skipped if the current method fails. If
+   *     the current method is a configuration method, then an empty set is returned.
+   */
+  default Set<ITestNGMethod> downstreamDependencies() {
+    throw new UnsupportedOperationException("Pending implementation");
+  }
+
+  /**
+   * @return - The set of methods upon which the current method has a dependency. This information
+   *     can help in deciding what all TestNG methods need to pass before the current method can be
+   *     executed. If the current method is a configuration method, then an empty set is returned.
+   */
+  default Set<ITestNGMethod> upstreamDependencies() {
+    throw new UnsupportedOperationException("Pending implementation");
+  }
 
   void addMethodDependedUpon(String methodName);
 
