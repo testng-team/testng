@@ -21,6 +21,10 @@ public interface IDynamicGraph<T> {
 
   List<T> getFreeNodes();
 
+  default List<T> getUpstreamDependenciesFor(T node) {
+    throw new UnsupportedOperationException("Pending implementation");
+  }
+
   List<T> getDependenciesFor(T node);
 
   void setStatus(Collection<T> nodes, Status status);

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IDynamicGraph;
@@ -76,12 +77,19 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     return finalResult;
   }
 
+  @Override
+  public List<T> getUpstreamDependenciesFor(T node) {
+    return dependencies(m_edges.from(node));
+  }
+
   public List<T> getDependenciesFor(T node) {
-    Map<T, Integer> data = m_edges.to(node);
-    if (data == null) {
-      return Lists.newArrayList();
-    }
-    return Lists.newArrayList(data.keySet());
+    return dependencies(m_edges.to(node));
+  }
+
+  private List<T> dependencies(Map<T, Integer> dependencies) {
+    return Optional.ofNullable(dependencies)
+        .map(found -> Lists.newArrayList(found.keySet()))
+        .orElse(Lists.newArrayList());
   }
 
   /** Set the status for a set of nodes. */

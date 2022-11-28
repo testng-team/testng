@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import org.testng.Assert;
 import org.testng.ITestListener;
@@ -23,6 +24,9 @@ import test.dependent.github1380.GitHub1380Sample3;
 import test.dependent.github1380.GitHub1380Sample4;
 import test.dependent.issue2658.FailingClassSample;
 import test.dependent.issue2658.PassingClassSample;
+import test.dependent.issue893.DependencyTrackingListener;
+import test.dependent.issue893.MultiLevelDependenciesTestClassSample;
+import test.dependent.issue893.TestClassSample;
 
 public class DependentTest extends SimpleBaseTest {
 
@@ -216,6 +220,64 @@ public class DependentTest extends SimpleBaseTest {
     assertThat(listener.getFailedMethodNames()).containsExactly("test");
     assertThat(listener.getSucceedMethodNames()).containsExactly("test", "passingMethod");
     assertThat(listener.getSkippedMethodNames()).containsExactly("failingMethod");
+  }
+
+  @Test(description = "GITHUB-893", dataProvider = "getTestData")
+  public void testDownstreamDependencyRetrieval(
+      Class<?> clazz, String independentMethod, String[] dependentMethods) {
+    TestNG testng = create(clazz);
+    DependencyTrackingListener listener = new DependencyTrackingListener();
+    testng.addListener(listener);
+    testng.run();
+    String cls = clazz.getCanonicalName();
+    String key = cls + "." + independentMethod;
+    Set<String> downstream = listener.getDownstreamDependencies().get(key);
+    dependentMethods =
+        Arrays.stream(dependentMethods).map(each -> cls + "." + each).toArray(String[]::new);
+    assertThat(downstream).containsExactly(dependentMethods);
+  }
+
+  @DataProvider(name = "getTestData")
+  public Object[][] getTestData() {
+    return new Object[][] {
+      {
+        TestClassSample.class,
+        "independentTest",
+        new String[] {"anotherDependentTest", "dependentTest"}
+      },
+      {MultiLevelDependenciesTestClassSample.class, "father", new String[] {"child"}},
+      {
+        MultiLevelDependenciesTestClassSample.class,
+        "grandFather",
+        new String[] {"father", "mother"}
+      },
+      {MultiLevelDependenciesTestClassSample.class, "child", new String[] {}}
+    };
+  }
+
+  @Test(description = "GITHUB-893", dataProvider = "getUpstreamTestData")
+  public void testUpstreamDependencyRetrieval(
+      Class<?> clazz, String independentMethod, String[] dependentMethods) {
+    TestNG testng = create(clazz);
+    DependencyTrackingListener listener = new DependencyTrackingListener();
+    testng.addListener(listener);
+    testng.run();
+    String cls = clazz.getCanonicalName();
+    String key = cls + "." + independentMethod;
+    Set<String> upstream = listener.getUpstreamDependencies().get(key);
+    dependentMethods =
+        Arrays.stream(dependentMethods).map(each -> cls + "." + each).toArray(String[]::new);
+    assertThat(upstream).containsExactly(dependentMethods);
+  }
+
+  @DataProvider(name = "getUpstreamTestData")
+  public Object[][] getUpstreamTestData() {
+    return new Object[][] {
+      {TestClassSample.class, "dependentTest", new String[] {"independentTest"}},
+      {MultiLevelDependenciesTestClassSample.class, "father", new String[] {"grandFather"}},
+      {MultiLevelDependenciesTestClassSample.class, "child", new String[] {"father", "mother"}},
+      {MultiLevelDependenciesTestClassSample.class, "grandFather", new String[] {}}
+    };
   }
 
   public static class MethodNameCollector implements ITestListener {
