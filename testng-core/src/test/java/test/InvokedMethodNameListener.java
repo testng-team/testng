@@ -58,7 +58,9 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
     List<String> methodNames =
-        mapping.computeIfAbsent(testResult.getMethod().getRealClass(), k -> Lists.newArrayList());
+        mapping.computeIfAbsent(
+            testResult.getMethod().getRealClass(),
+            k -> Collections.synchronizedList(Lists.newArrayList()));
     methodNames.add(method.getTestMethod().getMethodName());
     String name = getName(testResult);
     switch (testResult.getStatus()) {

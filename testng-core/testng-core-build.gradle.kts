@@ -37,9 +37,10 @@ dependencies {
     implementation(projects.testngReflectionUtils)
     implementation(projects.testngRunnerApi)
     implementation("org.webjars:jquery:_")
-
     testImplementation(projects.testngAsserts)
-    testImplementation("org.codehaus.groovy:groovy-all:_")
+    testImplementation("org.codehaus.groovy:groovy-all:_") {
+        exclude("org.testng", "testng")
+    }
     testImplementation("org.spockframework:spock-core:_")
     testImplementation("org.apache-extras.beanshell:bsh:_")
     testImplementation("org.mockito:mockito-core:_")
@@ -64,7 +65,6 @@ tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
     (testFramework.options as TestNGOptions).apply {
         suites("src/test/resources/testng.xml")
-        listeners.add("org.testng.reporters.FailedInformationOnConsoleReporter")
         maxHeapSize = "1500m"
     }
 }

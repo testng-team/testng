@@ -1,8 +1,6 @@
 package test.yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,10 +36,9 @@ public class YamlTest extends SimpleBaseTest {
           "Validate that the YamlParser accepts yaml files with a .yaml or a .yml file extension, but not other file types.")
   public void accept() {
     YamlParser yamlParser = new YamlParser();
-
-    assertTrue(yamlParser.accept("TestSuite.yml"));
-    assertTrue(yamlParser.accept("TestSuite.yaml"));
-    assertFalse(yamlParser.accept("TestSuite.xml"));
+    assertThat(yamlParser.accept("TestSuite.yml")).isTrue();
+    assertThat(yamlParser.accept("TestSuite.yaml")).isTrue();
+    assertThat(yamlParser.accept("TestSuite.xml")).isFalse();
   }
 
   @Test(dataProvider = "dp")

@@ -23,7 +23,7 @@ public final class ClassBasedWrapper<T> {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ClassBasedWrapper<?> wrapper = (ClassBasedWrapper<?>) o;
-    return object.getClass().equals(wrapper.getClass());
+    return object.getClass().equals(wrapper.object.getClass());
   }
 
   @Override
