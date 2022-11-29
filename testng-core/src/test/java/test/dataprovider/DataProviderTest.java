@@ -78,11 +78,12 @@ public class DataProviderTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2819")
   public void testDataProviderRetryInstancesAreUniqueForEachDataDrivenTest() {
+    SimpleRetry.clearObjectIds();
     TestNG testng = create(TestClassWithMultipleRetryImplSample.class);
     DataProviderListenerForRetryAwareTests listener = new DataProviderListenerForRetryAwareTests();
     testng.addListener(listener);
     testng.run();
-    assertThat(SimpleRetry.getHashCodes()).hasSize(2);
+    assertThat(SimpleRetry.getObjectIds()).hasSize(2);
     // Without retrying itself we would have already invoked the listener once.
     assertThat(listener.getBeforeInvocations()).isEqualTo(6);
     assertThat(listener.getFailureInvocations()).isEqualTo(4);

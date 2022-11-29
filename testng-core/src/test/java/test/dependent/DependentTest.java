@@ -64,10 +64,8 @@ public class DependentTest extends SimpleBaseTest {
       description = "GITHUB-141",
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
-          "\nMethod \"test.dependent.issue141.ErrorScenarioNestedSample.a\\(\\)\" "
-              + "depends on nonexistent "
-              + "method \"test.dependent.issue141.ErrorScenarioNestedSample\\$InnerTestClass"
-              + ".rambo.*")
+          "\ntest.dependent.issue141.ErrorScenarioNestedSample.a\\(\\) "
+              + "depends on nonexistent method .*")
   public void ensureDependsOnMethodsHonoursRegexPatternsNestedClassesErrorCondition() {
     TestNG testng = create(ErrorScenarioNestedSample.class);
     MethodNameCollector listener = new MethodNameCollector();
@@ -101,9 +99,7 @@ public class DependentTest extends SimpleBaseTest {
   @Test(
       description = "GITHUB-141",
       expectedExceptions = TestNGException.class,
-      expectedExceptionsMessageRegExp =
-          "\nMethod \"test.dependent.issue141.NestedTestClassSample\\$FirstSample.randomTest\\(\\)\" "
-              + "depends on nonexistent method .*")
+      expectedExceptionsMessageRegExp = "\n.* depends on nonexistent method .*")
   public void ensureDependsOnMethodsHonoursRegexPatternsDuplicateMatchesNestedClasses() {
     TestNG testng = create(NestedTestClassSample.class);
     MethodNameCollector listener = new MethodNameCollector();
@@ -117,7 +113,7 @@ public class DependentTest extends SimpleBaseTest {
       description = "GITHUB-141",
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
-          "\nMethod \"test.dependent.issue141.NestedTestClassSample2.randomTest\\(\\)\" depends on "
+          "\ntest.dependent.issue141.NestedTestClassSample2.randomTest\\(\\) depends on "
               + "nonexistent method .*")
   public void ensureDependsOnMethodsHonourRegexPatternsNestedClasses() {
     TestNG testng = create(NestedTestClassSample2.class);

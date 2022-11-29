@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -1160,14 +1159,12 @@ public class TestRunner
   // TODO: This method needs to be removed and we need to be leveraging addListener().
   // Investigate and fix this.
   void addTestListener(ITestListener listener) {
-    Optional<ITestListener> found =
+    boolean found =
         m_testListeners.stream()
-            .filter(iTestListener -> iTestListener.getClass().equals(listener.getClass()))
-            .findAny();
-    if (found.isPresent()) {
-      return;
+            .anyMatch(iTestListener -> iTestListener.getClass().equals(listener.getClass()));
+    if (!found) {
+      m_testListeners.add(listener);
     }
-    m_testListeners.add(listener);
   }
 
   public void addListener(ITestNGListener listener) {
@@ -1214,7 +1211,11 @@ public class TestRunner
   }
 
   void addConfigurationListener(IConfigurationListener icl) {
-    m_configurationListeners.add(icl);
+    boolean alreadyAdded =
+        m_configurationListeners.stream().anyMatch(each -> each.getClass().equals(icl.getClass()));
+    if (!alreadyAdded) {
+      m_configurationListeners.add(icl);
+    }
   }
 
   private void dumpInvokedMethods() {

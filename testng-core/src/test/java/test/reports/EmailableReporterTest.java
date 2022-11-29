@@ -75,7 +75,7 @@ public class EmailableReporterTest extends SimpleBaseTest {
       if (jvm != null) {
         System.setProperty(jvm, filename);
       }
-      TestNG.main(args);
+      TestNG.privateMain(args, null);
     } catch (SecurityException t) {
       // Gobble Security exception
     } finally {

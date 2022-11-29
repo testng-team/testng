@@ -347,6 +347,10 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       // -- cbeust
       invoker = tr.getInvoker();
 
+      // Add back the configuration listeners that may have gotten altered after
+      // our suite level listeners were invoked.
+      this.configuration.getConfigurationListeners().forEach(tr::addConfigurationListener);
+
       for (ITestNGMethod m : tr.getBeforeSuiteMethods()) {
         beforeSuiteMethods.put(m.getConstructorOrMethod().getMethod(), m);
       }

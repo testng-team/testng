@@ -3,19 +3,24 @@ package test.dataprovider.issue2819;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import org.testng.IDataProviderMethod;
 import org.testng.IRetryDataProvider;
 
 public class SimpleRetry implements IRetryDataProvider {
 
-  private static final Set<Integer> hashCodes = new HashSet<>();
+  private static final Set<String> objectIds = new HashSet<>();
 
-  public static Set<Integer> getHashCodes() {
-    return Collections.unmodifiableSet(hashCodes);
+  public static Set<String> getObjectIds() {
+    return Collections.unmodifiableSet(objectIds);
+  }
+
+  public static void clearObjectIds() {
+    objectIds.clear();
   }
 
   public SimpleRetry() {
-    hashCodes.add(hashCode());
+    objectIds.add(UUID.randomUUID().toString());
   }
 
   private int counter = 0;

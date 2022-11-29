@@ -11,12 +11,14 @@ import org.testng.ITestResult;
 
 public class MyListener implements ISuiteListener, IClassListener {
 
-  public static int count = 0;
-  public static List<String> beforeSuiteCount = new ArrayList<>();
-  public static List<String> beforeClassCount = new ArrayList<>();
+  public static MyListener instance;
+  public List<String> beforeSuiteCount = new ArrayList<>();
+  public List<String> beforeClassCount = new ArrayList<>();
 
   public MyListener() {
-    count++;
+    if (instance == null) {
+      instance = this;
+    }
   }
 
   public void onStart(ISuite suite) {

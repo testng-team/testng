@@ -45,7 +45,7 @@ public class MethodHelper {
    * @param finder annotation finder
    * @param unique true for unique methods, false otherwise
    * @param outExcludedMethods - A List of excluded {@link ITestNGMethod} methods.
-   * @return list of ordered methods
+   * @return an array of ordered methods
    */
   public static ITestNGMethod[] collectAndOrderMethods(
       List<ITestNGMethod> methods,
@@ -82,7 +82,7 @@ public class MethodHelper {
    *
    * @param m TestNG method
    * @param methods list of methods to search for depended upon methods
-   * @return list of methods that match the criteria
+   * @return an array of methods that match the criteria
    */
   protected static ITestNGMethod[] findDependedUponMethods(
       ITestNGMethod m, List<ITestNGMethod> methods) {
@@ -95,7 +95,7 @@ public class MethodHelper {
    *
    * @param m TestNG method
    * @param incoming list of methods to search for depended upon methods
-   * @return list of methods that match the criteria
+   * @return an array of methods that match the criteria
    */
   public static ITestNGMethod[] findDependedUponMethods(ITestNGMethod m, ITestNGMethod[] incoming) {
     ITestNGMethod[] methods =
@@ -103,10 +103,6 @@ public class MethodHelper {
             .filter(each -> !each.equals(m))
             .filter(each -> Objects.isNull(each.getRealClass().getEnclosingClass()))
             .toArray(ITestNGMethod[]::new);
-    if (methods.length == 0) {
-      return new ITestNGMethod[] {};
-    }
-
     String canonicalMethodName = calculateMethodCanonicalName(m);
 
     List<ITestNGMethod> vResult = Lists.newArrayList();
