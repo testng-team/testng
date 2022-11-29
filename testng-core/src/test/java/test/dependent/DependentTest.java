@@ -32,6 +32,11 @@ import test.dependent.issue141.SkipReasoner;
 import test.dependent.issue141.TestClassSample;
 import test.dependent.issue2658.FailingClassSample;
 import test.dependent.issue2658.PassingClassSample;
+import test.dependent.issue550.ConfigDependencySample;
+import test.dependent.issue550.ConfigDependencyWithMismatchedLevelSample;
+import test.dependent.issue550.ConfigDependsOnTestAndConfigMethodSample;
+import test.dependent.issue550.ConfigDependsOnTestMethodSample;
+import test.dependent.issue550.OrderedResultsGatherer;
 import test.dependent.issue893.DependencyTrackingListener;
 import test.dependent.issue893.MultiLevelDependenciesTestClassSample;
 
@@ -375,6 +380,62 @@ public class DependentTest extends SimpleBaseTest {
       {MultiLevelDependenciesTestClassSample.class, "father", new String[] {"grandFather"}},
       {MultiLevelDependenciesTestClassSample.class, "child", new String[] {"father", "mother"}},
       {MultiLevelDependenciesTestClassSample.class, "grandFather", new String[] {}}
+    };
+  }
+
+  @Test(description = "GITHUB-550", dataProvider = "configDependencyTestData")
+  public void testConfigDependencies(String expectedErrorMsg, Class<?> testClassToUse) {
+    TestNG testng = create(testClassToUse);
+    String actualErrorMsg = null;
+    try {
+      testng.run();
+    } catch (TestNGException e) {
+      actualErrorMsg = e.getMessage().replace("\n", "");
+    }
+    assertThat(actualErrorMsg).isEqualTo(expectedErrorMsg);
+  }
+
+  @Test(description = "GITHUB-550")
+  public void testConfigDependenciesHappyCase() {
+    TestNG testng = create(ConfigDependencySample.class);
+    OrderedResultsGatherer gatherer = new OrderedResultsGatherer();
+    testng.addListener(gatherer);
+    testng.run();
+    assertThat(gatherer.getStartTimes()).isSorted();
+  }
+
+  @DataProvider(name = "configDependencyTestData")
+  public Object[][] configDependencyTestData() {
+    String template1 = "None of the dependencies of the method %s.%s are annotated with [@%s].";
+    String template2 =
+        "%s.%s() is depending on method public void %s.%s(), " + "which is not annotated with @%s.";
+    return new Object[][] {
+      {
+        String.format(
+            template1,
+            ConfigDependencyWithMismatchedLevelSample.class.getCanonicalName(),
+            "beforeMethod",
+            "BeforeMethod"),
+        ConfigDependencyWithMismatchedLevelSample.class
+      },
+      {
+        String.format(
+            template2,
+            ConfigDependsOnTestAndConfigMethodSample.class.getCanonicalName(),
+            "beforeMethod",
+            ConfigDependsOnTestAndConfigMethodSample.class.getCanonicalName(),
+            "testMethod",
+            "BeforeMethod"),
+        ConfigDependsOnTestAndConfigMethodSample.class
+      },
+      {
+        String.format(
+            template1,
+            ConfigDependsOnTestMethodSample.class.getCanonicalName(),
+            "beforeMethod",
+            "BeforeMethod"),
+        ConfigDependsOnTestMethodSample.class
+      }
     };
   }
 

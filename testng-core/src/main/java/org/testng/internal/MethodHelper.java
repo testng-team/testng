@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,6 +91,40 @@ public class MethodHelper {
     return findDependedUponMethods(m, methodsArray);
   }
 
+  private static Pair<String, Predicate<ITestNGMethod>> filterToUse(ITestNGMethod m) {
+    if (m.isBeforeMethodConfiguration()) {
+      return new Pair<>("BeforeMethod", ITestNGMethod::isBeforeMethodConfiguration);
+    }
+    if (m.isAfterMethodConfiguration()) {
+      return new Pair<>("AfterMethod", ITestNGMethod::isAfterMethodConfiguration);
+    }
+    if (m.isBeforeClassConfiguration()) {
+      return new Pair<>("BeforeClass", ITestNGMethod::isBeforeClassConfiguration);
+    }
+    if (m.isAfterClassConfiguration()) {
+      return new Pair<>("AfterClass", ITestNGMethod::isAfterClassConfiguration);
+    }
+    if (m.isBeforeTestConfiguration()) {
+      return new Pair<>("BeforeTest", ITestNGMethod::isBeforeTestConfiguration);
+    }
+    if (m.isAfterTestConfiguration()) {
+      return new Pair<>("AfterTest", ITestNGMethod::isAfterTestConfiguration);
+    }
+    if (m.isBeforeSuiteConfiguration()) {
+      return new Pair<>("BeforeSuite", ITestNGMethod::isBeforeSuiteConfiguration);
+    }
+    if (m.isAfterSuiteConfiguration()) {
+      return new Pair<>("AfterSuite", ITestNGMethod::isAfterSuiteConfiguration);
+    }
+    if (m.isBeforeGroupsConfiguration()) {
+      return new Pair<>("BeforeGroups", ITestNGMethod::isBeforeGroupsConfiguration);
+    }
+    if (m.isAfterGroupsConfiguration()) {
+      return new Pair<>("AfterGroups", ITestNGMethod::isAfterGroupsConfiguration);
+    }
+    return new Pair<>("Test", ITestNGMethod::isTest);
+  }
+
   /**
    * Finds TestNG methods that the specified TestNG method depends upon
    *
@@ -104,6 +139,25 @@ public class MethodHelper {
             .filter(each -> Objects.isNull(each.getRealClass().getEnclosingClass()))
             .toArray(ITestNGMethod[]::new);
     String canonicalMethodName = calculateMethodCanonicalName(m);
+    Pair<String, Predicate<ITestNGMethod>> filterPair = filterToUse(m);
+    String annotationType = filterPair.first();
+    Predicate<ITestNGMethod> predicate = filterPair.second();
+
+    if (isConfigurationMethod(m)) {
+      methods =
+          Arrays.stream(incoming)
+              .filter(tm -> !tm.equals(m)) // exclude the current config method from the list
+              .filter(predicate) // include only similar config methods
+              .toArray(ITestNGMethod[]::new);
+
+      if (methods.length == 0) {
+        String msg =
+            String.format(
+                "None of the dependencies of the method %s are annotated with [@%s].",
+                canonicalMethodName, annotationType);
+        throw new TestNGException(msg);
+      }
+    }
 
     List<ITestNGMethod> vResult = Lists.newArrayList();
     String regexp = null;
@@ -142,11 +196,17 @@ public class MethodHelper {
         }
         Method maybeReferringTo = findMethodByName(m, regexp);
         if (maybeReferringTo != null) {
+          String suffix = " or not included.";
+          if (isConfigurationMethod(m)) {
+            suffix = ".";
+          }
           throw new TestNGException(
               canonicalMethodName
                   + "() is depending on method "
                   + maybeReferringTo
-                  + ", which is not annotated with @Test or not included.");
+                  + ", which is not annotated with @"
+                  + annotationType
+                  + suffix);
         }
         throw new TestNGException(
             canonicalMethodName + "() depends on nonexistent method " + regexp);
