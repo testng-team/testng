@@ -1,9 +1,14 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.junit4.*;
+import test.junit4.issue2792.TestClassSample;
+import test.junit4.issue2792.TestContextGatheringListener;
 
 public class JUnit4Test extends BaseTest {
 
@@ -71,5 +76,17 @@ public class JUnit4Test extends BaseTest {
     verifyPassedTests(expectedPassedTests);
     verifyFailedTests(expectedFailedTests);
     verifySkippedTests(expectedSkippedTests);
+  }
+
+  @Test(description = "GITHUB-2792")
+  public void ensureTestContextAvailableForListeners() {
+    TestNG testng = new TestNG();
+    testng.setTestClasses(new Class[] {TestClassSample.class});
+    TestContextGatheringListener listener = new TestContextGatheringListener();
+    testng.addListener(listener);
+    testng.setJUnit(true);
+    testng.run();
+    assertThat(listener.isTestContextFoundOnTestStart()).isTrue();
+    assertThat(listener.isTestContextFoundOnAfterInvocation()).isTrue();
   }
 }
