@@ -39,27 +39,6 @@ class GroovyTest extends SimpleBaseTest {
         assert adapter.passedTests.size() == 1
     }
 
-    @Test
-    void spockSampleShouldWork() {
-        def tng = create(SpockSample)
-        tng.setJUnit(true)
-        def adapter = new TestListenerAdapter()
-        tng.addListener((ITestNGListener)adapter)
-        tng.run()
-
-        assert adapter.failedTests.isEmpty()
-        assert adapter.skippedTests.isEmpty()
-        assert adapter.passedTests.size() == 1
-    }
-
-    @Test
-    void reporterWithSpockSampleShouldWork() {
-        def tng = create(SpockSample)
-        tng.setJUnit(true)
-        tng.addListener((ITestNGListener) new JUnitXMLReporter())
-        tng.run()
-    }
-
     @Test(description = "GITHUB-2360")
     void groovyInternalMethodsAreSkipped() {
         def tng = create Issue2360Sample

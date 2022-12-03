@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2844: Deprecate support for running Spock Tests (Krishnan Mahadevan)
 Fixed: GITHUB-893: TestNG should provide an Api which allow to find all dependent of a specific test (Krishnan Mahadevan)
 New: Added .yml file extension for yaml suite files, previously only .yaml was allowed for yaml (Steven Jubb)
 Fixed: GITHUB-141: regular expression in "dependsOnMethods" does not work (Krishnan Mahadevan)
