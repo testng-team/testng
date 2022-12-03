@@ -4,7 +4,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import org.junit.runner.RunWith;
 
-/** @author lukas */
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public final class JUnit4TestRecognizer implements JUnitTestRecognizer {
 
   public JUnit4TestRecognizer() {}

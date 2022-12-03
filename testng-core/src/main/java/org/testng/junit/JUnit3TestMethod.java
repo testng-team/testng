@@ -6,6 +6,10 @@ import org.testng.ITestObjectFactory;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public class JUnit3TestMethod extends JUnitTestMethod {
 
   public JUnit3TestMethod(ITestObjectFactory objectFactory, JUnitTestClass owner, Test test) {

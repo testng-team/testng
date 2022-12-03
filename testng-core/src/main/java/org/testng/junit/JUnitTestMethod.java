@@ -6,6 +6,10 @@ import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConstructorOrMethod;
 
 // NO JUnit specific code here to avoid runtime errors
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public abstract class JUnitTestMethod extends BaseTestMethod {
 
   protected JUnitTestMethod(

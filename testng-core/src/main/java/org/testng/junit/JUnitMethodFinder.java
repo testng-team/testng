@@ -18,8 +18,9 @@ import org.testng.xml.XmlTest;
  * This class locates all test and configuration methods according to JUnit. It is used to change
  * the strategy used by TestRunner to locate its test methods.
  *
- * @since May 3, 2004
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
  */
+@Deprecated
 public class JUnitMethodFinder implements ITestMethodFinder {
 
   private final ITestObjectFactory objectFactory;
@@ -119,7 +120,10 @@ public class JUnitMethodFinder implements ITestMethodFinder {
     return new ITestNGMethod[0];
   }
 }
-
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 interface INameFilter {
   boolean accept(ConstructorOrMethod method);
 }
