@@ -231,7 +231,11 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
     JUnit4TestClass tc = new JUnit4TestClass(test);
     JUnitTestMethod tm = new JUnit4TestMethod(objectFactory, tc, test);
 
-    TestResult tr = TestResult.newTestResultFor(tm);
+    ITestContext ctx = null;
+    if (m_parentRunner instanceof ITestContext) {
+      ctx = (ITestContext) m_parentRunner;
+    }
+    TestResult tr = TestResult.newContextAwareTestResult(tm, ctx);
 
     InvokedMethod im = new InvokedMethod(tr.getStartMillis(), tr);
     if (tr.getMethod() instanceof IInvocationStatus) {

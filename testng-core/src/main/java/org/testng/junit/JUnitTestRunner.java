@@ -27,8 +27,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   private final ITestObjectFactory m_objectFactory;
   private final ITestResultNotifier m_parentRunner;
 
-  private Map<Test, TestRunInfo> m_tests = new WeakHashMap<>();
-  private List<ITestNGMethod> m_methods = Lists.newArrayList();
+  private final Map<Test, TestRunInfo> m_tests = new WeakHashMap<>();
+  private final List<ITestNGMethod> m_methods = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
 
   public JUnitTestRunner(ITestObjectFactory objectFactory, ITestResultNotifier tr) {
@@ -102,9 +102,14 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     JUnitTestClass tc = new JUnit3TestClass(test);
     JUnitTestMethod tm = new JUnit3TestMethod(m_objectFactory, tc, test);
 
+    ITestContext ctx = null;
+    if (m_parentRunner instanceof ITestContext) {
+      ctx = (ITestContext) m_parentRunner;
+    }
+
     org.testng.internal.TestResult tr =
         org.testng.internal.TestResult.newEndTimeAwareTestResult(
-            tm, null, tri.m_failure, tri.m_start);
+            tm, ctx, tri.m_failure, tri.m_start);
 
     if (tri.isFailure()) {
       tr.setStatus(ITestResult.FAILURE);
