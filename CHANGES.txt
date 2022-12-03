@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-2792: JUnitTestClass sets XmlTest as null when running JUnit 4 Tests using TestNG (Krishnan Mahadevan)
+Fixed: GITHUB-2847: Deprecate support for running JUnit tests (Krishnan Mahadevan)
 Fixed: GITHUB-2844: Deprecate support for running Spock Tests (Krishnan Mahadevan)
 Fixed: GITHUB-550: Weird @BeforeMethod and @AfterMethod behaviour with dependsOnMethods (Krishnan Mahadevan)
 Fixed: GITHUB-893: TestNG should provide an Api which allow to find all dependent of a specific test (Krishnan Mahadevan)

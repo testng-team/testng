@@ -16,7 +16,12 @@ import org.testng.internal.TestResult;
 import org.testng.internal.invokers.IInvocationStatus;
 import org.testng.internal.invokers.InvokedMethod;
 
-/** A JUnit TestRunner that records/triggers all information/events necessary to TestNG. */
+/**
+ * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
+ *
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public class JUnit4TestRunner implements IJUnitTestRunner {
 
   private final ITestObjectFactory objectFactory;

@@ -2,7 +2,10 @@ package org.testng.junit;
 
 import org.junit.runner.Description;
 
-/** @author lukas */
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public class JUnit4TestClass extends JUnitTestClass {
 
   public JUnit4TestClass(Description test) {

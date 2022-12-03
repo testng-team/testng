@@ -7,6 +7,10 @@ import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public class JUnit4TestMethod extends JUnitTestMethod {
 
   private static final AtomicBoolean warnOnce = new AtomicBoolean(false);

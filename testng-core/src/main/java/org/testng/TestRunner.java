@@ -15,6 +15,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -646,7 +647,18 @@ public class TestRunner
 
   private ITestNGMethod[] m_allJunitTestMethods = new ITestNGMethod[] {};
 
+  private static final AtomicBoolean warnOnce = new AtomicBoolean(false);
+
   private void privateRunJUnit() {
+    if (warnOnce.compareAndSet(false, true)) {
+      String msg =
+          "Support to run JUnit tests using TestNG stands deprecated "
+              + "and will be removed in future versions. You can now use the JUnit5 TestNG "
+              + "engine to run both JUnit and TestNG tests. For more information refer to "
+              + "https://github.com/junit-team/testng-engine .";
+      Logger.getLogger(TestRunner.class).warn(msg);
+    }
+
     final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
     final Set<Class<?>> classes = cim.getClasses();
     final List<ITestNGMethod> runMethods = Lists.newArrayList();
@@ -656,7 +668,7 @@ public class TestRunner
     // The resolution process is not specified in the JVM spec with a specific implementation,
     // so it can be eager => failure
     workers.add(
-        new IWorker<ITestNGMethod>() {
+        new IWorker<>() {
           /** @see TestMethodWorker#getTimeOut() */
           @Override
           public long getTimeOut() {

@@ -20,7 +20,12 @@ import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.TestListenerHelper;
 import org.testng.internal.invokers.InvokedMethod;
 
-/** A JUnit TestRunner that records/triggers all information/events necessary to TestNG. */
+/**
+ * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
+ *
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
   public static final String SUITE_METHODNAME = "suite";
 

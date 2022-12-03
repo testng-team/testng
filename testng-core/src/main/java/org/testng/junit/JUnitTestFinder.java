@@ -4,6 +4,10 @@ import java.lang.reflect.Modifier;
 import org.testng.internal.Utils;
 import org.testng.internal.objects.InstanceCreator;
 
+/**
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ */
+@Deprecated
 public final class JUnitTestFinder {
 
   private static final String JUNIT3_TEST = "junit.framework.Test";
