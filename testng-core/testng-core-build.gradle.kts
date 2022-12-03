@@ -41,7 +41,6 @@ dependencies {
     testImplementation("org.codehaus.groovy:groovy-all:_") {
         exclude("org.testng", "testng")
     }
-    testImplementation("org.spockframework:spock-core:_")
     testImplementation("org.apache-extras.beanshell:bsh:_")
     testImplementation("org.mockito:mockito-core:_")
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-api:_")

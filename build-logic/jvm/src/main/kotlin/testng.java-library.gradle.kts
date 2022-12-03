@@ -19,7 +19,9 @@ tasks.withType<JavaCompile>().configureEach {
         // But let's not fail builds for that reason
         if (JavaVersion.current() != JavaVersion.VERSION_17) {
             compilerArgs.add("-Xlint:deprecation")
-            compilerArgs.add("-Werror")
+            //If we have deprecation warnings, the build fails
+            //which should not happen
+            //compilerArgs.add("-Werror")
         }
     }
 }

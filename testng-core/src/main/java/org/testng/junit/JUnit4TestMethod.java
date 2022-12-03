@@ -1,11 +1,15 @@
 package org.testng.junit;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.runner.Description;
 import org.testng.ITestObjectFactory;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.Utils;
+import org.testng.log4testng.Logger;
 
 public class JUnit4TestMethod extends JUnitTestMethod {
+
+  private static final AtomicBoolean warnOnce = new AtomicBoolean(false);
 
   public JUnit4TestMethod(
       ITestObjectFactory objectFactory, JUnitTestClass owner, Description desc) {
@@ -15,6 +19,15 @@ public class JUnit4TestMethod extends JUnitTestMethod {
   private static ConstructorOrMethod getMethod(Class<?> c, Description desc) {
     String method = desc.getMethodName();
     if (JUnit4SpockMethod.isSpockClass(c)) {
+      if (warnOnce.compareAndSet(false, true)) {
+        String msg =
+            "Support for running Spock 1.x series is being deprecated and will "
+                + "be removed in the upcoming versions of TestNG. Spock 2.x based tests use "
+                + "the JUnit5 engine for running them. "
+                + "To run both TestNG and Spock2.x tests using JUnit5 refer to "
+                + "https://github.com/junit-team/testng-engine";
+        Logger.getLogger(JUnit4TestMethod.class).warn(msg);
+      }
       return new JUnit4SpockMethod(desc);
     }
     if (method == null) {
