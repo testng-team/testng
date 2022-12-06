@@ -12,7 +12,7 @@ import org.testng.internal.Utils;
 /**
  * An abstraction interface over JUnit test runners.
  *
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 public interface IJUnitTestRunner {

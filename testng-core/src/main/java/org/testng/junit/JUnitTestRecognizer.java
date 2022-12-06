@@ -1,7 +1,7 @@
 package org.testng.junit;
 
 /**
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 interface JUnitTestRecognizer {

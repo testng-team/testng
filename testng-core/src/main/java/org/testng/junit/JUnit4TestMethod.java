@@ -8,7 +8,7 @@ import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 
 /**
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 public class JUnit4TestMethod extends JUnitTestMethod {

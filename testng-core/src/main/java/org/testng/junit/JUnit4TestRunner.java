@@ -19,7 +19,7 @@ import org.testng.internal.invokers.InvokedMethod;
 /**
  * A JUnit TestRunner that records/triggers all information/events necessary to TestNG.
  *
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 public class JUnit4TestRunner implements IJUnitTestRunner {

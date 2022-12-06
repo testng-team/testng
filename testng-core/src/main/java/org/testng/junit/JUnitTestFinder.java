@@ -5,7 +5,7 @@ import org.testng.internal.Utils;
 import org.testng.internal.objects.InstanceCreator;
 
 /**
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 public final class JUnitTestFinder {

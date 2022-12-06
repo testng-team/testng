@@ -18,7 +18,7 @@ import org.testng.xml.XmlTest;
  * This class locates all test and configuration methods according to JUnit. It is used to change
  * the strategy used by TestRunner to locate its test methods.
  *
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 public class JUnitMethodFinder implements ITestMethodFinder {
@@ -121,7 +121,7 @@ public class JUnitMethodFinder implements ITestMethodFinder {
   }
 }
 /**
- * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.6.2</code>
+ * @deprecated - Support for running JUnit tests stands deprecated as of TestNG <code>7.7.0</code>
  */
 @Deprecated
 interface INameFilter {

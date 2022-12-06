@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import org.junit.runner.Description;
 import org.testng.internal.ConstructorOrMethod;
 
-/** @deprecated - Support for Spock1.x series is being deprecated as of TestNG <code>7.6.2</code> */
+/** @deprecated - Support for Spock1.x series is being deprecated as of TestNG <code>7.7.0</code> */
 @Deprecated
 public class JUnit4SpockMethod extends ConstructorOrMethod {
 
