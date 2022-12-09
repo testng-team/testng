@@ -1,4 +1,7 @@
 Current
+
+7.7.0
+Fixed: GITHUB-2852: [SECURITY] Fix Zip Slip Vulnerability (Jonathan Leitschuh)
 Fixed: GITHUB-2792: JUnitTestClass sets XmlTest as null when running JUnit 4 Tests using TestNG (Krishnan Mahadevan)
 Fixed: GITHUB-2847: Deprecate support for running JUnit tests (Krishnan Mahadevan)
 Fixed: GITHUB-2844: Deprecate support for running Spock Tests (Krishnan Mahadevan)

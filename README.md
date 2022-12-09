@@ -6,6 +6,7 @@
 Documentation available at [TestNG's main web site](https://testng.org).
 
 ### Release Notes
+* [7.7.0](https://groups.google.com/g/testng-users/c/V6jie-9uUIA)
 * [7.6.0](https://groups.google.com/g/testng-users/c/BAFB1vk-kok)
 * [7.5](https://groups.google.com/g/testng-users/c/ESLiK8xSomc)
 * [7.4.0](https://groups.google.com/g/testng-users/c/dwSJ04qeu8k)
@@ -15,6 +16,7 @@ Documentation available at [TestNG's main web site](https://testng.org).
 
 ### Need help?
 Before opening a new issue, did you ask your question on
+
 * [Google group](https://groups.google.com/group/testng-users)
 * [StackOverflow](https://stackoverflow.com/questions/tagged/testng)
 
