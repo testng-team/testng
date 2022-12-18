@@ -6,8 +6,8 @@ import org.testng.ITestContext
 import org.testng.ITestNGListener
 import org.testng.TestListenerAdapter
 import org.testng.annotations.Test
-import org.testng.reporters.JUnitXMLReporter
 import test.SimpleBaseTest
+import test.groovy.issue2854.AssertionsTestSample
 
 import static org.assertj.core.api.Assertions.assertThat
 
@@ -53,4 +53,10 @@ class GroovyTest extends SimpleBaseTest {
         assertThat testMethodNames containsExactly "test1", "test2"
     }
 
+    @Test(description = "GITHUB-2854")
+    void ensureAssertionsWork() {
+        def testng = create AssertionsTestSample
+        testng.run()
+        assertThat testng.status isEqualTo(0)
+    }
 }

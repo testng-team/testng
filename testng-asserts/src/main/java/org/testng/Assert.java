@@ -753,6 +753,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two doubles are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Double actual, Double expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two doubles are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -782,8 +794,18 @@ public class Assert {
     assertEquals(Double.valueOf(actual), expected, null);
   }
 
+  /**
+   * Asserts that two doubles are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Double actual, Double expected) {
+    assertEquals(actual, expected, null);
+  }
+
   private static boolean areEqual(float actual, float expected, float delta) {
-    // handle infinity specially since subtracting to infinite values gives NaN and the
+    // handle infinity specially since subtracting to infinite values gives NaN and
     // the following test fails
     if (Float.isInfinite(expected)) {
       if (!(expected == actual)) {
@@ -870,6 +892,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two floats are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Float actual, Float expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two floats are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -897,6 +931,16 @@ public class Assert {
    */
   public static void assertEquals(float actual, Float expected) {
     assertEquals(Float.valueOf(actual), expected, null);
+  }
+
+  /**
+   * Asserts that two floats are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Float actual, Float expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
@@ -931,8 +975,8 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  public static void assertEquals(long actual, Long expected, String message) {
-    assertEquals(Long.valueOf(actual), expected, message);
+  public static void assertEquals(Long actual, Long expected, String message) {
+    assertEquals(actual, (Object) expected, message);
   }
 
   /**
@@ -962,6 +1006,16 @@ public class Assert {
    */
   public static void assertEquals(long actual, Long expected) {
     assertEquals(Long.valueOf(actual), expected, null);
+  }
+
+  /**
+   * Asserts that two longs are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Long actual, Long expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
@@ -1001,6 +1055,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two booleans are equal. If they are not, an AssertionError, with the given
+   * message, is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Boolean actual, Boolean expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two booleans are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -1018,6 +1084,16 @@ public class Assert {
    */
   public static void assertEquals(Boolean actual, boolean expected) {
     assertEquals(actual, Boolean.valueOf(expected), null);
+  }
+
+  /**
+   * Asserts that two booleans are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Boolean actual, Boolean expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
@@ -1067,6 +1143,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two bytes are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Byte actual, Byte expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two bytes are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -1084,6 +1172,16 @@ public class Assert {
    */
   public static void assertEquals(Byte actual, byte expected) {
     assertEquals(actual, Byte.valueOf(expected), null);
+  }
+
+  /**
+   * Asserts that two bytes are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Byte actual, Byte expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
@@ -1133,6 +1231,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two chars are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Character actual, Character expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two chars are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -1160,6 +1270,16 @@ public class Assert {
    */
   public static void assertEquals(char actual, Character expected) {
     assertEquals(Character.valueOf(actual), expected, null);
+  }
+
+  /**
+   * Asserts that two chars are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Character actual, Character expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
@@ -1199,6 +1319,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two shorts are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Short actual, Short expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two shorts are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -1226,6 +1358,16 @@ public class Assert {
    */
   public static void assertEquals(short actual, Short expected) {
     assertEquals(Short.valueOf(actual), expected, null);
+  }
+
+  /**
+   * Asserts that two shorts are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Short actual, Short expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
@@ -1265,6 +1407,18 @@ public class Assert {
   }
 
   /**
+   * Asserts that two ints are equal. If they are not, an AssertionError, with the given message, is
+   * thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
+  public static void assertEquals(Integer actual, Integer expected, String message) {
+    assertEquals(actual, (Object) expected, message);
+  }
+
+  /**
    * Asserts that two ints are equal. If they are not, an AssertionError is thrown.
    *
    * @param actual the actual value
@@ -1292,6 +1446,16 @@ public class Assert {
    */
   public static void assertEquals(int actual, Integer expected) {
     assertEquals(Integer.valueOf(actual), expected, null);
+  }
+
+  /**
+   * Asserts that two ints are equal. If they are not, an AssertionError is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   */
+  public static void assertEquals(Integer actual, Integer expected) {
+    assertEquals(actual, expected, null);
   }
 
   /**
