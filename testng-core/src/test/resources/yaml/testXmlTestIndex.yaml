@@ -1,0 +1,14 @@
+name: SuiteYaml
+tests:
+  - name: TestYaml-1
+    parameters: { input: yaml_1 }
+    classes:
+      - test.TestNGTest
+  - name: TestYaml-2
+    parameters: { input: yaml_2 }
+    classes:
+      - test.TestNGTest
+  - name: TestYaml-3
+    parameters: { input: yaml_3 }
+    classes:
+      - test.TestNGTest

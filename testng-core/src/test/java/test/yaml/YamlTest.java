@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.testng.Assert;
@@ -18,6 +19,7 @@ import org.testng.internal.Yaml;
 import org.testng.internal.YamlParser;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import org.testng.xml.internal.Parser;
 import test.SimpleBaseTest;
 
@@ -97,6 +99,18 @@ public class YamlTest extends SimpleBaseTest {
       }
 
       throw new AssertionError("Yaml parser failed to parse suite", throwable);
+    }
+  }
+
+  @Test(description = "GITHUB-2857")
+  public void testXmlTestIndex() throws IOException {
+    YamlParser yamlParser = new YamlParser();
+    String yamlSuiteFile = "src/test/resources/yaml/testXmlTestIndex.yaml";
+    XmlSuite suite = yamlParser.parse(yamlSuiteFile, new FileInputStream(yamlSuiteFile), false);
+    List<XmlTest> tests = suite.getTests();
+    assertThat(tests.size()).isEqualTo(3);
+    for (int i = 0; i < tests.size(); i++) {
+      assertThat(tests.get(i).getIndex()).isEqualTo(i);
     }
   }
 
