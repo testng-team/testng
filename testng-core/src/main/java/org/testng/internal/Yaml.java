@@ -60,11 +60,13 @@ public final class Yaml {
     result.setFileName(filePath);
 
     // Adjust XmlTest parents and indices
+    int testIndex = 0;
     for (XmlTest t : result.getTests()) {
+      t.setIndex(testIndex++);
       t.setSuite(result);
-      int index = 0;
+      int classIndex = 0;
       for (XmlClass c : t.getClasses()) {
-        c.setIndex(index++);
+        c.setIndex(classIndex++);
       }
     }
 
