@@ -1,4 +1,6 @@
 Current
+
+7.7.1
 Fixed: GITHUB-2854: overloaded assertEquals methods do not work from Groovy (Krishnan Mahadevan)
 
 7.7.0
