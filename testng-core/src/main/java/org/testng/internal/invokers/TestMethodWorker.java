@@ -207,9 +207,16 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       invokeInstances.add(inst);
     }
 
-    for (IClassListener listener : m_listeners) {
-      listener.onAfterClass(testClass);
+    if (RuntimeBehavior.useSymmetricListenerExecution()) {
+      invokeAfterClassConfigurations(testClass, invokeInstances);
+      invokeListenersOnAfterClass(testClass, m_listeners);
+    } else {
+      invokeListenersOnAfterClass(testClass, m_listeners);
+      invokeAfterClassConfigurations(testClass, invokeInstances);
     }
+  }
+
+  private void invokeAfterClassConfigurations(ITestClass testClass, List<Object> invokeInstances) {
     for (Object invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes =
           new Builder()
@@ -220,6 +227,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
               .usingInstance(invokeInstance)
               .build();
       m_configInvoker.invokeConfigurations(attributes);
+    }
+  }
+
+  private void invokeListenersOnAfterClass(ITestClass testClass, List<IClassListener> listeners) {
+    for (IClassListener listener : listeners) {
+      listener.onAfterClass(testClass);
     }
   }
 

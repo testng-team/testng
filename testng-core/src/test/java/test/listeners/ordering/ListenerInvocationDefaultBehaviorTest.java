@@ -7,6 +7,7 @@ import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.internal.RuntimeBehavior;
 import test.SimpleBaseTest;
 import test.listeners.issue1952.TestclassSample;
 
@@ -460,6 +461,102 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
             IREPORTER_GENERATE_REPORT,
             IEXECUTIONLISTENER_ON_EXECUTION_FINISH);
     runTest(expected, SimpleTestClassWithFailedMethodHasRetryAnalyzer.class, true);
+  }
+
+  @Test(description = "Test Configuration/Listener order NOT using symmetric listener execution")
+  public void testOrderForNonSymmetricOnAfterClass() {
+    List<String> nonSymmetricExpected =
+        Arrays.asList(
+            IEXECUTIONLISTENER_ON_EXECUTION_START,
+            IALTERSUITELISTENER_ALTER,
+            IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS,
+            IANNOTATIONTRANSFORMER_TRANSFORM_4_ARGS,
+            ISUITELISTENER_ON_START,
+            ITESTLISTENER_ON_START_TEST_TAG,
+            METHODINTERCEPTOR_INTERCEPT,
+            METHODINTERCEPTOR_INTERCEPT,
+            // onBeforeClass
+            ICLASSLISTENER_ON_BEFORE_CLASS,
+            // @beforeClass
+            ICONFIGURATIONLISTENER_BEFORE_CONFIGURATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ICONFIGURATIONLISTENER_ON_CONFIGURATION_SUCCESS,
+            // test method
+            ITESTLISTENER_ON_START_TEST_METHOD,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ITESTLISTENER_ON_TEST_SUCCESS_TEST_METHOD,
+            // onAfterClass
+            ICLASSLISTENER_ON_AFTER_CLASS,
+            // @afterClass
+            ICONFIGURATIONLISTENER_BEFORE_CONFIGURATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ICONFIGURATIONLISTENER_ON_CONFIGURATION_SUCCESS,
+            IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
+            ITESTLISTENER_ON_FINISH_TEST_TAG,
+            ISUITELISTENER_ON_FINISH,
+            IREPORTER_GENERATE_REPORT,
+            IEXECUTIONLISTENER_ON_EXECUTION_FINISH);
+    runTest(nonSymmetricExpected, SimpleTestClassWithBeforeAndAfterClass.class);
+  }
+
+  @Test(description = "Test Configuration/Listener order using symmetric listener execution")
+  public void testOrderForSymmetricOnAfterClass() {
+    List<String> symmetricExpected =
+        Arrays.asList(
+            IEXECUTIONLISTENER_ON_EXECUTION_START,
+            IALTERSUITELISTENER_ALTER,
+            IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS,
+            IANNOTATIONTRANSFORMER_TRANSFORM_4_ARGS,
+            ISUITELISTENER_ON_START,
+            ITESTLISTENER_ON_START_TEST_TAG,
+            METHODINTERCEPTOR_INTERCEPT,
+            METHODINTERCEPTOR_INTERCEPT,
+            // onBeforeClass
+            ICLASSLISTENER_ON_BEFORE_CLASS,
+            // @beforeClass
+            ICONFIGURATIONLISTENER_BEFORE_CONFIGURATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ICONFIGURATIONLISTENER_ON_CONFIGURATION_SUCCESS,
+            // test method
+            ITESTLISTENER_ON_START_TEST_METHOD,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ITESTLISTENER_ON_TEST_SUCCESS_TEST_METHOD,
+            // @afterClass
+            ICONFIGURATIONLISTENER_BEFORE_CONFIGURATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION,
+            IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION,
+            IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT,
+            ICONFIGURATIONLISTENER_ON_CONFIGURATION_SUCCESS,
+            // onAfterClass
+            ICLASSLISTENER_ON_AFTER_CLASS,
+            IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION,
+            ITESTLISTENER_ON_FINISH_TEST_TAG,
+            ISUITELISTENER_ON_FINISH,
+            IREPORTER_GENERATE_REPORT,
+            IEXECUTIONLISTENER_ON_EXECUTION_FINISH);
+
+    try {
+      System.setProperty(RuntimeBehavior.SYMMETRIC_LISTENER_EXECUTION, Boolean.TRUE.toString());
+      runTest(symmetricExpected, SimpleTestClassWithBeforeAndAfterClass.class);
+    } finally {
+      System.setProperty(RuntimeBehavior.SYMMETRIC_LISTENER_EXECUTION, Boolean.FALSE.toString());
+    }
   }
 
   private static void runTest(List<String> expected, Class<?> clazz) {
