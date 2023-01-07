@@ -15,6 +15,7 @@ public final class RuntimeBehavior {
   public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
   public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
   public static final String IGNORE_CALLBACK_INVOCATION_SKIPS = "testng.ignore.callback.skip";
+  public static final String SYMMETRIC_LISTENER_EXECUTION = "testng.listener.execution.symmetric";
 
   private RuntimeBehavior() {}
 
@@ -131,5 +132,18 @@ public final class RuntimeBehavior {
    */
   public static int getDefaultVerboseLevel() {
     return Integer.getInteger(TESTNG_DEFAULT_VERBOSE, 1);
+  }
+
+  /**
+   * @return - <code>true</code> if we would like to invoke AfterClass methods symmetrically to
+   *     BeforeClass. When true, order is:
+   *     <ol>
+   *       <li>Class @afterClass methods
+   *       <li>Listener onAfterClass methods
+   *     </ol>
+   *     When false, order is reversed.
+   */
+  public static boolean useSymmetricListenerExecution() {
+    return Boolean.parseBoolean(System.getProperty(SYMMETRIC_LISTENER_EXECUTION, "false"));
   }
 }
