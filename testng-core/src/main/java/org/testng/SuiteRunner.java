@@ -69,6 +69,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
+  private ITestListener exitCodeListener;
 
   public SuiteRunner(
       IConfiguration configuration,
@@ -94,7 +95,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         useDefaultListeners,
         new ArrayList<>() /* method interceptor */,
         null /* invoked method listeners */,
-        null /* test listeners */,
+        new TestListenersContainer() /* test listeners */,
         null /* class listeners */,
         new DataProviderHolder(),
         comparator);
@@ -108,7 +109,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       boolean useDefaultListeners,
       List<IMethodInterceptor> methodInterceptors,
       Collection<IInvokedMethodListener> invokedMethodListeners,
-      Collection<ITestListener> testListeners,
+      TestListenersContainer container,
       Collection<IClassListener> classListeners,
       DataProviderHolder holder,
       Comparator<ITestNGMethod> comparator) {
@@ -120,7 +121,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         useDefaultListeners,
         methodInterceptors,
         invokedMethodListeners,
-        testListeners,
+        container,
         classListeners,
         holder,
         comparator);
@@ -134,7 +135,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
       boolean useDefaultListeners,
       List<IMethodInterceptor> methodInterceptors,
       Collection<IInvokedMethodListener> invokedMethodListener,
-      Collection<ITestListener> testListeners,
+      TestListenersContainer container,
       Collection<IClassListener> classListeners,
       DataProviderHolder attribs,
       Comparator<ITestNGMethod> comparator) {
@@ -146,6 +147,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     this.xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
     this.tmpRunnerFactory = runnerFactory;
+    this.exitCodeListener = container.exitCodeListener;
     List<IMethodInterceptor> localMethodInterceptors =
         Optional.ofNullable(methodInterceptors).orElse(Lists.newArrayList());
     setOutputDir(outputDir);
@@ -206,9 +208,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     }
 
     skipFailedInvocationCounts = suite.skipFailedInvocationCounts();
-    if (null != testListeners) {
-      this.testListeners.addAll(testListeners);
-    }
+    this.testListeners.addAll(container.listeners);
     for (IClassListener classListener :
         Optional.ofNullable(classListeners).orElse(Collections.emptyList())) {
       this.classListeners.put(classListener.getClass(), classListener);
@@ -257,13 +257,19 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     useDefaultListeners = reportResults;
   }
 
+  ITestListener getExitCodeListener() {
+    return exitCodeListener;
+  }
+
   private void invokeListeners(boolean start) {
     if (start) {
-      for (ISuiteListener sl : Lists.newArrayList(listeners.values())) {
+      for (ISuiteListener sl :
+          ListenerOrderDeterminer.order(Lists.newArrayList(listeners.values()))) {
         sl.onStart(this);
       }
     } else {
-      List<ISuiteListener> suiteListenersReversed = Lists.newReversedArrayList(listeners.values());
+      List<ISuiteListener> suiteListenersReversed =
+          ListenerOrderDeterminer.reversedOrder(listeners.values());
       for (ISuiteListener sl : suiteListenersReversed) {
         sl.onFinish(this);
       }
@@ -812,5 +818,20 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     return this.testRunners.stream()
         .flatMap(tr -> Arrays.stream(tr.getAllTestMethods()))
         .collect(Collectors.toList());
+  }
+
+  static class TestListenersContainer {
+    private final List<ITestListener> listeners = Lists.newArrayList();
+    private final ITestListener exitCodeListener;
+
+    TestListenersContainer() {
+      this(Collections.emptyList(), null);
+    }
+
+    TestListenersContainer(List<ITestListener> listeners, ITestListener exitCodeListener) {
+      this.listeners.addAll(listeners);
+      this.exitCodeListener =
+          Objects.requireNonNullElseGet(exitCodeListener, () -> new ITestListener() {});
+    }
   }
 }

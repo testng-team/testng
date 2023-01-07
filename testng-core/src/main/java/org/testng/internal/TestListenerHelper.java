@@ -42,7 +42,8 @@ public final class TestListenerHelper {
       ITestNGMethod tm,
       List<IConfigurationListener> listeners,
       IConfigurationListener internal) {
-    List<IConfigurationListener> listenersreversed = Lists.newReversedArrayList(listeners);
+    List<IConfigurationListener> listenersreversed =
+        ListenerOrderDeterminer.reversedOrder(listeners);
     listenersreversed.add(internal);
     for (IConfigurationListener icl : listenersreversed) {
       switch (tr.getStatus()) {

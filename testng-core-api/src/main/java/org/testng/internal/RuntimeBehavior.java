@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 /** This class houses handling all JVM arguments by TestNG */
@@ -16,11 +19,18 @@ public final class RuntimeBehavior {
   public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
   public static final String IGNORE_CALLBACK_INVOCATION_SKIPS = "testng.ignore.callback.skip";
   public static final String SYMMETRIC_LISTENER_EXECUTION = "testng.listener.execution.symmetric";
+  public static final String IDE_PACKAGE_NAMES = "testng.ide.listeners.package.name";
 
   private RuntimeBehavior() {}
 
   public static boolean ignoreCallbackInvocationSkips() {
     return Boolean.getBoolean(IGNORE_CALLBACK_INVOCATION_SKIPS);
+  }
+
+  public static List<String> getIdePackageNames() {
+    String packages =
+        Optional.ofNullable(System.getProperty(IDE_PACKAGE_NAMES)).orElse("com.intellij.rt.*");
+    return Arrays.asList(packages.split(","));
   }
 
   public static boolean strictParallelism() {

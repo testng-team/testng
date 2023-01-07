@@ -17,6 +17,7 @@ import junit.framework.TestSuite;
 import org.testng.*;
 import org.testng.collections.Lists;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.TestListenerHelper;
 import org.testng.internal.invokers.InvokedMethod;
 
@@ -94,8 +95,8 @@ public class JUnitTestRunner implements TestListener, IJUnitTestRunner {
     boolean isFinished = tr.getStatus() != ITestResult.STARTED;
     List<ITestListener> listeners =
         isFinished
-            ? Lists.newReversedArrayList(m_parentRunner.getTestListeners())
-            : m_parentRunner.getTestListeners();
+            ? ListenerOrderDeterminer.reversedOrder(m_parentRunner.getTestListeners())
+            : ListenerOrderDeterminer.order(m_parentRunner.getTestListeners());
     TestListenerHelper.runTestListeners(tr, listeners);
   }
 

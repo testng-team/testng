@@ -33,4 +33,6 @@ public interface ITestResultNotifier {
   List<ITestListener> getTestListeners();
 
   List<IConfigurationListener> getConfigurationListeners();
+
+  ITestListener getExitCodeListener();
 }

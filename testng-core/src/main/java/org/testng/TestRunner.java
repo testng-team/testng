@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,6 +37,7 @@ import org.testng.internal.IConfiguration;
 import org.testng.internal.IContainer;
 import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.ResultMap;
@@ -117,6 +119,8 @@ public class TestRunner
 
   // The XML method selector (groups/methods included/excluded in XML)
   private final XmlMethodSelector m_xmlMethodSelector = new XmlMethodSelector();
+
+  private ITestListener exitCodeListener;
 
   //
   // These next fields contain all the configuration methods found on this class.
@@ -252,6 +256,13 @@ public class TestRunner
     m_injectorFactory = m_configuration.getInjectorFactory();
     m_objectFactory = suite.getObjectFactory();
     setVerbose(test.getVerbose());
+    if (suiteRunner == null) {
+      if (suite instanceof SuiteRunner) {
+        setExitCodeListener(((SuiteRunner) suite).getExitCodeListener());
+      }
+    } else {
+      setExitCodeListener(suiteRunner.getExitCodeListener());
+    }
 
     boolean preserveOrder = test.getPreserveOrder();
     IMethodInterceptor builtinInterceptor =
@@ -963,15 +974,18 @@ public class TestRunner
    */
   private void fireEvent(boolean isStart) {
     if (isStart) {
-      for (ITestListener itl : m_testListeners) {
+      for (ITestListener itl : ListenerOrderDeterminer.order(m_testListeners)) {
         itl.onStart(this);
       }
+      this.exitCodeListener.onStart(this);
 
     } else {
-      List<ITestListener> testListenersReversed = Lists.newReversedArrayList(m_testListeners);
+      List<ITestListener> testListenersReversed =
+          ListenerOrderDeterminer.reversedOrder(m_testListeners);
       for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }
+      this.exitCodeListener.onFinish(this);
     }
     if (!isStart) {
       MethodHelper.clear(methods(this.getPassedConfigurations()));
@@ -1236,6 +1250,15 @@ public class TestRunner
     if (!alreadyAdded) {
       m_configurationListeners.add(icl);
     }
+  }
+
+  private void setExitCodeListener(ITestListener exitCodeListener) {
+    this.exitCodeListener = exitCodeListener;
+  }
+
+  @Override
+  public ITestListener getExitCodeListener() {
+    return Objects.requireNonNull(exitCodeListener, "ExitCodeListener cannot be null.");
   }
 
   private void dumpInvokedMethods() {

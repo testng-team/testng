@@ -11,10 +11,10 @@ import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
 import org.testng.SuiteRunner;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 
@@ -70,8 +70,8 @@ class BaseInvoker {
     boolean isAfterInvocation = InvokedMethodListenerMethod.AFTER_INVOCATION == listenerMethod;
     Collection<IInvokedMethodListener> listeners =
         isAfterInvocation
-            ? Lists.newReversedArrayList(m_invokedMethodListeners)
-            : m_invokedMethodListeners;
+            ? ListenerOrderDeterminer.reversedOrder(m_invokedMethodListeners)
+            : ListenerOrderDeterminer.order(m_invokedMethodListeners);
     if (!isAfterInvocation) {
       suiteRunner.beforeInvocation(invokedMethod, testResult);
     }
