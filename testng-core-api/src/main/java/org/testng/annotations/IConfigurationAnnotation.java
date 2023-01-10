@@ -67,4 +67,6 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
   default boolean isAfterGroups() {
     return false;
   }
+
+  boolean isIgnoreFailure();
 }

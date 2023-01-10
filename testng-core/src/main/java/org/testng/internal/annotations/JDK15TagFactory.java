@@ -163,7 +163,8 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
-              new String[0]);
+              new String[0],
+              bs.ignoreFailure());
     } else if (annotationClass == IAfterTest.class) {
       AfterTest bs = (AfterTest) a;
       result =
@@ -273,7 +274,8 @@ public class JDK15TagFactory {
               false,
               false,
               bs.timeOut(),
-              new String[0]);
+              new String[0],
+              bs.ignoreFailure());
     } else if (annotationClass == IAfterClass.class) {
       AfterClass bs = (AfterClass) a;
       result =
@@ -327,7 +329,8 @@ public class JDK15TagFactory {
               bs.firstTimeOnly(),
               false,
               bs.timeOut(),
-              bs.onlyForGroups());
+              bs.onlyForGroups(),
+              bs.ignoreFailure());
     } else if (annotationClass == IAfterMethod.class) {
       AfterMethod bs = (AfterMethod) a;
       result =
@@ -384,6 +387,58 @@ public class JDK15TagFactory {
       boolean lastTimeOnly,
       long timeOut,
       String[] groupFilters) {
+    return createConfigurationTag(
+        beforeSuite,
+        afterSuite,
+        beforeTest,
+        afterTest,
+        beforeGroups,
+        isBeforeGroups,
+        afterGroups,
+        isAfterGroups,
+        beforeClass,
+        afterClass,
+        beforeMethod,
+        afterMethod,
+        alwaysRun,
+        dependsOnGroups,
+        dependsOnMethods,
+        description,
+        enabled,
+        groups,
+        inheritGroups,
+        firstTimeOnly,
+        lastTimeOnly,
+        timeOut,
+        groupFilters,
+        false);
+  }
+
+  private IAnnotation createConfigurationTag(
+      boolean beforeSuite,
+      boolean afterSuite,
+      boolean beforeTest,
+      boolean afterTest,
+      String[] beforeGroups,
+      boolean isBeforeGroups,
+      String[] afterGroups,
+      boolean isAfterGroups,
+      boolean beforeClass,
+      boolean afterClass,
+      boolean beforeMethod,
+      boolean afterMethod,
+      boolean alwaysRun,
+      String[] dependsOnGroups,
+      String[] dependsOnMethods,
+      String description,
+      boolean enabled,
+      String[] groups,
+      boolean inheritGroups,
+      boolean firstTimeOnly,
+      boolean lastTimeOnly,
+      long timeOut,
+      String[] groupFilters,
+      boolean ignoreFailure) {
     ConfigurationAnnotation result = new ConfigurationAnnotation();
     result.setIsBeforeGroups(isBeforeGroups);
     result.setIsAfterGroups(isAfterGroups);
@@ -410,7 +465,7 @@ public class JDK15TagFactory {
     result.setFirstTimeOnly(firstTimeOnly);
     result.setLastTimeOnly(lastTimeOnly);
     result.setTimeOut(timeOut);
-
+    result.setIgnoreFailure(ignoreFailure);
     return result;
   }
 

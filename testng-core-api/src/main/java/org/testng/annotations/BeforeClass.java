@@ -77,4 +77,11 @@ public @interface BeforeClass {
    * @return the value (default 0)
    */
   long timeOut() default 0;
+
+  /**
+   * @return - <code>true</code> if the configuration failure arising out of this method should be
+   *     ignored. Enabling this will override the "configfailurepolicy" set at the suite level ONLY
+   *     for this method.
+   */
+  boolean ignoreFailure() default false;
 }
