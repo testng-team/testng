@@ -288,4 +288,12 @@ public interface ITestNGMethod extends Cloneable {
   default Class<?>[] getParameterTypes() {
     return new Class<?>[] {};
   }
+
+  /**
+   * @return - <code>true</code> if the configuration failure arising out of this method should be
+   *     ignored.
+   */
+  default boolean isIgnoreFailure() {
+    return false;
+  }
 }

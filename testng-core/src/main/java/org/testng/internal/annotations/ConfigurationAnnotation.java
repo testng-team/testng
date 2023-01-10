@@ -34,6 +34,7 @@ public class ConfigurationAnnotation extends TestOrConfiguration
   private boolean m_isFakeConfiguration;
   private boolean m_firstTimeOnly = false;
   private boolean m_lastTimeOnly = false;
+  private boolean m_ignoreFailure = false;
 
   public ConfigurationAnnotation() {}
 
@@ -195,5 +196,13 @@ public class ConfigurationAnnotation extends TestOrConfiguration
 
   public boolean isLastTimeOnly() {
     return m_lastTimeOnly;
+  }
+
+  public boolean isIgnoreFailure() {
+    return m_ignoreFailure;
+  }
+
+  public void setIgnoreFailure(boolean ignoreFailure) {
+    this.m_ignoreFailure = ignoreFailure;
   }
 }

@@ -86,12 +86,16 @@ public class AnnotationHelper {
   public static IConfigurationAnnotation findConfiguration(
       IAnnotationFinder finder, ConstructorOrMethod m) {
     IConfigurationAnnotation result = null;
+    boolean ignoreFailure = false;
     IConfigurationAnnotation bs =
         (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeSuite.class);
     IConfigurationAnnotation as =
         (IConfigurationAnnotation) finder.findAnnotation(m, IAfterSuite.class);
     IConfigurationAnnotation bt =
         (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeTest.class);
+    if (bt != null) {
+      ignoreFailure = bt.isIgnoreFailure();
+    }
     IConfigurationAnnotation at =
         (IConfigurationAnnotation) finder.findAnnotation(m, IAfterTest.class);
     IConfigurationAnnotation bg =
@@ -100,10 +104,16 @@ public class AnnotationHelper {
         (IConfigurationAnnotation) finder.findAnnotation(m, IAfterGroups.class);
     IConfigurationAnnotation bc =
         (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeClass.class);
+    if (bc != null) {
+      ignoreFailure = bc.isIgnoreFailure();
+    }
     IConfigurationAnnotation ac =
         (IConfigurationAnnotation) finder.findAnnotation(m, IAfterClass.class);
     IConfigurationAnnotation bm =
         (IConfigurationAnnotation) finder.findAnnotation(m, IBeforeMethod.class);
+    if (bm != null) {
+      ignoreFailure = bm.isIgnoreFailure();
+    }
     IConfigurationAnnotation am =
         (IConfigurationAnnotation) finder.findAnnotation(m, IAfterMethod.class);
 
@@ -118,6 +128,10 @@ public class AnnotationHelper {
         || bm != null
         || am != null) {
       result = createConfiguration(bs, as, bt, at, bg, ag, bc, ac, bm, am);
+    }
+
+    if (result instanceof ConfigurationAnnotation) {
+      ((ConfigurationAnnotation) result).setIgnoreFailure(ignoreFailure);
     }
 
     return result;

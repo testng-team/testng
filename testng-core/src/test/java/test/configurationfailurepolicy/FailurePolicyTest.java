@@ -1,9 +1,15 @@
 package test.configurationfailurepolicy;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
-import static test.SimpleBaseTest.getPathToResource;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
@@ -11,8 +17,17 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.testhelper.OutputDirectoryPatch;
 import org.testng.xml.XmlSuite;
+import test.SimpleBaseTest;
+import test.configurationfailurepolicy.issue2862.AnnotationAtParentClassLevelForMethodConfigSample;
+import test.configurationfailurepolicy.issue2862.AnnotationAtParentClassLevelForMethodConfigSample2;
+import test.configurationfailurepolicy.issue2862.AnnotationAtParentClassLevelForMethodConfigSample3;
+import test.configurationfailurepolicy.issue2862.AnnotationBeforeClassSample;
+import test.configurationfailurepolicy.issue2862.AnnotationBeforeMethodSample;
+import test.configurationfailurepolicy.issue2862.AnnotationBeforeTestMultipleTestsSample;
+import test.configurationfailurepolicy.issue2862.AnnotationBeforeTestSample;
+import test.configurationfailurepolicy.issue2862.ConfigFailurePolicyAwareReporter;
 
-public class FailurePolicyTest {
+public class FailurePolicyTest extends SimpleBaseTest {
 
   // only if this is run from an xml file that sets this on the suite
   @BeforeClass(enabled = false)
@@ -57,7 +72,7 @@ public class FailurePolicyTest {
 
   @Test(dataProvider = "dp")
   public void confFailureTest(
-      Class[] classesUnderTest,
+      Class<?>[] classesUnderTest,
       int configurationFailures,
       int configurationSkips,
       int skippedTests) {
@@ -75,7 +90,7 @@ public class FailurePolicyTest {
 
   @Test
   public void confFailureTestInvolvingGroups() {
-    Class[] classesUnderTest =
+    Class<?>[] classesUnderTest =
         new Class[] {ClassWithFailedBeforeClassMethodAndBeforeGroupsAfterClassAfterGroups.class};
 
     TestListenerAdapter tla = new TestListenerAdapter();
@@ -177,5 +192,127 @@ public class FailurePolicyTest {
         configurationSkips,
         "wrong number of configuration skips");
     assertEquals(tla.getSkippedTests().size(), skippedTests, "wrong number of skipped tests");
+  }
+
+  @Test(description = "GITHUB-2862")
+  public void ensureFailurePolicyCanBeOverriddenWithBeforeMethodAnnotation() {
+    Class<?> clazzOne = AnnotationBeforeMethodSample.AnnotatedClassSample.class;
+    TestNG tng = create(clazzOne);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(grouped.get(clazzOne).get(ITestResult.SKIP))
+        .withFailMessage(
+            clazzOne.getName() + " should have ONLY 1 skipped test due to config failure")
+        .hasSize(1);
+  }
+
+  @Test(description = "GITHUB-2862")
+  public void ensureFailurePolicyCanBeOverriddenWithBeforeClassAnnotation() {
+    Class<?> clazzOne = AnnotationBeforeClassSample.AnnotatedClassSample.class;
+    TestNG tng = create(clazzOne);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(grouped.get(clazzOne).getOrDefault(ITestResult.SKIP, Collections.emptyList()))
+        .withFailMessage(
+            clazzOne.getName() + " should have NOT HAVE ANY skipped test due to config failure")
+        .isEmpty();
+  }
+
+  @Test(description = "GITHUB-2862")
+  public void ensureFailurePolicyCanBeOverriddenWithAnnotationAtTestTagLevel() {
+    Class<?> clazzOne = AnnotationBeforeTestSample.AnnotatedClassSample.class;
+    TestNG tng = create(clazzOne);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(grouped.get(clazzOne).getOrDefault(ITestResult.SKIP, Collections.emptyList()))
+        .withFailMessage(
+            clazzOne.getName() + " should NOT HAVE ANY skipped test due to config failure")
+        .isEmpty();
+  }
+
+  @Test(description = "GITHUB-2862")
+  public void ensureFailurePolicyCanBeOverriddenWithAnnotationAtTestTagLevelMultipleTests() {
+    Class<?> clazzOne =
+        AnnotationBeforeTestMultipleTestsSample.FirstTestTagAnnotatedClassSample.class;
+    XmlSuite xmlSuite = new XmlSuite();
+    xmlSuite.setName("sample_suite");
+    createXmlTest(xmlSuite, "first_test_tag", clazzOne);
+
+    Class<?> clazzTwo =
+        AnnotationBeforeTestMultipleTestsSample.SeconTestTagAnnotatedClassSample.class;
+    createXmlTest(xmlSuite, "second_test_tag", clazzTwo);
+
+    TestNG tng = create(xmlSuite);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(grouped.get(clazzOne).getOrDefault(ITestResult.SKIP, Collections.emptyList()))
+        .withFailMessage(
+            clazzOne.getName() + " should NOT HAVE ANY skipped test due to config failure")
+        .isEmpty();
+    assertThat(grouped.get(clazzTwo).getOrDefault(ITestResult.SKIP, Collections.emptyList()))
+        .withFailMessage(
+            clazzOne.getName() + " should NOT HAVE ANY skipped test due to config failure")
+        .isEmpty();
+  }
+
+  @Test(description = "GITHUB-2862")
+  // Scenario: Annotation at base class, with a failing "@BeforeMethod"
+  public void ensureFailurePolicyCanBeOverriddenWithAnnotationAtBaseClassLevel() {
+    Class<?> clazzOne =
+        AnnotationAtParentClassLevelForMethodConfigSample.AnnotatedClassSample.class;
+    TestNG tng = create(clazzOne);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(grouped.get(clazzOne).get(ITestResult.SKIP))
+        .withFailMessage(
+            clazzOne.getName() + " should have ONLY 1 skipped test due to config failure")
+        .hasSize(1);
+  }
+
+  @Test(description = "GITHUB-2862")
+  // Scenario: Annotation at base class, with a failing "@BeforeTest"
+  public void ensureFailurePolicyCanBeOverriddenWithAnnotationAndFailuresAtBaseClassLevel() {
+    Class<?> clazzOne =
+        AnnotationAtParentClassLevelForMethodConfigSample2.AnnotatedClassSample.class;
+    TestNG tng = create(clazzOne);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(
+            grouped
+                .getOrDefault(clazzOne, new HashMap<>())
+                .getOrDefault(ITestResult.SKIP, new ArrayList<>()))
+        .withFailMessage(clazzOne.getName() + " should HAVE 2 skipped test due to config failure")
+        .hasSize(2);
+  }
+
+  @Test(description = "GITHUB-2862")
+  // Scenario: Annotation at base class, with a failing "@BeforeClass"
+  public void ensureFailurePolicyCanBeOverriddenWithAnnotationAndFailuresAtBaseClassLevel2() {
+    Class<?> clazzOne =
+        AnnotationAtParentClassLevelForMethodConfigSample3.AnnotatedClassSample.class;
+    TestNG tng = create(clazzOne);
+    ConfigFailurePolicyAwareReporter reporter = new ConfigFailurePolicyAwareReporter();
+    tng.addListener(reporter);
+    tng.run();
+    Map<Class<?>, Map<Integer, List<ITestResult>>> grouped = reporter.getGrouped();
+    assertThat(
+            grouped
+                .getOrDefault(clazzOne, new HashMap<>())
+                .getOrDefault(ITestResult.SKIP, new ArrayList<>()))
+        .withFailMessage(
+            clazzOne.getName() + " should NOT HAVE ANY skipped test due to config failure")
+        .isEmpty();
   }
 }

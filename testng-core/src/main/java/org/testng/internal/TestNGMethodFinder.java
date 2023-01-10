@@ -188,6 +188,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
       }
 
       if (create) {
+        boolean ignoreFailure = configuration.isIgnoreFailure();
         addConfigurationMethod(
             clazz,
             vResult,
@@ -200,6 +201,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
             isAfterClass,
             isBeforeTestMethod,
             isAfterTestMethod,
+            ignoreFailure,
             beforeGroups,
             afterGroups); /* @@@ */
       }
@@ -241,6 +243,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
       boolean isAfterClass,
       boolean isBeforeTestMethod,
       boolean isAfterTestMethod,
+      boolean isIgnoreFailure,
       String[] beforeGroups,
       String[] afterGroups) {
     if (method.getDeclaringClass().isAssignableFrom(clazz)) {
@@ -257,6 +260,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
               isAfterClass,
               isBeforeTestMethod,
               isAfterTestMethod,
+              isIgnoreFailure,
               beforeGroups,
               afterGroups,
               this.runInfo.getXmlTest(),

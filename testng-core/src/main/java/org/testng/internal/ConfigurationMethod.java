@@ -46,6 +46,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   private boolean m_isBeforeGroupsConfiguration;
   private boolean m_isAfterGroupsConfiguration;
 
+  private final boolean m_isIgnoreFailure;
   private boolean m_inheritGroupsFromTestClass = false;
   private final IParameterInfo factoryMethodInfo;
 
@@ -61,6 +62,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterClass,
       boolean isBeforeMethod,
       boolean isAfterMethod,
+      boolean isIgnoreFailure,
       String[] beforeGroups,
       String[] afterGroups,
       boolean initialize,
@@ -90,6 +92,8 @@ public class ConfigurationMethod extends BaseTestMethod {
     m_isBeforeMethodConfiguration = isBeforeMethod;
     m_isAfterMethodConfiguration = isAfterMethod;
 
+    m_isIgnoreFailure = isIgnoreFailure;
+
     m_beforeGroups = beforeGroups;
     m_afterGroups = afterGroups;
   }
@@ -114,6 +118,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterClass,
       boolean isBeforeMethod,
       boolean isAfterMethod,
+      boolean isIgnoreFailure,
       String[] beforeGroups,
       String[] afterGroups,
       XmlTest xmlTest,
@@ -130,6 +135,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         isAfterClass,
         isBeforeMethod,
         isAfterMethod,
+        isIgnoreFailure,
         beforeGroups,
         afterGroups,
         true,
@@ -175,6 +181,7 @@ public class ConfigurationMethod extends BaseTestMethod {
               isAfterClass,
               isBeforeMethod,
               isAfterMethod,
+              method.isIgnoreFailure(),
               new String[0],
               new String[0],
               xmlTest,
@@ -274,6 +281,7 @@ public class ConfigurationMethod extends BaseTestMethod {
               false,
               false,
               false,
+              false,
               isBefore ? methods[i].getBeforeGroups() : new String[0],
               new String[0],
               null,
@@ -297,6 +305,7 @@ public class ConfigurationMethod extends BaseTestMethod {
                     objectFactory,
                     m.getConstructorOrMethod(),
                     annotationFinder,
+                    false,
                     false,
                     false,
                     false,
@@ -398,6 +407,11 @@ public class ConfigurationMethod extends BaseTestMethod {
     return m_afterGroups != null && m_afterGroups.length > 0;
   }
 
+  @Override
+  public boolean isIgnoreFailure() {
+    return this.m_isIgnoreFailure;
+  }
+
   private boolean inheritGroupsFromTestClass() {
     return m_inheritGroupsFromTestClass;
   }
@@ -489,6 +503,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             isAfterClassConfiguration(),
             isBeforeMethodConfiguration(),
             isAfterMethodConfiguration(),
+            isIgnoreFailure(),
             getBeforeGroups(),
             getAfterGroups(),
             false /* do not call init() */,

@@ -32,6 +32,7 @@ public class MethodHelperTest {
             false,
             true,
             false,
+            false,
             new String[0],
             new String[0],
             Reporter.getCurrentTestResult().getTestContext().getCurrentXmlTest(),

@@ -3,6 +3,9 @@ Fixed: GITHUB-2875: JUnitReportReporter should capture the test case output at t
 Fixed: GITHUB-2771: After upgrading to TestNG 7.5.0, setting ITestResult.status to FAILURE doesn't fail the test anymore (Julien Herr & Krishnan Mahadevan)
 Fixed: GITHUB-2796: Option for onAfterClass to run after @AfterClass
 Fixed: GITHUB-2857: XmlTest index is not set for test suites invoked with YAML
+Fixed: GITHUB-2862: Allow test classes to define "configfailurepolicy" at a per class level (Krishnan Mahadevan)
+Fixed: GITHUB-2796: Option for onAfterClass to run after @AfterClass (Oliver Hughes)
+Fixed: GITHUB-2857: XmlTest index is not set for test suites invoked with YAML (Sergei Baranov)
 
 7.7.1
 Fixed: GITHUB-2854: overloaded assertEquals methods do not work from Groovy (Krishnan Mahadevan)

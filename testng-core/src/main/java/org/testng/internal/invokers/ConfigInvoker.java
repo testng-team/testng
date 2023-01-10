@@ -16,6 +16,7 @@ import org.testng.IClass;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IInvokedMethodListener;
+import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -50,6 +51,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       Maps.newConcurrentMap();
 
   private final boolean m_continueOnFailedConfiguration;
+  private boolean m_hasTestTagLevelFailures = false;
+  private boolean m_hasClassLevelFailures = false;
+  private boolean m_hasTestMethodLevelFailures = false;
 
   private final Set<ITestNGMethod> m_executedConfigMethods = ConcurrentHashMap.newKeySet();
 
@@ -79,34 +83,49 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
    */
   public boolean hasConfigurationFailureFor(
       ITestNGMethod testNGMethod, String[] groups, IClass testClass, Object instance) {
+    return hasConfigurationFailureFor(null, testNGMethod, groups, testClass, instance);
+  }
+
+  @Override
+  public boolean hasConfigurationFailureFor(
+      ITestNGMethod configMethod,
+      ITestNGMethod testNGMethod,
+      String[] groups,
+      IClass testClass,
+      Object instance) {
     boolean result = false;
 
     Class<?> cls = testClass.getRealClass();
 
     if (m_suiteState.isFailed()) {
-      result = true;
-    } else {
-      boolean hasConfigurationFailures = classConfigurationFailed(cls, instance);
-      if (hasConfigurationFailures) {
-        if (!m_continueOnFailedConfiguration) {
-          result = true;
-        } else {
-          Set<Object> set = getInvocationResults(testClass);
-          result = set.contains(instance);
-        }
-        return result;
+      // if there were suite level failures, then short circuit here itself and report them.
+      return true;
+    }
+
+    boolean annotationFound = canIgnoreConfigFailure(testClass, configMethod);
+    boolean hasConfigurationFailures = classConfigurationFailed(cls, instance);
+    if (hasConfigurationFailures) {
+      if (annotationFound) {
+        // We were told to ignore failures via the annotation.
+        return false;
       }
-      // if method is BeforeClass, currentTestMethod will be null
-      if (m_continueOnFailedConfiguration && hasConfigFailure(testNGMethod)) {
-        Object key = TestNgMethodUtils.getMethodInvocationToken(testNGMethod, instance);
-        result = m_methodInvocationResults.get(testNGMethod).contains(key);
-      } else if (!m_continueOnFailedConfiguration) {
-        for (Class<?> clazz : m_classInvocationResults.keySet()) {
-          if (clazz.isAssignableFrom(cls)
-              && m_classInvocationResults.get(clazz).contains(instance)) {
-            result = true;
-            break;
-          }
+      if (m_continueOnFailedConfiguration) {
+        Set<Object> set = getInvocationResults(testClass);
+        result = set.contains(instance);
+      } else {
+        result = true;
+      }
+      return result;
+    }
+    // if method is BeforeClass, currentTestMethod will be null
+    if ((m_continueOnFailedConfiguration || annotationFound) && hasConfigFailure(testNGMethod)) {
+      Object key = TestNgMethodUtils.getMethodInvocationToken(testNGMethod, instance);
+      result = m_methodInvocationResults.get(testNGMethod).contains(key);
+    } else if (!(m_continueOnFailedConfiguration || annotationFound)) {
+      for (Class<?> clazz : m_classInvocationResults.keySet()) {
+        if (clazz.isAssignableFrom(cls) && m_classInvocationResults.get(clazz).contains(instance)) {
+          result = true;
+          break;
         }
       }
     }
@@ -252,6 +271,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           continue;
         }
         if (hasConfigurationFailureFor(
+                tm,
                 arguments.getTestMethod(),
                 tm.getGroups(),
                 arguments.getTestClass(),
@@ -542,10 +562,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (annotation.getBeforeTestClass() || annotation.getAfterTestClass()) {
       // tm is the configuration method, and currentTestMethod is null for BeforeClass
       // methods, so we need testClass
-      if (m_continueOnFailedConfiguration) {
-        setClassInvocationFailure(testClass.getRealClass(), instance);
-      } else {
-        setClassInvocationFailure(tm.getRealClass(), instance);
+      Class<?> clazzToUse = tm.getRealClass();
+      if (m_continueOnFailedConfiguration || annotation.isIgnoreFailure()) {
+        clazzToUse = testClass.getRealClass();
+      }
+      setClassInvocationFailure(clazzToUse, instance);
+      if (annotation.getBeforeTestClass()) {
+        m_hasClassLevelFailures = true;
       }
     }
 
@@ -553,10 +576,13 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     // class as failed, or just the current test method as failed, depending on
     // the configuration failure policy
     else if (annotation.getBeforeTestMethod() || annotation.getAfterTestMethod()) {
-      if (m_continueOnFailedConfiguration) {
+      if (m_continueOnFailedConfiguration || canIgnoreConfigFailure(tm)) {
         setMethodInvocationFailure(currentTestMethod, instance);
       } else {
         setClassInvocationFailure(tm.getRealClass(), instance);
+      }
+      if (annotation.getBeforeTestMethod()) {
+        m_hasTestMethodLevelFailures = true;
       }
     }
 
@@ -573,6 +599,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       XmlClass[] classes = ClassHelper.findClassesInSameTest(tm.getRealClass(), suite);
       for (XmlClass xmlClass : classes) {
         setClassInvocationFailure(xmlClass.getSupportClass(), instance);
+      }
+      if (annotation.getBeforeTest()) {
+        m_hasTestTagLevelFailures = true;
       }
     }
     String[] beforeGroups = annotation.getBeforeGroups();
@@ -613,5 +642,45 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       throw new IllegalStateException("No failure logs for " + testClass.getRealClass());
     }
     return set;
+  }
+
+  private static boolean canIgnoreConfigFailure(ITestNGMethod method) {
+    if (method == null) {
+      return false;
+    }
+    return method.isIgnoreFailure();
+  }
+
+  private boolean canIgnoreConfigFailure(IClass testClass, ITestNGMethod configMethod) {
+    boolean instanceMatch = testClass instanceof ITestClass;
+    if (!instanceMatch) {
+      return false;
+    }
+    ITestClass tc = ((ITestClass) testClass);
+    ITestNGMethod[] methods = new ITestNGMethod[] {};
+    if (configMethod == null) { // We are dealing with a test method that is doing the checking
+      // First check if there were any @BeforeMethods that had the isIgnoreFailure flag.
+      if (m_hasTestMethodLevelFailures) {
+        methods = tc.getBeforeTestMethods();
+      } else if (m_hasClassLevelFailures) {
+        // If no @BeforeMethod were found, then we move to @BeforeClass
+        methods = tc.getBeforeClassMethods();
+      } else if (m_hasTestTagLevelFailures) {
+        // If no @BeforeClass were found, then we move to @BeforeTest
+        methods = tc.getBeforeTestConfigurationMethods();
+      }
+    } else { // We are dealing with a config method that is doing the checking
+      // First check if there were any @BeforeTest that had the isIgnoreFailure flag.
+      if (m_hasTestTagLevelFailures) {
+        methods = tc.getBeforeTestConfigurationMethods();
+      } else if (m_hasClassLevelFailures) {
+        // if no @BeforeTest were found, then we move to @BeforeClass
+        methods = tc.getBeforeClassMethods();
+      } else if (m_hasTestMethodLevelFailures) {
+        // if no @BeforeClass were found, then we move to @BeforeMethod
+        methods = tc.getBeforeTestMethods();
+      }
+    }
+    return Arrays.stream(methods).anyMatch(ITestNGMethod::isIgnoreFailure);
   }
 }

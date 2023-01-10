@@ -47,4 +47,8 @@ public interface IBaseBeforeAfter extends ITestOrConfiguration {
    * standard output if verbose &gt; 2.
    */
   String getDescription();
+
+  default boolean ignoreFailure() {
+    return false;
+  }
 }

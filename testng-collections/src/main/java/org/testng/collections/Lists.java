@@ -39,6 +39,14 @@ public final class Lists {
     return result;
   }
 
+  @SafeVarargs
+  public static <K> List<K> newArrayList(K[]... elements) {
+    return Arrays.stream(elements)
+        .map(Arrays::asList)
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
+  }
+
   public static <K> List<K> newArrayList(int size) {
     return new ArrayList<>(size);
   }
