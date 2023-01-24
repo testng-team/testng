@@ -482,7 +482,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
             classSetEntry -> {
               Set<Object> obj = classSetEntry.getValue();
               Class<?> c = classSetEntry.getKey();
-              boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(null);
+              boolean containsBeforeTestOrBeforeSuiteFailure = obj.contains(NULL_OBJECT);
               return c == cls
                   || c.isAssignableFrom(cls)
                       && (obj.contains(instance) || containsBeforeTestOrBeforeSuiteFailure);
@@ -513,7 +513,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     synchronized (m_classInvocationResults) {
       Set<Object> instances =
           m_classInvocationResults.computeIfAbsent(clazz, k -> Sets.newHashSet());
-      instances.add(instance);
+      Object objectToAdd = instance == null ? NULL_OBJECT : instance;
+      instances.add(objectToAdd);
     }
   }
 

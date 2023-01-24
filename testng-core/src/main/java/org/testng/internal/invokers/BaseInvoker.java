@@ -28,6 +28,11 @@ class BaseInvoker {
   /** Class failures must be synced as the Invoker is accessed concurrently */
   protected final Map<Class<?>, Set<Object>> m_classInvocationResults = Maps.newConcurrentMap();
 
+  // This object essentially represents the instance to which a BeforeTest|AfterTest
+  // method belongs to. Currently TestNG handles this with a null value.
+  // Instead we now would be using this special object.
+  protected final Object NULL_OBJECT = new Object();
+
   public BaseInvoker(
       ITestResultNotifier notifier,
       Collection<IInvokedMethodListener> invokedMethodListeners,
