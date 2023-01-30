@@ -277,7 +277,8 @@ public class TestRunner
             skipFailedInvocationCounts,
             invokedMethodListeners,
             classListeners,
-            holder);
+            holder,
+            m_confListener);
 
     if (test.getParallel() != null) {
       log("Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
@@ -337,7 +338,6 @@ public class TestRunner
     }
 
     initListeners();
-    addConfigurationListener(m_confListener);
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
       addConfigurationListener(cl);
     }

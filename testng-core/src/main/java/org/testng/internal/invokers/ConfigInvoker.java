@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
 import org.testng.IConfigurable;
+import org.testng.IConfigurationListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -54,16 +55,20 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private final Map<String, Boolean> m_beforegroupsFailures = Maps.newConcurrentMap();
 
+  private final IConfigurationListener internalConfigurationListener;
+
   public ConfigInvoker(
       ITestResultNotifier notifier,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       ITestContext testContext,
       SuiteRunState suiteState,
-      IConfiguration configuration) {
+      IConfiguration configuration,
+      IConfigurationListener internalConfigurationListener) {
     super(notifier, invokedMethodListeners, testContext, suiteState, configuration);
     this.m_continueOnFailedConfiguration =
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
             == XmlSuite.FailurePolicy.CONTINUE;
+    this.internalConfigurationListener = internalConfigurationListener;
   }
 
   /**
@@ -403,10 +408,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     if (before) {
       TestListenerHelper.runPreConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners());
+          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
     } else {
       TestListenerHelper.runPostConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners());
+          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
     }
   }
 
