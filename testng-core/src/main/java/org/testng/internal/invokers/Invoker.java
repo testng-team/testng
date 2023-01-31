@@ -43,8 +43,14 @@ public class Invoker implements IInvoker {
       IConfigurationListener internalConfigurationListener,
       SuiteRunner suiteRunner) {
     m_configInvoker =
-        new ConfigInvoker(notifier, invokedMethodListeners, testContext, state, configuration,
-            internalConfigurationListener, suiteRunner);
+        new ConfigInvoker(
+            notifier,
+            invokedMethodListeners,
+            testContext,
+            state,
+            configuration,
+            internalConfigurationListener,
+            suiteRunner);
     m_testInvoker =
         new TestInvoker(
             notifier,

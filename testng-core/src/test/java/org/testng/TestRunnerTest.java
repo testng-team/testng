@@ -101,9 +101,13 @@ public class TestRunnerTest {
     }
 
     @Override
-    public TestRunner newTestRunner(ISuite suite, XmlTest test,
-        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
-      return new TestRunner(configuration, suite, test, false, listeners, classListeners, suiteRunner);
+    public TestRunner newTestRunner(
+        ISuite suite,
+        XmlTest test,
+        Collection<IInvokedMethodListener> listeners,
+        List<IClassListener> classListeners) {
+      return new TestRunner(
+          configuration, suite, test, false, listeners, classListeners, suiteRunner);
     }
   }
 }

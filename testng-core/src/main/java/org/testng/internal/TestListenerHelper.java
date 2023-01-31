@@ -22,7 +22,9 @@ public final class TestListenerHelper {
   }
 
   public static void runPreConfigurationListeners(
-      ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners,
+      ITestResult tr,
+      ITestNGMethod tm,
+      List<IConfigurationListener> listeners,
       IConfigurationListener internal) {
     internal.beforeConfiguration(tr);
     for (IConfigurationListener icl : listeners) {
@@ -36,7 +38,9 @@ public final class TestListenerHelper {
   }
 
   public static void runPostConfigurationListeners(
-      ITestResult tr, ITestNGMethod tm, List<IConfigurationListener> listeners,
+      ITestResult tr,
+      ITestNGMethod tm,
+      List<IConfigurationListener> listeners,
       IConfigurationListener internal) {
     List<IConfigurationListener> listenersreversed = Lists.newReversedArrayList(listeners);
     listenersreversed.add(internal);

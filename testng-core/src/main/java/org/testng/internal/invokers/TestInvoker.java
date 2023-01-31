@@ -71,7 +71,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       boolean m_skipFailedInvocationCounts,
       ConfigInvoker invoker,
       SuiteRunner suiteRunner) {
-    super(m_notifier, m_invokedMethodListeners, m_testContext, m_suiteState, m_configuration,
+    super(
+        m_notifier,
+        m_invokedMethodListeners,
+        m_testContext,
+        m_suiteState,
+        m_configuration,
         suiteRunner);
     this.holder = holder;
     this.m_classListeners = m_classListeners;

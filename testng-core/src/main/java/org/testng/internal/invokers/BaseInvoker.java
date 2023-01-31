@@ -3,7 +3,6 @@ package org.testng.internal.invokers;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import org.testng.IConfigurationListener;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
