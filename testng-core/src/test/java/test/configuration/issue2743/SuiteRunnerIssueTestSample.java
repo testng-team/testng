@@ -35,37 +35,50 @@ public class SuiteRunnerIssueTestSample {
     final IConfiguration configuration = new Configuration();
     final boolean useDefaultListeners = true;
 
+    LocalFactory factory = new LocalFactory(configuration, useDefaultListeners);
     SuiteRunner suiteRunner =
         new SuiteRunner(
             configuration,
             suite,
             "outputDir",
-            new ITestRunnerFactory() {
-
-              @Override
-              public TestRunner newTestRunner(
-                  ISuite suite,
-                  XmlTest xmlTest,
-                  Collection<IInvokedMethodListener> listeners,
-                  List<IClassListener> classListeners) {
-                TestRunner runner =
-                    new TestRunner(
-                        configuration,
-                        suite,
-                        xmlTest,
-                        false /* skipFailedInvocationCounts */,
-                        listeners,
-                        classListeners);
-                if (useDefaultListeners) {
-                  runner.addListener(new TestHTMLReporter());
-                  runner.addListener(new JUnitXMLReporter());
-                }
-
-                return runner;
-              }
-            },
+            factory,
             useDefaultListeners,
             Comparator.comparingInt(ITestNGMethod::getPriority));
+    factory.suiteRunner = suiteRunner;
     suiteRunner.run();
+  }
+
+  private static class LocalFactory implements ITestRunnerFactory {
+    private final IConfiguration configuration;
+    private final boolean useDefaultListeners;
+    private SuiteRunner suiteRunner;
+
+    private LocalFactory(IConfiguration configuration, boolean useDefaultListeners) {
+      this.configuration = configuration;
+      this.useDefaultListeners = useDefaultListeners;
+    }
+
+    @Override
+    public TestRunner newTestRunner(
+        ISuite suite,
+        XmlTest xmlTest,
+        Collection<IInvokedMethodListener> listeners,
+        List<IClassListener> classListeners) {
+      TestRunner runner =
+          new TestRunner(
+              configuration,
+              suite,
+              xmlTest,
+              false /* skipFailedInvocationCounts */,
+              listeners,
+              classListeners,
+              suiteRunner);
+      if (useDefaultListeners) {
+        runner.addListener(new TestHTMLReporter());
+        runner.addListener(new JUnitXMLReporter());
+      }
+
+      return runner;
+    }
   }
 }

@@ -10,6 +10,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
+import org.testng.SuiteRunner;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.IConfiguration;
@@ -33,17 +34,21 @@ class BaseInvoker {
   // Instead we now would be using this special object.
   protected final Object NULL_OBJECT = new Object();
 
+  private final SuiteRunner suiteRunner;
+
   public BaseInvoker(
       ITestResultNotifier notifier,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       ITestContext testContext,
       SuiteRunState suiteState,
-      IConfiguration configuration) {
+      IConfiguration configuration,
+      SuiteRunner suiteRunner) {
     this.m_notifier = notifier;
     this.m_invokedMethodListeners = invokedMethodListeners;
     this.m_testContext = testContext;
     this.m_suiteState = suiteState;
     this.m_configuration = configuration;
+    this.suiteRunner = suiteRunner;
   }
 
   protected IAnnotationFinder annotationFinder() {
@@ -67,6 +72,9 @@ class BaseInvoker {
         isAfterInvocation
             ? Lists.newReversedArrayList(m_invokedMethodListeners)
             : m_invokedMethodListeners;
+    if (!isAfterInvocation) {
+      suiteRunner.beforeInvocation(invokedMethod, testResult);
+    }
     for (IInvokedMethodListener currentListener : listeners) {
       try {
         invoker.invokeListener(currentListener, invokedMethod);
@@ -81,6 +89,9 @@ class BaseInvoker {
         testResult.setStatus(ITestResult.SKIP);
         testResult.setThrowable(e);
       }
+    }
+    if (isAfterInvocation) {
+      suiteRunner.afterInvocation(invokedMethod, testResult);
     }
   }
 

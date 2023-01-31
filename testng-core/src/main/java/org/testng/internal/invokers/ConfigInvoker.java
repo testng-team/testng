@@ -14,12 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.testng.ConfigurationNotInvokedException;
 import org.testng.IClass;
 import org.testng.IConfigurable;
+import org.testng.IConfigurationListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.SuiteRunState;
+import org.testng.SuiteRunner;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Maps;
@@ -54,16 +56,21 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   /** Group failures must be synced as the Invoker is accessed concurrently */
   private final Map<String, Boolean> m_beforegroupsFailures = Maps.newConcurrentMap();
 
+  private final IConfigurationListener internalConfigurationListener;
+
   public ConfigInvoker(
       ITestResultNotifier notifier,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       ITestContext testContext,
       SuiteRunState suiteState,
-      IConfiguration configuration) {
-    super(notifier, invokedMethodListeners, testContext, suiteState, configuration);
+      IConfiguration configuration,
+      IConfigurationListener internalConfigurationListener,
+      SuiteRunner suiteRunner) {
+    super(notifier, invokedMethodListeners, testContext, suiteState, configuration, suiteRunner);
     this.m_continueOnFailedConfiguration =
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
             == XmlSuite.FailurePolicy.CONTINUE;
+    this.internalConfigurationListener = internalConfigurationListener;
   }
 
   /**
@@ -403,10 +410,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     if (before) {
       TestListenerHelper.runPreConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners());
+          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
     } else {
       TestListenerHelper.runPostConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners());
+          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
     }
   }
 

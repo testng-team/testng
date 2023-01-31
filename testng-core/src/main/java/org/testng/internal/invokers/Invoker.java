@@ -6,10 +6,12 @@ import java.util.function.BiPredicate;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
 import org.testng.IClassListener;
+import org.testng.IConfigurationListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.SuiteRunState;
+import org.testng.SuiteRunner;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
 
@@ -37,9 +39,18 @@ public class Invoker implements IInvoker {
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
-      DataProviderHolder holder) {
+      DataProviderHolder holder,
+      IConfigurationListener internalConfigurationListener,
+      SuiteRunner suiteRunner) {
     m_configInvoker =
-        new ConfigInvoker(notifier, invokedMethodListeners, testContext, state, configuration);
+        new ConfigInvoker(
+            notifier,
+            invokedMethodListeners,
+            testContext,
+            state,
+            configuration,
+            internalConfigurationListener,
+            suiteRunner);
     m_testInvoker =
         new TestInvoker(
             notifier,
@@ -50,7 +61,8 @@ public class Invoker implements IInvoker {
             holder,
             classListeners,
             skipFailedInvocationCounts,
-            m_configInvoker);
+            m_configInvoker,
+            suiteRunner);
   }
 
   public ConfigInvoker getConfigInvoker() {

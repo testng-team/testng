@@ -173,7 +173,8 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
       Comparator<ITestNGMethod> comparator,
-      DataProviderHolder otherHolder) {
+      DataProviderHolder otherHolder,
+      SuiteRunner suiteRunner) {
     this.comparator = comparator;
     this.holder.merge(otherHolder);
     init(
@@ -184,7 +185,8 @@ public class TestRunner
         finder,
         skipFailedInvocationCounts,
         invokedMethodListeners,
-        classListeners);
+        classListeners,
+        suiteRunner);
   }
 
   public TestRunner(
@@ -194,7 +196,8 @@ public class TestRunner
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
-      Comparator<ITestNGMethod> comparator) {
+      Comparator<ITestNGMethod> comparator,
+      SuiteRunner suiteRunner) {
     this.comparator = comparator;
     init(
         configuration,
@@ -204,7 +207,8 @@ public class TestRunner
         suite.getAnnotationFinder(),
         skipFailedInvocationCounts,
         invokedMethodListeners,
-        classListeners);
+        classListeners,
+        suiteRunner);
   }
 
   /* /!\ This constructor is used by testng-remote, any changes related to it please contact with testng-team. */
@@ -214,7 +218,8 @@ public class TestRunner
       XmlTest test,
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
-      List<IClassListener> classListeners) {
+      List<IClassListener> classListeners,
+      SuiteRunner suiteRunner) {
     this.comparator = Systematiser.getComparator();
     init(
         configuration,
@@ -224,7 +229,8 @@ public class TestRunner
         suite.getAnnotationFinder(),
         skipFailedInvocationCounts,
         invokedMethodListeners,
-        classListeners);
+        classListeners,
+        suiteRunner);
   }
 
   private void init(
@@ -235,7 +241,8 @@ public class TestRunner
       IAnnotationFinder annotationFinder,
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
-      List<IClassListener> classListeners) {
+      List<IClassListener> classListeners,
+      SuiteRunner suiteRunner) {
     m_configuration = configuration;
     m_xmlTest = test;
     m_suite = suite;
@@ -277,7 +284,9 @@ public class TestRunner
             skipFailedInvocationCounts,
             invokedMethodListeners,
             classListeners,
-            holder);
+            holder,
+            m_confListener,
+            suiteRunner);
 
     if (test.getParallel() != null) {
       log("Running the tests in '" + test.getName() + "' with parallel mode:" + test.getParallel());
@@ -337,7 +346,6 @@ public class TestRunner
     }
 
     initListeners();
-    addConfigurationListener(m_confListener);
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
       addConfigurationListener(cl);
     }

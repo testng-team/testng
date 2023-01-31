@@ -46,6 +46,7 @@ public class BaseTest extends BaseDistributedTest {
   private final IConfiguration m_configuration;
 
   private Integer m_verbose = null;
+  private SuiteRunner suiteRunner;
 
   public BaseTest() {
     m_configuration = new Configuration();
@@ -168,7 +169,7 @@ public class BaseTest extends BaseDistributedTest {
     setFailedButWithinSuccessPercentageTests(Maps.newHashMap());
 
     m_suite.setVerbose(m_verbose != null ? m_verbose : 0);
-    SuiteRunner suite =
+    suiteRunner =
         new SuiteRunner(
             m_configuration,
             m_suite,
@@ -176,7 +177,7 @@ public class BaseTest extends BaseDistributedTest {
             m_testRunnerFactory,
             Systematiser.getComparator());
 
-    suite.run();
+    suiteRunner.run();
   }
 
   protected void addMethodSelector(String className, int priority) {
@@ -364,7 +365,8 @@ public class BaseTest extends BaseDistributedTest {
               false,
               listeners,
               classListeners,
-              Systematiser.getComparator());
+              Systematiser.getComparator(),
+              m_baseTest.suiteRunner);
 
       testRunner.addListener(new TestHTMLReporter());
       testRunner.addListener(new JUnitXMLReporter());
