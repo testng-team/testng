@@ -3,6 +3,7 @@ package org.testng;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.annotations.BeforeMethod;
@@ -85,10 +86,24 @@ public class TestRunnerTest {
     XmlClass xmlClass = new XmlClass(testClass.getName());
     xmlTest.getXmlClasses().add(xmlClass);
     String outputDir = "build/reports/tests/test";
-    ITestRunnerFactory factory =
-        (suite, test, listeners, classListeners) ->
-            new TestRunner(configuration, suite, test, false, listeners, classListeners);
-    ISuite suite = new SuiteRunner(configuration, xmlSuite, outputDir, factory, (o1, o2) -> 0);
+    LocalFactory factory = new LocalFactory(configuration);
+    SuiteRunner suite = new SuiteRunner(configuration, xmlSuite, outputDir, factory, (o1, o2) -> 0);
+    factory.suiteRunner = suite;
     return factory.newTestRunner(suite, xmlTest, emptyList(), emptyList());
+  }
+
+  private static class LocalFactory implements ITestRunnerFactory {
+    private final IConfiguration configuration;
+    private SuiteRunner suiteRunner;
+
+    private LocalFactory(IConfiguration configuration) {
+      this.configuration = configuration;
+    }
+
+    @Override
+    public TestRunner newTestRunner(ISuite suite, XmlTest test,
+        Collection<IInvokedMethodListener> listeners, List<IClassListener> classListeners) {
+      return new TestRunner(configuration, suite, test, false, listeners, classListeners, suiteRunner);
+    }
   }
 }

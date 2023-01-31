@@ -21,6 +21,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.SuiteRunState;
+import org.testng.SuiteRunner;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Maps;
@@ -63,8 +64,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       ITestContext testContext,
       SuiteRunState suiteState,
       IConfiguration configuration,
-      IConfigurationListener internalConfigurationListener) {
-    super(notifier, invokedMethodListeners, testContext, suiteState, configuration);
+      IConfigurationListener internalConfigurationListener,
+      SuiteRunner suiteRunner) {
+    super(notifier, invokedMethodListeners, testContext, suiteState, configuration, suiteRunner);
     this.m_continueOnFailedConfiguration =
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
             == XmlSuite.FailurePolicy.CONTINUE;

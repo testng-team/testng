@@ -11,6 +11,7 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.SuiteRunState;
+import org.testng.SuiteRunner;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
 
@@ -39,10 +40,11 @@ public class Invoker implements IInvoker {
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
       DataProviderHolder holder,
-      IConfigurationListener internalConfigurationListener) {
+      IConfigurationListener internalConfigurationListener,
+      SuiteRunner suiteRunner) {
     m_configInvoker =
         new ConfigInvoker(notifier, invokedMethodListeners, testContext, state, configuration,
-            internalConfigurationListener);
+            internalConfigurationListener, suiteRunner);
     m_testInvoker =
         new TestInvoker(
             notifier,
@@ -53,7 +55,8 @@ public class Invoker implements IInvoker {
             holder,
             classListeners,
             skipFailedInvocationCounts,
-            m_configInvoker);
+            m_configInvoker,
+            suiteRunner);
   }
 
   public ConfigInvoker getConfigInvoker() {

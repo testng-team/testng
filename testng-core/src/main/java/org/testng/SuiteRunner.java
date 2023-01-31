@@ -204,7 +204,6 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
         Optional.ofNullable(invokedMethodListener).orElse(Collections.emptyList())) {
       invokedMethodListeners.put(listener.getClass(), listener);
     }
-    invokedMethodListeners.put(getClass(), this);
 
     skipFailedInvocationCounts = suite.skipFailedInvocationCounts();
     if (null != testListeners) {
@@ -289,7 +288,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
               testListeners.toArray(new ITestListener[0]),
               useDefaultListeners,
               skipFailedInvocationCounts,
-              comparator);
+              comparator,
+              this);
     } else {
       factory =
           new ProxyTestRunnerFactory(testListeners.toArray(new ITestListener[0]), tmpRunnerFactory);
@@ -588,18 +588,21 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     private final boolean skipFailedInvocationCounts;
     private final IConfiguration configuration;
     private final Comparator<ITestNGMethod> comparator;
+    private final SuiteRunner suiteRunner;
 
     public DefaultTestRunnerFactory(
         IConfiguration configuration,
         ITestListener[] failureListeners,
         boolean useDefaultListeners,
         boolean skipFailedInvocationCounts,
-        Comparator<ITestNGMethod> comparator) {
+        Comparator<ITestNGMethod> comparator,
+        SuiteRunner suiteRunner) {
       this.configuration = configuration;
       this.failureGenerators = failureListeners;
       this.useDefaultListeners = useDefaultListeners;
       this.skipFailedInvocationCounts = skipFailedInvocationCounts;
       this.comparator = comparator;
+      this.suiteRunner = suiteRunner;
     }
 
     @Override
@@ -645,7 +648,8 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
               listeners,
               classListeners,
               comparator,
-              holder);
+              holder,
+              suiteRunner);
 
       if (useDefaultListeners) {
         testRunner.addListener(new TestHTMLReporter());
