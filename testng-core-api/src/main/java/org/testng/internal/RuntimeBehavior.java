@@ -19,7 +19,7 @@ public final class RuntimeBehavior {
   public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
   public static final String IGNORE_CALLBACK_INVOCATION_SKIPS = "testng.ignore.callback.skip";
   public static final String SYMMETRIC_LISTENER_EXECUTION = "testng.listener.execution.symmetric";
-  public static final String IDE_PACKAGE_NAMES = "testng.ide.listeners.package.name";
+  public static final String PREFERENTIAL_LISTENERS = "testng.preferential.listeners.package";
 
   private RuntimeBehavior() {}
 
@@ -27,9 +27,14 @@ public final class RuntimeBehavior {
     return Boolean.getBoolean(IGNORE_CALLBACK_INVOCATION_SKIPS);
   }
 
-  public static List<String> getIdePackageNames() {
+  /**
+   * @return - A comma separated list of packages that represent special listeners which users will
+   *     expect to be executed after executing the regular listeners. Here special listeners can be
+   *     anything that a user feels should be executed ALWAYS at the end.
+   */
+  public static List<String> getPreferentialListeners() {
     String packages =
-        Optional.ofNullable(System.getProperty(IDE_PACKAGE_NAMES)).orElse("com.intellij.rt.*");
+        Optional.ofNullable(System.getProperty(PREFERENTIAL_LISTENERS)).orElse("com.intellij.rt.*");
     return Arrays.asList(packages.split(","));
   }
 
