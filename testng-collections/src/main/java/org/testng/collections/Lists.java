@@ -76,10 +76,4 @@ public final class Lists {
             });
     return result;
   }
-
-  public static <K> List<K> newReversedArrayList(Collection<K> c) {
-    List<K> list = newArrayList(c);
-    Collections.reverse(list);
-    return list;
-  }
 }

@@ -1,5 +1,8 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 /** This class houses handling all JVM arguments by TestNG */
@@ -16,11 +19,23 @@ public final class RuntimeBehavior {
   public static final String TESTNG_DEFAULT_VERBOSE = "testng.default.verbose";
   public static final String IGNORE_CALLBACK_INVOCATION_SKIPS = "testng.ignore.callback.skip";
   public static final String SYMMETRIC_LISTENER_EXECUTION = "testng.listener.execution.symmetric";
+  public static final String PREFERENTIAL_LISTENERS = "testng.preferential.listeners.package";
 
   private RuntimeBehavior() {}
 
   public static boolean ignoreCallbackInvocationSkips() {
     return Boolean.getBoolean(IGNORE_CALLBACK_INVOCATION_SKIPS);
+  }
+
+  /**
+   * @return - A comma separated list of packages that represent special listeners which users will
+   *     expect to be executed after executing the regular listeners. Here special listeners can be
+   *     anything that a user feels should be executed ALWAYS at the end.
+   */
+  public static List<String> getPreferentialListeners() {
+    String packages =
+        Optional.ofNullable(System.getProperty(PREFERENTIAL_LISTENERS)).orElse("com.intellij.rt.*");
+    return Arrays.asList(packages.split(","));
   }
 
   public static boolean strictParallelism() {

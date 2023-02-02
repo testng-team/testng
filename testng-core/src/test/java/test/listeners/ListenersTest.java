@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.ExitCode;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.listeners.issue2638.DummyInvokedMethodListener;
@@ -23,6 +24,7 @@ import test.listeners.issue2685.InterruptedTestSample;
 import test.listeners.issue2685.SampleTestFailureListener;
 import test.listeners.issue2752.ListenerSample;
 import test.listeners.issue2752.TestClassSample;
+import test.listeners.issue2771.TestCaseSample;
 
 public class ListenersTest extends SimpleBaseTest {
 
@@ -90,6 +92,13 @@ public class ListenersTest extends SimpleBaseTest {
     Map<String, List<String>> logs = ListenerSample.getLogs();
     assertThat(logs.get("Xml_Test_1")).containsAll(expected);
     assertThat(logs.get("Xml_Test_2")).containsAll(expected);
+  }
+
+  @Test(description = "GITHUB-2771")
+  public void testEnsureNativeListenersAreRunAlwaysAtEnd() {
+    TestNG testng = create(TestCaseSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(ExitCode.FAILED);
   }
 
   private void setupTest(boolean addExplicitListener) {

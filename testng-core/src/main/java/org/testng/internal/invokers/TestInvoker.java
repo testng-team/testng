@@ -279,9 +279,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     boolean isFinished = tr.getStatus() != ITestResult.STARTED;
     List<ITestListener> listeners =
         isFinished
-            ? Lists.newReversedArrayList(m_notifier.getTestListeners())
-            : m_notifier.getTestListeners();
+            ? ListenerOrderDeterminer.reversedOrder(m_notifier.getTestListeners())
+            : ListenerOrderDeterminer.order(m_notifier.getTestListeners());
     TestListenerHelper.runTestListeners(tr, listeners);
+    TestListenerHelper.runTestListeners(
+        tr, Collections.singletonList(m_notifier.getExitCodeListener()));
   }
 
   private Collection<IDataProviderListener> dataProviderListeners() {

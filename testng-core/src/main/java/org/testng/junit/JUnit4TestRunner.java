@@ -30,11 +30,13 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
   private final List<ITestNGMethod> m_methods = Lists.newArrayList();
   private Collection<IInvokedMethodListener> m_invokeListeners = Lists.newArrayList();
   private final Map<Description, ITestResult> m_foundMethods = new WeakHashMap<>();
+  private final ITestListener m_exitCodeListener;
 
   public JUnit4TestRunner(ITestObjectFactory objectFactory, ITestResultNotifier tr) {
     this.objectFactory = objectFactory;
     m_parentRunner = tr;
     m_listeners = m_parentRunner.getTestListeners();
+    m_exitCodeListener = m_parentRunner.getExitCodeListener();
   }
 
   /**
@@ -128,6 +130,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
       for (ITestListener l : m_listeners) {
         l.onTestSkipped(tr);
       }
+      m_exitCodeListener.onTestSkipped(tr);
     }
 
     @Override
@@ -163,6 +166,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         for (ITestListener l : m_listeners) {
           l.onTestFailure(tr);
         }
+        m_exitCodeListener.onTestFailure(tr);
       }
     }
 
@@ -178,6 +182,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         for (ITestListener l : m_listeners) {
           l.onTestSuccess(tr);
         }
+        m_exitCodeListener.onTestSuccess(tr);
       }
       m_methods.add(tr.getMethod());
     }
@@ -196,6 +201,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
         for (ITestListener l : m_listeners) {
           l.onTestSkipped(tr);
         }
+        m_exitCodeListener.onTestSkipped(tr);
       }
     }
 
@@ -212,6 +218,7 @@ public class JUnit4TestRunner implements IJUnitTestRunner {
       for (ITestListener l : m_listeners) {
         l.onTestStart(tr);
       }
+      m_exitCodeListener.onTestStart(tr);
     }
 
     private void runAfterInvocationListeners(ITestResult tr) {

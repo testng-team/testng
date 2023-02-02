@@ -20,6 +20,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import org.testng.SuiteRunner.TestListenersContainer;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -29,6 +30,7 @@ import org.testng.internal.Configuration;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.ReporterConfig;
 import org.testng.internal.RuntimeBehavior;
@@ -924,7 +926,6 @@ public class TestNG {
     if (m_failIfAllTestsSkipped) {
       this.exitCodeListener.failIfAllTestsSkipped();
     }
-    addListener(this.exitCodeListener);
     if (m_useDefaultListeners) {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
@@ -1106,17 +1107,22 @@ public class TestNG {
   }
 
   private void runExecutionListeners(boolean start) {
-    List<IExecutionListener> executionListeners = m_configuration.getExecutionListeners();
+    List<IExecutionListener> executionListeners =
+        ListenerOrderDeterminer.order(m_configuration.getExecutionListeners());
     if (start) {
       for (IExecutionListener l : executionListeners) {
         l.onExecutionStart();
       }
+      // Invoke our exit code listener after all the user's listeners have run.
+      exitCodeListener.onExecutionStart();
     } else {
       List<IExecutionListener> executionListenersReversed =
-          Lists.newReversedArrayList(executionListeners);
+          ListenerOrderDeterminer.reversedOrder(executionListeners);
       for (IExecutionListener l : executionListenersReversed) {
         l.onExecutionFinish();
       }
+      // Invoke our exit code listener after all the user's listeners have run.
+      exitCodeListener.onExecutionFinish();
     }
   }
 
@@ -1128,7 +1134,11 @@ public class TestNG {
   }
 
   private void generateReports(List<ISuite> suiteRunners) {
-    for (IReporter reporter : m_reporters.values()) {
+    List<IReporter> reporters = new ArrayList<>(m_reporters.values());
+    // Add our Exit code listener as the last of the reporter so that we can still accommodate
+    // whatever changes were done by a user's reporting listener
+    reporters.add(exitCodeListener);
+    for (IReporter reporter : reporters) {
       try {
         long start = System.currentTimeMillis();
         reporter.generateReport(m_suites, suiteRunners, m_outputDir);
@@ -1334,6 +1344,8 @@ public class TestNG {
     DataProviderHolder holder = new DataProviderHolder();
     holder.addListeners(m_dataProviderListeners.values());
     holder.addInterceptors(m_dataProviderInterceptors.values());
+    TestListenersContainer container =
+        new TestListenersContainer(getTestListeners(), this.exitCodeListener);
     SuiteRunner result =
         new SuiteRunner(
             getConfiguration(),
@@ -1343,7 +1355,7 @@ public class TestNG {
             m_useDefaultListeners,
             m_methodInterceptors,
             m_invokedMethodListeners.values(),
-            m_testListeners.values(),
+            container,
             m_classListeners.values(),
             holder,
             Systematiser.getComparator());
