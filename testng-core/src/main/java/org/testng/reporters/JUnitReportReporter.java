@@ -130,22 +130,38 @@ public class JUnitReportReporter implements IReporter {
 
       xsb.push(XMLConstants.TESTSUITE, p1);
       for (TestTag testTag : testCases) {
-        if (putElement(xsb, XMLConstants.TESTCASE, testTag.properties, testTag.childTag != null)) {
-          Properties p = new Properties();
-          safeSetProperty(p, XMLConstants.ATTR_MESSAGE, testTag.message);
-          safeSetProperty(p, XMLConstants.ATTR_TYPE, testTag.type);
+        boolean testCaseHasChildElements = testTag.childTag != null || testTag.sysOut != null;
+        if (putElement(xsb, XMLConstants.TESTCASE, testTag.properties, testCaseHasChildElements)) {
 
-          if (putElement(xsb, testTag.childTag, p, testTag.stackTrace != null)) {
-            xsb.addCDATA(testTag.stackTrace);
-            xsb.pop(testTag.childTag);
+          if (testTag.childTag != null) {
+            Properties p = new Properties();
+            safeSetProperty(p, XMLConstants.ATTR_MESSAGE, testTag.message);
+            safeSetProperty(p, XMLConstants.ATTR_TYPE, testTag.type);
+
+            if (putElement(xsb, testTag.childTag, p, testTag.stackTrace != null)) {
+              xsb.addCDATA(testTag.stackTrace);
+              xsb.pop(testTag.childTag);
+            }
+          }
+
+          // Add reporter output for each test case as a child system-out element of testcase.
+          if (testTag.sysOut != null) {
+            putElement(xsb, XMLConstants.SYSTEM_OUT, new Properties(), true);
+            xsb.addCDATA(testTag.sysOut);
+            xsb.pop(XMLConstants.SYSTEM_OUT);
           }
           xsb.pop(XMLConstants.TESTCASE);
         }
-        if (putElement(xsb, XMLConstants.SYSTEM_OUT, new Properties(), testTag.sysOut != null)) {
-          xsb.addCDATA(testTag.sysOut);
-          xsb.pop(XMLConstants.SYSTEM_OUT);
-        }
       }
+
+      // Add the full reporter output once as a child system-out element of testsuite.
+      List<String> output = Reporter.getOutput();
+      if ((!output.isEmpty())) {
+        putElement(xsb, XMLConstants.SYSTEM_OUT, new Properties(), true);
+        xsb.addCDATA(String.join("\n", output));
+        xsb.pop(XMLConstants.SYSTEM_OUT);
+      }
+
       xsb.pop(XMLConstants.TESTSUITE);
 
       String outputDirectory = defaultOutputDirectory + File.separator + "junitreports";
