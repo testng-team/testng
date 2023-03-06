@@ -1,4 +1,4 @@
-package test.suites.github1874;
+package org.testng.xml.github1874;
 
 import org.testng.annotations.Test;
 

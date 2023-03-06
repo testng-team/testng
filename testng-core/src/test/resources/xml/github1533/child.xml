@@ -3,7 +3,7 @@
 <suite name="GitHub1533_Suite">
     <test name="GitHub1533_Test">
         <classes>
-            <class name="test.suites.github1533.SampleTestClassSample"/>
+            <class name="org.testng.xml.github1533.SampleTestClassSample"/>
         </classes>
     </test>
 </suite>

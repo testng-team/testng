@@ -1,4 +1,4 @@
-package test.suites.github1533;
+package org.testng.xml.github1533;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
