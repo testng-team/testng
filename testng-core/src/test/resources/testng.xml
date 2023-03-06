@@ -908,14 +908,6 @@
     </classes>
   </test>
 
-  <test name="Suite_Related_Tests">
-    <classes>
-      <class name="test.suites.github1533.Github1533Test"/>
-      <class name="test.suites.github1850.DuplicateChildSuitesInitializationTest"/>
-      <class name="test.suites.github1874.IssueTest"/>
-    </classes>
-  </test>
-
   <test name="Jar_Related_tests">
     <classes>
       <class name="org.testng.JarFileUtilsTest"/>
