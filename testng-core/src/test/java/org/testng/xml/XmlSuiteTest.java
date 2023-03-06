@@ -12,7 +12,11 @@ import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.internal.Parser;
+import org.testng.xml.issue2866.ATestClassSample;
+import org.testng.xml.issue2866.BTestClassSample;
+import org.testng.xml.issue2866.ThreadCountingSuiteAlteringListener;
 import test.SimpleBaseTest;
 
 public class XmlSuiteTest extends SimpleBaseTest {
@@ -109,8 +113,27 @@ public class XmlSuiteTest extends SimpleBaseTest {
     }
   }
 
+  @Test(description = "GITHUB-2866")
+  public void ensureSuiteLevelThreadCountsAreInheritedInTestTags() {
+    XmlSuite xmlSuite = new XmlSuite();
+    xmlSuite.setName("Sample_suite");
+    xmlSuite.setThreadCount(1);
+    xmlSuite.setParallel(ParallelMode.CLASSES);
+    XmlTest xmlTest = new XmlTest(xmlSuite);
+    xmlTest.setName("Sample_test");
+    xmlTest.setClasses(
+        Arrays.asList(new XmlClass(ATestClassSample.class), new XmlClass(BTestClassSample.class)));
+    xmlTest.setThreadCount(5);
+    xmlTest.setParallel(ParallelMode.CLASSES);
+    TestNG testng = create(xmlSuite);
+    ThreadCountingSuiteAlteringListener listener = new ThreadCountingSuiteAlteringListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getThreadIds("Sample_test_cloned")).hasSize(2);
+  }
+
   static class StringOutputStream extends OutputStream {
-    private StringBuilder string = new StringBuilder();
+    private final StringBuilder string = new StringBuilder();
 
     @Override
     public void write(int b) {
