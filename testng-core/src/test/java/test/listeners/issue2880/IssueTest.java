@@ -1,4 +1,4 @@
-package test.listeners.github1602;
+package test.listeners.issue2880;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +17,7 @@ public class IssueTest extends SimpleBaseTest {
   public void testListenerInvocation(
       Class<?> clazz, XmlSuite.FailurePolicy policy, List<String> expected) {
     TestNG tng = create(clazz);
-    ListenerForIssue1602 listener = new ListenerForIssue1602();
+    ListenerForIssue2880 listener = new ListenerForIssue2880();
     tng.setConfigFailurePolicy(policy);
     tng.addListener(listener);
     tng.run();
@@ -28,27 +28,41 @@ public class IssueTest extends SimpleBaseTest {
   public Object[][] getData() {
     List<String> passList =
         Arrays.asList(
+            "BeforeInvocation_beforeClass_STARTED",
+            "AfterInvocation_beforeClass_SUCCESS",
             "BeforeInvocation_beforeMethod_STARTED",
             "AfterInvocation_beforeMethod_SUCCESS",
             "BeforeInvocation_testMethod_STARTED",
             "AfterInvocation_testMethod_SUCCESS",
             "BeforeInvocation_afterMethod_STARTED",
-            "AfterInvocation_afterMethod_SUCCESS");
+            "AfterInvocation_afterMethod_SUCCESS",
+            "BeforeInvocation_afterClass_STARTED",
+            "AfterInvocation_afterClass_SUCCESS");
 
-    List<String> baseList =
+    List<String> skipList =
         Arrays.asList(
-            "BeforeInvocation_beforeMethod_STARTED",
-            "AfterInvocation_beforeMethod_FAILURE",
+            "BeforeInvocation_beforeClass_STARTED",
+            "AfterInvocation_beforeClass_FAILURE",
+            "BeforeInvocation_beforeMethod_SKIP",
+            "AfterInvocation_beforeMethod_SKIP",
             "BeforeInvocation_testMethod_SKIP",
-            "AfterInvocation_testMethod_SKIP");
+            "AfterInvocation_testMethod_SKIP",
+            "BeforeInvocation_afterMethod_SKIP",
+            "AfterInvocation_afterMethod_SKIP",
+            "BeforeInvocation_afterClass_SKIP",
+            "AfterInvocation_afterClass_SKIP");
 
-    List<String> skipList = Lists.newArrayList(baseList);
-    skipList.add("BeforeInvocation_afterMethod_SKIP");
-    skipList.add("AfterInvocation_afterMethod_SKIP");
-
-    List<String> failList = Lists.newArrayList(baseList);
-    failList.add("BeforeInvocation_afterMethod_STARTED");
-    failList.add("AfterInvocation_afterMethod_FAILURE");
+    List<String> failList = Arrays.asList(
+            "BeforeInvocation_beforeClass_STARTED",
+            "AfterInvocation_beforeClass_FAILURE",
+            "BeforeInvocation_beforeMethod_SKIP",
+            "AfterInvocation_beforeMethod_SKIP",
+            "BeforeInvocation_testMethod_SKIP",
+            "AfterInvocation_testMethod_SKIP",
+            "BeforeInvocation_afterMethod_SKIP",
+            "AfterInvocation_afterMethod_SKIP",
+            "BeforeInvocation_afterClass_SKIP",
+            "AfterInvocation_afterClass_SKIP");
 
     return new Object[][] {
       {TestClassWithPassingConfigsSample.class, XmlSuite.FailurePolicy.SKIP, passList},
