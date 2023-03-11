@@ -7,7 +7,6 @@ import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
@@ -52,7 +51,8 @@ public class IssueTest extends SimpleBaseTest {
             "BeforeInvocation_afterClass_SKIP",
             "AfterInvocation_afterClass_SKIP");
 
-    List<String> failList = Arrays.asList(
+    List<String> failList =
+        Arrays.asList(
             "BeforeInvocation_beforeClass_STARTED",
             "AfterInvocation_beforeClass_FAILURE",
             "BeforeInvocation_beforeMethod_SKIP",
