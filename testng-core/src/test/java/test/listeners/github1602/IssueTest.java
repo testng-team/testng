@@ -34,17 +34,22 @@ public class IssueTest extends SimpleBaseTest {
             "AfterInvocation_testMethod_SUCCESS",
             "BeforeInvocation_afterMethod_STARTED",
             "AfterInvocation_afterMethod_SUCCESS");
+
     List<String> baseList =
         Arrays.asList(
             "BeforeInvocation_beforeMethod_STARTED",
             "AfterInvocation_beforeMethod_FAILURE",
             "BeforeInvocation_testMethod_SKIP",
-            "AfterInvocation_testMethod_SKIP",
-            "BeforeInvocation_afterMethod_STARTED");
+            "AfterInvocation_testMethod_SKIP");
+
     List<String> skipList = Lists.newArrayList(baseList);
+    skipList.add("BeforeInvocation_afterMethod_SKIP");
     skipList.add("AfterInvocation_afterMethod_SKIP");
+
     List<String> failList = Lists.newArrayList(baseList);
+    failList.add("BeforeInvocation_afterMethod_STARTED");
     failList.add("AfterInvocation_afterMethod_FAILURE");
+
     return new Object[][] {
       {TestClassWithPassingConfigsSample.class, XmlSuite.FailurePolicy.SKIP, passList},
       {TestClassWithFailingConfigsSample.class, XmlSuite.FailurePolicy.SKIP, skipList},
