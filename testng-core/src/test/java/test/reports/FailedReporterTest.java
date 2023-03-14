@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.testng.Assert;
@@ -32,8 +33,57 @@ import test.reports.issue2611.TestClassWithBeforeGroupsSample;
 import test.reports.issue2611.TestClassWithBeforeSuiteSample;
 import test.reports.issue2611.TestClassWithBeforeTestSample;
 import test.reports.issue2611.TestClassWithJustTestMethodsSample;
+import test.reports.issue2879.AnotherPrintingListener;
+import test.reports.issue2879.PrintingListener;
+import test.reports.issue2879.TestClassSample;
 
 public class FailedReporterTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-2879")
+  public void ensureParentListenersArePresentInFailedChildSuites() throws IOException {
+    XmlSuite xmlParentSuite = createXmlSuite("parent_suite");
+    xmlParentSuite.setListeners(Collections.singletonList(PrintingListener.class.getName()));
+    XmlSuite xmlSuite = createXmlSuite("2879_suite");
+    xmlSuite.setParentSuite(xmlParentSuite);
+    XmlTest xmlChildTest = createXmlTest(xmlSuite, "2879_test");
+    xmlChildTest.setClasses(Collections.singletonList(new XmlClass(TestClassSample.class)));
+    xmlParentSuite.getChildSuites().add(xmlSuite);
+    TestNG tng = create(xmlParentSuite);
+    Path temp = Files.createTempDirectory("tmp");
+    tng.setOutputDirectory(temp.toAbsolutePath().toString());
+    tng.addListener(new FailedReporter());
+    tng.run();
+
+    Collection<XmlSuite> failedSuites =
+        new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
+            .parse();
+    XmlSuite failedSuite = failedSuites.iterator().next();
+    assertThat(failedSuite.getListeners()).containsExactly(PrintingListener.class.getName());
+  }
+
+  @Test(description = "GITHUB-2879")
+  public void ensureParentListenersAreAppendedInFailedChildSuites() throws IOException {
+    XmlSuite xmlParentSuite = createXmlSuite("parent_suite");
+    xmlParentSuite.setListeners(Collections.singletonList(PrintingListener.class.getName()));
+    XmlSuite xmlSuite = createXmlSuite("2879_suite");
+    xmlSuite.setParentSuite(xmlParentSuite);
+    xmlSuite.setListeners(Collections.singletonList(AnotherPrintingListener.class.getName()));
+    XmlTest xmlChildTest = createXmlTest(xmlSuite, "2879_test");
+    xmlChildTest.setClasses(Collections.singletonList(new XmlClass(TestClassSample.class)));
+    xmlParentSuite.getChildSuites().add(xmlSuite);
+    TestNG tng = create(xmlParentSuite);
+    Path temp = Files.createTempDirectory("tmp");
+    tng.setOutputDirectory(temp.toAbsolutePath().toString());
+    tng.addListener(new FailedReporter());
+    tng.run();
+
+    Collection<XmlSuite> failedSuites =
+        new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
+            .parse();
+    XmlSuite failedSuite = failedSuites.iterator().next();
+    assertThat(failedSuite.getListeners())
+        .contains(PrintingListener.class.getName(), AnotherPrintingListener.class.getName());
+  }
 
   @Test
   public void failedFile() throws IOException {
