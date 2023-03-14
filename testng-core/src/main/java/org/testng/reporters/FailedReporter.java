@@ -77,6 +77,12 @@ public class FailedReporter implements IReporter {
     }
 
     if (null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
+      if (xmlSuite.getParentSuite() != null
+          && !xmlSuite.getParentSuite().getLocalListeners().isEmpty()) {
+        List<String> merged =
+            Lists.merge(failedSuite.getListeners(), xmlSuite.getParentSuite().getListeners());
+        failedSuite.setListeners(merged);
+      }
       Utils.writeUtf8File(outputDir, TESTNG_FAILED_XML, failedSuite.toXml());
       Utils.writeUtf8File(suite.getOutputDirectory(), TESTNG_FAILED_XML, failedSuite.toXml());
     }
