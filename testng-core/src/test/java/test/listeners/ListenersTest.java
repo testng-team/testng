@@ -25,6 +25,9 @@ import test.listeners.issue2685.SampleTestFailureListener;
 import test.listeners.issue2752.ListenerSample;
 import test.listeners.issue2752.TestClassSample;
 import test.listeners.issue2771.TestCaseSample;
+import test.listeners.issue2880.ListenerForIssue2880;
+import test.listeners.issue2880.TestClassWithFailingConfigsSample;
+import test.listeners.issue2880.TestClassWithPassingConfigsSample;
 
 public class ListenersTest extends SimpleBaseTest {
 
@@ -99,6 +102,17 @@ public class ListenersTest extends SimpleBaseTest {
     TestNG testng = create(TestCaseSample.class);
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(ExitCode.FAILED);
+  }
+
+  @Test(description = "GITHUB-2880", dataProvider = "issue2880-dataprovider")
+  public void testSkipStatusInBeforeAndAfterConfigurationMethod(
+      Class<?> clazz, XmlSuite.FailurePolicy policy, List<String> expected) {
+    TestNG tng = create(clazz);
+    ListenerForIssue2880 listener = new ListenerForIssue2880();
+    tng.setConfigFailurePolicy(policy);
+    tng.addListener(listener);
+    tng.run();
+    assertThat(listener.getLogs()).containsExactlyElementsOf(expected);
   }
 
   private void setupTest(boolean addExplicitListener) {
@@ -199,5 +213,54 @@ public class ListenersTest extends SimpleBaseTest {
     innerSuite1.setParentSuite(containerSuite);
     innerSuite2.setParentSuite(containerSuite);
     return containerSuite;
+  }
+
+  @DataProvider(name = "issue2880-dataprovider")
+  public Object[][] getIssue2880Data() {
+    List<String> passList =
+        Arrays.asList(
+            "BeforeInvocation_beforeClass_STARTED",
+            "AfterInvocation_beforeClass_SUCCESS",
+            "BeforeInvocation_beforeMethod_STARTED",
+            "AfterInvocation_beforeMethod_SUCCESS",
+            "BeforeInvocation_testMethod_STARTED",
+            "AfterInvocation_testMethod_SUCCESS",
+            "BeforeInvocation_afterMethod_STARTED",
+            "AfterInvocation_afterMethod_SUCCESS",
+            "BeforeInvocation_afterClass_STARTED",
+            "AfterInvocation_afterClass_SUCCESS");
+
+    List<String> skipList =
+        Arrays.asList(
+            "BeforeInvocation_beforeClass_STARTED",
+            "AfterInvocation_beforeClass_FAILURE",
+            "BeforeInvocation_beforeMethod_SKIP",
+            "AfterInvocation_beforeMethod_SKIP",
+            "BeforeInvocation_testMethod_SKIP",
+            "AfterInvocation_testMethod_SKIP",
+            "BeforeInvocation_afterMethod_SKIP",
+            "AfterInvocation_afterMethod_SKIP",
+            "BeforeInvocation_afterClass_SKIP",
+            "AfterInvocation_afterClass_SKIP");
+
+    List<String> failList =
+        Arrays.asList(
+            "BeforeInvocation_beforeClass_STARTED",
+            "AfterInvocation_beforeClass_FAILURE",
+            "BeforeInvocation_beforeMethod_SKIP",
+            "AfterInvocation_beforeMethod_SKIP",
+            "BeforeInvocation_testMethod_SKIP",
+            "AfterInvocation_testMethod_SKIP",
+            "BeforeInvocation_afterMethod_SKIP",
+            "AfterInvocation_afterMethod_SKIP",
+            "BeforeInvocation_afterClass_SKIP",
+            "AfterInvocation_afterClass_SKIP");
+
+    return new Object[][] {
+      {TestClassWithPassingConfigsSample.class, XmlSuite.FailurePolicy.SKIP, passList},
+      {TestClassWithFailingConfigsSample.class, XmlSuite.FailurePolicy.SKIP, skipList},
+      {TestClassWithPassingConfigsSample.class, XmlSuite.FailurePolicy.CONTINUE, passList},
+      {TestClassWithFailingConfigsSample.class, XmlSuite.FailurePolicy.CONTINUE, failList}
+    };
   }
 }
