@@ -2,12 +2,9 @@ package test.dataprovider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.testng.DataProviderInvocationException;
-import org.testng.ITestResult;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
-import test.dataprovider.issue2157.TestClassWithDataProviderThatThrowsExceptions;
 
 public class FailingDataProviderTest extends SimpleBaseTest {
 
@@ -35,14 +32,5 @@ public class FailingDataProviderTest extends SimpleBaseTest {
             "testShouldSkip",
             "testShouldSkipEvenIfSuccessPercentage",
             "testShouldSkipEvenIfSuccessPercentage");
-  }
-
-  @Test(description = "GITHUB-2157")
-  public void abortWhenDataProviderThrowsException() {
-    InvokedMethodNameListener listener = run(TestClassWithDataProviderThatThrowsExceptions.class);
-    ITestResult result = listener.getResult("testMethod");
-    Throwable cause = result.getThrowable();
-    assertThat(cause).isInstanceOf(DataProviderInvocationException.class);
-    assertThat(result.getStatus()).isEqualTo(ITestResult.FAILURE);
   }
 }

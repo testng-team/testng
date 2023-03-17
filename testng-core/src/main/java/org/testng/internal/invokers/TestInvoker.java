@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
-import org.testng.DataProviderInvocationException;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
 import org.testng.IHookable;
@@ -238,33 +237,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     failure.representsRetriedMethod = true;
     do {
       failure.instances = Lists.newArrayList();
-      Map<String, String> allParameters = Maps.newHashMap();
-      int verbose = testContext.getCurrentXmlTest().getVerbose();
-      // TODO: This recreates all the parameters every time when we only need
-      // one specific set. Should optimize it by only recreating the set needed.
-      ParameterHandler handler =
-          new ParameterHandler(
-              m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
-
-      ParameterBag bag =
-          handler.createParameters(
-              arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
-      ITestResult errorResult = bag.errorResult;
-
-      if (errorResult != null) {
-        Throwable cause = errorResult.getThrowable();
-        String m = errorResult.getMethod().getMethodName();
-        String msg =
-            String.format(
-                "Encountered problems when gathering parameter values for [%s]. Root cause: ", m);
-        throw new DataProviderInvocationException(msg, cause);
-      }
       Object[] parameterValues = arguments.getParameterValues();
       TestMethodArguments tma =
           new TestMethodArguments.Builder()
               .usingArguments(arguments)
               .withParameterValues(parameterValues)
-              .withParameters(allParameters)
+              .withParameters(arguments.getParameters())
               .build();
 
       result.add(invokeMethod(tma, testContext.getSuite().getXmlSuite(), failure));

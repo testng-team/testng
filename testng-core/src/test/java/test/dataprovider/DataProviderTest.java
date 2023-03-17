@@ -474,6 +474,14 @@ public class DataProviderTest extends SimpleBaseTest {
   }
 
   @Test
+  public void ensureDataProviderNotInvokedMultipleTimesForRetriedTests() {
+    TestNG testng = create(test.dataprovider.issue2884.TestClassSample.class);
+    testng.run();
+    assertThat(test.dataprovider.issue2884.TestClassSample.dataProviderInvocationCount.get())
+        .isEqualTo(1);
+  }
+
+  @Test
   public void retryWithDataProvider() {
     TestNG testng = create(DataProviderRetryTest.class);
     TestListenerAdapter tla = new TestListenerAdapter();
