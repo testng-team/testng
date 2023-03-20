@@ -22,8 +22,11 @@ import org.testng.internal.MethodInstance;
 import org.testng.internal.WrappedTestNGMethod;
 import org.testng.reporters.RuntimeBehavior;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import test.SimpleBaseTest;
 import test.reports.issue2171.TestClassExample;
+import test.reports.issue2886.HydeTestSample;
+import test.reports.issue2886.JekyllTestSample;
 import test.simple.SimpleSample;
 
 public class XmlReporterTest extends SimpleBaseTest {
@@ -60,7 +63,7 @@ public class XmlReporterTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2171")
   public void ensureCustomisationOfReportIsSupported() throws Exception {
-    File file = runTest(TestClassExample.class, "issue_2171.xml");
+    File file = runTest("issue_2171.xml", null, TestClassExample.class);
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.parse(file);
@@ -74,7 +77,6 @@ public class XmlReporterTest extends SimpleBaseTest {
   public void ensureReportGenerationWhenTestMethodIsWrappedWithWrappedTestNGMethod() {
     File file =
         runTest(
-            SimpleSample.class,
             testng ->
                 testng.setMethodInterceptor(
                     (methods, context) ->
@@ -88,19 +90,34 @@ public class XmlReporterTest extends SimpleBaseTest {
     assertThat(file.exists()).isTrue();
   }
 
+  @Test(description = "GITHUB-2886")
+  public void ensureConfigurationMethodsAreNotCountedAsSkippedInXmlReports() throws Exception {
+    File file =
+        runTest(RuntimeBehavior.FILE_NAME, null, JekyllTestSample.class, HydeTestSample.class);
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document doc = builder.parse(file);
+    XPath xPath = XPathFactory.newInstance().newXPath();
+    Node node = (Node) xPath.compile("/testng-results").evaluate(doc, XPathConstants.NODE);
+    int ignored = Integer.parseInt(node.getAttributes().getNamedItem("ignored").getNodeValue());
+    int total = Integer.parseInt(node.getAttributes().getNamedItem("total").getNodeValue());
+    int passed = Integer.parseInt(node.getAttributes().getNamedItem("passed").getNodeValue());
+    int failed = Integer.parseInt(node.getAttributes().getNamedItem("failed").getNodeValue());
+    assertThat(ignored).isZero();
+    assertThat(total).isEqualTo(2);
+    assertThat(passed).isEqualTo(2);
+    assertThat(failed).isZero();
+  }
+
   private static File runTest(Class<?> clazz) {
-    return runTest(clazz, RuntimeBehavior.FILE_NAME, null);
+    return runTest(RuntimeBehavior.FILE_NAME, null, clazz);
   }
 
-  private static File runTest(Class<?> clazz, Consumer<TestNG> customizer) {
-    return runTest(clazz, RuntimeBehavior.FILE_NAME, customizer);
+  private static File runTest(Consumer<TestNG> customizer) {
+    return runTest(RuntimeBehavior.FILE_NAME, customizer, SimpleSample.class);
   }
 
-  private static File runTest(Class<?> clazz, String fileName) {
-    return runTest(clazz, fileName, null);
-  }
-
-  private static File runTest(Class<?> clazz, String fileName, Consumer<TestNG> customizer) {
+  private static File runTest(String fileName, Consumer<TestNG> customizer, Class<?>... clazz) {
     String suiteName = UUID.randomUUID().toString();
     File fileLocation = createDirInTempDir(suiteName);
     TestNG testng = create(fileLocation.toPath(), clazz);

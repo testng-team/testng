@@ -55,7 +55,7 @@ public class XMLReporter implements IReporter, ICustomizeXmlReport {
         }
         skipped += skippedPerTest;
         retried += retriedPerTest;
-        ignored += testContext.getExcludedMethods().size();
+        ignored += testContext.getExcludedMethods().stream().filter(ITestNGMethod::isTest).count();
       }
     }
 

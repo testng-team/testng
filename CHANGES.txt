@@ -11,6 +11,7 @@ Fixed: GITHUB-2862: Allow test classes to define "configfailurepolicy" at a per 
 Fixed: GITHUB-2796: Option for onAfterClass to run after @AfterClass (Oliver Hughes)
 Fixed: GITHUB-2857: XmlTest index is not set for test suites invoked with YAML (Sergei Baranov)
 Fixed: GITHUB-2880: Before configuration and before invocation set 'SKIP' when beforeMethod is 'skip' (Bob Shi)
+Fixed: GITHUB-2886: testng-results xml reports config skips from base classes as ignored (Krishnan Mahadevan)
 
 7.7.1
 Fixed: GITHUB-2854: overloaded assertEquals methods do not work from Groovy (Krishnan Mahadevan)
