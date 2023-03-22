@@ -1,4 +1,5 @@
 Current
+Fixed: GITHUB-2888: Skipped Tests with DataProvider appear as failed (Joaquin Moreira)
 Fixed: GITHUB-2884: Discrepancies with DataProvider and Retry of failed tests (Krishnan Mahadevan)
 Fixed: GITHUB-2879: Test listeners specified in parent testng.xml file are not included in testng-failed.xml file (Krishnan Mahadevan)
 Fixed: GITHUB-2866: TestNG.xml doesn't honour Parallel value of a clone (Krishnan Mahadevan)

@@ -513,6 +513,14 @@ public class DataProviderTest extends SimpleBaseTest {
     assertThat(testng.getStatus()).isEqualTo(1);
   }
 
+  @Test(description = "GITHUB-2888")
+  public void ensureTestNGSkipExceptionWillSkipTestWithDataProvider() {
+    TestNG testng = create(test.dataprovider.issue2888.SkipDataProviderTest.class);
+    testng.propagateDataProviderFailureAsTestFailure();
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(2);
+  }
+
   @Test(description = "GITHUB-2255")
   public void ensureDataProviderValuesAreVisibleToConfigMethods() {
     TestNG testNG = create(test.dataprovider.issue2255.TestClassSample.class);
