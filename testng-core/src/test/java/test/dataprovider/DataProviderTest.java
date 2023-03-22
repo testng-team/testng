@@ -46,6 +46,7 @@ import test.dataprovider.issue2819.TestClassFailingRetrySample;
 import test.dataprovider.issue2819.TestClassSample;
 import test.dataprovider.issue2819.TestClassUsingDataProviderRetrySample;
 import test.dataprovider.issue2819.TestClassWithMultipleRetryImplSample;
+import test.dataprovider.issue2888.SkipDataProviderSample;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -515,7 +516,7 @@ public class DataProviderTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2888")
   public void ensureTestNGSkipExceptionWillSkipTestWithDataProvider() {
-    TestNG testng = create(test.dataprovider.issue2888.SkipDataProviderTest.class);
+    TestNG testng = create(SkipDataProviderSample.class);
     testng.propagateDataProviderFailureAsTestFailure();
     testng.run();
     assertThat(testng.getStatus()).isEqualTo(2);

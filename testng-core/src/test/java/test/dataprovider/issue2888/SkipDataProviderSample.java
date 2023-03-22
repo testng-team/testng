@@ -4,10 +4,9 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
-import test.SimpleBaseTest;
 
 @Listeners({SkipDataProviderListener.class})
-public class SkipDataProviderTest extends SimpleBaseTest {
+public class SkipDataProviderSample {
   @Test(groups = "SkipMe")
   public void testSkip() {
     Assert.fail("This test should not execute, it should be skipped");

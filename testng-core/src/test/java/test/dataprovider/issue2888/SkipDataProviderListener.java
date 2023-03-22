@@ -24,7 +24,7 @@ public class SkipDataProviderListener implements ITestListener, IDataProviderLis
     skipIfSkipMe(method);
   }
 
-  private void skipIfSkipMe(ITestNGMethod testNGMethod) {
+  private static void skipIfSkipMe(ITestNGMethod testNGMethod) {
     if (Arrays.asList(testNGMethod.getGroups()).contains("SkipMe"))
       throw new SkipException("Test was skipped");
   }
