@@ -21,10 +21,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.5.0
 
     - name: Gradle wrapper validation
-      uses: gradle/wrapper-validation-action@v1
+      uses: gradle/wrapper-validation-action@v1.0.6
 
     # Runs a single command using the runners shell
     - name: Install gpg secret key
