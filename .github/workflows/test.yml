@@ -20,7 +20,7 @@ jobs:
       # Ask matrix.js to produce 7 jobs
       MATRIX_JOBS: 7
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.0
         with:
           fetch-depth: 1
       - id: set-matrix
@@ -37,12 +37,12 @@ jobs:
     env:
       TZ: ${{ matrix.tz }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.0
         with:
           fetch-depth: 10
       # Install built-in JDK
       - name: 'Set up JDK ${{ matrix.jdk.version }} / ${{ matrix.jdk.distribution }}'
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3.11.0
         if: ${{ matrix.jdk.distribution != 'jdkfile' }}
         with:
           distribution: ${{ matrix.jdk.distribution }}
