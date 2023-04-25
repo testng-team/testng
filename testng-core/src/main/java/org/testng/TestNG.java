@@ -354,7 +354,7 @@ public class TestNG {
       }
       // If test names were specified, only run these test names
       TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
-      testNamesMatcher.validateMissMatchedTestNames();
+      testNamesMatcher.validateMissMatchedTestNames(m_ignoreMissedTestNames);
       result.addAll(testNamesMatcher.getSuitesMatchingTestNames());
     }
 
@@ -798,6 +798,8 @@ public class TestNG {
 
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
+
+  private boolean m_ignoreMissedTestNames;
 
   private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
 
@@ -1475,6 +1477,7 @@ public class TestNG {
 
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
+      setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
     }
 
     // Note: can't use a Boolean field here because we are allowing a boolean
@@ -1574,7 +1577,11 @@ public class TestNG {
     alwaysRunListeners(cla.alwaysRunListeners);
   }
 
-  public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
+  private void setIgnoreMissedTestNames(boolean ignoreMissedTestNames) {
+      m_ignoreMissedTestNames = ignoreMissedTestNames;
+  }
+
+public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
     m_suiteThreadPoolSize = suiteThreadPoolSize;
   }
 
@@ -1641,6 +1648,7 @@ public class TestNG {
     String testNames = (String) cmdLineArgs.get(CommandLineArgs.TEST_NAMES);
     if (testNames != null) {
       result.testNames = testNames;
+      result.ignoreMissedTestNames = (Boolean) cmdLineArgs.getOrDefault(CommandLineArgs.IGNORE_MISSED_TEST_NAMES, Boolean.FALSE);
     }
 
     String useDefaultListeners = (String) cmdLineArgs.get(CommandLineArgs.USE_DEFAULT_LISTENERS);

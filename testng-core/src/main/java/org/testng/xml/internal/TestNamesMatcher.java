@@ -1,13 +1,17 @@
 package org.testng.xml.internal;
 
 import java.util.List;
+
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
+import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /** The class to work with "-testnames" */
 public final class TestNamesMatcher {
+
+  private static final Logger LOGGER = Logger.getLogger(TestNamesMatcher.class);
 
   private final List<XmlSuite> cloneSuites = Lists.newArrayList();
   private final List<String> matchedTestNames = Lists.newArrayList();
@@ -43,14 +47,30 @@ public final class TestNamesMatcher {
     return cloneSuites;
   }
 
-  public void validateMissMatchedTestNames() {
+  /**
+  * Do validation for testNames and notify users if any testNames are missed in suite.
+  *
+  * @param ignoreMissedTestNames if true print warning message otherwise throw TestNGException for missed testNames.
+  */
+  public void validateMissMatchedTestNames(final boolean ignoreMissedTestNames) {
+      final List<String> tmpTestNames = getMissedTestNames();
+      if (!tmpTestNames.isEmpty()) {
+          final String errMsg = "The test(s) <" + tmpTestNames + "> cannot be found in suite.";
+          if(ignoreMissedTestNames){
+              LOGGER.warn(errMsg);
+          } else {
+              throw new TestNGException(errMsg);
+          }
+      }
+  }
+
+  public List<String> getMissedTestNames() {
     List<String> tmpTestNames = Lists.newArrayList();
     tmpTestNames.addAll(testNames);
     tmpTestNames.removeIf(matchedTestNames::contains);
-    if (!tmpTestNames.isEmpty()) {
-      throw new TestNGException("The test(s) <" + tmpTestNames + "> cannot be found in suite.");
-    }
+    return tmpTestNames;
   }
+
 
   public List<XmlTest> getMatchedTests() {
     return matchedTests;

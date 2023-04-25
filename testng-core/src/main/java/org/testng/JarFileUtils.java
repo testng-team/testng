@@ -10,19 +10,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
-import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
 
+import jdk.internal.joptsimple.internal.Strings;
+
 /** A Utility for extracting {@link XmlSuite} from a jar. */
 class JarFileUtils {
   private final IPostProcessor processor;
   private final String xmlPathInJar;
+  private final boolean ignoreMissedTestNames;
   private final List<String> testNames;
   private final List<XmlSuite> suites = Lists.newLinkedList();
   private final XmlSuite.ParallelMode mode;
@@ -36,10 +39,20 @@ class JarFileUtils {
       String xmlPathInJar,
       List<String> testNames,
       XmlSuite.ParallelMode mode) {
+      this(processor, xmlPathInJar, testNames, mode, false);
+  }
+
+  JarFileUtils(
+      IPostProcessor processor,
+      String xmlPathInJar,
+      List<String> testNames,
+      XmlSuite.ParallelMode mode,
+      final boolean ignoreMissedTestNames) {
     this.processor = processor;
     this.xmlPathInJar = xmlPathInJar;
     this.testNames = testNames;
     this.mode = mode == null ? XmlSuite.ParallelMode.NONE : mode;
+    this.ignoreMissedTestNames = ignoreMissedTestNames;
   }
 
   List<XmlSuite> extractSuitesFrom(File jarFile) {
@@ -96,7 +109,7 @@ class JarFileUtils {
         // If test names were specified, only run these test names
         if (testNames != null) {
           TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
-          testNamesMatcher.validateMissMatchedTestNames();
+          testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
           suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
         } else {
           suites.add(suite);
