@@ -161,6 +161,7 @@ public class TestNGAntTask extends Task {
   private String m_methods;
   private Mode mode = Mode.testng;
   private boolean forkJvm = true;
+  private boolean m_ignoreMissedTestNames;
 
   public enum Mode {
     // lower-case to better look in build scripts
@@ -358,6 +359,10 @@ public class TestNGAntTask extends Task {
 
   public void setTestNames(String testNames) {
     m_testNames = testNames;
+  }
+
+  public void setIgnoreMissedTestNames(boolean ignoreMissedTestNames) {
+    m_ignoreMissedTestNames = ignoreMissedTestNames;
   }
 
   /**
@@ -578,6 +583,7 @@ public class TestNGAntTask extends Task {
     addStringIfNotBlank(argv, CommandLineArgs.SUITE_NAME, m_suiteName);
     addStringIfNotBlank(argv, CommandLineArgs.TEST_NAME, m_testName);
     addStringIfNotBlank(argv, CommandLineArgs.TEST_NAMES, m_testNames);
+    addBooleanIfTrue(argv, CommandLineArgs.IGNORE_MISSED_TEST_NAMES, m_ignoreMissedTestNames);
     addStringIfNotBlank(argv, CommandLineArgs.METHODS, m_methods);
     addReporterConfigs(argv);
     addIntegerIfNotNull(argv, CommandLineArgs.SUITE_THREAD_POOL_SIZE, m_suiteThreadPoolSize);

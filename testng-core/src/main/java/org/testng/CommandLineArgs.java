@@ -142,6 +142,14 @@ public class CommandLineArgs {
   @Parameter(names = TEST_NAMES, description = "The list of test names to run")
   public String testNames;
 
+  public static final String IGNORE_MISSED_TEST_NAMES = "-ignoreMissedTestNames";
+
+  @Parameters(
+      names = IGNORE_MISSED_TEST_NAMES,
+      description =
+          "Ignore missed test names given by '-testnames' and continue to run existing tests, if any.")
+  public boolean ignoreMissedTestNames = false;
+
   public static final String TEST_JAR = "-testjar";
 
   @Parameter(names = TEST_JAR, description = "A jar file containing the tests")
