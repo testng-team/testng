@@ -1,4 +1,11 @@
 Current
+Fixed: GITHUB-2701: Bump gradle version to 7.3.3 to support java17 build (ZhangJian He)
+Fixed: GITHUB-2646: Streamline Logging Across TestNG (Krishnan Mahadevan)
+Fixed: GITHUB-2658: Inheritance + dependsOnMethods (Krishnan Mahadevan)
+Fixed: GITHUB-2664: Order for DependsOnGroups has changed after TestNg 7.4.0 (Krishnan Mahadevan)
+Fixed: GITHUB-2501: TestNG 7.4.0 throws an exception "sun.net.www.protocol.file.FileURLConnection cannot be cast to java.net.HttpURLConnection" when xml file contain "ENTITY SYSTEM" grammer (Krishnan Mahadevan)
+Fixed: GITHUB-2693: TestNG ignores 'dataproviderthreadcount' CLA (Krishnan Mahadevan)
+Fixed: GITHUB-2685: TestInvoker should clear Thread.interrupted flag before calling ITestListeners (Roman Morskyi)
 Fixed: GITHUB-2684: AfterGroups config annotation does not consider retries for tests (Roman Morskyi)
 Fixed: GITHUB-2689: Yaml parser: implement loadClasses flag (Dzmitry Sankouski)
 Fixed: GITHUB-2676: NPE is triggered when working with ITestObjectFactory (Krishnan Mahadevan)

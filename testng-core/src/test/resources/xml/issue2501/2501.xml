@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" [
+  <!ENTITY params SYSTEM "src/test/resources/xml/issue2501/params.xml">
+  ]>
+
+<suite name="VerifyTests" parallel="false" thread-count="1" preserve-order="true">
+
+  &params;
+
+  <parameter name="param" value="Value"/>
+
+  <test name="TestName">
+    <classes>
+      <class name="test.xml.issue2501.TestClassSample"/>
+    </classes>
+  </test>
+</suite>

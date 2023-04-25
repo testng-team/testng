@@ -2,10 +2,8 @@ package test.ant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.regex.Pattern;
 import org.apache.tools.ant.BuildFileRule;
-import org.apache.tools.ant.FileUtilities;
 import org.testng.annotations.Test;
 
 public class AntTest {
@@ -13,11 +11,11 @@ public class AntTest {
   private final BuildFileRule rule = new BuildFileRule();
 
   @Test
-  public void testSimple() throws IOException {
+  public void testSimple() {
     rule.configureProject("src/test/resources/ant/build-simple.xml");
     rule.executeTarget("testng");
-    File expected = rule.getProject().resolveFile("expected/ant-simple.test");
-    assertThat(rule.getLog()).isEqualToIgnoringNewLines(FileUtilities.getFileContents(expected));
+    String expectedText = "Total tests run: 1, Passes: 1, Failures: 0, Skips: 0";
+    assertThat(rule.getLog()).containsPattern(Pattern.compile(expectedText));
   }
 
   @Test

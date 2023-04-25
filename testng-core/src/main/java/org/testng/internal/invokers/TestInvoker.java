@@ -8,6 +8,7 @@ import static org.testng.internal.invokers.ParameterHandler.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -344,7 +345,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod[] methods = MethodHelper.findDependedUponMethods(testMethod, allTestMethods);
 
       if (failuresPresentInUpstreamDependency(testMethod, methods)) {
-        return "Method " + testMethod + " depends on not successfully finished methods";
+        String methodsInfo =
+            Arrays.stream(methods)
+                .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstance().toString())
+                .collect(Collectors.joining("\n"));
+        return String.format(
+            "Method %s() on instance %s depends on not successfully finished methods \n[%s]",
+            testMethod.getQualifiedName(), testMethod.getInstance().toString(), methodsInfo);
       }
     }
 
@@ -437,11 +444,19 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         .parallelStream()
         .filter(
             r -> {
-              // Keep this instance if 1) It's on a different class or 2) It's on the same class
-              // and on the same instance
               Object instance =
-                  r.getInstance() != null ? r.getInstance() : r.getMethod().getInstance();
-              return r.getTestClass() != method.getTestClass() || instance == method.getInstance();
+                  Optional.ofNullable(r.getInstance()).orElse(r.getMethod().getInstance());
+              if (method.getGroupsDependedUpon().length == 0) {
+                // Consider equality of objects alone if we are NOT dealing with group dependency.
+                return instance == method.getInstance();
+              }
+              // Keep this instance if
+              // 1) It's on a different class or
+              // 2) It's on the same class and on the same instance
+              boolean unEqualTestClasses =
+                  !r.getTestClass().getRealClass().equals(method.getTestClass().getRealClass());
+              boolean sameInstance = instance == method.getInstance();
+              return sameInstance || unEqualTestClasses;
             })
         .collect(Collectors.toSet());
   }
@@ -689,6 +704,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     } finally {
       // Set end time ASAP
       testResult.setEndMillis(System.currentTimeMillis());
+      cleanInterruptStatus();
       ExpectedExceptionsHolder expectedExceptionClasses =
           new ExpectedExceptionsHolder(
               annotationFinder(),
@@ -740,6 +756,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     }
 
     return testResult;
+  }
+
+  private static void cleanInterruptStatus() {
+    if (Thread.currentThread().isInterrupted()) {
+      Thread.interrupted();
+    }
   }
 
   private void runAfterConfigurations(

@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -70,17 +71,22 @@ public class TestNGContentHandler extends DefaultHandler {
                   "Failed to read [%s] from CLASSPATH. " + "Attempting to read from [%s].",
                   url.getPath(), systemId);
           Logger.getLogger(getClass()).warn(msg);
-          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          URLConnection urlConnection = url.openConnection();
+          if (urlConnection instanceof HttpURLConnection) {
+            HttpURLConnection conn = (HttpURLConnection) urlConnection;
 
-          int status = conn.getResponseCode();
-          if ((status == HttpURLConnection.HTTP_MOVED_TEMP
-              || status == HttpURLConnection.HTTP_MOVED_PERM
-              || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+            int status = conn.getResponseCode();
+            if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+                || status == HttpURLConnection.HTTP_MOVED_PERM
+                || status == HttpURLConnection.HTTP_SEE_OTHER)) {
 
-            String newUrl = conn.getHeaderField("Location");
-            conn = (HttpURLConnection) new URL(newUrl).openConnection();
+              String newUrl = conn.getHeaderField("Location");
+              conn = (HttpURLConnection) new URL(newUrl).openConnection();
+            }
+            stream = conn.getInputStream();
+          } else {
+            stream = urlConnection.getInputStream();
           }
-          stream = conn.getInputStream();
         }
         return new InputSource(
             Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));

@@ -132,7 +132,6 @@ public class MethodInvocationHelper {
         throw new TestNGException(thisMethod.getName() + " must be public", e);
       }
     }
-    cleanInterruptStatus();
     return thisMethod.invoke(instance, parameters);
   }
 
@@ -298,12 +297,6 @@ public class MethodInvocationHelper {
     }
   }
 
-  private static void cleanInterruptStatus() {
-    if (Thread.currentThread().isInterrupted()) {
-      Thread.interrupted();
-    }
-  }
-
   private static void invokeWithTimeoutWithNoExecutor(
       ITestNGMethod tm,
       Object instance,
@@ -340,14 +333,7 @@ public class MethodInvocationHelper {
       if (notTimedout) {
         testResult.setStatus(ITestResult.SUCCESS);
       } else {
-        ThreadTimeoutException exception =
-            new ThreadTimeoutException(
-                "Method "
-                    + tm.getQualifiedName()
-                    + "()"
-                    + " didn't finish within the time-out "
-                    + realTimeOut);
-        testResult.setThrowable(exception);
+        testResult.setThrowable(new ThreadTimeoutException(tm, realTimeOut));
         testResult.setStatus(ITestResult.FAILURE);
       }
     } catch (Exception ex) {
@@ -358,14 +344,7 @@ public class MethodInvocationHelper {
         }
         testResult.setThrowable(e);
       } else {
-        ThreadTimeoutException exception =
-            new ThreadTimeoutException(
-                "Method "
-                    + tm.getQualifiedName()
-                    + "()"
-                    + " didn't finish within the time-out "
-                    + realTimeOut);
-        testResult.setThrowable(exception);
+        testResult.setThrowable(new ThreadTimeoutException(tm, realTimeOut));
       }
       testResult.setStatus(ITestResult.FAILURE);
     } finally {
@@ -393,12 +372,7 @@ public class MethodInvocationHelper {
     boolean finished = exec.awaitTermination(realTimeOut, TimeUnit.MILLISECONDS);
 
     if (!finished) {
-      ThreadTimeoutException exception =
-          new ThreadTimeoutException(
-              "Method "
-                  + tm.getQualifiedName()
-                  + "() didn't finish within the time-out "
-                  + realTimeOut);
+      ThreadTimeoutException exception = new ThreadTimeoutException(tm, realTimeOut);
       StackTraceElement[] realStackTrace = getRunningMethodStackTrace(exec);
       if (realStackTrace != null) {
         exception.setStackTrace(realStackTrace);

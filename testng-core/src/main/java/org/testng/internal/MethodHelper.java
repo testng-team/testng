@@ -289,7 +289,10 @@ public class MethodHelper {
         }
         predecessors.addAll(Arrays.asList(methodsNamed));
       }
-      if (XmlTest.isGroupBasedExecution(xmlTest)) {
+      boolean anyConfigExceptGroupConfigs =
+          !(m.isBeforeGroupsConfiguration() || m.isAfterGroupsConfiguration());
+      boolean isGroupAgnosticConfigMethod = !m.isTest() && anyConfigExceptGroupConfigs;
+      if (isGroupAgnosticConfigMethod) {
         String[] groupsDependedUpon = m.getGroupsDependedUpon();
         if (groupsDependedUpon.length > 0) {
           for (String group : groupsDependedUpon) {
