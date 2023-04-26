@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -106,6 +107,33 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
           "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
   public void testHaveExceptionFromValidateWhenIgnoreMissedTestNamesDisabled() {
     final boolean ignoreMissedTestNames = false;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
+    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, No exception thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames'.")
+  public void testNoExceptionFromValidateWhenIgnoreMissedTestNamesEnabledBySystemProperty() {
+    final boolean ignoreMissedTestNames = false;
+    System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "true");
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
+    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, Expected exception thrown when ignoreMissedTestNames disabled by System property 'testng.ignore.missed.testnames'.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionFromValidateWhenIgnoreMissedTestNamesDisabledBySystemProperty() {
+    final boolean ignoreMissedTestNames = false;
+    System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
     TestNamesMatcher testNamesMatcher =
         new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
