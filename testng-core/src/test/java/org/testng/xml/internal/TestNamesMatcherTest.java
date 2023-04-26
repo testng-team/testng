@@ -112,6 +112,30 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
   }
 
+  @Test(description = "GITHUB-2897, No exception thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames'.")
+  public void testNoExceptionFromValidateWhenIgnoreMissedTestNamesEnabledBySystemProperty() {
+    final boolean ignoreMissedTestNames = false;
+    System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, true);
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
+    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+  }
+
+  @Test(
+      description = "GITHUB-2897, Expected exception thrown when ignoreMissedTestNames disabled by System property 'testng.ignore.missed.testnames'.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionFromValidateWhenIgnoreMissedTestNamesDisabledBySystemProperty() {
+    final boolean ignoreMissedTestNames = false;
+    System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, false);
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
+    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+  }
+
   @Test(description = "GITHUB-2897, Missed test names are found as expected.")
   public void testMissedTestNamesFound() {
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");

@@ -10,6 +10,7 @@ public final class RuntimeBehavior {
 
   public static final String TESTNG_THREAD_AFFINITY = "testng.thread.affinity";
   public static final String TESTNG_MODE_DRYRUN = "testng.mode.dryrun";
+  public static final String TESTNG_IGNORE_MISSED_TESTNAMES = "testng.ignore.missed.testnames";
   private static final String TEST_CLASSPATH = "testng.test.classpath";
   private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
   public static final String TESTNG_USE_UNSECURED_URL = "testng.dtd.http";
@@ -115,7 +116,13 @@ public final class RuntimeBehavior {
     return Boolean.parseBoolean(value);
   }
 
-  /**
+
+    public static boolean ignoreMissedTestNames(){
+        String value = System.getProperty(TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+        return Boolean.parseBoolean(value);
+    }
+
+    /**
    * @return - returns the {@link TimeZone} corresponding to the JVM argument <code>
    *     -Dtestng.timezone</code> if it was set. If not set, it returns the default timezone
    *     pertaining to the user property <code>user.timezone</code>

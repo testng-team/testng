@@ -7,7 +7,7 @@ import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
-/** The class to work with "-testnames" */
+/** The class to work with "-testnames", "-ignoreMissedTestNames", and VM argument "-Dtestng.ignore.missed.testnames" */
 public final class TestNamesMatcher {
 
   private static final Logger LOGGER = Logger.getLogger(TestNamesMatcher.class);
@@ -56,7 +56,7 @@ public final class TestNamesMatcher {
     final List<String> tmpTestNames = getMissedTestNames();
     if (!tmpTestNames.isEmpty()) {
       final String errMsg = "The test(s) <" + tmpTestNames + "> cannot be found in suite.";
-      if (ignoreMissedTestNames) {
+      if (ignoreMissedTestNames || RuntimeBehavior.ignoreMissedTestNames()) {
         LOGGER.warn(errMsg);
       } else {
         throw new TestNGException(errMsg);
