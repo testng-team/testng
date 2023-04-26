@@ -104,7 +104,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
           "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
-  public void testNoExceptionFromValidateWhenIgnoreMissedTestNamesDisabled() {
+  public void testHaveExceptionFromValidateWhenIgnoreMissedTestNamesDisabled() {
     final boolean ignoreMissedTestNames = false;
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
     TestNamesMatcher testNamesMatcher =
