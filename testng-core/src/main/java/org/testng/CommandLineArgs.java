@@ -144,7 +144,7 @@ public class CommandLineArgs {
 
   public static final String IGNORE_MISSED_TEST_NAMES = "-ignoreMissedTestNames";
 
-  @Parameters(
+  @Parameter(
       names = IGNORE_MISSED_TEST_NAMES,
       description =
           "Ignore missed test names given by '-testnames' and continue to run existing tests, if any.")
