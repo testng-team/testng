@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.internal.RuntimeBehavior;
 import org.testng.testhelper.JarCreator;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlClass;
@@ -63,6 +64,22 @@ public class JarFileUtilsTest {
         1,
         new String[] {"testng-tests-child1"},
         new String[] {"org.testng.jarfileutils.org.testng.SampleTest1"});
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames'.")
+  public void testWithInvalidTestNamesNoExceptionIfIgnoreMissedTestNamesEnabledBySystemProperty()
+      throws MalformedURLException {
+    String oldIgnoreMissedTestNames =
+        System.getProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+    try {
+      System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "true");
+      JarFileUtils utils = newJarFileUtils(Collections.singletonList("testng-tests-child11"));
+      runTest(utils, 1, null, null, "Jar suite");
+    } finally {
+      System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, oldIgnoreMissedTestNames);
+    }
   }
 
   @Test
@@ -161,7 +178,9 @@ public class JarFileUtilsTest {
     if (expectedTestNames != null) {
       assertThat(testNames).containsExactly(expectedTestNames);
     }
-    assertThat(classNames).contains(expectedClassNames);
+    if (expectedClassNames != null) {
+      assertThat(classNames).contains(expectedClassNames);
+    }
   }
 
   public static class FakeProcessor implements IPostProcessor {
