@@ -24,5 +24,6 @@ test-output-tests
 testng.iml
 z_build
 .DS_Store
+**/bin/
 
 **/Version.java
