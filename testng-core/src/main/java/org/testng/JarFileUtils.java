@@ -104,15 +104,20 @@ class JarFileUtils {
       Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor);
       delete(file);
       for (XmlSuite suite : parsedSuites) {
-        // If test names were specified, only run these test names
+        // If test names were specified, only run these test names. If any test names missed, then
+        // won't run any test names. (default legacy logic)
         if (testNames != null) {
           TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
-          testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
-          suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
+          boolean validationResult =
+              testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+          if (validationResult) {
+            suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
+          }
+          return validationResult;
         } else {
           suites.add(suite);
+          return true;
         }
-        return true;
       }
     }
     return false;
