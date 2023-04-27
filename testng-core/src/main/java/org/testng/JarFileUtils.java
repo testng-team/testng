@@ -134,7 +134,7 @@ class JarFileUtils {
     if (testNames == null || testNames.isEmpty()) {
       return true;
     }
-    return testNames.stream().anyMatch(String::isBlank);
+    return testNames.stream().allMatch(t -> t == null || t.isBlank());
   }
 
   private void delete(File f) throws IOException {
