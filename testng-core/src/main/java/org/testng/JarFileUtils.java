@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
-import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
-import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
+
+import jdk.internal.joptsimple.internal.Strings;
 
 /** A Utility for extracting {@link XmlSuite} from a jar. */
 class JarFileUtils {
@@ -109,8 +110,6 @@ class JarFileUtils {
       delete(file);
       boolean addedSuite = false;
       for (XmlSuite suite : parsedSuites) {
-        // If test names were specified, only run these test names. If any test names missed, then
-        // won't run any test names. (default legacy logic)
         if (isTestNamesNullEmptyBlanks()) {
           suites.add(suite);
           addedSuite = true;
