@@ -80,6 +80,7 @@ class JarFileUtils {
       Enumeration<JarEntry> entries = jf.entries();
       File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
       String suitePath = null;
+
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
         String jeName = je.getName();
@@ -98,29 +99,43 @@ class JarFileUtils {
           classes.add(constructClassName(je));
         }
       }
+
       if (Strings.isNullOrEmpty(suitePath)) {
+        Utils.log("TestNG", 1, String.format("Not found '%s' in '%s'.", xmlPathInJar, jarFile));
         return false;
       }
+
       Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor);
       delete(file);
+      boolean addedSuite = false;
       for (XmlSuite suite : parsedSuites) {
         // If test names were specified, only run these test names. If any test names missed, then
         // won't run any test names. (default legacy logic)
-        if (testNames != null) {
+        if (isTestNamesNullEmptyBlanks()) {
+          suites.add(suite);
+          addedSuite = true;
+        } else {
           TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
           boolean validationResult =
               testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
           if (validationResult) {
             suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
+            addedSuite = true;
+          } else {
+            Utils.error(String.format("None of '%s' found in '%s'.", testNames, suite));
           }
-          return validationResult;
-        } else {
-          suites.add(suite);
-          return true;
         }
       }
+
+      return addedSuite;
     }
-    return false;
+  }
+
+  private boolean isTestNamesNullEmptyBlanks() {
+    if (testNames == null || testNames.isEmpty()) {
+      return true;
+    }
+    return testNames.stream().anyMatch(String::isBlank);
   }
 
   private void delete(File f) throws IOException {

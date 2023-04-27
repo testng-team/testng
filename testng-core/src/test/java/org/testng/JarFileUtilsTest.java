@@ -66,6 +66,22 @@ public class JarFileUtilsTest {
         new String[] {"org.testng.jarfileutils.org.testng.SampleTest1"});
   }
 
+  @Test(description = "If emtpy test names are given, whole test suite will be run.")
+  public void testWithEmptyTestNames() throws MalformedURLException {
+    JarFileUtils utils = newJarFileUtils(Collections.singletonList(""));
+    runTest(
+        utils,
+        3,
+        1,
+        new String[] {"testng-tests-child1", "testng-tests-child2", "testng-tests-child3"},
+        new String[] {
+          "org.testng.jarfileutils.org.testng.SampleTest1",
+          "org.testng.jarfileutils.org.testng.SampleTest2",
+          "org.testng.jarfileutils.org.testng.SampleTest3"
+        },
+        "testng-tests-suite");
+  }
+
   @Test(
       description =
           "GITHUB-2897, Have TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames' and ALL given test names are invalid.",

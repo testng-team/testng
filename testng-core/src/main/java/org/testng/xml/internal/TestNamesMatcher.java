@@ -10,7 +10,9 @@ import org.testng.xml.XmlTest;
 
 /**
  * The class to work with "-testnames", "-ignoreMissedTestNames", and VM argument
- * "-Dtestng.ignore.missed.testnames". If both "-ignoreMissedTestNames" and VM argument "-Dtestng.ignore.missed.testnames" are set, then either of them has "true" value will enable the feature to ingore partially missed test names and run those existing test names.
+ * "-Dtestng.ignore.missed.testnames". If both "-ignoreMissedTestNames" and VM argument
+ * "-Dtestng.ignore.missed.testnames" are set, then either of them has "true" value will enable the
+ * feature to ingore partially missed test names and run those existing test names.
  */
 public final class TestNamesMatcher {
 
@@ -62,13 +64,15 @@ public final class TestNamesMatcher {
    *     missed testNames.
    * @return boolean if ignoreMissedTestNames disabled, then return true if no missed test names in
    *     suite, otherwise throw TestNGException; if ignoreMissedTestNames enabled, then return true
-   *     if any test names exist in suite, otehrwise (all given test names are missed) throw TestNGException.
+   *     if any test names exist in suite, otehrwise (all given test names are missed) throw
+   *     TestNGException.
    */
   public boolean validateMissMatchedTestNames(final boolean ignoreMissedTestNames) {
     final List<String> missedTestNames = getMissedTestNames();
     if (!missedTestNames.isEmpty()) {
       final String errMsg = "The test(s) <" + missedTestNames + "> cannot be found in suite.";
-	  final boolean enabledIgnoreMissedTestNames = (ignoreMissedTestNames || RuntimeBehavior.ignoreMissedTestNames());
+      final boolean enabledIgnoreMissedTestNames =
+          (ignoreMissedTestNames || RuntimeBehavior.ignoreMissedTestNames());
       if (enabledIgnoreMissedTestNames && !matchedTestNames.isEmpty()) {
         LOGGER.warn(errMsg);
         // as long as any test names match, then tell caller to run them.
@@ -80,9 +84,9 @@ public final class TestNamesMatcher {
     }
     return missedTestNames.isEmpty() && !matchedTestNames.isEmpty();
   }
-  
+
   public boolean validateMissMatchedTestNames() {
-	  return validateMissMatchedTestNames(false);
+    return validateMissMatchedTestNames(false);
   }
 
   public List<String> getMissedTestNames() {
