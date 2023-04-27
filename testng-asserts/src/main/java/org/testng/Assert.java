@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.testng.collections.Lists;
@@ -2454,5 +2455,59 @@ public class Assert {
         String.format(
             "Expected %s to be thrown, but nothing was thrown", throwableClass.getSimpleName());
     throw new AssertionError(message != null ? message : nothingThrownMessage);
+  }
+
+  /**
+   * Asserts that List contains object. Uses java.util.List#contains method, be sure that equals and
+   * hashCode of tested object are overridden.
+   *
+   * @param list the list to search in
+   * @param object the object to search in list
+   * @param message the fail message
+   * @param <T> type of object
+   */
+  public static <T> void assertListContainsObject(List<T> list, T object, String message) {
+    assertTrue(list.contains(object), "List NOT contains: [" + message + "]");
+  }
+
+  /**
+   * Asserts that List not contains object. Opposite to assertListContainsObject() Uses
+   * java.util.List#contains method, be sure that equals and hashCode of tested object are
+   * overridden.
+   *
+   * @param list the list to search in
+   * @param object to search in list
+   * @param message the fail message
+   * @param <T> type of object
+   */
+  public static <T> void assertListNotContainsObject(List<T> list, T object, String message) {
+    assertFalse(list.contains(object), "List contains: [" + message + "]");
+  }
+
+  /**
+   * Asserts that List contains object by specific Predicate. Uses
+   * java.util.stream.Stream#anyMatch(java.util.function.Predicate) method.
+   *
+   * @param list the list to search in
+   * @param predicate the Predicate to match object
+   * @param message the fail message
+   * @param <T> type of object
+   */
+  public static <T> void assertListContains(List<T> list, Predicate<T> predicate, String message) {
+    assertTrue(list.stream().anyMatch(predicate), "List NOT contains: [" + message + "]");
+  }
+
+  /**
+   * Asserts that List not contains object by specific Predicate. Opposite to assertListContains()
+   * method. Uses java.util.stream.Stream#noneMatch(java.util.function.Predicate) method.
+   *
+   * @param list the list to search in
+   * @param predicate the Predicate to match object
+   * @param message the fail message
+   * @param <T> type of object
+   */
+  public static <T> void assertListNotContains(
+      List<T> list, Predicate<T> predicate, String message) {
+    assertTrue(list.stream().noneMatch(predicate), "List contains: [" + message + "]");
   }
 }
