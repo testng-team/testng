@@ -1,5 +1,5 @@
 Current
-New: GITHUB-2897: Not exception but warning if some (not all) of the given test names are not found in suite files. (Bruce Wen)
+New:·GITHUB-2897:·Not·exception·but·warning·if·some·(not·all)·of·the·given·test·names·are·not·found·in·suite·files.·(Bruce·Wen)
 Fixed: GITHUB-2888: Skipped Tests with DataProvider appear as failed (Joaquin Moreira)
 Fixed: GITHUB-2884: Discrepancies with DataProvider and Retry of failed tests (Krishnan Mahadevan)
 Fixed: GITHUB-2879: Test listeners specified in parent testng.xml file are not included in testng-failed.xml file (Krishnan Mahadevan)
@@ -1295,7 +1295,7 @@ Fixed: Wasn't parsing <selector-class-name> correctly
 Fixed: Annotation Transformers now work on class-level annotations
 Fixed: Some class-level @Test attributes were not always honored
 Added: Clean separation between @Test invocation events and @Configuration invocation events
-	   (see also TESTNG-111)
+       (see also TESTNG-111)
 Added: Test instances created by @Factory now run in multiple threads in parallel mode
 Fixed: @Before/@AfterGroups invocation order
 Fixed: TESTNG-27: Parameters are not used on <test> level anymore
@@ -1463,8 +1463,8 @@ Fixed: TestNGAntTask was hardcoding m_haltOnFSP to true
 Fixed: Passing a null parameter caused an NPE in the reports
 Added: "listener" to the ant task (and documentation)
 Added: if patch-testng-sourcedir.properties is found in the classpath
-	   with a property "sourcedir" containing a ; separated list of
-	   directories, this list will override -sourcedir.
+       with a property "sourcedir" containing a ; separated list of
+       directories, this list will override -sourcedir.
 
 ===========================================================================
 
@@ -1474,14 +1474,14 @@ Added: if patch-testng-sourcedir.properties is found in the classpath
 Added: Maven 2 plug-in
 Fixed: Message formattings in TestNG assertion utility class
 Fixed: @Factory methods were counted as @Test as well
-	   https://jira.opensymphony.com/browse/TESTNG-51
+       https://jira.opensymphony.com/browse/TESTNG-51
 Fixed: All DataProvider parameters were shown in the HTML report
 Fixed: Bug in testng-failed.xml generation
 Fixed: <packages> bug when using a jar file to load the test classes
 Added: alwaysRun for before @Configuration methods
-	   https://jira.opensymphony.com/browse/TESTNG-35
+       https://jira.opensymphony.com/browse/TESTNG-35
 Fixed: groupless @Configurations were not invoked if a method depends on a group
-	   https://jira.opensymphony.com/browse/TESTNG-45
+       https://jira.opensymphony.com/browse/TESTNG-45
 Added: beforeGroups/afterGroups to @Configuration
 
 Eclipse plugin:
@@ -1622,7 +1622,7 @@ Fixed: Bug in <package> when directories contain spaces in their names
 Fixed: Introduced a JDK5 dependency in the JDK1.4 build (getEnclosingClass())
 Fixed: Output directory in ant task was not honored if it didn't exist
 Fixed: Problem with timeout according to
-	   https://forums.opensymphony.com/thread.jspa?threadID=6707
+       https://forums.opensymphony.com/thread.jspa?threadID=6707
 
 Eclipse plug-in:
 
@@ -1632,7 +1632,7 @@ Added: Quick Fix for JUnit conversion (Annotations and JavaDoc)
 Fixed: Methods Run as TestNG test
 Added: Package level Run as TestNG test
 Fixed: Resources from the linked directories are using a wrong path when
-	   passed to command line TestNG
+       passed to command line TestNG
 
 IDEA plug-in:
 
