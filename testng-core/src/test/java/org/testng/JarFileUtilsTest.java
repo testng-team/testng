@@ -68,7 +68,10 @@ public class JarFileUtilsTest {
 
   @Test(
       description =
-          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames' and no test to run when all given test names are invalid.")
+          "GITHUB-2897, Have TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames' and ALL given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) <\\[testng-tests-child11\\]> cannot be found in suite.")
   public void testWithAllInvalidTestNamesNoExceptionIfIgnoreMissedTestNamesEnabledBySystemProperty()
       throws MalformedURLException {
     String oldIgnoreMissedTestNames =
@@ -84,7 +87,7 @@ public class JarFileUtilsTest {
 
   @Test(
       description =
-          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames' and partial valid test names are expected to run.")
+          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames' and partial given test names are invalid and partial valid test names are expected to run.")
   public void
       testWithPartialInvalidTestNamesNoExceptionIfIgnoreMissedTestNamesEnabledBySystemProperty()
           throws MalformedURLException {

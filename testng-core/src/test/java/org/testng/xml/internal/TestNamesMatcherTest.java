@@ -91,8 +91,54 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     }
   }
 
-  @Test(description = "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled.")
-  public void testNoExceptionFromValidateWhenIgnoreMissedTestNamesEnabled() {
+  @Test(description = "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled and only partial of the given test names are invalid.")
+  public void testNoExceptionWhenIgnoreMissedTestNamesEnabled() {
+    final boolean ignoreMissedTestNames = true;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"));
+    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+  }
+  
+  @Test(description = "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled by system property 'testng.ignore.missed.testnames' but disabled by option and only partial of the given test names are invalid.")
+  public void testNoExceptionWhenIgnoreMissedTestNamesEnabledBySystemPropertyButDisabledByOption() {
+    final boolean ignoreMissedTestNames = false;
+	String oldIgnoreMissedTestNames =
+        System.getProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+    try {
+		System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "true");
+		XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+		TestNamesMatcher testNamesMatcher =
+			new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"));
+		testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+	} finally {
+      System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, oldIgnoreMissedTestNames);
+    }
+  }
+  
+  @Test(description = "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames disabled by system property 'testng.ignore.missed.testnames' but enabled by option and only partial of the given test names are invalid.")
+  public void testNoExceptionWhenIgnoreMissedTestNamesDisabledBySystemPropertyButEnabledByOption() {
+    final boolean ignoreMissedTestNames = true;
+	String oldIgnoreMissedTestNames =
+        System.getProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+    try {
+		System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+		XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+		TestNamesMatcher testNamesMatcher =
+			new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"));
+		testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+	} finally {
+      System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, oldIgnoreMissedTestNames);
+    }
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames enabled and all given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionWhenIgnoreMissedTestNamesEnabledWithAllInvalidTestNames() {
     final boolean ignoreMissedTestNames = true;
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
     TestNamesMatcher testNamesMatcher =
@@ -102,23 +148,59 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
 
   @Test(
       description =
-          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames disabled.",
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames disabled and all given test names are invalid.",
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
           "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
-  public void testHaveExceptionFromValidateWhenIgnoreMissedTestNamesDisabled() {
+  public void testHaveExceptionWhenIgnoreMissedTestNamesDisabledWithAllInvalidTestNames() {
     final boolean ignoreMissedTestNames = false;
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
     TestNamesMatcher testNamesMatcher =
         new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
     testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
   }
+  
+  @Test(
+      description =
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames disabled and partial of given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionWhenIgnoreMissedTestNamesDisabledWithPartialInvalidTestNames() {
+    final boolean ignoreMissedTestNames = false;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"));
+    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+  }
+  
+    @Test(
+      description =
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames disabled by system property 'testng.ignore.missed.testnames' and partial of given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionWhenIgnoreMissedTestNamesDisabledBySystemPropertyWithPartialInvalidTestNames() {
+    String oldIgnoreMissedTestNames =
+        System.getProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+    try {
+		System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
+		XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+		TestNamesMatcher testNamesMatcher =
+			new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"));
+		testNamesMatcher.validateMissMatchedTestNames();
+	} finally {
+      System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, oldIgnoreMissedTestNames);
+    }
+  }
 
   @Test(
       description =
-          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames'.")
-  public void testNoExceptionFromValidateWhenIgnoreMissedTestNamesEnabledBySystemProperty() {
-    final boolean ignoreMissedTestNames = false;
+          "GITHUB-2897, Expect TestNGException thrown when ignoreMissedTestNames enabled by System property 'testng.ignore.missed.testnames' but ALL given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testNoExceptionWhenIgnoreMissedTestNamesEnabledBySystemProperty() {
     String oldIgnoreMissedTestNames =
         System.getProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
     try {
@@ -126,7 +208,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
       XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
       TestNamesMatcher testNamesMatcher =
           new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
-      testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+      testNamesMatcher.validateMissMatchedTestNames();
     } finally {
       System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, oldIgnoreMissedTestNames);
     }
@@ -138,8 +220,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
           "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
-  public void testHaveExceptionFromValidateWhenIgnoreMissedTestNamesDisabledBySystemProperty() {
-    final boolean ignoreMissedTestNames = false;
+  public void testHaveExceptionWhenIgnoreMissedTestNamesDisabledBySystemProperty() {
     String oldIgnoreMissedTestNames =
         System.getProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, "false");
     try {
@@ -147,7 +228,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
       XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
       TestNamesMatcher testNamesMatcher =
           new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
-      testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+      testNamesMatcher.validateMissMatchedTestNames();
     } finally {
       System.setProperty(RuntimeBehavior.TESTNG_IGNORE_MISSED_TESTNAMES, oldIgnoreMissedTestNames);
     }
