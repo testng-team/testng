@@ -15,6 +15,7 @@ import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
@@ -30,7 +31,7 @@ public final class Yaml {
 
   public static XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
       throws FileNotFoundException {
-    Constructor constructor = new TestNGConstructor(XmlSuite.class);
+    Constructor constructor = new TestNGConstructor(XmlSuite.class, new LoaderOptions());
     {
       TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
       suiteDescription.addPropertyParameters("packages", XmlPackage.class);
@@ -301,8 +302,8 @@ public final class Yaml {
 
   private static class TestNGConstructor extends Constructor {
 
-    public TestNGConstructor(Class<?> theRoot) {
-      super(theRoot);
+    public TestNGConstructor(Class<?> theRoot, LoaderOptions loadingConfig) {
+      super(theRoot, loadingConfig);
       yamlClassConstructors.put(NodeId.scalar, new ConstructParallelMode());
       yamlClassConstructors.put(NodeId.mapping, new ConstructXmlScript());
     }
