@@ -178,7 +178,9 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     return new Object[][] {
       {new XmlSuite(), null},
       {new XmlSuite(), Collections.<String>emptyList()},
-      {new XmlSuite(), Collections.singletonList("")}
+      {new XmlSuite(), Collections.singletonList("")},
+      {new XmlSuite(), Collections.singletonList(" ")},
+      {new XmlSuite(), Arrays.asList(null, "", " ")}
     };
   }
 }
