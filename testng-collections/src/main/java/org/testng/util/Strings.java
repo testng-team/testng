@@ -1,5 +1,6 @@
 package org.testng.util;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +17,23 @@ public final class Strings {
 
   public static boolean isNotNullAndNotEmpty(String string) {
     return !isNullOrEmpty(string);
+  }
+
+  /**
+   * Check if the given string list is null or empty or all elements are null or empty or blank.
+   *
+   * @param list A list instance with String elements.
+   * @return true if the given string list is null or empty or all elements are null or empty or
+   *     blank; otherwise false.
+   */
+  public static boolean isBlankStringList(List<String> list) {
+    if (list == null) {
+      return true;
+    }
+    if (list.isEmpty()) {
+      return true;
+    }
+    return list.stream().allMatch(t -> t == null || t.isBlank());
   }
 
   private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();

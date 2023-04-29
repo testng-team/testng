@@ -1,10 +1,11 @@
 package org.testng.xml.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -12,7 +13,6 @@ import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
-
 import test.SimpleBaseTest;
 
 public class TestNamesMatcherTest extends SimpleBaseTest {
@@ -55,6 +55,17 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
   public void testCloneIfContainsTestsWithNamesMatchingAnyNegativeCondition(
       XmlSuite xmlSuite, List<String> names) {
     TestNamesMatcher testNamesHelper = new TestNamesMatcher(xmlSuite, names);
+  }
+
+  @Test(
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp = "\nPlease provide a valid list of names to check.",
+      dataProvider = "getData")
+  public void
+      testCloneIfContainsTestsWithNamesMatchingAnyNegativeConditionWithIgnoreMissedTestNamesEnabled(
+          XmlSuite xmlSuite, List<String> names) {
+    boolean ignoreMissedTestNames = true;
+    TestNamesMatcher testNamesHelper = new TestNamesMatcher(xmlSuite, names, ignoreMissedTestNames);
   }
 
   @Test
@@ -125,8 +136,8 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     final boolean ignoreMissedTestNames = false;
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
     TestNamesMatcher testNamesMatcher =
-        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"));
-    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"), ignoreMissedTestNames);
+    testNamesMatcher.validateMissMatchedTestNames();
   }
 
   @Test(
@@ -139,8 +150,8 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     final boolean ignoreMissedTestNames = false;
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
     TestNamesMatcher testNamesMatcher =
-        new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"));
-    testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+        new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"), ignoreMissedTestNames);
+    testNamesMatcher.validateMissMatchedTestNames();
   }
 
   @Test(description = "GITHUB-2897, Missed test names are found as expected.")
@@ -166,7 +177,8 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
   public Object[][] getTestData() {
     return new Object[][] {
       {new XmlSuite(), null},
-      {new XmlSuite(), Collections.<String>emptyList()}
+      {new XmlSuite(), Collections.<String>emptyList()},
+      {new XmlSuite(), Collections.singletonList("")}
     };
   }
 }

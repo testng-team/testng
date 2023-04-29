@@ -1,10 +1,10 @@
 package org.testng.xml.internal;
 
 import java.util.List;
-
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
+import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
@@ -25,10 +25,11 @@ public final class TestNamesMatcher {
   private final boolean ignoreMissedTestNames;
 
   public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames) {
-      this(xmlSuite, testNames, false);
+    this(xmlSuite, testNames, false);
   }
 
-  public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames, boolean ignoreMissedTestNames) {
+  public TestNamesMatcher(
+      XmlSuite xmlSuite, List<String> testNames, boolean ignoreMissedTestNames) {
     this.testNames = testNames;
     this.ignoreMissedTestNames = ignoreMissedTestNames;
     cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, this.testNames);
@@ -41,7 +42,7 @@ public final class TestNamesMatcher {
    * @param testNames The list of testnames to iterate through
    */
   private void cloneIfContainsTestsWithNamesMatchingAny(XmlSuite xmlSuite, List<String> testNames) {
-    if (testNames == null || testNames.isEmpty()) {
+    if (Strings.isBlankStringList(testNames)) {
       throw new TestNGException("Please provide a valid list of names to check.");
     }
 

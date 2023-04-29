@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
+import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
-import org.testng.util.Strings;
 import org.testng.xml.internal.Parser;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
@@ -45,8 +44,16 @@ class JarFileUtils {
       IPostProcessor processor,
       String xmlPathInJar,
       List<String> testNames,
+      boolean ignoreMissedTestNames) {
+    this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE, ignoreMissedTestNames);
+  }
+
+  JarFileUtils(
+      IPostProcessor processor,
+      String xmlPathInJar,
+      List<String> testNames,
       XmlSuite.ParallelMode mode,
-      final boolean ignoreMissedTestNames) {
+      boolean ignoreMissedTestNames) {
     this.processor = processor;
     this.xmlPathInJar = xmlPathInJar;
     this.testNames = testNames;
@@ -110,16 +117,13 @@ class JarFileUtils {
       delete(file);
       boolean addedSuite = false;
       for (XmlSuite suite : parsedSuites) {
-        if( testNames == null ){
-          suites.add(suite);
-          addedSuite = true;
-        } else if (isTestNamesEmptyBlanks() && ignoreMissedTestNames) {
+        if (testNames == null) {
           suites.add(suite);
           addedSuite = true;
         } else {
-          TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames, ignoreMissedTestNames);
-          boolean validationResult =
-              testNamesMatcher.validateMissMatchedTestNames();
+          TestNamesMatcher testNamesMatcher =
+              new TestNamesMatcher(suite, testNames, ignoreMissedTestNames);
+          boolean validationResult = testNamesMatcher.validateMissMatchedTestNames();
           if (validationResult) {
             suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
             addedSuite = true;
@@ -131,16 +135,6 @@ class JarFileUtils {
 
       return addedSuite;
     }
-  }
-
-  private boolean isTestNamesEmptyBlanks() {
-    if(testNames == null){
-      return false;
-    }
-    if (testNames.isEmpty()) {
-      return true;
-    }
-    return testNames.stream().allMatch(t -> t == null || t.isBlank());
   }
 
   private void delete(File f) throws IOException {
