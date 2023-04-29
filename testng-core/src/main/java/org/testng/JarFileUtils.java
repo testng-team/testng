@@ -13,12 +13,13 @@ import java.util.jar.JarFile;
 
 import org.testng.collections.Lists;
 import org.testng.internal.Utils;
-import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
+
+import jdk.internal.joptsimple.internal.Strings;
 
 /** A Utility for extracting {@link XmlSuite} from a jar. */
 class JarFileUtils {
@@ -110,7 +111,10 @@ class JarFileUtils {
       delete(file);
       boolean addedSuite = false;
       for (XmlSuite suite : parsedSuites) {
-        if (isTestNamesNullEmptyBlanks()) {
+        if( testNames == null ){
+          suites.add(suite);
+          addedSuite = true;
+        } else if (isTestNamesEmptyBlanks() && ignoreMissedTestNames) {
           suites.add(suite);
           addedSuite = true;
         } else {
@@ -130,8 +134,11 @@ class JarFileUtils {
     }
   }
 
-  private boolean isTestNamesNullEmptyBlanks() {
-    if (testNames == null || testNames.isEmpty()) {
+  private boolean isTestNamesEmptyBlanks() {
+    if(testNames == null){
+      return false;
+    }
+    if (testNames.isEmpty()) {
       return true;
     }
     return testNames.stream().allMatch(t -> t == null || t.isBlank());

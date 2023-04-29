@@ -1,7 +1,5 @@
 package org.testng;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
@@ -20,6 +19,8 @@ import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+
+import sun.jvm.hotspot.utilities.Assert;
 
 public class JarFileUtilsTest {
   private static File jar = null;
@@ -66,8 +67,24 @@ public class JarFileUtilsTest {
         new String[] {"org.testng.jarfileutils.org.testng.SampleTest1"});
   }
 
-  @Test(description = "If emtpy test names are given, whole test suite will be run.")
-  public void testWithEmptyTestNames() throws MalformedURLException {
+  @Test(
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+      "\nThe test\\(s\\) <\\[testng-tests-child11\\]> cannot be found in suite.",
+      description = "GITHUB-2897: Backward compatibility: Exception thrown if emtpy test names are given and ignoreMissedTestNames are DISABLED, whole test suite will be run.")
+  public void testHaveExceptionWithEmptyTestNamesAndIgnoreMissedTestNamesDisabled() throws MalformedURLException {
+    JarFileUtils utils = newJarFileUtils(Collections.singletonList(""));
+    runTest(
+        utils,
+        0,
+        0,
+        null,
+        null,
+        null);
+  }
+
+  @Test(description = "If emtpy test names are given and ignoreMissedTestNames are ENABLED, whole test suite will be run.")
+  public void testWithEmptyTestNamesAndIgnoreMissedTestNamesEnabled() throws MalformedURLException {
     JarFileUtils utils = newJarFileUtils(Collections.singletonList(""));
     runTest(
         utils,
