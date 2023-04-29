@@ -15,11 +15,10 @@ import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.xml.IPostProcessor;
 import org.testng.xml.XmlSuite;
+import org.testng.util.Strings;
 import org.testng.xml.internal.Parser;
 import org.testng.xml.internal.TestNamesMatcher;
 import org.testng.xml.internal.XmlSuiteUtils;
-
-import jdk.internal.joptsimple.internal.Strings;
 
 /** A Utility for extracting {@link XmlSuite} from a jar. */
 class JarFileUtils {
@@ -118,9 +117,9 @@ class JarFileUtils {
           suites.add(suite);
           addedSuite = true;
         } else {
-          TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
+          TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames, ignoreMissedTestNames);
           boolean validationResult =
-              testNamesMatcher.validateMissMatchedTestNames(ignoreMissedTestNames);
+              testNamesMatcher.validateMissMatchedTestNames();
           if (validationResult) {
             suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
             addedSuite = true;

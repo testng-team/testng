@@ -1,9 +1,9 @@
 package org.testng.xml.internal;
 
 import java.util.List;
+
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -22,9 +22,15 @@ public final class TestNamesMatcher {
   private final List<String> matchedTestNames = Lists.newArrayList();
   private final List<XmlTest> matchedTests = Lists.newArrayList();
   private final List<String> testNames;
+  private final boolean ignoreMissedTestNames;
 
   public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames) {
+      this(xmlSuite, testNames, false);
+  }
+
+  public TestNamesMatcher(XmlSuite xmlSuite, List<String> testNames, boolean ignoreMissedTestNames) {
     this.testNames = testNames;
+    this.ignoreMissedTestNames = ignoreMissedTestNames;
     cloneIfContainsTestsWithNamesMatchingAny(xmlSuite, this.testNames);
   }
 
@@ -67,13 +73,11 @@ public final class TestNamesMatcher {
    *     if any test names exist in suite, otehrwise (all given test names are missed) throw
    *     TestNGException.
    */
-  public boolean validateMissMatchedTestNames(final boolean ignoreMissedTestNames) {
+  public boolean validateMissMatchedTestNames() {
     final List<String> missedTestNames = getMissedTestNames();
     if (!missedTestNames.isEmpty()) {
       final String errMsg = "The test(s) <" + missedTestNames + "> cannot be found in suite.";
-      final boolean enabledIgnoreMissedTestNames =
-          (ignoreMissedTestNames || RuntimeBehavior.ignoreMissedTestNames());
-      if (enabledIgnoreMissedTestNames && !matchedTestNames.isEmpty()) {
+      if (ignoreMissedTestNames && !matchedTestNames.isEmpty()) {
         LOGGER.warn(errMsg);
         // as long as any test names match, then tell caller to run them.
         return true;
@@ -83,10 +87,6 @@ public final class TestNamesMatcher {
       }
     }
     return missedTestNames.isEmpty() && !matchedTestNames.isEmpty();
-  }
-
-  public boolean validateMissMatchedTestNames() {
-    return validateMissMatchedTestNames(false);
   }
 
   public List<String> getMissedTestNames() {

@@ -353,8 +353,8 @@ public class TestNG {
         continue;
       }
       // If test names were specified, only run these test names
-      TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
-      testNamesMatcher.validateMissMatchedTestNames(m_ignoreMissedTestNames);
+      TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames, m_ignoreMissedTestNames);
+      testNamesMatcher.validateMissMatchedTestNames();
       result.addAll(testNamesMatcher.getSuitesMatchingTestNames());
     }
 
@@ -417,7 +417,7 @@ public class TestNG {
     File jarFile = new File(m_jarPath);
 
     JarFileUtils utils =
-        new JarFileUtils(getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode);
+        new JarFileUtils(getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode, m_ignoreMissedTestNames);
 
     Collection<XmlSuite> allSuites = utils.extractSuitesFrom(jarFile);
     allSuites.forEach(this::processParallelModeCommandLineArgs);
@@ -1477,7 +1477,7 @@ public class TestNG {
 
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
-      setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
+      setIgnoreMissedTestNames(cla.ignoreMissedTestNames || RuntimeBehavior.ignoreMissedTestNames());
     }
 
     // Note: can't use a Boolean field here because we are allowing a boolean
