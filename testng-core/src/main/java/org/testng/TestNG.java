@@ -1479,8 +1479,7 @@ public class TestNG {
 
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
-      setIgnoreMissedTestNames(
-          cla.ignoreMissedTestNames || RuntimeBehavior.ignoreMissedTestNames());
+      setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
     }
 
     // Note: can't use a Boolean field here because we are allowing a boolean
