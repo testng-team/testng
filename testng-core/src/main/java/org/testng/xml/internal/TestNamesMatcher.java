@@ -67,8 +67,6 @@ public final class TestNamesMatcher {
    * ignoreMissedTestNames is enabled, then any of the given test names exist in suite will be run,
    * and print warning message to tell those test names do not exist in suite.
    *
-   * @param ignoreMissedTestNames if true print warning message otherwise throw TestNGException for
-   *     missed testNames.
    * @return boolean if ignoreMissedTestNames disabled, then return true if no missed test names in
    *     suite, otherwise throw TestNGException; if ignoreMissedTestNames enabled, then return true
    *     if any test names exist in suite, otehrwise (all given test names are missed) throw
@@ -80,10 +78,8 @@ public final class TestNamesMatcher {
       final String errMsg = "The test(s) <" + missedTestNames + "> cannot be found in suite.";
       if (ignoreMissedTestNames && !matchedTestNames.isEmpty()) {
         LOGGER.warn(errMsg);
-        // as long as any test names match, then tell caller to run them.
         return true;
       } else {
-        // legacy, throw exception and exit execution
         throw new TestNGException(errMsg);
       }
     }
