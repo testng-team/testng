@@ -1,4 +1,5 @@
 Current
+New: GITHUB-2897: Not exception but warning if some (not all) of the given test names are not found in suite files. (Bruce Wen)
 New: Added assertListContains and assertListContainsObject methods to check if specific object present in List (Dmytro Budym)
 Fixed: GITHUB-2888: Skipped Tests with DataProvider appear as failed (Joaquin Moreira)
 Fixed: GITHUB-2884: Discrepancies with DataProvider and Retry of failed tests (Krishnan Mahadevan)

@@ -23,6 +23,7 @@ import org.testng.xml.internal.XmlSuiteUtils;
 class JarFileUtils {
   private final IPostProcessor processor;
   private final String xmlPathInJar;
+  private final boolean ignoreMissedTestNames;
   private final List<String> testNames;
   private final List<XmlSuite> suites = Lists.newLinkedList();
   private final XmlSuite.ParallelMode mode;
@@ -36,10 +37,28 @@ class JarFileUtils {
       String xmlPathInJar,
       List<String> testNames,
       XmlSuite.ParallelMode mode) {
+    this(processor, xmlPathInJar, testNames, mode, false);
+  }
+
+  JarFileUtils(
+      IPostProcessor processor,
+      String xmlPathInJar,
+      List<String> testNames,
+      boolean ignoreMissedTestNames) {
+    this(processor, xmlPathInJar, testNames, XmlSuite.ParallelMode.NONE, ignoreMissedTestNames);
+  }
+
+  JarFileUtils(
+      IPostProcessor processor,
+      String xmlPathInJar,
+      List<String> testNames,
+      XmlSuite.ParallelMode mode,
+      boolean ignoreMissedTestNames) {
     this.processor = processor;
     this.xmlPathInJar = xmlPathInJar;
     this.testNames = testNames;
     this.mode = mode == null ? XmlSuite.ParallelMode.NONE : mode;
+    this.ignoreMissedTestNames = ignoreMissedTestNames;
   }
 
   List<XmlSuite> extractSuitesFrom(File jarFile) {
@@ -69,6 +88,7 @@ class JarFileUtils {
       Enumeration<JarEntry> entries = jf.entries();
       File file = java.nio.file.Files.createTempDirectory("testngXmlPathInJar-").toFile();
       String suitePath = null;
+
       while (entries.hasMoreElements()) {
         JarEntry je = entries.nextElement();
         String jeName = je.getName();
@@ -87,24 +107,34 @@ class JarFileUtils {
           classes.add(constructClassName(je));
         }
       }
+
       if (Strings.isNullOrEmpty(suitePath)) {
+        Utils.log("TestNG", 1, String.format("Not found '%s' in '%s'.", xmlPathInJar, jarFile));
         return false;
       }
+
       Collection<XmlSuite> parsedSuites = Parser.parse(suitePath, processor);
       delete(file);
+      boolean addedSuite = false;
       for (XmlSuite suite : parsedSuites) {
-        // If test names were specified, only run these test names
-        if (testNames != null) {
-          TestNamesMatcher testNamesMatcher = new TestNamesMatcher(suite, testNames);
-          testNamesMatcher.validateMissMatchedTestNames();
-          suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
-        } else {
+        if (testNames == null) {
           suites.add(suite);
+          addedSuite = true;
+        } else {
+          TestNamesMatcher testNamesMatcher =
+              new TestNamesMatcher(suite, testNames, ignoreMissedTestNames);
+          boolean validationResult = testNamesMatcher.validateMissMatchedTestNames();
+          if (validationResult) {
+            suites.addAll(testNamesMatcher.getSuitesMatchingTestNames());
+            addedSuite = true;
+          } else {
+            Utils.error(String.format("None of '%s' found in '%s'.", testNames, suite));
+          }
         }
-        return true;
       }
+
+      return addedSuite;
     }
-    return false;
   }
 
   private void delete(File f) throws IOException {

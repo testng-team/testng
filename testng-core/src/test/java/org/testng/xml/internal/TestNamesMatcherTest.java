@@ -57,6 +57,17 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     TestNamesMatcher testNamesHelper = new TestNamesMatcher(xmlSuite, names);
   }
 
+  @Test(
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp = "\nPlease provide a valid list of names to check.",
+      dataProvider = "getData")
+  public void
+      testCloneIfContainsTestsWithNamesMatchingAnyNegativeConditionWithIgnoreMissedTestNamesEnabled(
+          XmlSuite xmlSuite, List<String> names) {
+    boolean ignoreMissedTestNames = true;
+    TestNamesMatcher testNamesHelper = new TestNamesMatcher(xmlSuite, names, ignoreMissedTestNames);
+  }
+
   @Test
   public void testIfTestnamesComesFromDifferentSuite() {
     XmlSuite parentSuite = createDummySuiteWithTestNamesAs("test1", "test2");
@@ -90,6 +101,69 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     }
   }
 
+  @Test(
+      description =
+          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled and only partial of the given test names are invalid.")
+  public void testNoExceptionWhenIgnoreMissedTestNamesEnabled() {
+    final boolean ignoreMissedTestNames = true;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"), ignoreMissedTestNames);
+    testNamesMatcher.validateMissMatchedTestNames();
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames enabled and all given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionWhenIgnoreMissedTestNamesEnabledWithAllInvalidTestNames() {
+    final boolean ignoreMissedTestNames = true;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"), ignoreMissedTestNames);
+    testNamesMatcher.validateMissMatchedTestNames();
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames disabled and all given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionWhenIgnoreMissedTestNamesDisabledWithAllInvalidTestNames() {
+    final boolean ignoreMissedTestNames = false;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList("test3"), ignoreMissedTestNames);
+    testNamesMatcher.validateMissMatchedTestNames();
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, Expected TestNGException thrown when ignoreMissedTestNames disabled and partial of given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) \\<\\[test3\\]\\> cannot be found in suite.")
+  public void testHaveExceptionWhenIgnoreMissedTestNamesDisabledWithPartialInvalidTestNames() {
+    final boolean ignoreMissedTestNames = false;
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Arrays.asList("test2", "test3"), ignoreMissedTestNames);
+    testNamesMatcher.validateMissMatchedTestNames();
+  }
+
+  @Test(description = "GITHUB-2897, Missed test names are found as expected.")
+  public void testMissedTestNamesFound() {
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1", "test2");
+    final String expectedMissedTestNames = "test3";
+    TestNamesMatcher testNamesMatcher =
+        new TestNamesMatcher(xmlSuite, Collections.singletonList(expectedMissedTestNames));
+    List<String> missedTestNames = testNamesMatcher.getMissedTestNames();
+    assertThat(missedTestNames).hasSameElementsAs(Arrays.asList(expectedMissedTestNames));
+  }
+
   @DataProvider(name = "getTestnames")
   public Object[][] getTestnameToSearchFor() {
     return new Object[][] {
@@ -103,7 +177,10 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
   public Object[][] getTestData() {
     return new Object[][] {
       {new XmlSuite(), null},
-      {new XmlSuite(), Collections.<String>emptyList()}
+      {new XmlSuite(), Collections.<String>emptyList()},
+      {new XmlSuite(), Collections.singletonList("")},
+      {new XmlSuite(), Collections.singletonList(" ")},
+      {new XmlSuite(), Arrays.asList(null, "", " ")}
     };
   }
 }

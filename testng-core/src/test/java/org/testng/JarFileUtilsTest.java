@@ -21,6 +21,7 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 public class JarFileUtilsTest {
+
   private static File jar = null;
 
   @BeforeClass
@@ -65,6 +66,42 @@ public class JarFileUtilsTest {
         new String[] {"org.testng.jarfileutils.org.testng.SampleTest1"});
   }
 
+  @Test(
+      description =
+          "GITHUB-2897, Have TestNGException thrown when ignoreMissedTestNames enabled and ALL given test names are invalid.",
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp =
+          "\nThe test\\(s\\) <\\[testng-tests-child11\\]> cannot be found in suite.")
+  public void testWithAllInvalidTestNamesNoExceptionIfIgnoreMissedTestNamesEnabled()
+      throws MalformedURLException {
+    boolean ignoreMissedTestNames = true;
+    JarFileUtils utils =
+        newJarFileUtils(Collections.singletonList("testng-tests-child11"), ignoreMissedTestNames);
+    runTest(utils, 1, null, null, "Jar suite");
+  }
+
+  @Test(
+      description =
+          "GITHUB-2897, No TestNGException thrown when ignoreMissedTestNames enabled and partial given test names are invalid and partial valid test names are expected to run.")
+  public void testWithPartialInvalidTestNamesNoExceptionIfIgnoreMissedTestNamesEnabled()
+      throws MalformedURLException {
+    String[] expectedTestNames =
+        new String[] {"testng-tests-child2", "testng-tests-child4", "testng-tests-child5"};
+    String[] expectedClassNames =
+        new String[] {
+          "org.testng.jarfileutils.org.testng.SampleTest2",
+          "org.testng.jarfileutils.org.testng.SampleTest4",
+          "org.testng.jarfileutils.org.testng.SampleTest5"
+        };
+    List<String> testNames =
+        Arrays.asList(
+            "testng-tests-child2", "testng-tests-child4", "testng-tests-child5", "invalid");
+    boolean ignoreMissedTestNames = true;
+    JarFileUtils utils = newJarFileUtils(testNames, ignoreMissedTestNames);
+    // 3 tests from 3 suites, the first suite has one test is given
+    runTest(utils, 1, 3, expectedTestNames, expectedClassNames, "testng-tests-suite");
+  }
+
   @Test
   public void testWithInvalidXmlFile() throws MalformedURLException {
     JarFileUtils utils =
@@ -91,9 +128,30 @@ public class JarFileUtilsTest {
   public void ensureThatExceptionAreNotThrown() throws MalformedURLException {
     TestNG testNg = new TestNG(false);
     List<String> testNames =
+        Arrays.asList("testng-tests-child2", "testng-tests-child4", "testng-tests-child5");
+    testNg.setTestNames(testNames);
+    testNg.setXmlPathInJar("jarfileutils/testng-tests.xml");
+    testNg.setTestJar(jar.getAbsolutePath());
+    testNg.initializeSuitesAndJarFile();
+    // "testng-tests-child2", "testng-tests-child4", "testng-tests-child5" are from 3 different test
+    // suites
+    Assert.assertEquals(testNg.m_suites.size(), 3);
+  }
+
+  /**
+   * Test to ensure that exception is thrown for invalid test name.
+   *
+   * @throws MalformedURLException
+   */
+  @Test(
+      expectedExceptions = TestNGException.class,
+      expectedExceptionsMessageRegExp = "\nThe test\\(s\\) <\\[dummy\\]> cannot be found in suite.")
+  public void ensureThatExceptionAreThrown() throws MalformedURLException {
+    TestNG testNg = new TestNG(false);
+    List<String> testNames =
         Arrays.asList("testng-tests-child2", "testng-tests-child4", "testng-tests-child5", "dummy");
     testNg.setTestNames(testNames);
-    testNg.setXmlPathInJar(jar.getAbsolutePath());
+    testNg.setXmlPathInJar("jarfileutils/testng-tests.xml");
     testNg.setTestJar(jar.getAbsolutePath());
     testNg.initializeSuitesAndJarFile();
     Assert.assertEquals(testNg.m_suites.size(), 1);
@@ -118,20 +176,20 @@ public class JarFileUtilsTest {
     assertThat(suite.getName()).isEqualTo("testng-tests-suite");
     List<String> testNames = new LinkedList<>();
     List<String> classNames = new LinkedList<>();
-    for (XmlSuite xmlSuite : suites) {
-      extractClassNames(xmlSuite, testNames, classNames);
-    }
+    extractClassNames(suites, testNames, classNames);
 
     assertThat(testNames).containsExactly(expectedTestNames);
     assertThat(classNames).contains(expectedClassNames);
   }
 
   private static void extractClassNames(
-      XmlSuite xmlSuite, List<String> testNames, List<String> classNames) {
-    for (XmlTest xmlTest : xmlSuite.getTests()) {
-      testNames.add(xmlTest.getName());
-      for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
-        classNames.add(xmlClass.getName());
+      List<XmlSuite> xmlSuites, List<String> testNames, List<String> classNames) {
+    for (XmlSuite xmlSuite : xmlSuites) {
+      for (XmlTest xmlTest : xmlSuite.getTests()) {
+        testNames.add(xmlTest.getName());
+        for (XmlClass xmlClass : xmlTest.getXmlClasses()) {
+          classNames.add(xmlClass.getName());
+        }
       }
     }
   }
@@ -150,18 +208,30 @@ public class JarFileUtilsTest {
       String[] expectedTestNames,
       String[] expectedClassNames,
       String expectedSuiteName) {
+    runTest(utils, numberOfTests, 1, expectedTestNames, expectedClassNames, expectedSuiteName);
+  }
+
+  private static void runTest(
+      JarFileUtils utils,
+      int numberOfTests,
+      int expectedSuiteTotal,
+      String[] expectedTestNames,
+      String[] expectedClassNames,
+      String expectedSuiteName) {
     List<XmlSuite> suites = utils.extractSuitesFrom(jar);
-    assertThat(suites).hasSize(1);
+    assertThat(suites).hasSize(expectedSuiteTotal);
     XmlSuite suite = suites.get(0);
     assertThat(suite.getName()).isEqualTo(expectedSuiteName);
     assertThat(suite.getTests()).hasSize(numberOfTests);
     List<String> testNames = new LinkedList<>();
     List<String> classNames = new LinkedList<>();
-    extractClassNames(suite, testNames, classNames);
+    extractClassNames(suites, testNames, classNames);
     if (expectedTestNames != null) {
       assertThat(testNames).containsExactly(expectedTestNames);
     }
-    assertThat(classNames).contains(expectedClassNames);
+    if (expectedClassNames != null) {
+      assertThat(classNames).contains(expectedClassNames);
+    }
   }
 
   public static class FakeProcessor implements IPostProcessor {
@@ -173,15 +243,26 @@ public class JarFileUtilsTest {
   }
 
   private static JarFileUtils newJarFileUtils(List<String> testNames) throws MalformedURLException {
-    return newJarFileUtils("jarfileutils/testng-tests.xml", testNames);
+    return newJarFileUtils(testNames, false);
+  }
+
+  private static JarFileUtils newJarFileUtils(List<String> testNames, boolean ignoreMissedTestNames)
+      throws MalformedURLException {
+    return newJarFileUtils("jarfileutils/testng-tests.xml", testNames, ignoreMissedTestNames);
   }
 
   private static JarFileUtils newJarFileUtils(String suiteXmlName, List<String> testNames)
+      throws MalformedURLException {
+    return newJarFileUtils(suiteXmlName, testNames, false);
+  }
+
+  private static JarFileUtils newJarFileUtils(
+      String suiteXmlName, List<String> testNames, boolean ignoreMissedTestNames)
       throws MalformedURLException {
     URL url = jar.toURI().toURL();
     URLClassLoader classLoader =
         new URLClassLoader(new URL[] {url}, ClassLoader.getSystemClassLoader());
     Thread.currentThread().setContextClassLoader(classLoader);
-    return new JarFileUtils(new FakeProcessor(), suiteXmlName, testNames);
+    return new JarFileUtils(new FakeProcessor(), suiteXmlName, testNames, ignoreMissedTestNames);
   }
 }

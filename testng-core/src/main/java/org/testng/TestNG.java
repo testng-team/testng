@@ -353,7 +353,8 @@ public class TestNG {
         continue;
       }
       // If test names were specified, only run these test names
-      TestNamesMatcher testNamesMatcher = new TestNamesMatcher(s, m_testNames);
+      TestNamesMatcher testNamesMatcher =
+          new TestNamesMatcher(s, m_testNames, m_ignoreMissedTestNames);
       testNamesMatcher.validateMissMatchedTestNames();
       result.addAll(testNamesMatcher.getSuitesMatchingTestNames());
     }
@@ -417,7 +418,8 @@ public class TestNG {
     File jarFile = new File(m_jarPath);
 
     JarFileUtils utils =
-        new JarFileUtils(getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode);
+        new JarFileUtils(
+            getProcessor(), m_xmlPathInJar, m_testNames, m_parallelMode, m_ignoreMissedTestNames);
 
     Collection<XmlSuite> allSuites = utils.extractSuitesFrom(jarFile);
     allSuites.forEach(this::processParallelModeCommandLineArgs);
@@ -798,6 +800,8 @@ public class TestNG {
 
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
+
+  private boolean m_ignoreMissedTestNames;
 
   private Integer m_suiteThreadPoolSize = CommandLineArgs.SUITE_THREAD_POOL_SIZE_DEFAULT;
 
@@ -1475,6 +1479,7 @@ public class TestNG {
 
     if (cla.testNames != null) {
       setTestNames(Arrays.asList(cla.testNames.split(",")));
+      setIgnoreMissedTestNames(cla.ignoreMissedTestNames);
     }
 
     // Note: can't use a Boolean field here because we are allowing a boolean
@@ -1572,6 +1577,10 @@ public class TestNG {
     setSuiteThreadPoolSize(cla.suiteThreadPoolSize);
     setRandomizeSuites(cla.randomizeSuites);
     alwaysRunListeners(cla.alwaysRunListeners);
+  }
+
+  private void setIgnoreMissedTestNames(boolean ignoreMissedTestNames) {
+    m_ignoreMissedTestNames = ignoreMissedTestNames;
   }
 
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
