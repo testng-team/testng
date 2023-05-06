@@ -54,6 +54,7 @@ import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.EmailableReporter2;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.JUnitReportReporter;
+import org.testng.reporters.PerSuiteXMLReporter;
 import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
@@ -811,6 +812,7 @@ public class TestNG {
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
   private Boolean m_groupByInstances;
+  private boolean m_generateResultsPerSuite = false;
 
   private IConfiguration m_configuration;
 
@@ -827,6 +829,10 @@ public class TestNG {
 
   public void setExecutorFactoryClass(String clazzName) {
     this.m_executorFactory = createExecutorFactoryInstanceUsing(clazzName);
+  }
+
+  public void setGenerateResultsPerSuite(boolean generateResultsPerSuite) {
+    this.m_generateResultsPerSuite = generateResultsPerSuite;
   }
 
   private IExecutorFactory createExecutorFactoryInstanceUsing(String clazzName) {
@@ -934,7 +940,11 @@ public class TestNG {
       addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
       addReporter(FailedReporter.class);
-      addReporter(XMLReporter.class);
+      if (m_generateResultsPerSuite) {
+        addReporter(PerSuiteXMLReporter.class);
+      } else {
+        addReporter(XMLReporter.class);
+      }
       if (RuntimeBehavior.useOldTestNGEmailableReporter()) {
         addReporter(EmailableReporter.class);
       } else if (RuntimeBehavior.useEmailableReporter()) {
@@ -1449,6 +1459,9 @@ public class TestNG {
     Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
         .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
+
+    Optional.ofNullable(cla.generateResultsPerSuite).ifPresent(this::setGenerateResultsPerSuite);
+
     if (cla.verbose != null) {
       setVerbose(cla.verbose);
     }
@@ -1743,6 +1756,14 @@ public class TestNG {
     if (dependencyInjectorFactoryClass != null) {
       result.dependencyInjectorFactoryClass = dependencyInjectorFactoryClass;
     }
+
+    result.ignoreMissedTestNames =
+        Boolean.parseBoolean(
+            cmdLineArgs.getOrDefault(CommandLineArgs.IGNORE_MISSED_TEST_NAMES, false).toString());
+
+    result.generateResultsPerSuite =
+        Boolean.parseBoolean(
+            cmdLineArgs.getOrDefault(CommandLineArgs.GENERATE_RESULTS_PER_SUITE, false).toString());
 
     configure(result);
   }

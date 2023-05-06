@@ -267,4 +267,11 @@ public class CommandLineArgs {
       names = PROPAGATE_DATA_PROVIDER_FAILURES_AS_TEST_FAILURE,
       description = "Should TestNG consider failures in Data Providers  as test failures.")
   public Boolean propagateDataProviderFailureAsTestFailure = false;
+
+  public static final String GENERATE_RESULTS_PER_SUITE = "-generateResultsPerSuite";
+
+  @Parameter(
+      names = GENERATE_RESULTS_PER_SUITE,
+      description = "Should TestNG consider failures in Data Providers  as test failures.")
+  public Boolean generateResultsPerSuite = false;
 }
