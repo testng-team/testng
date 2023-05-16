@@ -23,4 +23,4 @@ jobs:
 
     - name: Publish to GitHub
       run: |
-        ./gradlew -PghNexusUsername=${{ secrets.SONATYPE_USER }} -PghNexusPassword=${{ secrets.SONATYPE_PASSWORD }} -Pgh publish
+        ./gradlew -PghNexusUsername=${{ secrets.NEXUS_USERNAME }} -PghNexusPassword=${{ secrets.NEXUS_PASSWORD }} -Pgh publish
