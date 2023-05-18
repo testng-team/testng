@@ -34,7 +34,7 @@ jobs:
     # Runs a single command using the runners shell
     - name: Install gpg secret key
       run: |
-        cat <(echo -e "${{ secrets.GPG_PASSPHRASE }}") | gpg --batch --import
+        cat <(echo -e "${{ secrets.GPG_PRIVATE_KEY }}") | gpg --batch --import
         gpg --export-secret-keys >$HOME/.gnupg/secring.gpg
         gpg --list-secret-keys --keyid-format LONG
         ls -l $HOME/.gnupg
@@ -47,4 +47,4 @@ jobs:
     # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
     - name: Publish Release Candidate
       run: |
-        ./gradlew -PghGitSourceUsername=cbeust -PghGitSourcePassword=${{ secrets.GITHUB_TOKEN }} -PghDryRun -PghNexusUsername=${{ secrets.NEXUS_USERNAME }} -PghNexusPassword=${{ secrets.NEXUS_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password="" -Psigning.keyId=${{ secrets.GPG_PRIVATE_KEY }} -Prc=${{ github.event.inputs.release_candidate }} publishDist
+        ./gradlew -PghGitSourceUsername=cbeust -PghGitSourcePassword=${{ secrets.GITHUB_TOKEN }} -PghDryRun -PghNexusUsername=${{ secrets.NEXUS_USERNAME }} -PghNexusPassword=${{ secrets.NEXUS_PASSWORD }} -Psigning.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Psigning.password=${{ secrets.GPG_PASSPHRASE }} -Psigning.keyId=${{ secrets.GPG_KEY_ID }} -Prc=${{ github.event.inputs.release_candidate }} publishDist
