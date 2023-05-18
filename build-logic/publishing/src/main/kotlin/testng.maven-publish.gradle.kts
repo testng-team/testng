@@ -1,6 +1,7 @@
 plugins {
     `maven-publish`
     id("testng.local-maven-repo")
+    id("testng.signing")
 }
 
 // It takes value from root project always: https://github.com/gradle/gradle/issues/13302
