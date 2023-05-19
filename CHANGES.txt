@@ -1,4 +1,6 @@
 Current
+
+7.8.0
 Fixed: GITHUB-2906: Generate testng-results.xml per test suite (Krishnan Mahadevan)
 New:   GITHUB-2897: Not exception but warning if some (not all) of the given test names are not found in suite files. (Bruce Wen)
 New:   GITHUB-2907: Added assertListContains and assertListContainsObject methods to check if specific object present in List (Dmytro Budym)
@@ -8,8 +10,6 @@ Fixed: GITHUB-2879: Test listeners specified in parent testng.xml file are not i
 Fixed: GITHUB-2866: TestNG.xml doesn't honour Parallel value of a clone (Krishnan Mahadevan)
 Fixed: GITHUB-2875: JUnitReportReporter should capture the test case output at the test case level
 Fixed: GITHUB-2771: After upgrading to TestNG 7.5.0, setting ITestResult.status to FAILURE doesn't fail the test anymore (Julien Herr & Krishnan Mahadevan)
-Fixed: GITHUB-2796: Option for onAfterClass to run after @AfterClass
-Fixed: GITHUB-2857: XmlTest index is not set for test suites invoked with YAML
 Fixed: GITHUB-2862: Allow test classes to define "configfailurepolicy" at a per class level (Krishnan Mahadevan)
 Fixed: GITHUB-2796: Option for onAfterClass to run after @AfterClass (Oliver Hughes)
 Fixed: GITHUB-2857: XmlTest index is not set for test suites invoked with YAML (Sergei Baranov)
