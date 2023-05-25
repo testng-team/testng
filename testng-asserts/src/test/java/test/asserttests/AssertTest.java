@@ -563,4 +563,92 @@ public class AssertTest {
 
     assertNotEquals(array1, array2);
   }
+
+  @Test
+  public void checkMapEquals() {
+    Map<String, Object> map1 = new LinkedHashMap<>();
+    map1.put("a", "1");
+    map1.put("b", 2);
+    Map<String, Object> map2 = new LinkedHashMap<>();
+    map2.put("b", 2);
+    map2.put("a", "1");
+
+    assertMapsEqual(map1, map2);
+  }
+
+  @Test
+  public void checkMapNotEquals() {
+    Map<String, Object> map1 = new LinkedHashMap<>();
+    map1.put("a", "1");
+    map1.put("b", "2");
+    Map<String, Object> map2 = new LinkedHashMap<>();
+    map2.put("a", "1");
+    map2.put("b", 2);
+
+    assertMapsNotEqual(map1, map2);
+  }
+
+  @Test(description = "GITHUB-2913")
+  public void checkMapNotEqualsWithNull() {
+    Map<String, Object> map1 = new LinkedHashMap<>();
+    map1.put("a", 1);
+    map1.put("b", null);
+    Map<String, Object> map2 = new LinkedHashMap<>();
+    map2.put("a", 1);
+    map2.put("c", null);
+
+    assertMapsNotEqual(map1, map2);
+  }
+
+  protected void assertMapsEqual(Map m1, Map m2) {
+    assertEquals((Object) m1, (Object) m2);
+    assertEquals(m1, m2);
+
+    boolean succeeded = false;
+    try {
+      assertNotEquals((Object) m1, (Object) m2);
+      succeeded = true;
+    } catch (AssertionError e) {
+      /* expected */
+    }
+    if (succeeded) {
+      Assert.fail("Maps reported as not equal when equal: " + m1 + " / " + m2);
+    }
+
+    try {
+      assertNotEquals(m1, m2);
+      succeeded = true;
+    } catch (AssertionError e) {
+      /* expected */
+    }
+    if (succeeded) {
+      Assert.fail("Maps reported as not equal when equal: " + m1 + " / " + m2);
+    }
+  }
+
+  protected void assertMapsNotEqual(Map m1, Map m2) {
+    boolean succeeded = false;
+    try {
+      assertEquals((Object) m1, (Object) m2);
+      succeeded = true;
+    } catch (AssertionError e) {
+      /* expected */
+    }
+    if (succeeded) {
+      Assert.fail("Maps reported as equal when not equal: " + m1 + " / " + m2);
+    }
+
+    try {
+      assertEquals(m1, m2);
+      succeeded = true;
+    } catch (AssertionError e) {
+      /* expected */
+    }
+    if (succeeded) {
+      Assert.fail("Maps reported as equal when not equal: " + m1 + " / " + m2);
+    }
+
+    assertNotEquals((Object) m1, (Object) m2);
+    assertNotEquals(m1, m2);
+  }
 }
