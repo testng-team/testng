@@ -2109,10 +2109,13 @@ public class Assert {
       Object key = entry.getKey();
       Object value = entry.getValue();
       Object expectedValue = expected.get(key);
-      String assertMessage =
-          "Maps do not match for key:" + key + " actual:" + value + " expected:" + expectedValue;
       if (!areEqualImpl(value, expectedValue)) {
+        String assertMessage =
+            "Maps do not match for key:" + key + " actual:" + value + " expected:" + expectedValue;
         return assertMessage;
+      }
+      if (value == null && !expected.containsKey(key)) {
+        return "Maps do not match for key:" + key + " actual: null but not present in expected";
       }
     }
     return null;
