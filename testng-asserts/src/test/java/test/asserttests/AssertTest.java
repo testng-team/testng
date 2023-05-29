@@ -608,22 +608,16 @@ public class AssertTest {
     try {
       assertNotEquals((Object) m1, (Object) m2);
       succeeded = true;
-    } catch (AssertionError e) {
-      /* expected */
+    } catch (AssertionError expected) {
     }
-    if (succeeded) {
-      Assert.fail("Maps reported as not equal when equal: " + m1 + " / " + m2);
-    }
+    assertFalse(succeeded, "Maps reported as not equal when equal: " + m1 + " / " + m2);
 
     try {
       assertNotEquals(m1, m2);
       succeeded = true;
-    } catch (AssertionError e) {
-      /* expected */
+    } catch (AssertionError expected) {
     }
-    if (succeeded) {
-      Assert.fail("Maps reported as not equal when equal: " + m1 + " / " + m2);
-    }
+    assertFalse(succeeded, "Maps reported as not equal when equal: " + m1 + " / " + m2);
   }
 
   protected void assertMapsNotEqual(Map m1, Map m2) {
@@ -631,22 +625,16 @@ public class AssertTest {
     try {
       assertEquals((Object) m1, (Object) m2);
       succeeded = true;
-    } catch (AssertionError e) {
-      /* expected */
+    } catch (AssertionError expected) {
     }
-    if (succeeded) {
-      Assert.fail("Maps reported as equal when not equal: " + m1 + " / " + m2);
-    }
+    assertFalse(succeeded, "Maps reported as equal when not equal: " + m1 + " / " + m2);
 
     try {
       assertEquals(m1, m2);
       succeeded = true;
-    } catch (AssertionError e) {
-      /* expected */
+    } catch (AssertionError expected) {
     }
-    if (succeeded) {
-      Assert.fail("Maps reported as equal when not equal: " + m1 + " / " + m2);
-    }
+    assertFalse(succeeded, "Maps reported as equal when not equal: " + m1 + " / " + m2);
 
     assertNotEquals((Object) m1, (Object) m2);
     assertNotEquals(m1, m2);

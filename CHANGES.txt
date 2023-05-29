@@ -1,6 +1,6 @@
 Current
 
-Fixed: GITHUB-2913: Maps containing nulls can be incorrectly considered equal
+Fixed: GITHUB-2913: Maps containing nulls can be incorrectly considered equal (Alex Heneveld)
 
 7.8.0
 Fixed: GITHUB-2906: Generate testng-results.xml per test suite (Krishnan Mahadevan)
