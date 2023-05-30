@@ -1,5 +1,7 @@
 Current
 
+Fixed: GITHUB-2913: Maps containing nulls can be incorrectly considered equal (Alex Heneveld)
+
 7.8.0
 Fixed: GITHUB-2906: Generate testng-results.xml per test suite (Krishnan Mahadevan)
 New:   GITHUB-2897: Not exception but warning if some (not all) of the given test names are not found in suite files. (Bruce Wen)
