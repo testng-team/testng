@@ -63,6 +63,7 @@ jobs:
           jdkFile: '${{ runner.temp }}/java_package.tar.gz'
           architecture: x64
       - name: Test
+        id: run_test_cases
         uses: burrunan/gradle-cache-action@v1
         with:
           job-id: jdk${{ matrix.jdk.version }}
@@ -71,3 +72,13 @@ jobs:
             build
           properties: |
             testng.test.extra.jvmargs=${{ matrix.testExtraJvmArgs }}
+      - name: 'Generate unique build id'
+        id: build_id
+        if: ${{ steps.run_test_cases.outcome == 'failure' }}
+        run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
+      - name: Upload build reports
+        if: ${{ steps.run_test_cases.outcome == 'failure' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.id }}
+          path: testng-core/build/reports/tests/test/**
