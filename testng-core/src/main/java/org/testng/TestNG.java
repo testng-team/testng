@@ -55,7 +55,6 @@ import org.testng.reporters.EmailableReporter2;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.JUnitReportReporter;
 import org.testng.reporters.PerSuiteXMLReporter;
-import org.testng.reporters.SuiteHTMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
@@ -937,7 +936,6 @@ public class TestNG {
       this.exitCodeListener.failIfAllTestsSkipped();
     }
     if (m_useDefaultListeners) {
-      addReporter(SuiteHTMLReporter.class);
       addReporter(Main.class);
       addReporter(FailedReporter.class);
       if (m_generateResultsPerSuite) {

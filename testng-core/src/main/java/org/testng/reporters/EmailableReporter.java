@@ -33,8 +33,10 @@ import org.testng.xml.XmlSuite;
 /**
  * Reported designed to render self-contained HTML top down view of a testing suite.
  *
+ * @deprecated - This reporter is being deprecated in favour of the newer {@link EmailableReporter2}
  * @since 5.2
  */
+@Deprecated
 public class EmailableReporter implements IReporter {
   private static final Logger L = Logger.getLogger(EmailableReporter.class);
 
