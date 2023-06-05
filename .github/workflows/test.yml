@@ -74,10 +74,10 @@ jobs:
             testng.test.extra.jvmargs=${{ matrix.testExtraJvmArgs }}
       - name: 'Generate unique build id'
         id: build_id
-        if: ${{ steps.run_test_cases.outcome == 'failure' }}
+        if: steps.run_test_cases.outcome == 'failure'
         run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Upload build reports
-        if: ${{ steps.run_test_cases.outcome == 'failure' }}
+        if: steps.run_test_cases.outcome == 'failure'
         uses: actions/upload-artifact@v3
         with:
           name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.id }}
