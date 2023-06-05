@@ -27,9 +27,12 @@ import org.testng.xml.XmlSuite;
 /**
  * This class implements an HTML reporter for suites.
  *
+ * @deprecated - This reporter is deprecated as of TestNG <code>7.9.0</code> in favour of {@link
+ *     org.testng.reporters.jq.Main}
  * @author cbeust
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
+@Deprecated
 public class SuiteHTMLReporter implements IReporter {
   public static final String METHODS_CHRONOLOGICAL = "methods.html";
   public static final String METHODS_ALPHABETICAL = "methods-alphabetical.html";
