@@ -161,7 +161,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
     Set<Object> instances =
-        invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
+        invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newConcurrentHashSet());
     Object instance = mi.getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);

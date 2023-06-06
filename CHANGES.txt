@@ -1,5 +1,6 @@
 Current
 
+Fixed: GITHUB-727 : Fixing data races (Krishnan Mahadevan)
 Fixed: GITHUB-2913: Maps containing nulls can be incorrectly considered equal (Alex Heneveld)
 
 7.8.0

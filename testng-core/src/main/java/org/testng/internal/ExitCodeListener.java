@@ -12,7 +12,7 @@ import org.testng.TestNGException;
 import org.testng.xml.XmlSuite;
 
 public class ExitCodeListener implements ITestListener, IReporter, IExecutionListener {
-  private boolean hasTests = false;
+  private volatile boolean hasTests = false;
   private final ExitCode status = new ExitCode();
   private boolean failIfAllTestsSkipped = false;
 
@@ -63,12 +63,6 @@ public class ExitCodeListener implements ITestListener, IReporter, IExecutionLis
   public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
     this.hasTests = true;
   }
-
-  @Override
-  public void onStart(ITestContext context) {}
-
-  @Override
-  public void onFinish(ITestContext context) {}
 
   @Override
   public void onExecutionFinish() {
