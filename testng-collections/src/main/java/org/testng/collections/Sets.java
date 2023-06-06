@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Sets {
 
@@ -12,6 +13,10 @@ public final class Sets {
 
   public static <V> Set<V> newHashSet() {
     return new HashSet<>();
+  }
+
+  public static <V> Set<V> newConcurrentHashSet() {
+    return ConcurrentHashMap.newKeySet();
   }
 
   public static <V> Set<V> newHashSet(Collection<V> c) {
