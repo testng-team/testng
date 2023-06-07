@@ -64,8 +64,7 @@ jobs:
           architecture: x64
       - name: 'Generate unique build id'
         id: build_id
-        if: always()
-        run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
+        run: echo "unique_id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Test
         id: run_test_cases
         uses: burrunan/gradle-cache-action@v1
@@ -80,5 +79,5 @@ jobs:
         if: ${{ failure() && steps.run_test_cases.outcome == 'failure' }}
         uses: actions/upload-artifact@v3
         with:
-          name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.id }}
+          name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.unique_id }}
           path: testng-core/build/reports/tests/test/**
