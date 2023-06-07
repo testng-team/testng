@@ -101,6 +101,7 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   private final Stack<Location> m_locations = new Stack<>();
+  private boolean isSuiteFileTag = false;
 
   private XmlClass m_currentClass = null;
   private ArrayList<XmlInclude> m_currentIncludedMethods = null;
@@ -196,9 +197,11 @@ public class TestNGContentHandler extends DefaultHandler {
       String path = attributes.getValue("path");
       pushLocation(Location.SUITE);
       m_suiteFiles.add(path);
+      isSuiteFileTag = true;
     } else {
       m_currentSuite.setSuiteFiles(m_suiteFiles);
       popLocation();
+      isSuiteFileTag = false;
     }
   }
 
@@ -611,6 +614,13 @@ public class TestNGContentHandler extends DefaultHandler {
     } else if ("exclude".equals(qName)) {
       xmlExclude(true, attributes);
     } else if ("parameter".equals(qName)) {
+      if (isSuiteFileTag) {
+        // do-not process a <parameter> tag when it is specified inside <suite-files>
+        Logger.getLogger(getClass())
+            .warn(
+                "Ignoring the <parameter> tag because it is specified inside a <suite-file> tag.");
+        return;
+      }
       String value = expandValue(attributes.getValue("value"));
       Location location = m_locations.peek();
       switch (location) {

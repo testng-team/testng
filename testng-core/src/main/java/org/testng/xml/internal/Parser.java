@@ -24,7 +24,7 @@ import org.testng.xml.XmlSuite;
 public class Parser {
 
   /** The name of the TestNG DTD. */
-  public static final String TESTNG_DTD = "testng-1.0.dtd";
+  public static final String TESTNG_DTD = "testng-1.1.dtd";
 
   /** The URL to the deprecated TestNG DTD. */
   // It has to be public because its being used by TestNG eclipse plugin

@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="parent_suite">
+  <suite-files>
+    <suite-file path="suite_one.xml">
+      <parameter name="url" value="http://www.google.com"/>
+    </suite-file>
+    <suite-file path="suite_two.xml">
+      <parameter name="url" value="http://www.bing.com"/>
+    </suite-file>
+  </suite-files>
+</suite>
