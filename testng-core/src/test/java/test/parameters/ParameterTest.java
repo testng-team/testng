@@ -2,9 +2,12 @@ package test.parameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -130,5 +133,22 @@ public class ParameterTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
     assertThat(listener.getPassedTests().isEmpty()).isFalse();
+  }
+
+  @Test(description = "GITHUB-581")
+  public void ensureParametersSpecifiedInsideSuiteFilesTagAreIgnored() {
+    TestNG testng = create();
+    testng.setTestSuites(
+        Collections.singletonList("src/test/resources/parametertest/issue_581/parent_suite.xml"));
+    Map<String, Map<String, String>> actualParameters = new HashMap<>();
+    testng.addListener(
+        new ISuiteListener() {
+          @Override
+          public void onStart(ISuite suite) {
+            actualParameters.put(suite.getName(), suite.getXmlSuite().getAllParameters());
+          }
+        });
+    testng.run();
+    actualParameters.values().forEach(each -> assertThat(each).isEmpty());
   }
 }

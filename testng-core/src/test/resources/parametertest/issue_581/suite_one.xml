@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="suite_one">
+  <test name="test_one">
+    <classes>
+      <class name="test.parameters.issue581.TestClassSample"/>
+    </classes>
+  </test>
+</suite>
