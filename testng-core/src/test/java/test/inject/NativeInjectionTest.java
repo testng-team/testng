@@ -1,5 +1,6 @@
 package test.inject;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.inject.NativeInjectionTestSamples.*;
 
 import org.testng.*;
@@ -9,13 +10,13 @@ import test.SimpleBaseTest;
 public class NativeInjectionTest extends SimpleBaseTest {
 
   @Test(dataProvider = "getTestData")
-  public void testBeforeSuiteInjection(Class clazz, String methodName, String expected) {
+  public void testBeforeSuiteInjection(Class<?> clazz, String methodName, String expected) {
     TestNG tng = create(clazz);
     InjectionResultHolder holder = new InjectionResultHolder();
     tng.addListener(holder);
     tng.setGroups("test");
     tng.run();
-    Assert.assertTrue(holder.getErrorMessage().contains(expected + methodName));
+    assertThat(holder.getErrorMessage()).contains(expected + methodName);
   }
 
   @DataProvider
@@ -23,11 +24,12 @@ public class NativeInjectionTest extends SimpleBaseTest {
     String variant1 = "Can inject only one of <ITestContext, XmlTest> into a @%s annotated ";
     String variant2 =
         "Can inject only one of <ITestContext, XmlTest, Method, Object[], ITestResult> into a @%s annotated ";
+    String variant3 = "Native Injection is NOT supported for @%s annotated ";
     return new Object[][] {
       {
         BadBeforeSuiteSample.class,
         "beforeSuite",
-        String.format(variant1, BeforeSuite.class.getSimpleName())
+        String.format(variant3, BeforeSuite.class.getSimpleName())
       },
       {
         BadBeforeTestSample.class,
@@ -62,7 +64,7 @@ public class NativeInjectionTest extends SimpleBaseTest {
       {
         BadAfterSuiteSample.class,
         "afterSuite",
-        String.format(variant1, AfterSuite.class.getSimpleName())
+        String.format(variant3, AfterSuite.class.getSimpleName())
       },
       {
         BadBeforeGroupsSample.class,
