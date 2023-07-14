@@ -5,12 +5,12 @@ import java.util.Map;
 import java.util.Set;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
+import org.testng.ISuiteRunnerListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
-import org.testng.SuiteRunner;
 import org.testng.collections.Maps;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
@@ -34,7 +34,7 @@ class BaseInvoker {
   // Instead we now would be using this special object.
   protected final Object NULL_OBJECT = new Object();
 
-  private final SuiteRunner suiteRunner;
+  private final ISuiteRunnerListener suiteRunner;
 
   public BaseInvoker(
       ITestResultNotifier notifier,
@@ -42,7 +42,7 @@ class BaseInvoker {
       ITestContext testContext,
       SuiteRunState suiteState,
       IConfiguration configuration,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     this.m_notifier = notifier;
     this.m_invokedMethodListeners = invokedMethodListeners;
     this.m_testContext = testContext;

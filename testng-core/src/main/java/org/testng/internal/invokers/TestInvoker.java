@@ -28,6 +28,7 @@ import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.IRetryAnalyzer;
 import org.testng.ISuite;
+import org.testng.ISuiteRunnerListener;
 import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -69,7 +70,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       List<IClassListener> m_classListeners,
       boolean m_skipFailedInvocationCounts,
       ConfigInvoker invoker,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     super(
         m_notifier,
         m_invokedMethodListeners,

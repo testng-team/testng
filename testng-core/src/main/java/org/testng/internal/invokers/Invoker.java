@@ -8,10 +8,10 @@ import org.testng.IClass;
 import org.testng.IClassListener;
 import org.testng.IConfigurationListener;
 import org.testng.IInvokedMethodListener;
+import org.testng.ISuiteRunnerListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.SuiteRunState;
-import org.testng.SuiteRunner;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
 
@@ -41,7 +41,7 @@ public class Invoker implements IInvoker {
       List<IClassListener> classListeners,
       DataProviderHolder holder,
       IConfigurationListener internalConfigurationListener,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     m_configInvoker =
         new ConfigInvoker(
             notifier,

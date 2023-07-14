@@ -178,7 +178,7 @@ public class TestRunner
       List<IClassListener> classListeners,
       Comparator<ITestNGMethod> comparator,
       DataProviderHolder otherHolder,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     this.comparator = comparator;
     this.holder.merge(otherHolder);
     init(
@@ -201,7 +201,7 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
       Comparator<ITestNGMethod> comparator,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     this.comparator = comparator;
     init(
         configuration,
@@ -223,7 +223,7 @@ public class TestRunner
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     this.comparator = Systematiser.getComparator();
     init(
         configuration,
@@ -246,7 +246,7 @@ public class TestRunner
       boolean skipFailedInvocationCounts,
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
-      SuiteRunner suiteRunner) {
+      ISuiteRunnerListener suiteRunner) {
     m_configuration = configuration;
     m_xmlTest = test;
     m_suite = suite;
@@ -257,8 +257,8 @@ public class TestRunner
     m_objectFactory = suite.getObjectFactory();
     setVerbose(test.getVerbose());
     if (suiteRunner == null) {
-      if (suite instanceof SuiteRunner) {
-        setExitCodeListener(((SuiteRunner) suite).getExitCodeListener());
+      if (suite instanceof ISuiteRunnerListener) {
+        setExitCodeListener(((ISuiteRunnerListener) suite).getExitCodeListener());
       }
     } else {
       setExitCodeListener(suiteRunner.getExitCodeListener());
