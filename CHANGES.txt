@@ -1,5 +1,5 @@
 Current
-
+Fixed: GITHUB-2928: The constructor of TestRunner encountered NBC changes in 7.8.0 (Krishnan Mahadevan)
 Fixed: GITHUB-581: Parameters of nested test suites are overridden(Krishnan Mahadevan)
 Fixed: GITHUB-727 : Fixing data races (Krishnan Mahadevan)
 Fixed: GITHUB-2913: Maps containing nulls can be incorrectly considered equal (Alex Heneveld)

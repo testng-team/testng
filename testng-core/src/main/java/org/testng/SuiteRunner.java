@@ -30,7 +30,7 @@ import org.testng.xml.XmlTest;
  * <CODE>SuiteRunner</CODE> is responsible for running all the tests included in one suite. The test
  * start is triggered by {@link #run()} method.
  */
-public class SuiteRunner implements ISuite, IInvokedMethodListener {
+public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
@@ -257,7 +257,7 @@ public class SuiteRunner implements ISuite, IInvokedMethodListener {
     useDefaultListeners = reportResults;
   }
 
-  ITestListener getExitCodeListener() {
+  public ITestListener getExitCodeListener() {
     return exitCodeListener;
   }
 
