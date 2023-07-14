@@ -65,7 +65,7 @@ public class Parameters {
            +--------------+--------------+---------+--------+----------+-------------+
            |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
            +--------------+--------------+---------+--------+----------+-------------+
-           | BeforeSuite  | Yes          | Yes     | No     | No       | No          |
+           | BeforeSuite  | No           | No      | No     | No       | No          |
            +--------------+--------------+---------+--------+----------+-------------+
            | BeforeTest   | Yes          | Yes     | No     | No       | No          |
            +--------------+--------------+---------+--------+----------+-------------+
@@ -75,7 +75,7 @@ public class Parameters {
            +--------------+--------------+---------+--------+----------+-------------+
            | BeforeMethod | Yes          | Yes     | Yes    | Yes      | Yes         |
            +--------------+--------------+---------+--------+----------+-------------+
-           | AfterSuite   | Yes          | Yes     | No     | No       | No          |
+           | AfterSuite   | No           | No      | No     | No       | No          |
            +--------------+--------------+---------+--------+----------+-------------+
            | AfterTest    | Yes          | Yes     | No     | No       | No          |
            +--------------+--------------+---------+--------+----------+-------------+
@@ -96,8 +96,8 @@ public class Parameters {
     List<Class<?>> beforeAfterMethod =
         Arrays.asList(
             ITestContext.class, XmlTest.class, Method.class, Object[].class, ITestResult.class);
-    mapping.put(BeforeSuite.class.getSimpleName(), ctxTest);
-    mapping.put(AfterSuite.class.getSimpleName(), ctxTest);
+    mapping.put(BeforeSuite.class.getSimpleName(), Collections.emptyList());
+    mapping.put(AfterSuite.class.getSimpleName(), Collections.emptyList());
 
     mapping.put(BeforeTest.class.getSimpleName(), ctxTest);
     mapping.put(AfterTest.class.getSimpleName(), ctxTest);
@@ -417,13 +417,22 @@ public class Parameters {
         }
         String errPrefix;
         if (mapping.containsKey(methodAnnotation)) {
-          errPrefix =
-              "Can inject only one of "
-                  + prettyFormat(mapping.get(methodAnnotation))
-                  + " into a "
-                  + annotation
-                  + " annotated "
-                  + methodName;
+          boolean nativeInjectionUnsupported = mapping.get(methodAnnotation).isEmpty();
+          if (nativeInjectionUnsupported) {
+            errPrefix =
+                "Native Injection is NOT supported for @"
+                    + methodAnnotation
+                    + " annotated "
+                    + methodName;
+          } else {
+            errPrefix =
+                "Can inject only one of "
+                    + prettyFormat(mapping.get(methodAnnotation))
+                    + " into a "
+                    + annotation
+                    + " annotated "
+                    + methodName;
+          }
         } else {
           errPrefix =
               "Cannot inject "
