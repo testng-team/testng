@@ -47,6 +47,9 @@ import test.dataprovider.issue2819.TestClassSample;
 import test.dataprovider.issue2819.TestClassUsingDataProviderRetrySample;
 import test.dataprovider.issue2819.TestClassWithMultipleRetryImplSample;
 import test.dataprovider.issue2888.SkipDataProviderSample;
+import test.dataprovider.issue2934.TestCaseSample;
+import test.dataprovider.issue2934.TestCaseSample.CoreListener;
+import test.dataprovider.issue2934.TestCaseSample.ToggleDataProvider;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -591,5 +594,79 @@ public class DataProviderTest extends SimpleBaseTest {
     testNG.addListener(listener);
     testNG.run();
     assertThat(listener.getParameters()).containsExactlyElementsOf(Arrays.asList(1, 2, 3, 4, 5));
+  }
+
+  @Test(description = "GITHUB-2934")
+  public void ensureParallelDataProviderWithRetryAnalyserWorks() {
+    runTest(true);
+  }
+
+  @Test(description = "GITHUB-2934")
+  public void ensureSequentialDataProviderWithRetryAnalyserWorks() {
+    runTest(false);
+  }
+
+  private static void runTest(boolean isParallel) {
+    TestNG testng = create(TestCaseSample.class);
+    CoreListener listener = new CoreListener();
+    ToggleDataProvider transformer = new ToggleDataProvider(isParallel);
+    testng.addListener(listener);
+    testng.addListener(transformer);
+    testng.setVerbose(2);
+    testng.run();
+    SoftAssertions softly = new SoftAssertions();
+
+    softly
+        .assertThat(listener.totalTests())
+        .withFailMessage("We should have had 9 test results in total.")
+        .isEqualTo(9);
+
+    // Assert passed tests
+    softly
+        .assertThat(listener.getPassedTests())
+        .withFailMessage("We should have had ONLY 1 passed test.")
+        .hasSize(1);
+    listener
+        .getPassedTests()
+        .forEach(
+            each ->
+                softly
+                    .assertThat(each.wasRetried())
+                    .withFailMessage(
+                        "Passed test " + stringify(each) + " should NOT have been retried")
+                    .isFalse());
+
+    // Assert failed tests
+    assertThat(listener.getFailedTests())
+        .withFailMessage("We should have had 2 failed tests.")
+        .hasSize(2);
+    listener
+        .getFailedTests()
+        .forEach(
+            each ->
+                softly
+                    .assertThat(each.wasRetried())
+                    .withFailMessage(
+                        "Failed test " + stringify(each) + " should NOT have been retried")
+                    .isFalse());
+
+    // Assert skipped tests
+    assertThat(listener.getSkippedTests())
+        .withFailMessage("We should have had 6 skipped tests due to retries.")
+        .hasSize(6);
+    listener
+        .getSkippedTests()
+        .forEach(
+            each ->
+                softly
+                    .assertThat(each.wasRetried())
+                    .withFailMessage(
+                        "Skipped test " + stringify(each) + " should have been retried")
+                    .isTrue());
+    softly.assertAll();
+  }
+
+  private static String stringify(ITestResult itr) {
+    return "(" + Arrays.toString(itr.getParameters()) + ")";
   }
 }

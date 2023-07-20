@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -817,7 +818,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
       this.m_retryAnalyzer = computeRetryAnalyzerInstanceToUse(tr);
       return this.m_retryAnalyzer;
     }
-    final String keyAsString = getSimpleName() + "#" + getParameterInvocationCount();
+
+    final String keyAsString = getSimpleName() + "#" + hashParameters(tr);
     return m_testMethodToRetryAnalyzer.computeIfAbsent(
         keyAsString,
         key -> {
@@ -825,6 +827,11 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
           CreationAttributes attributes = new CreationAttributes(tr.getTestContext(), ba, null);
           return (IRetryAnalyzer) Dispenser.newInstance(m_objectFactory).dispense(attributes);
         });
+  }
+
+  private int hashParameters(ITestResult itr) {
+    Object[] parameters = itr.getParameters();
+    return Objects.hash(parameters);
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {

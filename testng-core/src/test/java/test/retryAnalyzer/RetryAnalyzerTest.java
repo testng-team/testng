@@ -49,7 +49,10 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     Map<Integer, Long> collected =
         HashCodeAwareRetryAnalyzer.hashCodes.stream()
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-    assertThat(collected.keySet()).hasSize(1);
+    assertThat(collected.keySet())
+        .withFailMessage(
+            "There should have been 2 RetryAnalyser instances since the data driven test has 2 sets of data")
+        .hasSize(2);
   }
 
   @Test
