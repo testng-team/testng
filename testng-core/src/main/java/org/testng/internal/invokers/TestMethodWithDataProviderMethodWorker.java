@@ -74,7 +74,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
 
     final ITestInvoker.FailureContext failure = new ITestInvoker.FailureContext();
-    failure.count = m_failureCount;
+    failure.count.set(m_failureCount);
     try {
       tmpResults.add(
           m_testInvoker.invokeTestMethod(
@@ -92,7 +92,7 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
               suite,
               failure));
     } finally {
-      m_failureCount = failure.count;
+      m_failureCount = failure.count.get();
       if (failure.instances.isEmpty()) {
         m_testResults.addAll(tmpResults);
       } else {
@@ -100,7 +100,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
           List<ITestResult> retryResults = Lists.newArrayList();
 
           m_failureCount =
-              m_testInvoker.retryFailed(
+              m_testInvoker
+                  .retryFailed(
                       new Builder()
                           .usingInstance(instance)
                           .forTestMethod(m_testMethod)
@@ -115,7 +116,8 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
                       retryResults,
                       m_failureCount,
                       m_testContext)
-                  .count;
+                  .count
+                  .get();
           m_testResults.addAll(retryResults);
         }
       }

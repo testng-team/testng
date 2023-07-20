@@ -59,13 +59,14 @@ public class MethodRunner implements IMethodRunner {
           result.addAll(tmpResults);
         } else {
           List<ITestResult> retryResults = Lists.newArrayList();
-          failure = testInvoker.retryFailed(tmArguments, retryResults, failure.count, context);
+          failure =
+              testInvoker.retryFailed(tmArguments, retryResults, failure.count.get(), context);
           result.addAll(retryResults);
         }
 
         // If we have a failure, skip all the
         // other invocationCounts
-        if (failure.count > 0
+        if (failure.count.get() > 0
             && (skipFailedInvocationCounts
                 || tmArguments.getTestMethod().skipFailedInvocations())) {
           while (invocationCount.getAndDecrement() > 0) {
@@ -122,7 +123,7 @@ public class MethodRunner implements IMethodRunner {
               context,
               skipFailedInvocationCounts,
               invocationCount.get(),
-              failure.count,
+              failure.count.get(),
               testInvoker.getNotifier());
       workers.add(w);
       // testng387: increment the param index in the bag.

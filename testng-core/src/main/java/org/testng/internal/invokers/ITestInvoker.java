@@ -1,6 +1,8 @@
 package org.testng.internal.invokers;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
@@ -14,9 +16,9 @@ public interface ITestInvoker {
 
   class FailureContext {
 
-    int count = 0;
+    AtomicInteger count = new AtomicInteger(0);
     List<Object> instances = Lists.newArrayList();
-    boolean representsRetriedMethod = false;
+    AtomicBoolean representsRetriedMethod = new AtomicBoolean(false);
   }
 
   List<ITestResult> invokeTestMethods(
