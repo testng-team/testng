@@ -14,11 +14,17 @@ import org.testng.xml.XmlTest;
  */
 public interface ITestResultNotifier {
 
+  
+
+ 
   Set<ITestResult> getPassedTests(ITestNGMethod tm);
 
   Set<ITestResult> getFailedTests(ITestNGMethod tm);
 
   Set<ITestResult> getSkippedTests(ITestNGMethod tm);
+  
+    
+ 
 
   void addPassedTest(ITestNGMethod tm, ITestResult tr);
 
