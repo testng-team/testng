@@ -758,6 +758,10 @@ public class TestNG {
     if (listener instanceof IConfigurationListener) {
       m_configuration.addConfigurationListener((IConfigurationListener) listener);
     }
+    if (listener instanceof IListenerSetupReporter) {
+      m_configuration.addListenerSetupReporters((IListenerSetupReporter) listener);
+    }
+
     if (listener instanceof IAlterSuiteListener) {
       IAlterSuiteListener alter = (IAlterSuiteListener) listener;
       maybeAddListener(m_alterSuiteListeners, alter);
@@ -1057,12 +1061,21 @@ public class TestNG {
       return;
     }
 
-    initializeSuitesAndJarFile();
-    initializeConfiguration();
-    initializeDefaultListeners();
-    initializeCommandLineSuites();
-    initializeCommandLineSuitesParams();
-    initializeCommandLineSuitesGroups();
+    runListenerSetupReporters(true /* start */);
+    try {
+      initializeSuitesAndJarFile();
+      initializeConfiguration();
+      initializeDefaultListeners();
+      initializeCommandLineSuites();
+      initializeCommandLineSuitesParams();
+      initializeCommandLineSuitesGroups();
+    } catch(Exception e) {
+      ListenerOrderDeterminer.order(m_configuration.getListenerSetupReporters())
+          .forEach(l -> l.onListenerSetupFailure(e));
+      throw e;
+    } finally {
+      runListenerSetupReporters(false /* start */);
+    }
 
     m_isInitialized = true;
   }
@@ -1115,6 +1128,22 @@ public class TestNG {
   private void runSuiteAlterationListeners() {
     for (IAlterSuiteListener l : m_alterSuiteListeners.values()) {
       l.alter(m_suites);
+    }
+  }
+
+  private void runListenerSetupReporters(boolean start) {
+    List<IListenerSetupReporter> listenerSetupReporters =
+        ListenerOrderDeterminer.order(m_configuration.getListenerSetupReporters());
+    if (start) {
+      for (IListenerSetupReporter l : listenerSetupReporters) {
+        l.onListenerSetupStart();
+      }
+    } else {
+      List<IListenerSetupReporter> listenerSetupReportersReversed =
+          ListenerOrderDeterminer.reversedOrder(listenerSetupReporters);
+      for (IListenerSetupReporter l : listenerSetupReportersReversed) {
+        l.onListenerSetupFinish();
+      }
     }
   }
 

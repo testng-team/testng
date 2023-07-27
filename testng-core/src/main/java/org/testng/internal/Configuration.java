@@ -7,6 +7,7 @@ import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
 import org.testng.IHookable;
 import org.testng.IInjectorFactory;
+import org.testng.IListenerSetupReporter;
 import org.testng.ITestObjectFactory;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -36,6 +37,9 @@ public class Configuration implements IConfiguration {
   private boolean includeAllDataDrivenTestsWhenSkipping;
 
   private boolean propagateDataProviderFailureAsTestFailure;
+
+  private final Map<Class<? extends IListenerSetupReporter>, IListenerSetupReporter>
+      listenerSetupReporters = Maps.newLinkedHashMap();;
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
@@ -92,6 +96,16 @@ public class Configuration implements IConfiguration {
   @Override
   public List<IExecutionListener> getExecutionListeners() {
     return Lists.newArrayList(m_executionListeners.values());
+  }
+
+  @Override
+  public List<IListenerSetupReporter> getListenerSetupReporters() {
+    return Lists.newArrayList(listenerSetupReporters.values());
+  }
+
+  @Override
+  public boolean addListenerSetupReporters(IListenerSetupReporter l) {
+    return listenerSetupReporters.putIfAbsent(l.getClass(), l) == null;
   }
 
   @Override

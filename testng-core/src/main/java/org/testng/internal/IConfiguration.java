@@ -24,6 +24,10 @@ public interface IConfiguration {
 
   List<IExecutionListener> getExecutionListeners();
 
+  List<IListenerSetupReporter> getListenerSetupReporters();
+
+  boolean addListenerSetupReporters(IListenerSetupReporter l);
+
   default void addExecutionListener(IExecutionListener l) {}
 
   default boolean addExecutionListenerIfAbsent(IExecutionListener l) {

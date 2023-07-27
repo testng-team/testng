@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
+import static org.testng.xml.issue2937.ListenerSetupReporter.isListenerSetupFailureReported;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,6 +23,7 @@ import org.testng.xml.internal.Parser;
 import org.testng.xml.issue2866.ATestClassSample;
 import org.testng.xml.issue2866.BTestClassSample;
 import org.testng.xml.issue2866.ThreadCountingSuiteAlteringListener;
+import org.testng.xml.issue2937.ListenerSetupReporter;
 import test.SimpleBaseTest;
 
 public class XmlSuiteTest extends SimpleBaseTest {
@@ -212,6 +214,23 @@ public class XmlSuiteTest extends SimpleBaseTest {
     assertEquals(suite5_0.getName(), "Child Suite 5");
     assertEquals(suite5_0.getTests().size(), 1);
   }
+
+  @Test()
+  public void ensureSuiteLevelTests() throws IOException {
+    PrintStream current = System.out;
+    try {
+      Parser parser = new Parser("src/test/java/org/testng/xml/issue2937/suite.xml");
+      List<XmlSuite> suites = parser.parseToList();
+      TestNG testNG = new TestNG();
+      testNG.setXmlSuites(suites);
+//      testNG.addListener(new ListenerSetupReporter());
+      testNG.run();
+    } finally {
+
+      assertThat(isListenerSetupFailureReported).isEqualTo(true);
+    }
+  }
+
 
   private static void runTests(
       String suiteFile, int childSuitesCount, int suiteCounter, String... suiteNames) {
