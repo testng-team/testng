@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -224,7 +224,7 @@ public final class Utils {
    * @param level the logging level of the message.
    * @param msg the message to log to System.out.
    */
-  public static void log(String cls, int level, String msg) {
+  public static void log(String cls, int level, @Nullable String msg) {
     // Why this coupling on a static member of getVerbose()?
     if (getVerbose() >= level) {
       if (cls.length() > 0) {
@@ -360,7 +360,7 @@ public final class Utils {
     FULL
   }
 
-  public static String escapeHtml(String s) {
+  public static @Nullable String escapeHtml(@Nullable String s) {
     if (s == null) {
       return null;
     }
@@ -380,7 +380,7 @@ public final class Utils {
     return result.toString();
   }
 
-  public static String escapeUnicode(String s) {
+  public static @Nullable String escapeUnicode(@Nullable String s) {
     if (s == null) {
       return null;
     }

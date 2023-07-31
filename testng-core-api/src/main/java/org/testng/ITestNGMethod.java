@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.IParameterInfo;
@@ -17,8 +18,8 @@ import org.testng.xml.XmlTest;
 public interface ITestNGMethod extends Cloneable {
 
   /**
-   * @return The real class on which this method was declared (can be different from
-   *     getMethod().getDeclaringClass() if the test method was defined in a superclass).
+   * Returns the real class on which this method was declared (can be different from
+   * getMethod().getDeclaringClass() if the test method was defined in a superclass).
    */
   Class getRealClass();
 
@@ -48,16 +49,16 @@ public interface ITestNGMethod extends Cloneable {
   long[] getInstanceHashCodes();
 
   /**
-   * @return The groups this method belongs to, possibly added to the groups declared on the class.
+   * Returns the groups this method belongs to, possibly added to the groups declared on the class.
    */
   String[] getGroups();
 
   /**
-   * @return The groups this method depends on, possibly added to the groups declared on the class.
+   * Returns the groups this method depends on, possibly added to the groups declared on the class.
    */
   String[] getGroupsDependedUpon();
 
-  /** @return If a group was not found. */
+  /** Returns if a group was not found. */
   String getMissingGroup();
 
   void setMissingGroup(String group);
@@ -67,24 +68,24 @@ public interface ITestNGMethod extends Cloneable {
   String[] getAfterGroups();
 
   /**
-   * @return The methods this method depends on, possibly added to the methods declared on the
-   *     class.
+   * Returns the methods this method depends on, possibly added to the methods declared on the
+   * class.
    */
   String[] getMethodsDependedUpon();
 
   /**
-   * @return - The set of methods that are dependent on the current method. This information can
-   *     help in deciding what other TestNG methods will be skipped if the current method fails. If
-   *     the current method is a configuration method, then an empty set is returned.
+   * Returns the set of methods that are dependent on the current method. This information can help
+   * in deciding what other TestNG methods will be skipped if the current method fails. If the
+   * current method is a configuration method, then an empty set is returned.
    */
   default Set<ITestNGMethod> downstreamDependencies() {
     throw new UnsupportedOperationException("Pending implementation");
   }
 
   /**
-   * @return - The set of methods upon which the current method has a dependency. This information
-   *     can help in deciding what all TestNG methods need to pass before the current method can be
-   *     executed. If the current method is a configuration method, then an empty set is returned.
+   * Returns the set of methods upon which the current method has a dependency. This information can
+   * help in deciding what all TestNG methods need to pass before the current method can be
+   * executed. If the current method is a configuration method, then an empty set is returned.
    */
   default Set<ITestNGMethod> upstreamDependencies() {
     throw new UnsupportedOperationException("Pending implementation");
@@ -92,31 +93,31 @@ public interface ITestNGMethod extends Cloneable {
 
   void addMethodDependedUpon(String methodName);
 
-  /** @return true if this method was annotated with @Test */
+  /** Returns true if this method was annotated with @Test */
   boolean isTest();
 
-  /** @return true if this method was annotated with @Configuration and beforeTestMethod = true */
+  /** Returns true if this method was annotated with @Configuration and beforeTestMethod = true */
   boolean isBeforeMethodConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeTestMethod = false */
+  /** Returns true if this method was annotated with @Configuration and beforeTestMethod = false */
   boolean isAfterMethodConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeClassMethod = true */
+  /** Returns true if this method was annotated with @Configuration and beforeClassMethod = true */
   boolean isBeforeClassConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeClassMethod = false */
+  /** Returns true if this method was annotated with @Configuration and beforeClassMethod = false */
   boolean isAfterClassConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and beforeSuite = true */
+  /** Returns true if this method was annotated with @Configuration and beforeSuite = true */
   boolean isBeforeSuiteConfiguration();
 
-  /** @return true if this method was annotated with @Configuration and afterSuite = true */
+  /** Returns true if this method was annotated with @Configuration and afterSuite = true */
   boolean isAfterSuiteConfiguration();
 
-  /** @return <code>true</code> if this method is a @BeforeTest (@Configuration beforeTest=true) */
+  /** Returns <code>true</code> if this method is a @BeforeTest (@Configuration beforeTest=true) */
   boolean isBeforeTestConfiguration();
 
-  /** @return <code>true</code> if this method is an @AfterTest (@Configuration afterTest=true) */
+  /** Returns <code>true</code> if this method is an @AfterTest (@Configuration afterTest=true) */
   boolean isAfterTestConfiguration();
 
   boolean isBeforeGroupsConfiguration();
@@ -131,20 +132,20 @@ public interface ITestNGMethod extends Cloneable {
     return false;
   }
 
-  /** @return The timeout in milliseconds. */
+  /** Returns the timeout in milliseconds. */
   long getTimeOut();
 
   void setTimeOut(long timeOut);
 
-  /** @return the number of times this method needs to be invoked. */
+  /** Returns the number of times this method needs to be invoked. */
   int getInvocationCount();
 
   void setInvocationCount(int count);
 
-  /** @return the success percentage for this method (between 0 and 100). */
+  /** Returns the success percentage for this method (between 0 and 100). */
   int getSuccessPercentage();
 
-  /** @return The id of the thread this method was run in. */
+  /** Returns the id of the thread this method was run in. */
   String getId();
 
   void setId(String id);
@@ -154,15 +155,16 @@ public interface ITestNGMethod extends Cloneable {
   void setDate(long date);
 
   /**
+   * Returns true if this ITestNGMethod can be invoked from within IClass.
+   *
    * @param testClass The test class
-   * @return true if this ITestNGMethod can be invoked from within IClass.
    */
   boolean canRunFromClass(IClass testClass);
 
-  /** @return true if this method is alwaysRun=true */
+  /** Returns true if this method is alwaysRun=true */
   boolean isAlwaysRun();
 
-  /** @return the number of threads to be used when invoking the method on parallel */
+  /** Returns the number of threads to be used when invoking the method on parallel */
   int getThreadPoolSize();
 
   void setThreadPoolSize(int threadPoolSize);
@@ -197,7 +199,7 @@ public interface ITestNGMethod extends Cloneable {
 
   void setSkipFailedInvocations(boolean skip);
 
-  /** @return The time under which all invocationCount methods need to complete by. */
+  /** Returns the time under which all invocationCount methods need to complete by. */
   long getInvocationTimeOut();
 
   boolean ignoreMissingDependencies();
@@ -239,21 +241,20 @@ public interface ITestNGMethod extends Cloneable {
 
   void setInterceptedPriority(int priority);
 
-  /** @return the XmlTest this method belongs to. */
+  /** Returns the XmlTest this method belongs to. */
   XmlTest getXmlTest();
 
   ConstructorOrMethod getConstructorOrMethod();
 
   /**
+   * Returns the parameters found in the include tag, if any
+   *
    * @param test - The {@link XmlTest} object.
-   * @return the parameters found in the include tag, if any
    */
   Map<String, String> findMethodParameters(XmlTest test);
 
   /**
-   * getRealClass().getName() + "." + getMethodName()
-   *
-   * @return qualified name for this method
+   * Returns the qualified name for this method: getRealClass().getName() + "." + getMethodName()
    */
   String getQualifiedName();
 
@@ -262,26 +263,26 @@ public interface ITestNGMethod extends Cloneable {
   }
 
   /**
-   * @return - A {@link IParameterInfo} object that represents details about the parameters
-   *     associated with the factory method.
+   * Returns a {@link IParameterInfo} object that represents details about the parameters associated
+   * with the factory method.
    */
-  default IParameterInfo getFactoryMethodParamsInfo() {
+  default @Nullable IParameterInfo getFactoryMethodParamsInfo() {
     return null;
   }
 
   /**
-   * @return - An array of {@link CustomAttribute} that represents the custom attributes associated
-   *     with a test.
+   * Returns an array of {@link CustomAttribute} that represents the custom attributes associated
+   * with a test.
    */
   default CustomAttribute[] getAttributes() {
     return new CustomAttribute[] {};
   }
 
   /**
-   * @return - An {@link IDataProviderMethod} for a data provider powered test method and <code>null
+   * Returns an {@link IDataProviderMethod} for a data provider powered test method and <code>null
    *     </code> otherwise.
    */
-  default IDataProviderMethod getDataProviderMethod() {
+  default @Nullable IDataProviderMethod getDataProviderMethod() {
     return null;
   }
 
@@ -290,8 +291,8 @@ public interface ITestNGMethod extends Cloneable {
   }
 
   /**
-   * @return - <code>true</code> if the configuration failure arising out of this method should be
-   *     ignored.
+   * Returns <code>true</code> if the configuration failure arising out of this method should be
+   * ignored.
    */
   default boolean isIgnoreFailure() {
     return false;

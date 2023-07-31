@@ -5,9 +5,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.checkerframework.checker.nullness.qual.KeyFor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
-  protected final Map<K, C> m_objects;
+  protected final @NonNull Map<@NonNull K, @NonNull C> m_objects;
 
   protected MultiMap(boolean isSorted) {
     if (isSorted) {
@@ -19,7 +22,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
 
   protected abstract C createValue();
 
-  public boolean put(K key, V method) {
+  public boolean put(@NonNull K key, @NonNull V method) {
     AtomicBoolean exists = new AtomicBoolean(true);
     return m_objects
             .computeIfAbsent(
@@ -32,48 +35,47 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
         && exists.get();
   }
 
-  public C get(K key) {
+  public C get(@NonNull K key) {
     return m_objects.computeIfAbsent(key, k -> createValue());
   }
 
-  public Set<K> keySet() {
+  public @NonNull Set<K> keySet() {
     return new HashSet<>(m_objects.keySet());
   }
 
-  public boolean containsKey(K k) {
+  public boolean containsKey(@NonNull K k) {
     return m_objects.containsKey(k);
   }
 
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder();
-    Set<K> indices = keySet();
-    for (K i : indices) {
-      result.append("\n    ").append(i).append(" <-- ");
-      for (Object o : m_objects.get(i)) {
-        result.append(o).append(" ");
+    for (Map.Entry<K, C> entry : m_objects.entrySet()) {
+      result.append("\n    ").append(entry.getKey()).append(" <-- ");
+      for (V v : entry.getValue()) {
+        result.append(v).append(" ");
       }
     }
     return result.toString();
   }
 
   public boolean isEmpty() {
-    return m_objects.size() == 0;
+    return m_objects.isEmpty();
   }
 
   public int size() {
     return m_objects.size();
   }
 
-  public boolean remove(K key, V value) {
+  public boolean remove(@NonNull K key, @NonNull V value) {
     return get(key).remove(value);
   }
 
-  public C removeAll(K key) {
+  public @Nullable C removeAll(@NonNull K key) {
     return m_objects.remove(key);
   }
 
-  public Set<Map.Entry<K, C>> entrySet() {
+  public Set<Map.Entry<@NonNull @KeyFor("this.m_objects") K, @NonNull C>> entrySet() {
     return m_objects.entrySet();
   }
 
@@ -81,9 +83,9 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.values();
   }
 
-  public boolean putAll(K k, Collection<? extends V> values) {
+  public boolean putAll(@NonNull K k, @NonNull Collection<? extends @NonNull V> values) {
     boolean result = false;
-    for (V v : values) {
+    for (@NonNull V v : values) {
       result = put(k, v) || result;
     }
     return result;

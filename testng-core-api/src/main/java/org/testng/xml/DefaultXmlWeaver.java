@@ -7,6 +7,7 @@ import static org.testng.xml.XmlSuite.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.reporters.XMLStringBuffer;
 
 /**
@@ -26,7 +27,7 @@ class DefaultXmlWeaver implements IWeaveXml {
     this(null);
   }
 
-  DefaultXmlWeaver(String defaultComment) {
+  DefaultXmlWeaver(@Nullable String defaultComment) {
     this.defaultComment = defaultComment;
   }
 

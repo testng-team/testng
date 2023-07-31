@@ -4,13 +4,14 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PerformanceUtils {
 
   private static final ThreadMXBean THREAD_MX_BEAN = ManagementFactory.getThreadMXBean();
-  private static final Method GET_THREAD_ALLOCATED_BYTES = initGetThreadAllocatedBytes();
+  private static final @Nullable Method GET_THREAD_ALLOCATED_BYTES = initGetThreadAllocatedBytes();
 
-  private static Method initGetThreadAllocatedBytes() {
+  private static @Nullable Method initGetThreadAllocatedBytes() {
     try {
       Method method = THREAD_MX_BEAN.getClass().getMethod("getThreadAllocatedBytes", long.class);
       method.setAccessible(true);
@@ -25,7 +26,7 @@ public class PerformanceUtils {
     return GET_THREAD_ALLOCATED_BYTES != null;
   }
 
-  /** @return amount of memory (in bytes) allocated by current thread until now */
+  /** Returns amount of memory (in bytes) allocated by current thread until now. */
   public static long measureAllocatedMemory() {
     if (GET_THREAD_ALLOCATED_BYTES == null) {
       throw new IllegalStateException(
@@ -34,7 +35,12 @@ public class PerformanceUtils {
     long selfId = Thread.currentThread().getId();
 
     try {
-      return (long) GET_THREAD_ALLOCATED_BYTES.invoke(THREAD_MX_BEAN, selfId);
+      Object result = GET_THREAD_ALLOCATED_BYTES.invoke(THREAD_MX_BEAN, selfId);
+      if (!(result instanceof Long)) {
+        throw new IllegalStateException(
+            "Method getThreadAllocatedBytes(long) returns unexpected type: " + result);
+      }
+      return (Long) result;
     } catch (IllegalAccessException e) {
       throw new RuntimeException("Unable to call " + GET_THREAD_ALLOCATED_BYTES, e);
     } catch (InvocationTargetException e) {

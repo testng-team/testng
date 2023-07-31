@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.ITestObjectFactory;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -86,7 +87,7 @@ public class XmlSuite implements Cloneable {
       this.name = name;
     }
 
-    public static FailurePolicy getValidPolicy(String policy) {
+    public static @Nullable FailurePolicy getValidPolicy(String policy) {
       if (policy == null) {
         return null;
       }

@@ -33,6 +33,9 @@ class BundledResourceProcessor extends Processor {
       Method thisMethod = url.openConnection().getClass().getDeclaredMethod("getFileURL", params);
       Object[] paramsObj = {};
       URL fileUrl = (URL) thisMethod.invoke(connection, paramsObj);
+      if (fileUrl == null) {
+        return Lists.newArrayList();
+      }
       return findClassesInDirPackage(
           packageOnly, included, excluded, URLDecoder.decode(fileUrl.getFile(), UTF_8), recursive);
     } catch (Exception ex) {

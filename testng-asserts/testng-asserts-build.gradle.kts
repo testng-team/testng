@@ -6,6 +6,7 @@ dependencies {
     implementation(projects.testngCollections) {
         because("Lists.newArrayList")
     }
+    implementation("org.checkerframework:checker-qual:3.36.0")
 
     testImplementation("org.testng:testng:7.3.0") {
         because("core depends on assertions and we need testng to test assertions")

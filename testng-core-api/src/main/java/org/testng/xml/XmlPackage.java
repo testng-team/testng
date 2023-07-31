@@ -17,6 +17,7 @@ public class XmlPackage {
   private List<String> m_exclude = Lists.newArrayList();
   private List<XmlClass> m_xmlClasses = null;
 
+  @SuppressWarnings("initialization.fields.uninitialize")
   public XmlPackage() {}
 
   // For YAML

@@ -3,18 +3,21 @@ package org.testng.internal.reflect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 
-public class ReflectionHelper {
+public final class ReflectionHelper {
+  private ReflectionHelper() {}
   /**
-   * @return An array of all locally declared methods or equivalent thereof (such as default methods
-   *     on Java 8 based interfaces that the given class implements).
+   * Returns an array of all locally declared methods or equivalent thereof (such as default methods
+   * on Java 8 based interfaces that the given class implements).
    */
   public static Method[] getLocalMethods(Class<?> clazz) {
     Method[] declaredMethods = excludingMain(clazz);
@@ -39,13 +42,13 @@ public class ReflectionHelper {
   }
 
   /**
-   * @return An array of all locally declared methods or equivalent thereof (such as default methods
-   *     on Java 8 based interfaces that the given class implements) but excludes the <code>main()
+   * Returns an array of all locally declared methods or equivalent thereof (such as default methods
+   * on Java 8 based interfaces that the given class implements) but excludes the <code>main()
    *     </code> method alone.
    */
   public static Method[] excludingMain(Class<?> clazz) {
     Method[] declaredMethods = clazz.getDeclaredMethods();
-    List<Method> pruned = new LinkedList<>();
+    List<Method> pruned = new ArrayList<>();
     for (Method declaredMethod : declaredMethods) {
       if ("main".equals(declaredMethod.getName())
           && isStaticVoid(declaredMethod)
@@ -66,7 +69,7 @@ public class ReflectionHelper {
    * @param <T> - The annotation type
    * @return - Either the annotation if found (or) <code>null.</code>
    */
-  public static <T extends Annotation> T findAnnotation(
+  public static <T extends Annotation> @Nullable T findAnnotation(
       Class<?> typedTestClass, Class<T> annotation) {
     if (typedTestClass == null || annotation == null) {
       return null;
@@ -104,11 +107,12 @@ public class ReflectionHelper {
         .collect(Collectors.toList());
   }
 
-  private static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
+  private static Set<Class<?>> getAllInterfaces(@NonNull Class<?> clazz) {
     Set<Class<?>> result = new HashSet<>();
-    while (clazz != null && clazz != Object.class) {
-      result.addAll(Arrays.asList(clazz.getInterfaces()));
-      clazz = clazz.getSuperclass();
+    @Nullable Class<?> superClass = clazz;
+    while (superClass != null && superClass != Object.class) {
+      result.addAll(Arrays.asList(superClass.getInterfaces()));
+      superClass = superClass.getSuperclass();
     }
     return result;
   }

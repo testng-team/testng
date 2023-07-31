@@ -2,6 +2,7 @@ package org.testng;
 
 import java.util.Collection;
 import java.util.Date;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.xml.XmlTest;
 
 /**
@@ -13,29 +14,30 @@ import org.testng.xml.XmlTest;
  */
 public interface ITestContext extends IAttributes {
 
-  /** @return The name of this test. */
+  /** Returns the name of this test. */
   String getName();
 
-  /** @return When this test started running. */
+  /** Returns when this test started running. */
   Date getStartDate();
 
-  /** @return When this test stopped running. */
+  /** Returns when this test stopped running. */
   Date getEndDate();
 
-  /** @return A list of all the tests that run successfully. */
+  /** Returns a list of all the tests that run successfully. */
   IResultMap getPassedTests();
 
-  /** @return A list of all the tests that were skipped */
+  /** Returns a list of all the tests that were skipped */
   IResultMap getSkippedTests();
 
   /**
-   * @return A list of all the tests that failed but are being ignored because annotated with a
-   *     successPercentage.
+   * Returns a list of all the tests that failed but are being ignored because annotated with a
+   * successPercentage.
    */
   IResultMap getFailedButWithinSuccessPercentageTests();
 
   /**
-   * @return A map of all the tests that failed, indexed by their ITestNGMethod.
+   * Returns a map of all the tests that failed, indexed by their ITestNGMethod.
+   *
    * @see org.testng.ITestNGMethod
    */
   IResultMap getFailedTests();
@@ -43,40 +45,40 @@ public interface ITestContext extends IAttributes {
   /** @return All the groups that are included for this test run. */
   String[] getIncludedGroups();
 
-  /** @return All the groups that are excluded for this test run. */
+  /** Returns all the groups that are excluded for this test run. */
   String[] getExcludedGroups();
 
-  /** @return Where the reports will be generated. */
+  /** Returns where the reports will be generated. */
   String getOutputDirectory();
 
-  /** @return The Suite object that was passed to the runner at start-up. */
+  /** Returns the Suite object that was passed to the runner at start-up. */
   ISuite getSuite();
 
-  /** @return All the test methods that were run. */
+  /** Returns all the test methods that were run. */
   ITestNGMethod[] getAllTestMethods();
 
   /**
-   * @return The host where this test was run, or null if it was run locally. The returned string
-   *     has the form: host:port
+   * Returns the host where this test was run, or null if it was run locally. The returned string
+   * has the form: host:port
    */
   String getHost();
 
-  /** @return All the methods that were not included in this test run. */
+  /** Returns all the methods that were not included in this test run. */
   Collection<ITestNGMethod> getExcludedMethods();
 
-  /** @return The information about the successful configuration method invocations. */
+  /** Returns the information about the successful configuration method invocations. */
   IResultMap getPassedConfigurations();
 
-  /** @return The information about the skipped configuration method invocations. */
+  /** Returns the information about the skipped configuration method invocations. */
   IResultMap getSkippedConfigurations();
 
-  /** @return The information about the failed configuration method invocations. */
+  /** Returns the information about the failed configuration method invocations. */
   IResultMap getFailedConfigurations();
 
-  /** @return the current XmlTest. */
+  /** Returns the current XmlTest. */
   XmlTest getCurrentXmlTest();
 
-  default IInjectorFactory getInjectorFactory() {
+  default @Nullable IInjectorFactory getInjectorFactory() {
     return null;
   }
 }

@@ -53,7 +53,14 @@ public class Input {
     private String packageDirName;
     private String packageName;
 
-    private Builder() {}
+    private Builder() {
+      included = Collections.emptyList();
+      excluded = Collections.emptyList();
+      packageWithoutWildCards = "";
+      recursive = false;
+      packageDirName = "";
+      packageName = "";
+    }
 
     public static Builder newBuilder() {
       return new Builder();

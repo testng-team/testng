@@ -14,10 +14,12 @@ public class ConstructorOrMethod {
 
   public ConstructorOrMethod(Method m) {
     m_method = m;
+    m_constructor = null;
   }
 
   public ConstructorOrMethod(Constructor<?> c) {
     m_constructor = c;
+    m_method = null;
   }
 
   public ConstructorOrMethod(Executable e) {

@@ -3,6 +3,7 @@ package org.testng.xml;
 import static org.testng.collections.CollectionUtils.hasElements;
 
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
@@ -45,7 +46,7 @@ public class XmlDefine {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

@@ -2,8 +2,8 @@ package org.testng.xml;
 
 public class XmlScript {
 
-  private String language;
-  private String expression;
+  private String language = null;
+  private String expression = null;
 
   public void setLanguage(String language) {
     this.language = language;

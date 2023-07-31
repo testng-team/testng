@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
@@ -103,7 +104,7 @@ public class XmlInclude {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
     if (obj == null) return XmlSuite.f();
     if (getClass() != obj.getClass()) return XmlSuite.f();

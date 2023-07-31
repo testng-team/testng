@@ -3,6 +3,7 @@ package org.testng.xml;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -210,7 +211,7 @@ public class XmlClass implements Cloneable {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }

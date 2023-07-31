@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Factory used to create all test instances. This object factory only receives the class in
  * parameter.
@@ -17,7 +19,7 @@ public interface IObjectFactory2 extends ITestObjectFactory {
    * @return - The newly created object.
    */
   @Deprecated
-  default Object newInstance(Class<?> cls) {
+  default Object newInstance(@NonNull Class<?> cls) {
     return newInstance(cls, new Object[0]);
   }
 }

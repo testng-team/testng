@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     implementation(projects.testngCollections)
+    implementation("org.checkerframework:checker-qual:3.36.0")
 }

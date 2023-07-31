@@ -2,6 +2,7 @@ package org.testng;
 
 import java.io.File;
 import java.io.IOException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Assertion tool for File centric assertions. Conceptually, this is an extension of {@link Assert}.
@@ -77,7 +78,7 @@ public class FileAssert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  public static void assertLength(File tstvalue, long expected, String message) {
+  public static void assertLength(File tstvalue, long expected, @Nullable String message) {
     long actual = -1L;
     try {
       actual = tstvalue.isDirectory() ? tstvalue.list().length : tstvalue.length();
@@ -291,7 +292,7 @@ public class FileAssert {
    * @param message
    */
   private static void failSecurity(
-      Exception e, File path, String actual, String expected, String message) {
+      Exception e, File path, String actual, String expected, @Nullable String message) {
     String formatted = "";
     if (message != null) {
       formatted = message + " ";

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.collections.Lists;
@@ -68,7 +69,7 @@ public final class ClassHelper {
    * @param className the class name to be loaded.
    * @return the class or null if the class is not found.
    */
-  public static Class<?> forName(final String className) {
+  public static @Nullable Class<?> forName(final String className) {
     List<ClassLoader> allClassLoaders = appendContextualClassLoaders(classLoaders);
 
     for (ClassLoader classLoader : allClassLoaders) {
@@ -172,20 +173,18 @@ public final class ClassHelper {
     }
 
     Class<?> parent = clazz.getSuperclass();
-    if (null != parent) {
-      while (!Object.class.equals(parent)) {
-        Set<Map.Entry<String, Set<Method>>> extractedMethods =
-            extractMethods(clazz, parent, methods).entrySet();
-        for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods) {
-          Set<Method> m = methods.get(extractedMethod.getKey());
-          if (m == null) {
-            methods.put(extractedMethod.getKey(), extractedMethod.getValue());
-          } else {
-            m.addAll(extractedMethod.getValue());
-          }
+    while (parent != null && !Object.class.equals(parent)) {
+      Set<Map.Entry<String, Set<Method>>> extractedMethods =
+          extractMethods(clazz, parent, methods).entrySet();
+      for (Map.Entry<String, Set<Method>> extractedMethod : extractedMethods) {
+        Set<Method> m = methods.get(extractedMethod.getKey());
+        if (m == null) {
+          methods.put(extractedMethod.getKey(), extractedMethod.getValue());
+        } else {
+          m.addAll(extractedMethod.getValue());
         }
-        parent = parent.getSuperclass();
       }
+      parent = parent.getSuperclass();
     }
 
     Set<Method> returnValue = Sets.newHashSet();
@@ -231,7 +230,8 @@ public final class ClassHelper {
     return visible && hasNoInheritanceTraits;
   }
 
-  private static boolean isSamePackage(Package childPackage, Package classPackage) {
+  private static boolean isSamePackage(
+      @Nullable Package childPackage, @Nullable Package classPackage) {
     boolean isSamePackage = false;
 
     if ((null == childPackage) && (null == classPackage)) {

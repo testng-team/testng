@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.internal.protocols.Input;
 import org.testng.internal.protocols.Processor;
@@ -79,7 +80,7 @@ public class PackageUtils {
         .toArray(String[]::new);
   }
 
-  private static String[] getTestClasspath() {
+  private static @Nullable String[] getTestClasspath() {
     if (null != testClassPaths) {
       return testClassPaths;
     }

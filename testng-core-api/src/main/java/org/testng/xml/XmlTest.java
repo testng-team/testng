@@ -1,6 +1,8 @@
 package org.testng.xml;
 
 import java.util.*;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -27,15 +29,16 @@ public class XmlTest implements Cloneable {
 
   private String m_timeOut;
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
-  private Map<String, List<Integer>> m_failedInvocationNumbers = null; // lazily initialized
+  private @Nullable Map<String, List<Integer>> m_failedInvocationNumbers =
+      null; // lazily initialized
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
 
   private int m_index;
 
-  private Boolean m_groupByInstances;
+  private @Nullable Boolean m_groupByInstances;
 
-  private Boolean m_allowReturnValues = null;
+  private @Nullable Boolean m_allowReturnValues = null;
 
   private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
 
@@ -46,14 +49,6 @@ public class XmlTest implements Cloneable {
    * @param index the index of this test tag in testng.xml
    */
   public XmlTest(XmlSuite suite, int index) {
-    init(suite, index);
-  }
-
-  public XmlTest(XmlSuite suite) {
-    init(suite, 0);
-  }
-
-  private void init(XmlSuite suite, int index) {
     m_suite = suite;
     m_suite.getTests().add(this);
     m_index = index;
@@ -62,7 +57,12 @@ public class XmlTest implements Cloneable {
     m_name = "Default XmlTest name " + UUID.randomUUID();
   }
 
+  public XmlTest(XmlSuite suite) {
+    this(suite, 0);
+  }
+
   // For YAML
+  @SuppressWarnings("initialization.fields.uninitialize")
   public XmlTest() {}
 
   public void setXmlPackages(List<XmlPackage> packages) {
@@ -104,7 +104,7 @@ public class XmlTest implements Cloneable {
     return m_suite;
   }
 
-  /** @return the includedGroups. */
+  /** Returns the includedGroups. */
   public List<String> getIncludedGroups() {
     List<String> result = Lists.newArrayList();
     if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
@@ -118,7 +118,7 @@ public class XmlTest implements Cloneable {
     return getIncludedGroups().isEmpty() && getExcludedGroups().isEmpty();
   }
 
-  /** @return Returns the classes. */
+  /** Returns the classes. */
   public List<XmlClass> getXmlClasses() {
     return m_xmlClasses;
   }
@@ -142,7 +142,7 @@ public class XmlTest implements Cloneable {
     m_xmlClasses = classes;
   }
 
-  /** @return Returns the name. */
+  /** Returns the name. */
   public String getName() {
     return m_name;
   }
@@ -216,7 +216,7 @@ public class XmlTest implements Cloneable {
     m_xmlGroups.getRun().getExcludes().add(g);
   }
 
-  /** @return Returns the verbose. */
+  /** Returns the verbose. */
   public int getVerbose() {
     Integer result = m_verbose;
     if (null == result || XmlSuite.DEFAULT_VERBOSE.equals(m_verbose)) {
@@ -270,7 +270,7 @@ public class XmlTest implements Cloneable {
     m_skipFailedInvocationCounts = skip;
   }
 
-  /** @return Returns the isJUnit. */
+  /** Returns the isJUnit. */
   public boolean skipFailedInvocationCounts() {
     Boolean result = m_skipFailedInvocationCounts;
     if (null == result) {
@@ -301,7 +301,7 @@ public class XmlTest implements Cloneable {
     }
   }
 
-  /** @return Returns the metaGroups. */
+  /** Returns the metaGroups. */
   public Map<String, List<String>> getMetaGroups() {
     if (m_xmlGroups == null) {
       return Collections.emptyMap();
@@ -332,7 +332,7 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
-  /** @return the parameters defined in this test tag and the tags above it. */
+  /** Returns the parameters defined in this test tag and the tags above it. */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     result.putAll(getSuite().getParameters());
@@ -341,8 +341,8 @@ public class XmlTest implements Cloneable {
   }
 
   /**
-   * @return the parameters defined in this tag, and only this test tag. To retrieve the inherited
-   *     parameters as well, call {@code getAllParameters()}.
+   * Returns the parameters defined in this tag, and only this test tag. To retrieve the inherited
+   * parameters as well, call {@code getAllParameters()}.
    */
   public Map<String, String> getLocalParameters() {
     return m_parameters;
@@ -394,7 +394,7 @@ public class XmlTest implements Cloneable {
     }
   }
 
-  public XmlScript getScript() {
+  public @Nullable XmlScript getScript() {
     List<XmlMethodSelector> selectors = getMethodSelectors();
     if (selectors.isEmpty()) {
       return null;
@@ -440,6 +440,22 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
+  private @NonNull Map<String, List<Integer>> getFailedInvocationNumbers() {
+    if (m_failedInvocationNumbers == null) {
+      m_failedInvocationNumbers = Maps.newHashMap();
+      for (XmlClass c : getXmlClasses()) {
+        for (XmlInclude xi : c.getIncludedMethods()) {
+          List<Integer> invocationNumbers = xi.getInvocationNumbers();
+          if (!invocationNumbers.isEmpty()) {
+            String methodName = c.getName() + "." + xi.getName();
+            m_failedInvocationNumbers.put(methodName, invocationNumbers);
+          }
+        }
+      }
+    }
+    return m_failedInvocationNumbers;
+  }
+
   /**
    * Convenience method to cache the ordering numbers for methods.
    *
@@ -447,20 +463,7 @@ public class XmlTest implements Cloneable {
    * @return The invocation numbers of the method
    */
   public List<Integer> getInvocationNumbers(String method) {
-    if (m_failedInvocationNumbers == null) {
-      m_failedInvocationNumbers = Maps.newHashMap();
-      for (XmlClass c : getXmlClasses()) {
-        for (XmlInclude xi : c.getIncludedMethods()) {
-          List<Integer> invocationNumbers = xi.getInvocationNumbers();
-          if (invocationNumbers.size() > 0) {
-            String methodName = c.getName() + "." + xi.getName();
-            m_failedInvocationNumbers.put(methodName, invocationNumbers);
-          }
-        }
-      }
-    }
-
-    List<Integer> result = m_failedInvocationNumbers.get(method);
+    List<Integer> result = getFailedInvocationNumbers().get(method);
     if (result == null) {
       // Don't use emptyList here since this list might end up receiving values if
       // the test run fails.
@@ -662,8 +665,9 @@ public class XmlTest implements Cloneable {
   }
 
   /**
+   * Returns <code>true</code> if the current test's name matches with any of the given names.
+   *
    * @param names The list of names to check.
-   * @return <code>true</code> if the current test's name matches with any of the given names.
    */
   public boolean nameMatchesAny(List<String> names) {
     return names.contains(getName());
