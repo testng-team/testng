@@ -164,7 +164,7 @@ public class ConfigurationMethod extends BaseTestMethod {
             "Detected a static method ["
                 + method.getQualifiedName()
                 + "()]. Static configuration methods can cause "
-                + " unexpected behavior.";
+                + "unexpected behavior.";
         Logger.getLogger(Configuration.class).warn(msg);
       }
 
