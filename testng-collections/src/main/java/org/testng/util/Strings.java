@@ -3,7 +3,6 @@ package org.testng.util;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.testng.collections.Maps;
 
 public final class Strings {
@@ -55,7 +54,7 @@ public final class Strings {
     return result;
   }
 
-  public static String valueOf(Map<?, @NonNull ?> m) {
+  public static String valueOf(Map<?, ?> m) {
     return m.values().stream().map(Object::toString).collect(Collectors.joining(" "));
   }
 

@@ -2,8 +2,7 @@ plugins {
     `java-base`
     id("testng.versioning")
     id("testng.style")
-    id("testng.errorprone")
-    id("testng.checkerframework")
+    // id("testng.build-parameters") // Plugin [id: 'testng.build-parameters'] was not found
     id("testng.repositories")
     // Improves Gradle Test logging
     // See https://github.com/vlsi/vlsi-release-plugins/tree/master/plugins/gradle-extensions-plugin
@@ -13,6 +12,13 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+}
+
+if (true /*buildParameters.enableCheckerframework*/) {
+    apply(plugin = "testng.checkerframework")
+}
+if (true /*buildParameters.enableErrorprone*/) {
+    apply(plugin = "testng.errorprone")
 }
 
 tasks.withType<JavaCompile>().configureEach {

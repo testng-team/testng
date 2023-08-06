@@ -6,11 +6,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.checkerframework.checker.nullness.qual.KeyFor;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
-  protected final @NonNull Map<@NonNull K, @NonNull C> m_objects;
+  protected final Map<K, C> m_objects;
 
   protected MultiMap(boolean isSorted) {
     if (isSorted) {
@@ -22,7 +21,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
 
   protected abstract C createValue();
 
-  public boolean put(@NonNull K key, @NonNull V method) {
+  public boolean put(K key, V method) {
     AtomicBoolean exists = new AtomicBoolean(true);
     return m_objects
             .computeIfAbsent(
@@ -35,15 +34,15 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
         && exists.get();
   }
 
-  public C get(@NonNull K key) {
+  public C get(K key) {
     return m_objects.computeIfAbsent(key, k -> createValue());
   }
 
-  public @NonNull Set<K> keySet() {
+  public Set<K> keySet() {
     return new HashSet<>(m_objects.keySet());
   }
 
-  public boolean containsKey(@NonNull K k) {
+  public boolean containsKey(K k) {
     return m_objects.containsKey(k);
   }
 
@@ -67,15 +66,15 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.size();
   }
 
-  public boolean remove(@NonNull K key, @NonNull V value) {
+  public boolean remove(K key, V value) {
     return get(key).remove(value);
   }
 
-  public @Nullable C removeAll(@NonNull K key) {
+  public @Nullable C removeAll(K key) {
     return m_objects.remove(key);
   }
 
-  public Set<Map.Entry<@NonNull @KeyFor("this.m_objects") K, @NonNull C>> entrySet() {
+  public Set<Map.Entry<@KeyFor("this.m_objects") K, C>> entrySet() {
     return m_objects.entrySet();
   }
 
@@ -83,9 +82,9 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return m_objects.values();
   }
 
-  public boolean putAll(@NonNull K k, @NonNull Collection<? extends @NonNull V> values) {
+  public boolean putAll(K k, Collection<? extends V> values) {
     boolean result = false;
-    for (@NonNull V v : values) {
+    for (V v : values) {
       result = put(k, v) || result;
     }
     return result;

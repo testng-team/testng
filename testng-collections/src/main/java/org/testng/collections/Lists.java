@@ -3,7 +3,6 @@ package org.testng.collections;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class Lists {
 
@@ -52,7 +51,7 @@ public final class Lists {
     return new ArrayList<>(size);
   }
 
-  public static <K> List<K> intersection(List<@NonNull K> list1, List<@NonNull K> list2) {
+  public static <K> List<K> intersection(List<K> list1, List<K> list2) {
     return list1.stream().filter(list2::contains).collect(Collectors.toList());
   }
 

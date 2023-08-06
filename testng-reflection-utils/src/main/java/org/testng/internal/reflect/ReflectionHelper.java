@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 
@@ -107,7 +106,7 @@ public final class ReflectionHelper {
         .collect(Collectors.toList());
   }
 
-  private static Set<Class<?>> getAllInterfaces(@NonNull Class<?> clazz) {
+  private static Set<Class<?>> getAllInterfaces(Class<?> clazz) {
     Set<Class<?>> result = new HashSet<>();
     @Nullable Class<?> superClass = clazz;
     while (superClass != null && superClass != Object.class) {

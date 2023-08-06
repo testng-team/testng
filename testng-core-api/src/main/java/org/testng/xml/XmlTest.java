@@ -1,7 +1,6 @@
 package org.testng.xml;
 
 import java.util.*;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -440,7 +439,7 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
-  private @NonNull Map<String, List<Integer>> getFailedInvocationNumbers() {
+  private Map<String, List<Integer>> getFailedInvocationNumbers() {
     if (m_failedInvocationNumbers == null) {
       m_failedInvocationNumbers = Maps.newHashMap();
       for (XmlClass c : getXmlClasses()) {
