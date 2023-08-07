@@ -20,7 +20,7 @@ public class XmlTest implements Cloneable {
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
 
   private Map<String, String> m_parameters = Maps.newHashMap();
-  private XmlSuite.ParallelMode m_parallel;
+  private XmlSuite.ParallelMode m_parallel = null;
 
   private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
   // test level packages
@@ -28,8 +28,7 @@ public class XmlTest implements Cloneable {
 
   private String m_timeOut;
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
-  private @Nullable Map<String, List<Integer>> m_failedInvocationNumbers =
-      null; // lazily initialized
+  private final Map<String, List<Integer>> m_failedInvocationNumbers = Maps.newHashMap();
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
 
@@ -61,7 +60,7 @@ public class XmlTest implements Cloneable {
   }
 
   // For YAML
-  @SuppressWarnings("initialization.fields.uninitialize")
+  @SuppressWarnings("initialization.fields.uninitialized")
   public XmlTest() {}
 
   public void setXmlPackages(List<XmlPackage> packages) {
@@ -230,7 +229,7 @@ public class XmlTest implements Cloneable {
   }
 
   public boolean getGroupByInstances() {
-    Boolean result = m_groupByInstances;
+    @Nullable Boolean result = m_groupByInstances;
     if (result == null || XmlSuite.DEFAULT_GROUP_BY_INSTANCES.equals(m_groupByInstances)) {
       result = getSuite().getGroupByInstances();
     }
@@ -322,8 +321,8 @@ public class XmlTest implements Cloneable {
     m_parameters.put(key, value);
   }
 
-  public String getParameter(String name) {
-    String result = m_parameters.get(name);
+  public @Nullable String getParameter(String name) {
+    @Nullable String result = m_parameters.get(name);
     if (null == result) {
       result = getSuite().getParameter(name);
     }
@@ -355,8 +354,8 @@ public class XmlTest implements Cloneable {
     return Optional.ofNullable(m_parallel).orElse(getSuite().getParallel());
   }
 
-  public String getTimeOut() {
-    String result = getSuite().getTimeOut();
+  public @Nullable String getTimeOut() {
+    @Nullable String result = getSuite().getTimeOut();
     if (null != m_timeOut) {
       result = m_timeOut;
     }
@@ -440,15 +439,15 @@ public class XmlTest implements Cloneable {
   }
 
   private Map<String, List<Integer>> getFailedInvocationNumbers() {
-    if (m_failedInvocationNumbers == null) {
-      m_failedInvocationNumbers = Maps.newHashMap();
-      for (XmlClass c : getXmlClasses()) {
-        for (XmlInclude xi : c.getIncludedMethods()) {
-          List<Integer> invocationNumbers = xi.getInvocationNumbers();
-          if (!invocationNumbers.isEmpty()) {
-            String methodName = c.getName() + "." + xi.getName();
-            m_failedInvocationNumbers.put(methodName, invocationNumbers);
-          }
+    if (!m_failedInvocationNumbers.isEmpty()) {
+      return m_failedInvocationNumbers;
+    }
+    for (XmlClass c : getXmlClasses()) {
+      for (XmlInclude xi : c.getIncludedMethods()) {
+        List<Integer> invocationNumbers = xi.getInvocationNumbers();
+        if (!invocationNumbers.isEmpty()) {
+          String methodName = c.getName() + "." + xi.getName();
+          m_failedInvocationNumbers.put(methodName, invocationNumbers);
         }
       }
     }
@@ -462,7 +461,7 @@ public class XmlTest implements Cloneable {
    * @return The invocation numbers of the method
    */
   public List<Integer> getInvocationNumbers(String method) {
-    List<Integer> result = getFailedInvocationNumbers().get(method);
+    @Nullable List<Integer> result = getFailedInvocationNumbers().get(method);
     if (result == null) {
       // Don't use emptyList here since this list might end up receiving values if
       // the test run fails.
@@ -550,15 +549,15 @@ public class XmlTest implements Cloneable {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     XmlTest other = (XmlTest) obj;
     if (m_xmlGroups == null) {
-      if (other.m_xmlGroups != null) return XmlSuite.f();
+      if (other.m_xmlGroups != null) return false;
     } else {
       if (other.m_xmlGroups == null) {
         return false;
@@ -568,55 +567,53 @@ public class XmlTest implements Cloneable {
         return false;
       }
       if (!m_xmlGroups.getRun().getExcludes().equals(other.m_xmlGroups.getRun().getExcludes())) {
-        return XmlSuite.f();
+        return false;
       }
       if (!m_xmlGroups.getRun().getIncludes().equals(other.m_xmlGroups.getRun().getIncludes())) {
-        return XmlSuite.f();
+        return false;
       }
       if (!m_xmlGroups.getDefines().equals(other.m_xmlGroups.getDefines())) {
         return false;
       }
     }
     if (m_failedInvocationNumbers == null) {
-      if (other.m_failedInvocationNumbers != null) return XmlSuite.f();
-    } else if (!m_failedInvocationNumbers.equals(other.m_failedInvocationNumbers))
-      return XmlSuite.f();
+      if (other.m_failedInvocationNumbers != null) return false;
+    } else if (!m_failedInvocationNumbers.equals(other.m_failedInvocationNumbers)) return false;
     if (m_isJUnit == null) {
-      if (other.m_isJUnit != null && !other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
-        return XmlSuite.f();
-    } else if (!m_isJUnit.equals(other.m_isJUnit)) return XmlSuite.f();
+      if (other.m_isJUnit != null && !other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT)) return false;
+    } else if (!m_isJUnit.equals(other.m_isJUnit)) return false;
     if (m_methodSelectors == null) {
-      if (other.m_methodSelectors != null) return XmlSuite.f();
-    } else if (!m_methodSelectors.equals(other.m_methodSelectors)) return XmlSuite.f();
+      if (other.m_methodSelectors != null) return false;
+    } else if (!m_methodSelectors.equals(other.m_methodSelectors)) return false;
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) return false;
+    } else if (!m_name.equals(other.m_name)) return false;
     if (m_parallel == null) {
-      if (other.m_parallel != null) return XmlSuite.f();
-    } else if (!m_parallel.equals(other.m_parallel)) return XmlSuite.f();
+      if (other.m_parallel != null) return false;
+    } else if (!m_parallel.equals(other.m_parallel)) return false;
     if (m_parameters == null) {
-      if (other.m_parameters != null) return XmlSuite.f();
-    } else if (!m_parameters.equals(other.m_parameters)) return XmlSuite.f();
+      if (other.m_parameters != null) return false;
+    } else if (!m_parameters.equals(other.m_parameters)) return false;
     if (m_preserveOrder == null) {
-      if (other.m_preserveOrder != null) return XmlSuite.f();
-    } else if (!m_preserveOrder.equals(other.m_preserveOrder)) return XmlSuite.f();
+      if (other.m_preserveOrder != null) return false;
+    } else if (!m_preserveOrder.equals(other.m_preserveOrder)) return false;
     if (m_skipFailedInvocationCounts == null) {
-      if (other.m_skipFailedInvocationCounts != null) return XmlSuite.f();
+      if (other.m_skipFailedInvocationCounts != null) return false;
     } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts))
-      return XmlSuite.f();
-    if (m_threadCount != other.m_threadCount) return XmlSuite.f();
+      return false;
+    if (m_threadCount != other.m_threadCount) return false;
     if (m_timeOut == null) {
-      if (other.m_timeOut != null) return XmlSuite.f();
-    } else if (!m_timeOut.equals(other.m_timeOut)) return XmlSuite.f();
+      if (other.m_timeOut != null) return false;
+    } else if (!m_timeOut.equals(other.m_timeOut)) return false;
     if (m_verbose == null) {
-      if (other.m_verbose != null) return XmlSuite.f();
-    } else if (!m_verbose.equals(other.m_verbose)) return XmlSuite.f();
+      if (other.m_verbose != null) return false;
+    } else if (!m_verbose.equals(other.m_verbose)) return false;
     if (m_xmlClasses == null) {
-      if (other.m_xmlClasses != null) return XmlSuite.f();
-    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) return XmlSuite.f();
+      if (other.m_xmlClasses != null) return false;
+    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) return false;
     if (m_xmlPackages == null) {
-      if (other.m_xmlPackages != null) return XmlSuite.f();
-    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return XmlSuite.f();
+      if (other.m_xmlPackages != null) return false;
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return false;
 
     return true;
   }

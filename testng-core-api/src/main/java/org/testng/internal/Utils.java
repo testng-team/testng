@@ -131,7 +131,7 @@ public final class Utils {
    */
   private static void writeFile(
       @Nullable File outputFolder, String fileNameParameter, String sb, @Nullable String encoding) {
-    File outDir = outputFolder;
+    @Nullable File outDir = outputFolder;
     String fileName = fileNameParameter;
     try {
       if (outDir == null) {
@@ -270,7 +270,7 @@ public final class Utils {
 
   public static void writeResourceToFile(File file, String resourceName, Class<?> clasz)
       throws IOException {
-    InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
+    @Nullable InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
     if (inputStream == null) {
       LOG.error("Couldn't find resource on the class path: " + resourceName);
       return;
@@ -369,7 +369,7 @@ public final class Utils {
 
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
-      String nc = ESCAPES.get(c);
+      @Nullable String nc = ESCAPES.get(c);
       if (nc != null) {
         result.append(nc);
       } else {
@@ -380,11 +380,7 @@ public final class Utils {
     return result.toString();
   }
 
-  public static @Nullable String escapeUnicode(@Nullable String s) {
-    if (s == null) {
-      return null;
-    }
-
+  public static String escapeUnicode(String s) {
     StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -403,11 +399,11 @@ public final class Utils {
 
     try {
       // first line contains the thrown exception
-      String line = bufferedReader.readLine();
-      if (line == null) {
+      @Nullable String firstLine = bufferedReader.readLine();
+      if (firstLine == null) {
         return "";
       }
-      buf.append(line).append(LINE_SEP);
+      buf.append(firstLine).append(LINE_SEP);
 
       //
       // the stack frames of the trace
@@ -415,6 +411,7 @@ public final class Utils {
       String[] excludedStrings =
           new String[] {"org.testng", "reflect", "org.gradle", "org.apache.maven.surefire"};
 
+      String line;
       int excludedCount = 0;
       while ((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;

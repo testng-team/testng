@@ -53,7 +53,7 @@ public final class ClassHelper {
 
   static List<ClassLoader> appendContextualClassLoaders(List<ClassLoader> currentLoaders) {
     List<ClassLoader> allClassLoaders = Lists.newArrayList();
-    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    @Nullable ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
     }
@@ -172,7 +172,7 @@ public final class ClassHelper {
       appendMethod(methods, declaredMethod);
     }
 
-    Class<?> parent = clazz.getSuperclass();
+    @Nullable Class<?> parent = clazz.getSuperclass();
     while (parent != null && !Object.class.equals(parent)) {
       Set<Map.Entry<String, Set<Method>>> extractedMethods =
           extractMethods(clazz, parent, methods).entrySet();

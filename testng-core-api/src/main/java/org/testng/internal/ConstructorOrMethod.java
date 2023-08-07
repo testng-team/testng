@@ -4,12 +4,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Encapsulation of either a method or a constructor. */
 public class ConstructorOrMethod {
 
-  private Method m_method;
-  private Constructor<?> m_constructor;
+  private @Nullable Method m_method;
+  private @Nullable Constructor<?> m_constructor;
   private boolean m_enabled = true;
 
   public ConstructorOrMethod(Method m) {
@@ -62,7 +63,7 @@ public class ConstructorOrMethod {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

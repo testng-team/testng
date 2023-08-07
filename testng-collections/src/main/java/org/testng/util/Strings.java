@@ -54,7 +54,7 @@ public final class Strings {
     return result;
   }
 
-  public static String valueOf(Map<?, ?> m) {
+  public static <K, V> String valueOf(Map<K, V> m) {
     return m.values().stream().map(Object::toString).collect(Collectors.joining(" "));
   }
 

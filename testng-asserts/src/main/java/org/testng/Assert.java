@@ -108,7 +108,8 @@ public class Assert {
    *
    * @param message the assertion error message
    */
-  public static void fail(@Nullable String message) {
+  // See https://github.com/typetools/checker-framework/issues/2076
+  public static /* @ThrowsException */ void fail(@Nullable String message) {
     throw new AssertionError(message);
   }
 
@@ -183,7 +184,8 @@ public class Assert {
   }
 
   /** returns not equal reason or null if equal */
-  private static @Nullable String getArrayNotEqualReason(Object actual, Object expected) {
+  private static @Nullable String getArrayNotEqualReason(
+      @Nullable Object actual, @Nullable Object expected) {
     if (Objects.equals(actual, expected)) {
       return null;
     }
@@ -214,14 +216,16 @@ public class Assert {
     return getArrayNotEqualReason(actual, expected) == null;
   }
 
-  private static void assertArrayEquals(Object actual, Object expected, @Nullable String message) {
+  private static void assertArrayEquals(
+      @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
     String reason = getArrayNotEqualReason(actual, expected);
     if (null != reason) {
       failNotEquals(actual, expected, message == null ? "" : message + " (" + message + ")");
     }
   }
 
-  private static void assertArrayNotEquals(Object actual, Object expected, String message) {
+  private static void assertArrayNotEquals(
+      @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
     String reason = getArrayNotEqualReason(actual, expected);
     if (null == reason) {
       failEquals(actual, expected, message);
@@ -1584,7 +1588,8 @@ public class Assert {
     fail(format(actual, expected, message, true));
   }
 
-  private static void failEquals(Object actual, Object expected, String message) {
+  private static void failEquals(
+      @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
     fail(format(actual, expected, message, false));
   }
 
@@ -1612,7 +1617,8 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  public static void assertEquals(Collection<?> actual, Collection<?> expected) {
+  public static void assertEquals(
+      @Nullable Collection<@Nullable ?> actual, @Nullable Collection<@Nullable ?> expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -1625,7 +1631,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(
-      Collection<?> actual, Collection<?> expected, @Nullable String message) {
+      @Nullable Collection<@Nullable ?> actual,
+      @Nullable Collection<@Nullable ?> expected,
+      @Nullable String message) {
     if (actual == expected) { // We don't use Objects.equals here because order is checked
       return;
     }
@@ -1636,6 +1644,7 @@ public class Assert {
       } else {
         fail("Collections not equal: expected: " + expected + " and actual: " + actual);
       }
+      return;
     }
 
     assertEquals(
@@ -1766,7 +1775,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(
-      @Nullable Object[] actual, @Nullable Object[] expected, @Nullable String message) {
+      @Nullable Object @Nullable [] actual,
+      @Nullable Object @Nullable [] expected,
+      @Nullable String message) {
     if (Arrays.equals(actual, expected)) {
       return;
     }
@@ -1781,6 +1792,7 @@ public class Assert {
                 + " and actual: "
                 + Arrays.toString(actual));
       }
+      return;
     }
     if (actual.length != expected.length) {
       failAssertNoEqual(
@@ -1818,7 +1830,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(
-      @Nullable Object[] actual, @Nullable Object[] expected, @Nullable String message) {
+      @Nullable Object @Nullable [] actual,
+      @Nullable Object @Nullable [] expected,
+      @Nullable String message) {
     if (actual == expected) { // We don't use Arrays.equals here because order is not checked
       return;
     }
@@ -1836,6 +1850,7 @@ public class Assert {
     if (actual.length != expected.length) {
       failAssertNoEqual(
           "Arrays do not have the same size:" + actual.length + " != " + expected.length, message);
+      return;
     }
 
     List<Object> actualCollection = Lists.newArrayList(actual);
@@ -1861,7 +1876,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(
-      @Nullable Collection<?> actual, @Nullable Collection<?> expected, @Nullable String message) {
+      @Nullable Collection<@Nullable ?> actual,
+      @Nullable Collection<@Nullable ?> expected,
+      @Nullable String message) {
     if (actual.size() != expected.size()) {
       failAssertNoEqual(
           "Collections do not have the same size: " + actual.size() + " != " + expected.size(),
@@ -1886,7 +1903,7 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(
-      @Nullable Iterator<?> actual, @Nullable Iterator<?> expected, @Nullable String message) {
+      Iterator<@Nullable ?> actual, Iterator<@Nullable ?> expected, @Nullable String message) {
     List<?> actualCollection = Lists.newArrayList(actual);
     List<?> expectedCollection = Lists.newArrayList(expected);
 
@@ -1921,7 +1938,7 @@ public class Assert {
         .collect(Collectors.joining(", "));
   }
 
-  private static void failAssertNoEqual(String defaultMessage, String message) {
+  private static void failAssertNoEqual(String defaultMessage, @Nullable String message) {
     if (message != null) {
       fail(message);
     } else {
@@ -1936,7 +1953,8 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  public static void assertEquals(Object[] actual, Object[] expected) {
+  public static void assertEquals(
+      @Nullable Object @Nullable [] actual, @Nullable Object @Nullable [] expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -1949,7 +1967,8 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  public static void assertEqualsNoOrder(@Nullable Object[] actual, @Nullable Object[] expected) {
+  public static void assertEqualsNoOrder(
+      @Nullable Object @Nullable [] actual, @Nullable Object @Nullable [] expected) {
     assertEqualsNoOrder(actual, expected, null);
   }
 

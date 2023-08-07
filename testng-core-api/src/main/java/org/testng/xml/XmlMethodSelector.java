@@ -98,28 +98,27 @@ public class XmlMethodSelector {
   @Override
   public boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     XmlMethodSelector other = (XmlMethodSelector) obj;
     if (m_className == null) {
-      if (other.m_className != null) return XmlSuite.f();
-    } else if (!m_className.equals(other.m_className)) return XmlSuite.f();
+      if (other.m_className != null) return false;
+    } else if (!m_className.equals(other.m_className)) return false;
     if (getScript() == null || getScript().getExpression() == null) {
-      if (other.getScript() != null && other.getScript().getExpression() != null)
-        return XmlSuite.f();
+      if (other.getScript() != null && other.getScript().getExpression() != null) return false;
     } else if (!getScript()
         .getExpression()
         .equals(other.getScript() == null ? null : other.getScript().getExpression())) {
-      return XmlSuite.f();
+      return false;
     }
     if (getScript() == null || getScript().getLanguage() == null) {
-      if (other.getScript() != null && other.getScript().getLanguage() != null) return XmlSuite.f();
+      if (other.getScript() != null && other.getScript().getLanguage() != null) return false;
     } else if (!getScript()
         .getLanguage()
         .equals(other.getScript() == null ? null : other.getScript().getLanguage())) {
-      return XmlSuite.f();
+      return false;
     }
-    if (m_priority != other.m_priority) return XmlSuite.f();
+    if (m_priority != other.m_priority) return false;
     return true;
   }
 }

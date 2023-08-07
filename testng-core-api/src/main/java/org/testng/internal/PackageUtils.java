@@ -30,7 +30,7 @@ import org.testng.internal.protocols.UnhandledIOException;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
-  private static String[] testClassPaths;
+  private static @Nullable String[] testClassPaths;
 
   /** The additional class loaders to find classes in. */
   private static final Collection<ClassLoader> classLoaders = new ConcurrentLinkedDeque<>();
@@ -85,7 +85,7 @@ public class PackageUtils {
       return testClassPaths;
     }
 
-    String testClasspath = RuntimeBehavior.getTestClasspath();
+    @Nullable String testClasspath = RuntimeBehavior.getTestClasspath();
     if (null == testClasspath) {
       return null;
     }
@@ -125,7 +125,7 @@ public class PackageUtils {
   }
 
   private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
-    String[] classpathFragments = getTestClasspath();
+    @Nullable String[] classpathFragments = getTestClasspath();
     if (null == classpathFragments) {
       return true;
     }

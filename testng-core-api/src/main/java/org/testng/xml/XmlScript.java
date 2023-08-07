@@ -1,9 +1,11 @@
 package org.testng.xml;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 public class XmlScript {
 
-  private String language = null;
-  private String expression = null;
+  private @Nullable String language = null;
+  private @Nullable String expression = null;
 
   public void setLanguage(String language) {
     this.language = language;
@@ -13,11 +15,11 @@ public class XmlScript {
     this.expression = expression;
   }
 
-  public String getExpression() {
+  public @Nullable String getExpression() {
     return expression;
   }
 
-  public String getLanguage() {
+  public @Nullable String getLanguage() {
     return language;
   }
 }

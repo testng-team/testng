@@ -16,8 +16,8 @@ public class XmlClass implements Cloneable {
 
   private List<XmlInclude> m_includedMethods = Lists.newArrayList();
   private List<String> m_excludedMethods = Lists.newArrayList();
-  private String m_name = null;
-  private Class m_class = null;
+  private String m_name;
+  private @Nullable Class<?> m_class = null;
   /** The index of this class in the &lt;test&gt; tag */
   private int m_index;
   /** True if the classes need to be loaded */
@@ -27,58 +27,60 @@ public class XmlClass implements Cloneable {
   private XmlTest m_xmlTest;
 
   public XmlClass() {
-    init("", null, 0, false /* load classes */);
+    this("", null, 0, false /* load classes */);
   }
 
   public XmlClass(String name) {
-    init(name, null, 0);
+    this(name, null, 0);
   }
 
   public XmlClass(String name, boolean loadClasses) {
-    init(name, null, 0, loadClasses);
+    this(name, null, 0, loadClasses);
   }
 
-  public XmlClass(Class cls) {
-    init(cls.getName(), cls, 0, true);
+  public XmlClass(Class<?> cls) {
+    this(cls.getName(), cls, 0, true);
   }
 
-  public XmlClass(Class cls, boolean loadClasses) {
-    init(cls.getName(), cls, 0, loadClasses);
+  public XmlClass(Class<?> cls, boolean loadClasses) {
+    this(cls.getName(), cls, 0, loadClasses);
   }
 
   public XmlClass(String className, int index) {
-    init(className, null, index, true /* load classes */);
+    this(className, null, index, true /* load classes */);
   }
 
   public XmlClass(String className, int index, boolean loadClasses) {
-    init(className, null, index, loadClasses);
+    this(className, null, index, loadClasses);
   }
 
-  private void init(String className, Class cls, int index) {
-    init(className, cls, index, true /* load classes */);
+  private XmlClass(String className, @Nullable Class<?> cls, int index) {
+    this(className, cls, index, true /* load classes */);
   }
 
-  private void init(String className, Class cls, int index, boolean resolveClass) {
+  private XmlClass(String className, @Nullable Class<?> cls, int index, boolean resolveClass) {
     m_name = className;
-    m_class = cls;
-    m_index = index;
-
-    if (null == m_class && resolveClass) {
-      loadClass();
+    if (cls == null && resolveClass) {
+      m_class = loadClass(m_name);
+    } else {
+      m_class = null;
     }
+    m_index = index;
   }
 
-  private void loadClass() {
-    m_class = ClassHelper.forName(m_name);
-
-    if (null == m_class) {
-      throw new TestNGException("Cannot find class in classpath: " + m_name);
+  private static Class<?> loadClass(String name) {
+    @Nullable Class<?> clazz = ClassHelper.forName(name);
+    if (clazz == null) {
+      throw new TestNGException("Cannot find class in classpath: " + name);
     }
+    return clazz;
   }
 
   /** @return Returns the className. */
   public Class<?> getSupportClass() {
-    if (m_class == null) loadClass();
+    if (m_class == null) {
+      m_class = loadClass(m_name);
+    }
     return m_class;
   }
 
@@ -215,15 +217,15 @@ public class XmlClass implements Cloneable {
     if (this == obj) {
       return true;
     }
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     XmlClass other = (XmlClass) obj;
     if (other.m_loadClasses != m_loadClasses) {
-      return XmlSuite.f();
+      return false;
     }
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) return false;
+    } else if (!m_name.equals(other.m_name)) return false;
 
     return true;
   }

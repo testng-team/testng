@@ -1,6 +1,4 @@
-@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.FIELD)
-@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.PARAMETER)
-@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.RETURN)
+@DefaultQualifier(value = NonNull.class, locations = TypeUseLocation.ALL)
 package org.testng.internal.reflect;
 
 import org.checkerframework.checker.nullness.qual.NonNull;

@@ -50,11 +50,11 @@ public class Assertion implements IAssertLifecycle {
       this(null, null, message);
     }
 
-    public SimpleAssert(T actual, T expected) {
+    public SimpleAssert(@Nullable T actual, @Nullable T expected) {
       this(actual, expected, null);
     }
 
-    public SimpleAssert(T actual, T expected, String message) {
+    public SimpleAssert(@Nullable T actual, @Nullable T expected, String message) {
       this.actual = actual;
       this.expected = expected;
       m_message = message;

@@ -24,12 +24,12 @@ public interface ISuite extends IAttributes {
   /** Returns the object factory used to create all test instances. */
   ITestObjectFactory getObjectFactory();
 
-  @Deprecated
   /**
    * Returns null.
    *
    * @deprecated This interface stands deprecated as of TestNG 7.5.0
    */
+  @Deprecated
   default @Nullable IObjectFactory2 getObjectFactory2() {
     return null;
   }

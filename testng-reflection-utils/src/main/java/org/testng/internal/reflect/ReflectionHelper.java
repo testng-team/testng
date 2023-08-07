@@ -73,8 +73,8 @@ public final class ReflectionHelper {
     if (typedTestClass == null || annotation == null) {
       return null;
     }
-    T ignore = null;
-    Class<?> testClass = typedTestClass;
+    @Nullable T ignore = null;
+    @Nullable Class<?> testClass = typedTestClass;
 
     while (testClass != null && testClass != Object.class) {
       ignore = testClass.getAnnotation(annotation);

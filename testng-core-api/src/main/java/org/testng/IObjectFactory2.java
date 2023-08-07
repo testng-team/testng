@@ -18,6 +18,6 @@ public interface IObjectFactory2 extends ITestObjectFactory {
    */
   @Deprecated
   default Object newInstance(Class<?> cls) {
-    return newInstance(cls, new Object[0]);
+    return newInstance((Class<Object>) cls, new Object[0]);
   }
 }

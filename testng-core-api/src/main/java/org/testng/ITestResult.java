@@ -3,6 +3,7 @@ package org.testng;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.internal.thread.ThreadTimeoutException;
 
 /**
@@ -143,7 +144,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    * @param result - The test result of a method
    */
   static boolean wasFailureDueToTimeout(ITestResult result) {
-    Throwable cause = result.getThrowable();
+    @Nullable Throwable cause = result.getThrowable();
     while (cause != null && !cause.getClass().equals(Throwable.class)) {
       if (cause instanceof ThreadTimeoutException) {
         return true;
