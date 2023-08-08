@@ -17,6 +17,9 @@ public final class InstanceCreator {
 
   public static <T> T newInstance(String className, Object... parameters) {
     @Nullable Class<?> clazz = ClassHelper.forName(className);
+    if (clazz == null) {
+      throw new TestNGException(className + " was not found.");
+    }
     return (T) newInstance(clazz, parameters);
   }
 

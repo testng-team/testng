@@ -42,7 +42,8 @@ public final class XMLUtils {
     return result.toString();
   }
 
-  public static String extractComment(String tag, Properties properties) {
+  public static @Nullable String extractComment(
+      @Nullable String tag, @Nullable Properties properties) {
     if (properties == null || "span".equals(tag)) return null;
 
     String[] attributes = new String[] {"id", "name", "class"};
@@ -120,7 +121,7 @@ public final class XMLUtils {
     }
   }
 
-  public static void xmlClose(IBuffer result, String indent, String tag, String comment) {
+  public static void xmlClose(IBuffer result, String indent, String tag, @Nullable String comment) {
     result
         .append(indent)
         .append("</")

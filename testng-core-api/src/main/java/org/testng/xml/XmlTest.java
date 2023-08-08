@@ -365,8 +365,9 @@ public class XmlTest implements Cloneable {
 
   public long getTimeOut(long def) {
     long result = def;
-    if (getTimeOut() != null) {
-      result = Long.parseLong(getTimeOut());
+    @Nullable String timeOut = getTimeOut();
+    if (timeOut != null) {
+      result = Long.parseLong(timeOut);
     }
 
     return result;
@@ -376,7 +377,7 @@ public class XmlTest implements Cloneable {
     m_timeOut = Long.toString(timeOut);
   }
 
-  private void setTimeOut(String timeOut) {
+  private void setTimeOut(@Nullable String timeOut) {
     m_timeOut = timeOut;
   }
 

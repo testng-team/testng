@@ -47,11 +47,11 @@ public class ConstructorOrMethod {
         : getConstructor().getParameterTypes();
   }
 
-  public Method getMethod() {
+  public @Nullable Method getMethod() {
     return m_method;
   }
 
-  public Constructor<?> getConstructor() {
+  public @Nullable Constructor<?> getConstructor() {
     return m_constructor;
   }
 

@@ -21,7 +21,7 @@ class DefaultXmlWeaver implements IWeaveXml {
 
   private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
-  private final String defaultComment;
+  private final @Nullable String defaultComment;
 
   DefaultXmlWeaver() {
     this(null);

@@ -207,7 +207,7 @@ public class XmlSuite implements Cloneable {
   }
 
   /** @param fileName The fileName to set. */
-  public void setFileName(String fileName) {
+  public void setFileName(@Nullable String fileName) {
     m_fileName = fileName;
   }
 
@@ -596,7 +596,7 @@ public class XmlSuite implements Cloneable {
    *
    * @param timeOut The timeout.
    */
-  public void setTimeOut(String timeOut) {
+  public void setTimeOut(@Nullable String timeOut) {
     m_timeOut = timeOut;
   }
 
@@ -668,7 +668,7 @@ public class XmlSuite implements Cloneable {
     return m_dataProviderThreadCount;
   }
 
-  public void setParentSuite(XmlSuite parentSuite) {
+  public void setParentSuite(@Nullable XmlSuite parentSuite) {
     m_parentSuite = parentSuite;
     updateParameters();
   }

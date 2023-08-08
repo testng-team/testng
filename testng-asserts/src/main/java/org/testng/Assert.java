@@ -154,14 +154,15 @@ public class Assert {
     }
   }
 
-  private static void assertNotEqualsImpl(Object actual, Object expected, String message) {
+  private static void assertNotEqualsImpl(
+      @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
     boolean notEqual = areNotEqualImpl(actual, expected);
     if (!notEqual) {
       failEquals(actual, expected, message);
     }
   }
 
-  private static boolean areNotEqualImpl(Object actual, Object expected) {
+  private static boolean areNotEqualImpl(@Nullable Object actual, @Nullable Object expected) {
     if (expected == null) {
       return actual != null;
     }
@@ -218,7 +219,7 @@ public class Assert {
 
   private static void assertArrayEquals(
       @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
-    String reason = getArrayNotEqualReason(actual, expected);
+    @Nullable String reason = getArrayNotEqualReason(actual, expected);
     if (null != reason) {
       failNotEquals(actual, expected, message == null ? "" : message + " (" + message + ")");
     }
@@ -226,7 +227,7 @@ public class Assert {
 
   private static void assertArrayNotEquals(
       @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
-    String reason = getArrayNotEqualReason(actual, expected);
+    @Nullable String reason = getArrayNotEqualReason(actual, expected);
     if (null == reason) {
       failEquals(actual, expected, message);
     }
@@ -1652,13 +1653,13 @@ public class Assert {
         expected.size(),
         (message == null ? "" : message + ": ") + "lists don't have the same size");
 
-    Iterator<?> actIt = actual.iterator();
-    Iterator<?> expIt = expected.iterator();
+    Iterator<@Nullable ?> actIt = actual.iterator();
+    Iterator<@Nullable ?> expIt = expected.iterator();
     int i = -1;
     while (actIt.hasNext() && expIt.hasNext()) {
       i++;
-      Object e = expIt.next();
-      Object a = actIt.next();
+      @Nullable Object e = expIt.next();
+      @Nullable Object a = actIt.next();
       String explanation = "Lists differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
       assertEqualsImpl(a, e, errorMessage);
@@ -1687,7 +1688,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(
-      @Nullable Iterator<?> actual, @Nullable Iterator<?> expected, @Nullable String message) {
+      @Nullable Iterator<@Nullable ?> actual,
+      @Nullable Iterator<@Nullable ?> expected,
+      @Nullable String message) {
     if (actual == expected) { // We don't use Objects.equals here because order is checked
       return;
     }
@@ -1704,8 +1707,8 @@ public class Assert {
     while (actual.hasNext() && expected.hasNext()) {
 
       i++;
-      Object e = expected.next();
-      Object a = actual.next();
+      @Nullable Object e = expected.next();
+      @Nullable Object a = actual.next();
       String explanation = "Iterators differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
 
@@ -1733,7 +1736,8 @@ public class Assert {
    * @param actual the actual value
    * @param expected the expected value
    */
-  public static void assertEquals(@Nullable Iterable<?> actual, @Nullable Iterable<?> expected) {
+  public static void assertEquals(
+      @Nullable Iterable<@Nullable ?> actual, @Nullable Iterable<@Nullable ?> expected) {
     assertEquals(actual, expected, null);
   }
 
@@ -1746,7 +1750,9 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEquals(
-      @Nullable Iterable<?> actual, @Nullable Iterable<?> expected, @Nullable String message) {
+      @Nullable Iterable<@Nullable ?> actual,
+      @Nullable Iterable<@Nullable ?> expected,
+      @Nullable String message) {
     if (actual == expected) { // We don't use Objects.equals here because order is checked
       return;
     }
@@ -1760,8 +1766,8 @@ public class Assert {
       return;
     }
 
-    Iterator<?> actIt = actual.iterator();
-    Iterator<?> expIt = expected.iterator();
+    Iterator<@Nullable ?> actIt = actual.iterator();
+    Iterator<@Nullable ?> expIt = expected.iterator();
 
     assertEquals(actIt, expIt, message);
   }
@@ -1782,7 +1788,7 @@ public class Assert {
       return;
     }
 
-    if ((actual == null && expected != null) || (actual != null && expected == null)) {
+    if (actual == null || expected == null) {
       if (message != null) {
         fail(message);
       } else {
@@ -1800,14 +1806,14 @@ public class Assert {
     }
 
     for (int i = 0; i < expected.length; i++) {
-      Object e = expected[i];
-      Object a = actual[i];
+      @Nullable Object e = expected[i];
+      @Nullable Object a = actual[i];
       String explanation = "Arrays differ at element [" + i + "]: " + e + " != " + a;
       String errorMessage = message == null ? explanation : message + ": " + explanation;
       if (a == null && e == null) {
         continue;
       }
-      if ((a == null && e != null) || (a != null && e == null)) {
+      if (a == null || e == null) {
         failNotEquals(a, e, message);
       }
       // Compare by value for multi-dimensional array.
@@ -1853,7 +1859,7 @@ public class Assert {
       return;
     }
 
-    List<Object> actualCollection = Lists.newArrayList(actual);
+    List<@Nullable Object> actualCollection = Lists.newArrayList(actual);
     for (Object o : expected) {
       actualCollection.remove(o);
     }
@@ -1876,9 +1882,7 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(
-      @Nullable Collection<@Nullable ?> actual,
-      @Nullable Collection<@Nullable ?> expected,
-      @Nullable String message) {
+      Collection<@Nullable ?> actual, Collection<@Nullable ?> expected, @Nullable String message) {
     if (actual.size() != expected.size()) {
       failAssertNoEqual(
           "Collections do not have the same size: " + actual.size() + " != " + expected.size(),
@@ -1980,7 +1984,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEqualsNoOrder(
-      @Nullable Collection<?> actual, @Nullable Collection<?> expected) {
+      Collection<@Nullable ?> actual, Collection<@Nullable ?> expected) {
     assertEqualsNoOrder(actual, expected, null);
   }
 
@@ -1992,7 +1996,7 @@ public class Assert {
    * @param expected the expected value
    */
   public static void assertEqualsNoOrder(
-      @Nullable Iterator<?> actual, @Nullable Iterator<?> expected) {
+      Iterator<@Nullable ?> actual, Iterator<@Nullable ?> expected) {
     assertEqualsNoOrder(actual, expected, null);
   }
 
@@ -2007,7 +2011,8 @@ public class Assert {
   }
 
   /** returns not equal reason or null if equal */
-  private static String getNotEqualReason(Collection<?> actual, Collection<?> expected) {
+  private static @Nullable String getNotEqualReason(
+      @Nullable Collection<?> actual, @Nullable Collection<?> expected) {
     if (actual == expected) { // We don't use Arrays.equals here because order is checked
       return null;
     }
@@ -2024,7 +2029,8 @@ public class Assert {
     return getNotEqualReason(actual.iterator(), expected.iterator());
   }
 
-  private static String getNotEqualReason(Iterator<?> actual, Iterator<?> expected) {
+  private static @Nullable String getNotEqualReason(
+      @Nullable Iterator<@Nullable ?> actual, @Nullable Iterator<@Nullable ?> expected) {
     if (actual == expected) { // We don't use Arrays.equals here because order is checked
       return null;
     }
@@ -2048,7 +2054,8 @@ public class Assert {
     return null;
   }
 
-  private static String getNotEqualReason(Set<?> actual, Set<?> expected) {
+  private static @Nullable String getNotEqualReason(
+      @Nullable Set<@Nullable ?> actual, @Nullable Set<@Nullable ?> expected) {
     if (actual == expected) {
       return null;
     }
@@ -2072,8 +2079,10 @@ public class Assert {
    * @param message The message
    */
   public static void assertEquals(
-      @Nullable Set<?> actual, @Nullable Set<?> expected, @Nullable String message) {
-    String notEqualReason = getNotEqualReason(actual, expected);
+      @Nullable Set<@Nullable ?> actual,
+      @Nullable Set<@Nullable ?> expected,
+      @Nullable String message) {
+    @Nullable String notEqualReason = getNotEqualReason(actual, expected);
     if (null != notEqualReason) {
       // Keep the back compatible
       if (message == null) {
@@ -2085,7 +2094,8 @@ public class Assert {
   }
 
   /** returns not equal deep reason or null if equal */
-  private static String getNotEqualDeepReason(Set<?> actual, Set<?> expected) {
+  private static @Nullable String getNotEqualDeepReason(
+      @Nullable Set<@Nullable ?> actual, @Nullable Set<@Nullable ?> expected) {
     if (Objects.equals(actual, expected)) {
       return null;
     }
@@ -2105,7 +2115,7 @@ public class Assert {
       Object expectedValue = expectedIterator.next();
       Object value = actualIterator.next();
       if (expectedValue.getClass().isArray()) {
-        String arrayNotEqualReason = getArrayNotEqualReason(value, expectedValue);
+        @Nullable String arrayNotEqualReason = getArrayNotEqualReason(value, expectedValue);
         if (arrayNotEqualReason != null) {
           return arrayNotEqualReason;
         }
@@ -2118,8 +2128,11 @@ public class Assert {
     return null;
   }
 
-  public static void assertEqualsDeep(Set<?> actual, Set<?> expected, String message) {
-    String notEqualDeepReason = getNotEqualDeepReason(actual, expected);
+  public static void assertEqualsDeep(
+      @Nullable Set<@Nullable ?> actual,
+      @Nullable Set<@Nullable ?> expected,
+      @Nullable String message) {
+    @Nullable String notEqualDeepReason = getNotEqualDeepReason(actual, expected);
     if (notEqualDeepReason != null) {
       if (message == null) {
         fail(notEqualDeepReason);
@@ -2133,7 +2146,8 @@ public class Assert {
     assertEquals(actual, expected, null);
   }
 
-  private static String getNotEqualReason(Map<?, ?> actual, Map<?, ?> expected) {
+  private static @Nullable String getNotEqualReason(
+      @Nullable Map<?, ?> actual, @Nullable Map<?, ?> expected) {
     if (Objects.equals(actual, expected)) {
       return null;
     }
@@ -2173,7 +2187,7 @@ public class Assert {
    */
   public static void assertEquals(
       @Nullable Map<?, ?> actual, @Nullable Map<?, ?> expected, @Nullable String message) {
-    String notEqualReason = getNotEqualReason(actual, expected);
+    @Nullable String notEqualReason = getNotEqualReason(actual, expected);
     if (notEqualReason != null) {
       if (message == null) {
         fail(notEqualReason);
@@ -2183,12 +2197,13 @@ public class Assert {
     }
   }
 
-  public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected) {
+  public static void assertEqualsDeep(@Nullable Map<?, ?> actual, @Nullable Map<?, ?> expected) {
     assertEqualsDeep(actual, expected, null);
   }
 
   /** returns not equal deep reason or null if equal */
-  private static String getNotEqualDeepReason(Map<?, ?> actual, Map<?, ?> expected) {
+  private static @Nullable String getNotEqualDeepReason(
+      @Nullable Map<?, ?> actual, @Nullable Map<?, ?> expected) {
     if (Objects.equals(actual, expected)) {
       return null;
     }
@@ -2222,8 +2237,9 @@ public class Assert {
     return null;
   }
 
-  public static void assertEqualsDeep(Map<?, ?> actual, Map<?, ?> expected, String message) {
-    String notEqualDeepReason = getNotEqualDeepReason(actual, expected);
+  public static void assertEqualsDeep(
+      @Nullable Map<?, ?> actual, @Nullable Map<?, ?> expected, @Nullable String message) {
+    @Nullable String notEqualDeepReason = getNotEqualDeepReason(actual, expected);
     if (notEqualDeepReason != null) {
       if (message == null) {
         fail(notEqualDeepReason);
@@ -2237,7 +2253,8 @@ public class Assert {
   // assertNotEquals
   //
 
-  public static void assertNotEquals(Object actual, Object expected, String message) {
+  public static void assertNotEquals(
+      @Nullable Object actual, @Nullable Object expected, @Nullable String message) {
     if (expected != null && expected.getClass().isArray()) {
       assertArrayNotEquals(actual, expected, message);
       return;

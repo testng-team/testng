@@ -244,8 +244,8 @@ public final class Utils {
   }
 
   /* Tokenize the string using the separator. */
-  public static String[] split(String string, String sep) {
-    if ((string == null) || (string.length() == 0)) {
+  public static String[] split(@Nullable String string, String sep) {
+    if (string == null || string.isEmpty()) {
       return new String[0];
     }
 
@@ -275,7 +275,7 @@ public final class Utils {
       LOG.error("Couldn't find resource on the class path: " + resourceName);
       return;
     }
-    try {
+    try (inputStream) {
       try (FileOutputStream outputStream = new FileOutputStream(file)) {
         int nread;
         byte[] buffer = new byte[4096];
@@ -283,28 +283,26 @@ public final class Utils {
           outputStream.write(buffer, 0, nread);
         }
       }
-    } finally {
-      inputStream.close();
     }
   }
 
-  public static String defaultIfStringEmpty(String s, String defaultValue) {
+  public static String defaultIfStringEmpty(@Nullable String s, String defaultValue) {
     return isStringEmpty(s) ? defaultValue : s;
   }
 
-  public static boolean isStringBlank(String s) {
-    return s == null || "".equals(s.trim());
+  public static boolean isStringBlank(@Nullable String s) {
+    return s == null || s.trim().isEmpty();
   }
 
-  public static boolean isStringEmpty(String s) {
-    return s == null || "".equals(s);
+  public static boolean isStringEmpty(@Nullable String s) {
+    return s == null || s.isEmpty();
   }
 
-  public static boolean isStringNotBlank(String s) {
+  public static boolean isStringNotBlank(@Nullable String s) {
     return !isStringBlank(s);
   }
 
-  public static boolean isStringNotEmpty(String s) {
+  public static boolean isStringNotEmpty(@Nullable String s) {
     return !isStringEmpty(s);
   }
 

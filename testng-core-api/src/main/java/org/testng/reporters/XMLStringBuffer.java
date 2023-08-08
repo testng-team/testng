@@ -293,11 +293,11 @@ public class XMLStringBuffer {
     m_buffer.append(s);
   }
 
-  public void setDefaultComment(String defaultComment) {
+  public void setDefaultComment(@Nullable String defaultComment) {
     this.defaultComment = defaultComment;
   }
 
-  public void addCDATA(String content) {
+  public void addCDATA(@Nullable String content) {
     if (content != null) {
       // Solution from https://coderanch.com/t/455930/java/Remove-control-characters
       content = content.replaceAll("[\\p{Cc}&&[^\\r\\n]]", "");
@@ -352,9 +352,9 @@ public class XMLStringBuffer {
 class Tag {
   public final String tagName;
   public final String indent;
-  public final Properties properties;
+  public final @Nullable Properties properties;
 
-  public Tag(String ind, String n, Properties p) {
+  public Tag(String ind, String n, @Nullable Properties p) {
     tagName = n;
     indent = ind;
     properties = p;
