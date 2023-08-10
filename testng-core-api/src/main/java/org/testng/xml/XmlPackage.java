@@ -3,6 +3,7 @@ package org.testng.xml;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
@@ -15,11 +16,12 @@ public class XmlPackage {
   private String m_name;
   private List<String> m_include = Lists.newArrayList();
   private List<String> m_exclude = Lists.newArrayList();
-  private List<XmlClass> m_xmlClasses = null;
+  private @Nullable List<XmlClass> m_xmlClasses = null;
 
+  @SuppressWarnings("initialization.fields.uninitialized")
+  // For YAML
   public XmlPackage() {}
 
-  // For YAML
   public XmlPackage(String name) {
     m_name = name;
   }
@@ -117,23 +119,23 @@ public class XmlPackage {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     XmlPackage other = (XmlPackage) obj;
     if (m_exclude == null) {
-      if (other.m_exclude != null) return XmlSuite.f();
-    } else if (!m_exclude.equals(other.m_exclude)) return XmlSuite.f();
+      if (other.m_exclude != null) return false;
+    } else if (!m_exclude.equals(other.m_exclude)) return false;
     if (m_include == null) {
-      if (other.m_include != null) return XmlSuite.f();
-    } else if (!m_include.equals(other.m_include)) return XmlSuite.f();
+      if (other.m_include != null) return false;
+    } else if (!m_include.equals(other.m_include)) return false;
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) return false;
+    } else if (!m_name.equals(other.m_name)) return false;
     if (m_xmlClasses == null) {
-      if (other.m_xmlClasses != null) return XmlSuite.f();
-    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) return XmlSuite.f();
+      if (other.m_xmlClasses != null) return false;
+    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) return false;
     return true;
   }
 }

@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 
 /** Stores the information regarding the configuration of a pluggable report listener. */
@@ -43,7 +44,7 @@ public class ReporterConfig {
     return sb.toString();
   }
 
-  public static ReporterConfig deserialize(String inputString) {
+  public static @Nullable ReporterConfig deserialize(String inputString) {
 
     if (Utils.isStringEmpty(inputString)) {
       return null;

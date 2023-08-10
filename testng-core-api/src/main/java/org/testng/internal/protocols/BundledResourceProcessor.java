@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 
 class BundledResourceProcessor extends Processor {
@@ -32,7 +33,10 @@ class BundledResourceProcessor extends Processor {
       URLConnection connection = url.openConnection();
       Method thisMethod = url.openConnection().getClass().getDeclaredMethod("getFileURL", params);
       Object[] paramsObj = {};
-      URL fileUrl = (URL) thisMethod.invoke(connection, paramsObj);
+      @Nullable URL fileUrl = (URL) thisMethod.invoke(connection, paramsObj);
+      if (fileUrl == null) {
+        return Lists.newArrayList();
+      }
       return findClassesInDirPackage(
           packageOnly, included, excluded, URLDecoder.decode(fileUrl.getFile(), UTF_8), recursive);
     } catch (Exception ex) {

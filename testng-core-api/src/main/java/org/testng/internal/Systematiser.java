@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.ITestNGMethod;
 
 /** Helps determine how should {@link ITestNGMethod} be ordered by TestNG. */
@@ -15,7 +16,7 @@ public final class Systematiser {
           .thenComparing(Object::toString)
           .thenComparing(
               method -> {
-                IParameterInfo paramsInfo = method.getFactoryMethodParamsInfo();
+                @Nullable IParameterInfo paramsInfo = method.getFactoryMethodParamsInfo();
                 // TODO: avoid toString in parameter comparison
                 return paramsInfo == null ? "" : Arrays.toString(paramsInfo.getParameters());
               })

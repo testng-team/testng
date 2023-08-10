@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /** The base class for all exceptions thrown by TestNG. */
 public class TestNGException extends RuntimeException {
 
@@ -13,7 +15,7 @@ public class TestNGException extends RuntimeException {
     super("\n" + string);
   }
 
-  public TestNGException(String string, Throwable t) {
+  public TestNGException(String string, @Nullable Throwable t) {
     super("\n" + string, t);
   }
 }

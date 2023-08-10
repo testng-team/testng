@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.checkerframework.checker.nullness.qual.KeyFor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
   protected final Map<K, C> m_objects;
@@ -47,18 +49,17 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder();
-    Set<K> indices = keySet();
-    for (K i : indices) {
-      result.append("\n    ").append(i).append(" <-- ");
-      for (Object o : m_objects.get(i)) {
-        result.append(o).append(" ");
+    for (Map.Entry<K, C> entry : m_objects.entrySet()) {
+      result.append("\n    ").append(entry.getKey()).append(" <-- ");
+      for (V v : entry.getValue()) {
+        result.append(v).append(" ");
       }
     }
     return result.toString();
   }
 
   public boolean isEmpty() {
-    return m_objects.size() == 0;
+    return m_objects.isEmpty();
   }
 
   public int size() {
@@ -69,11 +70,11 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return get(key).remove(value);
   }
 
-  public C removeAll(K key) {
+  public @Nullable C removeAll(K key) {
     return m_objects.remove(key);
   }
 
-  public Set<Map.Entry<K, C>> entrySet() {
+  public Set<Map.Entry<@KeyFor("this.m_objects") K, C>> entrySet() {
     return m_objects.entrySet();
   }
 

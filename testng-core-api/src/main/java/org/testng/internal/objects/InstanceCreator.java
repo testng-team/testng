@@ -2,6 +2,7 @@ package org.testng.internal.objects;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 
@@ -15,7 +16,10 @@ public final class InstanceCreator {
   }
 
   public static <T> T newInstance(String className, Object... parameters) {
-    Class<?> clazz = ClassHelper.forName(className);
+    @Nullable Class<?> clazz = ClassHelper.forName(className);
+    if (clazz == null) {
+      throw new TestNGException(className + " was not found.");
+    }
     return (T) newInstance(clazz, parameters);
   }
 
@@ -43,7 +47,7 @@ public final class InstanceCreator {
   }
 
   public static <T> T newInstance(Class<T> cls, Object... parameters) {
-    Constructor<T> ctor = null;
+    @Nullable Constructor<T> ctor = null;
     for (Constructor<?> c : cls.getConstructors()) {
       // Just comparing parameter array sizes. Comparing the parameter types
       // is more error prone since we need to take conversions into account

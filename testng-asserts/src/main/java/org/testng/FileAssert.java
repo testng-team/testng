@@ -2,6 +2,7 @@ package org.testng;
 
 import java.io.File;
 import java.io.IOException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Assertion tool for File centric assertions. Conceptually, this is an extension of {@link Assert}.
@@ -25,7 +26,7 @@ public class FileAssert {
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
    */
-  public static void assertDirectory(File tstvalue, String message) {
+  public static void assertDirectory(File tstvalue, @Nullable String message) {
     boolean condition = false;
     try {
       condition = tstvalue.isDirectory();
@@ -77,7 +78,7 @@ public class FileAssert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  public static void assertLength(File tstvalue, long expected, String message) {
+  public static void assertLength(File tstvalue, long expected, @Nullable String message) {
     long actual = -1L;
     try {
       actual = tstvalue.isDirectory() ? tstvalue.list().length : tstvalue.length();
@@ -107,7 +108,7 @@ public class FileAssert {
    * @param expected the expected value
    * @param message the assertion error message
    */
-  public static void assertMinLength(File tstvalue, long expected, String message) {
+  public static void assertMinLength(File tstvalue, long expected, @Nullable String message) {
     long actual = -1L;
     try {
       actual = tstvalue.isDirectory() ? tstvalue.list().length : tstvalue.length();
@@ -138,7 +139,7 @@ public class FileAssert {
    * @param expected The expected max length
    * @param message the assertion error message
    */
-  public static void assertMaxLength(File tstvalue, long expected, String message) {
+  public static void assertMaxLength(File tstvalue, long expected, @Nullable String message) {
     long actual = -1L;
     try {
       actual = tstvalue.isDirectory() ? tstvalue.list().length : tstvalue.length();
@@ -167,7 +168,7 @@ public class FileAssert {
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
    */
-  public static void assertReadable(File tstvalue, String message) {
+  public static void assertReadable(File tstvalue, @Nullable String message) {
     boolean condition = false;
     try {
       condition = tstvalue.canRead();
@@ -221,7 +222,7 @@ public class FileAssert {
    * @param tstvalue the file to evaluate
    * @param message the assertion error message
    */
-  public static void assertReadWrite(File tstvalue, String message) {
+  public static void assertReadWrite(File tstvalue, @Nullable String message) {
     boolean condition = false;
     try {
       condition = tstvalue.canRead() && tstvalue.canWrite();
@@ -259,7 +260,7 @@ public class FileAssert {
    *
    * @param message the assertion error message
    */
-  public static void fail(String message) {
+  public static void fail(@Nullable String message) {
     throw new AssertionError(message);
   }
 
@@ -269,7 +270,8 @@ public class FileAssert {
   }
 
   /** Formats failure for file assertions. */
-  private static void failFile(File path, String actual, String expected, String message) {
+  private static void failFile(
+      File path, String actual, @Nullable String expected, @Nullable String message) {
     String formatted = "";
     if (message != null) {
       formatted = message + " ";
@@ -291,7 +293,7 @@ public class FileAssert {
    * @param message
    */
   private static void failSecurity(
-      Exception e, File path, String actual, String expected, String message) {
+      Exception e, File path, String actual, String expected, @Nullable String message) {
     String formatted = "";
     if (message != null) {
       formatted = message + " ";

@@ -2,7 +2,6 @@ package org.testng.util;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.testng.collections.Maps;
 
@@ -12,7 +11,10 @@ public final class Strings {
   }
 
   public static boolean isNullOrEmpty(String string) {
-    return Optional.ofNullable(string).orElse("").trim().isEmpty();
+    if (string == null) {
+      return true;
+    }
+    return string.isEmpty();
   }
 
   public static boolean isNotNullAndNotEmpty(String string) {
@@ -52,7 +54,7 @@ public final class Strings {
     return result;
   }
 
-  public static String valueOf(Map<?, ?> m) {
+  public static <K, V> String valueOf(Map<K, V> m) {
     return m.values().stream().map(Object::toString).collect(Collectors.joining(" "));
   }
 

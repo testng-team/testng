@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.ITestObjectFactory;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -86,7 +86,7 @@ public class XmlSuite implements Cloneable {
       this.name = name;
     }
 
-    public static FailurePolicy getValidPolicy(String policy) {
+    public static @Nullable FailurePolicy getValidPolicy(String policy) {
       if (policy == null) {
         return null;
       }
@@ -103,8 +103,6 @@ public class XmlSuite implements Cloneable {
     }
   }
 
-  private String m_test;
-
   /** The default suite name TODO CQ is this OK as a default name. */
   private static final String DEFAULT_SUITE_NAME = "Default Suite";
 
@@ -114,7 +112,7 @@ public class XmlSuite implements Cloneable {
   /** The suite verbose flag (0 to 10). */
   public static final Integer DEFAULT_VERBOSE = 1;
 
-  private Integer m_verbose = null;
+  private @Nullable Integer m_verbose = null;
 
   public static final ParallelMode DEFAULT_PARALLEL = ParallelMode.NONE;
   private ParallelMode m_parallel = DEFAULT_PARALLEL;
@@ -169,16 +167,16 @@ public class XmlSuite implements Cloneable {
   private Map<String, String> m_parameters = Maps.newHashMap();
 
   /** Name of the XML file. */
-  private String m_fileName;
+  private @Nullable String m_fileName;
 
   /** Time out for methods/tests. */
-  private String m_timeOut;
+  private @Nullable String m_timeOut;
 
   /** List of child XML suites specified using <suite-file> tags. */
   private final List<XmlSuite> m_childSuites = Lists.newArrayList();
 
   /** Parent XML suite if this suite was specified in another suite using <suite-file> tag. */
-  private XmlSuite m_parentSuite;
+  private @Nullable XmlSuite m_parentSuite;
 
   private List<String> m_suiteFiles = Lists.newArrayList();
 
@@ -204,12 +202,12 @@ public class XmlSuite implements Cloneable {
   }
 
   /** @return The fileName. */
-  public String getFileName() {
+  public @Nullable String getFileName() {
     return m_fileName;
   }
 
   /** @param fileName The fileName to set. */
-  public void setFileName(String fileName) {
+  public void setFileName(@Nullable String fileName) {
     m_fileName = fileName;
   }
 
@@ -328,12 +326,13 @@ public class XmlSuite implements Cloneable {
   }
 
   /**
-   * Returns the test.
-   *
+   * @deprecated Returns the test.
    * @return The test.
    */
+  @Deprecated
   public String getTest() {
-    return m_test;
+    throw new UnsupportedOperationException(
+        "getTest() is not supported anymore. Please use getTests() instead.");
   }
 
   /**
@@ -386,11 +385,9 @@ public class XmlSuite implements Cloneable {
      * suite override the same named parameters from the parent suite.
      */
     if (m_parentSuite != null) {
-      Set<String> keySet = m_parentSuite.getParameters().keySet();
-      for (String name : keySet) {
-        if (!m_parameters.containsKey(name)) {
-          m_parameters.put(name, m_parentSuite.getParameter(name));
-        }
+      Map<String, String> parentParameters = m_parentSuite.getParameters();
+      for (Map.Entry<String, String> parentParameter : parentParameters.entrySet()) {
+        m_parameters.putIfAbsent(parentParameter.getKey(), parentParameter.getValue());
       }
     }
   }
@@ -432,7 +429,7 @@ public class XmlSuite implements Cloneable {
    * @param name The parameter name.
    * @return The parameter defined in this suite only.
    */
-  public String getParameter(String name) {
+  public @Nullable String getParameter(String name) {
     return m_parameters.get(name);
   }
 
@@ -599,7 +596,7 @@ public class XmlSuite implements Cloneable {
    *
    * @param timeOut The timeout.
    */
-  public void setTimeOut(String timeOut) {
+  public void setTimeOut(@Nullable String timeOut) {
     m_timeOut = timeOut;
   }
 
@@ -608,7 +605,7 @@ public class XmlSuite implements Cloneable {
    *
    * @return The timeout.
    */
-  public String getTimeOut() {
+  public @Nullable String getTimeOut() {
     return m_timeOut;
   }
 
@@ -671,12 +668,12 @@ public class XmlSuite implements Cloneable {
     return m_dataProviderThreadCount;
   }
 
-  public void setParentSuite(XmlSuite parentSuite) {
+  public void setParentSuite(@Nullable XmlSuite parentSuite) {
     m_parentSuite = parentSuite;
     updateParameters();
   }
 
-  public XmlSuite getParentSuite() {
+  public @Nullable XmlSuite getParentSuite() {
     return m_parentSuite;
   }
 
@@ -710,7 +707,6 @@ public class XmlSuite implements Cloneable {
                 ? 0
                 : m_skipFailedInvocationCounts.hashCode());
     result = prime * result + ((m_suiteFiles == null) ? 0 : m_suiteFiles.hashCode());
-    result = prime * result + ((m_test == null) ? 0 : m_test.hashCode());
     result = prime * result + ((m_tests == null) ? 0 : m_tests.hashCode());
     result = prime * result + m_threadCount;
     result = prime * result + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
@@ -719,114 +715,107 @@ public class XmlSuite implements Cloneable {
     return result;
   }
 
-  /** Used to debug equals() bugs. */
-  static boolean f() {
-    return false;
-  }
-
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }
     if (obj == null) {
-      return f();
+      return false;
     }
     if (getClass() != obj.getClass()) {
-      return f();
+      return false;
     }
     XmlSuite other = (XmlSuite) obj;
     //      if (m_childSuites == null) {
     //        if (other.m_childSuites != null)
-    //          return f();
+    //          return false;
     //      } else if (!m_childSuites.equals(other.m_childSuites))
-    //        return f();
+    //        return false;
     if (m_configFailurePolicy == null) {
       if (other.m_configFailurePolicy != null) {
-        return f();
+        return false;
       }
     } else if (!m_configFailurePolicy.equals(other.m_configFailurePolicy)) {
-      return f();
+      return false;
     }
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount) {
-      return f();
+      return false;
     }
     if (m_isJUnit == null) {
       if (other.m_isJUnit != null) {
-        return f();
+        return false;
       }
     } else if (!m_isJUnit.equals(other.m_isJUnit)) {
-      return f();
+      return false;
     }
     if (m_listeners == null) {
       if (other.m_listeners != null) {
-        return f();
+        return false;
       }
     } else if (!m_listeners.equals(other.m_listeners)) {
-      return f();
+      return false;
     }
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null) {
-        return f();
+        return false;
       }
     } else if (!m_methodSelectors.equals(other.m_methodSelectors)) {
-      return f();
+      return false;
     }
     if (m_name == null) {
       if (other.m_name != null) {
-        return f();
+        return false;
       }
     } else if (!m_name.equals(other.m_name)) {
-      return f();
+      return false;
     }
     if (m_objectFactoryClass == null) {
       if (other.m_objectFactoryClass != null) {
-        return f();
+        return false;
       }
     } else if (!m_objectFactoryClass.equals(other.m_objectFactoryClass)) {
-      return f();
+      return false;
     }
     if (m_parallel == null) {
       if (other.m_parallel != null) {
-        return f();
+        return false;
       }
     } else if (!m_parallel.equals(other.m_parallel)) {
-      return f();
+      return false;
     }
     //    if (m_parameters == null) {
     //      if (other.m_parameters != null) {
-    //        return f();
+    //        return false;
     //      }
     //    } else if (!m_parameters.equals(other.m_parameters)) {
-    //      return f();
+    //      return false;
     //    }
     //      if (m_parentSuite == null) {
     //        if (other.m_parentSuite != null)
-    //          return f();
+    //          return false;
     //      } else if (!m_parentSuite.equals(other.m_parentSuite))
-    //        return f();
+    //        return false;
     if (m_skipFailedInvocationCounts == null) {
-      if (other.m_skipFailedInvocationCounts != null) return f();
-    } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts)) return f();
+      if (other.m_skipFailedInvocationCounts != null) return false;
+    } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts))
+      return false;
     if (m_suiteFiles == null) {
-      if (other.m_suiteFiles != null) return f();
-    } else if (!m_suiteFiles.equals(other.m_suiteFiles)) return f();
-    if (m_test == null) {
-      if (other.m_test != null) return f();
-    } else if (!m_test.equals(other.m_test)) return f();
+      if (other.m_suiteFiles != null) return false;
+    } else if (!m_suiteFiles.equals(other.m_suiteFiles)) return false;
     if (m_tests == null) {
-      if (other.m_tests != null) return f();
-    } else if (!m_tests.equals(other.m_tests)) return f();
-    if (m_threadCount != other.m_threadCount) return f();
+      if (other.m_tests != null) return false;
+    } else if (!m_tests.equals(other.m_tests)) return false;
+    if (m_threadCount != other.m_threadCount) return false;
     if (m_timeOut == null) {
-      if (other.m_timeOut != null) return f();
-    } else if (!m_timeOut.equals(other.m_timeOut)) return f();
+      if (other.m_timeOut != null) return false;
+    } else if (!m_timeOut.equals(other.m_timeOut)) return false;
     if (m_verbose == null) {
-      if (other.m_verbose != null) return f();
-    } else if (!m_verbose.equals(other.m_verbose)) return f();
+      if (other.m_verbose != null) return false;
+    } else if (!m_verbose.equals(other.m_verbose)) return false;
     if (m_xmlPackages == null) {
-      if (other.m_xmlPackages != null) return f();
-    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return f();
+      if (other.m_xmlPackages != null) return false;
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return false;
     return true;
   }
 

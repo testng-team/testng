@@ -1,42 +1,43 @@
 package org.testng.xml;
 
 import java.util.Properties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.reporters.XMLStringBuffer;
 
 /** This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml. */
 public class XmlMethodSelector {
   // Either this:
-  private String m_className;
+  private @Nullable String m_className;
   private int m_priority;
 
   // Or that:
-  private XmlScript m_script;
+  private @Nullable XmlScript m_script;
 
   // For YAML
-  public void setClassName(String s) {
+  public void setClassName(@Nullable String s) {
     m_className = s;
   }
 
-  public String getClassName() {
+  public @Nullable String getClassName() {
     return m_className;
   }
 
   // For YAML
-  public void setElement(String name, String priority) {
+  public void setElement(@Nullable String name, String priority) {
     setName(name);
     setPriority(Integer.parseInt(priority));
   }
 
-  public void setName(String name) {
+  public void setName(@Nullable String name) {
     m_className = name;
   }
 
-  public XmlScript getScript() {
+  public @Nullable XmlScript getScript() {
     return m_script;
   }
 
-  public void setScript(XmlScript script) {
+  public void setScript(@Nullable XmlScript script) {
     m_script = script;
   }
 
@@ -55,19 +56,26 @@ public class XmlMethodSelector {
 
     if (null != m_className) {
       Properties clsProp = new Properties();
-      clsProp.setProperty("name", getClassName());
+      clsProp.setProperty("name", m_className);
       if (getPriority() != -1) {
         clsProp.setProperty("priority", String.valueOf(getPriority()));
       }
       xsb.addEmptyElement("selector-class", clsProp);
-    } else if (getScript() != null && getScript().getLanguage() != null) {
-      Properties scriptProp = new Properties();
-      scriptProp.setProperty("language", getScript().getLanguage());
-      xsb.push("script", scriptProp);
-      xsb.addCDATA(getScript().getExpression());
-      xsb.pop("script");
     } else {
-      throw new TestNGException("Invalid Method Selector:  found neither class name nor language");
+      @Nullable XmlScript script = getScript();
+      if (script == null) {
+        throw new TestNGException("Invalid Method Selector: found neither class name nor script");
+      }
+      @Nullable String language = script.getLanguage();
+      @Nullable String expression = script.getExpression();
+      if (language == null || expression == null) {
+        throw new TestNGException("Invalid Method Selector: found neither expression nor language");
+      }
+      Properties scriptProp = new Properties();
+      scriptProp.setProperty("language", language);
+      xsb.push("script", scriptProp);
+      xsb.addCDATA(expression);
+      xsb.pop("script");
     }
 
     xsb.pop("method-selector");
@@ -80,45 +88,43 @@ public class XmlMethodSelector {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((m_className == null) ? 0 : m_className.hashCode());
-    if (getScript() != null) {
-      result =
-          prime * result
-              + ((getScript().getExpression() == null)
-                  ? 0
-                  : getScript().getExpression().hashCode());
-      result =
-          prime * result
-              + ((getScript().getLanguage() == null) ? 0 : getScript().getLanguage().hashCode());
+    @Nullable XmlScript script = getScript();
+    if (script != null) {
+      @Nullable String expression = script.getExpression();
+      @Nullable String language = script.getLanguage();
+      result = prime * result + ((expression == null) ? 0 : expression.hashCode());
+      result = prime * result + ((language == null) ? 0 : language.hashCode());
     }
     result = prime * result + m_priority;
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     XmlMethodSelector other = (XmlMethodSelector) obj;
     if (m_className == null) {
-      if (other.m_className != null) return XmlSuite.f();
-    } else if (!m_className.equals(other.m_className)) return XmlSuite.f();
-    if (getScript() == null || getScript().getExpression() == null) {
-      if (other.getScript() != null && other.getScript().getExpression() != null)
-        return XmlSuite.f();
-    } else if (!getScript()
+      if (other.m_className != null) return false;
+    } else if (!m_className.equals(other.m_className)) return false;
+    @Nullable XmlScript script = getScript();
+    @Nullable XmlScript otherScript = other.getScript();
+    if (script == null || script.getExpression() == null) {
+      if (otherScript != null && otherScript.getExpression() != null) return false;
+    } else if (!script
         .getExpression()
-        .equals(other.getScript() == null ? null : other.getScript().getExpression())) {
-      return XmlSuite.f();
+        .equals(otherScript == null ? null : otherScript.getExpression())) {
+      return false;
     }
-    if (getScript() == null || getScript().getLanguage() == null) {
-      if (other.getScript() != null && other.getScript().getLanguage() != null) return XmlSuite.f();
-    } else if (!getScript()
+    if (script == null || script.getLanguage() == null) {
+      if (otherScript != null && otherScript.getLanguage() != null) return false;
+    } else if (!script
         .getLanguage()
-        .equals(other.getScript() == null ? null : other.getScript().getLanguage())) {
-      return XmlSuite.f();
+        .equals(otherScript == null ? null : otherScript.getLanguage())) {
+      return false;
     }
-    if (m_priority != other.m_priority) return XmlSuite.f();
+    if (m_priority != other.m_priority) return false;
     return true;
   }
 }

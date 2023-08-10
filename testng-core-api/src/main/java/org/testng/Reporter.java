@@ -3,6 +3,7 @@ package org.testng;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Utils;
@@ -27,7 +28,7 @@ public class Reporter {
   // When tests are run in parallel, each thread may be working with different
   // 'current test result'. Also, this value should be inherited if the test code
   // spawns its own thread.
-  private static final ThreadLocal<ITestResult> m_currentTestResult =
+  private static final ThreadLocal<@Nullable ITestResult> m_currentTestResult =
       new InheritableThreadLocal<>();
 
   /** All output logged in a sequential order. */
@@ -153,7 +154,7 @@ public class Reporter {
   }
 
   /** @return the current test result. */
-  public static ITestResult getCurrentTestResult() {
+  public static @Nullable ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
   }
 

@@ -1,6 +1,7 @@
 package org.testng.asserts;
 
 import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Maps;
 
 /**
@@ -30,7 +31,7 @@ public class SoftAssert extends Assertion {
     assertAll(null);
   }
 
-  public void assertAll(String message) {
+  public void assertAll(@Nullable String message) {
     if (!m_errors.isEmpty()) {
       StringBuilder sb = new StringBuilder(null == message ? DEFAULT_SOFT_ASSERT_MESSAGE : message);
       boolean first = true;

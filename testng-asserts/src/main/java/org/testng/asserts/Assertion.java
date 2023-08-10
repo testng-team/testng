@@ -3,6 +3,7 @@ package org.testng.asserts;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** An assert class with various hooks allowing its behavior to be modified by subclasses. */
 public class Assertion implements IAssertLifecycle {
@@ -41,19 +42,19 @@ public class Assertion implements IAssertLifecycle {
   public void onAfterAssert(IAssert<?> assertCommand) {}
 
   private abstract static class SimpleAssert<T> implements IAssert<T> {
-    private final T actual;
-    private final T expected;
-    private final String m_message;
+    private final @Nullable T actual;
+    private final @Nullable T expected;
+    private final @Nullable String m_message;
 
     public SimpleAssert(String message) {
       this(null, null, message);
     }
 
-    public SimpleAssert(T actual, T expected) {
+    public SimpleAssert(@Nullable T actual, @Nullable T expected) {
       this(actual, expected, null);
     }
 
-    public SimpleAssert(T actual, T expected, String message) {
+    public SimpleAssert(@Nullable T actual, @Nullable T expected, String message) {
       this.actual = actual;
       this.expected = expected;
       m_message = message;

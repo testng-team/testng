@@ -7,6 +7,7 @@ import static org.testng.xml.XmlSuite.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.reporters.XMLStringBuffer;
 
 /**
@@ -20,13 +21,13 @@ class DefaultXmlWeaver implements IWeaveXml {
 
   private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
-  private final String defaultComment;
+  private final @Nullable String defaultComment;
 
   DefaultXmlWeaver() {
     this(null);
   }
 
-  DefaultXmlWeaver(String defaultComment) {
+  DefaultXmlWeaver(@Nullable String defaultComment) {
     this.defaultComment = defaultComment;
   }
 

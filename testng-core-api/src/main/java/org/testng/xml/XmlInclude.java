@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
@@ -103,21 +104,21 @@ public class XmlInclude {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
     XmlInclude other = (XmlInclude) obj;
     // if (m_index != other.m_index)
-    // return XmlSuite.f();
+    // return false;
     if (m_invocationNumbers == null) {
-      if (other.m_invocationNumbers != null) return XmlSuite.f();
-    } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) return XmlSuite.f();
+      if (other.m_invocationNumbers != null) return false;
+    } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) return false;
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) return false;
+    } else if (!m_name.equals(other.m_name)) return false;
     if (!m_parameters.equals(other.m_parameters)) {
-      return XmlSuite.f();
+      return false;
     }
     return true;
   }

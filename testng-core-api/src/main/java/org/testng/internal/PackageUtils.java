@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.collections.Lists;
 import org.testng.internal.protocols.Input;
 import org.testng.internal.protocols.Processor;
@@ -29,7 +30,7 @@ import org.testng.internal.protocols.UnhandledIOException;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class PackageUtils {
-  private static String[] testClassPaths;
+  private static @Nullable String[] testClassPaths;
 
   /** The additional class loaders to find classes in. */
   private static final Collection<ClassLoader> classLoaders = new ConcurrentLinkedDeque<>();
@@ -79,12 +80,12 @@ public class PackageUtils {
         .toArray(String[]::new);
   }
 
-  private static String[] getTestClasspath() {
+  private static @Nullable String[] getTestClasspath() {
     if (null != testClassPaths) {
       return testClassPaths;
     }
 
-    String testClasspath = RuntimeBehavior.getTestClasspath();
+    @Nullable String testClasspath = RuntimeBehavior.getTestClasspath();
     if (null == testClasspath) {
       return null;
     }
@@ -124,7 +125,7 @@ public class PackageUtils {
   }
 
   private static boolean matchTestClasspath(URL url, String lastFragment, boolean recursive) {
-    String[] classpathFragments = getTestClasspath();
+    @Nullable String[] classpathFragments = getTestClasspath();
     if (null == classpathFragments) {
       return true;
     }

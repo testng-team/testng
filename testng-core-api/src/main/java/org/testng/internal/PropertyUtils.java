@@ -8,6 +8,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 
@@ -21,7 +22,7 @@ public class PropertyUtils {
   private static final Logger LOGGER = Logger.getLogger(PropertyUtils.class);
 
   @SuppressWarnings("unchecked")
-  public static <T> T convertType(Class<T> type, String value, String paramName) {
+  public static <T> @Nullable T convertType(Class<T> type, String value, String paramName) {
     try {
       if (value == null || NULL_VALUE.equalsIgnoreCase(value)) {
         if (type.isPrimitive()) {
@@ -70,14 +71,14 @@ public class PropertyUtils {
     throw new TestNGException("Unsupported type parameter : " + type);
   }
 
-  public static void setProperty(Object instance, String name, String value) {
+  public static void setProperty(@Nullable Object instance, String name, String value) {
     if (instance == null) {
       LOGGER.warn(
           "Cannot set property " + name + " with value " + value + ". The target instance is null");
       return;
     }
 
-    Class<?> propClass = getPropertyType(instance.getClass(), name);
+    @Nullable Class<?> propClass = getPropertyType(instance.getClass(), name);
     if (propClass == null) {
       LOGGER.warn(
           "Cannot set property "
@@ -88,64 +89,71 @@ public class PropertyUtils {
       return;
     }
 
-    Object realValue = convertType(propClass, value, name);
+    @Nullable Object realValue = convertType(propClass, value, name);
     // TODO: Here the property desc is searched again
     setPropertyRealValue(instance, name, realValue);
   }
 
-  public static Class<?> getPropertyType(Class<?> instanceClass, String propertyName) {
+  public static @Nullable Class<?> getPropertyType(
+      @Nullable Class<?> instanceClass, String propertyName) {
     if (instanceClass == null) {
       LOGGER.warn(
           "Cannot retrieve property class for " + propertyName + ". Target instance class is null");
     }
-    PropertyDescriptor propDesc = getPropertyDescriptor(instanceClass, propertyName);
+    @Nullable PropertyDescriptor propDesc = getPropertyDescriptor(instanceClass, propertyName);
     if (propDesc == null) {
       return null;
     }
     return propDesc.getPropertyType();
   }
 
-  private static PropertyDescriptor getPropertyDescriptor(
-      Class<?> targetClass, String propertyName) {
-    PropertyDescriptor result = null;
+  private static @Nullable PropertyDescriptor getPropertyDescriptor(
+      @Nullable Class<?> targetClass, String propertyName) {
     if (targetClass == null) {
       LOGGER.warn("Cannot retrieve property " + propertyName + ". Class is null");
-    } else {
-      try {
-        BeanInfo beanInfo = Introspector.getBeanInfo(targetClass);
-        PropertyDescriptor[] propDescriptors = beanInfo.getPropertyDescriptors();
-        for (PropertyDescriptor propDesc : propDescriptors) {
-          if (propDesc.getName().equals(propertyName)) {
-            result = propDesc;
-            break;
-          }
+      return null;
+    }
+    @Nullable PropertyDescriptor result = null;
+    try {
+      BeanInfo beanInfo = Introspector.getBeanInfo(targetClass);
+      PropertyDescriptor[] propDescriptors = beanInfo.getPropertyDescriptors();
+      for (PropertyDescriptor propDesc : propDescriptors) {
+        if (propDesc.getName().equals(propertyName)) {
+          result = propDesc;
+          break;
         }
-      } catch (IntrospectionException ie) {
-        LOGGER.warn("Cannot retrieve property " + propertyName + ". Cause is: " + ie);
       }
+    } catch (IntrospectionException ie) {
+      LOGGER.warn("Cannot retrieve property " + propertyName + ". Cause is: " + ie);
     }
     return result;
   }
 
-  public static void setPropertyRealValue(Object instance, String name, Object value) {
+  public static void setPropertyRealValue(
+      @Nullable Object instance, String name, @Nullable Object value) {
     if (instance == null) {
       LOGGER.warn(
           "Cannot set property " + name + " with value " + value + ". Target instance is null");
       return;
     }
 
-    PropertyDescriptor propDesc = getPropertyDescriptor(instance.getClass(), name);
+    @Nullable PropertyDescriptor propDesc = getPropertyDescriptor(instance.getClass(), name);
     if (propDesc == null) {
       LOGGER.warn(
           "Cannot set property " + name + " with value " + value + ". Property does not exist");
       return;
     }
 
-    Method method = propDesc.getWriteMethod();
-    try {
-      method.invoke(instance, value);
-    } catch (IllegalAccessException | InvocationTargetException iae) {
-      LOGGER.warn("Cannot set property " + name + " with value " + value + ". Cause " + iae);
+    @Nullable Method method = propDesc.getWriteMethod();
+    if (method == null) {
+      LOGGER.warn(
+          "Cannot set property " + name + " with value " + value + ". Cause method not writeable");
+    } else {
+      try {
+        method.invoke(instance, value);
+      } catch (IllegalAccessException | InvocationTargetException iae) {
+        LOGGER.warn("Cannot set property " + name + " with value " + value + ". Cause " + iae);
+      }
     }
   }
 }

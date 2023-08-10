@@ -1,6 +1,7 @@
 package org.testng.log4testng;
 
 import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.LoggerFactory;
 import org.testng.collections.Maps;
 
@@ -48,7 +49,7 @@ public class Logger {
    *
    * @param message the message object to log.
    */
-  public void trace(Object message) {
+  public void trace(@Nullable Object message) {
     logger.trace("{}", message);
   }
 
@@ -59,7 +60,7 @@ public class Logger {
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.
    */
-  public void trace(Object message, Throwable t) {
+  public void trace(@Nullable Object message, Throwable t) {
     logger.trace("{}", message, t);
   }
 
@@ -78,7 +79,7 @@ public class Logger {
    *
    * @param message the message object to log.
    */
-  public void debug(Object message) {
+  public void debug(@Nullable Object message) {
     logger.debug("{}", message);
   }
 
@@ -89,7 +90,7 @@ public class Logger {
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.
    */
-  public void debug(Object message, Throwable t) {
+  public void debug(@Nullable Object message, Throwable t) {
     logger.debug("{}", message, t);
   }
 
@@ -108,7 +109,7 @@ public class Logger {
    *
    * @param message the message object to log.
    */
-  public void info(Object message) {
+  public void info(@Nullable Object message) {
     logger.info("{}", message);
   }
 
@@ -119,7 +120,7 @@ public class Logger {
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.
    */
-  public void info(Object message, Throwable t) {
+  public void info(@Nullable Object message, Throwable t) {
     logger.info("{}", message, t);
   }
 
@@ -129,7 +130,7 @@ public class Logger {
    *
    * @param message the message object to log.
    */
-  public void warn(Object message) {
+  public void warn(@Nullable Object message) {
     logger.warn("{}", message);
   }
 
@@ -140,7 +141,7 @@ public class Logger {
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.
    */
-  public void warn(Object message, Throwable t) {
+  public void warn(@Nullable Object message, Throwable t) {
     logger.warn("{}", message, t);
   }
 
@@ -150,7 +151,7 @@ public class Logger {
    *
    * @param message the message object to log.
    */
-  public void error(Object message) {
+  public void error(@Nullable Object message) {
     logger.error("{}", message);
   }
 
@@ -161,7 +162,7 @@ public class Logger {
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.
    */
-  public void error(Object message, Throwable t) {
+  public void error(@Nullable Object message, Throwable t) {
     logger.error("{}", message, t);
   }
 
@@ -171,7 +172,7 @@ public class Logger {
    *
    * @param message the message object to log.
    */
-  public void fatal(Object message) {
+  public void fatal(@Nullable Object message) {
     logger.error("{}", message);
   }
 
@@ -182,7 +183,7 @@ public class Logger {
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.
    */
-  public void fatal(Object message, Throwable t) {
+  public void fatal(@Nullable Object message, Throwable t) {
     logger.error("{}", message, t);
   }
 

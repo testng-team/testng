@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
@@ -131,7 +131,7 @@ public final class Utils {
    */
   private static void writeFile(
       @Nullable File outputFolder, String fileNameParameter, String sb, @Nullable String encoding) {
-    File outDir = outputFolder;
+    @Nullable File outDir = outputFolder;
     String fileName = fileNameParameter;
     try {
       if (outDir == null) {
@@ -224,7 +224,7 @@ public final class Utils {
    * @param level the logging level of the message.
    * @param msg the message to log to System.out.
    */
-  public static void log(String cls, int level, String msg) {
+  public static void log(String cls, int level, @Nullable String msg) {
     // Why this coupling on a static member of getVerbose()?
     if (getVerbose() >= level) {
       if (cls.length() > 0) {
@@ -244,8 +244,8 @@ public final class Utils {
   }
 
   /* Tokenize the string using the separator. */
-  public static String[] split(String string, String sep) {
-    if ((string == null) || (string.length() == 0)) {
+  public static String[] split(@Nullable String string, String sep) {
+    if (string == null || string.isEmpty()) {
       return new String[0];
     }
 
@@ -270,12 +270,12 @@ public final class Utils {
 
   public static void writeResourceToFile(File file, String resourceName, Class<?> clasz)
       throws IOException {
-    InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
+    @Nullable InputStream inputStream = clasz.getResourceAsStream("/" + resourceName);
     if (inputStream == null) {
       LOG.error("Couldn't find resource on the class path: " + resourceName);
       return;
     }
-    try {
+    try (inputStream) {
       try (FileOutputStream outputStream = new FileOutputStream(file)) {
         int nread;
         byte[] buffer = new byte[4096];
@@ -283,28 +283,26 @@ public final class Utils {
           outputStream.write(buffer, 0, nread);
         }
       }
-    } finally {
-      inputStream.close();
     }
   }
 
-  public static String defaultIfStringEmpty(String s, String defaultValue) {
+  public static String defaultIfStringEmpty(@Nullable String s, String defaultValue) {
     return isStringEmpty(s) ? defaultValue : s;
   }
 
-  public static boolean isStringBlank(String s) {
-    return s == null || "".equals(s.trim());
+  public static boolean isStringBlank(@Nullable String s) {
+    return s == null || s.trim().isEmpty();
   }
 
-  public static boolean isStringEmpty(String s) {
-    return s == null || "".equals(s);
+  public static boolean isStringEmpty(@Nullable String s) {
+    return s == null || s.isEmpty();
   }
 
-  public static boolean isStringNotBlank(String s) {
+  public static boolean isStringNotBlank(@Nullable String s) {
     return !isStringBlank(s);
   }
 
-  public static boolean isStringNotEmpty(String s) {
+  public static boolean isStringNotEmpty(@Nullable String s) {
     return !isStringEmpty(s);
   }
 
@@ -360,7 +358,7 @@ public final class Utils {
     FULL
   }
 
-  public static String escapeHtml(String s) {
+  public static @Nullable String escapeHtml(@Nullable String s) {
     if (s == null) {
       return null;
     }
@@ -369,7 +367,7 @@ public final class Utils {
 
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
-      String nc = ESCAPES.get(c);
+      @Nullable String nc = ESCAPES.get(c);
       if (nc != null) {
         result.append(nc);
       } else {
@@ -381,10 +379,6 @@ public final class Utils {
   }
 
   public static String escapeUnicode(String s) {
-    if (s == null) {
-      return null;
-    }
-
     StringBuilder result = new StringBuilder();
 
     for (int i = 0; i < s.length(); i++) {
@@ -403,11 +397,11 @@ public final class Utils {
 
     try {
       // first line contains the thrown exception
-      String line = bufferedReader.readLine();
-      if (line == null) {
+      @Nullable String firstLine = bufferedReader.readLine();
+      if (firstLine == null) {
         return "";
       }
-      buf.append(line).append(LINE_SEP);
+      buf.append(firstLine).append(LINE_SEP);
 
       //
       // the stack frames of the trace
@@ -415,6 +409,7 @@ public final class Utils {
       String[] excludedStrings =
           new String[] {"org.testng", "reflect", "org.gradle", "org.apache.maven.surefire"};
 
+      String line;
       int excludedCount = 0;
       while ((line = bufferedReader.readLine()) != null) {
         boolean isExcluded = false;

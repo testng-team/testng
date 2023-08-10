@@ -1,5 +1,6 @@
 package org.testng.collections;
 
+import com.google.errorprone.annotations.InlineMe;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -13,6 +14,8 @@ public class Maps {
     return new HashMap<>();
   }
 
+  @Deprecated
+  @InlineMe(replacement = "new Hashtable<>()", imports = "java.util.Hashtable")
   public static <K, V> Map<K, V> newHashtable() {
     return new Hashtable<>();
   }
