@@ -116,6 +116,13 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   String id();
 
   /**
+   * @return <code>true</code> if the current method (test|configuration) was executed by TestNG.
+   */
+  default boolean wasExecuted() {
+    return !isNotRunning();
+  }
+
+  /**
    * @return - <code>true</code> if the current test result is either {@link ITestResult#STARTED} or
    *     {@link ITestResult#CREATED}
    */

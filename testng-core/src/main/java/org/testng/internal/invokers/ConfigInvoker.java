@@ -314,18 +314,23 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
                 arguments.getTestMethodResult());
         testResult.setParameters(parameters);
 
-        runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
-
         Object newInstance = computeInstance(arguments.getInstance(), inst, tm);
         if (isConfigMethodEligibleForScrutiny(tm)) {
           if (m_executedConfigMethods.add(arguments.getTestMethod())) {
+            runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
             invokeConfigurationMethod(newInstance, tm, parameters, testResult);
           }
         } else {
+          runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
         copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
-        runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
+
+        if (testResult.wasExecuted()) {
+          // When it comes to "firstTimeOnly" configurations, some of them would NOT be run
+          // by TestNG. For those occurrences, DONOT run the listener.
+          runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
+        }
         if (testResult.getStatus() == ITestResult.SKIP) {
           Throwable t = testResult.getThrowable();
           if (t != null) {
