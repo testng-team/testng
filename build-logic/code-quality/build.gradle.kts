@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     implementation("org.sonarqube:org.sonarqube.gradle.plugin:2.8")
-    implementation("com.github.autostyle:autostyle-plugin-gradle:3.1")
+    implementation("com.github.autostyle:autostyle-plugin-gradle:3.2")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
