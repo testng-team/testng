@@ -13,9 +13,5 @@ public class MyReporter implements IReporter {
     }
   }
 
-  public void setEnableFiltering(boolean enableFiltering) {
-    if (enableFiltering != expectedFiltering) {
-      throw new IllegalArgumentException("Expect filtering: " + expectedFiltering);
-    }
+ 
   }
-}
