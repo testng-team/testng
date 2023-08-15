@@ -1,0 +1,20 @@
+name: Combine PRs
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Every day at 00:00 UTC
+  workflow_dispatch: # allows you to manually trigger the workflow
+
+# The minimum permissions required to run this Action
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  combine-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: combine-prs
+        id: combine-prs
+        uses: github/combine-prs@v3.1.1
