@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 10
       # Install built-in JDK
       - name: 'Set up JDK ${{ matrix.jdk.version }} / ${{ matrix.jdk.distribution }}'
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3
         if: ${{ matrix.jdk.distribution != 'jdkfile' }}
         with:
           distribution: ${{ matrix.jdk.distribution }}
@@ -55,7 +55,7 @@ jobs:
           jdk_url="${{ matrix.jdk.url }}"
           wget -nv -O "${{ runner.temp }}/java_package.tar.gz" "${jdk_url}"
       - name: 'Set up JDK ${{ matrix.jdk.version }} / ${{ matrix.jdk.url }}'
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         if: ${{ matrix.jdk.distribution == 'jdkfile' }}
         with:
           distribution: ${{ matrix.jdk.distribution }}
