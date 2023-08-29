@@ -317,7 +317,8 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
 
         Object newInstance = computeInstance(arguments.getInstance(), inst, tm);
-        if (isConfigMethodEligibleForScrutiny(tm)) {
+        boolean isFirstTimeOnlyConfigMethod = isConfigMethodEligibleForScrutiny(tm);
+        if (isFirstTimeOnlyConfigMethod) {
           if (m_executedConfigMethods.add(arguments.getTestMethod())) {
             invokeConfigurationMethod(newInstance, tm, parameters, testResult);
           }
@@ -325,7 +326,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           invokeConfigurationMethod(newInstance, tm, parameters, testResult);
         }
         copyAttributesFromNativelyInjectedTestResult(parameters, arguments.getTestMethodResult());
-        runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
+        if (!isFirstTimeOnlyConfigMethod) {
+          runConfigurationListeners(testResult, arguments.getTestMethod(), false /* after */);
+        }
         if (testResult.getStatus() == ITestResult.SKIP) {
           Throwable t = testResult.getThrowable();
           if (t != null) {
