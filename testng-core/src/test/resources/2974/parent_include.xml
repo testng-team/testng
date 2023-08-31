@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="parent suite with default group" parallel="methods" thread-count="1">
+
+    <groups>
+        <run>
+            <include name="default_group"/>
+        </run>
+    </groups>
+    <suite-files>
+        <suite-file path="child.xml"/>
+    </suite-files>
+</suite>
