@@ -56,5 +56,4 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
     Assert.assertTrue(collector.names.contains("defaultTest"));
     Assert.assertFalse(collector.names.contains("overrideTest"));
   }
-
 }
