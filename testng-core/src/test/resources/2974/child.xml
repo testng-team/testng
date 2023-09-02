@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="child">
+
+  <test name="Tests inherit groups from parent xml">
+    <classes>
+      <class name="test.cli.github2974.TwoGroupsTest"/>
+    </classes>
+  </test>
+</suite>

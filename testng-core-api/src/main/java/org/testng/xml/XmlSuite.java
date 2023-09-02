@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -189,8 +190,6 @@ public class XmlSuite implements Cloneable {
   public static final Boolean DEFAULT_PRESERVE_ORDER = Boolean.TRUE;
   private Boolean m_preserveOrder = DEFAULT_PRESERVE_ORDER;
 
-  private List<String> m_includedGroups = Lists.newArrayList();
-  private List<String> m_excludedGroups = Lists.newArrayList();
   private XmlMethodSelectors m_xmlMethodSelectors;
   private boolean parsed = false;
 
@@ -848,23 +847,39 @@ public class XmlSuite implements Cloneable {
     } else if (m_xmlGroups != null && (m_xmlGroups.getRun() != null)) {
       return m_xmlGroups.getRun().getIncludes();
     } else {
-      // deprecated
-      return m_includedGroups;
+      // deprecated. Use mutable list because there are unit tests which modifies it
+      return Lists.newArrayList();
+    }
+  }
+
+  private void initGroupsRun() {
+    if (m_xmlGroups == null) {
+      m_xmlGroups = new XmlGroups();
+    }
+    if (m_xmlGroups.getRun() == null) {
+      m_xmlGroups.setRun(new XmlRun());
     }
   }
 
   public void addIncludedGroup(String g) {
-    m_includedGroups.add(g);
+    initGroupsRun();
+    m_xmlGroups.getRun().onInclude(g);
   }
 
   /** @param g - The list of groups to include. */
   public void setIncludedGroups(List<String> g) {
-    m_includedGroups = g;
+    initGroupsRun();
+    List<String> includes = m_xmlGroups.getRun().getIncludes();
+    includes.clear();
+    includes.addAll(g);
   }
 
   /** @param g The excludedGrousps to set. */
   public void setExcludedGroups(List<String> g) {
-    m_excludedGroups = g;
+    initGroupsRun();
+    List<String> excludes = m_xmlGroups.getRun().getExcludes();
+    excludes.clear();
+    excludes.addAll(g);
   }
 
   /**
@@ -877,12 +892,13 @@ public class XmlSuite implements Cloneable {
     } else if (m_xmlGroups != null && (m_xmlGroups.getRun() != null)) {
       return m_xmlGroups.getRun().getExcludes();
     } else {
-      return m_excludedGroups;
+      return Collections.emptyList();
     }
   }
 
   public void addExcludedGroup(String g) {
-    m_excludedGroups.add(g);
+    initGroupsRun();
+    m_xmlGroups.getRun().onExclude(g);
   }
 
   public Boolean getGroupByInstances() {
