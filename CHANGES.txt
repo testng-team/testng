@@ -1,5 +1,6 @@
 Current
 Fixed: GITHUB-3006: ITestResult injected at @AfterMethod incorrect when a configuration method failed (Krishnan Mahadevan)
+Fixed: GITHUB-2980: Data Provider Threads configuration in the suite don't match the documentation (Krishnan Mahadevan)
 Fixed: GITHUB-3003: BeforeClass|AfterClass with inheritedGroups triggers cyclic dependencies (Krishnan Mahadevan)
 New:   Added @Inherited to the Listeners annotation, allowing it to be used in forming meta-annotations. (Pavlo Glushchenko)
 Fixed: GITHUB-2991: Suite attributes map should be thread safe (Krishnan Mahadevan)

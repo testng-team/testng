@@ -7,6 +7,7 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.CollectionUtils;
 import org.testng.collections.Lists;
+import org.testng.internal.ObjectBag;
 import org.testng.internal.Parameters;
 import org.testng.internal.PoolService;
 import org.testng.internal.invokers.ITestInvoker.FailureContext;
@@ -129,7 +130,18 @@ public class MethodRunner implements IMethodRunner {
       // testng387: increment the param index in the bag.
       parametersIndex += 1;
     }
-    PoolService<List<ITestResult>> ps = new PoolService<>(suite.getDataProviderThreadCount());
+
+    ObjectBag objectBag = ObjectBag.getInstance(context.getSuite());
+    boolean sharedThreadPool = context.getSuite().getXmlSuite().isShareThreadPoolForDataProviders();
+
+    @SuppressWarnings("unchecked")
+    PoolService<List<ITestResult>> ps =
+        sharedThreadPool
+            ? (PoolService<List<ITestResult>>)
+                objectBag.createIfRequired(
+                    PoolService.class,
+                    () -> new PoolService<>(suite.getDataProviderThreadCount(), false))
+            : new PoolService<>(suite.getDataProviderThreadCount());
     List<List<ITestResult>> r = ps.submitTasksAndWait(workers);
     for (List<ITestResult> l2 : r) {
       result.addAll(l2);

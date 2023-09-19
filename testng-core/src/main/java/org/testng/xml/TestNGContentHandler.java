@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Stack;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -267,6 +268,15 @@ public class TestNGContentHandler extends DefaultHandler {
       if (null != dataProviderThreadCount) {
         m_currentSuite.setDataProviderThreadCount(Integer.parseInt(dataProviderThreadCount));
       }
+
+      String shareThreadPoolForDataProviders =
+          attributes.getValue("share-thread-pool-for-data-providers");
+      Optional.ofNullable(shareThreadPoolForDataProviders)
+          .ifPresent(
+              it ->
+                  m_currentSuite.setShareThreadPoolForDataProviders(
+                      Boolean.parseBoolean(shareThreadPoolForDataProviders)));
+
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
         m_currentSuite.setTimeOut(timeOut);

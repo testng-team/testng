@@ -17,6 +17,8 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
+import org.testng.internal.collections.Pair;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
@@ -50,6 +52,7 @@ import test.dataprovider.issue2888.SkipDataProviderSample;
 import test.dataprovider.issue2934.TestCaseSample;
 import test.dataprovider.issue2934.TestCaseSample.CoreListener;
 import test.dataprovider.issue2934.TestCaseSample.ToggleDataProvider;
+import test.dataprovider.issue2980.LoggingListener;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -604,6 +607,80 @@ public class DataProviderTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2934")
   public void ensureSequentialDataProviderWithRetryAnalyserWorks() {
     runTest(false);
+  }
+
+  @Test(description = "GITHUB-2980", dataProvider = "dataProviderForIssue2980")
+  public void ensureWeCanShareThreadPoolForDataProviders(
+      boolean flag, Pair<List<String>, Integer> pair) {
+    LoggingListener listener = runDataProviderTest(flag);
+    assertThat(listener.getMethodNames())
+        .withFailMessage("Ensuring that the method names along with parameters match.")
+        .containsAll(pair.first());
+    assertThat(listener.getThreadIds())
+        .withFailMessage("Ensuring that the thread ids are correct")
+        .hasSize(pair.second());
+  }
+
+  @Test(description = "GITHUB-2980", dataProvider = "getSuiteFileNames")
+  public void ensureWeCanShareThreadPoolForDataProvidersThroughSuiteFiles(
+      String fileName, Pair<List<String>, Integer> pair) {
+    TestNG testng = create();
+    testng.setTestSuites(Collections.singletonList(fileName));
+    LoggingListener listener = new LoggingListener();
+    testng.addListener(listener);
+    testng.run();
+    assertThat(listener.getMethodNames())
+        .withFailMessage("Ensuring that the method names along with parameters match.")
+        .containsAll(pair.first());
+    assertThat(listener.getThreadIds())
+        .withFailMessage("Ensuring that the thread ids are correct")
+        .hasSize(pair.second());
+  }
+
+  @DataProvider
+  public Object[][] getSuiteFileNames() {
+    return new Object[][] {
+      {
+        "src/test/resources/2980_with_shared_threadpool_enabled.xml",
+        new Pair<>(METHODS_ISSUE_2980, 5)
+      },
+      {
+        "src/test/resources/2980_with_shared_threadpool_disabled.xml",
+        new Pair<>(METHODS_ISSUE_2980, 10)
+      }
+    };
+  }
+
+  private LoggingListener runDataProviderTest(boolean flag) {
+    TestNG testng = new TestNG();
+    testng.setTestClasses(new Class[] {test.dataprovider.issue2980.TestClassSample.class});
+    LoggingListener listener = new LoggingListener();
+    testng.addListener(listener);
+    testng.setDataProviderThreadCount(5);
+    testng.shareThreadPoolForDataProviders(flag);
+    testng.run();
+    return listener;
+  }
+
+  private static final List<String> METHODS_ISSUE_2980 =
+      Lists.newArrayList(
+          "testMethod_[1]",
+          "testMethod_[2]",
+          "testMethod_[3]",
+          "testMethod_[4]",
+          "testMethod_[5]",
+          "anotherTestMethod_[A]",
+          "anotherTestMethod_[B]",
+          "anotherTestMethod_[C]",
+          "anotherTestMethod_[D]",
+          "anotherTestMethod_[E]");
+
+  @DataProvider
+  public Object[][] dataProviderForIssue2980() {
+    return new Object[][] {
+      {true, new Pair<>(METHODS_ISSUE_2980, 5)},
+      {false, new Pair<>(METHODS_ISSUE_2980, 10)}
+    };
   }
 
   private static void runTest(boolean isParallel) {

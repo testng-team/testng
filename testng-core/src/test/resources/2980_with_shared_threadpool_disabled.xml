@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "src/main/resources/testng-1.0.dtd">
+<suite name="suite" share-thread-pool-for-data-providers="false" data-provider-thread-count="5">
+    <test name="test">
+        <classes>
+            <class name="test.dataprovider.issue2980.TestClassSample"/>
+        </classes>
+    </test> <!-- test -->
+</suite> <!-- suite -->
