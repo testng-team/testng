@@ -274,4 +274,13 @@ public class CommandLineArgs {
       names = GENERATE_RESULTS_PER_SUITE,
       description = "Should TestNG consider failures in Data Providers  as test failures.")
   public Boolean generateResultsPerSuite = false;
+
+  public static final String SHARE_THREAD_POOL_FOR_DATA_PROVIDERS =
+      "-shareThreadPoolForDataProviders";
+
+  @Parameter(
+      names = SHARE_THREAD_POOL_FOR_DATA_PROVIDERS,
+      description =
+          "Should TestNG use a global Shared ThreadPool (At suite level) for running data providers.")
+  public Boolean shareThreadPoolForDataProviders = false;
 }

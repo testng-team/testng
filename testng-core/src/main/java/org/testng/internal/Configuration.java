@@ -23,6 +23,8 @@ public class Configuration implements IConfiguration {
   private ITestObjectFactory m_objectFactory;
   private IHookable m_hookable;
   private IConfigurable m_configurable;
+
+  private boolean shareThreadPoolForDataProviders = false;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
       Maps.newLinkedHashMap();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
@@ -167,5 +169,15 @@ public class Configuration implements IConfiguration {
   @Override
   public boolean isPropagateDataProviderFailureAsTestFailure() {
     return propagateDataProviderFailureAsTestFailure;
+  }
+
+  @Override
+  public boolean isShareThreadPoolForDataProviders() {
+    return this.shareThreadPoolForDataProviders;
+  }
+
+  @Override
+  public void shareThreadPoolForDataProviders(boolean flag) {
+    this.shareThreadPoolForDataProviders = flag;
   }
 }

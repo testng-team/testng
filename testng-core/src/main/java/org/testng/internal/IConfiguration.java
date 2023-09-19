@@ -59,4 +59,8 @@ public interface IConfiguration {
   void propagateDataProviderFailureAsTestFailure();
 
   boolean isPropagateDataProviderFailureAsTestFailure();
+
+  boolean isShareThreadPoolForDataProviders();
+
+  void shareThreadPoolForDataProviders(boolean flag);
 }

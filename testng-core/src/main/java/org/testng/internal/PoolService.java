@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -15,12 +17,18 @@ import org.testng.collections.Lists;
 import org.testng.internal.thread.ThreadUtil;
 
 /** Simple wrapper for an ExecutorCompletionService. */
-public class PoolService<FutureType> {
+public class PoolService<FutureType> implements Closeable {
 
   private final ExecutorCompletionService<FutureType> m_completionService;
   private final ExecutorService m_executor;
 
+  private final boolean shutdownAfterExecution;
+
   public PoolService(int threadPoolSize) {
+    this(threadPoolSize, true);
+  }
+
+  public PoolService(int threadPoolSize, boolean shutdownAfterExecution) {
 
     ThreadFactory threadFactory =
         new ThreadFactory() {
@@ -35,6 +43,7 @@ public class PoolService<FutureType> {
         };
     m_executor = Executors.newFixedThreadPool(threadPoolSize, threadFactory);
     m_completionService = new ExecutorCompletionService<>(m_executor);
+    this.shutdownAfterExecution = shutdownAfterExecution;
   }
 
   public List<FutureType> submitTasksAndWait(List<? extends Callable<FutureType>> tasks) {
@@ -53,7 +62,16 @@ public class PoolService<FutureType> {
       }
     }
 
-    m_executor.shutdown();
+    if (shutdownAfterExecution) {
+      m_executor.shutdown();
+    }
     return result;
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (!shutdownAfterExecution) {
+      m_executor.shutdown();
+    }
   }
 }

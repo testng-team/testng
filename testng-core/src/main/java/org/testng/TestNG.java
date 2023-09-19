@@ -31,6 +31,7 @@ import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ListenerOrderDeterminer;
+import org.testng.internal.ObjectBag;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.ReporterConfig;
 import org.testng.internal.RuntimeBehavior;
@@ -609,6 +610,14 @@ public class TestNG {
     return this.m_configuration.isPropagateDataProviderFailureAsTestFailure();
   }
 
+  public void shareThreadPoolForDataProviders(boolean flag) {
+    this.m_configuration.shareThreadPoolForDataProviders(flag);
+  }
+
+  public boolean isShareThreadPoolForDataProviders() {
+    return this.m_configuration.isShareThreadPoolForDataProviders();
+  }
+
   /**
    * Set the suites file names to be run by this TestNG object. This method tries to load and parse
    * the specified TestNG suite xml files. If a file is missing, it is ignored.
@@ -1082,6 +1091,7 @@ public class TestNG {
     m_end = System.currentTimeMillis();
 
     if (null != suiteRunners) {
+      suiteRunners.forEach(ObjectBag::cleanup);
       generateReports(suiteRunners);
     }
 
@@ -1186,6 +1196,9 @@ public class TestNG {
     // First initialize the suite runners to ensure there are no configuration issues.
     // Create a map with XmlSuite as key and corresponding SuiteRunner as value
     for (XmlSuite xmlSuite : m_suites) {
+      if (m_configuration.isShareThreadPoolForDataProviders()) {
+        xmlSuite.setShareThreadPoolForDataProviders(true);
+      }
       createSuiteRunners(suiteRunnerMap, xmlSuite);
     }
 
@@ -1454,6 +1467,8 @@ public class TestNG {
    * @param cla The command line parameters
    */
   protected void configure(CommandLineArgs cla) {
+    Optional.ofNullable(cla.shareThreadPoolForDataProviders)
+        .ifPresent(this::shareThreadPoolForDataProviders);
     Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
         .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);

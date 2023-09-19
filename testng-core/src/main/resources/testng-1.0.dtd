@@ -56,11 +56,13 @@ Cedric Beust & Alexandru Popescu
 @attr  skipfailedinvocationcounts Whether to skip failed invocations.
 @attr  data-provider-thread-count An integer giving the size of the thread pool to use
        for parallel data providers.
+@attr share-thread-pool-for-data-providers - Whether TestNG should use a common thread pool
+      for running parallel data providers. (Works only with TestNG versions 7.9.0 or higher)
 @attr  object-factory A class that implements IObjectFactory that will be used to
        instantiate the test objects.
 @attr allow-return-values If true, tests that return a value will be run as well
 -->
-<!ATTLIST suite 
+<!ATTLIST suite
     name CDATA #REQUIRED
     junit (true | false) "false"
     verbose CDATA #IMPLIED
@@ -73,6 +75,7 @@ Cedric Beust & Alexandru Popescu
     time-out CDATA #IMPLIED
     skipfailedinvocationcounts (true | false) "false"
     data-provider-thread-count CDATA "10"
+    share-thread-pool-for-data-providers (true | false) "false"
     object-factory CDATA #IMPLIED
     group-by-instances (true | false) "false"
     preserve-order (true | false) "true"

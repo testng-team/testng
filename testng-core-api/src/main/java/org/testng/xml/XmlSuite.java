@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import org.testng.ITestObjectFactory;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -123,6 +124,9 @@ public class XmlSuite implements Cloneable {
   private String m_parentModule = "";
   private String m_guiceStage = "";
 
+  /** Represents a unique id for this suite. Can be used for uniquely identifying the xml suite. */
+  public final UUID SUITE_ID = UUID.randomUUID();
+
   /** Whether to SKIP or CONTINUE to re-attempt failed configuration methods. */
   public static final FailurePolicy DEFAULT_CONFIG_FAILURE_POLICY = FailurePolicy.SKIP;
 
@@ -138,6 +142,8 @@ public class XmlSuite implements Cloneable {
 
   public static final Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
+
+  private boolean shareThreadPoolForDataProviders = false;
 
   /** The thread count. */
   public static final Integer DEFAULT_THREAD_COUNT = 5;
@@ -241,6 +247,14 @@ public class XmlSuite implements Cloneable {
 
   public Class<? extends ITestObjectFactory> getObjectFactoryClass() {
     return m_objectFactoryClass;
+  }
+
+  public void setShareThreadPoolForDataProviders(boolean shareThreadPoolForDataProviders) {
+    this.shareThreadPoolForDataProviders = shareThreadPoolForDataProviders;
+  }
+
+  public boolean isShareThreadPoolForDataProviders() {
+    return shareThreadPoolForDataProviders;
   }
 
   @Deprecated
