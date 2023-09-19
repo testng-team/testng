@@ -190,25 +190,23 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   }
 
   public void setDownstreamDependencies(Set<ITestNGMethod> methods) {
-    if (!downstreamDependencies.isEmpty()) {
-      downstreamDependencies.clear();
-    }
-    Set<ITestNGMethod> toAdd = methods;
-    if (RuntimeBehavior.isMemoryFriendlyMode()) {
-      toAdd = methods.stream().map(LiteWeightTestNGMethod::new).collect(Collectors.toSet());
-    }
-    downstreamDependencies.addAll(toAdd);
+    setupDependencies(downstreamDependencies, methods);
   }
 
   public void setUpstreamDependencies(Set<ITestNGMethod> methods) {
-    if (!upstreamDependencies.isEmpty()) {
-      upstreamDependencies.clear();
+    setupDependencies(upstreamDependencies, methods);
+  }
+
+  private static void setupDependencies(
+      Set<ITestNGMethod> dependencies, Set<ITestNGMethod> methods) {
+    if (!dependencies.isEmpty()) {
+      dependencies.clear();
     }
     Set<ITestNGMethod> toAdd = methods;
     if (RuntimeBehavior.isMemoryFriendlyMode()) {
       toAdd = methods.stream().map(LiteWeightTestNGMethod::new).collect(Collectors.toSet());
     }
-    upstreamDependencies.addAll(toAdd);
+    dependencies.addAll(toAdd);
   }
 
   /** {@inheritDoc} */

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
@@ -113,6 +114,7 @@ public class Graph<T> {
       //
       Node<T> node = findNodeWithNoPredecessors(nodes2);
       if (null == node) {
+        // We found a cycle. Time to use the Tarjan's algorithm to get the cycle.
         List<T> cycle = new Tarjan<>(this, nodes2.get(0).getObject()).getCycle();
         StringBuilder sb = new StringBuilder();
         sb.append("The following methods have cyclic dependencies:\n");
@@ -132,16 +134,12 @@ public class Graph<T> {
 
   private void initializeIndependentNodes() {
     if (null == m_independentNodes) {
-      List<Node<T>> list = Lists.newArrayList(m_nodes.values());
-      // Ideally, we should not have to sort this. However, due to a bug where it treats all the
-      // methods as
-      // dependent nodes.
-      list.sort(comparator);
-
-      m_independentNodes = Maps.newLinkedHashMap();
-      for (Node<T> node : list) {
-        m_independentNodes.put(node.getObject(), node);
-      }
+      m_independentNodes =
+          Lists.newArrayList(m_nodes.values()).stream()
+              .sorted(comparator)
+              .collect(
+                  Collectors.toMap(
+                      Node::getObject, Function.identity(), (a, b) -> a, Maps::newLinkedHashMap));
     }
   }
 
@@ -159,9 +157,7 @@ public class Graph<T> {
    */
   private void removeFromNodes(List<Node<T>> nodes, Node<T> node) {
     nodes.remove(node);
-    for (Node<T> n : nodes) {
-      n.removePredecessor(node.getObject());
-    }
+    nodes.parallelStream().forEach(it -> it.removePredecessor(node.getObject()));
   }
 
   private static void log(String s) {
@@ -173,13 +169,7 @@ public class Graph<T> {
   }
 
   private Node<T> findNodeWithNoPredecessors(List<Node<T>> nodes) {
-    for (Node<T> n : nodes) {
-      if (!n.hasPredecessors()) {
-        return n;
-      }
-    }
-
-    return null;
+    return nodes.parallelStream().filter(it -> !it.hasPredecessors()).findFirst().orElse(null);
   }
 
   /**
@@ -295,7 +285,7 @@ public class Graph<T> {
     }
 
     public boolean hasPredecessors() {
-      return m_predecessors.size() > 0;
+      return !m_predecessors.isEmpty();
     }
   }
 }

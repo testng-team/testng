@@ -205,7 +205,7 @@ public class MethodGroupsHelper {
       //
       // Only keep going if new methods have been added
       //
-      keepGoing = newMethods.size() > 0;
+      keepGoing = !newMethods.isEmpty();
       includedMethods = Lists.newArrayList();
       includedMethods.addAll(newMethods.keySet());
       newMethods = Maps.newHashMap();

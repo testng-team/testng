@@ -14,39 +14,40 @@ import org.testng.collections.Maps;
  */
 public class Tarjan<T> {
   int m_index = 0;
-  private final Stack<T> m_s;
-  Map<T, Integer> m_indices = Maps.newHashMap();
+  private final Stack<T> stack;
+  Map<T, Integer> visitedNodes = Maps.newHashMap();
   Map<T, Integer> m_lowlinks = Maps.newHashMap();
   private List<T> m_cycle;
 
   public Tarjan(Graph<T> graph, T start) {
-    m_s = new Stack<>();
+    stack = new Stack<>();
     run(graph, start);
   }
 
-  private void run(Graph<T> graph, T v) {
-    m_indices.put(v, m_index);
-    m_lowlinks.put(v, m_index);
+  private void run(Graph<T> graph, T start) {
+    visitedNodes.put(start, m_index);
+    m_lowlinks.put(start, m_index);
     m_index++;
-    m_s.push(v);
+    stack.push(start);
 
-    for (T vprime : graph.getPredecessors(v)) {
-      if (!m_indices.containsKey(vprime)) {
-        run(graph, vprime);
-        int min = Math.min(m_lowlinks.get(v), m_lowlinks.get(vprime));
-        m_lowlinks.put(v, min);
-      } else if (m_s.contains(vprime)) {
-        m_lowlinks.put(v, Math.min(m_lowlinks.get(v), m_indices.get(vprime)));
+    for (T predecessor : graph.getPredecessors(start)) {
+      if (!visitedNodes.containsKey(predecessor)) {
+        run(graph, predecessor);
+        int min = Math.min(m_lowlinks.get(start), m_lowlinks.get(predecessor));
+        m_lowlinks.put(start, min);
+      } else if (stack.contains(predecessor)) {
+        int min = Math.min(m_lowlinks.get(start), visitedNodes.get(predecessor));
+        m_lowlinks.put(start, min);
       }
     }
 
-    if (Objects.equals(m_lowlinks.get(v), m_indices.get(v))) {
+    if (Objects.equals(m_lowlinks.get(start), visitedNodes.get(start))) {
       m_cycle = Lists.newArrayList();
       T n;
       do {
-        n = m_s.pop();
+        n = stack.pop();
         m_cycle.add(n);
-      } while (!n.equals(v));
+      } while (!n.equals(start));
     }
   }
 
