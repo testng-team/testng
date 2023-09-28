@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.sonarqube:org.sonarqube.gradle.plugin:2.8")
+    implementation("org.sonarqube:org.sonarqube.gradle.plugin:4.4.0.3356")
     implementation("com.github.autostyle:autostyle-plugin-gradle:3.2")
 }
 
