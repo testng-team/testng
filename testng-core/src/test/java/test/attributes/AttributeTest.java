@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Set;
 import org.testng.ITestContext;
+import org.testng.TestNG;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import test.SimpleBaseTest;
+import test.attributes.issue2991.TestClassSample;
 
-public class AttributeTest {
+public class AttributeTest extends SimpleBaseTest {
 
   @BeforeClass
   public void bc(ITestContext ctx) {
@@ -31,5 +34,12 @@ public class AttributeTest {
     assertThat(names).hasSize(1);
     assertThat(names).contains("test2");
     assertThat(ctx.getAttribute("test2")).isEqualTo("2");
+  }
+
+  @Test(description = "GITHUB-2991")
+  public void ensureAttributeAccessIsThreadSafe() {
+    TestNG testng = create(TestClassSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isZero();
   }
 }

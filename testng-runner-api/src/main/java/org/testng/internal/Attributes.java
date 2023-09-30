@@ -8,7 +8,7 @@ import org.testng.collections.Maps;
 /** Simple implementation of IAttributes. */
 public class Attributes implements IAttributes {
 
-  private final Map<String, Object> m_attributes = Maps.newHashMap();
+  private final Map<String, Object> m_attributes = Maps.newConcurrentMap();
 
   @Override
   public Object getAttribute(String name) {
