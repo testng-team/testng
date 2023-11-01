@@ -2,6 +2,7 @@ package org.testng.annotations;
 
 import static java.lang.annotation.ElementType.TYPE;
 
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import org.testng.IAnnotationTransformer;
@@ -18,6 +19,7 @@ import org.testng.ITestNGListener;
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({TYPE})
+@Inherited
 public @interface Listeners {
   Class<? extends ITestNGListener>[] value() default {};
 }

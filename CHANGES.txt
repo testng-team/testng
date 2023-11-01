@@ -1,4 +1,5 @@
 Current
+New:   Added @Inherited to the Listeners annotation, allowing it to be used in forming meta-annotations. (Pavlo Glushchenko)
 Fixed: GITHUB-2991: Suite attributes map should be thread safe (Krishnan Mahadevan)
 Fixed: GITHUB-2974: Command line arguments -groups and -excludegroups override defined groups in a suite xml file (dr29bart)
 Fixed: GITHUB-2961: "Unexpected value: 16" error when multiple beforeMethod config methods with firstTimeOnly property run before a test (Krishnan Mahadevan)
