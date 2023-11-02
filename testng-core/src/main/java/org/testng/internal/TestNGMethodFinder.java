@@ -172,15 +172,13 @@ public class TestNGMethodFinder implements ITestMethodFinder {
         case BEFORE_GROUPS:
           beforeGroups = configuration.getBeforeGroups();
           create =
-              shouldCreateBeforeAfterGroup(
-                  beforeGroups, annotationFinder, clazz, configuration.getInheritGroups());
+              shouldCreateBeforeAfterGroup(beforeGroups, annotationFinder, clazz, configuration);
           isBeforeTestMethod = true;
           break;
         case AFTER_GROUPS:
           afterGroups = configuration.getAfterGroups();
           create =
-              shouldCreateBeforeAfterGroup(
-                  afterGroups, annotationFinder, clazz, configuration.getInheritGroups());
+              shouldCreateBeforeAfterGroup(afterGroups, annotationFinder, clazz, configuration);
           isAfterTestMethod = true;
           break;
         default:
@@ -220,10 +218,14 @@ public class TestNGMethodFinder implements ITestMethodFinder {
   }
 
   private static boolean shouldCreateBeforeAfterGroup(
-      String[] groups, IAnnotationFinder finder, Class<?> clazz, boolean isInheritGroups) {
-    if (!isInheritGroups) {
+      String[] groups, IAnnotationFinder finder, Class<?> clazz, IConfigurationAnnotation config) {
+    boolean isInheritGroups = config.getInheritGroups();
+    boolean isBeforeAfterGroups = config.isBeforeGroups() || config.isAfterGroups();
+    if (!isInheritGroups || !isBeforeAfterGroups) {
       return groups.length > 0;
     }
+    // Confine honouring of group inheritance ONLY to BeforeGroups|AfterGroups annotation
+    // This will ensure that we are backward compatible.
     ITestAnnotation test = AnnotationHelper.findTest(finder, clazz);
     if (test == null) {
       return groups.length > 0;

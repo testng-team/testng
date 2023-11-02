@@ -3,6 +3,7 @@ package test.configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
@@ -63,6 +64,16 @@ public class ConfigurationTest extends ConfigurationBaseTest {
     testng.setVerbose(2);
     testng.run();
     assertThat(testng.getStatus()).isZero();
+  }
+
+  @Test(description = "GITHUB-3003")
+  public void ensureGroupInheritanceWorksForConfigMethods() {
+    TestNG testng = create(test.configuration.issue3003.TestClassSample.class);
+    testng.setVerbose(2);
+    testng.run();
+    List<String> expected =
+        Arrays.asList("setupMethod1", "setupMethod2", "setupMethod3", "testMethod1");
+    assertThat(test.configuration.issue3003.TestClassSample.logs).containsAll(expected);
   }
 
   @DataProvider(name = "produceTestClasses")
