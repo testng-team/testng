@@ -595,10 +595,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       TestResult.copyAttributes(testResult, result);
       m_notifier.addSkippedTest(arguments.getTestMethod(), result);
       arguments.getTestMethod().incrementCurrentInvocationCount();
-      testResult.setMethod(arguments.getTestMethod());
       invokedMethod = new InvokedMethod(startTime, result);
       invokeListenersForSkippedTestResult(result, invokedMethod);
-      runAfterConfigurations(arguments, suite, testResult);
+      runAfterConfigurations(arguments, suite, result);
       runAfterGroupsConfigurations(arguments);
 
       return result;
@@ -773,7 +772,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   private void runAfterConfigurations(
-      TestMethodArguments arguments, XmlSuite suite, TestResult testResult) {
+      TestMethodArguments arguments, XmlSuite suite, ITestResult testResult) {
     ITestNGMethod[] teardownConfigMethods =
         TestNgMethodUtils.filterTeardownConfigurationMethods(
             arguments.getTestMethod(), arguments.getAfterMethods());
@@ -795,7 +794,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private void runConfigMethods(
       TestMethodArguments arguments,
       XmlSuite suite,
-      TestResult testResult,
+      ITestResult testResult,
       ITestNGMethod[] teardownConfigMethods) {
     ConfigMethodArguments cfgArgs =
         new ConfigMethodArguments.Builder()

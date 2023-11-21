@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.testng.Assert;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -74,6 +77,22 @@ public class ConfigurationTest extends ConfigurationBaseTest {
     List<String> expected =
         Arrays.asList("setupMethod1", "setupMethod2", "setupMethod3", "testMethod1");
     assertThat(test.configuration.issue3003.TestClassSample.logs).containsAll(expected);
+  }
+
+  @Test(description = "GITHUB-3006")
+  public void ensureNativelyInjectedTestResultForAfterMethodMatchesTestMethod() {
+    TestNG testng = create(test.configuration.issue3006.TestClassSample.class);
+    testng.run();
+    ITestResult actual = test.configuration.issue3006.TestClassSample.iTestResult;
+    assertThat(actual.getStatus())
+        .withFailMessage("The test method status should have been SKIPPED")
+        .isEqualTo(ITestResult.SKIP);
+    List<String> skippedDueTo =
+        actual.getSkipCausedBy().stream()
+            .map(ITestNGMethod::getQualifiedName)
+            .collect(Collectors.toList());
+    assertThat(skippedDueTo)
+        .containsExactly("test.configuration.issue3006.TestClassSample.beforeMethod");
   }
 
   @DataProvider(name = "produceTestClasses")
