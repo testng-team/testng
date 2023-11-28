@@ -1,11 +1,10 @@
 package org.testng.internal;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import org.testng.ISuite;
 import org.testng.log4testng.Logger;
@@ -42,16 +41,9 @@ public final class ObjectBag {
 
   public void cleanup() {
     bag.values().stream()
-        .filter(it -> it instanceof Closeable)
-        .map(it -> (Closeable) it)
-        .forEach(
-            it -> {
-              try {
-                it.close();
-              } catch (IOException e) {
-                logger.debug("Could not clean-up " + it, e);
-              }
-            });
+        .filter(it -> it instanceof ExecutorService)
+        .map(it -> (ExecutorService) it)
+        .forEach(ExecutorService::shutdown);
     bag.clear();
   }
 }
