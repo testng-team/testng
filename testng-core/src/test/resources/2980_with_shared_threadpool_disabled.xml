@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suite SYSTEM "src/main/resources/testng-1.0.dtd">
+<!DOCTYPE suite SYSTEM "file:///src/main/resources/testng-1.1.dtd">
 <suite name="suite" share-thread-pool-for-data-providers="false" data-provider-thread-count="5">
     <test name="test">
         <classes>

@@ -145,6 +145,8 @@ public class XmlSuite implements Cloneable {
 
   private boolean shareThreadPoolForDataProviders = false;
 
+  private boolean useGlobalThreadPool = false;
+
   /** The thread count. */
   public static final Integer DEFAULT_THREAD_COUNT = 5;
 
@@ -251,6 +253,14 @@ public class XmlSuite implements Cloneable {
 
   public void setShareThreadPoolForDataProviders(boolean shareThreadPoolForDataProviders) {
     this.shareThreadPoolForDataProviders = shareThreadPoolForDataProviders;
+  }
+
+  public boolean useGlobalThreadPool() {
+    return this.useGlobalThreadPool;
+  }
+
+  public void shouldUseGlobalThreadPool(boolean flag) {
+    this.useGlobalThreadPool = flag;
   }
 
   public boolean isShareThreadPoolForDataProviders() {

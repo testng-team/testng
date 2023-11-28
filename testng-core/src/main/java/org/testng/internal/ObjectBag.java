@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 import org.testng.ISuite;
 import org.testng.log4testng.Logger;
+import org.testng.xml.XmlSuite;
 
 /**
  * A simple bean bag that is intended to help share objects during the lifetime of TestNG without
@@ -21,7 +22,11 @@ public final class ObjectBag {
   private static final Map<UUID, ObjectBag> instances = new ConcurrentHashMap<>();
 
   public static ObjectBag getInstance(ISuite suite) {
-    return instances.computeIfAbsent(suite.getXmlSuite().SUITE_ID, k -> new ObjectBag());
+    return getInstance(suite.getXmlSuite());
+  }
+
+  public static ObjectBag getInstance(XmlSuite xmlSuite) {
+    return instances.computeIfAbsent(xmlSuite.SUITE_ID, k -> new ObjectBag());
   }
 
   public static void cleanup(ISuite suite) {

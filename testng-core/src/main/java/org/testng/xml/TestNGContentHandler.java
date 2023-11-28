@@ -277,6 +277,13 @@ public class TestNGContentHandler extends DefaultHandler {
                   m_currentSuite.setShareThreadPoolForDataProviders(
                       Boolean.parseBoolean(shareThreadPoolForDataProviders)));
 
+      String useGlobalThreadPool = attributes.getValue("use-global-thread-pool");
+      Optional.ofNullable(useGlobalThreadPool)
+          .ifPresent(
+              it ->
+                  m_currentSuite.shouldUseGlobalThreadPool(
+                      Boolean.parseBoolean(useGlobalThreadPool)));
+
       String timeOut = attributes.getValue("time-out");
       if (null != timeOut) {
         m_currentSuite.setTimeOut(timeOut);

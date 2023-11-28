@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "file:///src/main/resources/testng-1.1.dtd">
+<suite name="2019_suite">
+  <test name="2019_test" parallel="methods" verbose="2">
+    <classes>
+      <class name="test.thread.issue2019.TestClassSample"/>
+    </classes>
+  </test>
+</suite>

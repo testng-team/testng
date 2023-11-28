@@ -63,4 +63,8 @@ public interface IConfiguration {
   boolean isShareThreadPoolForDataProviders();
 
   void shareThreadPoolForDataProviders(boolean flag);
+
+  boolean useGlobalThreadPool();
+
+  void shouldUseGlobalThreadPool(boolean flag);
 }

@@ -39,6 +39,8 @@ public class Configuration implements IConfiguration {
 
   private boolean propagateDataProviderFailureAsTestFailure;
 
+  private boolean useGlobalThreadPool = false;
+
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
   }
@@ -179,5 +181,15 @@ public class Configuration implements IConfiguration {
   @Override
   public void shareThreadPoolForDataProviders(boolean flag) {
     this.shareThreadPoolForDataProviders = flag;
+  }
+
+  @Override
+  public boolean useGlobalThreadPool() {
+    return this.useGlobalThreadPool;
+  }
+
+  @Override
+  public void shouldUseGlobalThreadPool(boolean flag) {
+    this.useGlobalThreadPool = flag;
   }
 }

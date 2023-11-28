@@ -5,7 +5,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import org.testng.internal.IConfiguration;
+import org.testng.internal.ObjectBag;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.TestNGThreadFactory;
@@ -47,8 +49,7 @@ class TestTaskExecutor {
 
   public void execute() {
     String name = "test-" + xmlTest.getName();
-    int threadCount = xmlTest.getThreadCount();
-    threadCount = Math.max(threadCount, 1);
+    int threadCount = Math.max(xmlTest.getThreadCount(), 1);
     if (RuntimeBehavior.favourCustomThreadPoolExecutor()) {
       IExecutorFactory execFactory = configuration.getExecutorFactory();
       ITestNGThreadPoolExecutor executor =
@@ -65,14 +66,22 @@ class TestTaskExecutor {
       executor.run();
       service = executor;
     } else {
-      service =
-          new ThreadPoolExecutor(
-              threadCount,
-              threadCount,
-              0,
-              TimeUnit.MILLISECONDS,
-              queue,
-              new TestNGThreadFactory(name));
+      boolean reUse = xmlTest.getSuite().useGlobalThreadPool();
+      Supplier<Object> supplier =
+          () ->
+              new ThreadPoolExecutor(
+                  threadCount,
+                  threadCount,
+                  0,
+                  TimeUnit.MILLISECONDS,
+                  queue,
+                  new TestNGThreadFactory(name));
+      if (reUse) {
+        ObjectBag bag = ObjectBag.getInstance(xmlTest.getSuite());
+        service = (ExecutorService) bag.createIfRequired(ExecutorService.class, supplier);
+      } else {
+        service = (ExecutorService) supplier.get();
+      }
       GraphOrchestrator<ITestNGMethod> executor =
           new GraphOrchestrator<>(service, factory, graph, comparator);
       executor.run();
