@@ -54,13 +54,17 @@ Cedric Beust & Alexandru Popescu
 @attr  time-out     The time to wait in milliseconds before aborting the
                 method (if parallel="methods") or the test (parallel="tests")
 @attr  skipfailedinvocationcounts Whether to skip failed invocations.
+@attr use-global-thread-pool - Whether TestNG should use a common thread pool
+for running both regular and data driven tests in parallel. (Works only with TestNG versions 7.9.0 or higher)
 @attr  data-provider-thread-count An integer giving the size of the thread pool to use
        for parallel data providers.
+@attr share-thread-pool-for-data-providers - Whether TestNG should use a common thread pool
+      for running parallel data providers. (Works only with TestNG versions 7.9.0 or higher)
 @attr  object-factory A class that implements IObjectFactory that will be used to
        instantiate the test objects.
 @attr allow-return-values If true, tests that return a value will be run as well
 -->
-<!ATTLIST suite 
+<!ATTLIST suite
     name CDATA #REQUIRED
     junit (true | false) "false"
     verbose CDATA #IMPLIED
@@ -72,7 +76,9 @@ Cedric Beust & Alexandru Popescu
     annotations CDATA #IMPLIED
     time-out CDATA #IMPLIED
     skipfailedinvocationcounts (true | false) "false"
+    use-global-thread-pool (true | false) "false"
     data-provider-thread-count CDATA "10"
+    share-thread-pool-for-data-providers (true | false) "false"
     object-factory CDATA #IMPLIED
     group-by-instances (true | false) "false"
     preserve-order (true | false) "true"
@@ -82,7 +88,7 @@ Cedric Beust & Alexandru Popescu
 <!-- A list of XML files that contain more suite descriptions -->
 <!ELEMENT suite-files (suite-file)* >
 
-<!ELEMENT suite-file EMPTY >
+<!ELEMENT suite-file ANY >
 <!ATTLIST suite-file
     path CDATA #REQUIRED
 >
@@ -92,7 +98,7 @@ Parameters can be defined at the <suite> or at the <test> level.
 Parameters defined at the <test> level override parameters of the same name in <suite>
 Parameters are used to link Java method parameters to their actual value, defined here.
 -->
-<!ELEMENT parameter EMPTY>
+<!ELEMENT parameter ANY>
 <!ATTLIST parameter
     name CDATA #REQUIRED
     value CDATA #REQUIRED >
@@ -103,12 +109,12 @@ They need to implement <tt>org.testng.IMethodSelector</tt>
 -->
 <!ELEMENT method-selectors (method-selector*) >
 <!ELEMENT method-selector ((selector-class)*|script) >
-<!ELEMENT selector-class EMPTY>
+<!ELEMENT selector-class ANY>
 <!ATTLIST selector-class
     name CDATA #REQUIRED
   priority CDATA #IMPLIED
 >
-<!ELEMENT script EMPTY>
+<!ELEMENT script ANY>
 <!ATTLIST script
     language CDATA #REQUIRED
 >
@@ -166,14 +172,14 @@ Defines additional groups ("groups of groups") and also which groups to include 
     name CDATA #REQUIRED>
 
 <!-- Defines which groups to include in the current group of groups         -->
-<!ELEMENT include EMPTY>
+<!ELEMENT include ANY>
 <!ATTLIST include
     name CDATA #REQUIRED
     description CDATA #IMPLIED
     invocation-numbers CDATA #IMPLIED>
 
 <!-- Defines which groups to exclude from the current group of groups       -->
-<!ELEMENT exclude EMPTY>
+<!ELEMENT exclude ANY>
 <!ATTLIST exclude
     name CDATA #REQUIRED>
 
@@ -182,7 +188,7 @@ Defines additional groups ("groups of groups") and also which groups to include 
 
 <!ELEMENT dependencies (group*)>
 
-<!ELEMENT group EMPTY>
+<!ELEMENT group ANY>
 <!ATTLIST group
     name CDATA #REQUIRED
     depends-on CDATA #REQUIRED>
@@ -208,6 +214,6 @@ Defines additional groups ("groups of groups") and also which groups to include 
 <!-- The list of listeners that will be passed to TestNG -->
 <!ELEMENT listeners (listener*) >
 
-<!ELEMENT listener EMPTY>
+<!ELEMENT listener ANY>
 <!ATTLIST listener
     class-name CDATA #REQUIRED >

@@ -616,6 +616,14 @@ public class TestNG {
     return this.m_configuration.isShareThreadPoolForDataProviders();
   }
 
+  public boolean useGlobalThreadPool() {
+    return this.m_configuration.useGlobalThreadPool();
+  }
+
+  public void shouldUseGlobalThreadPool(boolean flag) {
+    this.m_configuration.shouldUseGlobalThreadPool(flag);
+  }
+
   /**
    * Set the suites file names to be run by this TestNG object. This method tries to load and parse
    * the specified TestNG suite xml files. If a file is missing, it is ignored.
@@ -1203,6 +1211,9 @@ public class TestNG {
       if (m_configuration.isShareThreadPoolForDataProviders()) {
         xmlSuite.setShareThreadPoolForDataProviders(true);
       }
+      if (m_configuration.useGlobalThreadPool()) {
+        xmlSuite.shouldUseGlobalThreadPool(true);
+      }
       createSuiteRunners(suiteRunnerMap, xmlSuite);
     }
 
@@ -1457,6 +1468,7 @@ public class TestNG {
    * @param cla The command line parameters
    */
   protected void configure(CommandLineArgs cla) {
+    Optional.ofNullable(cla.useGlobalThreadPool).ifPresent(this::shouldUseGlobalThreadPool);
     Optional.ofNullable(cla.shareThreadPoolForDataProviders)
         .ifPresent(this::shareThreadPoolForDataProviders);
     Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)

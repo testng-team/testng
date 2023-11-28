@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
@@ -21,7 +23,7 @@ import org.testng.internal.ObjectBag;
 import org.testng.internal.Parameters;
 import org.testng.internal.invokers.ITestInvoker.FailureContext;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
-import org.testng.internal.thread.ThreadUtil;
+import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.xml.XmlSuite;
 
 public class MethodRunner implements IMethodRunner {
@@ -107,9 +109,9 @@ public class MethodRunner implements IMethodRunner {
     XmlSuite suite = context.getSuite().getXmlSuite();
     int parametersIndex = 0;
     ObjectBag objectBag = ObjectBag.getInstance(context.getSuite());
-    boolean reUse = suite.isShareThreadPoolForDataProviders();
+    boolean reUse = suite.isShareThreadPoolForDataProviders() || suite.useGlobalThreadPool();
 
-    ExecutorService service = getOrCreate(reUse, suite.getDataProviderThreadCount(), objectBag);
+    ExecutorService service = getOrCreate(reUse, suite, objectBag);
     List<CompletableFuture<List<ITestResult>>> all = new ArrayList<>();
     for (Object[] next : CollectionUtils.asIterable(allParamValues)) {
       if (next == null) {
@@ -163,18 +165,20 @@ public class MethodRunner implements IMethodRunner {
     return result;
   }
 
-  private static ExecutorService getOrCreate(boolean reUse, int count, ObjectBag objectBag) {
+  private static ExecutorService getOrCreate(boolean reUse, XmlSuite suite, ObjectBag objectBag) {
+    AtomicReference<Integer> count = new AtomicReference<>();
+    count.set(suite.getDataProviderThreadCount());
+    Supplier<Object> supplier = () -> Executors.newFixedThreadPool(count.get(), threadFactory());
     if (reUse) {
-      return (ExecutorService)
-          objectBag.createIfRequired(
-              ExecutorService.class, () -> Executors.newFixedThreadPool(count, threadFactory()));
+      if (suite.useGlobalThreadPool()) {
+        count.set(suite.getThreadCount());
+      }
+      return (ExecutorService) objectBag.createIfRequired(ExecutorService.class, supplier);
     }
-    return Executors.newFixedThreadPool(count, threadFactory());
+    return (ExecutorService) supplier.get();
   }
 
   private static ThreadFactory threadFactory() {
-    AtomicInteger threadNumber = new AtomicInteger(0);
-    return r ->
-        new Thread(r, ThreadUtil.THREAD_NAME + "-PoolService-" + threadNumber.getAndIncrement());
+    return new TestNGThreadFactory("PoolService");
   }
 }

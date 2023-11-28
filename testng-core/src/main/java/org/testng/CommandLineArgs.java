@@ -283,4 +283,12 @@ public class CommandLineArgs {
       description =
           "Should TestNG use a global Shared ThreadPool (At suite level) for running data providers.")
   public Boolean shareThreadPoolForDataProviders = false;
+
+  public static final String USE_GLOBAL_THREAD_POOL = "-useGlobalThreadPool";
+
+  @Parameter(
+      names = USE_GLOBAL_THREAD_POOL,
+      description =
+          "Should TestNG use a global Shared ThreadPool (At suite level) for running regular and data driven tests.")
+  public Boolean useGlobalThreadPool = false;
 }
