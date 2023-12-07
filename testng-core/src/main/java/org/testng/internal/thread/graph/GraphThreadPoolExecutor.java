@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nonnull;
 import org.testng.IDynamicGraph;
 import org.testng.IDynamicGraph.Status;
 import org.testng.TestNGException;
@@ -22,7 +21,11 @@ import org.testng.thread.IWorker;
  * An Executor that launches tasks per batches. It takes a {@code DynamicGraph} of tasks to be run
  * and a {@code IThreadWorkerFactory} to initialize/create {@code Runnable} wrappers around those
  * tasks
+ *
+ * @deprecated - This implementation stands deprecated as of TestNG <code>v7.9.0</code>. There are
+ *     no alternatives for this implementation.
  */
+@Deprecated
 public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor
     implements ITestNGThreadPoolExecutor {
 
@@ -161,44 +164,8 @@ public class GraphThreadPoolExecutor<T> extends ThreadPoolExecutor
       IWorker<T> w = mapping.get(upstreamNode);
       if (w != null) {
         long threadId = w.getCurrentThreadId();
-        mapping.put(node, new PhoneyWorker(threadId));
+        mapping.put(node, new PhoneyWorker<>(threadId));
       }
-    }
-  }
-
-  private class PhoneyWorker implements IWorker<T> {
-    private long threadId;
-
-    public PhoneyWorker(long threadId) {
-      this.threadId = threadId;
-    }
-
-    @Override
-    public List<T> getTasks() {
-      return null;
-    }
-
-    @Override
-    public long getTimeOut() {
-      return 0;
-    }
-
-    @Override
-    public int getPriority() {
-      return 0;
-    }
-
-    @Override
-    public int compareTo(@Nonnull IWorker<T> o) {
-      return 0;
-    }
-
-    @Override
-    public void run() {}
-
-    @Override
-    public long getThreadIdToRunOn() {
-      return threadId;
     }
   }
 }

@@ -11,6 +11,11 @@ import org.testng.thread.IExecutorFactory;
 import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 
+/**
+ * @deprecated - This implementation stands deprecated as of TestNG <code>v7.9.0</code>. There are
+ *     no alternatives for this implementation.
+ */
+@Deprecated
 public class DefaultThreadPoolExecutorFactory implements IExecutorFactory {
 
   @Override
