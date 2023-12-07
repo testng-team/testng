@@ -10,7 +10,10 @@ import org.testng.ITestNGMethod;
 /**
  * Represents the capabilities to be possessed by any implementation that can be plugged into TestNG
  * to execute nodes from a {@link org.testng.IDynamicGraph} object.
+ *
+ * @deprecated - This interface stands deprecated as of TestNG <code>v7.9.0</code>.
  */
+@Deprecated
 public interface IExecutorFactory {
 
   /**

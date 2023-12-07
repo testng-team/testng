@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import org.testng.SuiteRunner.TestListenersContainer;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Lists;
@@ -60,7 +59,6 @@ import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
 import org.testng.thread.IExecutorFactory;
-import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
@@ -835,6 +833,8 @@ public class TestNG {
     m_verbose = verbose;
   }
 
+  /** This method stands deprecated as of TestNG <code>v7.9.0</code>. */
+  @Deprecated
   public void setExecutorFactoryClass(String clazzName) {
     this.m_executorFactory = createExecutorFactoryInstanceUsing(clazzName);
   }
@@ -853,10 +853,14 @@ public class TestNG {
         clazzName + " does not implement " + IExecutorFactory.class.getName());
   }
 
+  /** This method stands deprecated as of TestNG <code>v7.9.0</code>. */
+  @Deprecated
   public void setExecutorFactory(IExecutorFactory factory) {
     this.m_executorFactory = factory;
   }
 
+  /** This method stands deprecated as of TestNG <code>v7.9.0</code>. */
+  @Deprecated
   public IExecutorFactory getExecutorFactory() {
     if (this.m_executorFactory == null) {
       this.m_executorFactory = createExecutorFactoryInstanceUsing(DEFAULT_THREADPOOL_FACTORY);
@@ -1227,29 +1231,15 @@ public class TestNG {
     IThreadWorkerFactory<ISuite> factory =
         new SuiteWorkerFactory(
             suiteRunnerMap, 0 /* verbose hasn't been set yet */, getDefaultSuiteName());
-    ITestNGThreadPoolExecutor pooledExecutor =
-        this.getExecutorFactory()
-            .newSuiteExecutor(
-                "suites",
-                suiteGraph,
-                factory,
-                m_suiteThreadPoolSize,
-                m_suiteThreadPoolSize,
-                Integer.MAX_VALUE,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(),
-                null);
-
-    Utils.log("TestNG", 2, "Starting executor for all suites");
-    // Run all suites in parallel
-    pooledExecutor.run();
-    try {
-      pooledExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-      pooledExecutor.shutdownNow();
-    } catch (InterruptedException handled) {
-      Thread.currentThread().interrupt();
-      error("Error waiting for concurrent executors to finish " + handled.getMessage());
-    }
+    SuiteTaskExecutor taskExecutor =
+        new SuiteTaskExecutor(
+            this.m_configuration,
+            factory,
+            new LinkedBlockingQueue<>(),
+            suiteGraph,
+            m_suiteThreadPoolSize);
+    taskExecutor.execute();
+    taskExecutor.awaitCompletion();
 
     //
     // Generate the suites report

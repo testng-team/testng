@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -61,7 +60,6 @@ import org.testng.internal.invokers.TestMethodWorker;
 import org.testng.internal.objects.IObjectDispenser;
 import org.testng.junit.IJUnitTestRunner;
 import org.testng.log4testng.Logger;
-import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 import org.testng.util.Strings;
@@ -761,8 +759,6 @@ public class TestRunner
   private void privateRun(XmlTest xmlTest) {
     boolean parallel = xmlTest.getParallel().isParallel();
 
-    // parallel
-    int threadCount = parallel ? xmlTest.getThreadCount() : 1;
     // Make sure we create a graph based on the intercepted methods, otherwise an interceptor
     // removing methods would cause the graph never to terminate (because it would expect
     // termination from methods that never get invoked).
@@ -798,36 +794,11 @@ public class TestRunner
       if (graph.getNodeCount() <= 0) {
         return;
       }
-      ITestNGThreadPoolExecutor executor =
-          this.m_configuration
-              .getExecutorFactory()
-              .newTestMethodExecutor(
-                  "test=" + xmlTest.getName(),
-                  graph,
-                  this,
-                  threadCount,
-                  threadCount,
-                  0,
-                  TimeUnit.MILLISECONDS,
-                  newQueue(needPrioritySort),
-                  methodComparator);
-      executor.run();
-      try {
-        long timeOut = m_xmlTest.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS);
-        Utils.log(
-            "TestRunner",
-            2,
-            "Starting executor for test "
-                + m_xmlTest.getName()
-                + " with time out:"
-                + timeOut
-                + " milliseconds.");
-        executor.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-        executor.shutdownNow();
-      } catch (InterruptedException handled) {
-        LOGGER.error(handled.getMessage(), handled);
-        Thread.currentThread().interrupt();
-      }
+      TestTaskExecutor taskExecutor =
+          new TestTaskExecutor(
+              m_configuration, xmlTest, this, newQueue(needPrioritySort), graph, methodComparator);
+      taskExecutor.execute();
+      taskExecutor.awaitCompletion();
       return;
     }
     List<ITestNGMethod> freeNodes = graph.getFreeNodes();

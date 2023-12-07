@@ -20,11 +20,22 @@ public final class RuntimeBehavior {
   public static final String IGNORE_CALLBACK_INVOCATION_SKIPS = "testng.ignore.callback.skip";
   public static final String SYMMETRIC_LISTENER_EXECUTION = "testng.listener.execution.symmetric";
   public static final String PREFERENTIAL_LISTENERS = "testng.preferential.listeners.package";
+  public static final String FAVOR_CUSTOM_THREAD_POOL_EXECUTOR =
+      "testng.favor.custom.thread-pool.executor";
 
   private RuntimeBehavior() {}
 
   public static boolean ignoreCallbackInvocationSkips() {
     return Boolean.getBoolean(IGNORE_CALLBACK_INVOCATION_SKIPS);
+  }
+
+  /**
+   * @return - <code>true</code> if TestNG is to be using its custom implementation of {@link
+   *     java.util.concurrent.ThreadPoolExecutor} for running concurrent tests. Defaults to <code>
+   *     false</code>
+   */
+  public static boolean favourCustomThreadPoolExecutor() {
+    return Boolean.getBoolean(FAVOR_CUSTOM_THREAD_POOL_EXECUTOR);
   }
 
   /**
