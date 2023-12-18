@@ -77,7 +77,7 @@ jobs:
             testng.test.extra.jvmargs=${{ matrix.testExtraJvmArgs }}
       - name: Upload build reports
         if: ${{ failure() && steps.run_test_cases.outcome == 'failure' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.unique_id }}
           path: testng-core/build/reports/tests/test/**
