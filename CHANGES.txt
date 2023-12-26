@@ -1,4 +1,6 @@
 Current
+
+7.9.0
 Fixed: GITHUB-2019: Total thread count in testng parallel tests with dataproviders (Krishnan Mahadevan)
 Fixed: GITHUB-3006: ITestResult injected at @AfterMethod incorrect when a configuration method failed (Krishnan Mahadevan)
 Fixed: GITHUB-2980: Data Provider Threads configuration in the suite don't match the documentation (Krishnan Mahadevan)
