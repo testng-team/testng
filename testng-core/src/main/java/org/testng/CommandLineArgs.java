@@ -71,7 +71,7 @@ public class CommandLineArgs {
   @Parameter(
       names = OBJECT_FACTORY,
       description =
-          "List of .class files or list of class " + "names implementing ITestRunnerFactory")
+          "Fully qualified class name that implements org.testng.ITestObjectFactory which can be used to create test class and listener instances.")
   public String objectFactory;
 
   public static final String PARALLEL = "-parallel";
@@ -171,16 +171,6 @@ public class CommandLineArgs {
       description = "The factory used to create tests")
   public String testRunnerFactory;
 
-  public static final String PORT = "-port";
-
-  @Parameter(names = PORT, description = "The port")
-  public Integer port;
-
-  public static final String HOST = "-host";
-
-  @Parameter(names = HOST, description = "The host", hidden = true)
-  public String host;
-
   public static final String METHODS = "-methods";
 
   @Parameter(names = METHODS, description = "Comma separated of test methods")
@@ -191,7 +181,7 @@ public class CommandLineArgs {
 
   @Parameter(
       names = SUITE_THREAD_POOL_SIZE,
-      description = "Size of the thread pool to use" + " to run suites")
+      description = "Size of the thread pool to use to run suites")
   public Integer suiteThreadPoolSize = SUITE_THREAD_POOL_SIZE_DEFAULT;
 
   public static final String RANDOMIZE_SUITES = "-randomizesuites";
@@ -201,11 +191,6 @@ public class CommandLineArgs {
       hidden = true,
       description = "Whether to run suites in same order as specified in XML or not")
   public Boolean randomizeSuites = Boolean.FALSE;
-
-  public static final String DEBUG = "-debug";
-
-  @Parameter(names = DEBUG, hidden = true, description = "Used to debug TestNG")
-  public Boolean debug = Boolean.FALSE;
 
   public static final String ALWAYS_RUN_LISTENERS = "-alwaysrunlisteners";
 
@@ -272,7 +257,8 @@ public class CommandLineArgs {
 
   @Parameter(
       names = GENERATE_RESULTS_PER_SUITE,
-      description = "Should TestNG consider failures in Data Providers  as test failures.")
+      description =
+          "Should TestNG generate results on a per suite basis by creating a sub directory for each suite and dumping results into it.")
   public Boolean generateResultsPerSuite = false;
 
   public static final String SHARE_THREAD_POOL_FOR_DATA_PROVIDERS =
