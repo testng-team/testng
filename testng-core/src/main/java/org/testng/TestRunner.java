@@ -15,11 +15,9 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -56,16 +54,12 @@ import org.testng.internal.invokers.ConfigMethodArguments;
 import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.internal.invokers.IInvoker;
 import org.testng.internal.invokers.Invoker;
-import org.testng.internal.invokers.TestMethodWorker;
 import org.testng.internal.objects.IObjectDispenser;
-import org.testng.junit.IJUnitTestRunner;
-import org.testng.log4testng.Logger;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
-import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlTest;
 
@@ -77,7 +71,6 @@ public class TestRunner
         IConfigEavesdropper {
 
   private static final String DEFAULT_PROP_OUTPUT_DIR = "test-output";
-  private static final Logger LOGGER = Logger.getLogger(TestRunner.class);
 
   private final Comparator<ITestNGMethod> comparator;
   private ISuite m_suite;
@@ -99,7 +92,6 @@ public class TestRunner
 
   private final IConfigurationListener m_confListener = new ConfigurationListener();
 
-  private Collection<IInvokedMethodListener> m_invokedMethodListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       Maps.newLinkedHashMap();
   private final DataProviderHolder holder = new DataProviderHolder();
@@ -268,7 +260,7 @@ public class TestRunner
             ? new PreserveOrderMethodInterceptor()
             : new InstanceOrderingMethodInterceptor();
     m_methodInterceptors = new ArrayList<>();
-    // Add the built in interceptor as the first interceptor. That way we let our users determine
+    // Add the built-in interceptor as the first interceptor. That way we let our users determine
     // the final order
     // by plugging in their own custom interceptors as well.
     m_methodInterceptors.add(builtinInterceptor);
@@ -279,7 +271,6 @@ public class TestRunner
     }
 
     m_annotationFinder = annotationFinder;
-    m_invokedMethodListeners = invokedMethodListeners;
     m_classListeners.clear();
     for (IClassListener classListener : classListeners) {
       m_classListeners.put(classListener.getClass(), classListener);
@@ -349,10 +340,7 @@ public class TestRunner
     initRunInfo(m_xmlTest);
 
     // Init methods and class map
-    // JUnit behavior is different and doesn't need this initialization step
-    if (!m_xmlTest.isJUnit()) {
-      initMethods();
-    }
+    initMethods();
 
     initListeners();
     for (IConfigurationListener cl : m_configuration.getConfigurationListeners()) {
@@ -613,11 +601,7 @@ public class TestRunner
 
     try {
       XmlTest test = getTest();
-      if (test.isJUnit()) {
-        privateRunJUnit();
-      } else {
-        privateRun(test);
-      }
+      privateRun(test);
     } finally {
       afterRun();
       forgetHeavyReferencesIfNeeded();
@@ -660,82 +644,6 @@ public class TestRunner
               .build();
       m_invoker.getConfigInvoker().invokeConfigurations(arguments);
     }
-  }
-
-  private ITestNGMethod[] m_allJunitTestMethods = new ITestNGMethod[] {};
-
-  private static final AtomicBoolean warnOnce = new AtomicBoolean(false);
-
-  private void privateRunJUnit() {
-    if (warnOnce.compareAndSet(false, true)) {
-      String msg =
-          "Support to run JUnit tests using TestNG stands deprecated "
-              + "and will be removed in future versions. You can now use the JUnit5 TestNG "
-              + "engine to run both JUnit and TestNG tests. For more information refer to "
-              + "https://github.com/junit-team/testng-engine .";
-      Logger.getLogger(TestRunner.class).warn(msg);
-    }
-
-    final ClassInfoMap cim = new ClassInfoMap(m_testClassesFromXml, false);
-    final Set<Class<?>> classes = cim.getClasses();
-    final List<ITestNGMethod> runMethods = Lists.newArrayList();
-    List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
-    // FIXME: directly referencing JUnitTestRunner which uses JUnit classes
-    // may result in an class resolution exception under different JVMs
-    // The resolution process is not specified in the JVM spec with a specific implementation,
-    // so it can be eager => failure
-    workers.add(
-        new IWorker<>() {
-          /** @see TestMethodWorker#getTimeOut() */
-          @Override
-          public long getTimeOut() {
-            return 0;
-          }
-
-          /** @see java.lang.Runnable#run() */
-          @Override
-          public void run() {
-            for (Class<?> tc : classes) {
-              List<XmlInclude> includedMethods = cim.getXmlClass(tc).getIncludedMethods();
-              List<String> methods = Lists.newArrayList();
-              for (XmlInclude inc : includedMethods) {
-                methods.add(inc.getName());
-              }
-              IJUnitTestRunner tr =
-                  IJUnitTestRunner.createTestRunner(m_objectFactory, TestRunner.this);
-              tr.setInvokedMethodListeners(m_invokedMethodListeners);
-              try {
-                tr.run(tc, methods.toArray(new String[0]));
-              } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-              } finally {
-                runMethods.addAll(tr.getTestMethods());
-              }
-            }
-          }
-
-          @Override
-          public List<ITestNGMethod> getTasks() {
-            throw new TestNGException("JUnit not supported");
-          }
-
-          @Override
-          public int getPriority() {
-            if (m_allJunitTestMethods.length == 1) {
-              return m_allJunitTestMethods[0].getPriority();
-            } else {
-              return 0;
-            }
-          }
-
-          @Override
-          public int compareTo(@Nonnull IWorker<ITestNGMethod> other) {
-            return getPriority() - other.getPriority();
-          }
-        });
-
-    runJUnitWorkers(workers);
-    m_allJunitTestMethods = runMethods.toArray(new ITestNGMethod[0]);
   }
 
   private static Comparator<ITestNGMethod> newComparator(boolean needPrioritySort) {
@@ -890,14 +798,6 @@ public class TestRunner
         .createWorkers(args);
   }
 
-  //
-  // Invoke the workers
-  //
-  private void runJUnitWorkers(List<? extends IWorker<ITestNGMethod>> workers) {
-    // Sequential run
-    workers.forEach(Runnable::run);
-  }
-
   private void afterRun() {
     // invoke @AfterTest
     ITestNGMethod[] testConfigurationMethods = getAfterTestConfigurationMethods();
@@ -1039,10 +939,6 @@ public class TestRunner
 
   @Override
   public ITestNGMethod[] getAllTestMethods() {
-    if (getTest().isJUnit()) {
-      // This is true only when we are running JUnit mode
-      return m_allJunitTestMethods;
-    }
     return testMethodsContainer.getItems();
   }
 

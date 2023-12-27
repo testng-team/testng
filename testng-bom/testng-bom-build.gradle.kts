@@ -14,6 +14,5 @@ dependencies {
         api(projects.testngCore)
         api(projects.testngReflectionUtils)
         api(projects.testngRunnerApi)
-        api(projects.testngRunnerJunit4)
     }
 }

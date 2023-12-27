@@ -68,11 +68,6 @@ class DefaultXmlWeaver implements IWeaveXml {
     if (isStringNotEmpty(xmlSuite.getTimeOut())) {
       p.setProperty("time-out", xmlSuite.getTimeOut());
     }
-    if (!DEFAULT_JUNIT.equals(xmlSuite.isJUnit())) {
-      p.setProperty(
-          "junit",
-          xmlSuite.isJUnit() != null ? xmlSuite.isJUnit().toString() : "false"); // TESTNG-141
-    }
     XmlUtils.setProperty(
         p,
         "skipfailedinvocationcounts",
@@ -174,8 +169,6 @@ class DefaultXmlWeaver implements IWeaveXml {
     xsb.setDefaultComment(defaultComment);
     Properties p = new Properties();
     p.setProperty("name", xmlTest.getName());
-    XmlUtils.setProperty(
-        p, "junit", Boolean.toString(xmlTest.isJUnit()), XmlSuite.DEFAULT_JUNIT.toString());
     XmlUtils.setProperty(
         p, "parallel", xmlTest.getParallel().toString(), XmlSuite.DEFAULT_PARALLEL.toString());
     XmlUtils.setProperty(

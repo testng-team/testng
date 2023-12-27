@@ -21,9 +21,6 @@ java {
             api(platform("com.google.inject:guice-bom:_"))
             api("com.google.inject:guice")
         }
-        create("junit") {
-            implementation(projects.testngRunnerJunit4)
-        }
         create("yaml") {
             implementation("org.yaml:snakeyaml:_")
         }
@@ -60,8 +57,6 @@ tasks.mergedJar {
                 bsh.*;version="[2.0.0,3.0.0)";resolution:=optional,
                 com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional,
                 com.google.inject.*;version="[1.2,1.3)";resolution:=optional,
-                junit.framework;version="[3.8.1, 5.0.0)";resolution:=optional,
-                org.junit.*;resolution:=optional,
                 org.apache.tools.ant.*;version="[1.7.0, 2.0.0)";resolution:=optional,
                 org.yaml.*;version="[1.6,2.0)";resolution:=optional,
                 *;resolution:=optional
@@ -77,13 +72,11 @@ tasks.mergedJar {
                 org.testng.internal.collections
                 org.testng.internal.invokers
                 org.testng.internal.invokers.objects
-                org.testng.internal.junit
                 org.testng.internal.objects
                 org.testng.internal.objects.pojo
                 org.testng.internal.reflect
                 org.testng.internal.thread
                 org.testng.internal.thread.graph
-                org.testng.junit
                 org.testng.log
                 org.testng.log4testng
                 org.testng.reporters

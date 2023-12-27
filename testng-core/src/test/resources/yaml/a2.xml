@@ -27,7 +27,7 @@
 	    </script>
 	  </method-selector>
   </method-selectors>
-  <test verbose="1" name="Test3" junit="false" preserve-order="false">
+  <test verbose="1" name="Test3" preserve-order="false">
     <method-selectors>
       <method-selector>
         <selector-class name="org.testng.internal.XmlMethodSelector" priority="1"/>
@@ -59,7 +59,7 @@
       </package>
     </packages>
   </test>
-  <test verbose="1" name="Test1" junit="false" preserve-order="false">
+  <test verbose="1" name="Test1" preserve-order="false">
     <classes>
       <class name="test.tmp.A">
         <methods>
@@ -71,7 +71,7 @@
       <class name="test.tmp.B"/>
     </classes>
   </test>
-  <test verbose="1" name="Test2" junit="false" preserve-order="false">
+  <test verbose="1" name="Test2" preserve-order="false">
     <classes>
       <class name="test.tmp.B"/>
     </classes>

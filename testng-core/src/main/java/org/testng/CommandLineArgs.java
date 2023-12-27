@@ -36,11 +36,6 @@ public class CommandLineArgs {
   @Parameter(names = OUTPUT_DIRECTORY, description = "Output directory")
   public String outputDirectory;
 
-  public static final String JUNIT = "-junit";
-
-  @Parameter(names = JUNIT, description = "JUnit mode")
-  public Boolean junit = Boolean.FALSE;
-
   public static final String MIXED = "-mixed";
 
   @Parameter(

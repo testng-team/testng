@@ -119,17 +119,6 @@ public class ClassImpl implements IClass {
   public Object[] getInstances(boolean create, String errorMsgPrefix) {
     Object[] result = {};
 
-    if (m_testContext.getCurrentXmlTest().isJUnit()) {
-      if (create) {
-        DetailedAttributes ea = newDetailedAttributes(create, errorMsgPrefix);
-        CreationAttributes attributes = new CreationAttributes(m_testContext, null, ea);
-        result =
-            new Object[] {
-              Dispenser.newInstance(m_testContext.getSuite().getObjectFactory())
-                  .dispense(attributes)
-            };
-      }
-    }
     if (!m_instances.isEmpty()) {
       result = m_instances.toArray(new Object[0]);
     } else {

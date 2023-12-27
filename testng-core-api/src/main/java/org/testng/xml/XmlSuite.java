@@ -131,11 +131,6 @@ public class XmlSuite implements Cloneable {
 
   private FailurePolicy m_configFailurePolicy = DEFAULT_CONFIG_FAILURE_POLICY;
 
-  /** JUnit compatibility flag. */
-  public static final Boolean DEFAULT_JUNIT = Boolean.FALSE;
-
-  private Boolean m_isJUnit = DEFAULT_JUNIT;
-
   /** Mixed mode flag. */
   public static final Boolean DEFAULT_MIXED = Boolean.FALSE;
 
@@ -457,25 +452,6 @@ public class XmlSuite implements Cloneable {
     m_threadCount = threadCount;
   }
 
-  /** @return The JUnit compatibility flag. */
-  public Boolean isJUnit() {
-    return m_isJUnit;
-  }
-
-  /**
-   * Sets the JUnit compatibility flag.
-   *
-   * @param isJUnit The JUnit compatibility flag.
-   */
-  public void setJUnit(Boolean isJUnit) {
-    m_isJUnit = isJUnit;
-  }
-
-  // For YAML
-  public void setJunit(Boolean j) {
-    setJUnit(j);
-  }
-
   public Boolean skipFailedInvocationCounts() {
     return m_skipFailedInvocationCounts;
   }
@@ -593,7 +569,6 @@ public class XmlSuite implements Cloneable {
     result.setVerbose(getVerbose());
     result.setXmlPackages(getXmlPackages());
     result.setMethodSelectors(getMethodSelectors());
-    result.setJUnit(isJUnit()); // TESTNG-141
     result.setSkipFailedInvocationCounts(skipFailedInvocationCounts());
     result.setObjectFactoryClass(getObjectFactoryClass());
     result.setAllowReturnValues(getAllowReturnValues());
@@ -699,7 +674,6 @@ public class XmlSuite implements Cloneable {
         prime * result + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy.hashCode());
     result = prime * result + m_dataProviderThreadCount;
     result = prime * result + ((m_fileName == null) ? 0 : m_fileName.hashCode());
-    result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
     result = prime * result + ((m_listeners == null) ? 0 : m_listeners.hashCode());
 
     result = prime * result + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
@@ -747,13 +721,6 @@ public class XmlSuite implements Cloneable {
       return f();
     }
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount) {
-      return f();
-    }
-    if (m_isJUnit == null) {
-      if (other.m_isJUnit != null) {
-        return f();
-      }
-    } else if (!m_isJUnit.equals(other.m_isJUnit)) {
       return f();
     }
     if (m_listeners == null) {

@@ -15,10 +15,6 @@
   <parameter name="first-name" value="Cedric" />
   <parameter name="suiteParameter" value="suiteParameterValue" />
 
-  <suite-files>
-    <suite-file path="./junit-suite.xml" />
-  </suite-files>
-
   <groups>
     <define name="bigSuite">
       <include name="suite1" />
@@ -28,7 +24,7 @@
       <exclude name="excludeThisGroup" />
       <include name="includeThisGroup" />
     </run>
-<!-- 
+<!--
     <dependencies>
       <group name="a" depends-on="b" />
       <group name="c" depends-on="d" />

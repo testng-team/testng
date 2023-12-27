@@ -1,4 +1,6 @@
 Current
+7.10.0
+Fixed: GITHUB-3022: Remove deprecated JUnit related support in TestNG (Krishnan Mahadevan)
 
 7.9.0
 Fixed: GITHUB-2019: Total thread count in testng parallel tests with dataproviders (Krishnan Mahadevan)

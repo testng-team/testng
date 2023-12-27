@@ -67,10 +67,6 @@ public class BaseTest extends BaseDistributedTest {
     m_suite.setTimeOut(Long.toString(n));
   }
 
-  protected void setJUnit(boolean f) {
-    getTest().setJUnit(f);
-  }
-
   protected void setThreadCount(int count) {
     getTest().getSuite().setThreadCount(count);
   }

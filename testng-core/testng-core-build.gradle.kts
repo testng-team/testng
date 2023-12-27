@@ -13,10 +13,6 @@ java {
         usingSourceSet(sourceSets["main"])
     }
 
-    registerFeature("junit") {
-        usingSourceSet(sourceSets["main"])
-    }
-
     registerFeature("yaml") {
         usingSourceSet(sourceSets["main"])
     }
@@ -30,7 +26,6 @@ dependencies {
 
     "guiceApi"(platform("com.google.inject:guice-bom:_"))
     "guiceApi"("com.google.inject:guice")
-    "junitImplementation"(projects.testngRunnerJunit4)
     "yamlImplementation"("org.yaml:snakeyaml:_")
 
     implementation(projects.testngCollections)
