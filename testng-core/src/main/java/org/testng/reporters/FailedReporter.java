@@ -76,7 +76,7 @@ public class FailedReporter implements IReporter {
           testContext.getSkippedTests().getAllResults());
     }
 
-    if (null != failedSuite.getTests() && failedSuite.getTests().size() > 0) {
+    if (null != failedSuite.getTests() && !failedSuite.getTests().isEmpty()) {
       if (xmlSuite.getParentSuite() != null
           && !xmlSuite.getParentSuite().getLocalListeners().isEmpty()) {
         List<String> merged =
@@ -95,7 +95,7 @@ public class FailedReporter implements IReporter {
       Set<ITestResult> skippedTests) {
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
-    if (skippedTests.size() > 0 || failedTests.size() > 0) {
+    if (!skippedTests.isEmpty() || !failedTests.isEmpty()) {
       Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
 
       // Get the transitive closure of all the failed methods and the methods

@@ -127,7 +127,7 @@ public class ReportTest extends SimpleBaseTest {
           public void onTestSuccess(ITestResult tr) {
             super.onTestSuccess(tr);
             List<String> output = Reporter.getOutput(tr);
-            ReportTest.m_success = (output != null && output.size() > 0);
+            ReportTest.m_success = !output.isEmpty();
           }
         };
     tng.addListener(listener);
@@ -263,7 +263,7 @@ public class ReportTest extends SimpleBaseTest {
     }
 
     @Test(dataProvider = "dpArrays")
-    public void testMethod(Item[] strings) {}
+    public void testMethod(Item[] ignored) {}
   }
 
   public static class NullParameter {

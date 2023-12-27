@@ -1600,7 +1600,7 @@ public class TestNG {
       addReporter(reporterConfig);
     }
 
-    if (cla.commandLineMethods.size() > 0) {
+    if (!cla.commandLineMethods.isEmpty()) {
       m_commandLineMethods = cla.commandLineMethods;
     }
 

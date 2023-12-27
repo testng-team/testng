@@ -42,14 +42,8 @@ public class JUnitXMLReporter implements IResultListener2 {
   private int m_numFailed = 0;
   private Queue<ITestResult> m_allTests = new ConcurrentLinkedDeque<>();
   private Queue<ITestResult> m_configIssues = new ConcurrentLinkedDeque<>();
-  private Map<String, String> m_fileNameMap = Maps.newHashMap();
+  private final Map<String, String> m_fileNameMap = Maps.newHashMap();
   private int m_fileNameIncrementer = 0;
-
-  @Override
-  public void onTestStart(ITestResult result) {}
-
-  @Override
-  public void beforeConfiguration(ITestResult tr) {}
 
   /** Invoked each time a test succeeds. */
   @Override
@@ -123,7 +117,7 @@ public class JUnitXMLReporter implements IResultListener2 {
       // ignore
     }
     Set<String> packages = getPackages(context);
-    if (packages.size() > 0) {
+    if (!packages.isEmpty()) {
       attrs.setProperty(XMLConstants.ATTR_NAME, context.getCurrentXmlTest().getName());
       //        attrs.setProperty(XMLConstants.ATTR_PACKAGE, packages.iterator().next());
     }
@@ -219,7 +213,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     if (t != null) {
       attrs.setProperty(XMLConstants.ATTR_TYPE, t.getClass().getName());
       String message = t.getMessage();
-      if ((message != null) && (message.length() > 0)) {
+      if ((message != null) && (!message.isEmpty())) {
         attrs.setProperty(XMLConstants.ATTR_MESSAGE, encodeAttr(message)); // ENCODE
       }
       doc.push(XMLConstants.FAILURE, attrs);
@@ -235,7 +229,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   }
 
   private String encodeAttr(String attr) {
-    String result = replaceAmpersand(attr, ENTITY);
+    String result = replaceAmpersand(attr);
     for (Map.Entry<String, Pattern> e : ATTR_ESCAPES.entrySet()) {
       result = e.getValue().matcher(result).replaceAll(e.getKey());
     }
@@ -243,7 +237,7 @@ public class JUnitXMLReporter implements IResultListener2 {
     return result;
   }
 
-  private String replaceAmpersand(String str, Pattern pattern) {
+  private String replaceAmpersand(String str) {
     int start = 0;
     int idx = str.indexOf('&', start);
     if (idx == -1) {
@@ -251,8 +245,8 @@ public class JUnitXMLReporter implements IResultListener2 {
     }
     StringBuilder result = new StringBuilder();
     while (idx != -1) {
-      result.append(str.substring(start, idx));
-      if (pattern.matcher(str.substring(idx)).matches()) {
+      result.append(str, start, idx);
+      if (JUnitXMLReporter.ENTITY.matcher(str.substring(idx)).matches()) {
         // do nothing it is an entity;
         result.append("&");
       } else {

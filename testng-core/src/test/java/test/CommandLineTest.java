@@ -1,7 +1,6 @@
 package test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -10,7 +9,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.CommandLineArgs;
 import org.testng.IInjectorFactory;
@@ -84,7 +82,7 @@ public class CommandLineTest {
     TestNG.privateMain(argv, tla);
 
     List<ITestContext> contexts = tla.getTestContexts();
-    assertTrue(contexts.size() > 0);
+    assertFalse(contexts.isEmpty());
     for (ITestContext context : contexts) {
       assertEquals(context.getSuite().getName(), suiteName);
     }
@@ -109,7 +107,7 @@ public class CommandLineTest {
     TestNG.privateMain(argv, tla);
 
     List<ITestContext> contexts = tla.getTestContexts();
-    assertTrue(contexts.size() > 0);
+    assertFalse(contexts.isEmpty());
     for (ITestContext context : contexts) {
       assertEquals(context.getName(), testName);
     }
@@ -168,7 +166,7 @@ public class CommandLineTest {
   public static class TestInjectorFactory implements IInjectorFactory {
 
     @Override
-    public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
+    public Injector getInjector(Injector parent, Stage stage, Module... modules) {
       return null;
     }
   }

@@ -1,5 +1,8 @@
 package test;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.testng.Assert;
 import org.testng.IClassListener;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
@@ -18,7 +20,6 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
@@ -58,10 +59,6 @@ public class BaseTest extends BaseDistributedTest {
     getTest().setParallel(parallel);
   }
 
-  protected void setVerbose(int n) {
-    m_verbose = n;
-  }
-
   protected void setTestTimeOut(long n) {
     getTest().setTimeOut(n);
   }
@@ -78,14 +75,14 @@ public class BaseTest extends BaseDistributedTest {
     getTest().getSuite().setThreadCount(count);
   }
 
-  private Map<Long, XmlTest> m_tests = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_passedTests = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_failedTests = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_skippedTests = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_passedConfigs = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_failedConfigs = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_skippedConfigs = new HashMap<>();
-  private Map<Long, Map<String, List<ITestResult>>> m_failedButWithinSuccessPercentageTests =
+  private final Map<Long, XmlTest> m_tests = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_passedTests = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_failedTests = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_skippedTests = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_passedConfigs = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_failedConfigs = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_skippedConfigs = new HashMap<>();
+  private final Map<Long, Map<String, List<ITestResult>>> m_failedButWithinSuccessPercentageTests =
       new HashMap<>();
 
   protected Map<String, List<ITestResult>> getTests(Map<Long, Map<String, List<ITestResult>>> map) {
@@ -158,8 +155,8 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected void run() {
-    assert null != getTest()
-        : "Test wasn't set, maybe @Configuration methodSetUp() was never called";
+    assertNotNull(
+        getTest(), "Test wasn't set, maybe @Configuration methodSetUp() was never called");
     setPassedTests(Maps.newHashMap());
     setFailedTests(Maps.newHashMap());
     setSkippedTests(Maps.newHashMap());
@@ -309,27 +306,15 @@ public class BaseTest extends BaseDistributedTest {
    * SUCCESS/FAIL/FAIL_BUT_OK
    */
   protected void verifyResults(Map<String, List<ITestResult>> tests, int expected, String message) {
-    if (tests.size() > 0) {
+    if (!tests.isEmpty()) {
       Set<String> keys = tests.keySet();
       Object firstKey = keys.iterator().next();
       List<ITestResult> passedResult = tests.get(firstKey);
       int n = passedResult.size();
-      assert n == expected : "Expected " + expected + " " + message + " but found " + n;
+      assertEquals(n, expected, "Expected " + expected + " " + message + " but found " + n);
     } else {
-      assert expected == 0 : "Expected " + expected + " " + message + " but found " + tests.size();
+      assertEquals(0, expected, "Expected " + expected + " " + message + " but found 0.");
     }
-  }
-
-  protected static void verifyInstanceNames(
-      Map<String, List<ITestResult>> actual, String[] expected) {
-    List<String> actualNames = Lists.newArrayList();
-    for (Map.Entry<String, List<ITestResult>> es : actual.entrySet()) {
-      for (ITestResult tr : es.getValue()) {
-        Object instance = tr.getInstance();
-        actualNames.add(es.getKey() + "#" + (instance != null ? instance.toString() : ""));
-      }
-    }
-    Assert.assertEqualsNoOrder(actualNames.toArray(), expected);
   }
 
   protected void verifyPassedTests(String... expectedPassed) {

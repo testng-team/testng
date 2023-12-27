@@ -64,7 +64,7 @@ public class SuiteHTMLReporter implements IReporter {
       // Generate the various reports
       //
       XmlSuite xmlSuite = suite.getXmlSuite();
-      if (xmlSuite.getTests().size() == 0) {
+      if (xmlSuite.getTests().isEmpty()) {
         continue;
       }
       generateTableOfContents(xmlSuite, suite);
@@ -133,7 +133,7 @@ public class SuiteHTMLReporter implements IReporter {
 
     StringBuilder suiteBuf = new StringBuilder();
     for (ISuite suite : suites) {
-      if (suite.getResults().size() == 0) {
+      if (suite.getResults().isEmpty()) {
         continue;
       }
 
@@ -493,7 +493,7 @@ public class SuiteHTMLReporter implements IReporter {
     Map<String, Collection<ITestNGMethod>> groups = suite.getMethodsByGroups();
 
     sb.append("<h2>Groups used for this test run</h2>");
-    if (groups.size() > 0) {
+    if (!groups.isEmpty()) {
       sb.append("<table border=\"1\">\n")
           .append("<tr> <td align=\"center\"><b>Group name</b></td>")
           .append("<td align=\"center\"><b>Methods</b></td></tr>");
@@ -607,7 +607,7 @@ public class SuiteHTMLReporter implements IReporter {
         .append("chronological</a><br/>\n")
         .append("&nbsp;&nbsp;<a target='mainFrame' href='")
         .append(METHODS_ALPHABETICAL)
-        .append("\'>")
+        .append("'>")
         .append("alphabetical</a><br/>\n")
         .append("&nbsp;&nbsp;<a target='mainFrame' href='")
         .append(METHODS_NOT_RUN)
@@ -689,7 +689,7 @@ public class SuiteHTMLReporter implements IReporter {
     File fileResult =
         new File(m_outputDirectory + File.separatorChar + xmlSuite.getName()).getAbsoluteFile();
     if (!fileResult.exists()) {
-      fileResult.mkdirs();
+      boolean ignored = fileResult.mkdirs();
       if (!fileResult.exists()) {
         Utils.log(
             "Reports", 2, "Problem creating output directory " + fileResult.getAbsolutePath());

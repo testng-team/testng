@@ -274,7 +274,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   /** The priority of a worker is the priority of the first method it's going to run. */
   @Override
   public int getPriority() {
-    return m_methodInstances.size() > 0 ? m_methodInstances.get(0).getMethod().getPriority() : 0;
+    return !m_methodInstances.isEmpty() ? m_methodInstances.get(0).getMethod().getPriority() : 0;
   }
 
   @Override

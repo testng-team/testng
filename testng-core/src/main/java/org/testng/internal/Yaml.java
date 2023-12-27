@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -54,7 +53,7 @@ public final class Yaml {
 
     org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(constructor);
     if (is == null) {
-      is = new FileInputStream(new File(filePath));
+      is = new FileInputStream(filePath);
     }
     XmlSuite result = y.load(is);
 
@@ -180,11 +179,19 @@ public final class Yaml {
       result.append(sp2).append(sp2).append("xmlDependencyGroups:\n");
       t.getXmlDependencyGroups()
           .forEach(
-              (k, v) -> result.append(sp2).append(sp2).append(sp2).append(k + ": " + v + "\n"));
+              (k, v) ->
+                  result
+                      .append(sp2)
+                      .append(sp2)
+                      .append(sp2)
+                      .append(k)
+                      .append(": ")
+                      .append(v)
+                      .append("\n"));
     }
 
     Map<String, List<String>> mg = t.getMetaGroups();
-    if (mg.size() > 0) {
+    if (!mg.isEmpty()) {
       result.append(sp2).append("metaGroups: { ");
       boolean first = true;
       for (Map.Entry<String, List<String>> entry : mg.entrySet()) {
@@ -279,7 +286,7 @@ public final class Yaml {
   }
 
   private static void mapToYaml(Map<String, String> map, StringBuilder out) {
-    if (map.size() > 0) {
+    if (!map.isEmpty()) {
       out.append("{ ");
       boolean first = true;
       for (Map.Entry<String, String> e : map.entrySet()) {

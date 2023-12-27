@@ -13,7 +13,7 @@ import org.testng.reporters.XMLStringBuffer;
 public class XmlInclude {
 
   private String m_name;
-  private Set<Integer> m_invocationNumbers;
+  private final Set<Integer> m_invocationNumbers;
   private final int m_index;
   private String m_description;
   private final Map<String, String> m_parameters = Maps.newHashMap();
@@ -76,7 +76,7 @@ public class XmlInclude {
     Properties p = new Properties();
     p.setProperty("name", getName());
     List<Integer> invocationNumbers = getInvocationNumbers();
-    if (invocationNumbers != null && invocationNumbers.size() > 0) {
+    if (invocationNumbers != null && !invocationNumbers.isEmpty()) {
       p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers));
     }
 
@@ -108,8 +108,6 @@ public class XmlInclude {
     if (obj == null) return XmlSuite.f();
     if (getClass() != obj.getClass()) return XmlSuite.f();
     XmlInclude other = (XmlInclude) obj;
-    // if (m_index != other.m_index)
-    // return XmlSuite.f();
     if (m_invocationNumbers == null) {
       if (other.m_invocationNumbers != null) return XmlSuite.f();
     } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) return XmlSuite.f();
