@@ -3,6 +3,11 @@ package test.guice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.Stage;
+import org.jetbrains.annotations.Nullable;
+import org.testng.IInjectorFactory;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -45,7 +50,13 @@ public class GuiceTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2199")
   public void guiceWithExternalDependencyInjector() {
     TestNG testng = create(Guice1Test.class);
-    testng.setInjectorFactory((stage, modules) -> new FakeInjector());
+    testng.setInjectorFactory(
+        new IInjectorFactory() {
+          @Override
+          public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
+            return new FakeInjector();
+          }
+        });
     testng.run();
     assertThat(FakeInjector.getInstance()).isNotNull();
   }

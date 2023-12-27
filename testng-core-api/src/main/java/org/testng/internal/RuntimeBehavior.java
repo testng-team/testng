@@ -109,10 +109,6 @@ public final class RuntimeBehavior {
     return System.getProperty(TEST_CLASSPATH);
   }
 
-  public static boolean useOldTestNGEmailableReporter() {
-    return System.getProperty("oldTestngEmailableReporter") != null;
-  }
-
   public static boolean useEmailableReporter() {
     return System.getProperty("noEmailableReporter") == null;
   }
