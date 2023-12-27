@@ -233,7 +233,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     }
     List<Integer> availablePriorities = Lists.newArrayList(methodsByPriority.keySet());
     Collections.sort(availablePriorities);
-    Integer previousPriority = methods.size() > 0 ? availablePriorities.get(0) : 0;
+    Integer previousPriority = !methods.isEmpty() ? availablePriorities.get(0) : 0;
     for (int i = 1; i < availablePriorities.size(); i++) {
       Integer currentPriority = availablePriorities.get(i);
       for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {

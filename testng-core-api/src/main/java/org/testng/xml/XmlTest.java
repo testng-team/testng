@@ -223,11 +223,7 @@ public class XmlTest implements Cloneable {
       result = getSuite().getVerbose();
     }
 
-    if (null != result) {
-      return result;
-    } else {
-      return 1;
-    }
+    return Optional.ofNullable(result).orElse(1);
   }
 
   public boolean getGroupByInstances() {
@@ -235,11 +231,8 @@ public class XmlTest implements Cloneable {
     if (result == null || XmlSuite.DEFAULT_GROUP_BY_INSTANCES.equals(m_groupByInstances)) {
       result = getSuite().getGroupByInstances();
     }
-    if (result != null) {
-      return result;
-    } else {
-      return XmlSuite.DEFAULT_GROUP_BY_INSTANCES;
-    }
+
+    return Optional.ofNullable(result).orElse(XmlSuite.DEFAULT_GROUP_BY_INSTANCES);
   }
 
   public void setGroupByInstances(boolean f) {
@@ -384,7 +377,7 @@ public class XmlTest implements Cloneable {
 
   public void setScript(XmlScript script) {
     List<XmlMethodSelector> selectors = getMethodSelectors();
-    if (selectors.size() > 0) {
+    if (!selectors.isEmpty()) {
       XmlMethodSelector xms = selectors.get(0);
       xms.setScript(script);
     } else if (script != null) {
@@ -425,8 +418,7 @@ public class XmlTest implements Cloneable {
     result.setParallel(getParallel());
     result.setThreadCount(getThreadCount());
     result.setVerbose(getVerbose());
-    Map<String, String> localParameters = new HashMap<>();
-    localParameters.putAll(getLocalParameters());
+    Map<String, String> localParameters = Maps.newHashMap(getLocalParameters());
     result.setParameters(localParameters);
     result.setXmlPackages(getXmlPackages());
     result.setTimeOut(getTimeOut());
@@ -452,7 +444,7 @@ public class XmlTest implements Cloneable {
       for (XmlClass c : getXmlClasses()) {
         for (XmlInclude xi : c.getIncludedMethods()) {
           List<Integer> invocationNumbers = xi.getInvocationNumbers();
-          if (invocationNumbers.size() > 0) {
+          if (!invocationNumbers.isEmpty()) {
             String methodName = c.getName() + "." + xi.getName();
             m_failedInvocationNumbers.put(methodName, invocationNumbers);
           }
@@ -460,14 +452,7 @@ public class XmlTest implements Cloneable {
       }
     }
 
-    List<Integer> result = m_failedInvocationNumbers.get(method);
-    if (result == null) {
-      // Don't use emptyList here since this list might end up receiving values if
-      // the test run fails.
-      return Lists.newArrayList();
-    } else {
-      return result;
-    }
+    return Optional.ofNullable(m_failedInvocationNumbers.get(method)).orElse(Lists.newArrayList());
   }
 
   public void setPreserveOrder(Boolean preserveOrder) {

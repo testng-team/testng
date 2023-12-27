@@ -130,7 +130,7 @@ public class ClassImpl implements IClass {
             };
       }
     }
-    if (m_instances.size() > 0) {
+    if (!m_instances.isEmpty()) {
       result = m_instances.toArray(new Object[0]);
     } else {
       Object defaultInstance = getDefaultInstance(create, errorMsgPrefix);

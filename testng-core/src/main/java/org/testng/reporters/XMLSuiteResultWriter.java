@@ -326,7 +326,7 @@ public class XMLSuiteResultWriter {
   }
 
   private void addTestResultAttributes(XMLStringBuffer xmlBuffer, ITestResult testResult) {
-    if (testResult.getAttributeNames() != null && testResult.getAttributeNames().size() > 0) {
+    if (testResult.getAttributeNames() != null && !testResult.getAttributeNames().isEmpty()) {
       xmlBuffer.push(XMLReporterConfig.TAG_ATTRIBUTES);
       for (String attrName : testResult.getAttributeNames()) {
         if (attrName == null) {

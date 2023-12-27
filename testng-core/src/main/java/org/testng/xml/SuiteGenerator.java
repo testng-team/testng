@@ -36,7 +36,7 @@ public class SuiteGenerator {
       result =
           new LaunchSuite.ClassListSuite(
               projectName, packageNames, classes, groupNames, parameters, annotationType, logLevel);
-    } else if (packageNames != null && packageNames.size() > 0) {
+    } else if (packageNames != null && !packageNames.isEmpty()) {
       //
       // Create a suite from packages
       //

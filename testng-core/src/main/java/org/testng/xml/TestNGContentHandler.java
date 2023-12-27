@@ -5,7 +5,6 @@ import static org.testng.internal.Utils.isStringBlank;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -160,7 +159,7 @@ public class TestNGContentHandler extends DefaultHandler {
   private static boolean isMalformedFileSystemBasedSystemId(String systemId) {
     try {
 
-      URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8.name()).trim());
+      URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8).trim());
       if (url.getProtocol().equals("file")) {
         File file = new File(url.getFile());
         boolean isDirectory = file.isDirectory();
@@ -168,7 +167,7 @@ public class TestNGContentHandler extends DefaultHandler {
         return isDirectory || !fileExists;
       }
       return false;
-    } catch (MalformedURLException | UnsupportedEncodingException e) {
+    } catch (MalformedURLException e) {
       return true;
     }
   }
@@ -408,7 +407,7 @@ public class TestNGContentHandler extends DefaultHandler {
         m_enabledTest = Boolean.parseBoolean(enabledTestString);
       }
     } else {
-      if (null != m_currentTestParameters && m_currentTestParameters.size() > 0) {
+      if (null != m_currentTestParameters && !m_currentTestParameters.isEmpty()) {
         m_currentTest.setParameters(m_currentTestParameters);
       }
       if (null != m_currentClasses) {

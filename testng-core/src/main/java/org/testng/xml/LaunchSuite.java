@@ -94,19 +94,8 @@ public abstract class LaunchSuite {
     /** The string buffer used to write the XML file. */
     private XMLStringBuffer m_suiteBuffer;
 
-    /**
-     * Constructs a <code>CustomizedSuite</code> TODO cquezel JavaDoc.
-     *
-     * @param projectName
-     * @param className
-     * @param parameters
-     * @param annotationType
-     */
     private CustomizedSuite(
-        final String projectName,
-        final String className,
-        final Map<String, String> parameters,
-        final String annotationType) {
+        final String projectName, final String className, final Map<String, String> parameters) {
       super(true);
 
       m_projectName = projectName;
@@ -203,16 +192,6 @@ public abstract class LaunchSuite {
     protected String m_className;
     protected int m_logLevel;
 
-    /**
-     * Constructs a <code>MethodsSuite</code> TODO cquezel JavaDoc.
-     *
-     * @param projectName
-     * @param className
-     * @param methodNames
-     * @param parameters
-     * @param annotationType (may be null)
-     * @param logLevel
-     */
     MethodsSuite(
         final String projectName,
         final String className,
@@ -220,7 +199,7 @@ public abstract class LaunchSuite {
         final Map<String, String> parameters,
         final String annotationType,
         final int logLevel) {
-      super(projectName, className, parameters, annotationType);
+      super(projectName, className, parameters);
 
       m_className = className;
       m_methodNames = methodNames;
@@ -241,14 +220,14 @@ public abstract class LaunchSuite {
       Properties classAttrs = new Properties();
       classAttrs.setProperty("name", m_className);
 
-      if ((null != m_methodNames) && (m_methodNames.size() > 0)) {
+      if ((null != m_methodNames) && (!m_methodNames.isEmpty())) {
         suiteBuffer.push("class", classAttrs);
 
         suiteBuffer.push("methods");
 
-        for (Object methodName : m_methodNames) {
+        for (String methodName : m_methodNames) {
           Properties methodAttrs = new Properties();
-          methodAttrs.setProperty("name", (String) methodName);
+          methodAttrs.setProperty("name", methodName);
           suiteBuffer.addEmptyElement("include", methodAttrs);
         }
 
@@ -272,7 +251,7 @@ public abstract class LaunchSuite {
         final Map<String, String> parameters,
         final String annotationType,
         final int logLevel) {
-      super(projectName, "Custom suite", parameters, annotationType);
+      super(projectName, "Custom suite", parameters);
       m_classes = classes;
       m_logLevel = logLevel;
     }
@@ -293,7 +272,7 @@ public abstract class LaunchSuite {
         classAttrs.setProperty("name", entry.getKey());
 
         Collection<String> methodNames = sanitize(entry.getValue());
-        if ((null != methodNames) && (methodNames.size() > 0)) {
+        if ((null != methodNames) && (!methodNames.isEmpty())) {
           suiteBuffer.push("class", classAttrs);
 
           suiteBuffer.push("methods");
@@ -345,7 +324,7 @@ public abstract class LaunchSuite {
         final Map<String, String> parameters,
         final String annotationType,
         final int logLevel) {
-      super(projectName, "Custom suite", parameters, annotationType);
+      super(projectName, "Custom suite", parameters);
 
       m_packageNames = packageNames;
       m_classNames = classNames;
@@ -377,7 +356,7 @@ public abstract class LaunchSuite {
       }
 
       // packages belongs to suite according to the latest DTD
-      if ((m_packageNames != null) && (m_packageNames.size() > 0)) {
+      if ((m_packageNames != null) && (!m_packageNames.isEmpty())) {
         suiteBuffer.push("packages");
 
         for (String packageName : m_packageNames) {
@@ -388,7 +367,7 @@ public abstract class LaunchSuite {
         suiteBuffer.pop("packages");
       }
 
-      if ((m_classNames != null) && (m_classNames.size() > 0)) {
+      if ((m_classNames != null) && (!m_classNames.isEmpty())) {
         suiteBuffer.push("classes");
 
         for (String className : m_classNames) {

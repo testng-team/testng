@@ -537,14 +537,7 @@ public final class Utils {
   }
 
   public static <T> String join(List<T> objects, String separator) {
-    StringBuilder result = new StringBuilder();
-    for (int i = 0; i < objects.size(); i++) {
-      if (i > 0) {
-        result.append(separator);
-      }
-      result.append(objects.get(i).toString());
-    }
-    return result.toString();
+    return objects.stream().map(Object::toString).collect(Collectors.joining(separator));
   }
 
   /* Make sure that either we have an instance or if not, that the method is static */
