@@ -35,7 +35,6 @@ Cedric Beust & Alexandru Popescu
 <!-- Attributes: -->
 <!--
 @attr  name        The name of this suite (as it will appear in the reports)
-@attr  junit       Whether to run in JUnit mode.
 @attr  verbose     How verbose the output on the console will be.  
                 This setting has no impact on the HTML reports.
 @attr  parallel   Whether TestNG should use different threads
@@ -66,7 +65,6 @@ for running both regular and data driven tests in parallel. (Works only with Tes
 -->
 <!ATTLIST suite
     name CDATA #REQUIRED
-    junit (true | false) "false"
     verbose CDATA #IMPLIED
     parallel (false | true | none | methods | tests | classes | instances) "none"
     parent-module CDATA #IMPLIED
@@ -127,7 +125,6 @@ A test contains parameters and classes.  Additionally, you can define additional
 
 <!--
 @attr  name         The name of this test (as it will appear in the reports)
-@attr  junit        Whether to run in JUnit mode.
 @attr  verbose      How verbose the output on the console will be.
                 This setting has no impact on the HTML reports.
                 Default value: suite level verbose.
@@ -149,7 +146,6 @@ found in the XML file.
 -->
 <!ATTLIST test
     name CDATA #REQUIRED 
-    junit (true | false) "false"
     verbose  CDATA #IMPLIED
     parallel  (false | true | none | methods | tests | classes | instances) #IMPLIED
     thread-count CDATA #IMPLIED

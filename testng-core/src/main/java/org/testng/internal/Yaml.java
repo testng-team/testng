@@ -91,7 +91,6 @@ public final class Yaml {
     StringBuilder result = new StringBuilder();
 
     maybeAdd(result, "name", suite.getName(), null);
-    maybeAdd(result, "junit", suite.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, "verbose", suite.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, "threadCount", suite.getThreadCount(), XmlSuite.DEFAULT_THREAD_COUNT);
     maybeAdd(
@@ -144,7 +143,6 @@ public final class Yaml {
     String sp2 = " ".repeat(2);
     result.append("  ").append("- name: ").append(t.getName()).append("\n");
 
-    maybeAdd(result, sp2, "junit", t.isJUnit(), XmlSuite.DEFAULT_JUNIT);
     maybeAdd(result, sp2, "verbose", t.getVerbose(), XmlSuite.DEFAULT_VERBOSE);
     maybeAdd(result, sp2, "timeOut", t.getTimeOut(), null);
     maybeAdd(result, sp2, "parallel", t.getParallel(), XmlSuite.DEFAULT_PARALLEL);

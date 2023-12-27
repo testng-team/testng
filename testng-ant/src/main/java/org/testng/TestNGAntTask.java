@@ -560,8 +560,6 @@ public class TestNGAntTask extends Task {
 
   protected List<String> createArguments() {
     List<String> argv = Lists.newArrayList();
-    addBooleanIfTrue(argv, CommandLineArgs.JUNIT, mode == Mode.junit);
-    addBooleanIfTrue(argv, CommandLineArgs.MIXED, mode == Mode.mixed);
     addBooleanIfTrue(
         argv, CommandLineArgs.SKIP_FAILED_INVOCATION_COUNTS, m_skipFailedInvocationCounts);
     addIntegerIfNotNull(argv, CommandLineArgs.LOG, m_verbose);

@@ -210,7 +210,6 @@ public class FailedReporter implements IReporter {
     xmlTest.setExcludedGroups(srcXmlTest.getExcludedGroups());
     xmlTest.setParallel(srcXmlTest.getParallel());
     xmlTest.setParameters(srcXmlTest.getLocalParameters());
-    xmlTest.setJUnit(srcXmlTest.isJUnit());
     List<XmlClass> xmlClasses = createXmlClasses(methods, srcXmlTest);
     xmlTest.setXmlClasses(xmlClasses);
   }

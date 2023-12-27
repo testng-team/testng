@@ -48,7 +48,6 @@ import org.testng.internal.objects.IObjectDispenser;
 import org.testng.internal.objects.pojo.BasicAttributes;
 import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
-import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.EmailableReporter2;
 import org.testng.reporters.FailedReporter;
@@ -129,12 +128,8 @@ public class TestNG {
   protected List<XmlSuite> m_suites = Lists.newArrayList();
   private List<XmlSuite> m_cmdlineSuites;
   private String m_outputDir = DEFAULT_OUTPUTDIR;
-
   private String[] m_includedGroups;
   private String[] m_excludedGroups;
-
-  private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
-  private Boolean m_isMixed = XmlSuite.DEFAULT_MIXED;
   protected boolean m_useDefaultListeners = true;
   private boolean m_failIfAllTestsSkipped = false;
   private final List<String> m_listenersToSkipFromBeingWiredIn = new ArrayList<>();
@@ -545,11 +540,6 @@ public class TestNG {
       if (test != null) {
         suiteName = defaultIfStringEmpty(test.getSuiteName(), suiteName);
         testName = defaultIfStringEmpty(test.getTestName(), testName);
-      } else {
-        if (m_isMixed && JUnitTestFinder.isJUnitTest(c)) {
-          isJUnit = true;
-          testName = c.getName();
-        }
       }
       XmlSuite xmlSuite = suites.get(suiteName);
       if (xmlSuite == null) {
@@ -572,7 +562,6 @@ public class TestNG {
       if (xmlTest == null) {
         xmlTest = new XmlTest(xmlSuite);
         xmlTest.setName(testName);
-        xmlTest.setJUnit(isJUnit);
       }
 
       xmlTest.getXmlClasses().add(xmlClasses[i]);
@@ -1329,10 +1318,6 @@ public class TestNG {
    * @param xmlSuite Xml Suite (and its children) for which {@code SuiteRunner}s are created
    */
   private void createSuiteRunners(SuiteRunnerMap suiteRunnerMap /* OUT */, XmlSuite xmlSuite) {
-    if (null != m_isJUnit && !m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT)) {
-      xmlSuite.setJUnit(m_isJUnit);
-    }
-
     // If the skip flag was invoked on the command line, it
     // takes precedence
     if (null != m_skipFailedInvocationCounts) {
@@ -1526,8 +1511,6 @@ public class TestNG {
     setExcludedGroups(cla.excludedGroups);
     setTestJar(cla.testJar);
     setXmlPathInJar(cla.xmlPathInJar);
-    setJUnit(cla.junit);
-    setMixed(cla.mixed);
     setSkipFailedInvocationCounts(cla.skipFailedInvocationCounts);
     toggleFailureIfAllTestsWereSkipped(cla.failIfAllTestsSkipped);
     setListenersToSkipFromBeingWiredInViaServiceLoaders(cla.spiListenersToSkip.split(","));
@@ -1695,7 +1678,6 @@ public class TestNG {
     result.excludedGroups = (String) cmdLineArgs.get(CommandLineArgs.EXCLUDED_GROUPS);
     result.testJar = (String) cmdLineArgs.get(CommandLineArgs.TEST_JAR);
     result.xmlPathInJar = (String) cmdLineArgs.get(CommandLineArgs.XML_PATH_IN_JAR);
-    result.junit = (Boolean) cmdLineArgs.get(CommandLineArgs.JUNIT);
     result.mixed = (Boolean) cmdLineArgs.get(CommandLineArgs.MIXED);
     Object tmpValue = cmdLineArgs.get(CommandLineArgs.INCLUDE_ALL_DATA_DRIVEN_TESTS_WHEN_SKIPPING);
     if (tmpValue != null) {
@@ -1826,23 +1808,6 @@ public class TestNG {
   }
 
   /**
-   * Specify if this run should be made in JUnit mode
-   *
-   * @param isJUnit - Specify if this run should be made in JUnit mode
-   */
-  public void setJUnit(Boolean isJUnit) {
-    m_isJUnit = isJUnit;
-  }
-
-  /** @param isMixed Specify if this run should be made in mixed mode */
-  public void setMixed(Boolean isMixed) {
-    if (isMixed == null) {
-      return;
-    }
-    m_isMixed = isMixed;
-  }
-
-  /**
    * Double check that the command line parameters are valid.
    *
    * @param args The command line to check
@@ -1869,13 +1834,6 @@ public class TestNG {
         && testClasses == null
         && (testNgXml == null || testNgXml.isEmpty())) {
       throw new ParameterException("Groups option should be used with testclass option");
-    }
-
-    Boolean junit = args.junit;
-    Boolean mixed = args.mixed;
-    if (junit && mixed) {
-      throw new ParameterException(
-          CommandLineArgs.MIXED + " can't be combined with " + CommandLineArgs.JUNIT);
     }
   }
 

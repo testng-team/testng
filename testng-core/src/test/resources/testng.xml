@@ -4,7 +4,6 @@
     data-provider-thread-count="3">
 
   <suite-files>
-    <suite-file path="./junit-suite.xml" />
     <suite-file path="./parent-module-suite.xml" />
     <suite-file path="./188.xml"/>
   </suite-files>
@@ -108,7 +107,6 @@
       <class name="test.thread.MultiThreadedDependentTest" />
       <class name="test.thread.TrueParallelTest" />
       <class name="test.github765.ExcludeSyntheticMethodsFromTemplateCallsTest"/>
-      <class name="test.github1405.TestExclusionOfMainMethod"/>
       <class name="test.cli.CliTest"/>
       <class name="test.cli.github2974.OverrideGroupsCliTest"/>
       <class name="test.thread.ParallelSuiteTest"/>
@@ -116,7 +114,6 @@
       <class name="test.reports.ReportTest" />
       <class name="test.reports.XmlReporterTest"/>
       <class name="test.reports.PerSuiteXMLReporterTest"/>
-      <class name="test.reports.issue2069.IssueTest"/>
       <class name="test.annotationtransformer.AnnotationTransformerTest" />
 <!--
       <class name="test.jar.JarTest" />
@@ -676,12 +673,7 @@
 
   <test name="JUnit">
     <classes>
-      <class name="test.JUnitTest1" />
-      <class name="test.CommandLineTest"/>
-      <class name="test.JUnit4Test" />
-      <class name="test.junit4.listeners.Issue323TestRunner"/>
       <class name="test.groovy.GroovyTest" />
-      <class name="test.JUnitTestClassLoader" />
     </classes>
   </test>
 
@@ -858,12 +850,6 @@
       <class name="test.configuration.BeforeClassTest"/>
       <class name="test.configuration.issue2209.IssueTest"/>
       <class name="test.configuration.issue2254.IssueTest"/>
-    </classes>
-  </test>
-
-  <test name="Mixed">
-    <classes>
-      <class name="test.mixed.MixedTest" />
     </classes>
   </test>
 

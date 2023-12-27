@@ -224,7 +224,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentSuite.setJUnit(Boolean.valueOf(jUnit));
+        warnSinceJUnitDetected();
       }
       String parallel = attributes.getValue("parallel");
       if (parallel != null) {
@@ -363,7 +363,7 @@ public class TestNGContentHandler extends DefaultHandler {
       }
       String jUnit = attributes.getValue("junit");
       if (null != jUnit) {
-        m_currentTest.setJUnit(Boolean.parseBoolean(jUnit));
+        warnSinceJUnitDetected();
       }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
@@ -841,5 +841,15 @@ public class TestNGContentHandler extends DefaultHandler {
     } else {
       return value;
     }
+  }
+
+  private static void warnSinceJUnitDetected() {
+    String msg =
+        "Ability to run JUnit tests via TestNG was deprecated in v7.7.0 and is NOW being removed permanently."
+            + " If you would like to run a mixture of TestNG and JUnit tests then please take a look at "
+            + " https://github.com/junit-team/testng-engine which is now maintained by the JUnit team";
+    // Intentionally logging this to the error console so that it's visible to the user.
+    System.err.println(msg);
+    ;
   }
 }

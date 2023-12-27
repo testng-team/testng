@@ -13,7 +13,6 @@ public class XmlTest implements Cloneable {
   private XmlSuite m_suite;
   private String m_name;
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
-  private Boolean m_isJUnit = XmlSuite.DEFAULT_JUNIT;
   private int m_threadCount = -1;
 
   private List<XmlClass> m_xmlClasses = Lists.newArrayList();
@@ -239,26 +238,6 @@ public class XmlTest implements Cloneable {
     m_groupByInstances = f;
   }
 
-  /** @return Returns the isJUnit. */
-  public boolean isJUnit() {
-    Boolean result = m_isJUnit;
-    if (null == result || XmlSuite.DEFAULT_JUNIT.equals(result)) {
-      result = getSuite().isJUnit();
-    }
-
-    return result;
-  }
-
-  /** @param isJUnit The isJUnit to set. */
-  public void setJUnit(boolean isJUnit) {
-    m_isJUnit = isJUnit;
-  }
-
-  // For YAML
-  public void setJunit(boolean isJUnit) {
-    setJUnit(isJUnit);
-  }
-
   public void setSkipFailedInvocationCounts(boolean skip) {
     m_skipFailedInvocationCounts = skip;
   }
@@ -414,7 +393,6 @@ public class XmlTest implements Cloneable {
     result.setName(getName());
     result.setIncludedGroups(getIncludedGroups());
     result.setExcludedGroups(getExcludedGroups());
-    result.setJUnit(isJUnit());
     result.setParallel(getParallel());
     result.setThreadCount(getThreadCount());
     result.setVerbose(getVerbose());
@@ -512,7 +490,6 @@ public class XmlTest implements Cloneable {
             + ((m_xmlGroups == null || m_xmlGroups.getRun() == null)
                 ? 0
                 : m_xmlGroups.getRun().getIncludes().hashCode());
-    result = prime * result + ((m_isJUnit == null) ? 0 : m_isJUnit.hashCode());
     result = prime * result + ((m_xmlGroups == null) ? 0 : m_xmlGroups.getDefines().hashCode());
     result = prime * result + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
     result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
@@ -564,10 +541,6 @@ public class XmlTest implements Cloneable {
       if (other.m_failedInvocationNumbers != null) return XmlSuite.f();
     } else if (!m_failedInvocationNumbers.equals(other.m_failedInvocationNumbers))
       return XmlSuite.f();
-    if (m_isJUnit == null) {
-      if (other.m_isJUnit != null && !other.m_isJUnit.equals(XmlSuite.DEFAULT_JUNIT))
-        return XmlSuite.f();
-    } else if (!m_isJUnit.equals(other.m_isJUnit)) return XmlSuite.f();
     if (m_methodSelectors == null) {
       if (other.m_methodSelectors != null) return XmlSuite.f();
     } else if (!m_methodSelectors.equals(other.m_methodSelectors)) return XmlSuite.f();
