@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.CommandLineArgs;
 import org.testng.IInjectorFactory;
@@ -167,8 +168,7 @@ public class CommandLineTest {
   public static class TestInjectorFactory implements IInjectorFactory {
 
     @Override
-    @SuppressWarnings("deprecation")
-    public Injector getInjector(Stage stage, Module... modules) {
+    public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
       return null;
     }
   }

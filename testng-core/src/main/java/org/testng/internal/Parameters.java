@@ -44,7 +44,6 @@ import org.testng.xml.XmlTest;
 
 /** Methods that bind parameters declared in testng.xml to actual values used to invoke methods. */
 public class Parameters {
-  @Deprecated public static final String NULL_VALUE = org.testng.annotations.Parameters.NULL_VALUE;
 
   private static final List<Class<? extends Annotation>> annotationList =
       Arrays.asList(

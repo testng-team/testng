@@ -50,7 +50,6 @@ import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.internal.thread.graph.SuiteWorkerFactory;
 import org.testng.junit.JUnitTestFinder;
 import org.testng.log4testng.Logger;
-import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.EmailableReporter2;
 import org.testng.reporters.FailedReporter;
 import org.testng.reporters.JUnitReportReporter;
@@ -964,9 +963,7 @@ public class TestNG {
       } else {
         addReporter(XMLReporter.class);
       }
-      if (RuntimeBehavior.useOldTestNGEmailableReporter()) {
-        addReporter(EmailableReporter.class);
-      } else if (RuntimeBehavior.useEmailableReporter()) {
+      if (RuntimeBehavior.useEmailableReporter()) {
         addReporter(EmailableReporter2.class);
       }
       addReporter(JUnitReportReporter.class);

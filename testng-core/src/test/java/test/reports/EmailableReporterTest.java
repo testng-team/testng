@@ -9,7 +9,6 @@ import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.reporters.EmailableReporter;
 import org.testng.reporters.EmailableReporter2;
 import test.SimpleBaseTest;
 
@@ -39,25 +38,17 @@ public class EmailableReporterTest extends SimpleBaseTest {
   @DataProvider(name = "getReporterInstances")
   public Object[][] getReporterInstances(Method method) {
     if (method.getName().toLowerCase().contains("jvmarguments")) {
-      return new Object[][] {
-        {new EmailableReporter(), "emailable.report.name"},
-        {new EmailableReporter2(), "emailable.report2.name"}
-      };
+      return new Object[][] {{new EmailableReporter2(), "emailable.report2.name"}};
     }
-    return new Object[][] {{new EmailableReporter()}, {new EmailableReporter2()}};
+    return new Object[][] {{new EmailableReporter2()}};
   }
 
   @DataProvider(name = "getReporterNames")
   public Object[][] getReporterNames(Method method) {
     if (method.getName().toLowerCase().contains("jvmarguments")) {
-      return new Object[][] {
-        {EmailableReporter.class.getName(), "emailable.report.name"},
-        {EmailableReporter2.class.getName(), "emailable.report2.name"}
-      };
+      return new Object[][] {{EmailableReporter2.class.getName(), "emailable.report2.name"}};
     }
-    return new Object[][] {
-      {EmailableReporter.class.getName()}, {EmailableReporter2.class.getName()}
-    };
+    return new Object[][] {{EmailableReporter2.class.getName()}};
   }
 
   private void runTestViaMainMethod(String clazzName, String jvm) {
@@ -100,9 +91,6 @@ public class EmailableReporterTest extends SimpleBaseTest {
       testNG.setOutputDirectory(output.getAbsolutePath());
       if (reporter instanceof EmailableReporter2) {
         ((EmailableReporter2) reporter).setFileName(filename);
-      }
-      if (reporter instanceof EmailableReporter) {
-        ((EmailableReporter) reporter).setFileName(filename);
       }
       testNG.addListener((ITestNGListener) reporter);
       testNG.setTestClasses(new Class[] {ReporterSample.class});

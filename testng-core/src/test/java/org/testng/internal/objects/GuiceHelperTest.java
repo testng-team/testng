@@ -6,6 +6,7 @@ import static org.testng.Assert.assertNotNull;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.IInjectorFactory;
 import org.testng.ITest;
@@ -35,9 +36,9 @@ public final class GuiceHelperTest {
   }
 
   private static final class MockInjectorFactory implements IInjectorFactory {
+
     @Override
-    @SuppressWarnings("deprecation")
-    public Injector getInjector(Stage stage, Module... modules) {
+    public Injector getInjector(@Nullable Injector parent, Stage stage, Module... modules) {
       return new MockInjector(modules);
     }
   }
