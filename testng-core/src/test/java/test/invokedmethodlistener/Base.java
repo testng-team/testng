@@ -11,7 +11,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class Base {
-  private boolean m_fail;
+  private final boolean m_fail;
 
   public Base(boolean fail) {
     m_fail = fail;

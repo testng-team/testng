@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 
 public class AnotherTestClassSample {
 
-  public static List<String> logs = new ArrayList<>();
+  public static final List<String> logs = new ArrayList<>();
 
   @BeforeGroups(groups = "testGroup1")
   public void beforeGroups1() {

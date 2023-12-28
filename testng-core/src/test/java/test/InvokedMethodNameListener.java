@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
-import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
@@ -127,12 +126,6 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
           "A FailedButWithinSuccessPercentage test is supposed to be invoked");
     }
   }
-
-  @Override
-  public void onStart(ITestContext context) {}
-
-  @Override
-  public void onFinish(ITestContext context) {}
 
   public Set<Object> getTestInstances() {
     return testInstances;

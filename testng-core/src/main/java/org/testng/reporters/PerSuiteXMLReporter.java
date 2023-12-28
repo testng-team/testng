@@ -26,7 +26,7 @@ public class PerSuiteXMLReporter extends AbstractXmlReporter {
     for (ISuite s : suites) {
       Count count = computeCountForSuite(s);
       XMLStringBuffer rootBuffer = new XMLStringBuffer();
-      Properties p = writeSummaryCount(count, rootBuffer);
+      Properties p = writeSummaryCount(count);
       rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS, p);
       writeReporterOutput(rootBuffer, getOutput(s));
       writeSuite(rootBuffer, s);

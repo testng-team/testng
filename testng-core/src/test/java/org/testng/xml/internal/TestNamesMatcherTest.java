@@ -54,7 +54,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
       dataProvider = "getData")
   public void testCloneIfContainsTestsWithNamesMatchingAnyNegativeCondition(
       XmlSuite xmlSuite, List<String> names) {
-    TestNamesMatcher testNamesHelper = new TestNamesMatcher(xmlSuite, names);
+    new TestNamesMatcher(xmlSuite, names);
   }
 
   @Test(
@@ -65,7 +65,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
       testCloneIfContainsTestsWithNamesMatchingAnyNegativeConditionWithIgnoreMissedTestNamesEnabled(
           XmlSuite xmlSuite, List<String> names) {
     boolean ignoreMissedTestNames = true;
-    TestNamesMatcher testNamesHelper = new TestNamesMatcher(xmlSuite, names, ignoreMissedTestNames);
+    new TestNamesMatcher(xmlSuite, names, ignoreMissedTestNames);
   }
 
   @Test
@@ -97,7 +97,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     List<XmlSuite> clonedSuites = testNamesMatcher.getSuitesMatchingTestNames();
     if (!CollectionUtils.hasElements(clonedSuites)) {
       throw new TestNGException(
-          "The test(s) <" + Collections.singletonList("test3").toString() + "> cannot be found.");
+          "The test(s) <" + Collections.singletonList("test3") + "> cannot be found.");
     }
   }
 
@@ -161,7 +161,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     TestNamesMatcher testNamesMatcher =
         new TestNamesMatcher(xmlSuite, Collections.singletonList(expectedMissedTestNames));
     List<String> missedTestNames = testNamesMatcher.getMissedTestNames();
-    assertThat(missedTestNames).hasSameElementsAs(Arrays.asList(expectedMissedTestNames));
+    assertThat(missedTestNames).hasSameElementsAs(List.of(expectedMissedTestNames));
   }
 
   @DataProvider(name = "getTestnames")

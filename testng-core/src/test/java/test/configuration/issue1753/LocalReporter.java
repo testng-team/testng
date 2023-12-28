@@ -10,7 +10,7 @@ import org.testng.xml.XmlSuite;
 
 public class LocalReporter implements IReporter {
 
-  private Map<String, String> attributes = Maps.newHashMap();
+  private final Map<String, String> attributes = Maps.newHashMap();
 
   @Override
   public void generateReport(

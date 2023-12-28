@@ -53,9 +53,6 @@ public class EnsureInstancesAreOrderedViaFactories extends SimpleBaseTest {
     List<String> messages = Lists.newArrayList();
 
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
-
-    @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
       messages.addAll(Reporter.getOutput(testResult));
     }

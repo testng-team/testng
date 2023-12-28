@@ -34,7 +34,6 @@ public class GitHub128Sample {
   @Test(dataProvider = "methods")
   public void testInvokeRemote(Method param1, Object[] param2) {
     Assert.fail("The test is supposed to fail because the method param is not defined");
-    ;
   }
 
   @Test(dataProvider = "methods")

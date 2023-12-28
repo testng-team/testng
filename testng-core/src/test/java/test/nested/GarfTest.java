@@ -4,9 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import test.nested.foo.AccountTypeEnum;
 
-@Test(
-    groups = {"unittest"},
-    enabled = true)
+@Test(groups = {"unittest"})
 public class GarfTest {
 
   @Test()

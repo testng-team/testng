@@ -16,7 +16,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.thread.parallelization.BaseParallelizationTest;
 import test.thread.parallelization.TestNgRunStateListener;
-import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 
 public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTest {
   private static final Logger log = Logger.getLogger(EfficientPriorityParallelizationTest2.class);
@@ -26,7 +25,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
 
   private static final int THREAD_POOL_SIZE = 2;
 
-  private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
+  private final Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
 
   private List<EventLog> suiteLevelEventLogs;
   private List<EventLog> testLevelEventLogs;
@@ -257,7 +256,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
                   return e.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_START && rightClass;
                 })
             .findFirst()
-            .get();
+            .orElseThrow(() -> new IllegalStateException("Should have found a valid value"));
     EventLog highPriEnd =
         suiteOneTestOneTestMethodLevelEventLogs.stream()
             .filter(
@@ -268,8 +267,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
                   return e.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_PASS && rightClass;
                 })
             .findFirst()
-            .get();
-    ;
+            .orElseThrow(() -> new IllegalStateException("Should have found a valid value"));
     List<EventLog> lowPriEvents =
         suiteOneTestOneTestMethodLevelEventLogs.stream()
             .filter(

@@ -7,8 +7,8 @@ import org.testng.annotations.Test;
 /** This class is created by FactoryWithInstanceInfo2Sample */
 public class FactoryWithInstanceInfo2Sample {
 
-  private static List<Integer> numbers = new ArrayList<>();
-  private int number;
+  private static final List<Integer> numbers = new ArrayList<>();
+  private final int number;
 
   public FactoryWithInstanceInfo2Sample() {
     throw new RuntimeException("Shouldn't be invoked");

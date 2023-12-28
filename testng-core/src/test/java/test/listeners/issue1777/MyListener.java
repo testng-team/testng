@@ -16,12 +16,6 @@ public class MyListener implements IInvokedMethodListener, ITestListener {
   List<String> cfgMsgs = new LinkedList<>();
 
   @Override
-  public void onFinish(ITestContext testContext) {}
-
-  @Override
-  public void onStart(ITestContext testContext) {}
-
-  @Override
   public void onTestFailedButWithinSuccessPercentage(ITestResult testResult) {
     log("testFailedBut", testResult);
   }
@@ -102,7 +96,7 @@ public class MyListener implements IInvokedMethodListener, ITestListener {
         }
       }
       if (builder.length() != 0) {
-        return "[" + builder.toString() + "]";
+        return "[" + builder + "]";
       }
     }
     return "";

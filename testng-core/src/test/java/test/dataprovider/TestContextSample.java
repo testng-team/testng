@@ -1,5 +1,6 @@
 package test.dataprovider;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
@@ -18,9 +19,7 @@ public class TestContextSample {
 
     int n = groups.length > 0 ? Integer.parseInt(groups[0]) : 0;
     Object[] result = new Object[n];
-    for (int i = 0; i < n; i++) {
-      result[i] = "foo";
-    }
+    Arrays.fill(result, "foo");
 
     return new Object[] {result};
   }

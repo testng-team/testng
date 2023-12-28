@@ -2,8 +2,8 @@ package test.preserveorder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -34,7 +34,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
     XmlSuite suite = createXmlSuite("Suite");
     XmlTest test = createXmlTest(suite, "Test", tests);
     test.setPreserveOrder(true);
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(List.of(suite));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
@@ -70,7 +70,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
     XmlTest test = createXmlTest(suite, "Test", A.class);
     addMethods(test.getXmlClasses().get(0), methods);
     test.setPreserveOrder(true);
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(List.of(suite));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
@@ -86,7 +86,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
     XmlSuite suite = createXmlSuite("PreserveOrder");
     XmlTest test = createXmlTest(suite, "Test", Chuck4Sample.class, Chuck3Sample.class);
     test.setPreserveOrder(true);
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(List.of(suite));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
@@ -104,7 +104,7 @@ public class PreserveOrderTest extends SimpleBaseTest {
     XmlSuite suite = createXmlSuite("FactoryPreserve");
     XmlTest test = createXmlTest(suite, "Test", ClassSampleFactory.class);
     test.setPreserveOrder(true);
-    tng.setXmlSuites(Arrays.asList(suite));
+    tng.setXmlSuites(List.of(suite));
 
     tng.run();
   }

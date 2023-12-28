@@ -10,7 +10,7 @@ import org.testng.collections.Lists;
 
 public class DependentWithDataProviderSampleTest {
   public static List<String> m_log = Lists.newArrayList();
-  private String param;
+  private final String param;
 
   @Factory(dataProvider = "prov")
   public DependentWithDataProviderSampleTest(String param) {

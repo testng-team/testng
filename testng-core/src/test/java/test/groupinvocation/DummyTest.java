@@ -7,7 +7,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 public class DummyTest {
-  private static Map<String, Integer> s_externalClassGroups = new HashMap<>();
+  private static final Map<String, Integer> s_externalClassGroups = new HashMap<>();
 
   @Test(groups = {"a"})
   public void testA() {}

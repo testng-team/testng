@@ -13,7 +13,7 @@ public class ThisFactory {
 
   @Factory
   public Object[] create() {
-    List result = new ArrayList();
+    List<Test1> result = new ArrayList<>();
     for (int i = 0; i < 10; i++) {
       result.add(new Test1());
     }

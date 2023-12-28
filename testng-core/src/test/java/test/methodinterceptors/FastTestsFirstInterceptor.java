@@ -1,9 +1,6 @@
 package test.methodinterceptors;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
@@ -15,10 +12,7 @@ public class FastTestsFirstInterceptor implements IMethodInterceptor {
     List<IMethodInstance> result = new ArrayList<>();
     for (IMethodInstance m : methods) {
       Test test = m.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Test.class);
-      Set<String> groups = new HashSet<>();
-      for (String group : test.groups()) {
-        groups.add(group);
-      }
+      Set<String> groups = new HashSet<>(Arrays.asList(test.groups()));
       if (groups.contains("fast")) {
         result.add(0, m);
       } else {

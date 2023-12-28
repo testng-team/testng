@@ -72,7 +72,7 @@ public class SequentialTest extends BaseTest {
           Helper.getMap(classes[0]), Helper.getMap(classes[1]), Helper.getMap(classes[2]),
         };
 
-    for (Map m : maps) {
+    for (Map<Long, Long> m : maps) {
       Assert.assertEquals(m.size(), 1);
     }
 

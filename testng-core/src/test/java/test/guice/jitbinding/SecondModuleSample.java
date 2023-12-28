@@ -12,7 +12,7 @@ public class SecondModuleSample {
   static class SecondModule extends AbstractModule {
     @Override
     protected void configure() {
-      bind(String.class).toInstance(new String("Hello"));
+      bind(String.class).toInstance("Hello");
     }
   }
 

@@ -1,7 +1,6 @@
 package test.listeners;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.testng.*;
@@ -73,10 +72,9 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
       s.addListener(listenerName);
     }
     TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(s));
+    tng.setXmlSuites(List.of(s));
     tng.run();
-    Pair<TestNG, XmlSuite> returnObj = new Pair<>(tng, s);
-    return returnObj;
+    return new Pair<>(tng, s);
   }
 
   public static class AlterSuiteListener1SampleTest {

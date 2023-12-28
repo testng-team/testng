@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 public class ClassContainer {
 
   @Test
-  public class NonGroupClass3 {
+  public static class NonGroupClass3 {
 
     public void step1() {}
 

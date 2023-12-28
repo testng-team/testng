@@ -8,7 +8,7 @@ import org.testng.reporters.JUnitReportReporter;
 import org.testng.xml.XmlSuite;
 
 public class LocalJUnitReportReporter extends JUnitReportReporter implements TestsuiteRetriever {
-  private List<Testsuite> testsuites = new ArrayList<>();
+  private final List<Testsuite> testsuites = new ArrayList<>();
 
   @Override
   public void generateReport(

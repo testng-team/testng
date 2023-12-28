@@ -2,7 +2,7 @@ package test.testng173;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
+import java.util.List;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -25,7 +25,7 @@ public class TestNG173Test extends SimpleBaseTest {
 
     t.setPreserveOrder(true);
 
-    tng.setXmlSuites(Arrays.asList(s));
+    tng.setXmlSuites(List.of(s));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);
@@ -51,7 +51,7 @@ public class TestNG173Test extends SimpleBaseTest {
 
     t.setPreserveOrder(true);
 
-    tng.setXmlSuites(Arrays.asList(s));
+    tng.setXmlSuites(List.of(s));
 
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener((ITestNGListener) listener);

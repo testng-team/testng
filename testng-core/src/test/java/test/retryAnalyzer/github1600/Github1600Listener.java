@@ -11,8 +11,6 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 
 public class Github1600Listener implements IInvokedMethodListener, IAnnotationTransformer {
-  @Override
-  public void beforeInvocation(IInvokedMethod iInvokedMethod, ITestResult iTestResult) {}
 
   @Override
   public void afterInvocation(IInvokedMethod iInvokedMethod, ITestResult iTestResult) {

@@ -27,20 +27,19 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
 
   public static void log(
       IMethodInterceptor listener, List<IMethodInstance> input, List<IMethodInstance> output) {
-    StringBuilder msg =
-        new StringBuilder()
-            .append(listener.getClass().getName())
-            .append(" - Input:")
-            .append(getMethodNames(input))
-            .append(" ")
-            .append(input.size())
-            .append(" methods.")
-            .append(" Output:")
-            .append(getMethodNames(output))
-            .append(" ")
-            .append(output.size())
-            .append(" methods");
-    log(msg.toString());
+    String msg =
+        listener.getClass().getName()
+            + " - Input:"
+            + getMethodNames(input)
+            + " "
+            + input.size()
+            + " methods."
+            + " Output:"
+            + getMethodNames(output)
+            + " "
+            + output.size()
+            + " methods";
+    System.err.println(msg);
   }
 
   public static List<String> getMethodNames(List<IMethodInstance> methods) {
@@ -49,9 +48,5 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
       names.add(m.getMethod().getMethodName());
     }
     return names;
-  }
-
-  private static void log(String s) {
-    //    System.out.println("[MI2] " + s);
   }
 }

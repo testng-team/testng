@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 public class Issue1029SampleTestClassWithFiveInstances {
 
-  private int i;
+  private final int i;
 
   @Factory(dataProvider = "dp")
   public Issue1029SampleTestClassWithFiveInstances(int i) {

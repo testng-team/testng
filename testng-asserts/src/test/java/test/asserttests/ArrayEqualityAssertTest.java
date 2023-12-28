@@ -6,7 +6,6 @@ import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotEqualsDeep;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,15 +75,15 @@ public class ArrayEqualityAssertTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void arrayInsideListAssertEquals() {
-    List<int[]> list = Arrays.asList(new int[] {42});
-    List<int[]> listCopy = Arrays.asList(new int[] {42});
+    List<int[]> list = List.of(new int[] {42});
+    List<int[]> listCopy = List.of(new int[] {42});
     assertEquals(list, listCopy, "arrays inside lists are compared by reference in assertEquals");
   }
 
   @Test
   public void arrayInsideListAssertNotEquals() {
-    List<int[]> list = Arrays.asList(new int[] {42});
-    List<int[]> listCopy = Arrays.asList(new int[] {42});
+    List<int[]> list = List.of(new int[] {42});
+    List<int[]> listCopy = List.of(new int[] {42});
     assertNotEquals(
         list, listCopy, "arrays inside lists are compared by reference in assertNotEquals");
   }
@@ -225,8 +224,8 @@ public class ArrayEqualityAssertTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void arrayDeepInListsAssertEquals() {
-    List<List<int[]>> list = Collections.singletonList(Arrays.asList(new int[] {42}));
-    List<List<int[]>> listCopy = Collections.singletonList(Arrays.asList(new int[] {42}));
+    List<List<int[]>> list = Collections.singletonList(List.of(new int[] {42}));
+    List<List<int[]>> listCopy = Collections.singletonList(List.of(new int[] {42}));
 
     assertEquals(
         list,
@@ -271,9 +270,9 @@ public class ArrayEqualityAssertTest {
   @Test(expectedExceptions = AssertionError.class)
   public void arrayDeepInMapAndListAssertEquals() {
     Map<String, List<int[]>> map = new HashMap<>();
-    map.put("list", Arrays.asList(new int[] {42}));
+    map.put("list", List.of(new int[] {42}));
     Map<String, List<int[]>> mapCopy = new HashMap<>();
-    mapCopy.put("list", Arrays.asList(new int[] {42}));
+    mapCopy.put("list", List.of(new int[] {42}));
 
     assertEquals(
         map,
@@ -283,8 +282,8 @@ public class ArrayEqualityAssertTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void arrayInsideIterableAssertEquals() {
-    Iterable<int[]> iterable = Arrays.asList(new int[] {42});
-    Iterable<int[]> iterableCopy = Arrays.asList(new int[] {42});
+    Iterable<int[]> iterable = List.of(new int[] {42});
+    Iterable<int[]> iterableCopy = List.of(new int[] {42});
     assertEquals(
         iterable,
         iterableCopy,
@@ -293,8 +292,8 @@ public class ArrayEqualityAssertTest {
 
   @Test(expectedExceptions = AssertionError.class)
   public void arrayDeepInIterablesAssertEquals() {
-    List<List<int[]>> iterable = Collections.singletonList(Arrays.asList(new int[] {42}));
-    List<List<int[]>> iterableCopy = Collections.singletonList(Arrays.asList(new int[] {42}));
+    List<List<int[]>> iterable = Collections.singletonList(List.of(new int[] {42}));
+    List<List<int[]>> iterableCopy = Collections.singletonList(List.of(new int[] {42}));
 
     assertEquals(
         iterable,
@@ -323,8 +322,8 @@ public class ArrayEqualityAssertTest {
   @SuppressWarnings("unchecked")
   @Test(expectedExceptions = AssertionError.class)
   public void arrayDeepInArrayAndListAssertEquals() {
-    List<int[]>[] array = new List[] {Arrays.asList(new int[] {42})};
-    List<int[]>[] arrayCopy = new List[] {Arrays.asList(new int[] {42})};
+    List<int[]>[] array = new List[] {List.of(new int[] {42})};
+    List<int[]>[] arrayCopy = new List[] {List.of(new int[] {42})};
 
     assertEquals(
         array,

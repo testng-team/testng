@@ -24,9 +24,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
   private void assertOrder(List<String> methods) {
     List<String> expectedMethods =
         Arrays.asList(
-            new String[] {
-              "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t"
-            });
+            "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t");
     int size = expectedMethods.size();
     Assert.assertEquals(methods.size(), size);
     for (String em : expectedMethods) {

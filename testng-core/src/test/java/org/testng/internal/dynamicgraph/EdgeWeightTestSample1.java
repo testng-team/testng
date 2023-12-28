@@ -11,8 +11,7 @@ public class EdgeWeightTestSample1 {
 
   @Test(
       groups = {"g2"},
-      dependsOnGroups = "g1",
-      priority = 0)
+      dependsOnGroups = "g1")
   public void t2() {}
 
   @Test(

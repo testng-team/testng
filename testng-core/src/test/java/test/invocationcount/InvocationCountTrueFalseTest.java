@@ -7,6 +7,6 @@ public class InvocationCountTrueFalseTest extends InvocationBase {
   @BeforeMethod(firstTimeOnly = true)
   public void beforeMethod() {}
 
-  @AfterMethod(lastTimeOnly = false)
+  @AfterMethod()
   public void afterMethod() {}
 }

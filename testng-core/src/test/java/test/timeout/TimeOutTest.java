@@ -37,7 +37,7 @@ public class TimeOutTest extends BaseTest {
   public Iterator<Object[]> createData() {
     final Iterator<XmlSuite.ParallelMode> parallelModes =
         Arrays.asList(XmlSuite.ParallelMode.values()).iterator();
-    return new Iterator<Object[]>() {
+    return new Iterator<>() {
       @Override
       public boolean hasNext() {
         return parallelModes.hasNext();
@@ -46,11 +46,6 @@ public class TimeOutTest extends BaseTest {
       @Override
       public Object[] next() {
         return new Object[] {parallelModes.next()};
-      }
-
-      @Override
-      public void remove() {
-        throw new UnsupportedOperationException("remove");
       }
     };
   }

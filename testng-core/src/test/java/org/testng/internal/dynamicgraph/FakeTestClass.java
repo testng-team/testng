@@ -6,7 +6,7 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 public class FakeTestClass implements ITestClass {
-  private Class<?> clazz;
+  private final Class<?> clazz;
 
   public FakeTestClass(Class<?> clazz) {
     this.clazz = clazz;

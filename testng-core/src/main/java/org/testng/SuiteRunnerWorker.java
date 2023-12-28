@@ -86,7 +86,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
             .append(counts.m_confSkips);
       }
       bufLog.append(LINE);
-      System.out.println(bufLog.toString());
+      System.out.println(bufLog);
     }
   }
 

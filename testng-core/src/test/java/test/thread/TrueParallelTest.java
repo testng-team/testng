@@ -1,6 +1,5 @@
 package test.thread;
 
-import java.util.Arrays;
 import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
@@ -22,7 +21,7 @@ public class TrueParallelTest extends SimpleBaseTest {
       createXmlTest(s, "Test", TrueParallelSampleTest.class.getName());
       TestNG tng = create();
       s.setParallel(XmlSuite.ParallelMode.METHODS);
-      tng.setXmlSuites(Arrays.asList(s));
+      tng.setXmlSuites(List.of(s));
       BaseThreadTest.initThreadLog();
       tng.run();
 

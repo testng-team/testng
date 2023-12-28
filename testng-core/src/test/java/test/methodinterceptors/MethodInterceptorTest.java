@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
@@ -14,26 +13,22 @@ import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
-import org.xml.sax.SAXException;
 import test.SimpleBaseTest;
 import test.TestHelper;
 
 public class MethodInterceptorTest extends SimpleBaseTest {
 
-  private String XML =
+  private static final String XML =
       TestHelper.SUITE_XML_HEADER
           + "<suite name=\"Single\" verbose=\"0\">"
-          + ""
           + "<listeners>"
           + "  <listener class-name=\"test.methodinterceptors.NullMethodInterceptor\" />"
           + "</listeners>"
-          + ""
           + "  <test name=\"Single\" >"
           + "    <classes>"
           + "      <class name=\"test.methodinterceptors.FooTest\" />"
           + "     </classes>"
           + "  </test>"
-          + ""
           + "</suite>";
 
   @Test
@@ -87,8 +82,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
   }
 
   @Test
-  public void nullMethodInterceptorWorksInTestngXml()
-      throws IOException, ParserConfigurationException, SAXException {
+  public void nullMethodInterceptorWorksInTestngXml() throws IOException {
 
     File f = File.createTempFile("testng-tests-", "");
     f.deleteOnExit();
@@ -96,15 +90,11 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     bw.write(XML);
     bw.close();
 
-    try {
-      List<XmlSuite> xmlSuites = new Parser(f.getAbsolutePath()).parseToList();
+    List<XmlSuite> xmlSuites = new Parser(f.getAbsolutePath()).parseToList();
 
-      TestNG tng = create();
-      tng.setXmlSuites(xmlSuites);
-      testNullInterceptor(tng);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+    TestNG tng = create();
+    tng.setXmlSuites(xmlSuites);
+    testNullInterceptor(tng);
   }
 
   @Test(timeOut = 1000)

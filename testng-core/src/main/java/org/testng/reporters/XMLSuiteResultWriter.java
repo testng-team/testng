@@ -110,17 +110,7 @@ public class XMLSuiteResultWriter {
   private void addTestResults(XMLStringBuffer xmlBuffer, Set<ITestResult> testResults) {
     Map<String, List<ITestResult>> testsGroupedByClass = buildTestClassGroups(testResults);
     for (Map.Entry<String, List<ITestResult>> result : testsGroupedByClass.entrySet()) {
-      Properties attributes = new Properties();
-      String className = result.getKey();
-      if (config.isSplitClassAndPackageNames()) {
-        int dot = className.lastIndexOf('.');
-        attributes.setProperty(
-            XMLReporterConfig.ATTR_NAME, dot > -1 ? className.substring(dot + 1) : className);
-        attributes.setProperty(
-            XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
-      } else {
-        attributes.setProperty(XMLReporterConfig.ATTR_NAME, className);
-      }
+      Properties attributes = buildProperties(result);
 
       xmlBuffer.push(XMLReporterConfig.TAG_CLASS, attributes);
       List<ITestResult> sortedResults = result.getValue();
@@ -130,6 +120,21 @@ public class XMLSuiteResultWriter {
       }
       xmlBuffer.pop();
     }
+  }
+
+  private Properties buildProperties(Map.Entry<String, List<ITestResult>> result) {
+    Properties attributes = new Properties();
+    String className = result.getKey();
+    if (config.isSplitClassAndPackageNames()) {
+      int dot = className.lastIndexOf('.');
+      attributes.setProperty(
+          XMLReporterConfig.ATTR_NAME, dot > -1 ? className.substring(dot + 1) : className);
+      attributes.setProperty(
+          XMLReporterConfig.ATTR_PACKAGE, dot > -1 ? className.substring(0, dot) : "[default]");
+    } else {
+      attributes.setProperty(XMLReporterConfig.ATTR_NAME, className);
+    }
+    return attributes;
   }
 
   private Map<String, List<ITestResult>> buildTestClassGroups(Set<ITestResult> testResults) {

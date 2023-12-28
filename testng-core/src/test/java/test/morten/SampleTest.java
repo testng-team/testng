@@ -4,12 +4,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class SampleTest {
-  private int capacity = 10;
-  private float loadFactor = 0.3f;
-
-  public class SampleTestTestFactory {
-    public SampleTestTestFactory() {} // CTR necessary ?
-
+  public static class SampleTestTestFactory {
     @Factory
     public Object[] createInstances() {
       return new SampleTest[] {
@@ -18,18 +13,10 @@ public class SampleTest {
     }
   }
 
-  public SampleTest() {}
-
-  public SampleTest(int capacity, float loadFactor) {
+  public SampleTest(int capacity, float ignored) {
     System.out.println("CREATING TEST WITH " + capacity);
-    this.capacity = capacity;
-    this.loadFactor = loadFactor;
   }
 
   @Test
-  public void testPut() {
-    // FIXME: This test does nothing
-    // HashMap hashTable = new HashMap(capacity, loadFactor);
-    // ...
-  }
+  public void testPut() {}
 }

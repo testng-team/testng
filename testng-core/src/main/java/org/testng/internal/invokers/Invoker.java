@@ -65,11 +65,11 @@ public class Invoker implements IInvoker {
             suiteRunner);
   }
 
-  public ConfigInvoker getConfigInvoker() {
+  public IConfigInvoker getConfigInvoker() {
     return m_configInvoker;
   }
 
-  public TestInvoker getTestInvoker() {
+  public ITestInvoker getTestInvoker() {
     return m_testInvoker;
   }
 }

@@ -12,13 +12,13 @@ public class B {
   @Test
   public void testB2() {}
 
-  @Test(enabled = true)
+  @Test()
   public void testB3() {}
 
   @Test(enabled = false)
   public void disabledB() {}
 
-  @BeforeSuite(enabled = true)
+  @BeforeSuite()
   public void disabledBeforeSuiteB() {}
 
   @BeforeSuite
@@ -27,19 +27,19 @@ public class B {
   @BeforeSuite(enabled = false)
   public void disabledBeforeSuiteB3() {}
 
-  @BeforeSuite(alwaysRun = false)
+  @BeforeSuite()
   public void beforeSuiteNoRunB() {}
 
-  @BeforeSuite(enabled = true, alwaysRun = false)
+  @BeforeSuite()
   public void beforeSuiteNoRunB2() {}
 
-  @BeforeSuite(enabled = false, alwaysRun = false)
+  @BeforeSuite(enabled = false)
   public void disabledBeforeSuiteNoRunB() {}
 
   @BeforeSuite(alwaysRun = true)
   public void beforeSuiteRunB() {}
 
-  @BeforeSuite(enabled = true, alwaysRun = true)
+  @BeforeSuite(alwaysRun = true)
   public void beforeSuiteRunB2() {}
 
   @BeforeSuite(enabled = false, alwaysRun = true)
@@ -48,25 +48,25 @@ public class B {
   @AfterSuite
   public void afterSuiteB() {}
 
-  @AfterSuite(enabled = true)
+  @AfterSuite()
   public void afterSuiteB2() {}
 
   @AfterSuite(enabled = false)
   public void disabledAfterSuiteB() {}
 
-  @AfterSuite(alwaysRun = false)
+  @AfterSuite()
   public void afterSuiteNoRunB() {}
 
-  @AfterSuite(enabled = true, alwaysRun = false)
+  @AfterSuite()
   public void afterSuiteNoRunB2() {}
 
-  @AfterSuite(enabled = false, alwaysRun = false)
+  @AfterSuite(enabled = false)
   public void disabledAfterSuiteNoRunB() {}
 
   @AfterSuite(alwaysRun = true)
   public void afterSuiteRunB() {}
 
-  @AfterSuite(enabled = true, alwaysRun = true)
+  @AfterSuite(alwaysRun = true)
   public void afterSuiteRunB2() {}
 
   @AfterSuite(enabled = false, alwaysRun = true)

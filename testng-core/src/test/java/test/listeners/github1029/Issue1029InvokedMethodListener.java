@@ -9,8 +9,8 @@ import org.testng.ITestResult;
 import org.testng.xml.XmlTest;
 
 public class Issue1029InvokedMethodListener implements IInvokedMethodListener {
-  private List<String> beforeInvocation = Collections.synchronizedList(new ArrayList<String>());
-  private List<String> afterInvocation = Collections.synchronizedList(new ArrayList<String>());
+  private final List<String> beforeInvocation = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> afterInvocation = Collections.synchronizedList(new ArrayList<>());
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {

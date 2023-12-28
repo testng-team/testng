@@ -84,9 +84,6 @@ public class Github1649Test extends SimpleBaseTest {
     Map<String, String> failures = Maps.newHashMap();
 
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
-
-    @Override
     public void onTestFailure(ITestResult testResult) {
       String methodName = testResult.getMethod().getMethodName();
       String raw = testResult.getThrowable().getMessage();

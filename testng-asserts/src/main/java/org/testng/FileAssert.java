@@ -2,6 +2,7 @@ package org.testng;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Assertion tool for File centric assertions. Conceptually, this is an extension of {@link Assert}.
@@ -80,7 +81,10 @@ public class FileAssert {
   public static void assertLength(File tstvalue, long expected, String message) {
     long actual = -1L;
     try {
-      actual = tstvalue.isDirectory() ? tstvalue.list().length : tstvalue.length();
+      actual =
+          tstvalue.isDirectory()
+              ? Optional.ofNullable(tstvalue.list()).orElse(new String[0]).length
+              : tstvalue.length();
     } catch (SecurityException e) {
       failSecurity(e, tstvalue, String.valueOf(actual), String.valueOf(expected), message);
     }
@@ -284,12 +288,6 @@ public class FileAssert {
             + (expected != null ? "<" + expected + ">" : ""));
   }
 
-  /**
-   * @param tstvalue
-   * @param string
-   * @param string2
-   * @param message
-   */
   private static void failSecurity(
       Exception e, File path, String actual, String expected, String message) {
     String formatted = "";

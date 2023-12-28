@@ -12,7 +12,7 @@ public class C {
   @Test
   public void testC2() {}
 
-  @Test(enabled = true)
+  @Test()
   public void testC3() {}
 
   @Test(enabled = false)
@@ -21,25 +21,25 @@ public class C {
   @BeforeSuite
   public void beforeSuiteC() {}
 
-  @BeforeSuite(enabled = true)
+  @BeforeSuite()
   public void beforeSuiteC2() {}
 
   @BeforeSuite(enabled = false)
   public void disabledBeforeSuiteC() {}
 
-  @BeforeSuite(alwaysRun = false)
+  @BeforeSuite()
   public void beforeSuiteNoRunC() {}
 
-  @BeforeSuite(enabled = true, alwaysRun = false)
+  @BeforeSuite()
   public void beforeSuiteNoRunC2() {}
 
-  @BeforeSuite(enabled = false, alwaysRun = false)
+  @BeforeSuite(enabled = false)
   public void disabledBeforeSuiteNoRunC() {}
 
   @BeforeSuite(alwaysRun = true)
   public void beforeSuiteRunC() {}
 
-  @BeforeSuite(enabled = true, alwaysRun = true)
+  @BeforeSuite(alwaysRun = true)
   public void beforeSuiteRunC2() {}
 
   @BeforeSuite(enabled = false, alwaysRun = true)
@@ -48,25 +48,25 @@ public class C {
   @AfterSuite
   public void afterSuiteC() {}
 
-  @AfterSuite(enabled = true)
+  @AfterSuite()
   public void afterSuiteC2() {}
 
   @AfterSuite(enabled = false)
   public void disabledAfterSuiteC() {}
 
-  @AfterSuite(alwaysRun = false)
+  @AfterSuite()
   public void afterSuiteNoRunC() {}
 
-  @AfterSuite(enabled = true, alwaysRun = false)
+  @AfterSuite()
   public void afterSuiteNoRunC2() {}
 
-  @AfterSuite(enabled = false, alwaysRun = false)
+  @AfterSuite(enabled = false)
   public void disabledAfterSuiteNoRunC() {}
 
   @AfterSuite(alwaysRun = true)
   public void afterSuiteRunC() {}
 
-  @AfterSuite(enabled = true, alwaysRun = true)
+  @AfterSuite(alwaysRun = true)
   public void afterSuiteRunC2() {}
 
   @AfterSuite(enabled = false, alwaysRun = true)

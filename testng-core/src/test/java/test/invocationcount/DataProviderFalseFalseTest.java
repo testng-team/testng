@@ -4,9 +4,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 public class DataProviderFalseFalseTest extends DataProviderBase {
-  @BeforeMethod(firstTimeOnly = false)
+  @BeforeMethod()
   public void beforeMethod() {}
 
-  @AfterMethod(lastTimeOnly = false)
+  @AfterMethod()
   public void afterMethod() {}
 }

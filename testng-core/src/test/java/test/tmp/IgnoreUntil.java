@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 public @interface IgnoreUntil {
 
   /** Format: hhmm */
-  public String time();
+  String time();
 }

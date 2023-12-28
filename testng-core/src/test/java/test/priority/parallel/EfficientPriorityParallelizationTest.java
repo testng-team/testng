@@ -15,7 +15,6 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.thread.parallelization.BaseParallelizationTest;
 import test.thread.parallelization.TestNgRunStateListener;
-import test.thread.parallelization.TestNgRunStateTracker.EventLog;
 
 public class EfficientPriorityParallelizationTest extends BaseParallelizationTest {
   private static final Logger log = Logger.getLogger(EfficientPriorityParallelizationTest2.class);
@@ -26,7 +25,7 @@ public class EfficientPriorityParallelizationTest extends BaseParallelizationTes
 
   private static final int THREAD_POOL_SIZE = 2;
 
-  private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
+  private final Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
 
   private List<EventLog> suiteLevelEventLogs;
   private List<EventLog> testLevelEventLogs;

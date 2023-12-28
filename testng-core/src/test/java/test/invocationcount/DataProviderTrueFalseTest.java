@@ -7,6 +7,6 @@ public class DataProviderTrueFalseTest extends DataProviderBase {
   @BeforeMethod(firstTimeOnly = true)
   public void beforeMethod() {}
 
-  @AfterMethod(lastTimeOnly = false)
+  @AfterMethod()
   public void afterMethod() {}
 }

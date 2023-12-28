@@ -23,7 +23,7 @@ import org.testng.xml.XmlTest;
 
 public class FakeSuite implements ISuite {
 
-  private XmlTest xmlTest;
+  private final XmlTest xmlTest;
 
   public FakeSuite(XmlTest xmlTest) {
     this.xmlTest = xmlTest;

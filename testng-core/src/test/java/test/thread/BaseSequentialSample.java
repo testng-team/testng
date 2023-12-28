@@ -10,8 +10,8 @@ public class BaseSequentialSample {
     getMap().put(id, id);
   }
 
-  Map getMap() {
-    Map result = Helper.getMap(getClass().getName());
+  Map<Long, Long> getMap() {
+    Map<Long, Long> result = Helper.getMap(getClass().getName());
     debug("RETURNING MAP " + result + " THIS:" + this);
 
     return result;

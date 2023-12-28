@@ -565,7 +565,7 @@ public class AssertTest {
     Assert.assertNotEquals(obj, obj);
   }
 
-  class Contrived {
+  static class Contrived {
 
     int integer;
 

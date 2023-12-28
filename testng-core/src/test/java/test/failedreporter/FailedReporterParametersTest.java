@@ -89,7 +89,8 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
         failedTest.getClasses().stream()
             .filter(failedClass -> failedClass.getName().equals("test.reports.SimpleFailedSample"))
             .findFirst()
-            .get();
+            .orElseThrow(
+                () -> new IllegalStateException("At-least one value should have been found"));
     XmlClass failedClass2 =
         failedTest.getClasses().stream()
             .filter(
@@ -99,7 +100,8 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
                         .equals(
                             "test.failedreporter.FailedReporterParametersTest$AnotherSimpleFailedSample"))
             .findFirst()
-            .get();
+            .orElseThrow(
+                () -> new IllegalStateException("At-least one value should have been found"));
 
     // Cheeck class1 Parameters
     Assert.assertEquals("44", failedClass1.getAllParameters().get("sharedParameter"));
@@ -128,8 +130,7 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
     }
   }
 
-  class AnotherSimpleFailedSample {
-
+  static class AnotherSimpleFailedSample {
     @Test
     public void failed() {
       throw new RuntimeException("Failing intentionally");

@@ -15,7 +15,7 @@ import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IBeforeSuite;
 
 public class MAnnotation2SampleTest {
-  private IConfiguration m_configuration = new org.testng.internal.Configuration();
+  private final IConfiguration m_configuration = new org.testng.internal.Configuration();
   private IAnnotationFinder m_finder;
 
   @BeforeClass(enabled = true, groups = "current")
@@ -33,7 +33,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      Assert.assertEqualsNoOrder(expected.toArray(new String[expected.size()]), test1.getGroups());
+      Assert.assertEqualsNoOrder(expected.toArray(new String[0]), test1.getGroups());
     }
   }
 
@@ -48,8 +48,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      Assert.assertEqualsNoOrder(
-          expected.toArray(new String[expected.size()]), test1.getDependsOnGroups());
+      Assert.assertEqualsNoOrder(expected.toArray(new String[0]), test1.getDependsOnGroups());
     }
   }
 
@@ -63,8 +62,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      Assert.assertEqualsNoOrder(
-          expected.toArray(new String[expected.size()]), test1.getDependsOnMethods());
+      Assert.assertEqualsNoOrder(expected.toArray(new String[0]), test1.getDependsOnMethods());
     }
   }
 

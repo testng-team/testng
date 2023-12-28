@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.testng.ITestResult;
 
+@SuppressWarnings("unused")
 public class XMLReporterConfig implements IReporterConfig {
 
   public static final String TAG_TEST = "test";
@@ -96,7 +97,7 @@ public class XMLReporterConfig implements IReporterConfig {
   /** Stack trace output method for the failed tests using one of the STACKTRACE_* constants. */
   private StackTraceLevels stackTraceOutputMethod = StackTraceLevels.FULL;
 
-  private StackTraceLevels stackTraceOutputLevel =
+  private final StackTraceLevels stackTraceOutputLevel =
       StackTraceLevels.parse(RuntimeBehavior.getDefaultStacktraceLevels());
 
   /**
@@ -230,7 +231,7 @@ public class XMLReporterConfig implements IReporterConfig {
       this.level = level;
     }
 
-    private int level;
+    private final int level;
 
     public int getLevel() {
       return level;

@@ -23,7 +23,7 @@ public class XMLReporter extends AbstractXmlReporter {
     }
 
     XMLStringBuffer rootBuffer = new XMLStringBuffer();
-    Properties p = writeSummaryCount(count, rootBuffer);
+    Properties p = writeSummaryCount(count);
     rootBuffer.push(XMLReporterConfig.TAG_TESTNG_RESULTS, p);
     writeReporterOutput(rootBuffer);
     for (ISuite suite : suites) {

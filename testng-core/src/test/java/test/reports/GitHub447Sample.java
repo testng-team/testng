@@ -17,17 +17,15 @@ public class GitHub447Sample {
   }
 
   @DataProvider(name = "add")
-  protected static final Object[][] addTestData() {
+  protected static Object[][] addTestData() {
     List<Object> list = new ArrayList<>(5);
 
-    Object[][] testData =
-        new Object[][] {
-          {list, null, "[null]"},
-          {list, "dup", "[null, dup]"},
-          {list, "dup", "[null, dup, dup]"},
-          {list, "str", "[null, dup, dup, str]"},
-          {list, null, "[null, dup, dup, str, null]"},
-        };
-    return testData;
+    return new Object[][] {
+      {list, null, "[null]"},
+      {list, "dup", "[null, dup]"},
+      {list, "dup", "[null, dup, dup]"},
+      {list, "str", "[null, dup, dup, str]"},
+      {list, null, "[null, dup, dup, str, null]"},
+    };
   }
 }

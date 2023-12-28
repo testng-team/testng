@@ -54,9 +54,4 @@ class FilteredParameters implements Iterator<Object[]> {
     index++;
     return next;
   }
-
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException("remove");
-  }
 }

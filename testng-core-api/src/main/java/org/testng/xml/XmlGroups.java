@@ -36,10 +36,6 @@ public class XmlGroups {
     return m_dependencies;
   }
 
-  //  public void setDependencies(List<XmlDependencies> dependencies) {
-  //    m_dependencies = dependencies;
-  //  }
-
   public void setXmlDependencies(XmlDependencies dependencies) {
     m_dependencies.add(dependencies);
   }

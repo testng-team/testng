@@ -18,8 +18,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.annotations.*;
-import org.testng.annotations.IDataProviderAnnotation;
-import org.testng.annotations.IParametersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;

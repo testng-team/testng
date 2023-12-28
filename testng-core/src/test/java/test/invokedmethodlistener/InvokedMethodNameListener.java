@@ -14,9 +14,6 @@ public class InvokedMethodNameListener implements IInvokedMethodListener {
   final Set<String> configurationMethodsFromTM = new HashSet<>();
 
   @Override
-  public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
-
-  @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
     String methodName = method.getTestMethod().getMethodName();
 

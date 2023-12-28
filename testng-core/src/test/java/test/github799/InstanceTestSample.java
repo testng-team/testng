@@ -7,8 +7,8 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class InstanceTestSample {
-  private String name;
-  private int age;
+  private final String name;
+  private final int age;
 
   @Factory(dataProvider = "dp")
   public InstanceTestSample(String name, int age) {

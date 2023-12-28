@@ -9,10 +9,4 @@ public class DummyListenerFactory implements ITestNGListenerFactory, IExecutionL
   public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
     return this;
   }
-
-  @Override
-  public void onExecutionStart() {}
-
-  @Override
-  public void onExecutionFinish() {}
 }

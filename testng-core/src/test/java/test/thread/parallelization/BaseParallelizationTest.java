@@ -474,7 +474,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 + "have the same "
                 + threadCount
                 + " thread IDs: "
-                + allThreadIds.toString());
+                + allThreadIds);
         assertTrue(
             methodsExecuting.size() < threadCount,
             "The current event log is a test method start "

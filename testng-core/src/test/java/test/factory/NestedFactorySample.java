@@ -11,7 +11,7 @@ public class NestedFactorySample {
   private final int m_capacity;
   private final float m_loadFactor;
 
-  public class NestedFactory {
+  public static class NestedFactory {
     @Factory
     public Object[] createInstances() {
       return new NestedFactorySample[] {

@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -151,8 +152,12 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   private static boolean excludeFactory(FactoryMethod fm, ITestContext ctx) {
+    // Use the containsAll() implementation of a HashSet so that it delegates the call to
+    // underlying HashMap which is more efficient than the one defined in Collection.
+    // Please refer to https://stackoverflow.com/a/39575190 for more information.
     return fm.getGroups().length != 0
-        && ctx.getCurrentXmlTest().getExcludedGroups().containsAll(Arrays.asList(fm.getGroups()));
+        && new HashSet<>(ctx.getCurrentXmlTest().getExcludedGroups())
+            .containsAll(Arrays.asList(fm.getGroups()));
   }
 
   private ClassInfoMap processFactory(IClass ic, ConstructorOrMethod factoryMethod) {

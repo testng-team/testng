@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
 public class ConfigurationGroups7SampleTest {
-  private List<String> m_log = new ArrayList<>();
+  private final List<String> m_log = new ArrayList<>();
 
   @BeforeGroups({"A"})
   private void initA() {

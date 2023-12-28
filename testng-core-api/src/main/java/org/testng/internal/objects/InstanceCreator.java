@@ -2,6 +2,7 @@ package org.testng.internal.objects;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 import org.testng.TestNGException;
 import org.testng.internal.ClassHelper;
 
@@ -16,6 +17,7 @@ public final class InstanceCreator {
 
   public static <T> T newInstance(String className, Object... parameters) {
     Class<?> clazz = ClassHelper.forName(className);
+    Objects.requireNonNull(clazz, "Could not find a valid class");
     return (T) newInstance(clazz, parameters);
   }
 

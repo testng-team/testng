@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.testng.annotations.Test;
 
 public class Github1636Sample {
-  private static Map<Long, Boolean> map = new ConcurrentHashMap<>();
+  private static final Map<Long, Boolean> map = new ConcurrentHashMap<>();
   static Set<Long> threads = Collections.newSetFromMap(map);
 
   @Test

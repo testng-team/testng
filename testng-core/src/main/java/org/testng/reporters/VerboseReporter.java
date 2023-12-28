@@ -2,6 +2,7 @@ package org.testng.reporters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
@@ -29,16 +30,11 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
   private final String prefix;
 
   private enum Status {
-    SUCCESS(ITestResult.SUCCESS),
-    FAILURE(ITestResult.FAILURE),
-    SKIP(ITestResult.SKIP),
-    SUCCESS_PERCENTAGE_FAILURE(ITestResult.SUCCESS_PERCENTAGE_FAILURE),
-    STARTED(ITestResult.STARTED);
-    private int status;
-
-    Status(int i) {
-      status = i;
-    }
+    SUCCESS,
+    FAILURE,
+    SKIP,
+    SUCCESS_PERCENTAGE_FAILURE,
+    STARTED;
   }
 
   /**
@@ -210,9 +206,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
       sb.append(" ms");
       if (!Utils.isStringEmpty(tm.getDescription())) {
         sb.append("\n");
-        for (int i = 0; i < identLevel; i++) {
-          sb.append(" ");
-        }
+        sb.append(" ".repeat(Math.max(0, identLevel)));
         sb.append(tm.getDescription());
       }
       if (tm.getInvocationCount() > 1) {
@@ -264,11 +258,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     // perhaps should rather adopt the original method instead
     StringBuilder buf = new StringBuilder();
     buf.append("\"");
-    if (suiteName != null) {
-      buf.append(suiteName);
-    } else {
-      buf.append("UNKNOWN");
-    }
+    buf.append(Optional.ofNullable(suiteName).orElse("UNKNOWN"));
     buf.append("\"");
     buf.append(" - ");
     String tempName = Utils.annotationFormFor(method);

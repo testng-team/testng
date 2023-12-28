@@ -13,7 +13,7 @@ public class CustomAttributesTransformer implements IAnnotationTransformer {
   public void transform(
       ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {
     CustomAttribute[] attributes =
-        new CustomAttribute[] {new MoreAttribute("sorrow", new String[] {"Coffee", "Tea"})};
+        new CustomAttribute[] {new MoreAttribute("sorrow", "Coffee", "Tea")};
     annotation.setAttributes(attributes);
   }
 

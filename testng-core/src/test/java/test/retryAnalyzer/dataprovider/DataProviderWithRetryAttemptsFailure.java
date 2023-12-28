@@ -1,12 +1,11 @@
 package test.retryAnalyzer.dataprovider;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DataProviderWithRetryAttemptsFailure {
-  private static int countWithObjectAndStringArrayForFailure = 3;
-
   @DataProvider(name = "getObjectData")
   public Object[][] getObjectData() {
     return new Object[][] {new Object[] {false, "abc1", "cdf1"}};
@@ -19,7 +18,7 @@ public class DataProviderWithRetryAttemptsFailure {
         flag,
         "Test execution is not"
             + "successful after 3 retry attempts configured in retryAnalyzer for this data "
-            + values
+            + Arrays.toString(values)
             + "with boolean flag as "
             + flag);
   }

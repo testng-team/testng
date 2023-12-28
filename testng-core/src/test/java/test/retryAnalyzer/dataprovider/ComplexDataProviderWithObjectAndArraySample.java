@@ -1,5 +1,6 @@
 package test.retryAnalyzer.dataprovider;
 
+import java.util.Arrays;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -16,11 +17,12 @@ public class ComplexDataProviderWithObjectAndArraySample {
   // attempts
   @Test(dataProvider = "getObjectData", retryAnalyzer = DataProviderRetryAnalyzer.class)
   public void test(boolean flag, String... values) {
-    Assert.assertTrue(
-        countWithObjectAndStringArrayForSuccess-- == 0,
+    Assert.assertEquals(
+        countWithObjectAndStringArrayForSuccess--,
+        0,
         "Test execution is not"
             + "successful after 3 retry attempts configured in retryAnalyzer for this data "
-            + values
+            + Arrays.toString(values)
             + "with boolean flag as "
             + flag);
   }

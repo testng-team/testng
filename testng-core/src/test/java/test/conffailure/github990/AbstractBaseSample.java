@@ -7,7 +7,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public abstract class AbstractBaseSample {
-  public static List<String> messages = new ArrayList<>();
+  public static final List<String> messages = new ArrayList<>();
 
   @BeforeTest
   protected void setup() {
