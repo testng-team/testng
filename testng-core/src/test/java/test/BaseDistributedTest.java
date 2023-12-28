@@ -19,16 +19,14 @@ public class BaseDistributedTest {
     Assert.assertEquals(
         found.size(), expected.size(), "Verification for " + title + " tests failed:");
 
-    for (Object o : expected.values()) {
-      String name = (String) o;
-      if (null == found.get(name)) {
+    for (String o : expected.values()) {
+      if (null == found.get(o)) {
         dumpMap("Expected", expected);
         dumpMap("Found", found);
       }
 
       Assert.assertNotNull(
-          found.get(name),
-          "Expected to find method " + name + " in " + title + " but didn't find it.");
+          found.get(o), "Expected to find method " + o + " in " + title + " but didn't find it.");
     }
   }
 

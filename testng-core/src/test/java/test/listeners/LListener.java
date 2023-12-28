@@ -11,7 +11,4 @@ public class LListener implements IInvokedMethodListener {
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
     invoked = true;
   }
-
-  @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
 }

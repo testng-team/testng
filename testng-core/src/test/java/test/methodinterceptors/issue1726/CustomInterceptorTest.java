@@ -40,9 +40,6 @@ public class CustomInterceptorTest extends SimpleBaseTest {
     static List<String> ordered = new ArrayList<>();
 
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
-
-    @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
       String clazz = method.getTestMethod().getRealClass().getSimpleName() + ".";
       ordered.add(clazz + method.getTestMethod().getMethodName());

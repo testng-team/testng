@@ -8,7 +8,7 @@ public abstract class Base {
     return new Object[] {new Inner()};
   }
 
-  public class Inner {
+  public static class Inner {
     @Factory
     public Object[] createTests() {
       return new Object[0];

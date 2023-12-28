@@ -22,7 +22,7 @@ public class DataProviderParametersMismatchTest extends SimpleBaseTest {
       System.setErr(stream);
       TestNG tng = create(GitHub128Sample.class);
       tng.run();
-      String msg = new String(out.toByteArray(), StandardCharsets.UTF_8);
+      String msg = out.toString(StandardCharsets.UTF_8);
       boolean contains =
           msg.contains(
               "Missing one or more parameters that are being injected by the data provider. Please add the below arguments to the method.");

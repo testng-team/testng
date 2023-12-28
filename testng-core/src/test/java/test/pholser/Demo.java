@@ -31,15 +31,14 @@ public class Demo {
 
   @AfterClass
   public void tearDownFixture() {
-    final List<String> expected =
-        Arrays.asList(new String[] {"Demo.setUpFixture", "Demo.setUp", "Demo.tearDown"});
+    final List<String> expected = Arrays.asList("Demo.setUpFixture", "Demo.setUp", "Demo.tearDown");
     final List<String> actual = Captor.instance().captives();
     verify(expected, actual);
   }
 
   @Test
   public void go() {
-    final List<String> expected = Arrays.asList(new String[] {"Demo.setUpFixture", "Demo.setUp"});
+    final List<String> expected = Arrays.asList("Demo.setUpFixture", "Demo.setUp");
     final List<String> actual = Captor.instance().captives();
     verify(expected, actual);
   }
@@ -52,9 +51,9 @@ public class Demo {
   }
 
   private String dumpList(List<String> list) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     for (String l : list) {
-      result.append(" " + l);
+      result.append(" ").append(l);
     }
 
     return result.toString();

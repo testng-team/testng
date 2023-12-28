@@ -16,9 +16,6 @@ public class SkipDataProviderListener implements ITestListener, IDataProviderLis
   }
 
   @Override
-  public void onTestSkipped(ITestResult result) {}
-
-  @Override
   public void beforeDataProviderExecution(
       IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
     skipIfSkipMe(method);

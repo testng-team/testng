@@ -1,8 +1,6 @@
 package test.tmp;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -15,11 +13,11 @@ import org.testng.annotations.Test;
 public class DataDrivenTest {
 
   @DataProvider(name = "provider")
-  public Object[][] createData() throws FileNotFoundException, IOException {
+  public Object[][] createData() throws IOException {
     Properties p = new Properties();
     List<Object> vResult = new ArrayList<>();
-    p.load(new FileInputStream(new File("c:/t/data.properties")));
-    for (Enumeration e = p.keys(); e.hasMoreElements(); ) {
+    p.load(new FileInputStream("c:/t/data.properties"));
+    for (Enumeration<Object> e = p.keys(); e.hasMoreElements(); ) {
       vResult.add(e.nextElement());
     }
 

@@ -21,13 +21,13 @@ public class InjectDataProviderTest {
     };
   }
 
-  @Test(dataProvider = "dp1", enabled = true)
+  @Test(dataProvider = "dp1")
   public void dpObject1(Integer n, ITestContext ctx, String a) {}
 
-  @Test(dataProvider = "dp1", enabled = true)
+  @Test(dataProvider = "dp1")
   public void dpObject2(ITestContext ctx, Integer n, String a) {}
 
-  @Test(dataProvider = "dp1", enabled = true)
+  @Test(dataProvider = "dp1")
   public void dpObject3(Integer n, String a, ITestContext ctx) {}
 
   @DataProvider

@@ -12,10 +12,9 @@ import org.testng.annotations.Test;
  * get invoked.
  *
  * @author cbeust
- * @date Mar 9, 2006
  */
 public class ConfigurationGroups8SampleTest {
-  private List<String> m_log = new ArrayList<>();
+  private final List<String> m_log = new ArrayList<>();
 
   @Test
   public void dummy() {

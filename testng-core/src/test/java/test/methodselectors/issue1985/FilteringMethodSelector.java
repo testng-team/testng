@@ -10,7 +10,7 @@ public class FilteringMethodSelector implements IMethodSelector {
 
   private static final String ALL = "all";
   public static final String GROUP = "group";
-  private String whichGroup;
+  private final String whichGroup;
 
   public FilteringMethodSelector() {
     whichGroup = System.getProperty(GROUP, ALL);

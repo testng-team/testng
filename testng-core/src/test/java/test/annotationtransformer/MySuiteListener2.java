@@ -11,7 +11,4 @@ public class MySuiteListener2 implements ISuiteListener {
   public void onStart(ISuite suite) {
     triggered = true;
   }
-
-  @Override
-  public void onFinish(ISuite suite) {}
 }

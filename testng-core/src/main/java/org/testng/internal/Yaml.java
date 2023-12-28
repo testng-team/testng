@@ -79,7 +79,7 @@ public final class Yaml {
 
   private static void maybeAdd(StringBuilder sb, String sp, String key, Object value, Object def) {
     if (value != null && !value.equals(def)) {
-      sb.append(sp).append(key).append(": ").append(value.toString()).append("\n");
+      sb.append(sp).append(key).append(": ").append(value).append("\n");
     }
   }
 

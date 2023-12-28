@@ -9,7 +9,7 @@ import org.testng.ITestContext;
 import org.testng.reporters.JUnitXMLReporter;
 
 public class LocalJUnitXMLReporter extends JUnitXMLReporter implements TestsuiteRetriever {
-  private List<Testsuite> testsuites = new ArrayList<>();
+  private final List<Testsuite> testsuites = new ArrayList<>();
 
   protected void generateReport(ITestContext context) {
     super.generateReport(context);

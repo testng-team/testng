@@ -72,11 +72,11 @@ public final class Utils {
       final File outDir =
           (outputDir != null) ? new File(outputDir) : new File("").getAbsoluteFile();
       if (!outDir.exists()) {
-        outDir.mkdirs();
+        boolean ignored = outDir.mkdirs();
       }
       final File file = new File(outDir, fileName);
       if (!file.exists()) {
-        file.createNewFile();
+        boolean ignored = file.createNewFile();
       }
       try (final OutputStreamWriter w =
           new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
@@ -138,12 +138,12 @@ public final class Utils {
         outDir = new File("").getAbsoluteFile();
       }
       if (!outDir.exists()) {
-        outDir.mkdirs();
+        boolean ignored = outDir.mkdirs();
       }
 
       fileName = replaceSpecialCharacters(fileName);
       File outputFile = new File(outDir, fileName);
-      outputFile.delete();
+      boolean ignored = outputFile.delete();
       log(FORMAT, 3, "Attempting to create " + outputFile);
       log(FORMAT, 3, "  Directory " + outDir + " exists: " + outDir.exists());
       outputFile.createNewFile();
@@ -186,18 +186,18 @@ public final class Utils {
     String outDirPath = outputDir != null ? outputDir : "";
     File outDir = new File(outDirPath);
     if (!outDir.exists()) {
-      outDir.mkdirs();
+      boolean ignored = outDir.mkdirs();
     }
     fileName = replaceSpecialCharacters(fileName);
     File outputFile = new File(outDir, fileName);
-    outputFile.delete();
+    boolean ignored = outputFile.delete();
     return openWriter(outputFile, null);
   }
 
   private static BufferedWriter openWriter(File outputFile, @Nullable String encoding)
       throws IOException {
     if (!outputFile.exists()) {
-      outputFile.createNewFile();
+      boolean ignored = outputFile.createNewFile();
     }
     OutputStreamWriter osw;
     if (null != encoding) {
@@ -227,7 +227,7 @@ public final class Utils {
   public static void log(String cls, int level, String msg) {
     // Why this coupling on a static member of getVerbose()?
     if (getVerbose() >= level) {
-      if (cls.length() > 0) {
+      if (!cls.isEmpty()) {
         LOG.info("[" + cls + "] " + msg);
       } else {
         LOG.info(msg);
@@ -245,7 +245,7 @@ public final class Utils {
 
   /* Tokenize the string using the separator. */
   public static String[] split(String string, String sep) {
-    if ((string == null) || (string.length() == 0)) {
+    if (string == null || string.isEmpty()) {
       return new String[0];
     }
 
@@ -275,7 +275,7 @@ public final class Utils {
       LOG.error("Couldn't find resource on the class path: " + resourceName);
       return;
     }
-    try {
+    try (inputStream) {
       try (FileOutputStream outputStream = new FileOutputStream(file)) {
         int nread;
         byte[] buffer = new byte[4096];
@@ -283,8 +283,6 @@ public final class Utils {
           outputStream.write(buffer, 0, nread);
         }
       }
-    } finally {
-      inputStream.close();
     }
   }
 
@@ -293,11 +291,11 @@ public final class Utils {
   }
 
   public static boolean isStringBlank(String s) {
-    return s == null || "".equals(s.trim());
+    return s == null || s.trim().isEmpty();
   }
 
   public static boolean isStringEmpty(String s) {
-    return s == null || "".equals(s);
+    return s == null || s.isEmpty();
   }
 
   public static boolean isStringNotBlank(String s) {
@@ -526,7 +524,7 @@ public final class Utils {
    */
   public static String replaceSpecialCharacters(String fileNameParameter) {
     String fileName = fileNameParameter;
-    if (fileName == null || fileName.length() == 0) {
+    if (fileName == null || fileName.isEmpty()) {
       return fileName;
     }
     for (char element : SPECIAL_CHARACTERS) {

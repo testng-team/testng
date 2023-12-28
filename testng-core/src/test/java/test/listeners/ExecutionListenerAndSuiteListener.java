@@ -16,15 +16,9 @@ public class ExecutionListenerAndSuiteListener implements ISuiteListener, IExecu
   }
 
   @Override
-  public void onExecutionFinish() {}
-
-  @Override
   public void onStart(ISuite suite) {
     tmp = testString.toUpperCase(Locale.ROOT);
   }
-
-  @Override
-  public void onFinish(ISuite suite) {}
 
   public static String getTmpString() {
     return tmp;

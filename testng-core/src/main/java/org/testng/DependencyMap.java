@@ -97,7 +97,8 @@ public class DependencyMap {
 
   private static boolean belongToDifferentClassHierarchy(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    return !baseClassMethod.getRealClass().isAssignableFrom(derivedClassMethod.getRealClass());
+    Class<?> clazz = baseClassMethod.getRealClass();
+    return !clazz.isAssignableFrom(derivedClassMethod.getRealClass());
   }
 
   private static boolean hasInstance(

@@ -7,12 +7,10 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 public class GroupByInstancesSampleTest {
-  private String m_country;
+  private final String m_country;
   public static List<String> m_log = Lists.newArrayList();
 
   private static void log(String method, String country) {
-    //    System.out.println("LOG:" + method + "#" + country + " " +
-    // Thread.currentThread().getId());
     m_log.add(method + "#" + country);
   }
 

@@ -14,7 +14,7 @@ import org.testng.collections.Lists;
  */
 public class InstanceSkipSampleTest {
 
-  private int m_n;
+  private final int m_n;
   public static List<String> m_list = Lists.newArrayList();
 
   @Factory(dataProvider = "dp")

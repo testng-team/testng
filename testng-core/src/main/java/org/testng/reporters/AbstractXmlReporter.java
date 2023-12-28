@@ -70,7 +70,7 @@ public abstract class AbstractXmlReporter implements IReporter, ICustomizeXmlRep
     XMLStringBuffer xmlBuffer = new XMLStringBuffer();
     writeSuiteToBuffer(xmlBuffer, suite);
     File parentDir = suiteFile.getParentFile();
-    suiteFile.getParentFile().mkdirs();
+    boolean ignored = suiteFile.getParentFile().mkdirs();
     if (parentDir.exists() || suiteFile.getParentFile().exists()) {
       Utils.writeUtf8File(parentDir.getAbsolutePath(), fileName(), xmlBuffer.toXML());
     }
@@ -166,7 +166,7 @@ public abstract class AbstractXmlReporter implements IReporter, ICustomizeXmlRep
     attributes.setProperty(XMLReporterConfig.ATTR_DURATION_MS, Long.toString(duration));
   }
 
-  protected final Properties writeSummaryCount(Count count, XMLStringBuffer rootBuffer) {
+  protected final Properties writeSummaryCount(Count count) {
     Properties p = new Properties();
     p.put("passed", count.passed);
     p.put("failed", count.failed);
@@ -200,7 +200,8 @@ public abstract class AbstractXmlReporter implements IReporter, ICustomizeXmlRep
       }
       skipped += skippedPerTest;
       retried += retriedPerTest;
-      ignored += testContext.getExcludedMethods().stream().filter(ITestNGMethod::isTest).count();
+      ignored +=
+          (int) testContext.getExcludedMethods().stream().filter(ITestNGMethod::isTest).count();
     }
     return Count.Builder.builder()
         .withPassed(passed)

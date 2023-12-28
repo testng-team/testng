@@ -707,10 +707,6 @@ public class XmlSuite implements Cloneable {
     result =
         prime * result + ((m_objectFactoryClass == null) ? 0 : m_objectFactoryClass.hashCode());
     result = prime * result + ((m_parallel == null) ? 0 : m_parallel.hashCode());
-    //    result = prime * result
-    //        + ((m_parameters == null) ? 0 : m_parameters.hashCode());
-    //      result = prime * result
-    //          + ((m_parentSuite == null) ? 0 : m_parentSuite.hashCode());
     result =
         prime * result
             + ((m_skipFailedInvocationCounts == null)
@@ -743,11 +739,6 @@ public class XmlSuite implements Cloneable {
       return f();
     }
     XmlSuite other = (XmlSuite) obj;
-    //      if (m_childSuites == null) {
-    //        if (other.m_childSuites != null)
-    //          return f();
-    //      } else if (!m_childSuites.equals(other.m_childSuites))
-    //        return f();
     if (m_configFailurePolicy == null) {
       if (other.m_configFailurePolicy != null) {
         return f();
@@ -800,18 +791,7 @@ public class XmlSuite implements Cloneable {
     } else if (!m_parallel.equals(other.m_parallel)) {
       return f();
     }
-    //    if (m_parameters == null) {
-    //      if (other.m_parameters != null) {
-    //        return f();
-    //      }
-    //    } else if (!m_parameters.equals(other.m_parameters)) {
-    //      return f();
-    //    }
-    //      if (m_parentSuite == null) {
-    //        if (other.m_parentSuite != null)
-    //          return f();
-    //      } else if (!m_parentSuite.equals(other.m_parentSuite))
-    //        return f();
+
     if (m_skipFailedInvocationCounts == null) {
       if (other.m_skipFailedInvocationCounts != null) return f();
     } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts)) return f();

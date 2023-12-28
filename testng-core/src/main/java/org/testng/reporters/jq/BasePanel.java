@@ -10,7 +10,7 @@ public abstract class BasePanel implements IPanel {
   public static final String B = "button";
   public static final String I = "id";
 
-  private Model m_model;
+  private final Model m_model;
 
   public BasePanel(Model model) {
     m_model = model;
@@ -25,7 +25,7 @@ public abstract class BasePanel implements IPanel {
   }
 
   protected static String pluralize(int count, String singular) {
-    return Integer.toString(count)
+    return count
         + " "
         + (count == 0 || count > 1
             ? (singular.endsWith("s") ? singular + "es" : singular + "s")

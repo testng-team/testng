@@ -42,18 +42,6 @@ public class ConfigMethodArguments extends MethodArguments {
     return suite;
   }
 
-  public Map<String, String> getParameters() {
-    return params;
-  }
-
-  public Object[] getParameterValues() {
-    return parameterValues;
-  }
-
-  public Object getInstance() {
-    return instance;
-  }
-
   public ITestResult getTestMethodResult() {
     return testMethodResult;
   }

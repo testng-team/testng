@@ -24,7 +24,7 @@ public class DotTestListener implements ITestListener {
   private void log(String string) {
     System.out.print(string);
     if (m_count++ % 40 == 0) {
-      System.out.println("");
+      System.out.println();
     }
   }
 }

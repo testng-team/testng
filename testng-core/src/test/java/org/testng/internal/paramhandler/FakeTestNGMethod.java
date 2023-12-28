@@ -18,8 +18,8 @@ import org.testng.xml.XmlTest;
 
 public class FakeTestNGMethod implements ITestNGMethod {
   private final ConstructorOrMethod consMethod;
-  private Class<?> clazz;
-  private XmlTest xmlTest;
+  private final Class<?> clazz;
+  private final XmlTest xmlTest;
 
   public FakeTestNGMethod(Class<?> clazz, String methodName) {
     this(clazz, methodName, null);

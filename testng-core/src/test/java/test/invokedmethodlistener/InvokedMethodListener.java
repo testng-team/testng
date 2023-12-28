@@ -15,9 +15,6 @@ public class InvokedMethodListener implements IInvokedMethodListener {
     m_methods.add(method);
   }
 
-  @Override
-  public void afterInvocation(IInvokedMethod method, ITestResult testResult) {}
-
   public List<IInvokedMethod> getInvokedMethods() {
     return m_methods;
   }

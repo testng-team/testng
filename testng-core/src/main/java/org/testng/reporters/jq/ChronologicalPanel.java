@@ -1,7 +1,5 @@
 package org.testng.reporters.jq;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.ISuite;
@@ -30,40 +28,15 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
     XMLStringBuffer xsb = new XMLStringBuffer(main.getCurrentIndent());
     List<IInvokedMethod> invokedMethods = suite.getAllInvokedMethods();
 
-    Collections.sort(
-        invokedMethods,
-        new Comparator<IInvokedMethod>() {
-          @Override
-          public int compare(IInvokedMethod arg0, IInvokedMethod arg1) {
-            return (int)
-                (arg0.getTestResult().getStartMillis() - arg1.getTestResult().getStartMillis());
-          }
-        });
+    invokedMethods.sort(
+        (m1, m2) ->
+            (int) (m1.getTestResult().getStartMillis() - m2.getTestResult().getStartMillis()));
 
     String currentClass = "";
     long start = 0;
     for (IInvokedMethod im : invokedMethods) {
       ITestNGMethod m = im.getTestMethod();
-      //      for (ITestResult tr : results) {
-      //        ITestNGMethod m = tr.getMethod();
-      String cls = "test-method";
-      if (m.isBeforeSuiteConfiguration()) {
-        cls = "configuration-suite before";
-      } else if (m.isAfterSuiteConfiguration()) {
-        cls = "configuration-suite after";
-      } else if (m.isBeforeTestConfiguration()) {
-        cls = "configuration-test before";
-      } else if (m.isAfterTestConfiguration()) {
-        cls = "configuration-test after";
-      } else if (m.isBeforeClassConfiguration()) {
-        cls = "configuration-class before";
-      } else if (m.isAfterClassConfiguration()) {
-        cls = "configuration-class after";
-      } else if (m.isBeforeMethodConfiguration()) {
-        cls = "configuration-method before";
-      } else if (m.isAfterMethodConfiguration()) {
-        cls = "configuration-method after";
-      }
+      String cls = extractMethodType(m);
       ITestResult tr = im.getTestResult();
       String methodName = Model.getTestResultName(tr);
 
@@ -88,10 +61,32 @@ public class ChronologicalPanel extends BaseMultiSuitePanel {
       if (start == 0) {
         start = tr.getStartMillis();
       }
-      xsb.addRequired(S, Long.toString(tr.getStartMillis() - start) + " ms", C, "method-start");
+      xsb.addRequired(S, tr.getStartMillis() - start + " ms", C, "method-start");
       xsb.pop(D);
     }
     return xsb.toXML();
+  }
+
+  private static String extractMethodType(ITestNGMethod m) {
+    String cls = "test-method";
+    if (m.isBeforeSuiteConfiguration()) {
+      cls = "configuration-suite before";
+    } else if (m.isAfterSuiteConfiguration()) {
+      cls = "configuration-suite after";
+    } else if (m.isBeforeTestConfiguration()) {
+      cls = "configuration-test before";
+    } else if (m.isAfterTestConfiguration()) {
+      cls = "configuration-test after";
+    } else if (m.isBeforeClassConfiguration()) {
+      cls = "configuration-class before";
+    } else if (m.isAfterClassConfiguration()) {
+      cls = "configuration-class after";
+    } else if (m.isBeforeMethodConfiguration()) {
+      cls = "configuration-method before";
+    } else if (m.isAfterMethodConfiguration()) {
+      cls = "configuration-method after";
+    }
+    return cls;
   }
 
   @Override

@@ -5,7 +5,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class DataProviderWithFactoryFailedReporterSample {
-  private Integer data;
+  private final Integer data;
 
   @Factory(dataProvider = "dp")
   public DataProviderWithFactoryFailedReporterSample(Integer data) {

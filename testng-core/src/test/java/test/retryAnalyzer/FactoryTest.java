@@ -10,7 +10,7 @@ public class FactoryTest implements ITest {
   private static final Logger log = Logger.getLogger(FactoryTest.class);
   public static int m_count = 0;
 
-  private String name;
+  private final String name;
 
   public FactoryTest(String name) {
     this.name = name;

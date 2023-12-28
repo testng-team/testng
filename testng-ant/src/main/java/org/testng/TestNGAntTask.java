@@ -678,20 +678,12 @@ public class TestNGAntTask extends Task {
   }
 
   private void addXmlFiles(List<String> argv) {
-    for (String file : getSuiteFileNames()) {
-      argv.add(file);
-    }
+    argv.addAll(getSuiteFileNames());
   }
 
   /** @return the list of the XML file names. This method can be overridden by subclasses. */
   protected List<String> getSuiteFileNames() {
-    List<String> result = Lists.newArrayList();
-
-    for (String file : getFiles(m_xmlFilesets)) {
-      result.add(file);
-    }
-
-    return result;
+    return Lists.newArrayList(getFiles(m_xmlFilesets));
   }
 
   private void delegateCommandSystemProperties() {

@@ -5,8 +5,8 @@ import java.util.List;
 import org.testng.annotations.Test;
 
 public class FactoryTest2 {
-  private static List<Integer> numbers = new ArrayList<>();
-  private int number;
+  private static final List<Integer> numbers = new ArrayList<>();
+  private final int number;
 
   public FactoryTest2() {
     throw new RuntimeException("Shouldn't be invoked");

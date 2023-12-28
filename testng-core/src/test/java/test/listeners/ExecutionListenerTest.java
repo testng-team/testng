@@ -1,12 +1,11 @@
 package test.listeners;
 
-import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.IExecutionListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 public class ExecutionListenerTest extends SimpleBaseTest {
@@ -47,13 +46,13 @@ public class ExecutionListenerTest extends SimpleBaseTest {
 
   private void runTest(Class<?> listenerClass, boolean addListener, boolean expected) {
     XmlSuite s = createXmlSuite("ExecutionListener");
-    XmlTest t = createXmlTest(s, "Test", listenerClass.getName());
+    createXmlTest(s, "Test", listenerClass.getName());
 
     if (addListener) {
       s.addListener(ExecutionListener.class.getName());
     }
     TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(s));
+    tng.setXmlSuites(List.of(s));
     ExecutionListener.m_start = false;
     ExecutionListener.m_finish = false;
     tng.run();

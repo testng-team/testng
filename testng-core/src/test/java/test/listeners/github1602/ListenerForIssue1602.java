@@ -8,7 +8,7 @@ import org.testng.ITestResult;
 import org.testng.collections.Lists;
 
 public class ListenerForIssue1602 implements IInvokedMethodListener {
-  private List<String> logs = Collections.synchronizedList(Lists.newArrayList());
+  private final List<String> logs = Collections.synchronizedList(Lists.newArrayList());
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
@@ -48,6 +48,6 @@ public class ListenerForIssue1602 implements IInvokedMethodListener {
       case ITestResult.SUCCESS_PERCENTAGE_FAILURE:
         return "SUCCESS_PERCENTAGE_FAILURE";
     }
-    return " ??? " + String.valueOf(status);
+    return " ??? " + status;
   }
 }

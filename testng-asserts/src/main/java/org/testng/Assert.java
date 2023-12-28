@@ -1873,7 +1873,7 @@ public class Assert {
     if (actualCollection.size() != expectedCollection.size()) {
       failAssertNoEqual(
           "Iterators do not have the same size: "
-              + +actualCollection.size()
+              + actualCollection.size()
               + " != "
               + expectedCollection.size(),
           message);

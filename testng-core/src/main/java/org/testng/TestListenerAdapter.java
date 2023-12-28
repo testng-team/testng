@@ -69,9 +69,6 @@ public class TestListenerAdapter implements IResultListener2 {
     m_testContexts.add(testContext);
   }
 
-  @Override
-  public void onFinish(ITestContext testContext) {}
-
   /** @return Returns the failedButWithinSuccessPercentageTests. */
   public List<ITestResult> getFailedButWithinSuccessPercentageTests() {
     return new ArrayList<>(m_failedButWSPerTests);
@@ -118,9 +115,6 @@ public class TestListenerAdapter implements IResultListener2 {
     m_skippedTests = skippedTests;
   }
 
-  @Override
-  public void onTestStart(ITestResult result) {}
-
   public List<ITestContext> getTestContexts() {
     return new ArrayList<>(m_testContexts);
   }
@@ -138,9 +132,6 @@ public class TestListenerAdapter implements IResultListener2 {
   public List<ITestResult> getConfigurationSkips() {
     return new ArrayList<>(m_skippedConfs);
   }
-
-  @Override
-  public void beforeConfiguration(ITestResult tr) {}
 
   /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
   @Override

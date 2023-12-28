@@ -70,7 +70,7 @@ public class EmailableReporter2 implements IReporter {
   }
 
   protected PrintWriter createWriter(String outdir) throws IOException {
-    new File(outdir).mkdirs();
+    boolean ignored = new File(outdir).mkdirs();
     String jvmArg = RuntimeBehavior.getDefaultEmailableReport2Name();
     if (jvmArg != null && !jvmArg.trim().isEmpty()) {
       fileName = jvmArg;
@@ -320,8 +320,10 @@ public class EmailableReporter2 implements IReporter {
         int methodIndex = 0;
         for (MethodResult methodResult : classResult.getMethodResults()) {
           List<ITestResult> results = methodResult.getResults();
+          if (results.isEmpty()) {
+            throw new IllegalArgumentException("Should have found atleast 1 result");
+          }
           int resultsCount = results.size();
-          assert resultsCount > 0;
 
           ITestResult firstResult = results.iterator().next();
           String methodName = Utils.escapeHtml(firstResult.getMethod().getMethodName());
@@ -422,7 +424,9 @@ public class EmailableReporter2 implements IReporter {
       String className = classResult.getClassName();
       for (MethodResult methodResult : classResult.getMethodResults()) {
         List<ITestResult> results = methodResult.getResults();
-        assert !results.isEmpty();
+        if (results.isEmpty()) {
+          throw new IllegalStateException("There should have been at-least 1 test result");
+        }
 
         String label =
             Utils.escapeHtml(
@@ -452,7 +456,7 @@ public class EmailableReporter2 implements IReporter {
     boolean hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
     int parameterCount = (parameters == null ? 0 : parameters.length);
     hasRows = dumpParametersInfo("Parameter", result.getParameters());
-    dumpAttributesInfo("Attribute(s)", result.getMethod().getAttributes());
+    dumpAttributesInfo(result.getMethod().getAttributes());
 
     // Write reporter messages (if any)
     List<String> reporterMessages = Reporter.getOutput(result);
@@ -528,13 +532,13 @@ public class EmailableReporter2 implements IReporter {
     return true;
   }
 
-  private void dumpAttributesInfo(String prefix, CustomAttribute[] attributes) {
+  private void dumpAttributesInfo(CustomAttribute[] attributes) {
     int parameterCount = (attributes == null ? 0 : attributes.length);
     if (parameterCount == 0) {
       return;
     }
     writer.print("<tr class=\"param\">");
-    writer.print(String.format("<th colspan=3>%s</th>", prefix));
+    writer.print(String.format("<th colspan=3>%s</th>", "Attribute(s)"));
     writer.print("</tr>");
     writer.print("<tr class=\"param stripe\">");
     writer.print("<th>#</th><th>Name</th><th>Value(s)</th>");
@@ -552,7 +556,9 @@ public class EmailableReporter2 implements IReporter {
   protected void writeReporterMessages(List<String> reporterMessages) {
     writer.print("<div class=\"messages\">");
     Iterator<String> iterator = reporterMessages.iterator();
-    assert iterator.hasNext();
+    if (!iterator.hasNext()) {
+      throw new IllegalStateException("There should have been at-least 1 message.");
+    }
     if (Reporter.getEscapeHtml()) {
       writer.print(Utils.escapeHtml(iterator.next()));
     } else {
@@ -729,7 +735,9 @@ public class EmailableReporter2 implements IReporter {
         List<ITestResult> resultsList = Lists.newArrayList(results);
         resultsList.sort(RESULT_COMPARATOR);
         Iterator<ITestResult> resultsIterator = resultsList.iterator();
-        assert resultsIterator.hasNext();
+        if (!resultsIterator.hasNext()) {
+          throw new IllegalStateException("There should have been at-least 1 result");
+        }
 
         ITestResult result = resultsIterator.next();
         resultsPerMethod.add(result);
@@ -742,11 +750,12 @@ public class EmailableReporter2 implements IReporter {
           String className = result.getTestClass().getName();
           if (!previousClassName.equals(className)) {
             // Different class implies different method
-            assert !resultsPerMethod.isEmpty();
+            if (!resultsPerMethod.isEmpty()) {
+              throw new IllegalStateException("Results per method should NOT have been empty");
+            }
             resultsPerClass.add(new MethodResult(resultsPerMethod));
             resultsPerMethod = Lists.newArrayList();
 
-            assert !resultsPerClass.isEmpty();
             classResults.add(new ClassResult(previousClassName, resultsPerClass));
             resultsPerClass = Lists.newArrayList();
 
@@ -764,9 +773,10 @@ public class EmailableReporter2 implements IReporter {
           }
           resultsPerMethod.add(result);
         }
-        assert !resultsPerMethod.isEmpty();
+        if (!resultsPerMethod.isEmpty()) {
+          throw new IllegalStateException("Results per method should NOT have been empty");
+        }
         resultsPerClass.add(new MethodResult(resultsPerMethod));
-        assert !resultsPerClass.isEmpty();
         classResults.add(new ClassResult(previousClassName, resultsPerClass));
       }
       return classResults;

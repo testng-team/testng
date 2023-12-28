@@ -5,7 +5,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class FactoryTestClassSample {
-  private String text;
+  private final String text;
 
   @Factory(dataProvider = "getData")
   public FactoryTestClassSample(String text) {

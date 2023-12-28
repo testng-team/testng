@@ -10,7 +10,7 @@ import org.testng.collections.Maps;
 
 public class LocalListener implements IInvokedMethodListener {
 
-  private Map<String, List<String>> mapping = Maps.newHashMap();
+  private final Map<String, List<String>> mapping = Maps.newHashMap();
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

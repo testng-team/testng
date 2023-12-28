@@ -200,14 +200,14 @@ public class ReflectionRecipesTest {
     Assert.assertFalse(ReflectionRecipes.isOrImplementsInterface(ITestContext.class, clazz));
   }
 
-  private static interface T {
-    public void s0(TestContextJustForTesting testContext, int i, Boolean b);
+  private interface T {
+    void s0(TestContextJustForTesting testContext, int i, Boolean b);
 
-    public void s1(int i, ITestContext iTestContext, Boolean b);
+    void s1(int i, ITestContext iTestContext, Boolean b);
 
-    public void s2(int i, Boolean b, ITestContext iTestContext);
+    void s2(int i, Boolean b, ITestContext iTestContext);
 
-    public void s3(ITestContext iTestContext1, int i, Boolean b, ITestContext iTestContext2);
+    void s3(ITestContext iTestContext1, int i, Boolean b, ITestContext iTestContext2);
   }
 
   public abstract static class ExactMatchTest {
@@ -272,10 +272,10 @@ public class ReflectionRecipesTest {
 
     @Retention(RUNTIME)
     @Target({METHOD})
-    public static @interface Expectation {
-      public String expectationProvider();
+    public @interface Expectation {
+      String expectationProvider();
 
-      public int flag();
+      int flag();
     }
   }
 
@@ -352,10 +352,10 @@ public class ReflectionRecipesTest {
 
     @Retention(RUNTIME)
     @Target({METHOD})
-    public static @interface Expectation {
-      public String expectationProvider();
+    public @interface Expectation {
+      String expectationProvider();
 
-      public int flag();
+      int flag();
     }
   }
 }

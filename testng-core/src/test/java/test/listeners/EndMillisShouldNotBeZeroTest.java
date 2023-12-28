@@ -16,9 +16,6 @@ public class EndMillisShouldNotBeZeroTest {
   public static class MyInvokedMethodListener implements IInvokedMethodListener {
 
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {}
-
-    @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
       m_end = testResult.getEndMillis();
     }

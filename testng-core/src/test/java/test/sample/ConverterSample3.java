@@ -70,7 +70,7 @@ public class ConverterSample3 {
   }
 
   /** @testng.test */
-  public class TestInnerClass {
+  public static class TestInnerClass {
     public void bareInnerMethod() {
       // Empty body
     }

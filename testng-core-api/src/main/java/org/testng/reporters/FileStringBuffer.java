@@ -24,7 +24,7 @@ import org.testng.log4testng.Logger;
  * @since Nov 9, 2012
  */
 public class FileStringBuffer implements IBuffer {
-  private static int MAX = 100000;
+  private static final int MAX = 100000;
   private static final boolean VERBOSE = RuntimeBehavior.verboseMode();
   private static final Logger LOGGER = Logger.getLogger(FileStringBuffer.class);
 

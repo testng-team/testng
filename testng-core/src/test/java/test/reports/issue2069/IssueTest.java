@@ -15,12 +15,12 @@ import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
 
-  private PrintStream currentError = System.err;
+  private final PrintStream currentError = System.err;
   private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
   @BeforeMethod
   public void setup() throws UnsupportedEncodingException {
-    PrintStream ps = new PrintStream(baos, true, "UTF-8");
+    PrintStream ps = new PrintStream(baos, true, StandardCharsets.UTF_8);
     System.setErr(ps);
   }
 
@@ -38,7 +38,7 @@ public class IssueTest extends SimpleBaseTest {
     TestNG tng = create(xmlSuite);
     tng.setUseDefaultListeners(true);
     tng.run();
-    String data = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+    String data = baos.toString(StandardCharsets.UTF_8);
     assertThat(data).doesNotContain("NullPointerException");
   }
 }

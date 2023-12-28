@@ -10,14 +10,14 @@ import test.guice.issue2570.GuiceModule.DragonWarrior;
 @Guice(modules = GuiceModule.class)
 public class GuicePoweredConstructorInjectedRetryForDPTest implements IRetryAnalyzer {
 
-  private static AtomicInteger counter = new AtomicInteger(0);
+  private static final AtomicInteger counter = new AtomicInteger(0);
 
   public static int getCounter() {
     return counter.get();
   }
 
   @Inject
-  public GuicePoweredConstructorInjectedRetryForDPTest(@DragonWarrior String name) {
+  public GuicePoweredConstructorInjectedRetryForDPTest(@DragonWarrior String ignored) {
     counter.incrementAndGet();
   }
 

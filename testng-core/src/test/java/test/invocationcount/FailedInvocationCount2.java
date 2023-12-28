@@ -20,7 +20,7 @@ public class FailedInvocationCount2 {
     }
   }
 
-  @Test(invocationCount = 10, skipFailedInvocations = false)
+  @Test(invocationCount = 10)
   public void shouldNotSkipFromAnnotation() {
     if (m_count2++ > 3) {
       throw new RuntimeException();

@@ -1,6 +1,6 @@
 package test.jason;
 
-import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -20,7 +20,7 @@ public class MainTest extends SimpleBaseTest {
     c.getIncludedMethods().add(new XmlInclude("test1"));
     t.setPreserveOrder(true);
     TestNG tng = create();
-    tng.setXmlSuites(Arrays.asList(new XmlSuite[] {s}));
+    tng.setXmlSuites(List.of(s));
     Main.m_passed = false;
     tng.run();
     Assert.assertTrue(Main.m_passed);

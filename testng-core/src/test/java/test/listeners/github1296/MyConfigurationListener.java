@@ -9,7 +9,6 @@ import org.testng.IConfigurationListener;
 import org.testng.ITestResult;
 
 public class MyConfigurationListener implements IConfigurationListener {
-
   private static final Map<String, AtomicInteger> CALLS = new ConcurrentHashMap<>();
 
   public static void clearCalls() {
@@ -26,10 +25,4 @@ public class MyConfigurationListener implements IConfigurationListener {
     String xmlTestName = itr.getTestContext().getCurrentXmlTest().getName();
     CALLS.computeIfAbsent(xmlTestName, k -> new AtomicInteger()).incrementAndGet();
   }
-
-  @Override
-  public void onConfigurationFailure(ITestResult iTestResult) {}
-
-  @Override
-  public void onConfigurationSkip(ITestResult itr) {}
 }

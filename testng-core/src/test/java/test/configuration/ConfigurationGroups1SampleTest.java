@@ -1,7 +1,5 @@
 package test.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -10,7 +8,6 @@ import org.testng.annotations.Test;
  * Simple beforeGroups test: 1 before method and 2 test method
  *
  * @author cbeust
- * @date Mar 3, 2006
  */
 public class ConfigurationGroups1SampleTest {
   private boolean m_before = false;
@@ -32,15 +29,9 @@ public class ConfigurationGroups1SampleTest {
     m_f1 = true;
   }
 
-  private List<String> m_list = new ArrayList<>();
-
   @Test(dependsOnGroups = {"cg1-a", "cg1-1"})
   public void verify() {
     Assert.assertTrue(m_before);
     Assert.assertTrue(m_f1);
-  }
-
-  private void log(String s) {
-    m_list.add(s);
   }
 }

@@ -20,7 +20,7 @@ public class TestSample {
 
   @Test
   public void test2() {
-    Assert.assertTrue(false);
+    Assert.fail();
   }
 
   @Test
@@ -57,9 +57,6 @@ public class TestSample {
     }
 
     @Override
-    public void onTestStart(ITestResult result) {}
-
-    @Override
     public void onTestSuccess(ITestResult itr) {
       maps.put(itr.getMethod().getMethodName(), itr.getInstance());
     }
@@ -73,14 +70,5 @@ public class TestSample {
     public void onTestSkipped(ITestResult itr) {
       maps.put(itr.getMethod().getMethodName(), itr.getInstance());
     }
-
-    @Override
-    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {}
-
-    @Override
-    public void onStart(ITestContext context) {}
-
-    @Override
-    public void onFinish(ITestContext context) {}
   }
 }

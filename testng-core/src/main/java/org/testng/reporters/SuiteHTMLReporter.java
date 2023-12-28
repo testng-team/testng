@@ -511,7 +511,7 @@ public class SuiteHTMLReporter implements IReporter {
         for (ITestNGMethod tm : uniqueMethods.values()) {
           methodNames.append(tm.toString()).append("<br/>");
         }
-        sb.append("<td>").append(methodNames.toString()).append("</td></tr>\n");
+        sb.append("<td>").append(methodNames).append("</td></tr>\n");
       }
 
       sb.append("</table>\n");

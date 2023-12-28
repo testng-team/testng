@@ -11,7 +11,7 @@ import org.testng.collections.Lists;
 public class FactoryAnnotatedConstructorExample {
   static List<FactoryAnnotatedConstructorExample> objects = Lists.newArrayList();
 
-  private int data;
+  private final int data;
 
   @Factory(dataProvider = "dp")
   public FactoryAnnotatedConstructorExample(int data) {

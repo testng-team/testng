@@ -56,7 +56,7 @@ public class ExampleClassListener implements IInvokedMethodListener {
       }
     }
     if (builder.length() != 0) {
-      returnValue = "[" + builder.toString() + "]";
+      returnValue = "[" + builder + "]";
     }
     return returnValue;
   }

@@ -16,18 +16,18 @@ import org.testng.collections.SetMultiMap;
 import org.testng.internal.Utils;
 
 public class Model {
-  private ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
-  private List<ISuite> m_suites = null;
-  private Map<String, String> m_testTags = Maps.newHashMap();
-  private Map<ITestResult, String> m_testResultMap = Maps.newHashMap();
-  private Map<ISuite, ResultsByClass> m_failedResultsByClass = Maps.newHashMap();
-  private Map<ISuite, ResultsByClass> m_skippedResultsByClass = Maps.newHashMap();
-  private Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
-  private List<ITestResult> m_allFailedResults = Lists.newArrayList();
+  private final ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
+  private final List<ISuite> m_suites;
+  private final Map<String, String> m_testTags = Maps.newHashMap();
+  private final Map<ITestResult, String> m_testResultMap = Maps.newHashMap();
+  private final Map<ISuite, ResultsByClass> m_failedResultsByClass = Maps.newHashMap();
+  private final Map<ISuite, ResultsByClass> m_skippedResultsByClass = Maps.newHashMap();
+  private final Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
+  private final List<ITestResult> m_allFailedResults = Lists.newArrayList();
   // Each suite is mapped to failed.png, skipped.png or nothing (which means passed.png)
-  private Map<String, String> m_statusBySuiteName = Maps.newHashMap();
-  private SetMultiMap<String, String> m_groupsBySuiteName = Maps.newSetMultiMap();
-  private SetMultiMap<String, String> m_methodsByGroup = Maps.newSetMultiMap();
+  private final Map<String, String> m_statusBySuiteName = Maps.newHashMap();
+  private final SetMultiMap<String, String> m_groupsBySuiteName = Maps.newSetMultiMap();
+  private final SetMultiMap<String, String> m_methodsByGroup = Maps.newSetMultiMap();
 
   public Model(List<ISuite> suites) {
     m_suites = suites;
@@ -150,11 +150,11 @@ public class Model {
         p.append(Utils.toString(parameters[i]));
       }
       if (p.length() > 100) {
-        String s = p.toString().substring(0, 100);
+        String s = p.substring(0, 100);
         s = s + "...";
         result.append(s);
       } else {
-        result.append(p.toString());
+        result.append(p);
       }
       result.append(")");
     }

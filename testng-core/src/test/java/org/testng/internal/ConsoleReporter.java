@@ -30,8 +30,7 @@ public class ConsoleReporter implements IReporter {
             StringWriter sw = new StringWriter();
             PrintWriter writer = new PrintWriter(sw);
             result.getThrowable().printStackTrace(writer);
-            System.out.println(
-                String.format("StackTrace:\n %s \n", Utils.filterTrace(sw.toString())));
+            System.out.printf("StackTrace:\n %s \n%n", Utils.filterTrace(sw.toString()));
           }
         }
       }

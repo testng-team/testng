@@ -9,10 +9,10 @@ import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
 
 public class DummyReporter implements IReporter {
-  private Set<ITestResult> failures = Sets.newHashSet();
-  private Set<ITestResult> skip = Sets.newHashSet();
-  private Set<ITestResult> success = Sets.newHashSet();
-  private Set<ITestResult> failedWithinSuccessPercentage = Sets.newHashSet();
+  private final Set<ITestResult> failures = Sets.newHashSet();
+  private final Set<ITestResult> skip = Sets.newHashSet();
+  private final Set<ITestResult> success = Sets.newHashSet();
+  private final Set<ITestResult> failedWithinSuccessPercentage = Sets.newHashSet();
 
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {

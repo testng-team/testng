@@ -26,14 +26,6 @@ public class GroupConfigMethodArguments extends Arguments {
     return getTestMethod().getXmlTest().getSuite();
   }
 
-  public Map<String, String> getParameters() {
-    return params;
-  }
-
-  public Object getInstance() {
-    return instance;
-  }
-
   public static class Builder {
 
     private ITestNGMethod testMethod;

@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -23,7 +23,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
               + " during execution. This test makes sure we dont run into any NPEs")
   public void noNPEInCountingResults() {
     TestNG tng = create();
-    tng.setTestSuites(Arrays.asList(getPathToResource("param-inheritance/parent-suite.xml")));
+    tng.setTestSuites(List.of(getPathToResource("param-inheritance/parent-suite.xml")));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
@@ -56,7 +56,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
   @Test(description = "Checks to make sure parameters are inherited and overridden properly")
   public void parameterInheritanceAndOverriding() {
     TestNG tng = create();
-    tng.setTestSuites(Arrays.asList(getPathToResource("parametertest/parent-suite.xml")));
+    tng.setTestSuites(List.of(getPathToResource("parametertest/parent-suite.xml")));
 
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);

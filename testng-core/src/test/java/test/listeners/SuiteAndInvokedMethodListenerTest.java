@@ -23,23 +23,15 @@ public class SuiteAndInvokedMethodListenerTest {
     private static boolean m_before = false;
     private static boolean m_start = false;
 
-    public MyListener() {}
-
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult result) {
       m_before = true;
     }
 
     @Override
-    public void afterInvocation(IInvokedMethod method, ITestResult result) {}
-
-    @Override
     public void onStart(ISuite suite) {
       m_start = true;
     }
-
-    @Override
-    public void onFinish(ISuite suite) {}
   }
 
   @Test

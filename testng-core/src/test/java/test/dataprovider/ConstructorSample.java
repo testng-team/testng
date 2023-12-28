@@ -20,7 +20,7 @@ public class ConstructorSample {
   }
 
   @DataProvider(name = "dp")
-  public static Object[][] createData(Constructor c) {
+  public static Object[][] createData(Constructor<?> c) {
     Assert.assertEquals(c.getDeclaringClass(), ConstructorSample.class);
     Assert.assertNotNull(c.getAnnotation(Factory.class));
     Assert.assertEquals(c.getParameterTypes().length, 1);

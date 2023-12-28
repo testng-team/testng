@@ -6,7 +6,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class FactoryPoweredDataProviderWithoutListenerAnnotationSample {
-  private int i;
+  private final int i;
 
   @Factory(dataProvider = "dp")
   public FactoryPoweredDataProviderWithoutListenerAnnotationSample(int i) {

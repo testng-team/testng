@@ -7,9 +7,9 @@ import org.testng.annotations.Test;
 
 public class AssertionListContainsTest {
 
-  private User userJack = new User("Jack", 22);
-  private User userJohn = new User("John", 32);
-  private List<User> users = List.of(userJack, userJohn);
+  private final User userJack = new User("Jack", 22);
+  private final User userJohn = new User("John", 32);
+  private final List<User> users = List.of(userJack, userJohn);
 
   @Test
   public void assertListContainsObject() {
@@ -31,10 +31,10 @@ public class AssertionListContainsTest {
     Assert.assertListNotContains(users, user -> user.age.equals(19), "user with age 19");
   }
 
-  private class User {
+  private static class User {
 
-    private String name;
-    private Integer age;
+    private final String name;
+    private final Integer age;
 
     public User(String name, Integer age) {
       this.name = name;
@@ -56,11 +56,7 @@ public class AssertionListContainsTest {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder("User{");
-      sb.append("name='").append(name).append('\'');
-      sb.append(", age=").append(age);
-      sb.append('}');
-      return sb.toString();
+      return "User{" + "name='" + name + '\'' + ", age=" + age + '}';
     }
   }
 }

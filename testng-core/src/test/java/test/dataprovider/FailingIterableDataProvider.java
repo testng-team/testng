@@ -8,7 +8,7 @@ public class FailingIterableDataProvider {
 
   @DataProvider(name = "dp")
   public Iterator<Object[]> createData() {
-    return new Iterator<Object[]>() {
+    return new Iterator<>() {
       int count = 0;
 
       @Override
@@ -22,11 +22,6 @@ public class FailingIterableDataProvider {
           throw new RuntimeException();
         }
         return new Object[] {count};
-      }
-
-      @Override
-      public void remove() {
-        throw new UnsupportedOperationException("remove");
       }
     };
   }

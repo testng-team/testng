@@ -4,18 +4,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class TestSuiteHandler extends DefaultHandler {
-  private static List<String> tags = Arrays.asList("error", "skipped", "ignored", "failure");
-  private Testsuite testsuite = new Testsuite();
-  private Stack<String> elementStack = new Stack();
-  private Stack<Testcase> testcaseStack = new Stack<>();
+  private static final List<String> tags = Arrays.asList("error", "skipped", "ignored", "failure");
+  private final Testsuite testsuite = new Testsuite();
+  private final Stack<String> elementStack = new Stack<>();
+  private final Stack<Testcase> testcaseStack = new Stack<>();
 
   @Override
-  public void startElement(String uri, String localName, String qName, Attributes attributes)
-      throws SAXException {
+  public void startElement(String uri, String localName, String qName, Attributes attributes) {
     this.elementStack.push(qName);
     if ("testsuite".equals(qName)) {
       if (attributes != null) {
@@ -38,7 +36,7 @@ public class TestSuiteHandler extends DefaultHandler {
   }
 
   @Override
-  public void endElement(String uri, String localName, String qName) throws SAXException {
+  public void endElement(String uri, String localName, String qName) {
     elementStack.pop();
     if ("testcase".equals(qName)) {
       Testcase testcase = testcaseStack.pop();

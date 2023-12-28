@@ -8,10 +8,10 @@ public abstract class Issue420BaseTestCase {
   @BeforeSuite(alwaysRun = true)
   public static void alwaysBeforeSuite() {}
 
-  @BeforeSuite(alwaysRun = false)
+  @BeforeSuite()
   public static void beforeSuite() {}
 
-  @AfterSuite(alwaysRun = false)
+  @AfterSuite()
   public static void afterSuite() {}
 
   @AfterSuite(alwaysRun = true)

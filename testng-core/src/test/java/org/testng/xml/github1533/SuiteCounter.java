@@ -16,9 +16,6 @@ public class SuiteCounter implements ISuiteListener {
     suiteNames.add(suite.getName());
   }
 
-  @Override
-  public void onFinish(ISuite suite) {}
-
   public int getCounter() {
     return counter.get();
   }

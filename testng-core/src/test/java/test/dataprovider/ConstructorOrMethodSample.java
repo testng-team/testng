@@ -23,7 +23,7 @@ public class ConstructorOrMethodSample {
     Assert.assertNull(cOrM.getMethod());
     Assert.assertNotNull(cOrM.getConstructor());
 
-    Constructor c = cOrM.getConstructor();
+    Constructor<?> c = cOrM.getConstructor();
     Assert.assertNotNull(c.getAnnotation(Factory.class));
     Assert.assertEquals(c.getParameterTypes().length, 1);
     Assert.assertEquals(c.getParameterTypes()[0], String.class);
@@ -47,5 +47,5 @@ public class ConstructorOrMethodSample {
   }
 
   @Test(dataProvider = "dp2")
-  public void test2(String s) {}
+  public void test2(String ignored) {}
 }

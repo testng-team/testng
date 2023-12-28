@@ -19,7 +19,6 @@ public class ClonedMethod implements ITestNGMethod {
   private final Method m_javaMethod;
   private String m_id;
   private int m_currentInvocationCount;
-  private long m_date;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private final List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
@@ -254,7 +253,7 @@ public class ClonedMethod implements ITestNGMethod {
 
   @Override
   public void setDate(long date) {
-    m_date = date;
+    this.m_method.setDate(date);
   }
 
   @Override
