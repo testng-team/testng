@@ -11,6 +11,10 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.reporters.EmailableReporter2;
 import test.SimpleBaseTest;
+import test.reports.issue3038.AnotherTestCaseSample;
+import test.reports.issue3038.ExceptionAwareEmailableReporter;
+import test.reports.issue3038.TestCaseSample;
+import test.reports.issue3038.TestCaseWithConfigProblemSample;
 
 public class EmailableReporterTest extends SimpleBaseTest {
   @Test(dataProvider = "getReporterInstances", priority = 1)
@@ -33,6 +37,30 @@ public class EmailableReporterTest extends SimpleBaseTest {
   public void testReportsNameCustomizationViaMainMethodInvocationAndJVMArguments(
       String clazzName, String jvm) {
     runTestViaMainMethod(clazzName, jvm);
+  }
+
+  @Test
+  public void ensureEmailableReportsDontThrowExceptions() {
+    runTest(TestCaseSample.class);
+  }
+
+  @Test
+  public void ensureEmailableReportsDontThrowExceptionsWhenMultipleClassesAreUsed() {
+    runTest(TestCaseSample.class, AnotherTestCaseSample.class);
+  }
+
+  @Test
+  public void ensureEmailableReportsDontThrowExceptionsWhenConfigsHaveErrors() {
+    runTest(
+        TestCaseSample.class, TestCaseWithConfigProblemSample.class, AnotherTestCaseSample.class);
+  }
+
+  private static void runTest(Class<?>... classes) {
+    TestNG testng = create(classes);
+    ExceptionAwareEmailableReporter reporter = new ExceptionAwareEmailableReporter();
+    testng.addListener(reporter);
+    testng.run();
+    assertThat(reporter.hasError).isFalse();
   }
 
   @DataProvider(name = "getReporterInstances")
