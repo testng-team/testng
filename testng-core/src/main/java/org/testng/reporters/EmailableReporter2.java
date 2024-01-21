@@ -750,7 +750,7 @@ public class EmailableReporter2 implements IReporter {
           String className = result.getTestClass().getName();
           if (!previousClassName.equals(className)) {
             // Different class implies different method
-            if (!resultsPerMethod.isEmpty()) {
+            if (resultsPerMethod.isEmpty()) {
               throw new IllegalStateException("Results per method should NOT have been empty");
             }
             resultsPerClass.add(new MethodResult(resultsPerMethod));
@@ -764,7 +764,9 @@ public class EmailableReporter2 implements IReporter {
           } else {
             String methodName = result.getMethod().getMethodName();
             if (!previousMethodName.equals(methodName)) {
-              assert !resultsPerMethod.isEmpty();
+              if (resultsPerMethod.isEmpty()) {
+                throw new IllegalStateException("Results per method should NOT have been empty");
+              }
               resultsPerClass.add(new MethodResult(resultsPerMethod));
               resultsPerMethod = Lists.newArrayList();
 
@@ -773,7 +775,7 @@ public class EmailableReporter2 implements IReporter {
           }
           resultsPerMethod.add(result);
         }
-        if (!resultsPerMethod.isEmpty()) {
+        if (resultsPerMethod.isEmpty()) {
           throw new IllegalStateException("Results per method should NOT have been empty");
         }
         resultsPerClass.add(new MethodResult(resultsPerMethod));
