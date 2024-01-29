@@ -7,6 +7,7 @@ import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
 import org.testng.IHookable;
 import org.testng.IInjectorFactory;
+import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -23,6 +24,8 @@ public class Configuration implements IConfiguration {
   private ITestObjectFactory m_objectFactory;
   private IHookable m_hookable;
   private IConfigurable m_configurable;
+
+  private ITestNGListenerFactory m_listenerFactory;
 
   private boolean shareThreadPoolForDataProviders = false;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
@@ -61,6 +64,16 @@ public class Configuration implements IConfiguration {
   @Override
   public void setAnnotationFinder(IAnnotationFinder finder) {
     m_annotationFinder = finder;
+  }
+
+  @Override
+  public void setListenerFactory(ITestNGListenerFactory testNGListenerFactory) {
+    this.m_listenerFactory = testNGListenerFactory;
+  }
+
+  @Override
+  public ITestNGListenerFactory getListenerFactory() {
+    return m_listenerFactory;
   }
 
   @Override

@@ -166,6 +166,11 @@ public class CommandLineArgs {
       description = "The factory used to create tests")
   public String testRunnerFactory;
 
+  public static final String LISTENER_FACTORY = "-listenerfactory";
+
+  @Parameter(names = LISTENER_FACTORY, description = "The factory used to create TestNG listeners")
+  public String listenerFactory;
+
   public static final String METHODS = "-methods";
 
   @Parameter(names = METHODS, description = "Comma separated of test methods")

@@ -1,5 +1,6 @@
 Current
 7.10.0
+Fixed: GITHUB-3059: Support the ability to inject custom listener factory (Krishnan Mahadevan)
 Fixed: GITHUB-3038: java.lang.IllegalStateException: Results per method should NOT have been empty (Krishnan Mahadevan)
 Fixed: GITHUB-3022: Remove deprecated JUnit related support in TestNG (Krishnan Mahadevan)
 

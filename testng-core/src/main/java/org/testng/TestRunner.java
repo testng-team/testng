@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -377,8 +378,8 @@ public class TestRunner
     //
 
     ITestNGListenerFactory factory =
-        TestListenerHelper.createListenerFactory(
-            m_objectFactory, m_testClassFinder, listenerFactoryClass, this);
+        Optional.ofNullable(m_configuration.getListenerFactory())
+            .orElse(new DefaultListenerFactory(m_objectFactory, this));
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {

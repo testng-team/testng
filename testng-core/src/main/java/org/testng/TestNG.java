@@ -26,6 +26,7 @@ import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
+import org.testng.internal.DefaultListenerFactory;
 import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
@@ -682,8 +683,12 @@ public class TestNG {
    *     IReporter
    */
   public void setListenerClasses(List<Class<? extends ITestNGListener>> classes) {
+    ITestNGListenerFactory factory = m_configuration.getListenerFactory();
+    if (factory == null) {
+      factory = new DefaultListenerFactory(m_objectFactory, null);
+    }
     for (Class<? extends ITestNGListener> cls : classes) {
-      addListener(m_objectFactory.newInstance(cls));
+      addListener(factory.createListener(cls));
     }
   }
 
@@ -833,6 +838,10 @@ public class TestNG {
   @Deprecated
   public void setExecutorFactoryClass(String clazzName) {
     this.m_executorFactory = createExecutorFactoryInstanceUsing(clazzName);
+  }
+
+  public void setListenerFactory(ITestNGListenerFactory factory) {
+    this.m_configuration.setListenerFactory(factory);
   }
 
   public void setGenerateResultsPerSuite(boolean generateResultsPerSuite) {
@@ -1465,6 +1474,13 @@ public class TestNG {
     Optional.ofNullable(cla.propagateDataProviderFailureAsTestFailure)
         .ifPresent(value -> propagateDataProviderFailureAsTestFailure());
     setReportAllDataDrivenTestsAsSkipped(cla.includeAllDataDrivenTestsWhenSkipping);
+
+    Optional.ofNullable(cla.listenerFactory)
+        .map(ClassHelper::forName)
+        .filter(ITestNGListenerFactory.class::isAssignableFrom)
+        .map(it -> m_objectFactory.newInstance(it))
+        .map(it -> (ITestNGListenerFactory) it)
+        .ifPresent(this::setListenerFactory);
 
     Optional.ofNullable(cla.generateResultsPerSuite).ifPresent(this::setGenerateResultsPerSuite);
 

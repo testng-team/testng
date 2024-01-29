@@ -192,6 +192,7 @@
       <class name="test.skip.github1632.IssueTest"/>
       <class name="test.listeners.issue2220.IssueTest"/>
       <class name="test.listeners.issue2328.IssueTest"/>
+      <class name="test.listeners.factory.TestNGFactoryTest"/>
       <class name="test_result.ResultStatusTest"/>
       <class name="test_result.TestResultTest"/>
       <class name="test.listeners.github1319.TestResultInstanceCheckTest"/>
