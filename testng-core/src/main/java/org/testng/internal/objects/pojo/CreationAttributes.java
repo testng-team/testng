@@ -1,6 +1,5 @@
 package org.testng.internal.objects.pojo;
 
-import java.util.Objects;
 import org.testng.ITestContext;
 import org.testng.internal.invokers.objects.GuiceContext;
 
@@ -13,7 +12,6 @@ public class CreationAttributes {
   private final GuiceContext suiteContext;
 
   public CreationAttributes(ITestContext ctx, BasicAttributes basic, DetailedAttributes detailed) {
-    Objects.requireNonNull(ctx);
     this.basic = basic;
     this.detailed = detailed;
     this.context = ctx;

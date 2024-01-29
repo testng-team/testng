@@ -10,6 +10,10 @@ public interface IConfiguration {
 
   void setAnnotationFinder(IAnnotationFinder finder);
 
+  void setListenerFactory(ITestNGListenerFactory testNGListenerFactory);
+
+  ITestNGListenerFactory getListenerFactory();
+
   ITestObjectFactory getObjectFactory();
 
   void setObjectFactory(ITestObjectFactory m_objectFactory);
