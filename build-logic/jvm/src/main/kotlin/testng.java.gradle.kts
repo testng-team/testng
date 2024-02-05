@@ -9,8 +9,9 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(JavaVersion.current().majorVersion))
+    }
 }
 
 tasks.withType<JavaCompile>().configureEach {
