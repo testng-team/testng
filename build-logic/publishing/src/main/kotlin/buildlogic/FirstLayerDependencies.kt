@@ -9,6 +9,7 @@ import org.gradle.api.artifacts.result.UnresolvedDependencyResult
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.the
+import java.util.*
 
 /**
  * Walks over the dependency tree and selects the first non-shaded dependencies.
@@ -57,7 +58,8 @@ fun Project.firstLayerDependencies(
     vararg rest: Configuration,
 ): Configuration {
     val optionalFeatures = (the<JavaPluginExtension>() as ExtensionAware).the<OptionalFeaturesExtension>()
-    val usageKind = usage.removePrefix("java-").capitalize()
+    val usageKind = usage.removePrefix("java-")
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
     val allDependencies = configurations.create(conf.name + "${usageKind}AllDependencies") {
         description = "Resolves the list of all dependencies for $usage in ${conf.name}"
