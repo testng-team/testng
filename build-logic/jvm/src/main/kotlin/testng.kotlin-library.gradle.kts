@@ -10,8 +10,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-stdlib")
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set((project.property("targetJavaVersion") as String).toInt())
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = JavaVersion.current().majorVersion
+        jvmTarget = project.property("targetJavaVersion") as String
     }
 }

@@ -15,8 +15,18 @@ dependencies {
     implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.21")
 }
 
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(project.property("jdkBuildVersion") as String))
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set((project.property("targetJavaVersion") as String).toInt())
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = JavaVersion.current().majorVersion
+        jvmTarget = project.property("targetJavaVersion") as String
     }
 }
