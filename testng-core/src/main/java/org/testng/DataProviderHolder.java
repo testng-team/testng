@@ -2,6 +2,8 @@ package org.testng;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 
 /**
@@ -10,11 +12,11 @@ import org.testng.collections.Sets;
  */
 public class DataProviderHolder {
 
-  private final Collection<IDataProviderListener> listeners = Sets.newHashSet();
+  private final Map<Class<?>, IDataProviderListener> listeners = Maps.newConcurrentMap();
   private final Collection<IDataProviderInterceptor> interceptors = Sets.newHashSet();
 
   public Collection<IDataProviderListener> getListeners() {
-    return Collections.unmodifiableCollection(listeners);
+    return Collections.unmodifiableCollection(listeners.values());
   }
 
   public Collection<IDataProviderInterceptor> getInterceptors() {
@@ -26,7 +28,7 @@ public class DataProviderHolder {
   }
 
   public void addListener(IDataProviderListener listener) {
-    listeners.add(listener);
+    listeners.putIfAbsent(listener.getClass(), listener);
   }
 
   public void addInterceptors(Collection<IDataProviderInterceptor> interceptors) {
@@ -38,7 +40,7 @@ public class DataProviderHolder {
   }
 
   public void merge(DataProviderHolder other) {
-    this.listeners.addAll(other.getListeners());
+    addListeners(other.getListeners());
     this.interceptors.addAll(other.getInterceptors());
   }
 }

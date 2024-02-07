@@ -22,6 +22,8 @@ import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.xml.XmlClass;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
@@ -54,6 +56,9 @@ import test.dataprovider.issue2934.TestCaseSample;
 import test.dataprovider.issue2934.TestCaseSample.CoreListener;
 import test.dataprovider.issue2934.TestCaseSample.ToggleDataProvider;
 import test.dataprovider.issue2980.LoggingListener;
+import test.dataprovider.issue3045.DataProviderListener;
+import test.dataprovider.issue3045.DataProviderTestClassSample;
+import test.dataprovider.issue3045.DataProviderWithoutListenerTestClassSample;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -664,6 +669,48 @@ public class DataProviderTest extends SimpleBaseTest {
         new Pair<>(METHODS_ISSUE_2980, 10)
       }
     };
+  }
+
+  @Test(description = "GITHUB-3045")
+  public void testIfDataProviderListenerInvokedOnlyOncePerDataProvider() {
+    runTest(DataProviderTestClassSample.class, false);
+  }
+
+  @Test(description = "GITHUB-3045")
+  public void testIfDataProviderListenerInvokedOnlyOncePerDataProviderWhenListenerAddedViaSuite() {
+    runTest(DataProviderWithoutListenerTestClassSample.class, true);
+  }
+
+  private static void runTest(Class<?> clazz, boolean wireInListener) {
+    DataProviderListener.logs.clear();
+    TestNG testng = new TestNG();
+    XmlSuite xmlSuite = new XmlSuite();
+    if (wireInListener) {
+      xmlSuite.addListener(DataProviderListener.class.getName());
+    }
+    xmlSuite.setName("suite1");
+    xmlTest(xmlSuite, clazz, "Test1", "normalTest");
+    xmlTest(xmlSuite, clazz, "Test2", "dataDrivenTest");
+    testng.setXmlSuites(Collections.singletonList(xmlSuite));
+    testng.setVerbose(2);
+    testng.run();
+    assertThat(DataProviderListener.logs).hasSize(2);
+    assertThat(DataProviderListener.logs)
+        .containsExactly(
+            "[Test2]-beforeDataProviderExecution-dataProvider",
+            "[Test2]-afterDataProviderExecution-dataProvider");
+  }
+
+  private static void xmlTest(XmlSuite xmlSuite, Class<?> clazz, String name, String methodName) {
+    XmlTest xmlTest = new XmlTest(xmlSuite);
+    xmlTest.setName(name);
+    xmlTest.setXmlClasses(List.of(xmlClass(clazz, methodName)));
+  }
+
+  private static XmlClass xmlClass(Class<?> clazz, String methodName) {
+    XmlClass xmlClass = new XmlClass(clazz);
+    xmlClass.setIncludedMethods(List.of(new XmlInclude(methodName)));
+    return xmlClass;
   }
 
   private LoggingListener runDataProviderTest(boolean flag) {
