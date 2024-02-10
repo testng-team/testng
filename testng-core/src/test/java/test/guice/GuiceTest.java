@@ -6,11 +6,14 @@ import static org.testng.Assert.assertEquals;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
+import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.testng.IInjectorFactory;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlPackage;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 import test.guice.issue2343.Person;
 import test.guice.issue2343.SampleA;
@@ -26,6 +29,7 @@ import test.guice.issue2570.GuicePoweredConstructorInjectedRetry;
 import test.guice.issue2570.GuicePoweredConstructorInjectedRetryForDPTest;
 import test.guice.issue2570.GuicePoweredSetterInjectedRetry;
 import test.guice.issue2570.SampleTestClass;
+import test.guice.issue3050.EvidenceRetryAnalyzer;
 
 public class GuiceTest extends SimpleBaseTest {
 
@@ -107,5 +111,18 @@ public class GuiceTest extends SimpleBaseTest {
     assertThat(GuicePoweredConstructorInjectedRetryForDPTest.getCounter())
         .withFailMessage("There should have been 2 retry analyser instances created by Guice")
         .isEqualTo(2);
+  }
+
+  @Test(description = "GITHUB-3050")
+  public void ensureNoDuplicateGuiceModulesAreCreated() {
+    TestNG testng = create();
+    XmlSuite xmlSuite = createXmlSuite("evidence_suite");
+    xmlSuite.setParallel(XmlSuite.ParallelMode.CLASSES);
+    xmlSuite.setThreadCount(7);
+    XmlTest xmlTest = createXmlTest(xmlSuite, "evidence_test");
+    xmlTest.setXmlPackages(List.of(new XmlPackage("test.guice.issue3050.*")));
+    testng.setXmlSuites(List.of(xmlSuite));
+    testng.run();
+    assertThat(EvidenceRetryAnalyzer.hasOnlyOneUuid()).isTrue();
   }
 }
