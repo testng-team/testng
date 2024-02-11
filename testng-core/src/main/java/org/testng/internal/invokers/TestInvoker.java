@@ -34,6 +34,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.ListenerComparator;
 import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
@@ -256,10 +257,15 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // but regarding
     // onTestSkipped/onTestFailedButWithinSuccessPercentage/onTestFailedWithTimeout/onTestFailure/onTestSuccess, it should be reverse order.
     boolean isFinished = tr.getStatus() != ITestResult.STARTED;
+    List<ITestListener> original = m_notifier.getTestListeners();
+    ListenerComparator comparator = m_configuration.getListenerComparator();
+    if (comparator != null) {
+      original.sort(comparator::compare);
+    }
     List<ITestListener> listeners =
         isFinished
-            ? ListenerOrderDeterminer.reversedOrder(m_notifier.getTestListeners())
-            : ListenerOrderDeterminer.order(m_notifier.getTestListeners());
+            ? ListenerOrderDeterminer.reversedOrder(original)
+            : ListenerOrderDeterminer.order(original);
     TestListenerHelper.runTestListeners(tr, listeners);
     TestListenerHelper.runTestListeners(
         tr, Collections.singletonList(m_notifier.getExitCodeListener()));
@@ -277,7 +283,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   private DataProviderHolder buildDataProviderHolder() {
-    DataProviderHolder holder = new DataProviderHolder();
+    DataProviderHolder holder = new DataProviderHolder(m_configuration);
     holder.addListeners(dataProviderListeners());
     holder.addInterceptors(this.holder.getInterceptors());
     return holder;

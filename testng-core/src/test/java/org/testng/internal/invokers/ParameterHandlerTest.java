@@ -12,6 +12,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
+import org.testng.internal.Configuration;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -30,7 +31,8 @@ public class ParameterHandlerTest extends SimpleBaseTest {
   public void beforeClass() {
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
     handler =
-        new ParameterHandler(new ITestObjectFactory() {}, finder, new DataProviderHolder(), 0);
+        new ParameterHandler(
+            new ITestObjectFactory() {}, finder, new DataProviderHolder(new Configuration()), 0);
   }
 
   @Test

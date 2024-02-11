@@ -144,7 +144,11 @@ public class TestNGClassFinder extends BaseClassFinder {
 
     TestNGClassFinder finder =
         new TestNGClassFinder(
-            moreClasses, m_instanceMap, configuration, m_testContext, new DataProviderHolder());
+            moreClasses,
+            m_instanceMap,
+            configuration,
+            m_testContext,
+            new DataProviderHolder(configuration));
 
     for (IClass ic2 : finder.findTestClasses()) {
       putIClass(ic2.getRealClass(), ic2);

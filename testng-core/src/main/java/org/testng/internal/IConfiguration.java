@@ -14,6 +14,10 @@ public interface IConfiguration {
 
   ITestNGListenerFactory getListenerFactory();
 
+  void setListenerComparator(ListenerComparator comparator);
+
+  ListenerComparator getListenerComparator();
+
   ITestObjectFactory getObjectFactory();
 
   void setObjectFactory(ITestObjectFactory m_objectFactory);

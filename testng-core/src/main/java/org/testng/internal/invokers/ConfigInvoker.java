@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,10 +22,12 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.ListenerComparator;
 import org.testng.Reporter;
 import org.testng.SuiteRunState;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
@@ -75,6 +78,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
             == XmlSuite.FailurePolicy.CONTINUE;
     this.internalConfigurationListener = internalConfigurationListener;
+  }
+
+  @Override
+  public IConfiguration getConfiguration() {
+    return this.m_configuration;
   }
 
   /**
@@ -433,12 +441,18 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
+    List<IConfigurationListener> original =
+        Lists.newArrayList(m_notifier.getConfigurationListeners());
+    ListenerComparator comparator = m_configuration.getListenerComparator();
+    if (comparator != null) {
+      original.sort(comparator::compare);
+    }
     if (before) {
       TestListenerHelper.runPreConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
+          tr, tm, original, internalConfigurationListener);
     } else {
       TestListenerHelper.runPostConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
+          tr, tm, original, internalConfigurationListener);
     }
   }
 

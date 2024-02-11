@@ -273,6 +273,14 @@ public class TestNG {
     m_useDefaultListeners = useDefaultListeners;
   }
 
+  public void setListenerComparator(ListenerComparator listenerComparator) {
+    this.m_configuration.setListenerComparator(listenerComparator);
+  }
+
+  public ListenerComparator getListenerComparator() {
+    return m_configuration.getListenerComparator();
+  }
+
   /**
    * Sets a jar containing a testng.xml file.
    *
@@ -1130,14 +1138,21 @@ public class TestNG {
   }
 
   private void runSuiteAlterationListeners() {
-    for (IAlterSuiteListener l : m_alterSuiteListeners.values()) {
+    List<IAlterSuiteListener> original = Lists.newArrayList(m_alterSuiteListeners.values());
+    Optional.ofNullable(m_configuration.getListenerComparator())
+        .ifPresent(it -> original.sort(it::compare));
+
+    for (IAlterSuiteListener l : original) {
       l.alter(m_suites);
     }
   }
 
   private void runExecutionListeners(boolean start) {
-    List<IExecutionListener> executionListeners =
-        ListenerOrderDeterminer.order(m_configuration.getExecutionListeners());
+    List<IExecutionListener> original = m_configuration.getExecutionListeners();
+    Optional.ofNullable(m_configuration.getListenerComparator())
+        .ifPresent(it -> original.sort(it::compare));
+
+    List<IExecutionListener> executionListeners = ListenerOrderDeterminer.order(original);
     if (start) {
       for (IExecutionListener l : executionListeners) {
         l.onExecutionStart();
@@ -1367,7 +1382,7 @@ public class TestNG {
 
   /** Creates a suite runner and configures its initial state */
   private SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
-    DataProviderHolder holder = new DataProviderHolder();
+    DataProviderHolder holder = new DataProviderHolder(m_configuration);
     holder.addListeners(m_dataProviderListeners.values());
     holder.addInterceptors(m_dataProviderInterceptors.values());
     TestListenersContainer container =
@@ -1483,6 +1498,13 @@ public class TestNG {
         .ifPresent(this::setListenerFactory);
 
     Optional.ofNullable(cla.generateResultsPerSuite).ifPresent(this::setGenerateResultsPerSuite);
+
+    Optional.ofNullable(cla.listenerComparator)
+        .map(ClassHelper::forName)
+        .filter(ListenerComparator.class::isAssignableFrom)
+        .map(it -> m_objectFactory.newInstance(it))
+        .map(it -> (ListenerComparator) it)
+        .ifPresent(this::setListenerComparator);
 
     if (cla.verbose != null) {
       setVerbose(cla.verbose);

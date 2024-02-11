@@ -13,6 +13,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.ListenerComparator;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 import org.testng.internal.*;
@@ -165,7 +166,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     Object instance = mi.getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);
-      for (IClassListener listener : m_listeners) {
+      List<IClassListener> original = Lists.newArrayList(m_listeners);
+      ListenerComparator comparator = m_configInvoker.getConfiguration().getListenerComparator();
+      if (comparator != null) {
+        original.sort(comparator::compare);
+      }
+      for (IClassListener listener : original) {
         listener.onBeforeClass(testClass);
       }
       ConfigMethodArguments attributes =
@@ -231,7 +237,12 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   private void invokeListenersOnAfterClass(ITestClass testClass, List<IClassListener> listeners) {
-    for (IClassListener listener : listeners) {
+    List<IClassListener> original = Lists.newArrayList(listeners);
+    ListenerComparator comparator = m_configInvoker.getConfiguration().getListenerComparator();
+    if (comparator != null) {
+      original.sort(comparator::compare);
+    }
+    for (IClassListener listener : original) {
       listener.onAfterClass(testClass);
     }
   }

@@ -1,5 +1,6 @@
 Current (7.10.0)
-Fixed: GITHUB-3033: Moved ant support under own repository https://github.com/testng-team/testng-ant
+New:   GITHUB-2916: Allow users to define ordering for TestNG listeners (Krishnan Mahadevan)
+Fixed: GITHUB-3033: Moved ant support under own repository https://github.com/testng-team/testng-ant (Julien Herr)
 Fixed: GITHUB-3064: TestResult lost if failure creating RetryAnalyzer (Krishnan Mahadevan)
 Fixed: GITHUB-3048: ConcurrentModificationException when injecting values (Krishnan Mahadevan)
 Fixed: GITHUB-3050: Race condition when creating Guice Modules (Krishnan Mahadevan)

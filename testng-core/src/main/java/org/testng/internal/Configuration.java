@@ -9,6 +9,7 @@ import org.testng.IHookable;
 import org.testng.IInjectorFactory;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
+import org.testng.ListenerComparator;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -36,6 +37,8 @@ public class Configuration implements IConfiguration {
   private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
 
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
+
+  private ListenerComparator listenerComparator;
   private boolean overrideIncludedMethods = false;
 
   private boolean includeAllDataDrivenTestsWhenSkipping;
@@ -74,6 +77,16 @@ public class Configuration implements IConfiguration {
   @Override
   public ITestNGListenerFactory getListenerFactory() {
     return m_listenerFactory;
+  }
+
+  @Override
+  public void setListenerComparator(ListenerComparator comparator) {
+    this.listenerComparator = comparator;
+  }
+
+  @Override
+  public ListenerComparator getListenerComparator() {
+    return listenerComparator;
   }
 
   @Override
