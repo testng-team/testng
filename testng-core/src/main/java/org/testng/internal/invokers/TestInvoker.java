@@ -972,6 +972,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         ITestResult r =
             TestResult.newEndTimeAwareTestResult(
                 arguments.getTestMethod(), m_testContext, cause, start);
+        Optional.ofNullable(Reporter.getCurrentTestResult())
+            .ifPresent(it -> TestResult.copyAttributes(it, r));
         r.setStatus(TestResult.FAILURE);
         result.add(r);
         runTestResultListener(r);
