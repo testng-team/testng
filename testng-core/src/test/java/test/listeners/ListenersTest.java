@@ -28,6 +28,8 @@ import test.listeners.issue2771.TestCaseSample;
 import test.listeners.issue2880.ListenerForIssue2880;
 import test.listeners.issue2880.TestClassWithFailingConfigsSample;
 import test.listeners.issue2880.TestClassWithPassingConfigsSample;
+import test.listeners.issue3064.EvidenceListener;
+import test.listeners.issue3064.SampleTestCase;
 
 public class ListenersTest extends SimpleBaseTest {
 
@@ -36,6 +38,14 @@ public class ListenersTest extends SimpleBaseTest {
         "test.listeners.issue2638.TestClassASample.testMethod",
         "test.listeners.issue2638.TestClassBSample.testMethod"
       };
+
+  @Test(description = "GITHUB-3064")
+  public void ensureTestResultAttributesAreCarriedForward() {
+    TestNG testng = create(SampleTestCase.class);
+    testng.run();
+    assertThat(EvidenceListener.failureTestResult.getAttribute(EvidenceListener.ATTRIBUTE_KEY))
+        .isEqualTo("attributeValue");
+  }
 
   @Test(description = "GITHUB-2638", dataProvider = "suiteProvider")
   public void ensureDuplicateListenersAreNotWiredInAcrossSuites(
