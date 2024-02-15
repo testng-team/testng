@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    testImplementation("org.assertj:assertj-core:_")
+    testImplementation("org.assertj:assertj-core:3.23.1")
 }
 
 tasks.withType<Test>().configureEach {

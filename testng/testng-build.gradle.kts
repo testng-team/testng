@@ -18,11 +18,11 @@ java {
             api(projects.testngAnt)
         }
         create("guice") {
-            api(platform("com.google.inject:guice-bom:_"))
+            api(platform("com.google.inject:guice-bom:5.1.0"))
             api("com.google.inject:guice")
         }
         create("yaml") {
-            implementation("org.yaml:snakeyaml:_")
+            implementation("org.yaml:snakeyaml:2.2")
         }
     }
 }

@@ -1,6 +1,6 @@
 plugins {
     id("testng.repositories")
-    id("com.github.vlsi.stage-vote-release")
+    id("com.github.vlsi.stage-vote-release") version "1.90"
     id("idea")
 }
 

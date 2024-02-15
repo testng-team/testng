@@ -18,19 +18,19 @@ dependencies {
 
     testImplementation(projects.testng)
 
-    testImplementation("javax:javaee-api:_") {
+    testImplementation("javax:javaee-api:8.0.1") {
         // The dependency was not obvious, logged https://github.com/cbeust/testng/issues/2578
         because("PaxExam uses javax.transaction.NotSupportedException and other classes")
     }
-    testImplementation("org.ops4j.pax.exam:pax-exam-container-native:_")
+    testImplementation("org.ops4j.pax.exam:pax-exam-container-native:4.13.1")
     // pax-exam is not yet compatible with junit5
     // see https://github.com/ops4j/org.ops4j.pax.exam2/issues/886
-    testImplementation("org.ops4j.pax.exam:pax-exam-testng:_")
-    testImplementation("org.ops4j.pax.exam:pax-exam-link-mvn:_")
-    testImplementation("org.ops4j.pax.url:pax-url-aether:_")
-    testImplementation("org.apache.felix:org.apache.felix.framework:_")
-    testImplementation("ch.qos.logback:logback-core:_")
-    testImplementation("ch.qos.logback:logback-classic:_")
+    testImplementation("org.ops4j.pax.exam:pax-exam-testng:4.13.5")
+    testImplementation("org.ops4j.pax.exam:pax-exam-link-mvn:4.13.5")
+    testImplementation("org.ops4j.pax.url:pax-url-aether:2.6.12")
+    testImplementation("org.apache.felix:org.apache.felix.framework:7.0.5")
+    testImplementation("ch.qos.logback:logback-core:1.4.11")
+    testImplementation("ch.qos.logback:logback-classic:1.4.11")
 }
 
 // <editor-fold defaultstate="collapsed" desc="Pass dependency versions to pax-exam container">

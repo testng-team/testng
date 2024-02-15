@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     api(projects.testngCoreApi)
-    compileOnly("com.github.spotbugs:spotbugs:_")
+    compileOnly("com.github.spotbugs:spotbugs:4.8.1")
 }
