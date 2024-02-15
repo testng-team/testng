@@ -12,6 +12,9 @@ dependencies {
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        jvmTarget = "11"
+        freeCompilerArgs += "-Xjvm-default=all"
+        val jdkRelease = buildParameters.targetJavaVersion.toString()
+        freeCompilerArgs += "-Xjdk-release=$jdkRelease"
+        kotlinOptions.jvmTarget = jdkRelease
     }
 }

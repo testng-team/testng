@@ -18,6 +18,14 @@ java {
     }
 }
 
+tasks.withType<GroovyCompile>().configureEach {
+    // Groovy does not support targeting Java release yet
+    // See https://issues.apache.org/jira/browse/GROOVY-11105
+    sourceCompatibility = buildParameters.targetJavaVersion.toString()
+    targetCompatibility = buildParameters.targetJavaVersion.toString()
+}
+
+
 dependencies {
     api(projects.testngCoreApi)
     // Annotations have to be available on the compile classpath for the proper compilation

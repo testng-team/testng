@@ -1,22 +1,11 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    `kotlin-dsl`
-}
-
-repositories {
-    gradlePluginPortal()
+    id("build-logic.kotlin-dsl-gradle-plugin")
 }
 
 dependencies {
-    implementation(project(":basics"))
-    implementation(project(":code-quality"))
-    implementation("com.github.vlsi.gradle-extensions:com.github.vlsi.gradle-extensions.gradle.plugin:1.90")
-    implementation("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.21")
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+    api(projects.buildParameters)
+    api(projects.basics)
+    api(projects.codeQuality)
+    api("com.github.vlsi.gradle-extensions:com.github.vlsi.gradle-extensions.gradle.plugin:1.90")
+    api("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:1.6.21")
 }

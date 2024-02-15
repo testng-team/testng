@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.Test
 
 plugins {
     `java-library`
+    id("build-logic.build-params")
 }
 
 dependencies {
@@ -10,6 +11,9 @@ dependencies {
 
 tasks.withType<Test>().configureEach {
     useTestNG()
+    buildParameters.testJdk?.let {
+        javaLauncher.convention(javaToolchains.launcherFor(it))
+    }
     providers.gradleProperty("testng.test.extra.jvmargs")
         .orNull?.toString()?.trim()
         ?.takeIf { it.isNotEmpty() }

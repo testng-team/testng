@@ -10,6 +10,12 @@ version = buildVersion
 
 println("Building testng $buildVersion")
 
+tasks.register("parameters") {
+    group = HelpTasksPlugin.HELP_GROUP
+    description = "Displays the supported build parameters."
+    dependsOn(gradle.includedBuild("build-logic").task(":build-parameters:parameters"))
+}
+
 /**
  * Release procedure:
  *   1. ./gradlew prepareVote -Prc=1 -Pgh    (builds artifacts, stages them to Central, closes staging repository)

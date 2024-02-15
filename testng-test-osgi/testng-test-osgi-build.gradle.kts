@@ -38,7 +38,7 @@ val depDir = layout.buildDirectory.dir("pax-dependencies")
 
 val generateDependenciesProperties by tasks.registering(WriteProperties::class) {
     description = "Generates dependencies.properties so pax-exam can use .versionAsInProject()"
-    setOutputFile(depDir.map { it.file("META-INF/maven/dependencies.properties") })
+    destinationFile.set(depDir.map { it.file("META-INF/maven/dependencies.properties") })
     property("groupId", project.group)
     property("artifactId", project.name)
     property("version", project.version)
@@ -49,7 +49,7 @@ val generateDependenciesProperties by tasks.registering(WriteProperties::class) 
         configurations.testRuntimeClasspath.get().resolvedConfiguration.resolvedArtifacts.forEach {
             val prefix = "${it.moduleVersion.id.group}/${it.moduleVersion.id.name}"
             property("$prefix/scope", "compile")
-            property("$prefix/type", it.extension)
+            property("$prefix/type", it.extension.orEmpty())
             property("$prefix/version", it.moduleVersion.id.version)
         }
     }

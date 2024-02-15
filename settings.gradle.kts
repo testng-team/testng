@@ -7,6 +7,7 @@ rootProject.name = "testng-root"
 plugins {
     `gradle-enterprise`
     id("de.fayard.refreshVersions") version "0.60.3"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
 gradleEnterprise {
@@ -30,7 +31,6 @@ include(":testng-runner-api")
 include(":testng-test-kit")
 include(":testng-test-osgi")
 
-enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 for (project in rootProject.children) {
