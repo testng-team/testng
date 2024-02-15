@@ -1,127 +1,37 @@
 // The script generates a random subset of valid jdk, os, timezone, and other axes.
 // You can preview the results by running "node matrix.js"
 // See https://github.com/vlsi/github-actions-random-matrix
+let fs = require('fs');
+let os = require('os');
 let {MatrixBuilder} = require('./matrix_builder');
 const matrix = new MatrixBuilder();
 matrix.addAxis({
-  name: 'jdk',
-  title: x => x.version + ', ' + x.group,
+  name: 'java_distribution',
   values: [
-    // Zulu
-    {group: 'Zulu', version: '11', distribution: 'zulu', jit: 'hotspot'},
-    {group: 'Zulu', version: '17', distribution: 'zulu', jit: 'hotspot'},
-
-    // Adopt
-    {group: 'Adopt Hotspot', version: '11', distribution: 'adopt-hotspot', jit: 'hotspot'},
-    {group: 'Adopt Hotspot', version: '17', distribution: 'adopt-hotspot', jit: 'hotspot'},
-
-    // Amazon Corretto
-    {
-      group: 'Corretto',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz'
-    },
-    {
-      group: 'Corretto',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz'
-    },
-    //DragonWell
-    {
-      group: 'DragonWell',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/alibaba/dragonwell11/releases/download/dragonwell-standard-11.0.16.12_jdk-11.0.16-ga/Alibaba_Dragonwell_Standard_11.0.16.12.8_x64_linux.tar.gz'
-    },
-    {
-      group: 'DragonWell',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/alibaba/dragonwell17/releases/download/dragonwell-standard-17.0.4.0.4%2B8_jdk-17.0.4-ga/Alibaba_Dragonwell_Standard_17.0.4.0.4%2B8_x64_linux.tar.gz'
-    },
-    //GraalVM
-    {
-      group: 'GraalVM',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.3.0/graalvm-ce-java11-linux-amd64-22.3.0.tar.gz'
-    },
-    {
-      group: 'GraalVM',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.3.0/graalvm-ce-java17-linux-amd64-22.3.0.tar.gz'
-    },
-    // Microsoft
-    {
-      group: 'Microsoft',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://aka.ms/download-jdk/microsoft-jdk-11.0.11.9.1-linux-x64.tar.gz'
-    },
-    {
-      group: 'Microsoft',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://aka.ms/download-jdk/microsoft-jdk-17.0.1.12.1-linux-x64.tar.gz'
-    },
-    // Liberica
-    {
-      group: 'Liberica',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://download.bell-sw.com/java/17.0.1+12/bellsoft-jdk17.0.1+12-linux-amd64.tar.gz'
-    },
-    {
-      group: 'Liberica',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://download.bell-sw.com/java/11.0.13+8/bellsoft-jdk11.0.13+8-linux-amd64.tar.gz'
-    },
-    // SapMachine
-    {
-      group: 'SapMachine',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/SAP/SapMachine/releases/download/sapmachine-11.0.17/sapmachine-jdk-11.0.17_linux-x64_bin.tar.gz'
-    },
-    {
-      group: 'SapMachine',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/SAP/SapMachine/releases/download/sapmachine-17.0.5/sapmachine-jdk-17.0.5_linux-x64_bin.tar.gz'
-    },
-    //Semeru
-    {
-      group: 'Semeru',
-      version: '11',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/ibmruntimes/semeru11-binaries/releases/download/jdk-11.0.17%2B8_openj9-0.35.0/ibm-semeru-open-jdk_x64_linux_11.0.17_8_openj9-0.35.0.tar.gz'
-    },
-    {
-      group: 'Semeru',
-      version: '17',
-      jit: 'hotspot',
-      distribution: 'jdkfile',
-      url: 'https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.5%2B8_openj9-0.35.0/ibm-semeru-open-jdk_x64_linux_17.0.5_8_openj9-0.35.0.tar.gz'
-    },
+    {value: 'corretto', vendor: 'amazon', weight: 1},
+    {value: 'liberica', vendor: 'bellsoft', weight: 1},
+    {value: 'microsoft', vendor: 'microsoft', weight: 1},
+    {value: 'oracle', vendor: 'oracle', weight: 1},
+    // There are issues running Semeru JDK with Gradle 8.5
+    // See https://github.com/gradle/gradle/issues/27273
+    // {value: 'semeru', vendor: 'ibm', weight: 4},
+    {value: 'temurin', vendor: 'eclipse', weight: 1},
+    {value: 'zulu', vendor: 'azul', weight: 1},
   ]
 });
+
+const eaJava = '22';
+matrix.addAxis({
+  name: 'java_version',
+  // Strings allow versions like 18-ea
+  values: [
+    '11',
+    '17',
+    '21',
+    eaJava,
+  ]
+});
+
 matrix.addAxis({
   name: 'tz',
   values: [
@@ -157,25 +67,41 @@ matrix.addAxis({
   ]
 });
 
-matrix.setNamePattern(['jdk', 'hash', 'os', 'tz', 'locale']);
+matrix.setNamePattern(['java_version', 'java_distribution', 'hash', 'os', 'tz', 'locale']);
 
-// TODO: figure out how "same hashcode" could be configured in OpenJ9
-matrix.exclude({hash: {value: 'same'}, jdk: {jit: 'openj9'}});
-matrix.exclude({jdk: {distribution: 'jdkfile'}, os: ['windows-latest', 'macos-latest']});
+matrix.imply({java_version: eaJava}, {java_distribution: {value: 'oracle'}})
+// Oracle JDK is only supported for JDK 17 and later
+matrix.exclude({java_distribution: {value: 'oracle'}, java_version: ['11']});
+// Semeru uses OpenJ9 jit which has no option for making hash codes the same
+// See https://github.com/eclipse-openj9/openj9/issues/17309
+matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
 // Ensure at least one job with "same" hashcode exists
 matrix.generateRow({hash: {value: 'same'}});
 // Ensure at least one windows and at least one linux job is present (macos is almost the same as linux)
 matrix.generateRow({os: 'windows-latest'});
 matrix.generateRow({os: 'ubuntu-latest'});
-// Ensure there will be at least one job with Java 17
-matrix.generateRow({jdk: {version: 17}});
 // Ensure there will be at least one job with Java 11
-matrix.generateRow({jdk: {version: 11}});
+matrix.generateRow({java_version: "11"});
+// Ensure there will be at least one job with Java 17
+matrix.generateRow({java_version: "17"});
+// Ensure there will be at least one job with Java 21
+matrix.generateRow({java_version: "21"});
+// Ensure there will be at least one job with Java EA
+matrix.generateRow({java_version: eaJava});
 const include = matrix.generateRows(process.env.MATRIX_JOBS || 5);
 if (include.length === 0) {
   throw new Error('Matrix list is empty');
 }
 include.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true}));
+include.forEach(v => {
+  // Pass locale via Gradle arguments in case it won't be inherited from _JAVA_OPTIONS
+  // In fact, _JAVA_OPTIONS is non-standard and might be ignored by some JVMs
+  let gradleArgs = [
+    `-Duser.country=${v.locale.country}`,
+    `-Duser.language=${v.locale.language}`,
+  ];
+  v.extraGradleArgs = gradleArgs.join(' ');
+});
 include.forEach(v => {
   let jvmArgs = [];
   if (v.hash.value === 'same') {
@@ -184,10 +110,17 @@ include.forEach(v => {
   // Gradle does not work in tr_TR locale, so pass locale to test only: https://github.com/gradle/gradle/issues/17361
   jvmArgs.push(`-Duser.country=${v.locale.country}`);
   jvmArgs.push(`-Duser.language=${v.locale.language}`);
-  if (v.jdk.jit === 'hotspot' && Math.random() > 0.5) {
+  v.java_vendor = v.java_distribution.vendor;
+  v.java_distribution = v.java_distribution.value;
+  if (v.java_distribution === 'oracle') {
+    v.oracle_java_website = v.java_version === eaJava ? 'jdk.java.net' : 'oracle.com';
+  }
+  v.non_ea_java_version = v.java_version === eaJava ? '' : v.java_version;
+  if (v.java_distribution !== 'semeru' && Math.random() > 0.5) {
     // The following options randomize instruction selection in JIT compiler
     // so it might reveal missing synchronization in TestNG code
     v.name += ', stress JIT';
+    v.testDisableCaching = 'JIT randomization should not be cached';
     jvmArgs.push('-XX:+UnlockDiagnosticVMOptions');
     // Randomize instruction scheduling in GCM
     // share/opto/c2_globals.hpp
@@ -195,12 +128,12 @@ include.forEach(v => {
     // Randomize instruction scheduling in LCM
     // share/opto/c2_globals.hpp
     jvmArgs.push('-XX:+StressLCM');
-    if (v.jdk.version >= 16) {
+    if (v.java_version >= 16) {
       // Randomize worklist traversal in IGVN
       // share/opto/c2_globals.hpp
       jvmArgs.push('-XX:+StressIGVN');
     }
-    if (v.jdk.version >= 17) {
+    if (v.java_version >= 17) {
       // Randomize worklist traversal in CCP
       // share/opto/c2_globals.hpp
       jvmArgs.push('-XX:+StressCCP');
@@ -211,4 +144,9 @@ include.forEach(v => {
 });
 
 console.log(include);
-console.log('::set-output name=matrix::' + JSON.stringify({include}));
+let filePath = process.env['GITHUB_OUTPUT'] || '';
+if (filePath) {
+  fs.appendFileSync(filePath, `matrix<<MATRIX_BODY${os.EOL}${JSON.stringify({include})}${os.EOL}MATRIX_BODY${os.EOL}`, {
+    encoding: 'utf8'
+  });
+}
