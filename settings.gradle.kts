@@ -6,7 +6,6 @@ rootProject.name = "testng-root"
 
 plugins {
     `gradle-enterprise`
-    id("de.fayard.refreshVersions") version "0.60.3"
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
