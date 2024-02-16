@@ -27,7 +27,7 @@ jobs:
       # Ask matrix.js to produce 7 jobs
       MATRIX_JOBS: 7
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - id: set-matrix
@@ -44,7 +44,7 @@ jobs:
     env:
       TZ: ${{ matrix.tz }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 10
       - name: Set up Java ${{ matrix.java_version }}, oracle
