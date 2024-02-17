@@ -678,13 +678,6 @@
     </classes>
   </test>
 
-  <!-- TestNG command line related tests -->
-  <test name="CommandLineArgs" >
-    <classes>
-        <class name="test.ant.TestCommandLineArgs" />
-    </classes>
-  </test>
-
   <!-- Group ordering 1 -->
   <test name="Class Run">
     <groups>

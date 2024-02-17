@@ -18,7 +18,6 @@ gradleEnterprise {
 
 // Sorted by name
 include(":testng")
-include(":testng-ant")
 include(":testng-api")
 include(":testng-asserts")
 include(":testng-bom")

@@ -14,9 +14,6 @@ java {
             it.owner.let { id -> id is ProjectComponentIdentifier && id.build.isCurrentBuild }
         }
 
-        create("ant") {
-            api(projects.testngAnt)
-        }
         create("guice") {
             api(platform("com.google.inject:guice-bom:5.1.0"))
             api("com.google.inject:guice")
@@ -57,7 +54,6 @@ tasks.mergedJar {
                 bsh.*;version="[2.0.0,3.0.0)";resolution:=optional,
                 com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional,
                 com.google.inject.*;version="[1.2,1.3)";resolution:=optional,
-                org.apache.tools.ant.*;version="[1.7.0, 2.0.0)";resolution:=optional,
                 org.yaml.*;version="[1.6,2.0)";resolution:=optional,
                 *;resolution:=optional
             """.trimIndent().replace("\n", ""),
@@ -68,7 +64,6 @@ tasks.mergedJar {
                 org.testng.collections
                 org.testng.internal
                 org.testng.internal.annotations
-                org.testng.internal.ant
                 org.testng.internal.collections
                 org.testng.internal.invokers
                 org.testng.internal.invokers.objects
