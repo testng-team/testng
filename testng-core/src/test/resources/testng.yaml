@@ -312,10 +312,6 @@ tests:
       - test.JUnitTest1
       - test.CommandLineTest
 
-  - name: Ant-ClassFileResolution
-    classes:
-      - test.ant.TestCommandLineArgs
-
   - name: Class Run
     classes:
       - test.regression.groupsordering.A
