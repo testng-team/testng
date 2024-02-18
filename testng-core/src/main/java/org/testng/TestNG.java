@@ -1,5 +1,6 @@
 package org.testng;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
@@ -1138,20 +1139,16 @@ public class TestNG {
   }
 
   private void runSuiteAlterationListeners() {
-    List<IAlterSuiteListener> original = Lists.newArrayList(m_alterSuiteListeners.values());
-    Optional.ofNullable(m_configuration.getListenerComparator())
-        .ifPresent(it -> original.sort(it::compare));
-
+    Collection<IAlterSuiteListener> original =
+        sort(m_alterSuiteListeners.values(), m_configuration.getListenerComparator());
     for (IAlterSuiteListener l : original) {
       l.alter(m_suites);
     }
   }
 
   private void runExecutionListeners(boolean start) {
-    List<IExecutionListener> original = m_configuration.getExecutionListeners();
-    Optional.ofNullable(m_configuration.getListenerComparator())
-        .ifPresent(it -> original.sort(it::compare));
-
+    List<IExecutionListener> original =
+        sort(m_configuration.getExecutionListeners(), m_configuration.getListenerComparator());
     List<IExecutionListener> executionListeners = ListenerOrderDeterminer.order(original);
     if (start) {
       for (IExecutionListener l : executionListeners) {

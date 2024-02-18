@@ -1,11 +1,10 @@
 package org.testng;
 
+import static org.testng.ListenerComparator.*;
+
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.IConfiguration;
@@ -18,33 +17,18 @@ public class DataProviderHolder {
 
   private final Map<Class<?>, IDataProviderListener> listeners = Maps.newConcurrentMap();
   private final Collection<IDataProviderInterceptor> interceptors = Sets.newHashSet();
-
-  private final IConfiguration configuration;
+  private final ListenerComparator listenerComparator;
 
   public DataProviderHolder(IConfiguration configuration) {
-    this.configuration = configuration;
+    this.listenerComparator = Objects.requireNonNull(configuration).getListenerComparator();
   }
 
   public Collection<IDataProviderListener> getListeners() {
-    List<IDataProviderListener> original = Lists.newArrayList(listeners.values());
-    ListenerComparator comparator = getConfiguration().getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
-    return Collections.unmodifiableCollection(original);
-  }
-
-  public IConfiguration getConfiguration() {
-    return Objects.requireNonNull(configuration);
+    return sort(listeners.values(), listenerComparator);
   }
 
   public Collection<IDataProviderInterceptor> getInterceptors() {
-    List<IDataProviderInterceptor> original = Lists.newArrayList(interceptors);
-    ListenerComparator comparator = getConfiguration().getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
-    return Collections.unmodifiableCollection(original);
+    return sort(interceptors, listenerComparator);
   }
 
   public void addListeners(Collection<IDataProviderListener> listeners) {

@@ -1,7 +1,8 @@
 package org.testng.internal.invokers;
 
+import static org.testng.ListenerComparator.sort;
+
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.testng.IInvokedMethod;
@@ -10,10 +11,8 @@ import org.testng.ISuiteRunnerListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.ListenerComparator;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
@@ -71,11 +70,8 @@ class BaseInvoker {
     // For BEFORE_INVOCATION method, still run as insert order, but regarding AFTER_INVOCATION, it
     // should be reverse order
     boolean isAfterInvocation = InvokedMethodListenerMethod.AFTER_INVOCATION == listenerMethod;
-    List<IInvokedMethodListener> original = Lists.newArrayList(m_invokedMethodListeners);
-    ListenerComparator comparator = m_configuration.getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
+    Collection<IInvokedMethodListener> original =
+        sort(m_invokedMethodListeners, m_configuration.getListenerComparator());
     Collection<IInvokedMethodListener> listeners =
         isAfterInvocation
             ? ListenerOrderDeterminer.reversedOrder(original)

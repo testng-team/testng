@@ -1,5 +1,6 @@
 package org.testng.internal.invokers;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 import static org.testng.internal.invokers.Invoker.CAN_RUN_FROM_CLASS;
@@ -34,7 +35,6 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.ListenerComparator;
 import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.SuiteRunState;
@@ -257,11 +257,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // but regarding
     // onTestSkipped/onTestFailedButWithinSuccessPercentage/onTestFailedWithTimeout/onTestFailure/onTestSuccess, it should be reverse order.
     boolean isFinished = tr.getStatus() != ITestResult.STARTED;
-    List<ITestListener> original = m_notifier.getTestListeners();
-    ListenerComparator comparator = m_configuration.getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
+    List<ITestListener> original =
+        sort(m_notifier.getTestListeners(), m_configuration.getListenerComparator());
     List<ITestListener> listeners =
         isFinished
             ? ListenerOrderDeterminer.reversedOrder(original)

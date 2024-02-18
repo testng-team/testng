@@ -1,5 +1,6 @@
 package org.testng;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.Utils.isStringBlank;
 
 import com.google.inject.Injector;
@@ -236,11 +237,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   private void invokeListeners(boolean start) {
-    List<ISuiteListener> original = Lists.newArrayList(listeners.values());
-    ListenerComparator comparator = this.configuration.getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
+    Collection<ISuiteListener> original =
+        sort(listeners.values(), this.configuration.getListenerComparator());
     if (start) {
       for (ISuiteListener sl : ListenerOrderDeterminer.order(original)) {
         sl.onStart(this);

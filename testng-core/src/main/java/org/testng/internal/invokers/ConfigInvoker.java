@@ -1,5 +1,6 @@
 package org.testng.internal.invokers;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 import static org.testng.internal.invokers.Invoker.SAME_CLASS;
@@ -22,12 +23,10 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.ListenerComparator;
 import org.testng.Reporter;
 import org.testng.SuiteRunState;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
@@ -442,11 +441,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
     List<IConfigurationListener> original =
-        Lists.newArrayList(m_notifier.getConfigurationListeners());
-    ListenerComparator comparator = m_configuration.getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
+        sort(m_notifier.getConfigurationListeners(), m_configuration.getListenerComparator());
     if (before) {
       TestListenerHelper.runPreConfigurationListeners(
           tr, tm, original, internalConfigurationListener);

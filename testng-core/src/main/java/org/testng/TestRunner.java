@@ -1,5 +1,6 @@
 package org.testng;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.MethodHelper.fixMethodsWithClass;
 
 import java.lang.reflect.Method;
@@ -695,12 +696,8 @@ public class TestRunner
       }
     }
 
-    List<IExecutionVisualiser> original = Lists.newArrayList(this.visualisers);
-    ListenerComparator listenerComparator = m_configuration.getListenerComparator();
-    if (listenerComparator != null) {
-      original.sort(listenerComparator::compare);
-    }
-
+    Collection<IExecutionVisualiser> original =
+        sort(this.visualisers, m_configuration.getListenerComparator());
     graph.setVisualisers(Sets.newLinkedHashSet(original));
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
@@ -745,12 +742,8 @@ public class TestRunner
     List<IMethodInstance> methodInstances =
         MethodHelper.methodsToMethodInstances(Arrays.asList(methods));
 
-    List<IMethodInterceptor> original = Lists.newArrayList(m_methodInterceptors);
-    ListenerComparator listenerComparator = m_configuration.getListenerComparator();
-    if (listenerComparator != null) {
-      original.sort(listenerComparator::compare);
-    }
-
+    List<IMethodInterceptor> original =
+        sort(m_methodInterceptors, m_configuration.getListenerComparator());
     for (IMethodInterceptor m_methodInterceptor : original) {
       methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     }
@@ -859,11 +852,7 @@ public class TestRunner
    *     finish
    */
   private void fireEvent(boolean isStart) {
-    List<ITestListener> original = Lists.newArrayList(m_testListeners);
-    ListenerComparator listenerComparator = m_configuration.getListenerComparator();
-    if (listenerComparator != null) {
-      original.sort(listenerComparator::compare);
-    }
+    List<ITestListener> original = sort(m_testListeners, m_configuration.getListenerComparator());
     if (isStart) {
       for (ITestListener itl : ListenerOrderDeterminer.order(original)) {
         itl.onStart(this);

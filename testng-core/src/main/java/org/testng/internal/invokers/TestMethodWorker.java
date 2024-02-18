@@ -1,5 +1,7 @@
 package org.testng.internal.invokers;
 
+import static org.testng.ListenerComparator.sort;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,6 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.ListenerComparator;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 import org.testng.internal.*;
@@ -166,11 +167,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     Object instance = mi.getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);
-      List<IClassListener> original = Lists.newArrayList(m_listeners);
-      ListenerComparator comparator = m_configInvoker.getConfiguration().getListenerComparator();
-      if (comparator != null) {
-        original.sort(comparator::compare);
-      }
+      List<IClassListener> original =
+          sort(m_listeners, m_configInvoker.getConfiguration().getListenerComparator());
       for (IClassListener listener : original) {
         listener.onBeforeClass(testClass);
       }
@@ -237,11 +235,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   private void invokeListenersOnAfterClass(ITestClass testClass, List<IClassListener> listeners) {
-    List<IClassListener> original = Lists.newArrayList(listeners);
-    ListenerComparator comparator = m_configInvoker.getConfiguration().getListenerComparator();
-    if (comparator != null) {
-      original.sort(comparator::compare);
-    }
+    List<IClassListener> original =
+        sort(listeners, m_configInvoker.getConfiguration().getListenerComparator());
     for (IClassListener listener : original) {
       listener.onAfterClass(testClass);
     }
