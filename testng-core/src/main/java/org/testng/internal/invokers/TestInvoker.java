@@ -258,8 +258,10 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     boolean isFinished = tr.getStatus() != ITestResult.STARTED;
     List<ITestListener> listeners =
         isFinished
-            ? ListenerOrderDeterminer.reversedOrder(m_notifier.getTestListeners())
-            : ListenerOrderDeterminer.order(m_notifier.getTestListeners());
+            ? ListenerOrderDeterminer.reversedOrder(
+                m_notifier.getTestListeners(), m_configuration.getListenerComparator())
+            : ListenerOrderDeterminer.order(
+                m_notifier.getTestListeners(), m_configuration.getListenerComparator());
     TestListenerHelper.runTestListeners(tr, listeners);
     TestListenerHelper.runTestListeners(
         tr, Collections.singletonList(m_notifier.getExitCodeListener()));
@@ -277,7 +279,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   }
 
   private DataProviderHolder buildDataProviderHolder() {
-    DataProviderHolder holder = new DataProviderHolder();
+    DataProviderHolder holder = new DataProviderHolder(m_configuration);
     holder.addListeners(dataProviderListeners());
     holder.addInterceptors(this.holder.getInterceptors());
     return holder;

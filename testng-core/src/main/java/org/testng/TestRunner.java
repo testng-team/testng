@@ -1,5 +1,6 @@
 package org.testng;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.MethodHelper.fixMethodsWithClass;
 
 import java.lang.reflect.Method;
@@ -95,7 +96,7 @@ public class TestRunner
 
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
       Maps.newLinkedHashMap();
-  private final DataProviderHolder holder = new DataProviderHolder();
+  private final DataProviderHolder holder;
 
   private Date m_startDate = new Date();
   private Date m_endDate = null;
@@ -171,7 +172,7 @@ public class TestRunner
       DataProviderHolder otherHolder,
       ISuiteRunnerListener suiteRunner) {
     this.comparator = comparator;
-    this.holder.merge(otherHolder);
+    this.holder = otherHolder;
     init(
         configuration,
         suite,
@@ -194,6 +195,7 @@ public class TestRunner
       Comparator<ITestNGMethod> comparator,
       ISuiteRunnerListener suiteRunner) {
     this.comparator = comparator;
+    this.holder = new DataProviderHolder(configuration);
     init(
         configuration,
         suite,
@@ -216,6 +218,7 @@ public class TestRunner
       List<IClassListener> classListeners,
       ISuiteRunnerListener suiteRunner) {
     this.comparator = Systematiser.getComparator();
+    this.holder = new DataProviderHolder(configuration);
     init(
         configuration,
         suite,
@@ -693,7 +696,9 @@ public class TestRunner
       }
     }
 
-    graph.setVisualisers(this.visualisers);
+    Collection<IExecutionVisualiser> original =
+        sort(this.visualisers, m_configuration.getListenerComparator());
+    graph.setVisualisers(Sets.newLinkedHashSet(original));
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
     // priority on them, we need to sort.
@@ -737,7 +742,9 @@ public class TestRunner
     List<IMethodInstance> methodInstances =
         MethodHelper.methodsToMethodInstances(Arrays.asList(methods));
 
-    for (IMethodInterceptor m_methodInterceptor : m_methodInterceptors) {
+    List<IMethodInterceptor> original =
+        sort(m_methodInterceptors, m_configuration.getListenerComparator());
+    for (IMethodInterceptor m_methodInterceptor : original) {
       methodInstances = m_methodInterceptor.intercept(methodInstances, this);
     }
 
@@ -846,14 +853,16 @@ public class TestRunner
    */
   private void fireEvent(boolean isStart) {
     if (isStart) {
-      for (ITestListener itl : ListenerOrderDeterminer.order(m_testListeners)) {
+      for (ITestListener itl :
+          ListenerOrderDeterminer.order(m_testListeners, m_configuration.getListenerComparator())) {
         itl.onStart(this);
       }
       this.exitCodeListener.onStart(this);
 
     } else {
       List<ITestListener> testListenersReversed =
-          ListenerOrderDeterminer.reversedOrder(m_testListeners);
+          ListenerOrderDeterminer.reversedOrder(
+              m_testListeners, m_configuration.getListenerComparator());
       for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }

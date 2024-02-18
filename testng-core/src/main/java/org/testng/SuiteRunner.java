@@ -41,14 +41,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       Maps.newLinkedHashMap();
 
   private String outputDir;
-  private XmlSuite xmlSuite;
+  private final XmlSuite xmlSuite;
   private Injector parentInjector;
 
   private final List<ITestListener> testListeners = Lists.newArrayList();
   private final Map<Class<? extends IClassListener>, IClassListener> classListeners =
       Maps.newLinkedHashMap();
-  private ITestRunnerFactory tmpRunnerFactory;
-  private final DataProviderHolder holder = new DataProviderHolder();
+  private final ITestRunnerFactory tmpRunnerFactory;
+  private final DataProviderHolder holder;
 
   private boolean useDefaultListeners = true;
 
@@ -57,19 +57,19 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   // The configuration
   // Note: adjust test.multiplelisteners.SimpleReporter#generateReport test if renaming the field
-  private IConfiguration configuration;
+  private final IConfiguration configuration;
 
   private ITestObjectFactory objectFactory;
   private Boolean skipFailedInvocationCounts = Boolean.FALSE;
   private final List<IReporter> reporters = Lists.newArrayList();
 
-  private Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
+  private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       invokedMethodListeners;
 
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
   private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
-  private ITestListener exitCodeListener;
+  private final ITestListener exitCodeListener;
 
   public SuiteRunner(
       IConfiguration configuration,
@@ -97,7 +97,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         null /* invoked method listeners */,
         new TestListenersContainer() /* test listeners */,
         null /* class listeners */,
-        new DataProviderHolder(),
+        new DataProviderHolder(configuration),
         comparator);
   }
 
@@ -108,41 +108,15 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       ITestRunnerFactory runnerFactory,
       boolean useDefaultListeners,
       List<IMethodInterceptor> methodInterceptors,
-      Collection<IInvokedMethodListener> invokedMethodListeners,
+      Collection<IInvokedMethodListener> invokedMethodListener,
       TestListenersContainer container,
       Collection<IClassListener> classListeners,
       DataProviderHolder holder,
       Comparator<ITestNGMethod> comparator) {
-    init(
-        configuration,
-        suite,
-        outputDir,
-        runnerFactory,
-        useDefaultListeners,
-        methodInterceptors,
-        invokedMethodListeners,
-        container,
-        classListeners,
-        holder,
-        comparator);
-  }
-
-  private void init(
-      IConfiguration configuration,
-      XmlSuite suite,
-      String outputDir,
-      ITestRunnerFactory runnerFactory,
-      boolean useDefaultListeners,
-      List<IMethodInterceptor> methodInterceptors,
-      Collection<IInvokedMethodListener> invokedMethodListener,
-      TestListenersContainer container,
-      Collection<IClassListener> classListeners,
-      DataProviderHolder attribs,
-      Comparator<ITestNGMethod> comparator) {
     if (comparator == null) {
       throw new IllegalArgumentException("comparator must not be null");
     }
-    this.holder.merge(attribs);
+    this.holder = holder;
     this.configuration = configuration;
     this.xmlSuite = suite;
     this.useDefaultListeners = useDefaultListeners;
@@ -264,12 +238,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   private void invokeListeners(boolean start) {
     if (start) {
       for (ISuiteListener sl :
-          ListenerOrderDeterminer.order(Lists.newArrayList(listeners.values()))) {
+          ListenerOrderDeterminer.order(
+              listeners.values(), this.configuration.getListenerComparator())) {
         sl.onStart(this);
       }
     } else {
       List<ISuiteListener> suiteListenersReversed =
-          ListenerOrderDeterminer.reversedOrder(listeners.values());
+          ListenerOrderDeterminer.reversedOrder(
+              listeners.values(), this.configuration.getListenerComparator());
       for (ISuiteListener sl : suiteListenersReversed) {
         sl.onFinish(this);
       }
@@ -298,7 +274,8 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               this);
     } else {
       factory =
-          new ProxyTestRunnerFactory(testListeners.toArray(new ITestListener[0]), tmpRunnerFactory);
+          new ProxyTestRunnerFactory(
+              testListeners.toArray(new ITestListener[0]), tmpRunnerFactory, configuration);
     }
 
     return factory;
@@ -627,7 +604,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         Collection<IInvokedMethodListener> listeners,
         List<IClassListener> classListeners,
         Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
-      DataProviderHolder holder = new DataProviderHolder();
+      DataProviderHolder holder = new DataProviderHolder(this.configuration);
       holder.addListeners(dataProviderListeners.values());
       return newTestRunner(suite, test, listeners, classListeners, holder);
     }
@@ -684,9 +661,13 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     private final ITestListener[] failureGenerators;
     private final ITestRunnerFactory target;
 
-    public ProxyTestRunnerFactory(ITestListener[] failureListeners, ITestRunnerFactory target) {
+    private final IConfiguration configuration;
+
+    public ProxyTestRunnerFactory(
+        ITestListener[] failureListeners, ITestRunnerFactory target, IConfiguration configuration) {
       failureGenerators = failureListeners;
       this.target = target;
+      this.configuration = configuration;
     }
 
     @Override
@@ -705,7 +686,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         Collection<IInvokedMethodListener> listeners,
         List<IClassListener> classListeners,
         Map<Class<? extends IDataProviderListener>, IDataProviderListener> dataProviderListeners) {
-      DataProviderHolder holder = new DataProviderHolder();
+      DataProviderHolder holder = new DataProviderHolder(configuration);
       holder.addListeners(dataProviderListeners.values());
       return newTestRunner(suite, test, listeners, classListeners, holder);
     }

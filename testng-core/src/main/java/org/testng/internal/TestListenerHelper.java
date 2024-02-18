@@ -10,6 +10,7 @@ import org.testng.ITestNGListenerFactory;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
+import org.testng.ListenerComparator;
 import org.testng.TestNGException;
 import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.Lists;
@@ -25,9 +26,12 @@ public final class TestListenerHelper {
       ITestResult tr,
       ITestNGMethod tm,
       List<IConfigurationListener> listeners,
-      IConfigurationListener internal) {
+      IConfigurationListener internal,
+      ListenerComparator comparator) {
     internal.beforeConfiguration(tr);
-    for (IConfigurationListener icl : listeners) {
+    List<IConfigurationListener> original = ListenerOrderDeterminer.order(listeners, comparator);
+
+    for (IConfigurationListener icl : original) {
       icl.beforeConfiguration(tr);
       try {
         icl.beforeConfiguration(tr, tm);
@@ -41,9 +45,10 @@ public final class TestListenerHelper {
       ITestResult tr,
       ITestNGMethod tm,
       List<IConfigurationListener> listeners,
-      IConfigurationListener internal) {
+      IConfigurationListener internal,
+      ListenerComparator comparator) {
     List<IConfigurationListener> listenersreversed =
-        ListenerOrderDeterminer.reversedOrder(listeners);
+        ListenerOrderDeterminer.reversedOrder(listeners, comparator);
     listenersreversed.add(internal);
     for (IConfigurationListener icl : listenersreversed) {
       switch (tr.getStatus()) {

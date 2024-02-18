@@ -1,5 +1,6 @@
 package org.testng;
 
+import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
@@ -271,6 +272,14 @@ public class TestNG {
    */
   public void setUseDefaultListeners(boolean useDefaultListeners) {
     m_useDefaultListeners = useDefaultListeners;
+  }
+
+  public void setListenerComparator(ListenerComparator listenerComparator) {
+    this.m_configuration.setListenerComparator(listenerComparator);
+  }
+
+  public ListenerComparator getListenerComparator() {
+    return m_configuration.getListenerComparator();
   }
 
   /**
@@ -1130,14 +1139,17 @@ public class TestNG {
   }
 
   private void runSuiteAlterationListeners() {
-    for (IAlterSuiteListener l : m_alterSuiteListeners.values()) {
+    Collection<IAlterSuiteListener> original =
+        sort(m_alterSuiteListeners.values(), m_configuration.getListenerComparator());
+    for (IAlterSuiteListener l : original) {
       l.alter(m_suites);
     }
   }
 
   private void runExecutionListeners(boolean start) {
     List<IExecutionListener> executionListeners =
-        ListenerOrderDeterminer.order(m_configuration.getExecutionListeners());
+        ListenerOrderDeterminer.order(
+            m_configuration.getExecutionListeners(), m_configuration.getListenerComparator());
     if (start) {
       for (IExecutionListener l : executionListeners) {
         l.onExecutionStart();
@@ -1146,7 +1158,8 @@ public class TestNG {
       exitCodeListener.onExecutionStart();
     } else {
       List<IExecutionListener> executionListenersReversed =
-          ListenerOrderDeterminer.reversedOrder(executionListeners);
+          ListenerOrderDeterminer.reversedOrder(
+              m_configuration.getExecutionListeners(), m_configuration.getListenerComparator());
       for (IExecutionListener l : executionListenersReversed) {
         l.onExecutionFinish();
       }
@@ -1367,7 +1380,7 @@ public class TestNG {
 
   /** Creates a suite runner and configures its initial state */
   private SuiteRunner createSuiteRunner(XmlSuite xmlSuite) {
-    DataProviderHolder holder = new DataProviderHolder();
+    DataProviderHolder holder = new DataProviderHolder(m_configuration);
     holder.addListeners(m_dataProviderListeners.values());
     holder.addInterceptors(m_dataProviderInterceptors.values());
     TestListenersContainer container =
@@ -1483,6 +1496,13 @@ public class TestNG {
         .ifPresent(this::setListenerFactory);
 
     Optional.ofNullable(cla.generateResultsPerSuite).ifPresent(this::setGenerateResultsPerSuite);
+
+    Optional.ofNullable(cla.listenerComparator)
+        .map(ClassHelper::forName)
+        .filter(ListenerComparator.class::isAssignableFrom)
+        .map(it -> m_objectFactory.newInstance(it))
+        .map(it -> (ListenerComparator) it)
+        .ifPresent(this::setListenerComparator);
 
     if (cla.verbose != null) {
       setVerbose(cla.verbose);

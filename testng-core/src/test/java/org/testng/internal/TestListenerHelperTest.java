@@ -64,7 +64,7 @@ public class TestListenerHelperTest {
     configuration.setObjectFactory(objectFactory);
     TestNGClassFinder finder =
         new TestNGClassFinder(
-            classMap, Maps.newHashMap(), configuration, ctx, new DataProviderHolder());
+            classMap, Maps.newHashMap(), configuration, ctx, new DataProviderHolder(configuration));
     ITestNGListenerFactory factory =
         TestListenerHelper.createListenerFactory(objectFactory, finder, listenerClazz, ctx);
     assertThat(factory).isNotNull();

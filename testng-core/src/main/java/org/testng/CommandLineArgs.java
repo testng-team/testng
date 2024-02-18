@@ -54,6 +54,14 @@ public class CommandLineArgs {
               + " implementing ITestListener or ISuiteListener")
   public String listener;
 
+  public static final String LISTENER_COMPARATOR = "-listenercomparator";
+
+  @Parameter(
+      names = LISTENER_COMPARATOR,
+      description =
+          "An implementation of ListenerComparator that will be used by TestNG to determine order of execution for listeners")
+  public String listenerComparator;
+
   public static final String METHOD_SELECTORS = "-methodselectors";
 
   @Parameter(

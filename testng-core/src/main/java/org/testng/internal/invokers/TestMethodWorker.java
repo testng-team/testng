@@ -1,5 +1,7 @@
 package org.testng.internal.invokers;
 
+import static org.testng.ListenerComparator.sort;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +167,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     Object instance = mi.getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);
-      for (IClassListener listener : m_listeners) {
+      List<IClassListener> original =
+          sort(m_listeners, m_configInvoker.getConfiguration().getListenerComparator());
+      for (IClassListener listener : original) {
         listener.onBeforeClass(testClass);
       }
       ConfigMethodArguments attributes =
@@ -231,7 +235,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   }
 
   private void invokeListenersOnAfterClass(ITestClass testClass, List<IClassListener> listeners) {
-    for (IClassListener listener : listeners) {
+    List<IClassListener> original =
+        sort(listeners, m_configInvoker.getConfiguration().getListenerComparator());
+    for (IClassListener listener : original) {
       listener.onAfterClass(testClass);
     }
   }

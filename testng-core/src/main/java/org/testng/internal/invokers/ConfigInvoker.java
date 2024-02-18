@@ -21,6 +21,7 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
+import org.testng.ListenerComparator;
 import org.testng.Reporter;
 import org.testng.SuiteRunState;
 import org.testng.TestNGException;
@@ -75,6 +76,11 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
         testContext.getSuite().getXmlSuite().getConfigFailurePolicy()
             == XmlSuite.FailurePolicy.CONTINUE;
     this.internalConfigurationListener = internalConfigurationListener;
+  }
+
+  @Override
+  public IConfiguration getConfiguration() {
+    return this.m_configuration;
   }
 
   /**
@@ -433,12 +439,21 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   }
 
   private void runConfigurationListeners(ITestResult tr, ITestNGMethod tm, boolean before) {
+    ListenerComparator comparator = m_configuration.getListenerComparator();
     if (before) {
       TestListenerHelper.runPreConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
+          tr,
+          tm,
+          m_notifier.getConfigurationListeners(),
+          internalConfigurationListener,
+          comparator);
     } else {
       TestListenerHelper.runPostConfigurationListeners(
-          tr, tm, m_notifier.getConfigurationListeners(), internalConfigurationListener);
+          tr,
+          tm,
+          m_notifier.getConfigurationListeners(),
+          internalConfigurationListener,
+          comparator);
     }
   }
 

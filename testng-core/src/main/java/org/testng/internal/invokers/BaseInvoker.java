@@ -70,8 +70,10 @@ class BaseInvoker {
     boolean isAfterInvocation = InvokedMethodListenerMethod.AFTER_INVOCATION == listenerMethod;
     Collection<IInvokedMethodListener> listeners =
         isAfterInvocation
-            ? ListenerOrderDeterminer.reversedOrder(m_invokedMethodListeners)
-            : ListenerOrderDeterminer.order(m_invokedMethodListeners);
+            ? ListenerOrderDeterminer.reversedOrder(
+                m_invokedMethodListeners, m_configuration.getListenerComparator())
+            : ListenerOrderDeterminer.order(
+                m_invokedMethodListeners, m_configuration.getListenerComparator());
     if (!isAfterInvocation) {
       suiteRunner.beforeInvocation(invokedMethod, testResult);
     }

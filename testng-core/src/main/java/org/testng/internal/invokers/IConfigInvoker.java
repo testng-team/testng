@@ -2,6 +2,7 @@ package org.testng.internal.invokers;
 
 import org.testng.IClass;
 import org.testng.ITestNGMethod;
+import org.testng.internal.IConfiguration;
 
 public interface IConfigInvoker {
 
@@ -20,4 +21,6 @@ public interface IConfigInvoker {
   void invokeAfterGroupsConfigurations(GroupConfigMethodArguments arguments);
 
   void invokeConfigurations(ConfigMethodArguments arguments);
+
+  IConfiguration getConfiguration();
 }

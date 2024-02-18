@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import static org.testng.ListenerComparator.sort;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -7,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.testng.ITestNGListener;
+import org.testng.ListenerComparator;
 import org.testng.collections.Lists;
 import org.testng.internal.collections.Pair;
 
@@ -43,7 +47,9 @@ public final class ListenerOrderDeterminer {
    * @param original - The original collection of listeners
    * @return - A re-ordered collection wherein preferential listeners are added at the end
    */
-  public static <T> List<T> order(Collection<T> original) {
+  public static <T extends ITestNGListener> List<T> order(
+      Collection<T> original, ListenerComparator comparator) {
+    original = sort(original, comparator);
     Pair<List<T>, List<T>> ordered = arrange(original);
     List<T> ideListeners = ordered.first();
     List<T> regularListeners = ordered.second();
@@ -55,7 +61,9 @@ public final class ListenerOrderDeterminer {
    * @return - A reversed ordered list wherein the user listeners are found in reverse order
    *     followed by preferential listeners also in reverse order.
    */
-  public static <T> List<T> reversedOrder(Collection<T> original) {
+  public static <T extends ITestNGListener> List<T> reversedOrder(
+      Collection<T> original, ListenerComparator comparator) {
+    original = sort(original, comparator);
     Pair<List<T>, List<T>> ordered = arrange(original);
     List<T> preferentialListeners = ordered.first();
     List<T> regularListeners = ordered.second();
