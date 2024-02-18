@@ -1,6 +1,5 @@
 package org.testng;
 
-import static org.testng.ListenerComparator.sort;
 import static org.testng.internal.Utils.isStringBlank;
 
 import com.google.inject.Injector;
@@ -237,14 +236,16 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   private void invokeListeners(boolean start) {
-    Collection<ISuiteListener> original =
-        sort(listeners.values(), this.configuration.getListenerComparator());
     if (start) {
-      for (ISuiteListener sl : ListenerOrderDeterminer.order(original)) {
+      for (ISuiteListener sl :
+          ListenerOrderDeterminer.order(
+              listeners.values(), this.configuration.getListenerComparator())) {
         sl.onStart(this);
       }
     } else {
-      List<ISuiteListener> suiteListenersReversed = ListenerOrderDeterminer.reversedOrder(original);
+      List<ISuiteListener> suiteListenersReversed =
+          ListenerOrderDeterminer.reversedOrder(
+              listeners.values(), this.configuration.getListenerComparator());
       for (ISuiteListener sl : suiteListenersReversed) {
         sl.onFinish(this);
       }

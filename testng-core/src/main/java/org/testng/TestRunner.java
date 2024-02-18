@@ -852,15 +852,17 @@ public class TestRunner
    *     finish
    */
   private void fireEvent(boolean isStart) {
-    List<ITestListener> original = sort(m_testListeners, m_configuration.getListenerComparator());
     if (isStart) {
-      for (ITestListener itl : ListenerOrderDeterminer.order(original)) {
+      for (ITestListener itl :
+          ListenerOrderDeterminer.order(m_testListeners, m_configuration.getListenerComparator())) {
         itl.onStart(this);
       }
       this.exitCodeListener.onStart(this);
 
     } else {
-      List<ITestListener> testListenersReversed = ListenerOrderDeterminer.reversedOrder(original);
+      List<ITestListener> testListenersReversed =
+          ListenerOrderDeterminer.reversedOrder(
+              m_testListeners, m_configuration.getListenerComparator());
       for (ITestListener itl : testListenersReversed) {
         itl.onFinish(this);
       }

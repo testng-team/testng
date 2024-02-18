@@ -1147,9 +1147,9 @@ public class TestNG {
   }
 
   private void runExecutionListeners(boolean start) {
-    List<IExecutionListener> original =
-        sort(m_configuration.getExecutionListeners(), m_configuration.getListenerComparator());
-    List<IExecutionListener> executionListeners = ListenerOrderDeterminer.order(original);
+    List<IExecutionListener> executionListeners =
+        ListenerOrderDeterminer.order(
+            m_configuration.getExecutionListeners(), m_configuration.getListenerComparator());
     if (start) {
       for (IExecutionListener l : executionListeners) {
         l.onExecutionStart();
@@ -1158,7 +1158,8 @@ public class TestNG {
       exitCodeListener.onExecutionStart();
     } else {
       List<IExecutionListener> executionListenersReversed =
-          ListenerOrderDeterminer.reversedOrder(executionListeners);
+          ListenerOrderDeterminer.reversedOrder(
+              m_configuration.getExecutionListeners(), m_configuration.getListenerComparator());
       for (IExecutionListener l : executionListenersReversed) {
         l.onExecutionFinish();
       }
