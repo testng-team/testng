@@ -778,7 +778,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
       Annotation[] annotations = method.getDeclaredAnnotations();
 
       for (Annotation a : annotations) {
-        if (Test.class.isAssignableFrom(a.getClass())) {
+        if (Test.class.isAssignableFrom(a.annotationType())) {
           isTestMethod = true;
         }
       }

@@ -305,22 +305,10 @@ public class AssertTest {
     Assert.assertEquals(actual, expected, 0.1d);
   }
 
-  @SuppressWarnings("serial")
   @Test(expectedExceptions = AssertionError.class)
   public void assertEqualsMapShouldFail() {
-    Map<String, String> mapActual =
-        new HashMap<String, String>() {
-          {
-            put("a", "1");
-          }
-        };
-    Map<String, String> mapExpected =
-        new HashMap<String, String>() {
-          {
-            put("a", "1");
-            put("b", "2");
-          }
-        };
+    Map<String, String> mapActual = Map.of("a", "1");
+    Map<String, String> mapExpected = Map.of("a", "1", "b", "2");
 
     Assert.assertEquals(mapActual, mapExpected);
   }
@@ -654,12 +642,22 @@ public class AssertTest {
     public boolean equals(Object o) {
       return true; // broken implementation
     }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
   }
 
   static class BrokenEqualsFalse {
     @Override
     public boolean equals(Object o) {
       return false; // broken implementation
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
     }
   }
 }

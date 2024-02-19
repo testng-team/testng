@@ -1,5 +1,8 @@
 package test.sample;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,28 +25,29 @@ public class AfterClassCalledAtEnd extends BaseAfterClassCalledAtEnd {
   @AfterClass(groups = {"someGroup"})
   public void afterClass() {
     m_afterClass = true;
-    assert m_test1 && m_test2 && m_test3
-        : "One of the test methods was not invoked: " + m_test1 + " " + m_test2 + " " + m_test3;
+    assertTrue(
+        m_test1 && m_test2 && m_test3,
+        "One of the test methods was not invoked: " + m_test1 + " " + m_test2 + " " + m_test3);
   }
 
   @Test(description = "Verify that beforeClass and afterClass are called correctly")
   public void test1() {
     m_test1 = true;
-    assert m_before1Class : "beforeClass configuration must be called before method";
-    assert !m_afterClass : "afterClass configuration must not be called before test method";
+    assertTrue(m_before1Class, "beforeClass configuration must be called before method");
+    assertFalse(m_afterClass, "afterClass configuration must not be called before test method");
   }
 
   @Test
   public void test2() {
     m_test2 = true;
-    assert m_before1Class : "beforeClass configuration must be called before method";
-    assert !m_afterClass : "afterClass configuration must not be called before test method";
+    assertTrue(m_before1Class, "beforeClass configuration must be called before method");
+    assertFalse(m_afterClass, "afterClass configuration must not be called before test method");
   }
 
   @Test
   public void test3() {
     m_test3 = true;
-    assert m_before1Class : "beforeClass configuration must be called before method";
-    assert !m_afterClass : "afterClass configuration must not be called before test method";
+    assertTrue(m_before1Class, "beforeClass configuration must be called before method");
+    assertFalse(m_afterClass, "afterClass configuration must not be called before test method");
   }
 }

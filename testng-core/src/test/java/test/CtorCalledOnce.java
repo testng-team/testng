@@ -1,5 +1,7 @@
 package test;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 
@@ -16,17 +18,17 @@ public class CtorCalledOnce {
 
   @Test
   public void testMethod1() {
-    assert instantiated == 1 : "Expected 1, was invoked " + instantiated + " times";
+    assertEquals(instantiated, 1, "Expected 1, was invoked " + instantiated + " times");
   }
 
   @Test
   public void testMethod2() {
-    assert instantiated == 1 : "Expected 1, was invoked " + instantiated + " times";
+    assertEquals(instantiated, 1, "Expected 1, was invoked " + instantiated + " times");
   }
 
   @Test
   public void testMethod3() {
-    assert instantiated == 1 : "Expected 1, was invoked " + instantiated + " times";
+    assertEquals(instantiated, 1, "Expected 1, was invoked " + instantiated + " times");
   }
 
   @AfterTest

@@ -11,7 +11,7 @@ public class SampleTestUsingPredicate {
 
   @Test(dataProvider = "dp")
   public void testMethod(Predicate<String> data) {
-    data.test("IronHide");
+    boolean ignored = data.test("IronHide");
   }
 
   @DataProvider(name = "dp")

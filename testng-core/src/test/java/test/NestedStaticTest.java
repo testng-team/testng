@@ -1,6 +1,5 @@
 package test;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.testng.Assert;
@@ -19,13 +18,7 @@ public class NestedStaticTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    Set<String> expected =
-        new HashSet<String>() {
-          {
-            add("nested");
-            add("f");
-          }
-        };
+    Set<String> expected = Set.of("nested", "f");
     Set<String> actual = Sets.newHashSet();
     List<ITestResult> passedTests = tla.getPassedTests();
     for (ITestResult t : passedTests) {

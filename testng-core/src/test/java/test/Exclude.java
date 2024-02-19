@@ -1,5 +1,7 @@
 package test;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
 
 public class Exclude {
@@ -32,14 +34,15 @@ public class Exclude {
       dependsOnGroups = {"group1"},
       groups = {"group2"})
   public void verify() {
-    assert m_included1 && m_included2 && m_excluded1 && m_excluded2
-        : "Should all be true: "
+    assertTrue(
+        m_included1 && m_included2 && m_excluded1 && m_excluded2,
+        "Should all be true: "
             + m_included1
             + " "
             + m_included2
             + " "
             + m_excluded1
             + " "
-            + m_excluded2;
+            + m_excluded2);
   }
 }

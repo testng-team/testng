@@ -644,7 +644,7 @@ public class JDK15TagFactory {
     Object result = null;
     try {
       // Note:  we should cache methods already looked up
-      Method m = test.getClass().getMethod(methodName);
+      Method m = test.annotationType().getMethod(methodName);
       result = m.invoke(test);
     } catch (Exception e) {
       Logger.getLogger(JDK15TagFactory.class).error(e.getMessage(), e);

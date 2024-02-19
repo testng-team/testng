@@ -12,7 +12,7 @@ public class SampleTestUsingFunction {
 
   @Test(dataProvider = "dp")
   public void testMethod(Function<String, String> data) {
-    data.apply("Bumble_Bee");
+    String ignored = data.apply("Bumble_Bee");
   }
 
   @DataProvider(name = "dp")

@@ -1,5 +1,7 @@
 package test.factory;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -34,9 +36,11 @@ public class FactoryInSeparateClassTest {
       dependsOnGroups = {"MySample"})
   public void checkSum() {
     m_wasRun = true;
-    assert (m_checkSum == 6)
-        : "Test instances made by factory did not invoke their test methods correctly.  expected 6 but got "
-            + m_checkSum;
+    assertEquals(
+        m_checkSum,
+        6,
+        "Test instances made by factory did not invoke their test methods correctly.  expected 6 but got "
+            + m_checkSum);
   }
 
   public static boolean wasRun() {

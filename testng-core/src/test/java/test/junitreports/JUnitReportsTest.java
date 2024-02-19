@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -106,14 +105,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     tng.run();
     Testsuite suite = reportReporter.getTestsuite(Issue1262TestSample.class.getName());
     List<String> expected =
-        new LinkedList<String>() {
-          {
-            add("testRoles001_Post");
-            add("testRoles002_Post");
-            add("testRoles003_Post");
-            add("testRoles004_Post");
-          }
-        };
+        List.of("testRoles001_Post", "testRoles002_Post", "testRoles003_Post", "testRoles004_Post");
     List<String> actual = Lists.newLinkedList();
     for (Testcase testcase : suite.getTestcase()) {
       actual.add(testcase.getName().trim());

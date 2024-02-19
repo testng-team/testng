@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 public class BeforeConfigTestSample {
   @BeforeClass
   public void beforeClass() {
+    @SuppressWarnings("ConstantOverflow")
     int i = 5 / 0;
   }
 
