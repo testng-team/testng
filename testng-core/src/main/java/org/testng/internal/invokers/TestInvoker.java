@@ -377,7 +377,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     long maxTimeOut =
         workers.parallelStream().map(IWorker::getTimeOut).max(Long::compare).orElse(-1L);
 
-    ThreadUtil.execute("methods", workers, threadPoolSize, maxTimeOut);
+    ThreadUtil.execute(m_configuration, "methods", workers, threadPoolSize, maxTimeOut);
 
     //
     // Collect all the TestResults
@@ -673,6 +673,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         // Method with a timeout
         willfullyIgnored =
             !MethodInvocationHelper.invokeWithTimeout(
+                m_configuration,
                 arguments.getTestMethod(),
                 arguments.getInstance(),
                 arguments.getParameterValues(),

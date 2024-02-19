@@ -2,7 +2,6 @@ package org.testng;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.RuntimeBehavior;
@@ -10,8 +9,6 @@ import org.testng.internal.Utils;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.graph.GraphOrchestrator;
 import org.testng.log4testng.Logger;
-import org.testng.thread.IExecutorFactory;
-import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 
 class SuiteTaskExecutor {
@@ -42,29 +39,18 @@ class SuiteTaskExecutor {
   public void execute() {
     String name = "suites-";
     if (RuntimeBehavior.favourCustomThreadPoolExecutor()) {
-      IExecutorFactory execFactory = configuration.getExecutorFactory();
-      ITestNGThreadPoolExecutor executor =
-          execFactory.newSuiteExecutor(
-              name,
-              graph,
-              factory,
-              threadPoolSize,
-              threadPoolSize,
-              Integer.MAX_VALUE,
-              TimeUnit.MILLISECONDS,
-              queue,
-              null);
-      executor.run();
-      service = executor;
+      throw new UnsupportedOperationException("This is NO LONGER Supported in TestNG");
     } else {
       service =
-          new ThreadPoolExecutor(
-              threadPoolSize,
-              threadPoolSize,
-              Integer.MAX_VALUE,
-              TimeUnit.MILLISECONDS,
-              queue,
-              new TestNGThreadFactory(name));
+          this.configuration
+              .getExecutorServiceFactory()
+              .create(
+                  threadPoolSize,
+                  threadPoolSize,
+                  Integer.MAX_VALUE,
+                  TimeUnit.MILLISECONDS,
+                  queue,
+                  new TestNGThreadFactory(name));
       GraphOrchestrator<ISuite> executor = new GraphOrchestrator<>(service, factory, graph, null);
       executor.run();
     }

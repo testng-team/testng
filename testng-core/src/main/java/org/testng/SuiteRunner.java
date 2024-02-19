@@ -439,7 +439,11 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
 
     ThreadUtil.execute(
-        "tests", tasks, xmlSuite.getThreadCount(), xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS));
+        configuration,
+        "tests",
+        tasks,
+        xmlSuite.getThreadCount(),
+        xmlSuite.getTimeOut(XmlTest.DEFAULT_TIMEOUT_MS));
   }
 
   private class SuiteWorker implements Runnable {
