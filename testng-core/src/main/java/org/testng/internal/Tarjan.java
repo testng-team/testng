@@ -1,9 +1,9 @@
 package org.testng.internal;
 
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Stack;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 
@@ -14,13 +14,13 @@ import org.testng.collections.Maps;
  */
 public class Tarjan<T> {
   int m_index = 0;
-  private final Stack<T> stack;
+  private final ArrayDeque<T> stack;
   Map<T, Integer> visitedNodes = Maps.newHashMap();
   Map<T, Integer> m_lowlinks = Maps.newHashMap();
   private List<T> m_cycle;
 
   public Tarjan(Graph<T> graph, T start) {
-    stack = new Stack<>();
+    stack = new ArrayDeque<>();
     run(graph, start);
   }
 

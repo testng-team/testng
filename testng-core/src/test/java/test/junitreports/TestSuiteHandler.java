@@ -1,16 +1,17 @@
 package test.junitreports;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class TestSuiteHandler extends DefaultHandler {
   private static final List<String> tags = Arrays.asList("error", "skipped", "ignored", "failure");
   private final Testsuite testsuite = new Testsuite();
-  private final Stack<String> elementStack = new Stack<>();
-  private final Stack<Testcase> testcaseStack = new Stack<>();
+  private final Deque<String> elementStack = new ArrayDeque<>();
+  private final Deque<Testcase> testcaseStack = new ArrayDeque<>();
 
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
