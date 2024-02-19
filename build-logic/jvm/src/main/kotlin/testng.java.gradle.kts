@@ -42,3 +42,7 @@ tasks.configureEach<Test> {
     inputs.property("java.vm.version", System.getProperty("java.vm.version"))
     inputs.property("java.vm.vendor", System.getProperty("java.vm.vendor"))
 }
+
+if (!buildParameters.skipErrorProne) {
+    apply(plugin = "testng.errorprone")
+}
