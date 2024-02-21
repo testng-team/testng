@@ -1,5 +1,7 @@
 package test.sample;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
 
 /**
@@ -10,7 +12,8 @@ import org.testng.annotations.Test;
 public class PartialGroupVerification {
   @Test
   public void verify() {
-    assert PartialGroupTest.m_successMethod && PartialGroupTest.m_successClass
-        : "test1 and test2 should have been invoked both";
+    assertTrue(
+        PartialGroupTest.m_successMethod && PartialGroupTest.m_successClass,
+        "test1 and test2 should have been invoked both");
   }
 }

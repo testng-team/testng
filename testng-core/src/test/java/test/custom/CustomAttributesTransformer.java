@@ -3,6 +3,8 @@ package test.custom;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 import org.testng.IAnnotationTransformer;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestAnnotation;
@@ -40,6 +42,21 @@ public class CustomAttributesTransformer implements IAnnotationTransformer {
     @Override
     public Class<? extends Annotation> annotationType() {
       return CustomAttribute.class;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      MoreAttribute that = (MoreAttribute) o;
+      return Objects.equals(key, that.key) && Arrays.equals(values, that.values);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = Objects.hash(key);
+      result = 31 * result + Arrays.hashCode(values);
+      return result;
     }
   }
 }

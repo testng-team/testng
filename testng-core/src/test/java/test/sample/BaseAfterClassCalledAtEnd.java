@@ -1,5 +1,7 @@
 package test.sample;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.AfterClass;
 
 public class BaseAfterClassCalledAtEnd {
@@ -7,6 +9,6 @@ public class BaseAfterClassCalledAtEnd {
 
   @AfterClass(dependsOnGroups = {".*"})
   public void baseAfterClass() {
-    assert m_afterClass : "This afterClass method should have been called last";
+    assertTrue(m_afterClass, "This afterClass method should have been called last");
   }
 }

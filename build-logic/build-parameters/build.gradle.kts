@@ -49,4 +49,8 @@ buildParameters {
         defaultValue.set(true)
         description.set("Fail build on javadoc warnings")
     }
+    bool("skipErrorProne") {
+        defaultValue.set(false)
+        description.set("Skip Error Prone verifications")
+    }
 }

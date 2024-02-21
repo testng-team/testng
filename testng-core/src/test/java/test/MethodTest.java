@@ -1,5 +1,7 @@
 package test;
 
+import static org.testng.AssertJUnit.assertEquals;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import test.sample.Sample2;
@@ -36,7 +38,7 @@ public class MethodTest extends BaseTest {
   @Test
   public void excludePackage() {
     addClass(CLASS_NAME);
-    assert 1 == getTest().getXmlClasses().size();
+    assertEquals(getTest().getXmlClasses().size(), 1);
     addExcludedMethod(CLASS_NAME, ".*");
     run();
     String[] passed = {};

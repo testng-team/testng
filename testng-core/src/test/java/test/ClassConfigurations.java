@@ -1,5 +1,7 @@
 package test;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -29,22 +31,19 @@ public class ClassConfigurations {
 
   @Test
   public void testOne() {
-    //    System.out.println("testOne");
-    assert beforeCount == 1;
-    assert afterCount == 0;
+    assertEquals(beforeCount, 1);
+    assertEquals(afterCount, 0);
   }
 
   @Test
   public void testTwo() {
-    //    System.out.println("testTwo");
-    assert beforeCount == 1;
-    assert afterCount == 0;
+    assertEquals(beforeCount, 1);
+    assertEquals(afterCount, 0);
   }
 
   @Test
   public void testThree() {
-    //    System.out.println("testThree");
-    assert beforeCount == 1;
-    assert afterCount == 0;
+    assertEquals(beforeCount, 1);
+    assertEquals(afterCount, 0);
   }
 }

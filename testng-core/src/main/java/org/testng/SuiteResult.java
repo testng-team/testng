@@ -6,7 +6,7 @@ import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
 
 /** This class logs the result of an entire Test Suite (defined by a property file). */
-class SuiteResult implements ISuiteResult, Comparable<ISuiteResult> {
+class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
   private final XmlSuite m_suite;
   private final ITestContext m_testContext;
 
@@ -26,7 +26,7 @@ class SuiteResult implements ISuiteResult, Comparable<ISuiteResult> {
   }
 
   @Override
-  public int compareTo(@Nonnull ISuiteResult other) {
+  public int compareTo(@Nonnull SuiteResult other) {
     int result = 0;
     try {
       String n1 = getTestContext().getName();

@@ -1,5 +1,8 @@
 package test;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import test.sample.BaseSampleInheritance;
@@ -17,9 +20,9 @@ public class SampleInheritance extends BaseSampleInheritance {
       groups = "final",
       dependsOnGroups = {"configuration1"})
   public void configuration2() {
-    assert m_configurations.size() == 2 : "Expected size 2 found " + m_configurations.size();
-    assert "configuration0".equals(m_configurations.get(0)) : "Expected configuration0 to be run";
-    assert "configuration1".equals(m_configurations.get(1)) : "Expected configuration1 to be run";
+    assertEquals(m_configurations.size(), 2, "Expected size 2 found " + m_configurations.size());
+    assertEquals(m_configurations.get(0), "configuration0", "Expected configuration0 to be run");
+    assertEquals(m_configurations.get(1), "configuration1", "Expected configuration1 to be run");
     addConfiguration("configuration2");
   }
 
@@ -27,15 +30,15 @@ public class SampleInheritance extends BaseSampleInheritance {
       groups = "final",
       dependsOnGroups = {"inheritedTestMethod"})
   public void inheritedMethodsWereCalledInOrder() {
-    assert m_invokedBaseMethod : "Didn't invoke test method in base class";
-    assert m_invokedBaseConfiguration : "Didn't invoke configuration method in base class";
+    assertTrue(m_invokedBaseMethod, "Didn't invoke test method in base class");
+    assertTrue(m_invokedBaseConfiguration, "Didn't invoke configuration method in base class");
   }
 
   @Test(groups = "final2", dependsOnGroups = "final")
   public void configurationsWereCalledInOrder() {
-    assert m_configurations.size() == 3;
-    assert "configuration0".equals(m_configurations.get(0)) : "Expected configuration0 to be run";
-    assert "configuration1".equals(m_configurations.get(1)) : "Expected configuration1 to be run";
-    assert "configuration2".equals(m_configurations.get(2)) : "Expected configuration1 to be run";
+    assertEquals(m_configurations.size(), 3);
+    assertEquals(m_configurations.get(0), "configuration0", "Expected configuration0 to be run");
+    assertEquals(m_configurations.get(1), "configuration1", "Expected configuration1 to be run");
+    assertEquals(m_configurations.get(2), "configuration2", "Expected configuration1 to be run");
   }
 }

@@ -11,7 +11,7 @@ public class Tmp {
     debug("START " + Thread.currentThread().getId());
     try {
       Random r = new Random();
-      Thread.sleep(Math.abs(r.nextInt() % 300));
+      Thread.sleep(Math.abs(r.nextInt(300)));
     } catch (InterruptedException handled) {
       Thread.currentThread().interrupt();
       handled.printStackTrace();

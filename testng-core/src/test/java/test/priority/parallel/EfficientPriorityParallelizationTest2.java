@@ -100,8 +100,6 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
 
     suiteOneTestOneTestMethodLevelEventLogs =
         getTestMethodLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A);
-    suiteOneTestOneTestMethodLevelEventLogs.stream()
-        .filter(e -> e.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_START);
 
     testEventLogsMap.put(SUITE_A_TEST_A, getTestLevelEventLogsForTest(SUITE_A, SUITE_A_TEST_A));
 

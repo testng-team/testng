@@ -1,5 +1,7 @@
 package test.dependent;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.Test;
 
 /**
@@ -30,13 +32,14 @@ public class BaseOrderMethodTest {
 
   protected void verifyGroup(int groupNumber, boolean[] group) {
     for (int i = 0; i < group.length; i++) {
-      assert group[i]
-          : "Error while running group "
+      assertTrue(
+          group[i],
+          "Error while running group "
               + groupNumber
               + ": "
               + " index "
               + i
-              + " of previous group should have been run before.";
+              + " of previous group should have been run before.");
     }
   }
 }

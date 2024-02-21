@@ -1,5 +1,7 @@
 package test.objectfactory;
 
+import static org.testng.Assert.assertNotNull;
+
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
@@ -11,7 +13,7 @@ public class ContextAwareObjectFactoryFactory {
 
   @ObjectFactory
   public ITestObjectFactory create(ITestContext context) {
-    assert context != null;
+    assertNotNull(context);
     invoked++;
     return new ObjectFactoryImpl();
   }

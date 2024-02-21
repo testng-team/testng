@@ -1,9 +1,11 @@
 package org.testng.internal;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -190,9 +192,9 @@ public class Graph<T> {
     // already encountered.  "queue" is the queue of items whose
     // predecessors we haven't yet explored.
 
-    LinkedList<T> result = new LinkedList<>();
+    Deque<T> result = new ArrayDeque<>();
     Set<T> visited = new HashSet<>();
-    LinkedList<T> queue = new LinkedList<>();
+    Deque<T> queue = new ArrayDeque<>();
     visited.add(o);
     queue.addLast(o);
 
@@ -206,7 +208,7 @@ public class Graph<T> {
       }
     }
 
-    return result;
+    return new ArrayList<>(result);
   }
 
   @Override

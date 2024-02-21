@@ -25,6 +25,6 @@ public class JUnitSample2 extends TestCase {
   }
 
   public void testSample2ThatSetUpWasRun() {
-    assert null != m_field : "setUp() wasn't run";
+    assertNotNull("setUp() wasn't run", m_field);
   }
 }
