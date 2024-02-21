@@ -842,8 +842,8 @@ public class TestNG {
   }
 
   public void setExecutorServiceFactory(IExecutorServiceFactory factory) {
-    Objects.requireNonNull(factory);
-    m_configuration.setExecutorServiceFactory(factory);
+    m_configuration.setExecutorServiceFactory(
+        Objects.requireNonNull(factory, "ExecutorServiceFactory cannot be null"));
   }
 
   public void setListenerFactory(ITestNGListenerFactory factory) {
@@ -1188,11 +1188,9 @@ public class TestNG {
     // Create a map with XmlSuite as key and corresponding SuiteRunner as value
     for (XmlSuite xmlSuite : m_suites) {
       if (m_configuration.isShareThreadPoolForDataProviders()) {
-        abortIfUsingGraphThreadPoolExecutor("Shared thread-pool for data providers");
         xmlSuite.setShareThreadPoolForDataProviders(true);
       }
       if (m_configuration.useGlobalThreadPool()) {
-        abortIfUsingGraphThreadPoolExecutor("Global thread-pool");
         xmlSuite.shouldUseGlobalThreadPool(true);
       }
       createSuiteRunners(suiteRunnerMap, xmlSuite);
@@ -1241,13 +1239,6 @@ public class TestNG {
 
   private static void error(String s) {
     LOGGER.error(s);
-  }
-
-  private static void abortIfUsingGraphThreadPoolExecutor(String prefix) {
-    if (RuntimeBehavior.favourCustomThreadPoolExecutor()) {
-      throw new UnsupportedOperationException(
-          prefix + " is NOT COMPATIBLE with TestNG's custom thread pool executor");
-    }
   }
 
   /**

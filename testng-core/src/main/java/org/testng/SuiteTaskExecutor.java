@@ -4,7 +4,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.graph.GraphOrchestrator;
@@ -38,22 +37,18 @@ class SuiteTaskExecutor {
 
   public void execute() {
     String name = "suites-";
-    if (RuntimeBehavior.favourCustomThreadPoolExecutor()) {
-      throw new UnsupportedOperationException("This is NO LONGER Supported in TestNG");
-    } else {
-      service =
-          this.configuration
-              .getExecutorServiceFactory()
-              .create(
-                  threadPoolSize,
-                  threadPoolSize,
-                  Integer.MAX_VALUE,
-                  TimeUnit.MILLISECONDS,
-                  queue,
-                  new TestNGThreadFactory(name));
-      GraphOrchestrator<ISuite> executor = new GraphOrchestrator<>(service, factory, graph, null);
-      executor.run();
-    }
+    service =
+        this.configuration
+            .getExecutorServiceFactory()
+            .create(
+                threadPoolSize,
+                threadPoolSize,
+                Integer.MAX_VALUE,
+                TimeUnit.MILLISECONDS,
+                queue,
+                new TestNGThreadFactory(name));
+    GraphOrchestrator<ISuite> executor = new GraphOrchestrator<>(service, factory, graph, null);
+    executor.run();
   }
 
   public void awaitCompletion() {
