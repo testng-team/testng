@@ -30,15 +30,6 @@ public final class RuntimeBehavior {
   }
 
   /**
-   * @return - <code>true</code> if TestNG is to be using its custom implementation of {@link
-   *     java.util.concurrent.ThreadPoolExecutor} for running concurrent tests. Defaults to <code>
-   *     false</code>
-   */
-  public static boolean favourCustomThreadPoolExecutor() {
-    return Boolean.getBoolean(FAVOR_CUSTOM_THREAD_POOL_EXECUTOR);
-  }
-
-  /**
    * @return - A comma separated list of packages that represent special listeners which users will
    *     expect to be executed after executing the regular listeners. Here special listeners can be
    *     anything that a user feels should be executed ALWAYS at the end.

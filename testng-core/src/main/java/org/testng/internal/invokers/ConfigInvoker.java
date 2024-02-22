@@ -397,7 +397,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
                 targetInstance, params, configurableInstance, method.getMethod(), testResult);
       } else {
         MethodInvocationHelper.invokeMethodConsideringTimeout(
-            tm, method, targetInstance, params, testResult);
+            tm, method, targetInstance, params, testResult, m_configuration);
       }
       boolean testStatusRemainedUnchanged = testResult.isNotRunning();
       boolean throwException = !RuntimeBehavior.ignoreCallbackInvocationSkips();

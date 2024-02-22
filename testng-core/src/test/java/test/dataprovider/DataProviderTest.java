@@ -18,7 +18,6 @@ import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.xml.XmlClass;
@@ -613,20 +612,6 @@ public class DataProviderTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2934")
   public void ensureSequentialDataProviderWithRetryAnalyserWorks() {
     runTest(false);
-  }
-
-  @Test(
-      description = "GITHUB-2980",
-      expectedExceptions = UnsupportedOperationException.class,
-      expectedExceptionsMessageRegExp =
-          "Shared thread-pool for data providers is NOT COMPATIBLE with TestNG's custom thread pool executor")
-  public void ensureErrorShownWhenUsedWithGraphThreadPoolExecutor() {
-    try {
-      System.setProperty(RuntimeBehavior.FAVOR_CUSTOM_THREAD_POOL_EXECUTOR, "true");
-      runDataProviderTest(true);
-    } finally {
-      System.setProperty(RuntimeBehavior.FAVOR_CUSTOM_THREAD_POOL_EXECUTOR, "false");
-    }
   }
 
   @Test(description = "GITHUB-2980", dataProvider = "dataProviderForIssue2980")

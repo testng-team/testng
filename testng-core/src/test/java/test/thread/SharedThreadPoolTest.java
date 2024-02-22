@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.thread.issue2019.TestClassSample;
@@ -36,20 +35,6 @@ public class SharedThreadPoolTest extends SimpleBaseTest {
     assertThat(list)
         .withFailMessage("Expecting the regular and data driven tests to run in at-least 3 threads")
         .hasSizeGreaterThanOrEqualTo(3);
-  }
-
-  @Test(
-      description = "GITHUB-2019",
-      expectedExceptions = UnsupportedOperationException.class,
-      expectedExceptionsMessageRegExp =
-          "Global thread-pool is NOT COMPATIBLE with TestNG's custom thread pool executor")
-  public void ensureErrorShownWhenUsedWithGraphThreadPoolExecutor() {
-    try {
-      System.setProperty(RuntimeBehavior.FAVOR_CUSTOM_THREAD_POOL_EXECUTOR, "true");
-      runSimpleTest(true);
-    } finally {
-      System.setProperty(RuntimeBehavior.FAVOR_CUSTOM_THREAD_POOL_EXECUTOR, "false");
-    }
   }
 
   private static List<Long> runSimpleTest(boolean useSharedGlobalThreadPool) {

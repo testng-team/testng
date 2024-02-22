@@ -30,6 +30,7 @@ import org.testng.ITestResult;
 import org.testng.TestNGException;
 import org.testng.TestNotInvokedException;
 import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -63,12 +64,13 @@ public class MethodInvocationHelper {
       ConstructorOrMethod method,
       Object targetInstance,
       Object[] params,
-      ITestResult testResult)
+      ITestResult testResult,
+      IConfiguration config)
       throws Throwable {
     if (MethodHelper.calculateTimeOut(tm) <= 0) {
       MethodInvocationHelper.invokeMethod(method.getMethod(), targetInstance, params);
     } else {
-      MethodInvocationHelper.invokeWithTimeout(tm, targetInstance, params, testResult);
+      MethodInvocationHelper.invokeWithTimeout(config, tm, targetInstance, params, testResult);
       if (!testResult.isSuccess()) {
         // A time out happened
         Throwable ex = testResult.getThrowable();
@@ -281,12 +283,17 @@ public class MethodInvocationHelper {
    * as implementation an <code>Executor</code> and a <code>CountDownLatch</code>.
    */
   protected static void invokeWithTimeout(
-      ITestNGMethod tm, Object instance, Object[] parameterValues, ITestResult testResult)
+      IConfiguration config,
+      ITestNGMethod tm,
+      Object instance,
+      Object[] parameterValues,
+      ITestResult testResult)
       throws InterruptedException, ThreadExecutionException {
-    invokeWithTimeout(tm, instance, parameterValues, testResult, null);
+    invokeWithTimeout(config, tm, instance, parameterValues, testResult, null);
   }
 
   protected static boolean invokeWithTimeout(
+      IConfiguration config,
       ITestNGMethod tm,
       Object instance,
       Object[] parameterValues,
@@ -300,7 +307,8 @@ public class MethodInvocationHelper {
       // lose the time out of the enclosing executor).
       return invokeWithTimeoutWithNoExecutor(tm, instance, parameterValues, testResult, hookable);
     } else {
-      return invokeWithTimeoutWithNewExecutor(tm, instance, parameterValues, testResult, hookable);
+      return invokeWithTimeoutWithNewExecutor(
+          config, tm, instance, parameterValues, testResult, hookable);
     }
   }
 
@@ -372,13 +380,14 @@ public class MethodInvocationHelper {
   }
 
   private static boolean invokeWithTimeoutWithNewExecutor(
+      IConfiguration configuration,
       ITestNGMethod tm,
       Object instance,
       Object[] parameterValues,
       ITestResult testResult,
       IHookable hookable)
       throws InterruptedException, ThreadExecutionException {
-    ExecutorService exec = ThreadUtil.createExecutor(1, tm.getMethodName());
+    ExecutorService exec = ThreadUtil.createExecutor(configuration, 1, tm.getMethodName());
 
     InvokeMethodRunnable imr =
         new InvokeMethodRunnable(tm, instance, parameterValues, hookable, testResult);

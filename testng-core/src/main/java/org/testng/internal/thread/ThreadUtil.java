@@ -5,9 +5,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.testng.collections.Lists;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
 
@@ -30,7 +30,11 @@ public class ThreadUtil {
    * @param timeout a maximum timeout to wait for tasks finalization
    */
   public static void execute(
-      String name, List<? extends Runnable> tasks, int threadPoolSize, long timeout) {
+      IConfiguration configuration,
+      String name,
+      List<? extends Runnable> tasks,
+      int threadPoolSize,
+      long timeout) {
 
     Utils.log(
         "ThreadUtil",
@@ -43,13 +47,15 @@ public class ThreadUtil {
             + " threadPoolSize:"
             + threadPoolSize);
     ExecutorService pooledExecutor =
-        new ThreadPoolExecutor(
-            threadPoolSize,
-            threadPoolSize,
-            timeout,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(),
-            new TestNGThreadFactory(name));
+        configuration
+            .getExecutorServiceFactory()
+            .create(
+                threadPoolSize,
+                threadPoolSize,
+                timeout,
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(),
+                new TestNGThreadFactory(name));
 
     List<Callable<Object>> callables = Lists.newArrayList();
     for (final Runnable task : tasks) {
@@ -79,9 +85,12 @@ public class ThreadUtil {
     return thread.getName() + "@" + thread.hashCode();
   }
 
-  public static ExecutorService createExecutor(int threadCount, String threadFactoryName) {
+  public static ExecutorService createExecutor(
+      IConfiguration config, int threadCount, String threadFactoryName) {
     ThreadFactory tf = new TestNGThreadFactory("method=" + threadFactoryName);
-    return new ThreadPoolExecutor(
-        threadCount, threadCount, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), tf);
+    return config
+        .getExecutorServiceFactory()
+        .create(
+            threadCount, threadCount, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), tf);
   }
 }

@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -58,7 +59,6 @@ import org.testng.reporters.PerSuiteXMLReporter;
 import org.testng.reporters.VerboseReporter;
 import org.testng.reporters.XMLReporter;
 import org.testng.reporters.jq.Main;
-import org.testng.thread.IExecutorFactory;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
@@ -150,8 +150,6 @@ public class TestNG {
       m_dataProviderListeners = Maps.newLinkedHashMap();
   private final Map<Class<? extends IDataProviderInterceptor>, IDataProviderInterceptor>
       m_dataProviderInterceptors = Maps.newLinkedHashMap();
-
-  private IExecutorFactory m_executorFactory = null;
 
   public static final Integer DEFAULT_VERBOSE = 1;
 
@@ -843,10 +841,9 @@ public class TestNG {
     m_verbose = verbose;
   }
 
-  /** This method stands deprecated as of TestNG <code>v7.9.0</code>. */
-  @Deprecated
-  public void setExecutorFactoryClass(String clazzName) {
-    this.m_executorFactory = createExecutorFactoryInstanceUsing(clazzName);
+  public void setExecutorServiceFactory(IExecutorServiceFactory factory) {
+    m_configuration.setExecutorServiceFactory(
+        Objects.requireNonNull(factory, "ExecutorServiceFactory cannot be null"));
   }
 
   public void setListenerFactory(ITestNGListenerFactory factory) {
@@ -855,31 +852,6 @@ public class TestNG {
 
   public void setGenerateResultsPerSuite(boolean generateResultsPerSuite) {
     this.m_generateResultsPerSuite = generateResultsPerSuite;
-  }
-
-  private IExecutorFactory createExecutorFactoryInstanceUsing(String clazzName) {
-    Class<?> cls = ClassHelper.forName(clazzName);
-    Object instance = m_objectFactory.newInstance(cls);
-    if (instance instanceof IExecutorFactory) {
-      return (IExecutorFactory) instance;
-    }
-    throw new IllegalArgumentException(
-        clazzName + " does not implement " + IExecutorFactory.class.getName());
-  }
-
-  /** This method stands deprecated as of TestNG <code>v7.9.0</code>. */
-  @Deprecated
-  public void setExecutorFactory(IExecutorFactory factory) {
-    this.m_executorFactory = factory;
-  }
-
-  /** This method stands deprecated as of TestNG <code>v7.9.0</code>. */
-  @Deprecated
-  public IExecutorFactory getExecutorFactory() {
-    if (this.m_executorFactory == null) {
-      this.m_executorFactory = createExecutorFactoryInstanceUsing(DEFAULT_THREADPOOL_FACTORY);
-    }
-    return this.m_executorFactory;
   }
 
   private void initializeCommandLineSuites() {
@@ -1018,7 +990,6 @@ public class TestNG {
     m_configuration.setConfigurable(m_configurable);
     m_configuration.setObjectFactory(factory);
     m_configuration.setAlwaysRunListeners(this.m_alwaysRun);
-    m_configuration.setExecutorFactory(getExecutorFactory());
   }
 
   private void addListeners(XmlSuite s) {
@@ -1217,11 +1188,9 @@ public class TestNG {
     // Create a map with XmlSuite as key and corresponding SuiteRunner as value
     for (XmlSuite xmlSuite : m_suites) {
       if (m_configuration.isShareThreadPoolForDataProviders()) {
-        abortIfUsingGraphThreadPoolExecutor("Shared thread-pool for data providers");
         xmlSuite.setShareThreadPoolForDataProviders(true);
       }
       if (m_configuration.useGlobalThreadPool()) {
-        abortIfUsingGraphThreadPoolExecutor("Global thread-pool");
         xmlSuite.shouldUseGlobalThreadPool(true);
       }
       createSuiteRunners(suiteRunnerMap, xmlSuite);
@@ -1270,13 +1239,6 @@ public class TestNG {
 
   private static void error(String s) {
     LOGGER.error(s);
-  }
-
-  private static void abortIfUsingGraphThreadPoolExecutor(String prefix) {
-    if (RuntimeBehavior.favourCustomThreadPoolExecutor()) {
-      throw new UnsupportedOperationException(
-          prefix + " is NOT COMPATIBLE with TestNG's custom thread pool executor");
-    }
   }
 
   /**
@@ -1514,9 +1476,13 @@ public class TestNG {
             m_objectFactory.newInstance((Class<IInjectorFactory>) clazz));
       }
     }
-    if (cla.threadPoolFactoryClass != null) {
-      setExecutorFactoryClass(cla.threadPoolFactoryClass);
-    }
+    Optional.ofNullable(cla.threadPoolFactoryClass)
+        .map(ClassHelper::forName)
+        .filter(IExecutorServiceFactory.class::isAssignableFrom)
+        .map(it -> m_objectFactory.newInstance(it))
+        .map(it -> (IExecutorServiceFactory) it)
+        .ifPresent(this::setExecutorServiceFactory);
+
     setOutputDirectory(cla.outputDirectory);
 
     String testClasses = cla.testClass;

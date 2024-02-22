@@ -3,18 +3,14 @@ package org.testng;
 import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ObjectBag;
-import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.graph.GraphOrchestrator;
 import org.testng.log4testng.Logger;
-import org.testng.thread.IExecutorFactory;
-import org.testng.thread.ITestNGThreadPoolExecutor;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.xml.XmlTest;
 
@@ -50,42 +46,27 @@ class TestTaskExecutor {
   public void execute() {
     String name = "test-" + xmlTest.getName();
     int threadCount = Math.max(xmlTest.getThreadCount(), 1);
-    if (RuntimeBehavior.favourCustomThreadPoolExecutor()) {
-      IExecutorFactory execFactory = configuration.getExecutorFactory();
-      ITestNGThreadPoolExecutor executor =
-          execFactory.newTestMethodExecutor(
-              name,
-              graph,
-              factory,
-              threadCount,
-              threadCount,
-              0,
-              TimeUnit.MILLISECONDS,
-              queue,
-              comparator);
-      executor.run();
-      service = executor;
+    boolean reUse = xmlTest.getSuite().useGlobalThreadPool();
+    Supplier<Object> supplier =
+        () ->
+            configuration
+                .getExecutorServiceFactory()
+                .create(
+                    threadCount,
+                    threadCount,
+                    0,
+                    TimeUnit.MILLISECONDS,
+                    queue,
+                    new TestNGThreadFactory(name));
+    if (reUse) {
+      ObjectBag bag = ObjectBag.getInstance(xmlTest.getSuite());
+      service = (ExecutorService) bag.createIfRequired(ExecutorService.class, supplier);
     } else {
-      boolean reUse = xmlTest.getSuite().useGlobalThreadPool();
-      Supplier<Object> supplier =
-          () ->
-              new ThreadPoolExecutor(
-                  threadCount,
-                  threadCount,
-                  0,
-                  TimeUnit.MILLISECONDS,
-                  queue,
-                  new TestNGThreadFactory(name));
-      if (reUse) {
-        ObjectBag bag = ObjectBag.getInstance(xmlTest.getSuite());
-        service = (ExecutorService) bag.createIfRequired(ExecutorService.class, supplier);
-      } else {
-        service = (ExecutorService) supplier.get();
-      }
-      GraphOrchestrator<ITestNGMethod> executor =
-          new GraphOrchestrator<>(service, factory, graph, comparator);
-      executor.run();
+      service = (ExecutorService) supplier.get();
     }
+    GraphOrchestrator<ITestNGMethod> executor =
+        new GraphOrchestrator<>(service, factory, graph, comparator);
+    executor.run();
   }
 
   public void awaitCompletion() {

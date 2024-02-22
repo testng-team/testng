@@ -2,9 +2,12 @@ package org.testng.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.testng.IConfigurable;
 import org.testng.IConfigurationListener;
 import org.testng.IExecutionListener;
+import org.testng.IExecutorServiceFactory;
 import org.testng.IHookable;
 import org.testng.IInjectorFactory;
 import org.testng.ITestNGListenerFactory;
@@ -16,8 +19,6 @@ import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
 import org.testng.internal.objects.GuiceBackedInjectorFactory;
-import org.testng.internal.thread.DefaultThreadPoolExecutorFactory;
-import org.testng.thread.IExecutorFactory;
 
 public class Configuration implements IConfiguration {
 
@@ -34,7 +35,7 @@ public class Configuration implements IConfiguration {
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
       m_configurationListeners = Maps.newLinkedHashMap();
   private boolean alwaysRunListeners = true;
-  private IExecutorFactory m_executorFactory = new DefaultThreadPoolExecutorFactory();
+  private IExecutorServiceFactory executorServiceFactory = ThreadPoolExecutor::new;
 
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
 
@@ -145,13 +146,13 @@ public class Configuration implements IConfiguration {
   }
 
   @Override
-  public void setExecutorFactory(IExecutorFactory factory) {
-    this.m_executorFactory = factory;
+  public void setExecutorServiceFactory(IExecutorServiceFactory executorServiceFactory) {
+    this.executorServiceFactory = Objects.requireNonNull(executorServiceFactory);
   }
 
   @Override
-  public IExecutorFactory getExecutorFactory() {
-    return this.m_executorFactory;
+  public IExecutorServiceFactory getExecutorServiceFactory() {
+    return executorServiceFactory;
   }
 
   @Override
