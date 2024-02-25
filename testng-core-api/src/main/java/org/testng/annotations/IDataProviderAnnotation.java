@@ -40,4 +40,16 @@ public interface IDataProviderAnnotation extends IAnnotation {
    *     data provider.
    */
   Class<? extends IRetryDataProvider> retryUsing();
+
+  /**
+   * @param cache - when set to <code>true</code>, TestNG does not invoke the data provider again
+   *     when retrying failed tests using a retry analyzer.
+   */
+  void cacheDataForTestRetries(boolean cache);
+
+  /**
+   * @return - <code>true</code> if TestNG should use data returned by the original data provider
+   *     invocation, when a test method fails and is configured to be retried.
+   */
+  boolean isCacheDataForTestRetries();
 }

@@ -38,4 +38,12 @@ public interface IDataProviderMethod {
   default Class<? extends IRetryDataProvider> retryUsing() {
     return IRetryDataProvider.DisableDataProviderRetries.class;
   }
+
+  /**
+   * @return - <code>true</code> if TestNG should use data returned by the original data provider
+   *     invocation, when a test method fails and is configured to be retried.
+   */
+  default boolean cacheDataForTestRetries() {
+    return true;
+  }
 }

@@ -53,4 +53,9 @@ class DataProviderMethod implements IDataProviderMethod {
   public Class<? extends IRetryDataProvider> retryUsing() {
     return annotation.retryUsing();
   }
+
+  @Override
+  public boolean cacheDataForTestRetries() {
+    return annotation.isCacheDataForTestRetries();
+  }
 }
