@@ -483,6 +483,7 @@ public class JDK15TagFactory {
       result.propagateFailureAsTestFailure();
     }
     result.setRetryUsing(c.retryUsing());
+    result.cacheDataForTestRetries(c.cacheDataForTestRetries());
     return result;
   }
 

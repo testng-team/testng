@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IClassListener;
 import org.testng.IDataProviderListener;
+import org.testng.IDataProviderMethod;
 import org.testng.IHookable;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -238,6 +239,24 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     failure.representsRetriedMethod.set(true);
     do {
       failure.instances = Lists.newArrayList();
+      boolean cacheData =
+          Optional.ofNullable(arguments.getTestMethod().getDataProviderMethod())
+              .map(IDataProviderMethod::cacheDataForTestRetries)
+              .orElse(false);
+      if (!cacheData) {
+        Map<String, String> allParameters = Maps.newHashMap();
+        int verbose = testContext.getCurrentXmlTest().getVerbose();
+        ParameterHandler handler =
+            new ParameterHandler(
+                m_configuration.getObjectFactory(), annotationFinder(), this.holder, verbose);
+
+        ParameterBag bag =
+            handler.createParameters(
+                arguments.getTestMethod(), arguments.getParameters(), allParameters, testContext);
+        if (bag.hasErrors()) {
+          continue;
+        }
+      }
       Object[] parameterValues = arguments.getParameterValues();
       TestMethodArguments tma =
           new TestMethodArguments.Builder()

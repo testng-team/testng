@@ -58,6 +58,12 @@ public @interface DataProvider {
   boolean propagateFailureAsTestFailure() default false;
 
   /**
+   * @return - <code>true</code> if TestNG should use data returned by the original data provider
+   *     invocation, when a test method fails and is configured to be retried.
+   */
+  boolean cacheDataForTestRetries() default true;
+
+  /**
    * @return - An Class which implements {@link IRetryDataProvider} and which can be used to retry a
    *     data provider.
    */

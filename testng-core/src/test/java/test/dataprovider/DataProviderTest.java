@@ -55,11 +55,20 @@ import test.dataprovider.issue2934.TestCaseSample;
 import test.dataprovider.issue2934.TestCaseSample.CoreListener;
 import test.dataprovider.issue2934.TestCaseSample.ToggleDataProvider;
 import test.dataprovider.issue2980.LoggingListener;
+import test.dataprovider.issue3041.SampleTestCase;
 import test.dataprovider.issue3045.DataProviderListener;
 import test.dataprovider.issue3045.DataProviderTestClassSample;
 import test.dataprovider.issue3045.DataProviderWithoutListenerTestClassSample;
 
 public class DataProviderTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-3041")
+  public void ensureDataProvidersCanBeInstructedNotToCacheDataForFailedTestRetries() {
+    TestNG testng = create(SampleTestCase.class);
+    testng.setVerbose(2);
+    testng.run();
+    assertThat(SampleTestCase.invocationCount.get()).isEqualTo(2);
+  }
 
   @Test(description = "GITHUB-2819")
   public void testDataProviderCanBeRetriedOnFailures() {

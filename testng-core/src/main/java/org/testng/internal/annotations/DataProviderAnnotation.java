@@ -13,6 +13,8 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   private boolean m_bubbleUpFailures = false;
   private Class<? extends IRetryDataProvider> retryUsing;
 
+  private boolean cachedDataForTestRetries = true;
+
   @Override
   public boolean isParallel() {
     return m_parallel;
@@ -61,5 +63,14 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   @Override
   public Class<? extends IRetryDataProvider> retryUsing() {
     return retryUsing;
+  }
+
+  public void cacheDataForTestRetries(boolean cache) {
+    this.cachedDataForTestRetries = cache;
+  }
+
+  @Override
+  public boolean isCacheDataForTestRetries() {
+    return cachedDataForTestRetries;
   }
 }
