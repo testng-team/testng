@@ -1,5 +1,7 @@
 package org.testng;
 
+import org.testng.internal.AutoCloseableLock;
+
 /**
  * The root exception for special skip handling. In case a @Test or @Configuration throws this
  * exception the method will be considered a skip or a failure according to the return of {@link
@@ -34,6 +36,8 @@ public class SkipException extends RuntimeException {
     return true;
   }
 
+  private final AutoCloseableLock internalLock = new AutoCloseableLock();
+
   /**
    * Subclasses may use this method to reduce the printed stack trace. This method keeps only the
    * last frame. <b>Important</b>: after calling this method the preserved internally and can be
@@ -41,7 +45,7 @@ public class SkipException extends RuntimeException {
    */
   protected void reduceStackTrace() {
     if (!m_stackReduced) {
-      synchronized (this) {
+      try (AutoCloseableLock ignore = internalLock.lock()) {
         StackTraceElement[] newStack = new StackTraceElement[1];
         StackTraceElement[] originalStack = getStackTrace();
         if (originalStack.length > 0) {
@@ -60,7 +64,7 @@ public class SkipException extends RuntimeException {
    */
   protected void restoreStackTrace() {
     if (m_stackReduced && null != m_stackTrace) {
-      synchronized (this) {
+      try (AutoCloseableLock ignore = internalLock.lock()) {
         setStackTrace(m_stackTrace);
         m_stackReduced = false;
       }

@@ -415,12 +415,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
   }
 
+  private final AutoCloseableLock suiteResultsLock = new AutoCloseableLock();
+
   private void runTest(TestRunner tr) {
     visualisers.forEach(tr::addListener);
     tr.run();
 
     ISuiteResult sr = new SuiteResult(xmlSuite, tr);
-    synchronized (suiteResults) {
+    try (AutoCloseableLock ignore = suiteResultsLock.lock()) {
       suiteResults.put(tr.getName(), sr);
     }
   }

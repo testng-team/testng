@@ -10,10 +10,10 @@ public class TestClassContainerForGithubIssue1265 {
   public abstract static class ParentTest {
 
     @BeforeSuite
-    public synchronized void startEverything() throws Exception {}
+    public void startEverything() {}
 
     @AfterSuite
-    public synchronized void shutdownContainer() throws Exception {}
+    public void shutdownContainer() {}
   }
 
   public static class FirstTest extends ParentTest {

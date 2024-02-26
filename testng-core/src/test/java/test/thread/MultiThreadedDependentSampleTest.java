@@ -7,6 +7,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
+import org.testng.internal.AutoCloseableLock;
 
 public class MultiThreadedDependentSampleTest {
 
@@ -108,14 +109,16 @@ public class MultiThreadedDependentSampleTest {
     try {
       // With a lower value, tests fail sometimes
       Thread.sleep(40);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException ignore) {
     }
     long id = Thread.currentThread().getId();
     Helper.getMap(getClass().getName()).put(id, id);
   }
 
+  private static final AutoCloseableLock lock = new AutoCloseableLock();
+
   private void log(String string) {
-    synchronized (m_methods) {
+    try (AutoCloseableLock ignore = lock.lock()) {
       m_methods.add(string);
     }
   }

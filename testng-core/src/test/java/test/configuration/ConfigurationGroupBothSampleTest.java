@@ -7,12 +7,17 @@ import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.AutoCloseableLock;
 
 public class ConfigurationGroupBothSampleTest {
   static List<Integer> m_list = Collections.synchronizedList(new ArrayList<>());
 
-  private static synchronized void addToList(Integer n) {
-    m_list.add(n);
+  private static final AutoCloseableLock lock = new AutoCloseableLock();
+
+  private static void addToList(Integer n) {
+    try (AutoCloseableLock ignore = lock.lock()) {
+      m_list.add(n);
+    }
   }
 
   @BeforeGroups(

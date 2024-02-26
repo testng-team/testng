@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 import org.testng.IDynamicGraph;
 import org.testng.collections.Maps;
+import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.log4testng.Logger;
 import org.testng.thread.IThreadWorkerFactory;
@@ -23,6 +24,8 @@ public class GraphOrchestrator<T> {
   private final Comparator<T> comparator;
   private final IThreadWorkerFactory<T> factory;
 
+  private final AutoCloseableLock internalLock = new AutoCloseableLock();
+
   public GraphOrchestrator(
       ExecutorService service,
       IThreadWorkerFactory<T> factory,
@@ -35,7 +38,7 @@ public class GraphOrchestrator<T> {
   }
 
   public void run() {
-    synchronized (graph) {
+    try (AutoCloseableLock ignore = internalLock.lock()) {
       List<T> freeNodes = graph.getFreeNodes();
       if (comparator != null) {
         freeNodes.sort(comparator);
@@ -71,7 +74,7 @@ public class GraphOrchestrator<T> {
   }
 
   private void afterExecute(IWorker<T> r, Throwable t) {
-    synchronized (graph) {
+    try (AutoCloseableLock ignore = internalLock.lock()) {
       setStatus(r, computeStatus(r));
       if (graph.getNodeCount() == graph.getNodeCountWithStatus(IDynamicGraph.Status.FINISHED)) {
         service.shutdown();
@@ -112,7 +115,7 @@ public class GraphOrchestrator<T> {
   }
 
   private void setStatus(IWorker<T> worker, IDynamicGraph.Status status) {
-    synchronized (graph) {
+    try (AutoCloseableLock ignore = internalLock.lock()) {
       for (T m : worker.getTasks()) {
         graph.setStatus(m, status);
       }

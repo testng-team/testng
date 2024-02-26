@@ -14,6 +14,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
 import org.testng.util.TimeUtils;
@@ -146,21 +147,26 @@ public class JUnitXMLReporter implements IResultListener2 {
         System.currentTimeMillis(), XMLReporterConfig.FMT_DEFAULT);
   }
 
-  private synchronized void createElementFromTestResults(
+  private final AutoCloseableLock lock = new AutoCloseableLock();
+
+  private void createElementFromTestResults(
       XMLStringBuffer document, Collection<ITestResult> results) {
-    for (ITestResult tr : results) {
-      createElement(document, tr);
+    try (AutoCloseableLock ignore = lock.lock()) {
+      for (ITestResult tr : results) {
+        createElement(document, tr);
+      }
     }
   }
 
-  private synchronized void createElementFromIgnoredTests(
-      XMLStringBuffer doc, ITestContext context) {
-    Collection<ITestNGMethod> methods = context.getExcludedMethods();
-    for (ITestNGMethod method : methods) {
-      Properties properties = getPropertiesFor(method, 0);
-      doc.push(XMLConstants.TESTCASE, properties);
-      doc.addEmptyElement(XMLConstants.ATTR_IGNORED);
-      doc.pop();
+  private void createElementFromIgnoredTests(XMLStringBuffer doc, ITestContext context) {
+    try (AutoCloseableLock ignore = lock.lock()) {
+      Collection<ITestNGMethod> methods = context.getExcludedMethods();
+      for (ITestNGMethod method : methods) {
+        Properties properties = getPropertiesFor(method, 0);
+        doc.push(XMLConstants.TESTCASE, properties);
+        doc.addEmptyElement(XMLConstants.ATTR_IGNORED);
+        doc.pop();
+      }
     }
   }
 

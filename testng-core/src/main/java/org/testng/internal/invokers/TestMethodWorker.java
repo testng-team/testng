@@ -102,6 +102,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     return result.toString();
   }
 
+  private static final KeyAwareAutoCloseableLock lock = new KeyAwareAutoCloseableLock();
+
   /**
    * Run all the ITestNGMethods passed in through the constructor.
    *
@@ -119,8 +121,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
+      Object key = testMethod.getInstance();
       if (canInvokeBeforeClassMethods()) {
-        synchronized (testMethod.getInstance()) {
+        try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);
         }
       }
@@ -129,7 +132,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       try {
         invokeTestMethods(testMethod, testMethodInstance.getInstance());
       } finally {
-        synchronized (testMethod.getInstance()) {
+        try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(key)) {
           invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
         }
       }
