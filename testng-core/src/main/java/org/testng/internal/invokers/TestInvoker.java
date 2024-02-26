@@ -848,14 +848,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return result;
   }
 
-  private static final AutoCloseableLock LOCK = new AutoCloseableLock();
+  private static final AutoCloseableLock internalLock = new AutoCloseableLock();
 
   private StatusHolder considerExceptions(
       ITestNGMethod tm,
       ITestResult testResult,
       ExpectedExceptionsHolder exceptionsHolder,
       FailureContext failure) {
-    try (AutoCloseableLock ignore = LOCK.lock()) {
+    try (AutoCloseableLock ignore = internalLock.lock()) {
       return considerExceptionsInternal(tm, testResult, exceptionsHolder, failure);
     }
   }

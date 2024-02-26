@@ -64,6 +64,8 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     test(3);
   }
 
+  private final KeyAwareAutoCloseableLock lock = new KeyAwareAutoCloseableLock();
+
   private void test(int threadCount) {
     Helper.reset();
     MultiThreadedDependentSampleTest.m_methods = Lists.newArrayList();
@@ -71,7 +73,6 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     tng.setThreadCount(threadCount);
     tng.setParallel(XmlSuite.ParallelMode.METHODS);
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
-    KeyAwareAutoCloseableLock lock = new KeyAwareAutoCloseableLock();
     try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(map)) {
       tng.run();
       Assert.assertTrue(map.size() > 1, "Map size:" + map.size() + " expected more than 1");
