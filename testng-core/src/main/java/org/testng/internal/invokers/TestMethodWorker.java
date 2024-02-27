@@ -121,7 +121,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
-      Object key = testMethod.getInstance();
+      String key = Integer.toString(testMethod.getInstance().toString().hashCode());
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);

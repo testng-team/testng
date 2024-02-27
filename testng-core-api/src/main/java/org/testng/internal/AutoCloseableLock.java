@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.io.Closeable;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -16,8 +17,25 @@ public final class AutoCloseableLock implements Closeable {
     return this;
   }
 
+  public boolean isHeldByCurrentThread() {
+    return internalLock.isHeldByCurrentThread();
+  }
+
   @Override
   public void close() {
     internalLock.unlock();
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (this == object) return true;
+    if (object == null || getClass() != object.getClass()) return false;
+    AutoCloseableLock that = (AutoCloseableLock) object;
+    return Objects.equals(internalLock, that.internalLock);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(internalLock);
   }
 }

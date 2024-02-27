@@ -25,13 +25,27 @@ public final class KeyAwareAutoCloseableLock {
 
     AutoReleasable(AutoCloseableLock lock, Runnable cleanupAction) {
       this.lock = Objects.requireNonNull(lock);
-      this.cleanupAction = Objects.requireNonNull(cleanupAction);
+      this.cleanupAction =
+          this.lock.isHeldByCurrentThread() ? () -> {} : Objects.requireNonNull(cleanupAction);
     }
 
     @Override
     public void close() {
       lock.close();
       cleanupAction.run();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+      if (this == object) return true;
+      if (object == null || getClass() != object.getClass()) return false;
+      AutoReleasable that = (AutoReleasable) object;
+      return Objects.equals(lock, that.lock);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(lock);
     }
   }
 }
