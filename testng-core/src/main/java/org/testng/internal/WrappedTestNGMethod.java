@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
@@ -362,6 +363,11 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   @Override
   public String getQualifiedName() {
     return testNGMethod.getQualifiedName();
+  }
+
+  @Override
+  public UUID getInstanceId() {
+    return testNGMethod.getInstanceId();
   }
 
   @Override

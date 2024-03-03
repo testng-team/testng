@@ -27,14 +27,30 @@ public interface IClass {
    *
    * @param create flag if a new set of instances must be returned (if set to <code>false</code>)
    * @return All the instances the methods will be invoked upon.
+   * @deprecated - As of TestNG <code>v7.10.0</code>
    */
+  @Deprecated
   Object[] getInstances(boolean create);
 
+  /**
+   * Returns all the instances the methods will be invoked upon. This will typically be an array of
+   * one object in the absence of a @Factory annotation.
+   *
+   * @param create flag if a new set of instances must be returned (if set to <code>false</code>)
+   * @param errorMsgPrefix - Text that should be prefixed to the error message when there are
+   *     issues. Can be empty.
+   * @return All the instances the methods will be invoked upon.
+   * @deprecated - As of TestNG <code>v7.10.0</code>
+   */
+  @Deprecated
   default Object[] getInstances(boolean create, String errorMsgPrefix) {
     return getInstances(create);
   }
 
-  long[] getInstanceHashCodes();
-
+  /**
+   * @param instance - The instance to be added.
+   * @deprecated - As of TestNG <code>v7.10.0</code>
+   */
+  @Deprecated
   void addInstance(Object instance);
 }

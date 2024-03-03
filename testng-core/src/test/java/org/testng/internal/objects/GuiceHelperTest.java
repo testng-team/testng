@@ -61,7 +61,7 @@ public final class GuiceHelperTest {
           new FakeTestContext(),
           GuiceHelperTest.class,
           null,
-          (ITest) () -> "GITHUB-2273",
+          new IdentifiableObject((ITest) () -> "GITHUB-2273"),
           null,
           null,
           new ITestObjectFactory() {});

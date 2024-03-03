@@ -5,7 +5,7 @@ import org.testng.ITestNGMethod;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-public class NoOpTestClass implements ITestClass {
+public class NoOpTestClass implements ITestClass, IObject {
 
   protected Class<?> m_testClass = null;
 
@@ -22,7 +22,7 @@ public class NoOpTestClass implements ITestClass {
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
   protected ITestNGMethod[] m_afterGroupsMethods = new ITestNGMethod[0];
 
-  private final Object[] m_instances;
+  private final IdentifiableObject[] m_instances;
   private final long[] m_instanceHashes;
 
   private final XmlTest m_xmlTest;
@@ -47,8 +47,8 @@ public class NoOpTestClass implements ITestClass {
     m_afterGroupsMethods = testClass.getAfterGroupsMethods();
     m_afterClassMethods = testClass.getAfterClassMethods();
     m_afterTestMethods = testClass.getAfterTestMethods();
-    m_instances = testClass.getInstances(true);
-    m_instanceHashes = testClass.getInstanceHashCodes();
+    m_instances = IObject.objects(testClass, true);
+    m_instanceHashes = IObject.instanceHashCodes(testClass);
     m_xmlTest = testClass.getXmlTest();
     m_xmlClass = testClass.getXmlClass();
   }
@@ -123,13 +123,12 @@ public class NoOpTestClass implements ITestClass {
     return m_afterGroupsMethods;
   }
 
-  /** @see org.testng.ITestClass#getInstanceHashCodes() */
+  /** @see org.testng.internal.IObject#getInstanceHashCodes() */
   @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashes;
   }
 
-  /** @see org.testng.ITestClass#getInstances(boolean) */
   @Override
   public Object[] getInstances(boolean reuse) {
     return m_instances;
@@ -145,9 +144,16 @@ public class NoOpTestClass implements ITestClass {
     return m_testClass;
   }
 
-  /** @see org.testng.IClass#addInstance(java.lang.Object) */
   @Override
   public void addInstance(Object instance) {}
+
+  @Override
+  public void addObject(IdentifiableObject instance) {}
+
+  @Override
+  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    return m_instances;
+  }
 
   public void setTestClass(Class<?> declaringClass) {
     m_testClass = declaringClass;

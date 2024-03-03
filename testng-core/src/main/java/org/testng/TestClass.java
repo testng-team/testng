@@ -16,7 +16,7 @@ import org.testng.xml.XmlTest;
  * This class represents a test class: - The test methods - The configuration methods (test and
  * method) - The class file
  */
-class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo {
+class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo, IObject {
 
   private IAnnotationFinder annotationFinder = null;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
@@ -106,14 +106,13 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     //
     // TestClasses and instances
     //
-    Object[] instances = getInstances(true, this.m_errorMsgPrefix);
-    for (Object instance : instances) {
-      instance = IParameterInfo.embeddedInstance(instance);
-      if (instance instanceof ITest) {
-        testName = ((ITest) instance).getTestName();
-        break;
-      }
-    }
+    IObject.IdentifiableObject[] instances = getObjects(true, this.m_errorMsgPrefix);
+    Arrays.stream(instances)
+        .map(IdentifiableObject::getInstance)
+        .map(IParameterInfo::embeddedInstance)
+        .filter(it -> it instanceof ITest)
+        .findFirst()
+        .ifPresent(it -> testName = ((ITest) it).getTestName());
     if (testName == null) {
       testName = iClass.getTestName();
     }
@@ -130,8 +129,13 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   @Override
+  public IObject.IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    return IObject.objects(iClass, create, errorMsgPrefix);
+  }
+
+  @Override
   public long[] getInstanceHashCodes() {
-    return iClass.getInstanceHashCodes();
+    return IObject.instanceHashCodes(iClass);
   }
 
   @Override
@@ -139,11 +143,16 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     iClass.addInstance(instance);
   }
 
+  @Override
+  public void addObject(IObject.IdentifiableObject instance) {
+    IObject.cast(iClass).ifPresent(it -> it.addObject(instance));
+  }
+
   private void initMethods() {
     ITestNGMethod[] methods = testMethodFinder.getTestMethods(m_testClass, xmlTest);
     m_testMethods = createTestMethods(methods);
 
-    for (Object eachInstance : iClass.getInstances(false)) {
+    for (IdentifiableObject eachInstance : IObject.objects(iClass, false)) {
       m_beforeSuiteMethods =
           ConfigurationMethod.createSuiteConfigurationMethods(
               objectFactory,
@@ -182,7 +191,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               true,
               xmlTest,
               eachInstance);
-      Object instance = IParameterInfo.embeddedInstance(eachInstance);
+      Object instance = IParameterInfo.embeddedInstance(eachInstance.getInstance());
       beforeClassConfig.put(instance, Arrays.asList(m_beforeClassMethods));
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
@@ -234,7 +243,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
       if (m.getDeclaringClass().isAssignableFrom(m_testClass)) {
-        for (Object o : iClass.getInstances(false)) {
+        for (IdentifiableObject o : IObject.objects(iClass, false)) {
           log(4, "Adding method " + tm + " on TestClass " + m_testClass);
           vResult.add(new TestNGMethod(objectFactory, m.getMethod(), annotationFinder, xmlTest, o));
         }

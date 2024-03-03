@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
@@ -46,6 +48,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   private boolean completed = true;
   private final ITestInvoker m_testInvoker;
   private final IConfigInvoker m_configInvoker;
+
+  private static final KeyAwareAutoCloseableLock lock = new KeyAwareAutoCloseableLock();
 
   public TestMethodWorker(
       ITestInvoker testInvoker,
@@ -119,8 +123,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
+      UUID key = Objects.requireNonNull(testMethod.getInstanceId());
       if (canInvokeBeforeClassMethods()) {
-        synchronized (testMethod.getInstance()) {
+        try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);
         }
       }
@@ -129,7 +134,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       try {
         invokeTestMethods(testMethod, testMethodInstance.getInstance());
       } finally {
-        synchronized (testMethod.getInstance()) {
+        try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
         }
       }

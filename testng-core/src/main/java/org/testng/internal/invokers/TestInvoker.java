@@ -47,6 +47,7 @@ import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
 import org.testng.internal.*;
+import org.testng.internal.IObject;
 import org.testng.internal.invokers.GroupConfigMethodArguments.Builder;
 import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -381,14 +382,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Invoke @BeforeGroups on the original method (reduce thread contention,
     // and also solve thread confinement)
     ITestClass testClass = testMethod.getTestClass();
-    Object[] instances = testClass.getInstances(true);
-    for (Object instance : instances) {
+    IObject.IdentifiableObject[] instances = IObject.objects(testClass, true);
+    for (IObject.IdentifiableObject instance : instances) {
       GroupConfigMethodArguments arguments =
           new GroupConfigMethodArguments.Builder()
               .forTestMethod(testMethod)
               .withGroupConfigMethods(groupMethods)
               .withParameters(parameters)
-              .forInstance(instance)
+              .forInstance(instance.getInstance())
               .build();
       invoker.invokeBeforeGroupsConfigurations(arguments);
     }

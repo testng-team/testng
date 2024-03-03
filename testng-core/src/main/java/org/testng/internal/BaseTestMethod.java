@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -81,7 +82,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   private int m_interceptedPriority;
 
   private XmlTest m_xmlTest;
-  private final Object m_instance;
+  private final IObject.IdentifiableObject m_instance;
 
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
   protected final ITestObjectFactory m_objectFactory;
@@ -91,7 +92,7 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
       String methodName,
       ConstructorOrMethod com,
       IAnnotationFinder annotationFinder,
-      Object instance) {
+      IObject.IdentifiableObject instance) {
     m_objectFactory = objectFactory;
     m_methodClass = com.getDeclaringClass();
     m_method = com;
@@ -148,13 +149,21 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
 
   @Override
   public Object getInstance() {
-    return IParameterInfo.embeddedInstance(m_instance);
+    return Optional.ofNullable(m_instance)
+        .map(IObject.IdentifiableObject::getInstance)
+        .map(IParameterInfo::embeddedInstance)
+        .orElse(null);
+  }
+
+  @Override
+  public UUID getInstanceId() {
+    return m_instance.getInstanceId();
   }
 
   /** {@inheritDoc} */
   @Override
   public long[] getInstanceHashCodes() {
-    return m_testClass.getInstanceHashCodes();
+    return IObject.instanceHashCodes(m_testClass);
   }
 
   /**
@@ -379,8 +388,8 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
   @Override
   public int hashCode() {
     int hash = m_method.hashCode();
-    if (m_instance != null) {
-      hash = hash * 31 + System.identityHashCode(m_instance);
+    if (getInstance() != null) {
+      hash = hash * 31 + System.identityHashCode(getInstance());
     }
     return hash;
   }
@@ -790,8 +799,11 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
 
   @Override
   public IParameterInfo getFactoryMethodParamsInfo() {
-    if (m_instance instanceof IParameterInfo) {
-      return (IParameterInfo) m_instance;
+    if (m_instance == null) {
+      return null;
+    }
+    if (m_instance.getInstance() instanceof IParameterInfo) {
+      return (IParameterInfo) m_instance.getInstance();
     }
     return null;
   }

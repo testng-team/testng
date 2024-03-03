@@ -2,10 +2,11 @@ package org.testng.internal.dynamicgraph;
 
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.internal.IObject;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
-public class FakeTestClass implements ITestClass {
+public class FakeTestClass implements ITestClass, IObject {
   private final Class<?> clazz;
 
   public FakeTestClass(Class<?> clazz) {
@@ -98,10 +99,18 @@ public class FakeTestClass implements ITestClass {
   }
 
   @Override
+  public IObject.IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    return new IObject.IdentifiableObject[0];
+  }
+
+  @Override
   public long[] getInstanceHashCodes() {
     return new long[0];
   }
 
   @Override
   public void addInstance(Object instance) {}
+
+  @Override
+  public void addObject(IObject.IdentifiableObject instance) {}
 }

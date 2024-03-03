@@ -126,7 +126,7 @@ public class MethodInstanceTest {
     }
   }
 
-  public static class TestClassStub implements ITestClass {
+  public static class TestClassStub implements ITestClass, IObject {
 
     private XmlTest xmlTest;
     private XmlClass xmlClass;
@@ -165,8 +165,18 @@ public class MethodInstanceTest {
     public void addInstance(Object instance) {}
 
     @Override
+    public void addObject(IObject.IdentifiableObject instance) {
+      // Intentionally left blank
+    }
+
+    @Override
     public Object[] getInstances(boolean reuse) {
       return null;
+    }
+
+    @Override
+    public IObject.IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+      return new IObject.IdentifiableObject[0];
     }
 
     @Override
