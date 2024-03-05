@@ -5,13 +5,17 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.*;
 import org.testng.collections.Maps;
+import org.testng.internal.AutoCloseableLock;
 import org.testng.xml.XmlSuite;
 
 public class TestListenerFor1232 extends ListenerTemplate {
   static Map<CounterTypes, AtomicInteger> counters = Maps.newHashMap();
+  private static final AutoCloseableLock lock = new AutoCloseableLock();
 
-  static synchronized void resetCounters() {
-    counters = Maps.newHashMap();
+  static void resetCounters() {
+    try (AutoCloseableLock ignore = lock.lock()) {
+      counters = Maps.newHashMap();
+    }
   }
 
   @Override

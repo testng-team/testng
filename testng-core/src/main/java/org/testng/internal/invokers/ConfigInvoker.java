@@ -28,6 +28,7 @@ import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.ConstructorOrMethod;
@@ -556,8 +557,10 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     instances.add(TestNgMethodUtils.getMethodInvocationToken(method, instance));
   }
 
+  private final AutoCloseableLock internalLock = new AutoCloseableLock();
+
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
-    synchronized (m_classInvocationResults) {
+    try (AutoCloseableLock ignore = internalLock.lock()) {
       Set<Object> instances =
           m_classInvocationResults.computeIfAbsent(clazz, k -> Sets.newHashSet());
       Object objectToAdd = instance == null ? NULL_OBJECT : instance;

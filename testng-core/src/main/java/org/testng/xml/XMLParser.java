@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.testng.TestNGException;
+import org.testng.internal.AutoCloseableLock;
 import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -32,8 +33,10 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     m_saxParser = parser;
   }
 
+  private static final AutoCloseableLock lock = new AutoCloseableLock();
+
   public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
-    synchronized (m_saxParser) {
+    try (AutoCloseableLock ignore = lock.lock()) {
       m_saxParser.parse(is, dh);
     }
   }

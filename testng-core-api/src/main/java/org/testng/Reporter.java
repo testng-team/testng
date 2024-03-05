@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
+import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
 
@@ -67,7 +68,15 @@ public class Reporter {
     m_escapeHtml = escapeHtml;
   }
 
-  private static synchronized void log(String s, ITestResult m) {
+  private static final AutoCloseableLock lockForLogging = new AutoCloseableLock();
+
+  private static void log(String s, ITestResult m) {
+    try (AutoCloseableLock ignore = lockForLogging.lock()) {
+      logToReports(s, m);
+    }
+  }
+
+  private static void logToReports(String s, ITestResult m) {
     // Escape for the HTML reports.
     if (m_escapeHtml) {
       s = Strings.escapeHtml(s);
@@ -157,7 +166,15 @@ public class Reporter {
     return m_currentTestResult.get();
   }
 
-  public static synchronized List<String> getOutput(ITestResult tr) {
+  private static final AutoCloseableLock lockForOutputs = new AutoCloseableLock();
+
+  public static List<String> getOutput(ITestResult tr) {
+    try (AutoCloseableLock ignore = lockForOutputs.lock()) {
+      return getOutputFromResult(tr);
+    }
+  }
+
+  private static List<String> getOutputFromResult(ITestResult tr) {
     List<String> result = Lists.newArrayList();
     if (tr == null) {
       // Guard against a possible NPE in scenarios wherein the test result object itself could be a

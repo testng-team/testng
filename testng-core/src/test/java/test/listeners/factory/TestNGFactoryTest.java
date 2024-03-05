@@ -23,7 +23,7 @@ public class TestNGFactoryTest extends SimpleBaseTest {
         };
     TestNG testng = TestNG.privateMain(args, null);
     assertThat(SampleTestFactory.instance).isNotNull();
-    assertThat(ExampleListener.instance).isNotNull();
+    assertThat(ExampleListener.getInstance()).isNotNull();
     assertThat(testng.getStatus()).isZero();
   }
 

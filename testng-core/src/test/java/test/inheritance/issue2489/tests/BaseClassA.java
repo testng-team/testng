@@ -6,9 +6,11 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.collections.Lists;
+import org.testng.internal.AutoCloseableLock;
 
 public class BaseClassA {
   public static final List<String> logs = Lists.newArrayList();
+  private final AutoCloseableLock lock = new AutoCloseableLock();
 
   @BeforeSuite(groups = "a")
   public void beforeSuite() {
@@ -30,7 +32,9 @@ public class BaseClassA {
     print("afterClasses_BaseClass_A");
   }
 
-  protected synchronized void print(String message) {
-    logs.add(message);
+  protected void print(String message) {
+    try (AutoCloseableLock ignore = lock.lock()) {
+      logs.add(message);
+    }
   }
 }

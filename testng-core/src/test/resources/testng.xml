@@ -86,6 +86,7 @@
       <class name="org.testng.internal.TestListenerHelperTest"/>
       <class name="org.testng.internal.GroupsHelperTest"/>
       <class name="org.testng.internal.DynamicGraphHelperTest"/>
+      <class name="org.testng.internal.KeyAwareAutoCloseableLockTest"/>
       <class name="test.ReflectionHelperTest"/>
       <class name="test.privatemethod.PrivateMethodTest$PrivateMethodInnerTest"/>
       <class name="test.multiple.TestMultiple"/>

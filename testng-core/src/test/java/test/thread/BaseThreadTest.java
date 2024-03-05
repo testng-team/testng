@@ -7,12 +7,17 @@ import org.testng.Assert;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
+import org.testng.internal.AutoCloseableLock;
 import test.SimpleBaseTest;
 
 public class BaseThreadTest extends SimpleBaseTest {
   private static Set<Long> m_threadIds;
   private static Map<String, Long> m_suitesMap;
   private static List<String> m_strings;
+
+  private static final AutoCloseableLock stringsLock = new AutoCloseableLock();
+  private static final AutoCloseableLock threadIdsLock = new AutoCloseableLock();
+  private static final AutoCloseableLock suiteMapLock = new AutoCloseableLock();
 
   static void initThreadLog() {
     m_threadIds = Sets.newHashSet();
@@ -21,7 +26,7 @@ public class BaseThreadTest extends SimpleBaseTest {
   }
 
   protected void logString(String s) {
-    synchronized (m_strings) {
+    try (AutoCloseableLock ignore = stringsLock.lock()) {
       log("BaseThreadTest", "Logging string:" + s);
       m_strings.add(s);
     }
@@ -36,20 +41,20 @@ public class BaseThreadTest extends SimpleBaseTest {
   }
 
   protected void logThread(long threadId) {
-    synchronized (m_threadIds) {
+    try (AutoCloseableLock ignore = threadIdsLock.lock()) {
       log("BaseThreadTest", "Logging thread:" + threadId);
       m_threadIds.add(threadId);
     }
   }
 
   protected void logSuite(String suiteName, long time) {
-    synchronized (m_suitesMap) {
+    try (AutoCloseableLock ignore = suiteMapLock.lock()) {
       m_suitesMap.put(suiteName, time);
     }
   }
 
   static int getThreadCount() {
-    synchronized (m_threadIds) {
+    try (AutoCloseableLock ignore = threadIdsLock.lock()) {
       return m_threadIds.size();
     }
   }

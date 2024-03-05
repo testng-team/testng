@@ -1,4 +1,5 @@
 Current (7.10.0)
+Fixed: GITHUB:3040: replace the usages of synchronized with ReentrantLock (Krishnan Mahadevan)
 Fixed: GITHUB-3041: TestNG 7.x DataProvider works in opposite to TestNG 6.x when retrying tests. (Krishnan Mahadevan)
 Fixed: GITHUB-3066: How to dynamically adjust the number of TestNG threads after IExecutorFactory is deprecated? (Krishnan Mahadevan)
 New:   GITHUB-2874: Allow users to define ordering for TestNG listeners (Krishnan Mahadevan)

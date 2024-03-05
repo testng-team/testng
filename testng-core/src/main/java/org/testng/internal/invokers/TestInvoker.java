@@ -848,50 +848,58 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return result;
   }
 
-  private static final Object LOCK = new Object();
+  private static final AutoCloseableLock internalLock = new AutoCloseableLock();
 
   private StatusHolder considerExceptions(
       ITestNGMethod tm,
       ITestResult testResult,
       ExpectedExceptionsHolder exceptionsHolder,
       FailureContext failure) {
-    synchronized (LOCK) {
-      StatusHolder holder = new StatusHolder();
-      int status = testResult.getStatus();
-      holder.handled = false;
-
-      Throwable ite = testResult.getThrowable();
-      if (status == ITestResult.FAILURE && ite != null) {
-
-        //  Invocation caused an exception, see if the method was annotated with @ExpectedException
-        if (exceptionsHolder != null) {
-          if (exceptionsHolder.isExpectedException(ite)) {
-            testResult.setStatus(ITestResult.SUCCESS);
-            status = ITestResult.SUCCESS;
-          } else {
-            if (isSkipExceptionAndSkip(ite)) {
-              status = ITestResult.SKIP;
-            } else {
-              testResult.setThrowable(exceptionsHolder.wrongException(ite));
-              status = ITestResult.FAILURE;
-            }
-          }
-        } else {
-          handleException(ite, tm, testResult, failure.count.getAndIncrement());
-          holder.handled = true;
-          status = testResult.getStatus();
-        }
-      } else if (status != ITestResult.SKIP && exceptionsHolder != null) {
-        TestException exception = exceptionsHolder.noException(tm);
-        if (exception != null) {
-          testResult.setThrowable(exception);
-          status = ITestResult.FAILURE;
-        }
-      }
-      holder.originalStatus = testResult.getStatus();
-      holder.status = status;
-      return holder;
+    try (AutoCloseableLock ignore = internalLock.lock()) {
+      return considerExceptionsInternal(tm, testResult, exceptionsHolder, failure);
     }
+  }
+
+  private StatusHolder considerExceptionsInternal(
+      ITestNGMethod tm,
+      ITestResult testResult,
+      ExpectedExceptionsHolder exceptionsHolder,
+      FailureContext failure) {
+    StatusHolder holder = new StatusHolder();
+    int status = testResult.getStatus();
+    holder.handled = false;
+
+    Throwable ite = testResult.getThrowable();
+    if (status == ITestResult.FAILURE && ite != null) {
+
+      //  Invocation caused an exception, see if the method was annotated with @ExpectedException
+      if (exceptionsHolder != null) {
+        if (exceptionsHolder.isExpectedException(ite)) {
+          testResult.setStatus(ITestResult.SUCCESS);
+          status = ITestResult.SUCCESS;
+        } else {
+          if (isSkipExceptionAndSkip(ite)) {
+            status = ITestResult.SKIP;
+          } else {
+            testResult.setThrowable(exceptionsHolder.wrongException(ite));
+            status = ITestResult.FAILURE;
+          }
+        }
+      } else {
+        handleException(ite, tm, testResult, failure.count.getAndIncrement());
+        holder.handled = true;
+        status = testResult.getStatus();
+      }
+    } else if (status != ITestResult.SKIP && exceptionsHolder != null) {
+      TestException exception = exceptionsHolder.noException(tm);
+      if (exception != null) {
+        testResult.setThrowable(exception);
+        status = ITestResult.FAILURE;
+      }
+    }
+    holder.originalStatus = testResult.getStatus();
+    holder.status = status;
+    return holder;
   }
 
   private static void updateStatusHolderAccordingToTestResult(

@@ -28,8 +28,11 @@ public class ConfigurationGroupMethods {
   /** The list of beforeGroups methods keyed by the name of the group */
   private final Map<String, List<ITestNGMethod>> m_beforeGroupsMethods;
 
+  private final AutoCloseableLock beforeGroups = new AutoCloseableLock();
   private final Map<String, CountDownLatch> beforeGroupsThatHaveAlreadyRun =
       new ConcurrentHashMap<>();
+
+  private final AutoCloseableLock afterGroups = new AutoCloseableLock();
   private final Set<String> afterGroupsThatHaveAlreadyRun =
       Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -64,7 +67,7 @@ public class ConfigurationGroupMethods {
       return Collections.emptyList();
     }
 
-    synchronized (beforeGroupsThatHaveAlreadyRun) {
+    try (AutoCloseableLock ignore = beforeGroups.lock()) {
       return Arrays.stream(groups)
           .map(t -> retrieve(beforeGroupsThatHaveAlreadyRun, m_beforeGroupsMethods, t))
           .filter(Objects::nonNull)
@@ -79,8 +82,7 @@ public class ConfigurationGroupMethods {
     }
 
     Set<String> methodGroups = new HashSet<>(Arrays.asList(testMethod.getGroups()));
-
-    synchronized (afterGroupsThatHaveAlreadyRun) {
+    try (AutoCloseableLock ignore = afterGroups.lock()) {
       if (m_afterGroupsMap == null) {
         m_afterGroupsMap = initializeAfterGroupsMap();
       }
@@ -151,7 +153,7 @@ public class ConfigurationGroupMethods {
       }
     }
 
-    synchronized (afterGroupsThatHaveAlreadyRun) {
+    try (AutoCloseableLock ignore = afterGroups.lock()) {
       afterGroupsThatHaveAlreadyRun.clear();
     }
 
