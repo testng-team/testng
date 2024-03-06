@@ -46,7 +46,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2798")
   public void ensureNoDuplicateRetryAnalyzerInstancesAreCreated() {
     create(TestClassSample.class).run();
-    Map<Integer, Long> collected =
+    Map<String, Long> collected =
         HashCodeAwareRetryAnalyzer.hashCodes.stream()
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     assertThat(collected.keySet())
