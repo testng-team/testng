@@ -53,3 +53,92 @@ Refer our [Contributing](.github/CONTRIBUTING.md) section for detailed set of st
 
   If your pull request involves fixing SonarQube issues then we would suggest that you please discuss this with the 
   [TestNG-dev](https://groups.google.com/forum/#!forum/testng-dev) before you spend time working on it.
+  
+### GPG Keys
+
+#### Getting the keys
+
+Download the keys as shown below:
+
+```bash
+gpg --keyserver keyserver.ubuntu.com --recv-keys 0F13D5631D6AF36D
+gpg: key 0F13D5631D6AF36D: "Krishnan Mahadevan (krmahadevan-key) <krishnan.mahadevan1978@gmail.com>" not changed
+gpg: Total number processed: 1
+gpg:              unchanged: 1
+```
+
+#### Trusting the keys
+
+Trust the keys as shown below:
+
+```bash
+gpg --edit-key 0F13D5631D6AF36D
+gpg (GnuPG) 2.4.4; Copyright (C) 2024 g10 Code GmbH
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Secret key is available.
+
+sec  rsa2048/0F13D5631D6AF36D
+     created: 2016-12-01  expires: never       usage: SC
+     trust: full          validity: unknown
+ssb  rsa2048/7295B61CC8DD9AE8
+     created: 2016-12-01  expires: never       usage: E
+[ unknown] (1). Krishnan Mahadevan (krmahadevan-key) <krishnan.mahadevan1978@gmail.com>
+
+gpg> trust
+sec  rsa2048/0F13D5631D6AF36D
+     created: 2016-12-01  expires: never       usage: SC
+     trust: full          validity: unknown
+ssb  rsa2048/7295B61CC8DD9AE8
+     created: 2016-12-01  expires: never       usage: E
+[ unknown] (1). Krishnan Mahadevan (krmahadevan-key) <krishnan.mahadevan1978@gmail.com>
+
+Please decide how far you trust this user to correctly verify other users' keys
+(by looking at passports, checking fingerprints from different sources, etc.)
+
+  1 = I don't know or won't say
+  2 = I do NOT trust
+  3 = I trust marginally
+  4 = I trust fully
+  5 = I trust ultimately
+  m = back to the main menu
+
+Your decision? 5
+Do you really want to set this key to ultimate trust? (y/N) y
+
+sec  rsa2048/0F13D5631D6AF36D
+     created: 2016-12-01  expires: never       usage: SC
+     trust: ultimate      validity: unknown
+ssb  rsa2048/7295B61CC8DD9AE8
+     created: 2016-12-01  expires: never       usage: E
+[ unknown] (1). Krishnan Mahadevan (krmahadevan-key) <krishnan.mahadevan1978@gmail.com>
+Please note that the shown key validity is not necessarily correct
+unless you restart the program.
+
+gpg> exit
+
+Invalid command  (try "help")
+
+gpg> quit
+```
+
+#### Verifying the signature
+
+1. Download the `.asc` file from `https://repo1.maven.org/maven2/org/testng/testng/<versionGoesHere>`
+2. Run the command `gpg --verify testng-<versionGoesHere>.jar.asc testng-<versionGoesHere>.jar`
+3. You should see an output as below:
+
+```bash
+gpg: Signature made Tue Dec 26 15:06:16 2023 IST
+gpg:                using RSA key 0F13D5631D6AF36D
+gpg: checking the trustdb
+gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+gpg: Good signature from "Krishnan Mahadevan (krmahadevan-key) <krishnan.mahadevan1978@gmail.com>" [ultimate]
+```
+
+For more details regarding keys please refer:
+
+* [Verifying Signature](https://infra.apache.org/release-signing.html#verifying-signature)
+* [How to Trust Imported GPG Keys](https://classroom.anir0y.in/post/blog-how-to-trust-imported-gpg-keys/)
