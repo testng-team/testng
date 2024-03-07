@@ -2,7 +2,9 @@ package org.testng.internal.invokers;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -69,23 +71,31 @@ class TestNgMethodUtils {
   }
 
   static ITestNGMethod[] filterBeforeTestMethods(
-      ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
-    return filterMethods(testClass, testClass.getBeforeTestMethods(), predicate);
+      Object instance, ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
+    return filterMethods(instance, testClass, testClass.getBeforeTestMethods(), predicate);
   }
 
   static ITestNGMethod[] filterAfterTestMethods(
-      ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
-    return filterMethods(testClass, testClass.getAfterTestMethods(), predicate);
+      Object instance, ITestClass testClass, BiPredicate<ITestNGMethod, IClass> predicate) {
+    return filterMethods(instance, testClass, testClass.getAfterTestMethods(), predicate);
   }
 
   /** @return Only the ITestNGMethods applicable for this testClass */
   static ITestNGMethod[] filterMethods(
-      IClass testClass, ITestNGMethod[] methods, BiPredicate<ITestNGMethod, IClass> predicate) {
+      Object instance,
+      IClass testClass,
+      ITestNGMethod[] methods,
+      BiPredicate<ITestNGMethod, IClass> predicate) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
+    Predicate<ITestNGMethod> sameInstance =
+        tm ->
+            instance == null
+                || instance.equals(
+                    Optional.ofNullable(tm).map(ITestNGMethod::getInstance).orElse(new Object()));
 
     for (ITestNGMethod tm : methods) {
       String msg;
-      if (predicate.test(tm, testClass)
+      if ((predicate.test(tm, testClass) && sameInstance.test(tm))
           && (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult))) {
         msg = Utils.getVerbose() < 10 ? "" : "Keeping method " + tm + " for class " + testClass;
         vResult.add(tm);

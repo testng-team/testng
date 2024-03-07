@@ -236,7 +236,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
     ITestNGMethod[] methods =
         TestNgMethodUtils.filterMethods(
-            arguments.getTestClass(), arguments.getConfigMethods(), SAME_CLASS);
+            null, arguments.getTestClass(), arguments.getConfigMethods(), SAME_CLASS);
     Object[] parameters = new Object[] {};
 
     for (ITestNGMethod tm : methods) {

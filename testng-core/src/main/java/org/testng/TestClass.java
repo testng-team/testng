@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.stream.Stream;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.*;
@@ -32,10 +33,22 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private final IdentityHashMap<Object, List<ITestNGMethod>> beforeClassConfig =
       new IdentityHashMap<>();
 
+  private final IdentityHashMap<Object, List<ITestNGMethod>> afterClassConfig =
+      new IdentityHashMap<>();
+
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
-    return beforeClassConfig
-        .values()
+    return getAllClassLevelConfigs(beforeClassConfig);
+  }
+
+  @Override
+  public List<ITestNGMethod> getAllAfterClassMethods() {
+    return getAllClassLevelConfigs(afterClassConfig);
+  }
+
+  private static List<ITestNGMethod> getAllClassLevelConfigs(
+      IdentityHashMap<Object, List<ITestNGMethod>> map) {
+    return map.values()
         .parallelStream()
         .reduce(
             (a, b) -> {
@@ -49,6 +62,11 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   @Override
   public List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
     return beforeClassConfig.get(instance);
+  }
+
+  @Override
+  public List<ITestNGMethod> getInstanceAfterClassMethods(Object instance) {
+    return afterClassConfig.get(instance);
   }
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
@@ -201,6 +219,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               false,
               xmlTest,
               eachInstance);
+      afterClassConfig.put(instance, Arrays.asList(m_afterClassMethods));
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
@@ -216,21 +235,29 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               false,
               eachInstance);
       m_beforeTestMethods =
-          ConfigurationMethod.createTestMethodConfigurationMethods(
-              objectFactory,
-              testMethodFinder.getBeforeTestMethods(m_testClass),
-              annotationFinder,
-              true,
-              xmlTest,
-              eachInstance);
+          Stream.of(
+                  m_beforeTestMethods,
+                  ConfigurationMethod.createTestMethodConfigurationMethods(
+                      objectFactory,
+                      testMethodFinder.getBeforeTestMethods(m_testClass),
+                      annotationFinder,
+                      true,
+                      xmlTest,
+                      eachInstance))
+              .flatMap(Stream::of)
+              .toArray(ITestNGMethod[]::new);
       m_afterTestMethods =
-          ConfigurationMethod.createTestMethodConfigurationMethods(
-              objectFactory,
-              testMethodFinder.getAfterTestMethods(m_testClass),
-              annotationFinder,
-              false,
-              xmlTest,
-              eachInstance);
+          Stream.of(
+                  m_afterTestMethods,
+                  ConfigurationMethod.createTestMethodConfigurationMethods(
+                      objectFactory,
+                      testMethodFinder.getAfterTestMethods(m_testClass),
+                      annotationFinder,
+                      false,
+                      xmlTest,
+                      eachInstance))
+              .flatMap(Stream::of)
+              .toArray(ITestNGMethod[]::new);
     }
   }
 

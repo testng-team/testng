@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
@@ -48,6 +49,8 @@ import test.listeners.issue2916.SuiteListenerHolder;
 import test.listeners.issue2916.TestListenerHolder;
 import test.listeners.issue3064.EvidenceListener;
 import test.listeners.issue3064.SampleTestCase;
+import test.listeners.issue3082.ObjectRepository;
+import test.listeners.issue3082.ObjectTrackingMethodListener;
 
 public class ListenersTest extends SimpleBaseTest {
   public static final String[] github2638ExpectedList =
@@ -519,6 +522,24 @@ public class ListenersTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
     assertThat(listener.getLogs()).containsExactlyElementsOf(expected);
+  }
+
+  @Test(description = "GITHUB-3082")
+  public void ensureListenerWorksWithCorrectTestClassInstance() {
+    TestNG tng = create(test.listeners.issue3082.TestClassSample.class);
+    tng.addListener(new ObjectTrackingMethodListener());
+    tng.setParallel(XmlSuite.ParallelMode.INSTANCES);
+    tng.setGroupByInstances(true);
+    tng.setVerbose(2);
+    tng.run();
+    assertThat(ObjectRepository.errors()).isEmpty();
+    assertThat(ObjectRepository.instancesCount()).isEqualTo(2);
+    List<String> expected =
+        List.of("beforeClass", "beforeMethod", "testMethod", "afterMethod", "afterClass");
+    SoftAssertions softly = new SoftAssertions();
+    ObjectRepository.invocations()
+        .forEach(it -> softly.assertThat(it).containsExactlyElementsOf(expected));
+    softly.assertAll();
   }
 
   private void setupTest(boolean addExplicitListener) {

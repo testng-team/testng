@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.util.List;
+import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 
@@ -15,6 +16,10 @@ public interface ITestClassConfigInfo {
     return Lists.newArrayList();
   }
 
+  default List<ITestNGMethod> getAllAfterClassMethods() {
+    return Lists.newArrayList();
+  }
+
   /**
    * Query the instance before class methods from config methods map.
    *
@@ -22,6 +27,24 @@ public interface ITestClassConfigInfo {
    * @return All before class methods of instance
    */
   default List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
+    return Lists.newArrayList();
+  }
+
+  default List<ITestNGMethod> getInstanceAfterClassMethods(Object instance) {
+    return Lists.newArrayList();
+  }
+
+  static List<ITestNGMethod> allBeforeClassMethods(ITestClass tc) {
+    if (tc instanceof ITestClassConfigInfo) {
+      return ((ITestClassConfigInfo) tc).getAllBeforeClassMethods();
+    }
+    return Lists.newArrayList();
+  }
+
+  static List<ITestNGMethod> allAfterClassMethods(ITestClass tc) {
+    if (tc instanceof ITestClassConfigInfo) {
+      return ((ITestClassConfigInfo) tc).getAllAfterClassMethods();
+    }
     return Lists.newArrayList();
   }
 }
