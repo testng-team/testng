@@ -5,4 +5,10 @@ package org.testng;
  *
  * @author cbeust
  */
-public interface ITestNGListener {}
+public interface ITestNGListener {
+
+  /** @return - <code>true</code> if the current listener can be considered for execution. */
+  default boolean isEnabled() {
+    return true;
+  }
+}
