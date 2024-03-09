@@ -19,6 +19,9 @@ import org.testng.annotations.Test;
 import org.testng.internal.ExitCode;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.listeners.issue2381.FactoryTestClassSample;
+import test.listeners.issue2381.SampleGlobalListener;
+import test.listeners.issue2381.SampleTransformer;
 import test.listeners.issue2638.DummyInvokedMethodListener;
 import test.listeners.issue2638.TestClassASample;
 import test.listeners.issue2638.TestClassBSample;
@@ -522,6 +525,49 @@ public class ListenersTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
     assertThat(listener.getLogs()).containsExactlyElementsOf(expected);
+  }
+
+  @Test(description = "GITHUB-2381")
+  public void ensureListenersCanBeDisabled() {
+    SampleGlobalListener.clearLogs();
+    SampleTransformer.clearLogs();
+    TestNG testng =
+        create(test.listeners.issue2381.TestClassSample.class, FactoryTestClassSample.class);
+    SampleGlobalListener listener = new SampleGlobalListener();
+    SampleTransformer transformer = new SampleTransformer();
+    testng.addListener(listener);
+    testng.addListener(transformer);
+    testng.run();
+    assertThat(SampleGlobalListener.getLogs()).isEmpty();
+    assertThat(SampleTransformer.getLogs()).isEmpty();
+  }
+
+  @Test(description = "GITHUB-2381")
+  public void ensureListenersCanBeDisabledViaCLI() {
+    SampleGlobalListener.clearLogs();
+    SampleTransformer.clearLogs();
+    String listeners =
+        String.join(",", SampleGlobalListener.class.getName(), SampleTransformer.class.getName());
+    String testClasses =
+        String.join(
+            ",",
+            test.listeners.issue2381.TestClassSample.class.getName(),
+            FactoryTestClassSample.class.getName());
+    List<String> args = List.of("-listener", listeners, "-testclass", testClasses);
+    TestNG.privateMain(args.toArray(String[]::new), null);
+    assertThat(SampleGlobalListener.getLogs()).isEmpty();
+    assertThat(SampleTransformer.getLogs()).isEmpty();
+  }
+
+  @Test(description = "GITHUB-2381")
+  public void ensureListenersCanBeDisabledViaSuiteFile() {
+    SampleGlobalListener.clearLogs();
+    SampleTransformer.clearLogs();
+    TestNG testng = new TestNG();
+    testng.setTestSuites(List.of("src/test/resources/2381.xml"));
+    testng.run();
+    assertThat(SampleGlobalListener.getLogs()).isEmpty();
+    assertThat(SampleTransformer.getLogs()).isEmpty();
   }
 
   @Test(description = "GITHUB-3082")

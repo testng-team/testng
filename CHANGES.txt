@@ -1,4 +1,5 @@
 Current (7.10.0)
+Fixed: GITHUB-2381: Controlling the inclusion of the listener at runtime (Krishnan Mahadevan)
 Fixed: GITHUB-3082: IInvokedMethodListener Iinvoked method does not return correct instance during @BeforeMethod, @AfterMethod and @AfterClass (Krishnan Mahadevan)
 Fixed: GITHUB-3084: Document project's PGP artifact signing keys (Krishnan Mahadevan)
 Fixed: GITHUB-3079: Associate a unique id with every test class object instantiated by TestNG (Krishnan Mahadevan)

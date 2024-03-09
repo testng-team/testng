@@ -159,6 +159,9 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
       Constructor<?> testConstructor,
       Method testMethod,
       Class<?> whichClass) {
+    if (!m_transformer.isEnabled()) {
+      return;
+    }
     //
     // Transform @Test
     //

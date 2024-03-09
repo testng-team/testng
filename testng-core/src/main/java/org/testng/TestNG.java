@@ -731,6 +731,9 @@ public class TestNG {
     if (listener == null) {
       return;
     }
+    if (!listener.isEnabled()) {
+      return;
+    }
     if (listener instanceof IExecutionVisualiser) {
       IExecutionVisualiser visualiser = (IExecutionVisualiser) listener;
       maybeAddListener(m_executionVisualisers, visualiser);
