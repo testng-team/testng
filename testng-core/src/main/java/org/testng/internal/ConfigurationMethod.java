@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
@@ -143,7 +144,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     setXmlTest(xmlTest);
   }
 
-  private static ITestNGMethod[] createMethods(
+  private static List<ITestNGMethod> createMethods(
       ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder finder,
@@ -188,10 +189,10 @@ public class ConfigurationMethod extends BaseTestMethod {
               instance));
     }
 
-    return result.toArray(new ITestNGMethod[0]);
+    return result;
   }
 
-  public static ITestNGMethod[] createSuiteConfigurationMethods(
+  public static List<ITestNGMethod> createSuiteConfigurationMethods(
       ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
@@ -214,7 +215,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         instance);
   }
 
-  public static ITestNGMethod[] createTestConfigurationMethods(
+  public static List<ITestNGMethod> createTestConfigurationMethods(
       ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
@@ -237,7 +238,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         instance);
   }
 
-  public static ITestNGMethod[] createClassConfigurationMethods(
+  public static List<ITestNGMethod> createClassConfigurationMethods(
       ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
@@ -291,7 +292,7 @@ public class ConfigurationMethod extends BaseTestMethod {
     return result;
   }
 
-  public static ITestNGMethod[] createAfterConfigurationMethods(
+  public static List<ITestNGMethod> createAfterConfigurationMethods(
       ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,
@@ -318,10 +319,10 @@ public class ConfigurationMethod extends BaseTestMethod {
                     isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
                     null,
                     instance))
-        .toArray(ITestNGMethod[]::new);
+        .collect(Collectors.toList());
   }
 
-  public static ITestNGMethod[] createTestMethodConfigurationMethods(
+  public static List<ITestNGMethod> createTestMethodConfigurationMethods(
       ITestObjectFactory objectFactory,
       ITestNGMethod[] methods,
       IAnnotationFinder annotationFinder,

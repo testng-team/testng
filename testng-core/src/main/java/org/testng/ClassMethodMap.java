@@ -32,12 +32,7 @@ public class ClassMethodMap {
       }
 
       Object instance = m.getInstance();
-      Collection<ITestNGMethod> l = classMap.get(instance);
-      if (l == null) {
-        l = new ConcurrentLinkedQueue<>();
-        classMap.put(instance, l);
-      }
-      l.add(m);
+      classMap.computeIfAbsent(instance, k -> new ConcurrentLinkedQueue<>()).add(m);
     }
   }
 

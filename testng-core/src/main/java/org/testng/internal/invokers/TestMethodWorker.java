@@ -131,7 +131,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
       // Invoke test method
       try {
-        invokeTestMethods(testMethod, testMethodInstance.getInstance());
+        invokeTestMethods(testMethod, testMethod.getInstance());
       } finally {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeAfterClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -229,10 +229,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       ConfigMethodArguments attributes =
           new Builder()
               .forTestClass(testClass)
-              .usingConfigMethodsAs(testClass.getAfterClassMethods())
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
               .usingInstance(invokeInstance)
+              .usingConfigMethodsAs(
+                  ((ITestClassConfigInfo) testClass).getInstanceAfterClassMethods(invokeInstance))
               .build();
       m_configInvoker.invokeConfigurations(attributes);
     }

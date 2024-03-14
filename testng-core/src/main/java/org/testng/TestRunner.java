@@ -486,15 +486,13 @@ public class TestRunner
     // Walk through all the TestClasses, store their method
     // and initialize them with the correct ITestClass
     //
+
     for (ITestClass tc : m_classMap.values()) {
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
-      fixMethodsWithClass(
-          ((ITestClassConfigInfo) tc).getAllBeforeClassMethods().toArray(new ITestNGMethod[0]),
-          tc,
-          beforeClassMethods);
+      fixMethodsWithClass(beforeClassConfigMethods(tc), tc, beforeClassMethods);
       fixMethodsWithClass(tc.getBeforeTestMethods(), tc, null);
       fixMethodsWithClass(tc.getAfterTestMethods(), tc, null);
-      fixMethodsWithClass(tc.getAfterClassMethods(), tc, afterClassMethods);
+      fixMethodsWithClass(afterClassConfigMethods(tc), tc, afterClassMethods);
       fixMethodsWithClass(tc.getBeforeSuiteMethods(), tc, beforeSuiteMethods);
       fixMethodsWithClass(tc.getAfterSuiteMethods(), tc, afterSuiteMethods);
       fixMethodsWithClass(tc.getBeforeTestConfigurationMethods(), tc, beforeXmlTestMethods);
@@ -556,6 +554,14 @@ public class TestRunner
             true /* unique */,
             m_excludedMethods,
             comparator);
+  }
+
+  private static ITestNGMethod[] beforeClassConfigMethods(ITestClass tc) {
+    return ITestClassConfigInfo.allBeforeClassMethods(tc).toArray(ITestNGMethod[]::new);
+  }
+
+  private static ITestNGMethod[] afterClassConfigMethods(ITestClass tc) {
+    return ITestClassConfigInfo.allAfterClassMethods(tc).toArray(ITestNGMethod[]::new);
   }
 
   private ITestNGMethod[] computeAndGetAllTestMethods() {

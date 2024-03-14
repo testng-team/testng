@@ -183,9 +183,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
     ITestClass testClass = testMethod.getTestClass();
     ITestNGMethod[] beforeMethods =
-        TestNgMethodUtils.filterBeforeTestMethods(testClass, CAN_RUN_FROM_CLASS);
+        TestNgMethodUtils.filterBeforeTestMethods(instance, testClass, CAN_RUN_FROM_CLASS);
     ITestNGMethod[] afterMethods =
-        TestNgMethodUtils.filterAfterTestMethods(testClass, CAN_RUN_FROM_CLASS);
+        TestNgMethodUtils.filterAfterTestMethods(instance, testClass, CAN_RUN_FROM_CLASS);
     int invocationCount = onlyOne ? 1 : testMethod.getInvocationCount();
 
     TestMethodArguments arguments =
