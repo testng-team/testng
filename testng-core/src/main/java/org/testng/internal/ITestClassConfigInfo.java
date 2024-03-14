@@ -12,13 +12,9 @@ public interface ITestClassConfigInfo {
    *
    * @return all before class config methods
    */
-  default List<ITestNGMethod> getAllBeforeClassMethods() {
-    return Lists.newArrayList();
-  }
+  List<ITestNGMethod> getAllBeforeClassMethods();
 
-  default List<ITestNGMethod> getAllAfterClassMethods() {
-    return Lists.newArrayList();
-  }
+  List<ITestNGMethod> getAllAfterClassMethods();
 
   /**
    * Query the instance before class methods from config methods map.

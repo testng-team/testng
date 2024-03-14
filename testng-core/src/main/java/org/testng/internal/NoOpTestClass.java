@@ -1,9 +1,9 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
@@ -12,17 +12,17 @@ public class NoOpTestClass implements ITestClass, IObject {
   protected Class<?> m_testClass = null;
 
   // Test methods
-  protected List<ITestNGMethod> m_beforeClassMethods = Lists.newArrayList();
-  protected List<ITestNGMethod> m_beforeTestMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_beforeClassMethods = new ArrayList<>();
+  protected List<ITestNGMethod> m_beforeTestMethods = new ArrayList<>();
   protected ITestNGMethod[] m_testMethods = new ITestNGMethod[0];
-  protected List<ITestNGMethod> m_afterClassMethods = Lists.newArrayList();
-  protected List<ITestNGMethod> m_afterTestMethods = Lists.newArrayList();
-  protected List<ITestNGMethod> m_beforeSuiteMethods = Lists.newArrayList();
-  protected List<ITestNGMethod> m_afterSuiteMethods = Lists.newArrayList();
-  protected List<ITestNGMethod> m_beforeTestConfMethods = Lists.newArrayList();
-  protected List<ITestNGMethod> m_afterTestConfMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_afterClassMethods = new ArrayList<>();
+  protected List<ITestNGMethod> m_afterTestMethods = new ArrayList<>();
+  protected List<ITestNGMethod> m_beforeSuiteMethods = new ArrayList<>();
+  protected List<ITestNGMethod> m_afterSuiteMethods = new ArrayList<>();
+  protected List<ITestNGMethod> m_beforeTestConfMethods = new ArrayList<>();
+  protected List<ITestNGMethod> m_afterTestConfMethods = new ArrayList<>();
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
-  protected List<ITestNGMethod> m_afterGroupsMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_afterGroupsMethods = new ArrayList<>();
 
   private final IdentifiableObject[] m_instances;
   private final long[] m_instanceHashes;
