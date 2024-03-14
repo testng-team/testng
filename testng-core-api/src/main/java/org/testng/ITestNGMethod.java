@@ -3,7 +3,6 @@ package org.testng;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import org.testng.annotations.CustomAttribute;
 import org.testng.internal.ConstructorOrMethod;
@@ -296,13 +295,5 @@ public interface ITestNGMethod extends Cloneable {
    */
   default boolean isIgnoreFailure() {
     return false;
-  }
-
-  /**
-   * @return - A <code>{@link UUID}</code> that represents a unique id which is associated with
-   *     every test class object.
-   */
-  default UUID getInstanceId() {
-    return null;
   }
 }

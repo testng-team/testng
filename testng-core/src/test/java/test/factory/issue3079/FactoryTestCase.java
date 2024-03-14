@@ -15,6 +15,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
+import org.testng.internal.IInstanceIdentity;
 
 public class FactoryTestCase {
 
@@ -60,7 +61,8 @@ public class FactoryTestCase {
     ITestResult itr = Reporter.getCurrentTestResult();
     ITestNGMethod itm = itr.getMethod();
     objectMap
-        .computeIfAbsent(itm.getInstanceId(), k -> ConcurrentHashMap.newKeySet())
+        .computeIfAbsent(
+            (UUID) IInstanceIdentity.getInstanceId(itm), k -> ConcurrentHashMap.newKeySet())
         .add(itm.getInstance());
   }
 }

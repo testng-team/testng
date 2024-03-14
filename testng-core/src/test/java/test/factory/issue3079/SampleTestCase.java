@@ -13,6 +13,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.IInstanceIdentity;
 
 public class SampleTestCase {
   public static Map<UUID, Set<Object>> objectMap = new ConcurrentHashMap<>();
@@ -61,7 +62,8 @@ public class SampleTestCase {
     ITestResult itr = Reporter.getCurrentTestResult();
     ITestNGMethod itm = itr.getMethod();
     objectMap
-        .computeIfAbsent(itm.getInstanceId(), k -> ConcurrentHashMap.newKeySet())
+        .computeIfAbsent(
+            (UUID) IInstanceIdentity.getInstanceId(itm), k -> ConcurrentHashMap.newKeySet())
         .add(itm.getInstance());
   }
 }

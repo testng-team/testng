@@ -35,7 +35,8 @@ import org.testng.internal.objects.pojo.CreationAttributes;
 import org.testng.xml.XmlTest;
 
 /** Superclass to represent both &#64;Test and &#64;Configuration methods. */
-public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus {
+public abstract class BaseTestMethod
+    implements ITestNGMethod, IInvocationStatus, IInstanceIdentity {
 
   private static final Pattern SPACE_SEPARATOR_PATTERN = Pattern.compile(" +");
 
@@ -157,7 +158,9 @@ public abstract class BaseTestMethod implements ITestNGMethod, IInvocationStatus
 
   @Override
   public UUID getInstanceId() {
-    return m_instance.getInstanceId();
+    return Optional.ofNullable(m_instance)
+        .map(IObject.IdentifiableObject::getInstanceId)
+        .orElse(null);
   }
 
   /** {@inheritDoc} */

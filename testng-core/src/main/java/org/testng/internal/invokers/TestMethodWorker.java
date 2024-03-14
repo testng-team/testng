@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
@@ -123,7 +122,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
-      UUID key = Objects.requireNonNull(testMethod.getInstanceId());
+      Object key = Objects.requireNonNull(IInstanceIdentity.getInstanceId(testMethod));
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);

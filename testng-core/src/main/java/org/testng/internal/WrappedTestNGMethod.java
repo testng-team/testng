@@ -17,12 +17,18 @@ import org.testng.xml.XmlTest;
  * generates a unique hashcode that is different from the original {@link ITestNGMethod} instance
  * that it wraps.
  */
-public class WrappedTestNGMethod implements ITestNGMethod {
+public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   private final ITestNGMethod testNGMethod;
   private final int multiplicationFactor = new Random().nextInt();
 
+  private final UUID uuid;
+
   public WrappedTestNGMethod(ITestNGMethod testNGMethod) {
     this.testNGMethod = testNGMethod;
+    uuid =
+        (testNGMethod instanceof BaseTestMethod)
+            ? ((BaseTestMethod) testNGMethod).getInstanceId()
+            : UUID.randomUUID();
   }
 
   @Override
@@ -367,7 +373,7 @@ public class WrappedTestNGMethod implements ITestNGMethod {
 
   @Override
   public UUID getInstanceId() {
-    return testNGMethod.getInstanceId();
+    return uuid;
   }
 
   @Override
