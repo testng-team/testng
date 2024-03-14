@@ -8,6 +8,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
+import org.testng.internal.IObject;
 import org.testng.internal.Parameters;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.objects.pojo.BasicAttributes;
@@ -187,11 +188,11 @@ class SimpleObjectDispenser implements IObjectDispenser {
     if (enclosingIClass == null) {
       return factory.newInstance(ec);
     }
-    Object[] enclosingInstances = enclosingIClass.getInstances(false);
-    if (enclosingInstances == null || enclosingInstances.length == 0) {
+    IObject.IdentifiableObject[] enclosingInstances = IObject.objects(enclosingIClass, false);
+    if (enclosingInstances.length == 0) {
       return factory.newInstance(ec.getConstructor(ec));
     }
-    return enclosingInstances[0];
+    return enclosingInstances[0].getInstance();
   }
 
   /** Find the best constructor given the parameters found on the annotation */

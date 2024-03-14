@@ -32,7 +32,7 @@ public abstract class BaseClassFinder implements ITestClassFinder {
       ITestContext context,
       Class<?> cls,
       XmlClass xmlClass,
-      Object instance,
+      IObject.IdentifiableObject instance,
       IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
 

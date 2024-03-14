@@ -233,7 +233,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
                 each.getConstructorOrMethod().getMethod(),
                 finder,
                 xmlTest,
-                object);
+                new IObject.IdentifiableObject(object));
         fixedMethods.add(m);
       }
     }

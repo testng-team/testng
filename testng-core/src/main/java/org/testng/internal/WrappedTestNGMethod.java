@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
@@ -16,12 +17,18 @@ import org.testng.xml.XmlTest;
  * generates a unique hashcode that is different from the original {@link ITestNGMethod} instance
  * that it wraps.
  */
-public class WrappedTestNGMethod implements ITestNGMethod {
+public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   private final ITestNGMethod testNGMethod;
   private final int multiplicationFactor = new Random().nextInt();
 
+  private final UUID uuid;
+
   public WrappedTestNGMethod(ITestNGMethod testNGMethod) {
     this.testNGMethod = testNGMethod;
+    uuid =
+        (testNGMethod instanceof BaseTestMethod)
+            ? ((BaseTestMethod) testNGMethod).getInstanceId()
+            : UUID.randomUUID();
   }
 
   @Override
@@ -362,6 +369,11 @@ public class WrappedTestNGMethod implements ITestNGMethod {
   @Override
   public String getQualifiedName() {
     return testNGMethod.getQualifiedName();
+  }
+
+  @Override
+  public UUID getInstanceId() {
+    return uuid;
   }
 
   @Override

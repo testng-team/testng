@@ -412,6 +412,7 @@
       <class name="test.factory.VerifyFactoryTest" />
       <class name="test.factory.FactoryInSeparateClassTest" />
       <class name="test.factory.Factory2Test" />
+      <class name="test.factory.ObjectIdTest"/>
 
       <class name="test.factory.FactoryWithInstanceInfoTest" />
       <class name="test.factory.VerifyFactoryWithInstanceInfoTest" />

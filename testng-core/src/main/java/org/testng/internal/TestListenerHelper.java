@@ -177,8 +177,9 @@ public final class TestListenerHelper {
     try {
       if (finder != null) {
         IClass ic = finder.getIClass(factoryClass);
-        if (ic != null) {
-          listenerFactory = (ITestNGListenerFactory) ic.getInstances(false)[0];
+        IObject.IdentifiableObject[] created = IObject.objects(ic, false);
+        if (created.length != 0) {
+          listenerFactory = (ITestNGListenerFactory) created[0].getInstance();
         }
       }
       if (listenerFactory == null) {

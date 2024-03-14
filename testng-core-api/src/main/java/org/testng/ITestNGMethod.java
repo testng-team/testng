@@ -279,7 +279,7 @@ public interface ITestNGMethod extends Cloneable {
 
   /**
    * @return - An {@link IDataProviderMethod} for a data provider powered test method and <code>null
-   *     </code> otherwise.
+   * </code> otherwise.
    */
   default IDataProviderMethod getDataProviderMethod() {
     return null;

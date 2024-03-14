@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.testng.IClass;
@@ -20,15 +21,15 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
 /** Implementation of an IClass. */
-public class ClassImpl implements IClass {
+public class ClassImpl implements IClass, IObject {
 
   private final Class<?> m_class;
-  private Object m_defaultInstance = null;
+  private IObject.IdentifiableObject m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
-  private final List<Object> m_instances = Lists.newArrayList();
+  private final List<IObject.IdentifiableObject> identifiableObjects = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
   private long[] m_instanceHashCodes;
-  private final Object m_instance;
+  private final IObject.IdentifiableObject m_instance;
   private final ITestObjectFactory m_objectFactory;
   private String m_testName = null;
   private final XmlClass m_xmlClass;
@@ -38,7 +39,7 @@ public class ClassImpl implements IClass {
       ITestContext context,
       Class<?> cls,
       XmlClass xmlClass,
-      Object instance,
+      IObject.IdentifiableObject instance,
       Map<Class<?>, IClass> classes,
       IAnnotationFinder annotationFinder,
       ITestObjectFactory objectFactory) {
@@ -49,8 +50,8 @@ public class ClassImpl implements IClass {
     m_annotationFinder = annotationFinder;
     m_instance = instance;
     m_objectFactory = objectFactory;
-    if (instance instanceof ITest) {
-      m_testName = ((ITest) instance).getTestName();
+    if (IObject.IdentifiableObject.unwrap(instance) instanceof ITest) {
+      m_testName = ((ITest) instance.getInstance()).getTestName();
     }
     if (m_testName == null) {
       ITestAnnotation annotation = m_annotationFinder.findAnnotation(cls, ITestAnnotation.class);
@@ -90,7 +91,7 @@ public class ClassImpl implements IClass {
     return m_xmlClass;
   }
 
-  private Object getDefaultInstance(boolean create, String errMsgPrefix) {
+  private IObject.IdentifiableObject getDefaultInstance(boolean create, String errMsgPrefix) {
     if (m_defaultInstance == null) {
       if (m_instance != null) {
         m_defaultInstance = m_instance;
@@ -103,10 +104,12 @@ public class ClassImpl implements IClass {
         BasicAttributes basic = new BasicAttributes(this, null);
         DetailedAttributes detailed = newDetailedAttributes(create, errMsgPrefix);
         CreationAttributes attributes = new CreationAttributes(m_testContext, basic, detailed);
-        m_defaultInstance = dispenser.dispense(attributes);
+        Object raw = dispenser.dispense(attributes);
+        if (raw != null) {
+          m_defaultInstance = new IObject.IdentifiableObject(raw);
+        }
       }
     }
-
     return m_defaultInstance;
   }
 
@@ -117,21 +120,33 @@ public class ClassImpl implements IClass {
 
   @Override
   public Object[] getInstances(boolean create, String errorMsgPrefix) {
-    Object[] result = {};
+    return Arrays.stream(getObjects(create, errorMsgPrefix))
+        .map(IdentifiableObject::getInstance)
+        .toArray(Object[]::new);
+  }
 
-    if (!m_instances.isEmpty()) {
-      result = m_instances.toArray(new Object[0]);
+  @Override
+  public void addObject(IdentifiableObject instance) {
+    identifiableObjects.add(instance);
+  }
+
+  @Override
+  public IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix) {
+    IdentifiableObject[] result = {};
+
+    if (!identifiableObjects.isEmpty()) {
+      result = identifiableObjects.toArray(new IdentifiableObject[0]);
     } else {
-      Object defaultInstance = getDefaultInstance(create, errorMsgPrefix);
+      IdentifiableObject defaultInstance = getDefaultInstance(create, errorMsgPrefix);
       if (defaultInstance != null) {
-        result = new Object[] {defaultInstance};
+        result = new IdentifiableObject[] {defaultInstance};
       }
     }
 
-    int m_instanceCount = m_instances.size();
+    int m_instanceCount = identifiableObjects.size();
     m_instanceHashCodes = new long[m_instanceCount];
     for (int i = 0; i < m_instanceCount; i++) {
-      m_instanceHashCodes[i] = computeHashCode(m_instances.get(i));
+      m_instanceHashCodes[i] = computeHashCode(identifiableObjects.get(i).getInstance());
     }
     return result;
   }
@@ -143,7 +158,7 @@ public class ClassImpl implements IClass {
 
   @Override
   public void addInstance(Object instance) {
-    m_instances.add(instance);
+    addObject(new IdentifiableObject(instance));
   }
 
   private static int computeHashCode(Object instance) {
