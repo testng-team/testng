@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.stream.Stream;
 import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.*;
@@ -210,7 +209,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               xmlTest,
               eachInstance);
       Object instance = IParameterInfo.embeddedInstance(eachInstance.getInstance());
-      beforeClassConfig.put(instance, Arrays.asList(m_beforeClassMethods));
+      beforeClassConfig.put(instance, m_beforeClassMethods);
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
@@ -219,7 +218,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               false,
               xmlTest,
               eachInstance);
-      afterClassConfig.put(instance, Arrays.asList(m_afterClassMethods));
+      afterClassConfig.put(instance, m_afterClassMethods);
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
@@ -234,30 +233,22 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               annotationFinder,
               false,
               eachInstance);
-      m_beforeTestMethods =
-          Stream.of(
-                  m_beforeTestMethods,
-                  ConfigurationMethod.createTestMethodConfigurationMethods(
-                      objectFactory,
-                      testMethodFinder.getBeforeTestMethods(m_testClass),
-                      annotationFinder,
-                      true,
-                      xmlTest,
-                      eachInstance))
-              .flatMap(Stream::of)
-              .toArray(ITestNGMethod[]::new);
-      m_afterTestMethods =
-          Stream.of(
-                  m_afterTestMethods,
-                  ConfigurationMethod.createTestMethodConfigurationMethods(
-                      objectFactory,
-                      testMethodFinder.getAfterTestMethods(m_testClass),
-                      annotationFinder,
-                      false,
-                      xmlTest,
-                      eachInstance))
-              .flatMap(Stream::of)
-              .toArray(ITestNGMethod[]::new);
+      m_beforeTestMethods.addAll(
+          ConfigurationMethod.createTestMethodConfigurationMethods(
+              objectFactory,
+              testMethodFinder.getBeforeTestMethods(m_testClass),
+              annotationFinder,
+              true,
+              xmlTest,
+              eachInstance));
+      m_afterTestMethods.addAll(
+          ConfigurationMethod.createTestMethodConfigurationMethods(
+              objectFactory,
+              testMethodFinder.getAfterTestMethods(m_testClass),
+              annotationFinder,
+              false,
+              xmlTest,
+              eachInstance));
     }
   }
 

@@ -26,13 +26,9 @@ public interface ITestClassConfigInfo {
    * @param instance object hashcode
    * @return All before class methods of instance
    */
-  default List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
-    return Lists.newArrayList();
-  }
+  List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance);
 
-  default List<ITestNGMethod> getInstanceAfterClassMethods(Object instance) {
-    return Lists.newArrayList();
-  }
+  List<ITestNGMethod> getInstanceAfterClassMethods(Object instance);
 
   static List<ITestNGMethod> allBeforeClassMethods(ITestClass tc) {
     if (tc instanceof ITestClassConfigInfo) {

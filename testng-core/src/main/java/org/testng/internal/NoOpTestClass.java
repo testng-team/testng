@@ -1,7 +1,9 @@
 package org.testng.internal;
 
+import java.util.List;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlTest;
 
@@ -10,17 +12,17 @@ public class NoOpTestClass implements ITestClass, IObject {
   protected Class<?> m_testClass = null;
 
   // Test methods
-  protected ITestNGMethod[] m_beforeClassMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_beforeTestMethods = new ITestNGMethod[0];
+  protected List<ITestNGMethod> m_beforeClassMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_beforeTestMethods = Lists.newArrayList();
   protected ITestNGMethod[] m_testMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_afterClassMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_afterTestMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_beforeSuiteMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_afterSuiteMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_beforeTestConfMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_afterTestConfMethods = new ITestNGMethod[0];
+  protected List<ITestNGMethod> m_afterClassMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_afterTestMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_beforeSuiteMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_afterSuiteMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_beforeTestConfMethods = Lists.newArrayList();
+  protected List<ITestNGMethod> m_afterTestConfMethods = Lists.newArrayList();
   protected ITestNGMethod[] m_beforeGroupsMethods = new ITestNGMethod[0];
-  protected ITestNGMethod[] m_afterGroupsMethods = new ITestNGMethod[0];
+  protected List<ITestNGMethod> m_afterGroupsMethods = Lists.newArrayList();
 
   private final IdentifiableObject[] m_instances;
   private final long[] m_instanceHashes;
@@ -37,16 +39,16 @@ public class NoOpTestClass implements ITestClass, IObject {
 
   public NoOpTestClass(ITestClass testClass) {
     m_testClass = testClass.getRealClass();
-    m_beforeSuiteMethods = testClass.getBeforeSuiteMethods();
-    m_beforeTestConfMethods = testClass.getBeforeTestConfigurationMethods();
+    m_beforeSuiteMethods = List.of(testClass.getBeforeSuiteMethods());
+    m_beforeTestConfMethods = List.of(testClass.getBeforeTestConfigurationMethods());
     m_beforeGroupsMethods = testClass.getBeforeGroupsMethods();
-    m_beforeClassMethods = testClass.getBeforeClassMethods();
-    m_beforeTestMethods = testClass.getBeforeTestMethods();
-    m_afterSuiteMethods = testClass.getAfterSuiteMethods();
-    m_afterTestConfMethods = testClass.getAfterTestConfigurationMethods();
-    m_afterGroupsMethods = testClass.getAfterGroupsMethods();
-    m_afterClassMethods = testClass.getAfterClassMethods();
-    m_afterTestMethods = testClass.getAfterTestMethods();
+    m_beforeClassMethods = List.of(testClass.getBeforeClassMethods());
+    m_beforeTestMethods = List.of(testClass.getBeforeTestMethods());
+    m_afterSuiteMethods = List.of(testClass.getAfterSuiteMethods());
+    m_afterTestConfMethods = List.of(testClass.getAfterTestConfigurationMethods());
+    m_afterGroupsMethods = List.of(testClass.getAfterGroupsMethods());
+    m_afterClassMethods = List.of(testClass.getAfterClassMethods());
+    m_afterTestMethods = List.of(testClass.getAfterTestMethods());
     m_instances = IObject.objects(testClass, true);
     m_instanceHashes = IObject.instanceHashCodes(testClass);
     m_xmlTest = testClass.getXmlTest();
@@ -54,35 +56,35 @@ public class NoOpTestClass implements ITestClass, IObject {
   }
 
   public void setBeforeTestMethods(ITestNGMethod[] beforeTestMethods) {
-    m_beforeTestMethods = beforeTestMethods;
+    m_beforeTestMethods = List.of(beforeTestMethods);
   }
 
   public void setAfterTestMethod(ITestNGMethod[] afterTestMethods) {
-    m_afterTestMethods = afterTestMethods;
+    m_afterTestMethods = List.of(afterTestMethods);
   }
 
   /** @return Returns the afterClassMethods. */
   @Override
   public ITestNGMethod[] getAfterClassMethods() {
-    return m_afterClassMethods;
+    return m_afterClassMethods.toArray(ITestNGMethod[]::new);
   }
 
   /** @return Returns the afterTestMethods. */
   @Override
   public ITestNGMethod[] getAfterTestMethods() {
-    return m_afterTestMethods;
+    return m_afterTestMethods.toArray(ITestNGMethod[]::new);
   }
 
   /** @return Returns the beforeClassMethods. */
   @Override
   public ITestNGMethod[] getBeforeClassMethods() {
-    return m_beforeClassMethods;
+    return m_beforeClassMethods.toArray(ITestNGMethod[]::new);
   }
 
   /** @return Returns the beforeTestMethods. */
   @Override
   public ITestNGMethod[] getBeforeTestMethods() {
-    return m_beforeTestMethods;
+    return m_beforeTestMethods.toArray(ITestNGMethod[]::new);
   }
 
   /** @return Returns the testMethods. */
@@ -93,22 +95,22 @@ public class NoOpTestClass implements ITestClass, IObject {
 
   @Override
   public ITestNGMethod[] getBeforeSuiteMethods() {
-    return m_beforeSuiteMethods;
+    return m_beforeSuiteMethods.toArray(ITestNGMethod[]::new);
   }
 
   @Override
   public ITestNGMethod[] getAfterSuiteMethods() {
-    return m_afterSuiteMethods;
+    return m_afterSuiteMethods.toArray(ITestNGMethod[]::new);
   }
 
   @Override
   public ITestNGMethod[] getBeforeTestConfigurationMethods() {
-    return m_beforeTestConfMethods;
+    return m_beforeTestConfMethods.toArray(ITestNGMethod[]::new);
   }
 
   @Override
   public ITestNGMethod[] getAfterTestConfigurationMethods() {
-    return m_afterTestConfMethods;
+    return m_afterTestConfMethods.toArray(ITestNGMethod[]::new);
   }
 
   /** @return all @Configuration methods that should be invoked before certain groups */
@@ -120,7 +122,7 @@ public class NoOpTestClass implements ITestClass, IObject {
   /** @return all @Configuration methods that should be invoked after certain groups */
   @Override
   public ITestNGMethod[] getAfterGroupsMethods() {
-    return m_afterGroupsMethods;
+    return m_afterGroupsMethods.toArray(ITestNGMethod[]::new);
   }
 
   /** @see org.testng.internal.IObject#getInstanceHashCodes() */

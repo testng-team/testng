@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -87,15 +86,9 @@ class TestNgMethodUtils {
       ITestNGMethod[] methods,
       BiPredicate<ITestNGMethod, IClass> predicate) {
     List<ITestNGMethod> vResult = Lists.newArrayList();
-    Predicate<ITestNGMethod> sameInstance =
-        tm ->
-            instance == null
-                || instance.equals(
-                    Optional.ofNullable(tm).map(ITestNGMethod::getInstance).orElse(new Object()));
-
     for (ITestNGMethod tm : methods) {
       String msg;
-      if ((predicate.test(tm, testClass) && sameInstance.test(tm))
+      if ((predicate.test(tm, testClass) && isSameInstance(tm, instance))
           && (!TestNgMethodUtils.containsConfigurationMethod(tm, vResult))) {
         msg = Utils.getVerbose() < 10 ? "" : "Keeping method " + tm + " for class " + testClass;
         vResult.add(tm);
@@ -106,6 +99,14 @@ class TestNgMethodUtils {
       Utils.log("Invoker " + Thread.currentThread().hashCode(), 10, msg);
     }
     return vResult.toArray(new ITestNGMethod[0]);
+  }
+
+  private static boolean isSameInstance(ITestNGMethod tm, Object instance) {
+    if (instance == null) {
+      return true;
+    }
+    Object tmObject = Optional.ofNullable(tm).map(ITestNGMethod::getInstance).orElse(new Object());
+    return instance.equals(tmObject);
   }
 
   static ITestNGMethod[] filterSetupConfigurationMethods(
