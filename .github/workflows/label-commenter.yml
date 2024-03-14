@@ -1,0 +1,18 @@
+name: Label Commenter
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  comment:
+    if: github.repository_owner == 'testng-team'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Label Commenter
+        uses: peaceiris/actions-label-commenter@v1
