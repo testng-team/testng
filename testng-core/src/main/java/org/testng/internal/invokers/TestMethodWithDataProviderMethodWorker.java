@@ -14,7 +14,8 @@ import org.testng.internal.TestResult;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
 import org.testng.xml.XmlSuite;
 
-public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITestResult>> {
+public class TestMethodWithDataProviderMethodWorker
+    implements Callable<List<ITestResult>>, Comparable<TestMethodWithDataProviderMethodWorker> {
 
   private final ITestNGMethod m_testMethod;
   private final Object[] m_parameterValues;
@@ -151,5 +152,10 @@ public class TestMethodWithDataProviderMethodWorker implements Callable<List<ITe
 
   public int getInvocationCount() {
     return m_invocationCount;
+  }
+
+  @Override
+  public int compareTo(TestMethodWithDataProviderMethodWorker o) {
+    return Integer.compare(this.m_testMethod.getPriority(), o.m_testMethod.getPriority());
   }
 }
