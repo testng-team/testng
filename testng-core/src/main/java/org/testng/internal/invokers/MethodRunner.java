@@ -1,7 +1,6 @@
 package org.testng.internal.invokers;
 
 import static java.util.concurrent.CompletableFuture.allOf;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +22,7 @@ import org.testng.internal.ObjectBag;
 import org.testng.internal.Parameters;
 import org.testng.internal.invokers.ITestInvoker.FailureContext;
 import org.testng.internal.invokers.TestMethodArguments.Builder;
+import org.testng.internal.thread.Async;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.xml.XmlSuite;
 
@@ -140,7 +140,7 @@ public class MethodRunner implements IMethodRunner {
               invocationCount.get(),
               failure.count.get(),
               testInvoker.getNotifier());
-      all.add(supplyAsync(w::call, service));
+      all.add(Async.run(w, service));
       // testng387: increment the param index in the bag.
       parametersIndex += 1;
     }

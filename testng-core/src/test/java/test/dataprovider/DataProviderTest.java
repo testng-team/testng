@@ -59,6 +59,8 @@ import test.dataprovider.issue3041.SampleTestCase;
 import test.dataprovider.issue3045.DataProviderListener;
 import test.dataprovider.issue3045.DataProviderTestClassSample;
 import test.dataprovider.issue3045.DataProviderWithoutListenerTestClassSample;
+import test.dataprovider.issue3081.NoOpMethodInterceptor;
+import test.dataprovider.issue3081.TestClassWithPrioritiesSample;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -649,6 +651,45 @@ public class DataProviderTest extends SimpleBaseTest {
     assertThat(listener.getThreadIds())
         .withFailMessage("Ensuring that the thread ids are correct")
         .hasSize(pair.second());
+  }
+
+  @Test(description = "GITHUB-3081")
+  public void ensureNoExceptionsWhenRunningInSharedThreadPoolsWithMethodInterceptorsNoPriorities() {
+    TestNG testng = create(test.dataprovider.issue3081.TestClassSample.class);
+    test.dataprovider.issue3081.TestClassSample.clear();
+    testng.shouldUseGlobalThreadPool(true);
+    testng.addListener(new NoOpMethodInterceptor());
+    testng.setThreadCount(10);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.shareThreadPoolForDataProviders(true);
+    testng.setVerbose(2);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(test.dataprovider.issue3081.TestClassSample.getLogs())
+        .withFailMessage(
+            "There should have been 9 threads ONLY used by the data driven test "
+                + "because one thread would be the main thread on which TestNG would be running")
+        .hasSize(9);
+  }
+
+  @Test(description = "GITHUB-3081")
+  public void
+      ensureNoExceptionsWhenRunningInSharedThreadPoolsWithMethodInterceptorsWithPriorities() {
+    TestNG testng = create(TestClassWithPrioritiesSample.class);
+    TestClassWithPrioritiesSample.clear();
+    testng.shouldUseGlobalThreadPool(true);
+    testng.addListener(new NoOpMethodInterceptor());
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.shareThreadPoolForDataProviders(true);
+    testng.setThreadCount(10);
+    testng.setVerbose(2);
+    testng.run();
+    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(TestClassWithPrioritiesSample.getLogs())
+        .withFailMessage(
+            "There should have been 9 threads ONLY used by the data driven test "
+                + "because one thread would be the main thread on which TestNG would be running")
+        .hasSize(9);
   }
 
   @DataProvider
