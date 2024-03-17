@@ -6,13 +6,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.IClass;
@@ -832,7 +833,7 @@ public abstract class BaseTestMethod
       return this.m_retryAnalyzer;
     }
 
-    final String keyAsString = getSimpleName() + "#" + hashParameters(tr);
+    final String keyAsString = getSimpleName() + "#" + parameterId(tr);
     return m_testMethodToRetryAnalyzer.computeIfAbsent(
         keyAsString,
         key -> {
@@ -842,9 +843,13 @@ public abstract class BaseTestMethod
         });
   }
 
-  private int hashParameters(ITestResult itr) {
-    Object[] parameters = itr.getParameters();
-    return Objects.hash(parameters);
+  private final Map<IObject.IdentifiableArrayObject, IObject.IdentifiableArrayObject> parameters =
+      new ConcurrentHashMap<>();
+
+  private String parameterId(ITestResult itr) {
+    IObject.IdentifiableArrayObject parameter =
+        new IObject.IdentifiableArrayObject(itr.getParameters());
+    return parameters.computeIfAbsent(parameter, Function.identity()).getInstanceId();
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {
