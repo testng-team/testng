@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
@@ -72,7 +71,6 @@ public class TestListenerHolder {
         "MasterShifu.onFinish_ITestContext",
         "MasterOogway.onFinish_ITestContext"
       };
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = TestListenerHolder.class.getName() + "$";
 
   public static final List<ITestNGListener> ALL =
@@ -91,42 +89,43 @@ public class TestListenerHolder {
 
     @Override
     public void onStart(ITestContext context) {
-      LOGS.add(getClass().getSimpleName() + ".onStart_ITestContext");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onStart_ITestContext");
     }
 
     @Override
     public void onTestStart(ITestResult result) {
-      LOGS.add(getClass().getSimpleName() + ".onTestStart");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onTestStart");
     }
 
     @Override
     public void onTestSuccess(ITestResult result) {
-      LOGS.add(getClass().getSimpleName() + ".onTestSuccess");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onTestSuccess");
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
-      LOGS.add(getClass().getSimpleName() + ".onTestFailure");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onTestFailure");
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
-      LOGS.add(getClass().getSimpleName() + ".onTestSkipped");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onTestSkipped");
     }
 
     @Override
     public void onTestFailedWithTimeout(ITestResult result) {
-      LOGS.add(getClass().getSimpleName() + ".onTestFailedWithTimeout");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onTestFailedWithTimeout");
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-      LOGS.add(getClass().getSimpleName() + ".onTestFailedButWithinSuccessPercentage");
+      LogContainer.instance.log(
+          getClass().getSimpleName() + ".onTestFailedButWithinSuccessPercentage");
     }
 
     @Override
     public void onFinish(ITestContext context) {
-      LOGS.add(getClass().getSimpleName() + ".onFinish_ITestContext");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onFinish_ITestContext");
     }
   }
 

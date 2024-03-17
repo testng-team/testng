@@ -3,6 +3,7 @@ package test.listeners;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.ITestNGListener;
@@ -45,6 +47,7 @@ import test.listeners.issue2916.ElaborateSampleTestCase;
 import test.listeners.issue2916.ExecutionListenerHolder;
 import test.listeners.issue2916.ExecutionVisualiserHolder;
 import test.listeners.issue2916.InvokedMethodListenerHolder;
+import test.listeners.issue2916.LogContainer;
 import test.listeners.issue2916.MethodInterceptorHolder;
 import test.listeners.issue2916.NormalSampleTestCase;
 import test.listeners.issue2916.SimpleConfigTestCase;
@@ -65,63 +68,58 @@ public class ListenersTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionListenersViaApi() {
-    Ensure.orderingViaApi(
-        ExecutionListenerHolder.LOGS,
-        ExecutionListenerHolder.ALL,
-        ExecutionListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaApi(ExecutionListenerHolder.ALL, ExecutionListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForAlterSuiteListenersViaApi() {
-    Ensure.orderingViaApi(
-        AlterSuiteListenerHolder.LOGS,
-        AlterSuiteListenerHolder.ALL,
-        AlterSuiteListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaApi(AlterSuiteListenerHolder.ALL, AlterSuiteListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForSuiteListenersViaApi() {
-    Ensure.orderingViaApi(
-        SuiteListenerHolder.LOGS, SuiteListenerHolder.ALL, SuiteListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaApi(SuiteListenerHolder.ALL, SuiteListenerHolder.EXPECTED_LOGS);
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+    String arguments = String.join(" ", ManagementFactory.getRuntimeMXBean().getInputArguments());
+    System.err.println("Arguments = " + arguments);
+    ListenersTest object = new ListenersTest();
+    for (int i = 1; i <= 10000; i++) {
+      object.ensureOrderingForTestListenersViaApi();
+      TimeUnit.MILLISECONDS.sleep(500);
+    }
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForTestListenersViaApi() {
     Ensure.orderingViaApi(
-        ElaborateSampleTestCase.class,
-        TestListenerHolder.LOGS,
-        TestListenerHolder.ALL,
-        TestListenerHolder.EXPECTED_LOGS);
+        ElaborateSampleTestCase.class, TestListenerHolder.ALL, TestListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForInvokedListenersViaApi() {
     Ensure.orderingViaApi(
-        InvokedMethodListenerHolder.LOGS,
-        InvokedMethodListenerHolder.ALL,
-        InvokedMethodListenerHolder.EXPECTED_LOGS);
+        InvokedMethodListenerHolder.ALL, InvokedMethodListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForConfigurationListenersViaApi() {
     Ensure.orderingViaApi(
         SimpleConfigTestCase.class,
-        ConfigurationListenerHolder.LOGS,
         ConfigurationListenerHolder.ALL,
         ConfigurationListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForClassListenersViaApi() {
-    Ensure.orderingViaApi(
-        ClassListenerHolder.LOGS, ClassListenerHolder.ALL, ClassListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaApi(ClassListenerHolder.ALL, ClassListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForDataProviderListenersViaApi() {
     Ensure.orderingViaApi(
         DataProviderSampleTestCase.class,
-        DataProviderListenerHolder.LOGS,
         DataProviderListenerHolder.ALL,
         DataProviderListenerHolder.EXPECTED_LOGS);
   }
@@ -130,56 +128,41 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForDataProviderInterceptorsViaApi() {
     Ensure.orderingViaApi(
         DataProviderSampleTestCase.class,
-        DataProviderInterceptorHolder.LOGS,
         DataProviderInterceptorHolder.ALL,
         DataProviderInterceptorHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionVisualisersViaApi() {
-    Ensure.orderingViaApi(
-        ExecutionVisualiserHolder.LOGS,
-        ExecutionVisualiserHolder.ALL,
-        ExecutionVisualiserHolder.EXPECTED_LOGS);
+    Ensure.orderingViaApi(ExecutionVisualiserHolder.ALL, ExecutionVisualiserHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForMethodInterceptorsViaApi() {
-    Ensure.orderingViaApi(
-        MethodInterceptorHolder.LOGS,
-        MethodInterceptorHolder.ALL,
-        MethodInterceptorHolder.EXPECTED_LOGS);
+    Ensure.orderingViaApi(MethodInterceptorHolder.ALL, MethodInterceptorHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionListenersViaXmlTag() {
     Ensure.orderingViaXmlTag(
-        ExecutionListenerHolder.LOGS,
-        ExecutionListenerHolder.ALL_STRING,
-        ExecutionListenerHolder.EXPECTED_LOGS);
+        ExecutionListenerHolder.ALL_STRING, ExecutionListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForAlterSuiteListenersViaXmlTag() {
     Ensure.orderingViaXmlTag(
-        AlterSuiteListenerHolder.LOGS,
-        AlterSuiteListenerHolder.ALL_STRING,
-        AlterSuiteListenerHolder.EXPECTED_LOGS);
+        AlterSuiteListenerHolder.ALL_STRING, AlterSuiteListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForSuiteListenersViaXmlTag() {
-    Ensure.orderingViaXmlTag(
-        SuiteListenerHolder.LOGS,
-        SuiteListenerHolder.ALL_STRING,
-        SuiteListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaXmlTag(SuiteListenerHolder.ALL_STRING, SuiteListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForTestListenersViaXmlTag() {
     Ensure.orderingViaXmlTag(
         ElaborateSampleTestCase.class,
-        TestListenerHolder.LOGS,
         TestListenerHolder.ALL_STRING,
         TestListenerHolder.EXPECTED_LOGS);
   }
@@ -187,33 +170,26 @@ public class ListenersTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForInvokedMethodListenersViaXmlTag() {
     Ensure.orderingViaXmlTag(
-        InvokedMethodListenerHolder.LOGS,
-        InvokedMethodListenerHolder.ALL_STRING,
-        InvokedMethodListenerHolder.EXPECTED_LOGS);
+        InvokedMethodListenerHolder.ALL_STRING, InvokedMethodListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForConfigurationListenersViaXmlTag() {
     Ensure.orderingViaXmlTag(
         SimpleConfigTestCase.class,
-        ConfigurationListenerHolder.LOGS,
         ConfigurationListenerHolder.ALL_STRING,
         ConfigurationListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForClassListenersViaXmlTag() {
-    Ensure.orderingViaXmlTag(
-        ClassListenerHolder.LOGS,
-        ClassListenerHolder.ALL_STRING,
-        ClassListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaXmlTag(ClassListenerHolder.ALL_STRING, ClassListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForDataProviderListenersViaXmlTag() {
     Ensure.orderingViaXmlTag(
         DataProviderSampleTestCase.class,
-        DataProviderListenerHolder.LOGS,
         DataProviderListenerHolder.ALL_STRING,
         DataProviderListenerHolder.EXPECTED_LOGS);
   }
@@ -222,7 +198,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForDataProviderInterceptorsViaXmlTag() {
     Ensure.orderingViaXmlTag(
         DataProviderSampleTestCase.class,
-        DataProviderInterceptorHolder.LOGS,
         DataProviderInterceptorHolder.ALL_STRING,
         DataProviderInterceptorHolder.EXPECTED_LOGS);
   }
@@ -230,80 +205,63 @@ public class ListenersTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionVisualisersViaXmlTag() {
     Ensure.orderingViaXmlTag(
-        ExecutionVisualiserHolder.LOGS,
-        ExecutionVisualiserHolder.ALL_STRING,
-        ExecutionVisualiserHolder.EXPECTED_LOGS);
+        ExecutionVisualiserHolder.ALL_STRING, ExecutionVisualiserHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForMethodInterceptorsViaXmlTag() {
     Ensure.orderingViaXmlTag(
-        MethodInterceptorHolder.LOGS,
-        MethodInterceptorHolder.ALL_STRING,
-        MethodInterceptorHolder.EXPECTED_LOGS);
+        MethodInterceptorHolder.ALL_STRING, MethodInterceptorHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionListenersViaCli() {
     Ensure.orderingViaCli(
-        ExecutionListenerHolder.LOGS,
-        ExecutionListenerHolder.ALL_STRING,
-        ExecutionListenerHolder.EXPECTED_LOGS);
+        ExecutionListenerHolder.ALL_STRING, ExecutionListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForAlterSuiteListenersViaCli() {
     Ensure.orderingViaCli(
-        AlterSuiteListenerHolder.LOGS,
-        AlterSuiteListenerHolder.ALL_STRING,
-        AlterSuiteListenerHolder.EXPECTED_LOGS);
+        AlterSuiteListenerHolder.ALL_STRING, AlterSuiteListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForSuiteListenersViaCli() {
-    Ensure.orderingViaCli(
-        SuiteListenerHolder.LOGS,
-        SuiteListenerHolder.ALL_STRING,
-        SuiteListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaCli(SuiteListenerHolder.ALL_STRING, SuiteListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForTestListenersViaCli() {
     Ensure.orderingViaCli(
-        ElaborateSampleTestCase.class, TestListenerHolder.LOGS,
-        TestListenerHolder.ALL_STRING, TestListenerHolder.EXPECTED_LOGS);
+        ElaborateSampleTestCase.class,
+        TestListenerHolder.ALL_STRING,
+        TestListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForInvokedMethodListenersViaCli() {
     Ensure.orderingViaCli(
-        InvokedMethodListenerHolder.LOGS,
-        InvokedMethodListenerHolder.ALL_STRING,
-        InvokedMethodListenerHolder.EXPECTED_LOGS);
+        InvokedMethodListenerHolder.ALL_STRING, InvokedMethodListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForConfigurationListenersViaCli() {
     Ensure.orderingViaCli(
         SimpleConfigTestCase.class,
-        ConfigurationListenerHolder.LOGS,
         ConfigurationListenerHolder.ALL_STRING,
         ConfigurationListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForClassListenersViaCli() {
-    Ensure.orderingViaCli(
-        ClassListenerHolder.LOGS,
-        ClassListenerHolder.ALL_STRING,
-        ClassListenerHolder.EXPECTED_LOGS);
+    Ensure.orderingViaCli(ClassListenerHolder.ALL_STRING, ClassListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForDataProviderListenersViaCli() {
     Ensure.orderingViaCli(
         DataProviderSampleTestCase.class,
-        DataProviderListenerHolder.LOGS,
         DataProviderListenerHolder.ALL_STRING,
         DataProviderListenerHolder.EXPECTED_LOGS);
   }
@@ -312,7 +270,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForDataProviderInterceptorsViaCli() {
     Ensure.orderingViaCli(
         DataProviderSampleTestCase.class,
-        DataProviderInterceptorHolder.LOGS,
         DataProviderInterceptorHolder.ALL_STRING,
         DataProviderInterceptorHolder.EXPECTED_LOGS);
   }
@@ -320,17 +277,13 @@ public class ListenersTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionVisualisersViaCli() {
     Ensure.orderingViaCli(
-        ExecutionVisualiserHolder.LOGS,
-        ExecutionVisualiserHolder.ALL_STRING,
-        ExecutionVisualiserHolder.EXPECTED_LOGS);
+        ExecutionVisualiserHolder.ALL_STRING, ExecutionVisualiserHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForMethodInterceptorsViaCli() {
     Ensure.orderingViaCli(
-        MethodInterceptorHolder.LOGS,
-        MethodInterceptorHolder.ALL_STRING,
-        MethodInterceptorHolder.EXPECTED_LOGS);
+        MethodInterceptorHolder.ALL_STRING, MethodInterceptorHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
@@ -356,7 +309,6 @@ public class ListenersTest extends SimpleBaseTest {
         };
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.ExecutionListenerSampleTestCase.class,
-        ExecutionListenerHolder.LOGS,
         ExecutionListenerHolder.SUBSET,
         expected);
   }
@@ -365,7 +317,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForSuiteListenersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.SuiteListenerSampleTestCase.class,
-        SuiteListenerHolder.LOGS,
         SuiteListenerHolder.SUBSET,
         SuiteListenerHolder.EXPECTED_LOGS);
   }
@@ -374,7 +325,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForTestListenersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.TestListenerSampleTestCase.class,
-        TestListenerHolder.LOGS,
         TestListenerHolder.SUBSET,
         TestListenerHolder.EXPECTED_LOGS);
   }
@@ -383,7 +333,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForInvokedMethodListenersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.InvokedMethodListenerSampleTestCase.class,
-        InvokedMethodListenerHolder.LOGS,
         InvokedMethodListenerHolder.SUBSET,
         InvokedMethodListenerHolder.EXPECTED_LOGS);
   }
@@ -392,7 +341,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForConfigurationListenersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.ConfigurationListenerSampleTestCase.class,
-        ConfigurationListenerHolder.LOGS,
         ConfigurationListenerHolder.SUBSET,
         ConfigurationListenerHolder.EXPECTED_LOGS);
   }
@@ -401,7 +349,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForClassListenersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.ClassListenerSampleTestCase.class,
-        ClassListenerHolder.LOGS,
         ClassListenerHolder.SUBSET,
         ClassListenerHolder.EXPECTED_LOGS);
   }
@@ -410,7 +357,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForDataProviderListenersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.DataProviderListenerSampleTestCase.class,
-        DataProviderListenerHolder.LOGS,
         DataProviderListenerHolder.SUBSET,
         DataProviderListenerHolder.EXPECTED_LOGS);
   }
@@ -419,7 +365,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForDataProviderInterceptorsViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.DataProviderInterceptorSampleTestCase.class,
-        DataProviderInterceptorHolder.LOGS,
         DataProviderInterceptorHolder.SUBSET,
         DataProviderInterceptorHolder.EXPECTED_LOGS);
   }
@@ -428,7 +373,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForExecutionVisualisersViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.ExecutionVisualiserSampleTestCase.class,
-        ExecutionVisualiserHolder.LOGS,
         ExecutionVisualiserHolder.SUBSET,
         ExecutionVisualiserHolder.EXPECTED_LOGS);
   }
@@ -437,7 +381,6 @@ public class ListenersTest extends SimpleBaseTest {
   public void ensureOrderingForMethodInterceptorsViaAnnotation() {
     Ensure.orderingViaAnnotation(
         AnnotatedTestCaseSamplesHolder.MethodInterceptorSampleTestCase.class,
-        MethodInterceptorHolder.LOGS,
         MethodInterceptorHolder.SUBSET,
         MethodInterceptorHolder.EXPECTED_LOGS);
   }
@@ -750,23 +693,22 @@ public class ListenersTest extends SimpleBaseTest {
     private Ensure() {}
 
     static void orderingViaAnnotation(
-        Class<?> testClass, List<String> logs, List<ITestNGListener> listeners, String[] expected) {
-      logs.clear();
+        Class<?> testClass, List<ITestNGListener> listeners, String[] expected) {
+      LogContainer.instance.initialiseLogs();
       TestNG testng = create(testClass);
       listeners.forEach(testng::addListener);
       testng.setUseDefaultListeners(false);
       testng.setListenerComparator(new AnnotationBackedListenerComparator());
       testng.run();
-      assertThat(logs).containsExactly(expected);
+      assertThat(LogContainer.instance.allLogs()).containsExactly(expected);
     }
 
-    static void orderingViaCli(List<String> logs, List<String> listeners, String[] expected) {
-      orderingViaCli(NormalSampleTestCase.class, logs, listeners, expected);
+    static void orderingViaCli(List<String> listeners, String[] expected) {
+      orderingViaCli(NormalSampleTestCase.class, listeners, expected);
     }
 
-    static void orderingViaCli(
-        Class<?> clazz, List<String> logs, List<String> listeners, String[] expected) {
-      logs.clear();
+    static void orderingViaCli(Class<?> clazz, List<String> listeners, String[] expected) {
+      LogContainer.instance.initialiseLogs();
       String[] args =
           new String[] {
             "-listener", String.join(",", listeners),
@@ -775,39 +717,36 @@ public class ListenersTest extends SimpleBaseTest {
             "-listenercomparator", AnnotationBackedListenerComparator.class.getName()
           };
       TestNG.privateMain(args, null);
-      assertThat(logs).containsExactly(expected);
+      assertThat(LogContainer.instance.allLogs()).containsExactly(expected);
     }
 
-    static void orderingViaXmlTag(List<String> logs, List<String> listeners, String[] expected) {
-      orderingViaXmlTag(NormalSampleTestCase.class, logs, listeners, expected);
+    static void orderingViaXmlTag(List<String> listeners, String[] expected) {
+      orderingViaXmlTag(NormalSampleTestCase.class, listeners, expected);
     }
 
-    static void orderingViaXmlTag(
-        Class<?> clazz, List<String> logs, List<String> listeners, String[] expected) {
-      logs.clear();
+    static void orderingViaXmlTag(Class<?> clazz, List<String> listeners, String[] expected) {
+      LogContainer.instance.initialiseLogs();
       XmlSuite xmlSuite = createXmlSuite("suite", "test", clazz);
       listeners.forEach(xmlSuite::addListener);
       TestNG testng = create(xmlSuite);
       testng.setUseDefaultListeners(false);
       testng.setListenerComparator(new AnnotationBackedListenerComparator());
       testng.run();
-      assertThat(logs).containsExactly(expected);
+      assertThat(LogContainer.instance.allLogs()).containsExactly(expected);
     }
 
-    static void orderingViaApi(
-        List<String> logs, List<ITestNGListener> listeners, String[] expected) {
-      orderingViaApi(NormalSampleTestCase.class, logs, listeners, expected);
+    static void orderingViaApi(List<ITestNGListener> listeners, String[] expected) {
+      orderingViaApi(NormalSampleTestCase.class, listeners, expected);
     }
 
-    static void orderingViaApi(
-        Class<?> clazz, List<String> logs, List<ITestNGListener> listeners, String[] expected) {
-      logs.clear();
+    static void orderingViaApi(Class<?> clazz, List<ITestNGListener> listeners, String[] expected) {
+      LogContainer.instance.initialiseLogs();
       TestNG testng = create(clazz);
       listeners.forEach(testng::addListener);
       testng.setUseDefaultListeners(false);
       testng.setListenerComparator(new AnnotationBackedListenerComparator());
       testng.run();
-      assertThat(logs).containsExactly(expected);
+      assertThat(LogContainer.instance.allLogs()).containsExactly(expected);
     }
   }
 }

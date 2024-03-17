@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IClassListener;
 import org.testng.ITestClass;
@@ -8,7 +7,6 @@ import org.testng.ITestNGListener;
 
 public class ClassListenerHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = ClassListenerHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -37,12 +35,12 @@ public class ClassListenerHolder {
 
     @Override
     public void onBeforeClass(ITestClass testClass) {
-      LOGS.add(getClass().getSimpleName() + ".onBeforeClass");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onBeforeClass");
     }
 
     @Override
     public void onAfterClass(ITestClass testClass) {
-      LOGS.add(getClass().getSimpleName() + ".onAfterClass");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onAfterClass");
     }
   }
 

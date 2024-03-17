@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
@@ -17,7 +16,6 @@ public class SuiteListenerHolder {
         "MasterShifu.onFinish",
         "MasterOogway.onFinish"
       };
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = SuiteListenerHolder.class.getName() + "$";
 
   public static final List<ITestNGListener> ALL =
@@ -36,12 +34,12 @@ public class SuiteListenerHolder {
 
     @Override
     public void onStart(ISuite suite) {
-      LOGS.add(getClass().getSimpleName() + ".onStart");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onStart");
     }
 
     @Override
     public void onFinish(ISuite suite) {
-      LOGS.add(getClass().getSimpleName() + ".onFinish");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onFinish");
     }
   }
 

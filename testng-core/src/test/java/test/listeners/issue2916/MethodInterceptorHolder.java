@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IMethodInstance;
 import org.testng.IMethodInterceptor;
@@ -9,7 +8,6 @@ import org.testng.ITestNGListener;
 
 public class MethodInterceptorHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = MethodInterceptorHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -32,7 +30,7 @@ public class MethodInterceptorHolder {
 
     @Override
     public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-      LOGS.add(getClass().getSimpleName() + ".intercept");
+      LogContainer.instance.log(getClass().getSimpleName() + ".intercept");
       return methods;
     }
   }

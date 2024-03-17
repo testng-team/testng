@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IExecutionListener;
 import org.testng.ITestNGListener;
@@ -16,7 +15,6 @@ public class ExecutionListenerHolder {
         "MasterShifu.onExecutionFinish",
         "MasterOogway.onExecutionFinish"
       };
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = ExecutionListenerHolder.class.getName() + "$";
 
   public static final List<ITestNGListener> ALL =
@@ -35,12 +33,12 @@ public class ExecutionListenerHolder {
   public abstract static class KungFuWarrior implements IExecutionListener {
     @Override
     public void onExecutionStart() {
-      LOGS.add(getClass().getSimpleName() + ".onExecutionStart");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onExecutionStart");
     }
 
     @Override
     public void onExecutionFinish() {
-      LOGS.add(getClass().getSimpleName() + ".onExecutionFinish");
+      LogContainer.instance.log(getClass().getSimpleName() + ".onExecutionFinish");
     }
   }
 

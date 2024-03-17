@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IConfigurationListener;
 import org.testng.ITestNGListener;
@@ -9,7 +8,6 @@ import org.testng.ITestResult;
 
 public class ConfigurationListenerHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = ConfigurationListenerHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -58,25 +56,25 @@ public class ConfigurationListenerHolder {
 
     @Override
     public void beforeConfiguration(ITestResult tr, ITestNGMethod tm) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName() + ".beforeConfiguration_" + tr.getMethod().getMethodName());
     }
 
     @Override
     public void onConfigurationSuccess(ITestResult tr, ITestNGMethod tm) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName() + ".onConfigurationSuccess_" + tr.getMethod().getMethodName());
     }
 
     @Override
     public void onConfigurationFailure(ITestResult tr, ITestNGMethod tm) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName() + ".onConfigurationFailure_" + tr.getMethod().getMethodName());
     }
 
     @Override
     public void onConfigurationSkip(ITestResult tr, ITestNGMethod tm) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName() + ".onConfigurationSkip_" + tr.getMethod().getMethodName());
     }
   }

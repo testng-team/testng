@@ -1,12 +1,10 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.*;
 
 public class ExecutionVisualiserHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = ExecutionVisualiserHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -34,7 +32,7 @@ public class ExecutionVisualiserHolder {
 
     @Override
     public void consumeDotDefinition(String dotDefinition) {
-      LOGS.add(getClass().getSimpleName() + ".consumeDotDefinition");
+      LogContainer.instance.log(getClass().getSimpleName() + ".consumeDotDefinition");
     }
   }
 

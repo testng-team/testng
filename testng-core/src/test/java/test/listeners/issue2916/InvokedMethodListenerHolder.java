@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -9,7 +8,6 @@ import org.testng.ITestResult;
 
 public class InvokedMethodListenerHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = InvokedMethodListenerHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -107,7 +105,7 @@ public class InvokedMethodListenerHolder {
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
       IInvokedMethodListener.super.beforeInvocation(method, testResult);
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName()
               + ".beforeInvocation_"
               + method.getTestMethod().getMethodName());
@@ -115,7 +113,7 @@ public class InvokedMethodListenerHolder {
 
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName()
               + ".afterInvocation_"
               + method.getTestMethod().getMethodName());

@@ -23,8 +23,8 @@ public class ElaborateSampleTestCase extends NormalSampleTestCase {
     }
   }
 
-  @Test(timeOut = 2, priority = 4)
+  @Test(timeOut = 25, priority = 4)
   public void timingOutTest() throws InterruptedException {
-    TimeUnit.MILLISECONDS.sleep(10);
+    TimeUnit.MILLISECONDS.sleep(100);
   }
 }

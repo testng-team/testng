@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IAlterSuiteListener;
 import org.testng.ITestNGListener;
@@ -10,7 +9,6 @@ public class AlterSuiteListenerHolder {
 
   public static final String[] EXPECTED_LOGS =
       new String[] {"MasterOogway.alter", "MasterShifu.alter", "DragonWarrior.alter"};
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = AlterSuiteListenerHolder.class.getName() + "$";
 
   public static final List<ITestNGListener> ALL =
@@ -25,7 +23,7 @@ public class AlterSuiteListenerHolder {
   public abstract static class KungFuWarrior implements IAlterSuiteListener {
     @Override
     public void alter(List<XmlSuite> suites) {
-      LOGS.add(getClass().getSimpleName() + ".alter");
+      LogContainer.instance.log(getClass().getSimpleName() + ".alter");
     }
   }
 

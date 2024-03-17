@@ -1,13 +1,11 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.testng.*;
 
 public class DataProviderInterceptorHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = DataProviderInterceptorHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -39,7 +37,8 @@ public class DataProviderInterceptorHolder {
         IDataProviderMethod dp,
         ITestNGMethod method,
         ITestContext iTestContext) {
-      LOGS.add(getClass().getSimpleName() + ".intercept_" + dp.getMethod().getName());
+      LogContainer.instance.log(
+          getClass().getSimpleName() + ".intercept_" + dp.getMethod().getName());
       return original;
     }
   }

@@ -1,6 +1,5 @@
 package test.listeners.issue2916;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
@@ -10,7 +9,6 @@ import org.testng.ITestNGMethod;
 
 public class DataProviderListenerHolder {
 
-  public static List<String> LOGS = new ArrayList<>();
   private static final String PREFIX = DataProviderListenerHolder.class.getName() + "$";
 
   public static final String[] EXPECTED_LOGS =
@@ -48,7 +46,7 @@ public class DataProviderListenerHolder {
     @Override
     public void beforeDataProviderExecution(
         IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName()
               + ".beforeDataProviderExecution_"
               + dataProviderMethod.getMethod().getName());
@@ -57,7 +55,7 @@ public class DataProviderListenerHolder {
     @Override
     public void afterDataProviderExecution(
         IDataProviderMethod dataProviderMethod, ITestNGMethod method, ITestContext iTestContext) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName()
               + ".afterDataProviderExecution_"
               + dataProviderMethod.getMethod().getName());
@@ -65,7 +63,7 @@ public class DataProviderListenerHolder {
 
     @Override
     public void onDataProviderFailure(ITestNGMethod method, ITestContext ctx, RuntimeException t) {
-      LOGS.add(
+      LogContainer.instance.log(
           getClass().getSimpleName()
               + ".onDataProviderFailure_"
               + method.getDataProviderMethod().getMethod().getName());
