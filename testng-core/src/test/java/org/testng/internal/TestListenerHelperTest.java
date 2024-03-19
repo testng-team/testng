@@ -14,11 +14,11 @@ import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
-import org.testng.internal.listeners.DummyListenerFactory;
+import org.testng.internal.listeners.ListenerFactoryContainer;
+import org.testng.internal.listeners.TestClassContainer;
 import org.testng.internal.listeners.TestClassDoublingupAsListenerFactory;
 import org.testng.internal.listeners.TestClassWithCompositeListener;
 import org.testng.internal.listeners.TestClassWithListener;
-import org.testng.internal.listeners.TestClassWithMultipleListenerFactories;
 import org.testng.internal.paramhandler.FakeTestContext;
 import org.testng.xml.XmlClass;
 import test.SimpleBaseTest;
@@ -45,13 +45,25 @@ public class TestListenerHelperTest {
     };
   }
 
+  @Test(description = "GITHUB-3095")
+  public void testFindAllListenersDuplicateListenerFactories() {
+    TestListenerHelper.ListenerHolder result =
+        TestListenerHelper.findAllListeners(
+            TestClassContainer.TestClassWithDuplicateListenerFactories.class, finder);
+    assertThat(result.getListenerFactoryClass()).isNotNull();
+  }
+
   @Test(
+      description = "GITHUB-3095",
       expectedExceptions = TestNGException.class,
       expectedExceptionsMessageRegExp =
           "\nFound more than one class implementing ITestNGListenerFactory:class "
-              + "org.testng.internal.listeners.DummyListenerFactory and class org.testng.internal.listeners.DummyListenerFactory")
+              + "org.testng.internal.listeners.ListenerFactoryContainer\\$DummyListenerFactory2 "
+              + "and class org.testng.internal.listeners"
+              + ".ListenerFactoryContainer\\$DummyListenerFactory")
   public void testFindAllListenersErrorCondition() {
-    TestListenerHelper.findAllListeners(TestClassWithMultipleListenerFactories.class, finder);
+    TestListenerHelper.findAllListeners(
+        TestClassContainer.TestClassWithMultipleUniqueListenerFactories.class, finder);
   }
 
   @Test(dataProvider = "getFactoryTestData")
@@ -73,7 +85,7 @@ public class TestListenerHelperTest {
   @DataProvider(name = "getFactoryTestData")
   public Object[][] getFactoryTestData() {
     return new Object[][] {
-      {TestClassWithListener.class, DummyListenerFactory.class},
+      {TestClassWithListener.class, ListenerFactoryContainer.DummyListenerFactory.class},
       {TestClassDoublingupAsListenerFactory.class, TestClassDoublingupAsListenerFactory.class}
     };
   }
