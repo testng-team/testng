@@ -1,12 +1,11 @@
-package org.testng.internal.listeners;
+package test.listeners.issue3095;
 
-import org.testng.IExecutionListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestNGListenerFactory;
 
-public class DummyListenerFactory implements ITestNGListenerFactory, IExecutionListener {
+public class MyTestNgFactory implements ITestNGListener, ITestNGListenerFactory {
   @Override
   public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {
-    return this;
+    return null;
   }
 }

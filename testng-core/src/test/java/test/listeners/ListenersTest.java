@@ -54,6 +54,7 @@ import test.listeners.issue3064.EvidenceListener;
 import test.listeners.issue3064.SampleTestCase;
 import test.listeners.issue3082.ObjectRepository;
 import test.listeners.issue3082.ObjectTrackingMethodListener;
+import test.listeners.issue3095.ChildClassSample;
 
 public class ListenersTest extends SimpleBaseTest {
   public static final String[] github2638ExpectedList =
@@ -586,6 +587,13 @@ public class ListenersTest extends SimpleBaseTest {
     ObjectRepository.invocations()
         .forEach(it -> softly.assertThat(it).containsExactlyElementsOf(expected));
     softly.assertAll();
+  }
+
+  @Test(description = "GITHUB-3095")
+  public void ensureInheritanceIsHandledWhenDealingWithListeners() {
+    TestNG testng = create(ChildClassSample.class);
+    testng.run();
+    assertThat(testng.getStatus()).isZero();
   }
 
   private void setupTest(boolean addExplicitListener) {

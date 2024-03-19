@@ -1,6 +1,9 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.testng.IClass;
 import org.testng.IConfigurationListener;
 import org.testng.ITestContext;
@@ -13,7 +16,6 @@ import org.testng.ITestResult;
 import org.testng.ListenerComparator;
 import org.testng.TestNGException;
 import org.testng.annotations.IListenersAnnotation;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.IAnnotationFinder;
 
 /** A helper class that internally houses some of the listener related actions support. */
@@ -129,38 +131,16 @@ public final class TestListenerHelper {
    * @return all the @Listeners annotations found in the current class and its superclasses and
    *     inherited interfaces.
    */
-  @SuppressWarnings("unchecked")
   public static ListenerHolder findAllListeners(Class<?> cls, IAnnotationFinder finder) {
     ListenerHolder result = new ListenerHolder();
-    result.listenerClasses = Lists.newArrayList();
 
     while (cls != Object.class) {
       List<IListenersAnnotation> annotations =
           finder.findInheritedAnnotations(cls, IListenersAnnotation.class);
-      IListenersAnnotation l = finder.findAnnotation(cls, IListenersAnnotation.class);
-      if (l != null) {
-        annotations.add(l);
-      }
-      annotations.forEach(
-          anno -> {
-            Class<? extends ITestNGListener>[] classes = anno.getValue();
-            for (Class<? extends ITestNGListener> c : classes) {
-              result.listenerClasses.add(c);
+      Optional.ofNullable(finder.findAnnotation(cls, IListenersAnnotation.class))
+          .ifPresent(annotations::add);
 
-              if (ITestNGListenerFactory.class.isAssignableFrom(c)) {
-                if (result.listenerFactoryClass == null) {
-                  result.listenerFactoryClass = (Class<? extends ITestNGListenerFactory>) c;
-                } else {
-                  throw new TestNGException(
-                      "Found more than one class implementing "
-                          + "ITestNGListenerFactory:"
-                          + c
-                          + " and "
-                          + result.listenerFactoryClass);
-                }
-              }
-            }
-          });
+      annotations.stream().flatMap(it -> Arrays.stream(it.getValue())).forEach(result::addListener);
       cls = cls.getSuperclass();
     }
     return result;
@@ -196,8 +176,37 @@ public final class TestListenerHelper {
   }
 
   public static class ListenerHolder {
-    private List<Class<? extends ITestNGListener>> listenerClasses;
+    private final List<Class<? extends ITestNGListener>> listenerClasses = new ArrayList<>();
     private Class<? extends ITestNGListenerFactory> listenerFactoryClass;
+
+    @SuppressWarnings("unchecked")
+    public void addListener(Class<? extends ITestNGListener> c) {
+      // @Listener annotation is now inheritable. So let's add it ONLY
+      // if it wasn't added already
+      if (!listenerClasses.contains(c)) {
+        listenerClasses.add(c);
+      }
+      if (ITestNGListenerFactory.class.isAssignableFrom(c)) {
+        setListenerFactoryClass((Class<? extends ITestNGListenerFactory>) c);
+      }
+    }
+
+    private void setListenerFactoryClass(Class<? extends ITestNGListenerFactory> c) {
+      if (c.equals(listenerFactoryClass)) {
+        return;
+      }
+      if (listenerFactoryClass != null) {
+        // Let's say we already know of a ListenerFactoryClass called `MyFactory`.
+        // Now we are stumbling into another ListenerFactoryClass called `YourFactory`
+        // We need to throw an exception, because we can ONLY deal with 1 listener factory.
+        throw new TestNGException(
+            "Found more than one class implementing ITestNGListenerFactory:"
+                + c
+                + " and "
+                + listenerFactoryClass);
+      }
+      listenerFactoryClass = c;
+    }
 
     public List<Class<? extends ITestNGListener>> getListenerClasses() {
       return listenerClasses;
