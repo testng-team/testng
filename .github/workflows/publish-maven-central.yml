@@ -24,7 +24,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Gradle wrapper validation
-      uses: gradle/wrapper-validation-action@v3.3.0
+      uses: gradle/actions/wrapper-validation@v3
 
     # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
     - name: Publish Release Candidate
