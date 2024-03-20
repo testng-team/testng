@@ -35,7 +35,7 @@ public class Configuration implements IConfiguration {
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
       m_configurationListeners = Maps.newLinkedHashMap();
   private boolean alwaysRunListeners = true;
-  private IExecutorServiceFactory executorServiceFactory = ThreadPoolExecutor::new;
+  private volatile IExecutorServiceFactory executorServiceFactory = ThreadPoolExecutor::new;
 
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
 

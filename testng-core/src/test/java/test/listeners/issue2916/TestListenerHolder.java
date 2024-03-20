@@ -5,6 +5,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
+import org.testng.Reporter;
 
 public class TestListenerHolder {
 
@@ -99,26 +100,33 @@ public class TestListenerHolder {
 
     @Override
     public void onTestSuccess(ITestResult result) {
+      Reporter.log(result.getMethod().getQualifiedName() + " passed", true);
       LogContainer.instance.log(getClass().getSimpleName() + ".onTestSuccess");
     }
 
     @Override
     public void onTestFailure(ITestResult result) {
+      Reporter.log(result.getMethod().getQualifiedName() + " failed", true);
       LogContainer.instance.log(getClass().getSimpleName() + ".onTestFailure");
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
+      Reporter.log(result.getMethod().getQualifiedName() + " skipped", true);
       LogContainer.instance.log(getClass().getSimpleName() + ".onTestSkipped");
     }
 
     @Override
     public void onTestFailedWithTimeout(ITestResult result) {
+      Reporter.log(result.getMethod().getQualifiedName() + " failed due to timeout", true);
       LogContainer.instance.log(getClass().getSimpleName() + ".onTestFailedWithTimeout");
     }
 
     @Override
     public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+      Reporter.log(
+          result.getMethod().getQualifiedName() + " test failed but within success percentage",
+          true);
       LogContainer.instance.log(
           getClass().getSimpleName() + ".onTestFailedButWithinSuccessPercentage");
     }
