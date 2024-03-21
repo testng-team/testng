@@ -25,7 +25,7 @@ public class ElaborateSampleTestCase extends NormalSampleTestCase {
 
   @Test(timeOut = 25, priority = 4)
   public void timingOutTest() throws InterruptedException {
-    TimeUnit.MILLISECONDS.sleep(100);
+    TimeUnit.SECONDS.sleep(10);
     new Throwable().printStackTrace();
     if (counter != 3) {
       Assert.fail();
