@@ -34,8 +34,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private final Map<String, ISuiteResult> suiteResults =
-      Collections.synchronizedMap(Maps.newLinkedHashMap());
+  private final Map<String, ISuiteResult> suiteResults = Maps.newLinkedHashMap();
   private final List<TestRunner> testRunners = Lists.newArrayList();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners =
       Maps.newLinkedHashMap();
@@ -514,7 +513,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   @Override
   public Map<String, ISuiteResult> getResults() {
-    return suiteResults;
+    // Just to ensure that we guard the internals of the suite results we now wrap it
+    // around with an unmodifiable map.
+    return Collections.unmodifiableMap(suiteResults);
   }
 
   /**
