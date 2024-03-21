@@ -2,6 +2,7 @@ package test.thread;
 
 import java.util.Random;
 import org.testng.annotations.Test;
+import test.support.SafeRandoms;
 
 @Test
 public class TrueParallelSampleTest extends BaseThreadTest {
@@ -10,7 +11,7 @@ public class TrueParallelSampleTest extends BaseThreadTest {
   private void log(String s) {
     logString(s);
     try {
-      Thread.sleep(random.nextInt(10));
+      Thread.sleep(SafeRandoms.nextInt(3, 7, random));
     } catch (InterruptedException ex) {
       Thread.yield();
     }
