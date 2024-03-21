@@ -3,13 +3,13 @@ package test.factory.issue326;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
+import test.support.SafeRandoms;
 
 public class SampleTestClass {
 
@@ -18,12 +18,10 @@ public class SampleTestClass {
   static final String BARNEY = "Barney";
 
   private final String instance;
-  private final Random random;
 
   @Factory(dataProvider = "dp")
   public SampleTestClass(String instance) {
     this.instance = instance;
-    random = new Random();
   }
 
   @DataProvider
@@ -50,6 +48,6 @@ public class SampleTestClass {
   private void printer() throws InterruptedException {
     ITestResult result = Reporter.getCurrentTestResult();
     result.setAttribute(THREAD_ID, Thread.currentThread().getId());
-    TimeUnit.MILLISECONDS.sleep(10 * random.nextInt(100));
+    TimeUnit.MILLISECONDS.sleep(10L * SafeRandoms.nextInt(30, 70));
   }
 }
