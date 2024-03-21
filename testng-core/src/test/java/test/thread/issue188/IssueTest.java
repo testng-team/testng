@@ -40,17 +40,20 @@ public class IssueTest extends SimpleBaseTest {
         String allTimeStamps =
             keyset.stream().map(Objects::toString).collect(Collectors.joining(","));
         long prev = keyset.get(0);
+        int permissibleLag = 40;
         for (int i = 1; i < keyset.size(); i++) {
           long current = keyset.get(i);
           long diff = current - prev;
           Assertions.assertThat(diff)
               .withFailMessage(
-                  "Test methods should have started within a lag of max 40 ms but it was "
+                  "Test methods should have started within a lag of max "
+                      + permissibleLag
+                      + " ms but it was "
                       + diff
                       + " ms ["
                       + allTimeStamps
                       + "]")
-              .isLessThanOrEqualTo(40);
+              .isLessThanOrEqualTo(permissibleLag);
           prev = current;
         }
       }

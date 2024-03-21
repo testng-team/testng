@@ -37,9 +37,17 @@ public class Issue188TestSample {
 
   private void sleepSilently() {
     try {
-      TimeUnit.MILLISECONDS.sleep(500 * random.nextInt(10));
+      TimeUnit.MILLISECONDS.sleep(500 * random());
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
+  }
+
+  private static long random() {
+    int value = random.nextInt(10);
+    if (value == 0) {
+      return 1;
+    }
+    return value;
   }
 }
