@@ -25,7 +25,9 @@ public class PlainOsgiTest {
     return options(defaultTestngOsgiOptions());
   }
 
-  @Test
+  // TODO: Enable this test once the PR https://github.com/ops4j/org.ops4j.pax.exam2/pull/1112
+  // gets merged and there's a new release done.
+  @Test(enabled = false)
   public void versionShouldStartWithDigit() throws Exception {
     Class<?> versionClass = Class.forName("org.testng.internal.Version");
     Method getVersionStringMethod = versionClass.getMethod("getVersionString");
