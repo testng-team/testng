@@ -23,7 +23,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.collections.Maps;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
-import org.testng.internal.Systematiser;
+import org.testng.internal.MethodSorting;
 import org.testng.reporters.JUnitXMLReporter;
 import org.testng.reporters.TestHTMLReporter;
 import org.testng.xml.XmlClass;
@@ -168,7 +168,7 @@ public class BaseTest extends BaseDistributedTest {
             m_suite,
             m_outputDirectory,
             m_testRunnerFactory,
-            Systematiser.getComparator());
+            MethodSorting.basedOn());
 
     suiteRunner.run();
   }
@@ -346,7 +346,7 @@ public class BaseTest extends BaseDistributedTest {
               false,
               listeners,
               classListeners,
-              Systematiser.getComparator(),
+              MethodSorting.basedOn(),
               m_baseTest.suiteRunner);
 
       testRunner.addListener(new TestHTMLReporter());

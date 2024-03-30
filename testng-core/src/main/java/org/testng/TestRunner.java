@@ -39,10 +39,10 @@ import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.ListenerOrderDeterminer;
 import org.testng.internal.MethodGroupsHelper;
 import org.testng.internal.MethodHelper;
+import org.testng.internal.MethodSorting;
 import org.testng.internal.ResultMap;
 import org.testng.internal.RunInfo;
 import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.Systematiser;
 import org.testng.internal.TestListenerHelper;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.TestMethodContainer;
@@ -217,7 +217,7 @@ public class TestRunner
       Collection<IInvokedMethodListener> invokedMethodListeners,
       List<IClassListener> classListeners,
       ISuiteRunnerListener suiteRunner) {
-    this.comparator = Systematiser.getComparator();
+    this.comparator = MethodSorting.basedOn();
     this.holder = new DataProviderHolder(configuration);
     init(
         configuration,

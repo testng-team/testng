@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 public interface IInstanceIdentity {
@@ -15,5 +17,14 @@ public interface IInstanceIdentity {
       return ((IInstanceIdentity) object).getInstanceId();
     }
     return object;
+  }
+
+  /**
+   * @param objects - The objects to inspect
+   * @return - <code>true</code> if all the objects passed are of type {@link IInstanceIdentity}
+   */
+  static boolean isIdentityAware(Object... objects) {
+    return Arrays.stream(Objects.requireNonNull(objects))
+        .allMatch(it -> it instanceof IInstanceIdentity);
   }
 }

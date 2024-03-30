@@ -93,7 +93,7 @@ public final class RuntimeBehavior {
   }
 
   public static String orderMethodsBasedOn() {
-    return System.getProperty("testng.order", Systematiser.Order.INSTANCES.getValue());
+    return System.getProperty("testng.order");
   }
 
   public static String getTestClasspath() {

@@ -33,11 +33,11 @@ import org.testng.internal.DynamicGraph;
 import org.testng.internal.ExitCode;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ListenerOrderDeterminer;
+import org.testng.internal.MethodSorting;
 import org.testng.internal.ObjectBag;
 import org.testng.internal.OverrideProcessor;
 import org.testng.internal.ReporterConfig;
 import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.internal.Version;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
@@ -1362,7 +1362,7 @@ public class TestNG {
             container,
             m_classListeners.values(),
             holder,
-            Systematiser.getComparator());
+            MethodSorting.basedOn());
 
     for (ISuiteListener isl : m_suiteListeners.values()) {
       result.addListener(isl);
