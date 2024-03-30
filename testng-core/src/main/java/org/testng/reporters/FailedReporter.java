@@ -24,8 +24,8 @@ import org.testng.collections.Sets;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.LiteWeightTestNGMethod;
 import org.testng.internal.MethodHelper;
+import org.testng.internal.MethodSorting;
 import org.testng.internal.RuntimeBehavior;
-import org.testng.internal.Systematiser;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
@@ -111,8 +111,7 @@ public class FailedReporter implements IReporter {
         }
         methodsToReRun.add(current);
         List<ITestNGMethod> methodsDependedUpon =
-            MethodHelper.getMethodsDependedUpon(
-                current, allTestMethods, Systematiser.getComparator());
+            MethodHelper.getMethodsDependedUpon(current, allTestMethods, MethodSorting.basedOn());
 
         for (ITestNGMethod m : methodsDependedUpon) {
           if (m.isTest()) {
