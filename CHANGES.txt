@@ -1,5 +1,6 @@
 Current (7.10.0)
 
+Fixed: GITHUB-3000: Method predecessors lookup and/or method sorting is broken in certain inheritance and naming setups (Krishnan Mahadevan)
 Fixed: GITHUB-3095: Super class annotated with ITestNGListenerFactory makes derived test class throw TestNGException on execution (Krishnan Mahadevan)
 Fixed: GITHUB-3081: Discrepancy with combination of (Shared Thread pool and Method Interceptor) (Krishnan Mahadevan)
 Fixed: GITHUB-2381: Controlling the inclusion of the listener at runtime (Krishnan Mahadevan)

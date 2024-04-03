@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -11,6 +15,7 @@ import org.testng.xml.XmlSuite.ParallelMode;
 import test.SimpleBaseTest;
 import test.configuration.issue1035.InvocationTracker;
 import test.configuration.issue1035.MyFactory;
+import test.configuration.issue3000.TestClassSample;
 
 public class BeforeClassTest extends SimpleBaseTest {
 
@@ -47,5 +52,31 @@ public class BeforeClassTest extends SimpleBaseTest {
       assertThat(current.getThreadId()).isNotEqualTo(previousThreadId);
       previousThreadId = current.getThreadId();
     }
+  }
+
+  @Test(description = "GITHUB-3000")
+  public void ensureIndependentConfigurationsAlwaysRunFirstWhenUsingDependencies() {
+    TestNG testng = create(TestClassSample.class);
+    testng.setVerbose(2);
+
+    List<ITestResult> failures = new ArrayList<>();
+    testng.addListener(
+        new IReporter() {
+          @Override
+          public void generateReport(
+              List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
+            List<ITestResult> filtered =
+                suites.stream()
+                    .flatMap(it -> it.getResults().values().stream())
+                    .flatMap(
+                        it ->
+                            it.getTestContext().getFailedConfigurations().getAllResults().stream())
+                    .collect(Collectors.toList());
+            failures.addAll(filtered);
+          }
+        });
+    testng.run();
+    assertThat(testng.getStatus()).isZero();
+    assertThat(failures).isEmpty();
   }
 }

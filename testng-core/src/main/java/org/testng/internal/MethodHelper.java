@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -325,6 +326,7 @@ public class MethodHelper {
     Map<Object, List<ITestNGMethod>> testInstances = sortMethodsByInstance(methods);
 
     XmlTest xmlTest = null;
+
     for (ITestNGMethod m : methods) {
       if (xmlTest == null) {
         xmlTest = m.getXmlTest();
@@ -358,13 +360,12 @@ public class MethodHelper {
           !(m.isBeforeGroupsConfiguration() || m.isAfterGroupsConfiguration());
       boolean isGroupAgnosticConfigMethod = !m.isTest() && anyConfigExceptGroupConfigs;
       if (isGroupAgnosticConfigMethod) {
-        String[] groupsDependedUpon = m.getGroupsDependedUpon();
-        if (groupsDependedUpon.length > 0) {
-          for (String group : groupsDependedUpon) {
-            ITestNGMethod[] methodsThatBelongToGroup =
-                MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
-            predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
-          }
+        String[] groupsDependedUpon =
+            Optional.ofNullable(m.getGroupsDependedUpon()).orElse(new String[0]);
+        for (String group : groupsDependedUpon) {
+          ITestNGMethod[] methodsThatBelongToGroup =
+              MethodGroupsHelper.findMethodsThatBelongToGroup(m, methods, group);
+          predecessors.addAll(Arrays.asList(methodsThatBelongToGroup));
         }
       }
 
@@ -378,6 +379,31 @@ public class MethodHelper {
     parallelList.addAll(result.getIndependentNodes());
 
     return result;
+  }
+
+  private static Comparator<ITestNGMethod> bubbleUpIndependentMethodsFirst() {
+    return (a, b) -> {
+      boolean aIsIndependent = isIndependent(a);
+      boolean bIsIndependent = isIndependent(b);
+      if (aIsIndependent && bIsIndependent) {
+        // Both a and b are independent methods. So treat them as equal.
+        return 0;
+      }
+      if (aIsIndependent) {
+        // First method is independent. So a should come before b.
+        return -1;
+      }
+      if (bIsIndependent) {
+        // Second method is independent. So a should come after b.
+        return 1;
+      }
+      // Both a and b are dependent methods. So treat them as equal
+      return 0;
+    };
+  }
+
+  private static boolean isIndependent(ITestNGMethod tm) {
+    return tm.getMethodsDependedUpon().length == 0 && tm.getGroupsDependedUpon().length == 0;
   }
 
   /**
@@ -442,6 +468,18 @@ public class MethodHelper {
               || m.isBeforeSuiteConfiguration()
               || m.isBeforeTestConfiguration();
       MethodInheritance.fixMethodInheritance(allMethodsArray, before);
+
+      // In-case the user has ended up using "dependsOn" on configurations, then sometimes
+      // TestNG ends up finding the configuration methods in such a way that, it can cause
+      // un-expected failures. This usually happens due to the fully qualified method names
+      // acting up. So let's re-order the methods such that, the independent configurations always
+      // bubble up to the top and the ones that have dependencies get pushed to the bottom.
+      // That way, when we do a topologicalSort sort, the logic would work fine.
+
+      allMethodsArray =
+          Arrays.stream(allMethodsArray)
+              .sorted(bubbleUpIndependentMethodsFirst())
+              .toArray(ITestNGMethod[]::new);
     }
 
     topologicalSort(allMethodsArray, sl, pl, comparator);
