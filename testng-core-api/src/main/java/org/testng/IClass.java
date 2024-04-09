@@ -47,6 +47,10 @@ public interface IClass {
     return getInstances(create);
   }
 
+  /** @deprecated - As of TestNG <code>v7.10.0</code> */
+  @Deprecated
+  long[] getInstanceHashCodes();
+
   /**
    * @param instance - The instance to be added.
    * @deprecated - As of TestNG <code>v7.10.0</code>

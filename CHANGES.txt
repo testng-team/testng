@@ -1,5 +1,8 @@
 Current (7.11.0)
 
+7.10.1
+Fixed: GITHUB-3110: Update from testng 7.9.0 to 7.10.0 break maven build with junit5 (Krishnan Mahadevan)
+
 7.10.0
 Fixed: GITHUB-3000: Method predecessors lookup and/or method sorting is broken in certain inheritance and naming setups (Krishnan Mahadevan)
 Fixed: GITHUB-3095: Super class annotated with ITestNGListenerFactory makes derived test class throw TestNGException on execution (Krishnan Mahadevan)
