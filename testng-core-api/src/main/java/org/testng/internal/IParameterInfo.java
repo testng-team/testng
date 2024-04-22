@@ -1,21 +1,9 @@
 package org.testng.internal;
 
-/** Represents the ability to retrieve the parameters associated with a factory method. */
-public interface IParameterInfo {
-
-  /** @return - The actual instance associated with a factory method */
-  Object getInstance();
-
-  /** @return - The actual index of instance associated with a factory method */
-  int getIndex();
-
-  /** @return - The parameters associated with the factory method as an array. */
-  Object[] getParameters();
-
-  static Object embeddedInstance(Object original) {
-    if (original instanceof IParameterInfo) {
-      return ((IParameterInfo) original).getInstance();
-    }
-    return original;
-  }
-}
+/**
+ * Represents the ability to retrieve the parameters associated with a factory method.
+ *
+ * @deprecated - This interface stands deprecated as of TestNG <code>7.11.0</code>.
+ */
+@Deprecated
+public interface IParameterInfo extends org.testng.IParameterInfo {}

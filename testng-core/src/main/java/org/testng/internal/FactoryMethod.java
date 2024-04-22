@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
@@ -144,8 +145,8 @@ public class FactoryMethod extends BaseTestMethod {
     return groups.toArray(new String[0]);
   }
 
-  public IParameterInfo[] invoke() {
-    List<IParameterInfo> result = Lists.newArrayList();
+  public org.testng.IParameterInfo[] invoke() {
+    List<org.testng.IParameterInfo> result = Lists.newArrayList();
 
     Map<String, String> allParameterNames = Maps.newHashMap();
     Parameters.MethodParameters methodParameters =
@@ -174,6 +175,7 @@ public class FactoryMethod extends BaseTestMethod {
     try {
       List<Integer> indices = factoryAnnotation.getIndices();
       int position = 0;
+      AtomicInteger counter = new AtomicInteger(0);
       while (parameterIterator.hasNext()) {
         Object[] parameters = parameterIterator.next();
         if (parameters == null) {
@@ -196,13 +198,18 @@ public class FactoryMethod extends BaseTestMethod {
             final int instancePosition = position;
             result.addAll(
                 Arrays.stream(testInstances)
-                    .map(instance -> new ParameterInfo(instance, instancePosition, parameters))
+                    .map(
+                        instance ->
+                            new ParameterInfo(
+                                instance, instancePosition, parameters, counter.getAndIncrement()))
                     .collect(Collectors.toList()));
           } else {
             for (Integer index : indices) {
               int i = index - position;
               if (i >= 0 && i < testInstances.length) {
-                result.add(new ParameterInfo(testInstances[i], position, parameters));
+                result.add(
+                    new ParameterInfo(
+                        testInstances[i], position, parameters, counter.getAndIncrement()));
               }
             }
           }
@@ -210,7 +217,8 @@ public class FactoryMethod extends BaseTestMethod {
         } else {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
             Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
-            result.add(new ParameterInfo(instance, position, parameters));
+            result.add(
+                new ParameterInfo(instance, position, parameters, counter.getAndIncrement()));
           }
           position++;
         }

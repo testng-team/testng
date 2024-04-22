@@ -162,7 +162,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   private static int computeHashCode(Object instance) {
-    return IParameterInfo.embeddedInstance(instance).hashCode();
+    return org.testng.IParameterInfo.embeddedInstance(instance).hashCode();
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {

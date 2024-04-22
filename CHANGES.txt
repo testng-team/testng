@@ -1,4 +1,5 @@
 Current (7.11.0)
+Fixed: GITHUB-3111: Replacement API for IClass.getInstanceHashCodes() and IClass.getInstances(boolean) (Krishnan Mahadevan)
 
 7.10.2
 Fixed: GITHUB-3117: ListenerComparator doesn't work (Krishnan Mahadevan)

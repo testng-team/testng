@@ -178,7 +178,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     // If the factory returned IInstanceInfo, get the class from it,
     // otherwise, just call getClass() on the returned instances
     int i = 0;
-    for (IParameterInfo o : fm.invoke()) {
+    for (org.testng.IParameterInfo o : fm.invoke()) {
       if (o == null) {
         throw new TestNGException(
             "The factory " + fm + " returned a null instance" + "at index " + i);
@@ -329,8 +329,8 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private void addInstance(IObject.IdentifiableObject o) {
     Class<?> key = o.getInstance().getClass();
-    if (o.getInstance() instanceof IParameterInfo) {
-      key = ((IParameterInfo) o.getInstance()).getInstance().getClass();
+    if (o.getInstance() instanceof org.testng.IParameterInfo) {
+      key = ((org.testng.IParameterInfo) o.getInstance()).getInstance().getClass();
     }
     addInstance(key, o);
   }

@@ -298,7 +298,7 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object getInstance() {
-    return IParameterInfo.embeddedInstance(this.m_method.getInstance());
+    return org.testng.IParameterInfo.embeddedInstance(this.m_method.getInstance());
   }
 
   @Override

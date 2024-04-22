@@ -153,7 +153,7 @@ public abstract class BaseTestMethod
   public Object getInstance() {
     return Optional.ofNullable(m_instance)
         .map(IObject.IdentifiableObject::getInstance)
-        .map(IParameterInfo::embeddedInstance)
+        .map(org.testng.IParameterInfo::embeddedInstance)
         .orElse(null);
   }
 
