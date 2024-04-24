@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
+import org.testng.ITestClassInstance;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
@@ -153,7 +154,7 @@ public abstract class BaseTestMethod
   public Object getInstance() {
     return Optional.ofNullable(m_instance)
         .map(IObject.IdentifiableObject::getInstance)
-        .map(org.testng.IParameterInfo::embeddedInstance)
+        .map(ITestClassInstance::embeddedInstance)
         .orElse(null);
   }
 

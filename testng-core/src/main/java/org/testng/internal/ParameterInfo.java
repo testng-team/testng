@@ -4,13 +4,13 @@ public class ParameterInfo implements IParameterInfo {
   private final Object instance;
   private final int index;
   private final Object[] parameters;
-  private final int currentIndex;
+  private final int invocationIndex;
 
-  public ParameterInfo(Object instance, int index, Object[] parameters, int currentIndex) {
+  public ParameterInfo(Object instance, int index, Object[] parameters, int invocationIndex) {
     this.instance = instance;
     this.index = index;
     this.parameters = parameters;
-    this.currentIndex = currentIndex;
+    this.invocationIndex = invocationIndex;
   }
 
   @Override
@@ -24,8 +24,8 @@ public class ParameterInfo implements IParameterInfo {
   }
 
   @Override
-  public int currentIndex() {
-    return currentIndex;
+  public int getInvocationIndex() {
+    return invocationIndex;
   }
 
   @Override
