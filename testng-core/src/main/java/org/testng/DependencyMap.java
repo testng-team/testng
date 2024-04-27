@@ -107,8 +107,7 @@ public class DependencyMap {
     Object derivedInstance = derivedClassMethod.getInstance();
     boolean result = derivedInstance != null || baseInstance != null;
     boolean params =
-        null != baseClassMethod.getFactoryMethodParamsInfo()
-            && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
+        baseClassMethod.getFactoryMethod().flatMap(IFactoryMethod::getParameters).isPresent();
 
     if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
       return hasSameParameters(baseClassMethod, derivedClassMethod);
@@ -118,10 +117,17 @@ public class DependencyMap {
 
   private static boolean hasSameParameters(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    return baseClassMethod
-        .getFactoryMethodParamsInfo()
-        .getParameters()[0]
-        .equals(derivedClassMethod.getFactoryMethodParamsInfo().getParameters()[0]);
+    Optional<IFactoryMethod> first = baseClassMethod.getFactoryMethod();
+    Optional<IFactoryMethod> second = derivedClassMethod.getFactoryMethod();
+    if (first.isPresent() && second.isPresent()) {
+      Optional<Object[]> firstParams = first.get().getParameters();
+      Optional<Object[]> secondParams = second.get().getParameters();
+      if (firstParams.isPresent() && secondParams.isPresent()) {
+        return firstParams.get()[0].equals(secondParams.get()[0]);
+      }
+      return false;
+    }
+    return false;
   }
 
   private static boolean isSameInstance(
