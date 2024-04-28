@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
+import org.testng.IFactoryMethod;
 import org.testng.ITest;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -298,16 +300,15 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object getInstance() {
-    return IParameterInfo.embeddedInstance(this.m_method.getInstance());
+    return ITestClassInstance.embeddedInstance(this.m_method.getInstance());
   }
 
   @Override
   public Object[] getFactoryParameters() {
-    IParameterInfo instance = this.m_method.getFactoryMethodParamsInfo();
-    if (instance != null) {
-      return instance.getParameters();
-    }
-    return new Object[0];
+    return this.m_method
+        .getFactoryMethod()
+        .flatMap(IFactoryMethod::getParameters)
+        .orElse(new Object[0]);
   }
 
   @Override

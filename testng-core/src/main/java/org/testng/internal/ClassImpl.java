@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITest;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ITestAnnotation;
@@ -162,7 +163,7 @@ public class ClassImpl implements IClass, IObject {
   }
 
   private static int computeHashCode(Object instance) {
-    return IParameterInfo.embeddedInstance(instance).hashCode();
+    return ITestClassInstance.embeddedInstance(instance).hashCode();
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {

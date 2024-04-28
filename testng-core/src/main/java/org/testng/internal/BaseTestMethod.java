@@ -17,8 +17,10 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.IClass;
+import org.testng.IFactoryMethod;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
+import org.testng.ITestClassInstance;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
@@ -103,6 +105,10 @@ public abstract class BaseTestMethod
     m_instance = instance;
   }
 
+  protected final IObject.IdentifiableObject identifiableObject() {
+    return m_instance;
+  }
+
   /** {@inheritDoc} */
   @Override
   public boolean isAlwaysRun() {
@@ -153,7 +159,7 @@ public abstract class BaseTestMethod
   public Object getInstance() {
     return Optional.ofNullable(m_instance)
         .map(IObject.IdentifiableObject::getInstance)
-        .map(IParameterInfo::embeddedInstance)
+        .map(ITestClassInstance::embeddedInstance)
         .orElse(null);
   }
 
@@ -297,6 +303,19 @@ public abstract class BaseTestMethod
   @Override
   public void setTimeOut(long timeOut) {
     m_timeOut = timeOut;
+  }
+
+  @Override
+  public Optional<IFactoryMethod> getFactoryMethod() {
+    IObject.IdentifiableObject identifiable = identifiableObject();
+    if (identifiable == null) {
+      return Optional.empty();
+    }
+    Object instance = identifiableObject().getInstance();
+    if (instance instanceof ParameterInfo) {
+      return Optional.of(() -> Optional.of(((ParameterInfo) instance).getParameters()));
+    }
+    return ITestNGMethod.super.getFactoryMethod();
   }
 
   /**
@@ -538,11 +557,10 @@ public abstract class BaseTestMethod
   }
 
   private String instanceParameters() {
-    IParameterInfo instance = getFactoryMethodParamsInfo();
-    if (instance != null) {
-      return ", instance params:" + Arrays.toString(instance.getParameters());
-    }
-    return "";
+    return getFactoryMethod()
+        .flatMap(IFactoryMethod::getParameters)
+        .map(it -> ", instance params:" + Arrays.toString(it))
+        .orElse("");
   }
 
   protected String getSignature() {

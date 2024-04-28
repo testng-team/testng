@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
@@ -178,7 +179,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     // If the factory returned IInstanceInfo, get the class from it,
     // otherwise, just call getClass() on the returned instances
     int i = 0;
-    for (IParameterInfo o : fm.invoke()) {
+    for (ITestClassInstance o : fm.invoke()) {
       if (o == null) {
         throw new TestNGException(
             "The factory " + fm + " returned a null instance" + "at index " + i);
@@ -329,8 +330,8 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private void addInstance(IObject.IdentifiableObject o) {
     Class<?> key = o.getInstance().getClass();
-    if (o.getInstance() instanceof IParameterInfo) {
-      key = ((IParameterInfo) o.getInstance()).getInstance().getClass();
+    if (o.getInstance() instanceof ITestClassInstance) {
+      key = ((ITestClassInstance) o.getInstance()).getInstance().getClass();
     }
     addInstance(key, o);
   }

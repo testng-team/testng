@@ -126,7 +126,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     IObject.IdentifiableObject[] instances = getObjects(true, this.m_errorMsgPrefix);
     Arrays.stream(instances)
         .map(IdentifiableObject::getInstance)
-        .map(IParameterInfo::embeddedInstance)
+        .map(ITestClassInstance::embeddedInstance)
         .filter(it -> it instanceof ITest)
         .findFirst()
         .ifPresent(it -> testName = ((ITest) it).getTestName());
@@ -208,7 +208,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               true,
               xmlTest,
               eachInstance);
-      Object instance = IParameterInfo.embeddedInstance(eachInstance.getInstance());
+      Object instance = ITestClassInstance.embeddedInstance(eachInstance.getInstance());
       beforeClassConfig.put(instance, m_beforeClassMethods);
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
