@@ -1,5 +1,6 @@
 Current (7.11.0)
 
+7.10.2
 Fixed: GITHUB-3117: ListenerComparator doesn't work (Krishnan Mahadevan)
 
 7.10.1
