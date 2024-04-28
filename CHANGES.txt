@@ -1,5 +1,7 @@
 Current (7.11.0)
 
+Fixed: GITHUB-3117: ListenerComparator doesn't work (Krishnan Mahadevan)
+
 7.10.1
 Fixed: GITHUB-3110: Update from testng 7.9.0 to 7.10.0 break maven build with junit5 (Krishnan Mahadevan)
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.testng.CommandLineArgs;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
@@ -63,12 +64,28 @@ public class ListenersTest extends SimpleBaseTest {
         "test.listeners.issue2638.TestClassBSample.testMethod"
       };
 
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForExecutionListenersViaMaven() {
+    Ensure.orderingViaMap(
+        ExecutionListenerHolder.LOGS,
+        ExecutionListenerHolder.ALL,
+        ExecutionListenerHolder.EXPECTED_LOGS);
+  }
+
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionListenersViaApi() {
     Ensure.orderingViaApi(
         ExecutionListenerHolder.LOGS,
         ExecutionListenerHolder.ALL,
         ExecutionListenerHolder.EXPECTED_LOGS);
+  }
+
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForAlterSuiteListenersViaMaven() {
+    Ensure.orderingViaMap(
+        AlterSuiteListenerHolder.LOGS,
+        AlterSuiteListenerHolder.ALL,
+        AlterSuiteListenerHolder.EXPECTED_LOGS);
   }
 
   @Test(description = "GITHUB-2916")
@@ -85,9 +102,24 @@ public class ListenersTest extends SimpleBaseTest {
         SuiteListenerHolder.LOGS, SuiteListenerHolder.ALL, SuiteListenerHolder.EXPECTED_LOGS);
   }
 
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForSuiteListenersViaMaven() {
+    Ensure.orderingViaMap(
+        SuiteListenerHolder.LOGS, SuiteListenerHolder.ALL, SuiteListenerHolder.EXPECTED_LOGS);
+  }
+
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForTestListenersViaApi() {
     Ensure.orderingViaApi(
+        ElaborateSampleTestCase.class,
+        TestListenerHolder.LOGS,
+        TestListenerHolder.ALL,
+        TestListenerHolder.EXPECTED_LOGS);
+  }
+
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForTestListenersViaMaven() {
+    Ensure.orderingViaMap(
         ElaborateSampleTestCase.class,
         TestListenerHolder.LOGS,
         TestListenerHolder.ALL,
@@ -102,9 +134,26 @@ public class ListenersTest extends SimpleBaseTest {
         InvokedMethodListenerHolder.EXPECTED_LOGS);
   }
 
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForInvokedListenersViaMaven() {
+    Ensure.orderingViaMap(
+        InvokedMethodListenerHolder.LOGS,
+        InvokedMethodListenerHolder.ALL,
+        InvokedMethodListenerHolder.EXPECTED_LOGS);
+  }
+
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForConfigurationListenersViaApi() {
     Ensure.orderingViaApi(
+        SimpleConfigTestCase.class,
+        ConfigurationListenerHolder.LOGS,
+        ConfigurationListenerHolder.ALL,
+        ConfigurationListenerHolder.EXPECTED_LOGS);
+  }
+
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForConfigurationListenersViaMaven() {
+    Ensure.orderingViaMap(
         SimpleConfigTestCase.class,
         ConfigurationListenerHolder.LOGS,
         ConfigurationListenerHolder.ALL,
@@ -117,9 +166,24 @@ public class ListenersTest extends SimpleBaseTest {
         ClassListenerHolder.LOGS, ClassListenerHolder.ALL, ClassListenerHolder.EXPECTED_LOGS);
   }
 
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForClassListenersViaMaven() {
+    Ensure.orderingViaMap(
+        ClassListenerHolder.LOGS, ClassListenerHolder.ALL, ClassListenerHolder.EXPECTED_LOGS);
+  }
+
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForDataProviderListenersViaApi() {
     Ensure.orderingViaApi(
+        DataProviderSampleTestCase.class,
+        DataProviderListenerHolder.LOGS,
+        DataProviderListenerHolder.ALL,
+        DataProviderListenerHolder.EXPECTED_LOGS);
+  }
+
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForDataProviderListenersViaMaven() {
+    Ensure.orderingViaMap(
         DataProviderSampleTestCase.class,
         DataProviderListenerHolder.LOGS,
         DataProviderListenerHolder.ALL,
@@ -135,6 +199,15 @@ public class ListenersTest extends SimpleBaseTest {
         DataProviderInterceptorHolder.EXPECTED_LOGS);
   }
 
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForDataProviderInterceptorsViaMaven() {
+    Ensure.orderingViaMap(
+        DataProviderSampleTestCase.class,
+        DataProviderListenerHolder.LOGS,
+        DataProviderListenerHolder.ALL,
+        DataProviderListenerHolder.EXPECTED_LOGS);
+  }
+
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionVisualisersViaApi() {
     Ensure.orderingViaApi(
@@ -143,9 +216,25 @@ public class ListenersTest extends SimpleBaseTest {
         ExecutionVisualiserHolder.EXPECTED_LOGS);
   }
 
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForExecutionVisualisersViaMaven() {
+    Ensure.orderingViaMap(
+        ExecutionVisualiserHolder.LOGS,
+        ExecutionVisualiserHolder.ALL,
+        ExecutionVisualiserHolder.EXPECTED_LOGS);
+  }
+
   @Test(description = "GITHUB-2916")
   public void ensureOrderingForMethodInterceptorsViaApi() {
     Ensure.orderingViaApi(
+        MethodInterceptorHolder.LOGS,
+        MethodInterceptorHolder.ALL,
+        MethodInterceptorHolder.EXPECTED_LOGS);
+  }
+
+  @Test(description = "GITHUB-3117")
+  public void ensureOrderingForMethodInterceptorsViaMaven() {
+    Ensure.orderingViaMap(
         MethodInterceptorHolder.LOGS,
         MethodInterceptorHolder.ALL,
         MethodInterceptorHolder.EXPECTED_LOGS);
@@ -806,6 +895,26 @@ public class ListenersTest extends SimpleBaseTest {
       listeners.forEach(testng::addListener);
       testng.setUseDefaultListeners(false);
       testng.setListenerComparator(new AnnotationBackedListenerComparator());
+      testng.run();
+      assertThat(logs).containsExactly(expected);
+    }
+
+    static void orderingViaMap(
+        List<String> logs, List<ITestNGListener> listeners, String[] expected) {
+      orderingViaMap(NormalSampleTestCase.class, logs, listeners, expected);
+    }
+
+    static void orderingViaMap(
+        Class<?> clazz, List<String> logs, List<ITestNGListener> listeners, String[] expected) {
+      logs.clear();
+      TestNG testng = create(clazz);
+      listeners.forEach(testng::addListener);
+      testng.setUseDefaultListeners(false);
+      Map<String, String> map =
+          Map.of(
+              CommandLineArgs.LISTENER_COMPARATOR,
+              AnnotationBackedListenerComparator.class.getName());
+      testng.configure(map);
       testng.run();
       assertThat(logs).containsExactly(expected);
     }

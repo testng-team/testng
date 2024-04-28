@@ -1773,6 +1773,10 @@ public class TestNG {
         Boolean.parseBoolean(
             cmdLineArgs.getOrDefault(CommandLineArgs.GENERATE_RESULTS_PER_SUITE, false).toString());
 
+    Optional.ofNullable(cmdLineArgs.get(CommandLineArgs.LISTENER_COMPARATOR))
+        .map(Object::toString)
+        .ifPresent(it -> result.listenerComparator = it);
+
     configure(result);
   }
 
