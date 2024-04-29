@@ -47,6 +47,7 @@ import org.testng.internal.TestListenerHelper;
 import org.testng.internal.TestMethodComparator;
 import org.testng.internal.TestMethodContainer;
 import org.testng.internal.TestNGClassFinder;
+import org.testng.internal.TestNGDeadLockException;
 import org.testng.internal.TestNGMethodFinder;
 import org.testng.internal.Utils;
 import org.testng.internal.XmlMethodSelector;
@@ -63,6 +64,7 @@ import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 
 /** This class takes care of running one Test. */
@@ -807,9 +809,34 @@ public class TestRunner
             .testContext(this)
             .listeners(this.m_classListeners.values())
             .build();
-    return AbstractParallelWorker.newWorker(
-            m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances())
-        .createWorkers(args);
+    List<IWorker<ITestNGMethod>> result =
+        AbstractParallelWorker.newWorker(m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances())
+            .createWorkers(args);
+    long dataDrivenTestCount =
+        result.stream()
+            .flatMap(it -> it.getTasks().stream())
+            .filter(ITestNGMethod::isDataDriven)
+            .count();
+    int threads = getCurrentXmlTest().getThreadCount();
+    XmlSuite.ParallelMode parallelMode = getCurrentXmlTest().getParallel();
+    XmlSuite suite = getSuite().getXmlSuite();
+    if (suite.useGlobalThreadPool()
+        && parallelMode.isParallel()
+        && dataDrivenTestCount >= threads) {
+      String msg =
+          "[Deadlock condition detected] "
+              + "Cannot run "
+              + dataDrivenTestCount
+              + " data driven tests on just "
+              + threads
+              + " threads when "
+              + "using common thread pool. "
+              + "Please increase the number of threads to at-least "
+              + (dataDrivenTestCount + 1)
+              + ".";
+      throw new TestNGDeadLockException(msg);
+    }
+    return result;
   }
 
   private void afterRun() {

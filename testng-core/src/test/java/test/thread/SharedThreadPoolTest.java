@@ -8,10 +8,15 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.TestNGDeadLockException;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.thread.issue2019.TestClassSample;
+import test.thread.issue3028.AnotherDataDrivenTestSample;
+import test.thread.issue3028.DataDrivenTestSample;
+import test.thread.issue3028.FactoryPoweredDataDrivenTestSample;
 
 public class SharedThreadPoolTest extends SimpleBaseTest {
 
@@ -66,6 +71,27 @@ public class SharedThreadPoolTest extends SimpleBaseTest {
         .withFailMessage(
             "Expecting the regular and data driven tests to run at " + "max in 2 threads")
         .hasSizeBetween(4, 10);
+  }
+
+  @Test(expectedExceptions = TestNGDeadLockException.class, dataProvider = "modes")
+  public void ensureDeadLocksAreDetectedForDataDrivenTestsRunningInParallel(
+      XmlSuite.ParallelMode mode, Class<?>... classes) {
+    TestNG testng = create(classes);
+    testng.shouldUseGlobalThreadPool(true);
+    testng.setParallel(mode);
+    testng.setThreadCount(2);
+    testng.run();
+  }
+
+  @DataProvider(name = "modes")
+  public Object[][] parallelModes() {
+    return new Object[][] {
+      {XmlSuite.ParallelMode.METHODS, DataDrivenTestSample.class},
+      {XmlSuite.ParallelMode.INSTANCES, FactoryPoweredDataDrivenTestSample.class},
+      {
+        XmlSuite.ParallelMode.CLASSES, DataDrivenTestSample.class, AnotherDataDrivenTestSample.class
+      },
+    };
   }
 
   private static List<Long> runSimpleTest(String suite) {
