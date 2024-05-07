@@ -1,5 +1,6 @@
 Current (7.11.0)
 Fixed: GITHUB-3028: Execution stalls when using "use-global-thread-pool" (Krishnan Mahadevan)
+Fixed: GITHUB-3122: Update JCommander to 1.83 (Antoine Dessaigne)
 
 7.10.2
 Fixed: GITHUB-3117: ListenerComparator doesn't work (Krishnan Mahadevan)
