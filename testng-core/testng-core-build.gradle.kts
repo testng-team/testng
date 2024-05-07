@@ -30,7 +30,7 @@ dependencies {
     api(projects.testngCoreApi)
     // Annotations have to be available on the compile classpath for the proper compilation
     compileOnly("com.github.spotbugs:spotbugs:4.8.1")
-    api("com.beust:jcommander:1.82")
+    api("org.jcommander:jcommander:1.83")
 
     "guiceApi"(platform("com.google.inject:guice-bom:5.1.0"))
     "guiceApi"("com.google.inject:guice")
