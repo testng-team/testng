@@ -355,6 +355,33 @@ public class AssertTest {
     Assert.assertEquals("x", "y");
   }
 
+  @Test(
+      description = "GITHUB-3135",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "Arrays differ at element \\[2\\]: 3 != 5 expected \\[3\\] but found \\[5\\]")
+  public void testAssertEqualsArrayElementDiffers() {
+    Assert.assertEquals(new Integer[] {1, 2, 5}, new Integer[] {1, 2, 3});
+  }
+
+  @Test(
+      description = "GITHUB-3135",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "Arrays differ at element \\[2\\]: 3 != null expected \\[3\\] but found \\[null\\]")
+  public void testAssertEqualsArrayElementIsNull() {
+    Assert.assertEquals(new Integer[] {1, 2, null}, new Integer[] {1, 2, 3});
+  }
+
+  @Test(
+      description = "GITHUB-3135",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "Arrays differ at element \\[2\\]: null != 5 expected \\[null\\] but found \\[5\\]")
+  public void testAssertEqualsArrayElementIsNotNull() {
+    Assert.assertEquals(new Integer[] {1, 2, 5}, new Integer[] {1, 2, null});
+  }
+
   @Test
   public void testAssertEqualsNoOrder() {
     String[] actual = {"a", "b"};
