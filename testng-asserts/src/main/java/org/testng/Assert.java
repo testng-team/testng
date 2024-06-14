@@ -1780,7 +1780,7 @@ public class Assert {
         continue;
       }
       if ((a == null && e != null) || (a != null && e == null)) {
-        failNotEquals(a, e, message);
+        failNotEquals(a, e, errorMessage);
       }
       // Compare by value for multi-dimensional array.
       if (e.getClass().isArray()) {
