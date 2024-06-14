@@ -139,7 +139,7 @@ public @interface Test {
   String expectedExceptionsMessageRegExp() default ".*";
 
   /**
-   * The name of the suite this test class should be placed in. This attribute is ignore if @Test is
+   * The name of the suite this test class should be placed in. This attribute is ignored if @Test is
    * not at the class level.
    *
    * @return the value (default empty)
@@ -147,7 +147,7 @@ public @interface Test {
   String suiteName() default "";
 
   /**
-   * The name of the test this test class should be placed in. This attribute is ignore if @Test is
+   * The name of the test this test class should be placed in. This attribute is ignored if @Test is
    * not at the class level.
    *
    * @return the value (default empty)
