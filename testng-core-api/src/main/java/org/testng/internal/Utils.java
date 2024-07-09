@@ -311,7 +311,7 @@ public final class Utils {
    *
    * @param t - The {@link Throwable} exception
    * @param toHtml - <code>true</code> if the stacktrace should be translated to html as well
-   * @return - A string that represents the short stack trace.
+   * @return - A string that represents the full stack trace.
    */
   public static String longStackTrace(Throwable t, boolean toHtml) {
     return buildStackTrace(t, toHtml, StackTraceType.FULL);
@@ -322,7 +322,7 @@ public final class Utils {
    *
    * @param t - The {@link Throwable} exception
    * @param toHtml - <code>true</code> if the stacktrace should be translated to html as well
-   * @return - A string that represents the full stack trace.
+   * @return - A string that represents the short stack trace.
    */
   public static String shortStackTrace(Throwable t, boolean toHtml) {
     return buildStackTrace(t, toHtml, StackTraceType.SHORT);
