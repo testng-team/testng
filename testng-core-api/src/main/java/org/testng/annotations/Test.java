@@ -139,8 +139,8 @@ public @interface Test {
   String expectedExceptionsMessageRegExp() default ".*";
 
   /**
-   * The name of the suite this test class should be placed in. This attribute is ignored if @Test is
-   * not at the class level.
+   * The name of the suite this test class should be placed in. This attribute is ignored if @Test
+   * is not at the class level.
    *
    * @return the value (default empty)
    */
