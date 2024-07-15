@@ -580,6 +580,28 @@ public class AssertTest {
     Assert.assertNotEquals(obj, obj);
   }
 
+  @Test(description = "GITHUB-3140")
+  public void testAssertEqualsDeepSet() {
+    var expectedSet = new HashSet<>();
+    expectedSet.add(new Contrived(1));
+    expectedSet.add(new Contrived[] {new Contrived(1)});
+    var actualSet = new HashSet<>();
+    actualSet.add(new Contrived(1));
+    actualSet.add(new Contrived[] {new Contrived(1)});
+    Assert.assertEqualsDeep(actualSet, expectedSet);
+  }
+
+  @Test(description = "GITHUB-3140", expectedExceptions = AssertionError.class)
+  public void testAssertEqualsDeepSetFail() {
+    var expectedSet = new HashSet<>();
+    expectedSet.add(new Contrived(1));
+    expectedSet.add(new Contrived[] {new Contrived(1)});
+    var actualSet = new HashSet<>();
+    actualSet.add(new Contrived(1));
+    actualSet.add(new Contrived[] {new Contrived(2)});
+    Assert.assertEqualsDeep(actualSet, expectedSet);
+  }
+
   static class Contrived {
 
     int integer;

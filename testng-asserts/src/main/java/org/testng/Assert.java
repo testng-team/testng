@@ -2067,12 +2067,16 @@ public class Assert {
           return arrayNotEqualReason;
         }
       } else {
-        if (!areEqualImpl(value, expected)) {
+        if (!areEqualImpl(value, expectedValue)) {
           return "Sets not equal: expected: " + expectedValue + " and actual: " + value;
         }
       }
     }
     return null;
+  }
+
+  public static void assertEqualsDeep(Set<?> actual, Set<?> expected) {
+    assertEqualsDeep(actual, expected, null);
   }
 
   public static void assertEqualsDeep(Set<?> actual, Set<?> expected, String message) {
