@@ -73,7 +73,7 @@ jobs:
         run: echo "unique_id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Test
         id: run_test_cases
-        uses: burrunan/gradle-cache-action@v1
+        uses: burrunan/gradle-cache-action@v2
         with:
           job-id: jdk${{ matrix.jdk.version }}
           arguments: |
