@@ -1,6 +1,8 @@
 package org.testng.internal.invokers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.IInvokedMethod;
@@ -19,6 +21,7 @@ public interface ITestInvoker {
     AtomicInteger count = new AtomicInteger(0);
     List<Object> instances = Lists.newArrayList();
     AtomicBoolean representsRetriedMethod = new AtomicBoolean(false);
+    final Map<String, AtomicInteger> counter = new HashMap<>();
   }
 
   List<ITestResult> invokeTestMethods(
