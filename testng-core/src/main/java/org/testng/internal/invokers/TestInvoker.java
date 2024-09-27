@@ -764,7 +764,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         if (null != testResult.getMethod().getFactoryMethodParamsInfo()) {
           parametersIndex = testResult.getMethod().getFactoryMethodParamsInfo().getIndex();
         }
-        arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
+        if (!willRetryMethod) {
+          arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
+        }
       }
 
       //

@@ -1,4 +1,5 @@
 Current (7.11.0)
+Fixed: GITHUB-3180: TestNG testng-failed.xml 'invocation-numbers' values are not calculated correctly with retry and dataproviders (Krishnan Mahadevan)
 Fixed: GITHUB-3170: Specifying dataProvider and successPercentage causes test to always pass (Krishnan Mahadevan)
 Fixed: GITHUB-3028: Execution stalls when using "use-global-thread-pool" (Krishnan Mahadevan)
 Fixed: GITHUB-3122: Update JCommander to 1.83 (Antoine Dessaigne)
