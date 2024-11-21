@@ -7,7 +7,5 @@ public class SimpleIgnoredSample {
 
   @Test
   @Ignore
-  public void ignored() {
-
-  }
+  public void ignored() {}
 }

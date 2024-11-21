@@ -5,6 +5,7 @@ Fixed: GITHUB-3028: Execution stalls when using "use-global-thread-pool" (Krishn
 Fixed: GITHUB-3122: Update JCommander to 1.83 (Antoine Dessaigne)
 Fixed: GITHUB-3135: assertEquals on arrays - Failure message is missing information about the array index when an array element is unexpectedly null or non-null (Albert Choi)
 Fixed: GITHUB-3140: assertEqualsDeep on Sets - Deep comparison was using the wrong expected value
+Fixed: GITHUB-3189: Incorrect number of ignored tests displayed in the XML results
 
 7.10.2
 Fixed: GITHUB-3117: ListenerComparator doesn't work (Krishnan Mahadevan)
