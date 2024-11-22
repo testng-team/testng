@@ -93,7 +93,12 @@ public class XmlReporterTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2886")
   public void ensureConfigurationMethodsAreNotCountedAsSkippedInXmlReports() throws Exception {
     File file =
-        runTest(RuntimeBehavior.FILE_NAME, null, JekyllTestSample.class, HydeTestSample.class);
+        runTest(
+            RuntimeBehavior.FILE_NAME,
+            null,
+            JekyllTestSample.class,
+            HydeTestSample.class,
+            SimpleIgnoredSample.class);
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = factory.newDocumentBuilder();
     Document doc = builder.parse(file);
@@ -103,8 +108,8 @@ public class XmlReporterTest extends SimpleBaseTest {
     int total = Integer.parseInt(node.getAttributes().getNamedItem("total").getNodeValue());
     int passed = Integer.parseInt(node.getAttributes().getNamedItem("passed").getNodeValue());
     int failed = Integer.parseInt(node.getAttributes().getNamedItem("failed").getNodeValue());
-    assertThat(ignored).isZero();
-    assertThat(total).isEqualTo(2);
+    assertThat(ignored).isEqualTo(1);
+    assertThat(total).isEqualTo(3);
     assertThat(passed).isEqualTo(2);
     assertThat(failed).isZero();
   }
