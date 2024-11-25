@@ -15,6 +15,6 @@ dependencies {
     "guiceApi"("com.google.inject:guice")
 
     implementation(projects.testngReflectionUtils)
-    api("org.slf4j:slf4j-api:1.7.36")
-    testImplementation("org.slf4j:slf4j-simple:1.7.36")
+    api("org.slf4j:slf4j-api:2.0.16")
+    testImplementation("org.slf4j:slf4j-simple:2.0.16")
 }
