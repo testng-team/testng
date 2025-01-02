@@ -976,6 +976,18 @@ public class Assert {
    * @param expected the expected value
    * @param message the assertion error message
    */
+  public static void assertEquals(long actual, Long expected, String message) {
+    assertEquals(Long.valueOf(actual), expected, message);
+  }
+
+  /**
+   * Asserts that two longs are equal. If they are not, an AssertionError, with the given message,
+   * is thrown.
+   *
+   * @param actual the actual value
+   * @param expected the expected value
+   * @param message the assertion error message
+   */
   public static void assertEquals(Long actual, Long expected, String message) {
     assertEquals(actual, (Object) expected, message);
   }

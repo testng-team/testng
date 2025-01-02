@@ -51,6 +51,7 @@ public class AssertTest {
     assertEquals(a, b);
     assertEquals(a, b, "");
     assertEquals(b, a);
+    assertEquals(b, a, "");
     assertEquals(Long.valueOf(b), a, "");
   }
 
