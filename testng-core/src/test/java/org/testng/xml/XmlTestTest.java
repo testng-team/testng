@@ -21,7 +21,7 @@ public class XmlTestTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-3196")
-  public void testNameMatchesAnyWithRegex(){
+  public void testNameMatchesAnyWithRegex() {
     XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1");
     XmlTest xmlTest = xmlSuite.getTests().get(0);
     assertThat(xmlTest.nameMatchesAny(Collections.singletonList("^(test1$).*"))).isTrue();

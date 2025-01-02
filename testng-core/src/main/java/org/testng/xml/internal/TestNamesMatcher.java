@@ -109,7 +109,7 @@ public final class TestNamesMatcher {
         tests.add(xt);
         matchedTestNames.add(xt.getName());
         matchedTests.add(xt);
-      }else{
+      } else {
         missedTestNames.add(xt.getName());
         missedTests.add(xt);
       }

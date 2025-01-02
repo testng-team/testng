@@ -4,7 +4,6 @@
 [![Sonarqube Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=org.testng%3Atestng&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.testng%3Atestng)
 
 Documentation available at [TestNG's main web site](https://testng.org). Visit [TestNG Documentation's GitHub Repo](https://github.com/testng-team/testng-team.github.io) to contribute to it.
-###
 ### Release Notes
 * [7.10.0](https://groups.google.com/g/testng-users/c/6DmFaKUjIxY)
 * [7.9.0](https://groups.google.com/g/testng-users/c/nN7LkuZWO48)
