@@ -1,6 +1,7 @@
 package org.testng.xml;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -624,6 +625,6 @@ public class XmlTest implements Cloneable {
    * @return <code>true</code> if the current test's name matches with any of the given names.
    */
   public boolean nameMatchesAny(List<String> names) {
-    return names.contains(getName());
+    return names.stream().allMatch(regex -> Pattern.matches(regex, getName()));
   }
 }

@@ -21,6 +21,8 @@ public final class TestNamesMatcher {
   private final List<XmlSuite> cloneSuites = Lists.newArrayList();
   private final List<String> matchedTestNames = Lists.newArrayList();
   private final List<XmlTest> matchedTests = Lists.newArrayList();
+  private final List<String> missedTestNames = Lists.newArrayList();
+  private final List<XmlTest> missedTests = Lists.newArrayList();
   private final List<String> testNames;
   private final boolean ignoreMissedTestNames;
 
@@ -87,9 +89,6 @@ public final class TestNamesMatcher {
   }
 
   public List<String> getMissedTestNames() {
-    List<String> missedTestNames = Lists.newArrayList();
-    missedTestNames.addAll(testNames);
-    missedTestNames.removeIf(matchedTestNames::contains);
     return missedTestNames;
   }
 
@@ -110,6 +109,9 @@ public final class TestNamesMatcher {
         tests.add(xt);
         matchedTestNames.add(xt.getName());
         matchedTests.add(xt);
+      }else{
+        missedTestNames.add(xt.getName());
+        missedTests.add(xt);
       }
     }
     if (tests.isEmpty()) {

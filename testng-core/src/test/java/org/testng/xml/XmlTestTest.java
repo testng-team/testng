@@ -20,6 +20,14 @@ public class XmlTestTest extends SimpleBaseTest {
     assertThat(xmlTest.nameMatchesAny(Collections.singletonList("test2"))).isFalse();
   }
 
+  @Test(description = "GITHUB-3196")
+  public void testNameMatchesAnyWithRegex(){
+    XmlSuite xmlSuite = createDummySuiteWithTestNamesAs("test1");
+    XmlTest xmlTest = xmlSuite.getTests().get(0);
+    assertThat(xmlTest.nameMatchesAny(Collections.singletonList("^(test1$).*"))).isTrue();
+    assertThat(xmlTest.nameMatchesAny(Collections.singletonList("^(?!test1$).*,"))).isFalse();
+  }
+
   @Test(dataProvider = "dp", description = "GITHUB-1716")
   public void testNullOrEmptyParameter(Map<String, String> data) {
     XmlTest test = createXmlTest("suite", "test", Issue1716TestSample.class);
