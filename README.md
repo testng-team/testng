@@ -4,6 +4,7 @@
 [![Sonarqube Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=org.testng%3Atestng&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.testng%3Atestng)
 
 Documentation available at [TestNG's main web site](https://testng.org). Visit [TestNG Documentation's GitHub Repo](https://github.com/testng-team/testng-team.github.io) to contribute to it.
+
 ### Release Notes
 * [7.10.0](https://groups.google.com/g/testng-users/c/6DmFaKUjIxY)
 * [7.9.0](https://groups.google.com/g/testng-users/c/nN7LkuZWO48)
@@ -39,7 +40,7 @@ Always make sure your issue is happening on the latest TestNG version. Bug repor
 
 ### Have you considered sending a pull request instead of filing an issue?
 The best way to report a bug is to provide the TestNG team with a full test case reproducing the issue.
-Maybe you can write a runnable test case (check the `src/test/` folder for examples) and propose it in a pull request 
+Maybe you can write a runnable test case (check the `src/test/` folder for examples) and propose it in a pull request
 Don't worry if the CI fails because it is the expected behavior.
 This pull request will be a perfect start to find the fix :)
 
@@ -48,12 +49,12 @@ Refer our [Contributing](.github/CONTRIBUTING.md) section for detailed set of st
 
 ### We encourage pull requests that:
 
-  * Add new features to TestNG (or)
-  * Fix bugs in TestNG
+* Add new features to TestNG (or)
+* Fix bugs in TestNG
 
-  If your pull request involves fixing SonarQube issues then we would suggest that you please discuss this with the 
-  [TestNG-dev](https://groups.google.com/forum/#!forum/testng-dev) before you spend time working on it.
-  
+If your pull request involves fixing SonarQube issues then we would suggest that you please discuss this with the
+[TestNG-dev](https://groups.google.com/forum/#!forum/testng-dev) before you spend time working on it.
+
 ### GPG Keys
 
 #### Getting the keys
