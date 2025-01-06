@@ -90,10 +90,8 @@ public final class TestNamesMatcher {
   public List<String> getMissedTestNames() {
     List<String> missedTestNames = Lists.newArrayList();
     missedTestNames.addAll(testNames);
-    missedTestNames.removeIf(regex ->
-        matchedTestNames.stream()
-            .anyMatch(testName -> Pattern.matches(regex, testName))
-    );
+    missedTestNames.removeIf(
+        regex -> matchedTestNames.stream().anyMatch(testName -> Pattern.matches(regex, testName)));
     return missedTestNames;
   }
 
