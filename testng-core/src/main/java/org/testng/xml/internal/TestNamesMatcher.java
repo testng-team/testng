@@ -1,6 +1,7 @@
 package org.testng.xml.internal;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
@@ -89,7 +90,18 @@ public final class TestNamesMatcher {
   public List<String> getMissedTestNames() {
     List<String> missedTestNames = Lists.newArrayList();
     missedTestNames.addAll(testNames);
-    missedTestNames.removeIf(matchedTestNames::contains);
+    missedTestNames.removeIf(
+        regex ->
+            matchedTestNames.contains(regex)
+                || matchedTestNames.stream()
+                    .anyMatch(
+                        name -> {
+                          if (regex.startsWith("/") && regex.endsWith("/")) {
+                            String trimmedRegex = regex.substring(1, regex.length() - 1);
+                            return Pattern.matches(trimmedRegex, name);
+                          }
+                          return false;
+                        }));
     return missedTestNames;
   }
 
