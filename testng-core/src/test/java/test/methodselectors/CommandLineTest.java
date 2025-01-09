@@ -170,6 +170,27 @@ public class CommandLineTest extends SimpleBaseTest {
     verifyTests("Failed", failed, tla.getFailedTests());
   }
 
+  @Test(description = "GITHUB-2407")
+  public void testSpecificTestNamesWithRegexCommandLineExclusions() {
+    String[] args =
+        new String[] {
+          "src/test/resources/testnames/main-suite.xml",
+          "-log",
+          "0",
+          "-d",
+          OutputDirectoryPatch.getOutputDirectory(),
+          "-testnames",
+          "/^testGroup1.*/"
+        };
+
+    TestNG.privateMain(args, tla);
+
+    String[] passed = {"sampleOutputTest1"};
+    String[] failed = {};
+    verifyTests("Passed", passed, tla.getPassedTests());
+    verifyTests("Failed", failed, tla.getFailedTests());
+  }
+
   private void verifyTests(String title, String[] expected, List<ITestResult> found) {
 
     Assertions.assertThat(found.stream().map(ITestResult::getName).toArray(String[]::new))

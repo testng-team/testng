@@ -625,6 +625,15 @@ public class XmlTest implements Cloneable {
    * @return <code>true</code> if the current test's name matches with any of the given names.
    */
   public boolean nameMatchesAny(List<String> names) {
-    return names.stream().anyMatch(regex -> Pattern.matches(regex, getName()));
+    return names.contains(getName())
+        || names.stream()
+            .anyMatch(
+                regex -> {
+                  if (regex.startsWith("/") && regex.endsWith("/")) {
+                    String trimmedRegex = regex.substring(1, regex.length() - 1);
+                    return Pattern.matches(trimmedRegex, getName());
+                  }
+                  return false;
+                });
   }
 }
