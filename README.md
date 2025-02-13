@@ -6,6 +6,7 @@
 Documentation available at [TestNG's main web site](https://testng.org). Visit [TestNG Documentation's GitHub Repo](https://github.com/testng-team/testng-team.github.io) to contribute to it.
 
 ### Release Notes
+* [7.11.0](https://groups.google.com/g/testng-users/c/2z_tdavjZbA)
 * [7.10.0](https://groups.google.com/g/testng-users/c/6DmFaKUjIxY)
 * [7.9.0](https://groups.google.com/g/testng-users/c/nN7LkuZWO48)
 * [7.8.0](https://groups.google.com/g/testng-users/c/xdldK3VyU_s)
