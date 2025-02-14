@@ -365,7 +365,7 @@ public class MethodInvocationHelper {
       Throwable e = ex.getCause();
       boolean wasTimedOut = !(notTimedout && !interruptByMonitor.get());
       if (wasTimedOut) {
-        e = new ThreadTimeoutException(tm, realTimeOut);
+        e = new ThreadTimeoutException(tm, realTimeOut, e);
       } else {
         if (e instanceof TestNGRuntimeException) {
           e = e.getCause();

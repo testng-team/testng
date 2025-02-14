@@ -1,4 +1,7 @@
-Current (7.11.0)
+Current (7.12.0)
+Fixed: GITHUB-2765: Test timeouts using existing Executor now propagate the stack trace to the ThreadTimeoutException
+
+7.11.0
 Fixed: GITHUB-3180: TestNG testng-failed.xml 'invocation-numbers' values are not calculated correctly with retry and dataproviders (Krishnan Mahadevan)
 Fixed: GITHUB-3170: Specifying dataProvider and successPercentage causes test to always pass (Krishnan Mahadevan)
 Fixed: GITHUB-3028: Execution stalls when using "use-global-thread-pool" (Krishnan Mahadevan)
