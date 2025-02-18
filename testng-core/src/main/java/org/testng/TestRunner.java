@@ -662,11 +662,6 @@ public class TestRunner
     return needPrioritySort ? new TestMethodComparator() : null;
   }
 
-  private boolean sortOnPriority(ITestNGMethod[] interceptedOrder) {
-    return m_methodInterceptors.size() > 1
-        || Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
-  }
-
   // If any of the test methods specify a priority other than the default, we'll need to be able to
   // sort them.
   private static BlockingQueue<Runnable> newQueue(boolean needPrioritySort) {
@@ -710,7 +705,10 @@ public class TestRunner
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
     // priority on them, we need to sort.
-    boolean needPrioritySort = sortOnPriority(interceptedOrder);
+    boolean hasMultipleInterceptors = m_methodInterceptors.size() > 1;
+    boolean hasNonZeroPriorityMethods =
+        Arrays.stream(interceptedOrder).anyMatch(m -> m.getPriority() != 0);
+    boolean needPrioritySort = hasMultipleInterceptors || hasNonZeroPriorityMethods;
     Comparator<ITestNGMethod> methodComparator = newComparator(needPrioritySort);
     if (parallel) {
       if (graph.getNodeCount() <= 0) {
@@ -718,7 +716,12 @@ public class TestRunner
       }
       TestTaskExecutor taskExecutor =
           new TestTaskExecutor(
-              m_configuration, xmlTest, this, newQueue(needPrioritySort), graph, methodComparator);
+              m_configuration,
+              xmlTest,
+              this,
+              newQueue(hasNonZeroPriorityMethods),
+              graph,
+              methodComparator);
       taskExecutor.execute();
       taskExecutor.awaitCompletion();
       return;

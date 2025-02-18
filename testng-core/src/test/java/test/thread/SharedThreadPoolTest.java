@@ -17,6 +17,8 @@ import test.thread.issue2019.TestClassSample;
 import test.thread.issue3028.AnotherDataDrivenTestSample;
 import test.thread.issue3028.DataDrivenTestSample;
 import test.thread.issue3028.FactoryPoweredDataDrivenTestSample;
+import test.thread.issue3179.DummyMethodInterceptor;
+import test.thread.issue3179.SampleSuiteAlteringListener;
 
 public class SharedThreadPoolTest extends SimpleBaseTest {
 
@@ -81,6 +83,15 @@ public class SharedThreadPoolTest extends SimpleBaseTest {
     testng.setParallel(mode);
     testng.setThreadCount(2);
     testng.run();
+  }
+
+  @Test(description = "GITHUB-3179")
+  public void ensurePriorityAgnosticInterceptorsDontCauseExceptions() {
+    TestNG testng = create(test.thread.issue3179.TestClassSample.class);
+    testng.addListener(new SampleSuiteAlteringListener());
+    testng.addListener(new DummyMethodInterceptor());
+    testng.run();
+    assertThat(testng.getStatus()).isZero();
   }
 
   @DataProvider(name = "modes")

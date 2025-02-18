@@ -1,5 +1,6 @@
 Current (7.12.0)
-Fixed: GITHUB-2765: Test timeouts using existing Executor now propagate the stack trace to the ThreadTimeoutException
+Fixed: GITHUB-3179: ClassCastException when use shouldUseGlobalThreadPool(true) property (Krishnan Mahadevan)
+Fixed: GITHUB-2765: Test timeouts using existing Executor now propagate the stack trace to the ThreadTimeoutException (Charlie Hayes)
 
 7.11.0
 Fixed: GITHUB-3180: TestNG testng-failed.xml 'invocation-numbers' values are not calculated correctly with retry and dataproviders (Krishnan Mahadevan)
