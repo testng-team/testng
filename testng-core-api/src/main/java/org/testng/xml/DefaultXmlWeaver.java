@@ -47,6 +47,16 @@ class DefaultXmlWeaver implements IWeaveXml {
     }
     XmlUtils.setProperty(
         p,
+        "use-global-thread-pool",
+        String.valueOf(xmlSuite.useGlobalThreadPool()),
+        DEFAULT_SHARE_THREAD_POOL.toString());
+    XmlUtils.setProperty(
+        p,
+        "share-thread-pool-for-data-providers",
+        String.valueOf(xmlSuite.isShareThreadPoolForDataProviders()),
+        DEFAULT_SHARE_THREAD_POOL_FOR_DATA_PROVIDERS.toString());
+    XmlUtils.setProperty(
+        p,
         "group-by-instances",
         String.valueOf(xmlSuite.getGroupByInstances()),
         DEFAULT_GROUP_BY_INSTANCES.toString());

@@ -137,9 +137,11 @@ public class XmlSuite implements Cloneable {
   public static final Boolean DEFAULT_SKIP_FAILED_INVOCATION_COUNTS = Boolean.FALSE;
   private Boolean m_skipFailedInvocationCounts = DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
 
-  private boolean shareThreadPoolForDataProviders = false;
+  public static final Boolean DEFAULT_SHARE_THREAD_POOL_FOR_DATA_PROVIDERS = Boolean.FALSE;
+  private boolean shareThreadPoolForDataProviders = DEFAULT_SHARE_THREAD_POOL_FOR_DATA_PROVIDERS;
 
-  private boolean useGlobalThreadPool = false;
+  public static final Boolean DEFAULT_SHARE_THREAD_POOL = Boolean.FALSE;
+  private boolean useGlobalThreadPool = DEFAULT_SHARE_THREAD_POOL;
 
   /** The thread count. */
   public static final Integer DEFAULT_THREAD_COUNT = 5;
