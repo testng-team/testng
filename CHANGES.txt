@@ -1,4 +1,5 @@
 Current (7.12.0)
+Fixed: GITHUB-3177: Method org.testng.xml.XmlSuite#toXml do not save new properties like "share-thread-pool-for-data-providers" (Krishnan Mahadevan)
 Fixed: GITHUB-3179: ClassCastException when use shouldUseGlobalThreadPool(true) property (Krishnan Mahadevan)
 Fixed: GITHUB-2765: Test timeouts using existing Executor now propagate the stack trace to the ThreadTimeoutException (Charlie Hayes)
 

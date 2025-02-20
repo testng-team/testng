@@ -2,8 +2,11 @@ package test.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
@@ -14,6 +17,11 @@ import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import test.SimpleBaseTest;
 
 public class XmlVerifyTest extends SimpleBaseTest {
@@ -39,6 +47,26 @@ public class XmlVerifyTest extends SimpleBaseTest {
     String xml = suite.toXml();
     assertThat(xml).doesNotContain(COMMAND_LINE_TEST);
     assertThat(xml).doesNotContain(DEFAULT_SUITE);
+  }
+
+  @Test(description = "GITHUB-3177")
+  public void testThreadPoolRelatedAttributesPresentInXml() throws Exception {
+    XmlSuite suite = createSuite();
+    suite.setShareThreadPoolForDataProviders(true);
+    suite.shouldUseGlobalThreadPool(true);
+    String xml = suite.toXml();
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    Document document = builder.parse(new InputSource(new StringReader(xml)));
+    document.getDocumentElement().normalize();
+    NodeList allSuites = document.getElementsByTagName("suite");
+    assertThat(allSuites.getLength()).isEqualTo(1);
+    Node xmlSuite = allSuites.item(0);
+    assertThat(xmlSuite.getNodeType()).isEqualTo(Node.ELEMENT_NODE);
+    Element element = (Element) xmlSuite;
+    assertThat(element.getAttribute("use-global-thread-pool")).isEqualTo(Boolean.TRUE.toString());
+    assertThat(element.getAttribute("share-thread-pool-for-data-providers"))
+        .isEqualTo(Boolean.TRUE.toString());
   }
 
   @AfterMethod
