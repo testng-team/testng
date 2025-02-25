@@ -36,6 +36,7 @@ public class Logger {
    * @return true if this logger is enabled for level TRACE, false otherwise.
    */
   public boolean isTraceEnabled() {
+    System.lineSeparator();
     return logger.isTraceEnabled();
   }
 
@@ -49,6 +50,7 @@ public class Logger {
    * @param message the message object to log.
    */
   public void trace(Object message) {
+    System.lineSeparator();
     logger.trace("{}", message);
   }
 
@@ -60,6 +62,7 @@ public class Logger {
    * @param t the exception to log, including its stack trace.
    */
   public void trace(Object message, Throwable t) {
+    System.lineSeparator();
     logger.trace("{}", message, t);
   }
 
@@ -69,6 +72,7 @@ public class Logger {
    * @return true if this logger is enabled for level DEBUG, false otherwise.
    */
   public boolean isDebugEnabled() {
+    System.lineSeparator();
     return logger.isDebugEnabled();
   }
 
@@ -79,6 +83,7 @@ public class Logger {
    * @param message the message object to log.
    */
   public void debug(Object message) {
+    System.lineSeparator();
     logger.debug("{}", message);
   }
 
@@ -90,6 +95,7 @@ public class Logger {
    * @param t the exception to log, including its stack trace.
    */
   public void debug(Object message, Throwable t) {
+    System.lineSeparator();
     logger.debug("{}", message, t);
   }
 
@@ -99,6 +105,7 @@ public class Logger {
    * @return true if this logger is enabled for level INFO, false otherwise.
    */
   public boolean isInfoEnabled() {
+    
     return logger.isInfoEnabled();
   }
 
@@ -109,7 +116,8 @@ public class Logger {
    * @param message the message object to log.
    */
   public void info(Object message) {
-    logger.info("{}", message);
+    System.lineSeparator();
+    logger.info("{} ", message);
   }
 
   /**
@@ -120,7 +128,8 @@ public class Logger {
    * @param t the exception to log, including its stack trace.
    */
   public void info(Object message, Throwable t) {
-    logger.info("{}", message, t);
+    System.lineSeparator();
+    logger.info("{} ", message, t);
   }
 
   /**
@@ -130,6 +139,7 @@ public class Logger {
    * @param message the message object to log.
    */
   public void warn(Object message) {
+    System.lineSeparator();
     logger.warn("{}", message);
   }
 
@@ -141,6 +151,7 @@ public class Logger {
    * @param t the exception to log, including its stack trace.
    */
   public void warn(Object message, Throwable t) {
+    System.lineSeparator();
     logger.warn("{}", message, t);
   }
 
@@ -151,6 +162,7 @@ public class Logger {
    * @param message the message object to log.
    */
   public void error(Object message) {
+    System.lineSeparator();
     logger.error("{}", message);
   }
 
@@ -162,6 +174,7 @@ public class Logger {
    * @param t the exception to log, including its stack trace.
    */
   public void error(Object message, Throwable t) {
+    System.lineSeparator();
     logger.error("{}", message, t);
   }
 
@@ -172,6 +185,7 @@ public class Logger {
    * @param message the message object to log.
    */
   public void fatal(Object message) {
+    System.lineSeparator();
     logger.error("{}", message);
   }
 
