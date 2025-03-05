@@ -51,11 +51,12 @@ tasks.mergedJar {
             "Bundle-Description" to project.description,
             "Bundle-Version" to project.version.toString().removeSuffix("-SNAPSHOT"),
             "Import-Package" to """
-                bsh.*;version="[2.0.0,3.0.0)";resolution:=optional,
-                com.beust.jcommander.*;version="[1.7.0,3.0.0)";resolution:=optional,
-                com.google.inject.*;version="[1.2,1.3)";resolution:=optional,
-                org.yaml.*;version="[1.6,2.0)";resolution:=optional,
-                *;resolution:=optional
+                com.beust.jcommander;version="1.83",
+                org.slf4j;version="2.0",
+                com.google.inject;version="1.4";resolution:=optional,
+                org.yaml.snakeyaml;version="2.0";resolution:=optional,
+                org.yaml.snakeyaml.nodes;version="2.0";resolution:=optional,
+                org.yaml.snakeyaml.constructor;version="2.0";resolution:=optional
             """.trimIndent().replace("\n", ""),
             "Export-Package" to """
                 org.testng

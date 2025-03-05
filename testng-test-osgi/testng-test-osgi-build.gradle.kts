@@ -16,21 +16,40 @@ val testngRepository by configurations.creating {
 dependencies {
     testngRepository(projects.testng)
 
-    testImplementation(projects.testng)
+    testImplementation(projects.testng) {
+        capabilities {
+            requireFeature("guice")
+        }
+    }
+    testImplementation(projects.testng) {
+        capabilities {
+            requireFeature("yaml")
+        }
+    }
 
     testImplementation("javax:javaee-api:8.0.1") {
         // The dependency was not obvious, logged https://github.com/cbeust/testng/issues/2578
         because("PaxExam uses javax.transaction.NotSupportedException and other classes")
     }
-    testImplementation("org.ops4j.pax.exam:pax-exam-container-native:4.13.1")
+    testImplementation("org.ops4j.pax.exam:pax-exam-container-native:4.14.0")
     // pax-exam is not yet compatible with junit5
     // see https://github.com/ops4j/org.ops4j.pax.exam2/issues/886
-    testImplementation("org.ops4j.pax.exam:pax-exam-testng:4.13.5")
-    testImplementation("org.ops4j.pax.exam:pax-exam-link-mvn:4.13.5")
+    testImplementation("org.ops4j.pax.exam:pax-exam-testng:4.14.0")
+    testImplementation("org.ops4j.pax.exam:pax-exam-link-mvn:4.14.0")
     testImplementation("org.ops4j.pax.url:pax-url-aether:2.6.12")
     testImplementation("org.apache.felix:org.apache.felix.framework:7.0.5")
     testImplementation("ch.qos.logback:logback-core:1.4.11")
     testImplementation("ch.qos.logback:logback-classic:1.4.11")
+    testRuntimeOnly("org.assertj:assertj-core:3.23.1")
+    testRuntimeOnly("org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:1.0_6") {
+        because("Guice requires org.aopalliance.intercept package in osgi, however, aopalliance:aopalliance has no osgi headers")
+    }
+    testRuntimeOnly("com.google.errorprone:error_prone_annotations:2.36.0") {
+        because("It is needed for Guava, only recent version of error_prone_annotations have osgi headers")
+    }
+    testRuntimeOnly("org.apache.aries.spifly:org.apache.aries.spifly.dynamic.framework.extension:1.3.7") {
+        because("slf4j-api 2.0 requires osgi.serviceloader.processor, see https://stackoverflow.com/a/77867804")
+    }
 }
 
 // <editor-fold defaultstate="collapsed" desc="Pass dependency versions to pax-exam container">
@@ -83,5 +102,4 @@ tasks.test {
             "-Dtestng.org.ops4j.pax.url.mvn.localRepository=file:${paxLocalCacheRepository.get().asFile.absolutePath}@id=pax-repo"
         )
     })
-    ignoreFailures = true
 }
