@@ -4,14 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.testng.test.osgi.DefaultTestngOsgiOptions.defaultTestngOsgiOptions;
 
-import java.lang.reflect.Method;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.ops4j.pax.exam.testng.listener.PaxExam;
+import org.testng.IModuleFactory;
+import org.testng.TestNG;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import org.testng.internal.Version;
+import org.testng.internal.YamlParser;
+import org.testng.xml.XmlSuite;
 
 /**
  * The purpose of the class is to ensure {@code postgresql} bundle activation does not fail in case
@@ -25,17 +31,32 @@ public class PlainOsgiTest {
     return options(defaultTestngOsgiOptions());
   }
 
-  // TODO: Enable this test once the PR https://github.com/ops4j/org.ops4j.pax.exam2/pull/1112
-  // gets merged and there's a new release done.
-  @Test(enabled = false)
+  @Test
   public void versionShouldStartWithDigit() throws Exception {
-    Class<?> versionClass = Class.forName("org.testng.internal.Version");
-    Method getVersionStringMethod = versionClass.getMethod("getVersionString");
-    Object version = getVersionStringMethod.invoke(null);
+    String version = String.valueOf(Version.getVersionString());
 
     assertThat(version)
         .matches(
-            (v) -> String.valueOf(v).length() > 0 && Character.isDigit(String.valueOf(v).charAt(0)),
+            (v) -> !v.isEmpty() && Character.isDigit(v.charAt(0)),
             "Version.getVersionString() should start with a digit but was " + version);
+  }
+
+  @Test
+  public void guiceModuleFactoryLoads() {
+    assertThat(IModuleFactory.class.getMethods()).isNotEmpty();
+  }
+
+  @Test
+  public void jcommanderLoads() {
+    assertThat(TestNG.class.getFields()).isNotEmpty();
+  }
+
+  @Test
+  public void yamlLoads() {
+    YamlParser parser = new YamlParser();
+    ByteArrayInputStream input =
+        new ByteArrayInputStream("name: My_Suite\n".getBytes(StandardCharsets.UTF_8));
+    XmlSuite suite = parser.parse("test.yml", input, false);
+    assertThat(suite).extracting("name").isEqualTo("My_Suite");
   }
 }

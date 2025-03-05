@@ -21,7 +21,23 @@ public class DefaultTestngOsgiOptions {
         systemProperty("org.ops4j.pax.url.mvn.localRepository")
             .value(System.getProperty("testng.org.ops4j.pax.url.mvn.localRepository")),
         mavenBundle("org.testng", "testng").versionAsInProject(),
+        mavenBundle("org.jcommander", "jcommander").versionAsInProject(),
         mavenBundle("org.assertj", "assertj-core").versionAsInProject(),
+        mavenBundle("net.bytebuddy", "byte-buddy").versionAsInProject(),
+        mavenBundle("com.google.inject", "guice").versionAsInProject(),
+        mavenBundle("org.yaml", "snakeyaml").versionAsInProject(),
+        mavenBundle("com.google.guava", "guava").versionAsInProject(),
+        mavenBundle("com.google.guava", "failureaccess").versionAsInProject(),
+        mavenBundle("com.google.guava", "listenablefuture").versionAsInProject(),
+        mavenBundle("com.google.code.findbugs", "jsr305").versionAsInProject(),
+        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance")
+            .versionAsInProject(),
+        mavenBundle("org.checkerframework", "checker-qual").versionAsInProject(),
+        mavenBundle("com.google.errorprone", "error_prone_annotations").versionAsInProject(),
+        mavenBundle("com.google.j2objc", "j2objc-annotations").versionAsInProject(),
+        mavenBundle(
+                "org.apache.aries.spifly", "org.apache.aries.spifly.dynamic.framework.extension")
+            .versionAsInProject(),
         systemProperty("logback.configurationFile")
             .value(System.getProperty("logback.configurationFile")),
         mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
