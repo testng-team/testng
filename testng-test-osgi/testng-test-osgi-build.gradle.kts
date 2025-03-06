@@ -38,14 +38,18 @@ dependencies {
     testImplementation("org.ops4j.pax.exam:pax-exam-link-mvn:4.14.0")
     testImplementation("org.ops4j.pax.url:pax-url-aether:2.6.12")
     testImplementation("org.apache.felix:org.apache.felix.framework:7.0.5")
-    testImplementation("ch.qos.logback:logback-core:1.4.11")
-    testImplementation("ch.qos.logback:logback-classic:1.4.11")
     testRuntimeOnly("org.assertj:assertj-core:3.23.1")
     testRuntimeOnly("org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:1.0_6") {
         because("Guice requires org.aopalliance.intercept package in osgi, however, aopalliance:aopalliance has no osgi headers")
     }
     testRuntimeOnly("com.google.errorprone:error_prone_annotations:2.36.0") {
         because("It is needed for Guava, only recent version of error_prone_annotations have osgi headers")
+    }
+    testRuntimeOnly("org.ops4j.pax.logging:pax-logging-api:2.2.8") {
+        because("It will actually be used in osgi for logging")
+    }
+    testRuntimeOnly("org.ops4j.pax.logging:pax-logging-logback:2.2.8") {
+        because("It will actually be used in osgi for logging, basic slf4j+logback is hard to launch in osgi, see https://stackoverflow.com/a/77867804")
     }
     testRuntimeOnly("org.apache.aries.spifly:org.apache.aries.spifly.dynamic.framework.extension:1.3.7") {
         because("slf4j-api 2.0 requires osgi.serviceloader.processor, see https://stackoverflow.com/a/77867804")

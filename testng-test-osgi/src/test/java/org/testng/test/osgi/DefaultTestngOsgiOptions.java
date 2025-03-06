@@ -40,8 +40,7 @@ public class DefaultTestngOsgiOptions {
             .versionAsInProject(),
         systemProperty("logback.configurationFile")
             .value(System.getProperty("logback.configurationFile")),
-        mavenBundle("org.slf4j", "slf4j-api").versionAsInProject(),
-        mavenBundle("ch.qos.logback", "logback-core").versionAsInProject(),
-        mavenBundle("ch.qos.logback", "logback-classic").versionAsInProject());
+        mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+        mavenBundle("org.ops4j.pax.logging", "pax-logging-logback").versionAsInProject());
   }
 }
