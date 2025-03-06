@@ -20,7 +20,7 @@ matrix.addAxis({
   ]
 });
 
-const eaJava = '22';
+const eaJava = '24';
 matrix.addAxis({
   name: 'java_version',
   // Strings allow versions like 18-ea
@@ -70,8 +70,8 @@ matrix.addAxis({
 matrix.setNamePattern(['java_version', 'java_distribution', 'hash', 'os', 'tz', 'locale']);
 
 matrix.imply({java_version: eaJava}, {java_distribution: {value: 'oracle'}})
-// Oracle JDK is only supported for JDK 17 and later
-matrix.exclude({java_distribution: {value: 'oracle'}, java_version: ['11']});
+// Oracle JDK is only supported for JDK 21 and later
+matrix.imply({java_distribution: {value: 'oracle'}}, {java_version: v => v === eaJava || v >= 21});
 // Semeru uses OpenJ9 jit which has no option for making hash codes the same
 // See https://github.com/eclipse-openj9/openj9/issues/17309
 matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
