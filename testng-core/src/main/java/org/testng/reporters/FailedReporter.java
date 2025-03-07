@@ -44,7 +44,7 @@ public class FailedReporter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
   private XmlSuite m_xmlSuite;
-  private final Map<String, Map<String, String>> keyCache = new ConcurrentHashMap<>();
+  private final Map<String, Map<Object, MethodInvocationKey>> keyCache = new ConcurrentHashMap<>();
 
   public FailedReporter() {}
 
@@ -96,15 +96,12 @@ public class FailedReporter implements IReporter {
     keyCache.remove(ctx.getName());
   }
 
-  private static String key(ITestResult it) {
-    String prefix = it.getMethod().getQualifiedName() + it.getInstance().toString();
-    if (it.getParameters().length != 0) {
-      return prefix + Arrays.toString(it.getParameters());
-    }
-    return prefix + it.getMethod().getCurrentInvocationCount();
+  private static MethodInvocationKey key(ITestResult it) {
+    return new MethodInvocationKey(
+        it.getMethod(), it.getParameters(), it.getMethod().getCurrentInvocationCount());
   }
 
-  private static Map<String, String> buildMap(Set<ITestResult> passed) {
+  private static Map<Object, MethodInvocationKey> buildMap(Set<ITestResult> passed) {
     return passed
         .parallelStream()
         .map(FailedReporter::key)
@@ -114,7 +111,7 @@ public class FailedReporter implements IReporter {
 
   private boolean isFlakyTest(Set<ITestResult> passed, ITestResult result) {
     String ctxKey = result.getTestContext().getName();
-    String individualKey = key(result);
+    MethodInvocationKey individualKey = key(result);
     return keyCache.computeIfAbsent(ctxKey, k -> buildMap(passed)).containsKey(individualKey);
   }
 
