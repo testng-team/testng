@@ -50,6 +50,8 @@ tasks.mergedJar {
             "Bundle-License" to "Apache-2.0",
             "Bundle-Description" to project.description,
             "Bundle-Version" to project.version.toString().removeSuffix("-SNAPSHOT"),
+            //TestNG loads classes "by name" from configuration files, this allows to load such classes without need to know the exact package name
+            "DynamicImport-Package" to "*",
             "Import-Package" to """
                 com.beust.jcommander;version="1.83",
                 org.slf4j;version="2.0",
