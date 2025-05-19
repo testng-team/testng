@@ -2,6 +2,7 @@ package org.testng;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.*;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
@@ -600,6 +601,46 @@ public class AssertTest {
     actualSet.add(new Contrived(1));
     actualSet.add(new Contrived[] {new Contrived(2)});
     Assert.assertEqualsDeep(actualSet, expectedSet);
+  }
+
+  @Test(
+      description = "GITHUB-3227",
+      dataProvider = "3227-dp",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "list should not be equal")
+  public void testAssertEqualsNoOrderList(List<String> actual, List<String> expected) {
+    Assert.assertEqualsNoOrder(actual, expected, "list should not be equal");
+  }
+
+  @DataProvider(name = "3227-dp")
+  public Object[][] dataProvider() {
+    return new Object[][] {
+      {List.of("a", "b", "b"), List.of("a", "b", "c")},
+      {List.of("a", "b", "b"), List.of("a", "a", "b")},
+      {List.of("a", "a", "a", "a", "a", "a", "b"), List.of("a", "b", "b", "b", "b", "b", "b")}
+    };
+  }
+
+  @Test(
+      description = "GITHUB-3227",
+      dataProvider = "3227-dp",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "queue should not be equal")
+  public void testAssertEqualsNoOrderQueue(List<String> actualIn, List<String> expectedIn) {
+    var actual = new ArrayDeque<>(actualIn);
+    var expected = new ArrayDeque<>(expectedIn);
+    Assert.assertEqualsNoOrder(actual, expected, "queue should not be equal");
+  }
+
+  @Test(
+      description = "GITHUB-3227",
+      dataProvider = "3227-dp",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp = "iterator should not be equal")
+  public void testAssertEqualsNoOrderIterator(List<String> actualIn, List<String> expectedIn) {
+    var actual = actualIn.iterator();
+    var expected = expectedIn.iterator();
+    Assert.assertEqualsNoOrder(actual, expected, "iterator should not be equal");
   }
 
   static class Contrived {

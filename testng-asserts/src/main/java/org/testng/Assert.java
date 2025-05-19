@@ -1856,18 +1856,7 @@ public class Assert {
    */
   public static void assertEqualsNoOrder(
       Collection<?> actual, Collection<?> expected, String message) {
-    if (actual.size() != expected.size()) {
-      failAssertNoEqual(
-          "Collections do not have the same size: " + actual.size() + " != " + expected.size(),
-          message);
-    }
-
-    List<?> actualCollection = Lists.newArrayList(actual);
-    actualCollection.removeAll(expected);
-    if (!actualCollection.isEmpty()) {
-      failAssertNoEqual(
-          "Collections not equal: expected: " + expected + " and actual: " + actual, message);
-    }
+    validateEqualityNoOrder(actual, expected, "Collections", message);
   }
 
   /**
@@ -1879,26 +1868,25 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected, String message) {
-    List<?> actualCollection = Lists.newArrayList(actual);
-    List<?> expectedCollection = Lists.newArrayList(expected);
+    validateEqualityNoOrder(
+        Lists.newArrayList(actual), Lists.newArrayList(expected), "Iterators", message);
+  }
 
-    if (actualCollection.size() != expectedCollection.size()) {
+  private static void validateEqualityNoOrder(
+      Collection<?> actual, Collection<?> expected, String prefix, String message) {
+    if (actual.size() != expected.size()) {
       failAssertNoEqual(
-          "Iterators do not have the same size: "
-              + actualCollection.size()
-              + " != "
-              + expectedCollection.size(),
+          prefix + " do not have the same size: " + actual.size() + " != " + expected.size(),
           message);
     }
+    List<?> actualCollection = Lists.newArrayList(actual);
+    for (Object o : expected) {
+      actualCollection.remove(o);
+    }
 
-    actualCollection.removeAll(expectedCollection);
     if (!actualCollection.isEmpty()) {
       failAssertNoEqual(
-          "Iterators not equal: expected: "
-              + toString(expected)
-              + " and actual: "
-              + toString(actual),
-          message);
+          prefix + " not equal: expected: " + expected + " and actual: " + actual, message);
     }
   }
 
