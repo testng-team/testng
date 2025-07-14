@@ -24,7 +24,7 @@ public class RetryWithModifiedDataProviderParameterTest extends SimpleBaseTest {
   }
 
   public static class CustomType {
-    UUID id;
+    private UUID id;
 
     public void setId(UUID id) {
       this.id = id;

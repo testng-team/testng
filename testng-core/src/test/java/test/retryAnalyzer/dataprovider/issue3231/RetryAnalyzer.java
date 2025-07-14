@@ -1,9 +1,7 @@
 package test.retryAnalyzer.dataprovider.issue3231;
 
-import java.util.List;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
 public class RetryAnalyzer implements IRetryAnalyzer {
 
