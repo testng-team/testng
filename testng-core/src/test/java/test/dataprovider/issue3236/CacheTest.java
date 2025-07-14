@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 
 public class CacheTest {
 
-  public static final AtomicInteger invocationCount = new AtomicInteger(0);
+  private final AtomicInteger invocationCount = new AtomicInteger(0);
   private String currentUuid;
 
   @Test(dataProvider = "dp", retryAnalyzer = MyRetry.class)
