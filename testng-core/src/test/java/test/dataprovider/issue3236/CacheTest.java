@@ -26,7 +26,7 @@ public class CacheTest {
   public Object[][] getData() {
     invocationCount.incrementAndGet();
     currentUuid = UUID.randomUUID().toString();
-    return new Object[][]{{currentUuid}};
+    return new Object[][] {{currentUuid}};
   }
 
   public static class MyRetry implements IRetryAnalyzer {
