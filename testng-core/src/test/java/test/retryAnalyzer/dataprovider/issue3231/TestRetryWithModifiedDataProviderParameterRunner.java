@@ -1,11 +1,11 @@
 package test.retryAnalyzer.dataprovider.issue3231;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
-
-import static org.testng.Assert.assertEquals;
 
 public class TestRetryWithModifiedDataProviderParameterRunner extends SimpleBaseTest {
 

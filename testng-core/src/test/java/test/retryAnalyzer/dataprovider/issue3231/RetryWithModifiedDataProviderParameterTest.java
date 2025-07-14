@@ -1,13 +1,11 @@
 package test.retryAnalyzer.dataprovider.issue3231;
 
+import java.util.Objects;
+import java.util.UUID;
 import org.testng.Assert;
-import org.testng.TestListenerAdapter;
-import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
-import java.util.Objects;
-import java.util.UUID;
 
 public class RetryWithModifiedDataProviderParameterTest extends SimpleBaseTest {
 
@@ -19,8 +17,7 @@ public class RetryWithModifiedDataProviderParameterTest extends SimpleBaseTest {
 
   @DataProvider
   public CustomType[] dpNewObject() {
-    return new CustomType[]{
-        new CustomType()};
+    return new CustomType[] {new CustomType()};
   }
 
   public static class CustomType {
