@@ -717,7 +717,7 @@ public class DataProviderTest extends SimpleBaseTest {
     runTest(DataProviderWithoutListenerTestClassSample.class, true);
   }
 
-  @Test(description = "GITHUB-2819")
+  @Test(description = "GITHUB-3236")
   public void testDataProviderReturnsFreshDataWhenTestRetried() {
     TestNG testng = create(CacheTest.class);
     TestListenerAdapter tla = new TestListenerAdapter();
