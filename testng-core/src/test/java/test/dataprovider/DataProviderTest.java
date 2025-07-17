@@ -61,6 +61,7 @@ import test.dataprovider.issue3045.DataProviderTestClassSample;
 import test.dataprovider.issue3045.DataProviderWithoutListenerTestClassSample;
 import test.dataprovider.issue3081.NoOpMethodInterceptor;
 import test.dataprovider.issue3081.TestClassWithPrioritiesSample;
+import test.dataprovider.issue3236.CacheTest;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -714,6 +715,16 @@ public class DataProviderTest extends SimpleBaseTest {
   @Test(description = "GITHUB-3045")
   public void testIfDataProviderListenerInvokedOnlyOncePerDataProviderWhenListenerAddedViaSuite() {
     runTest(DataProviderWithoutListenerTestClassSample.class, true);
+  }
+
+  @Test(description = "GITHUB-2819")
+  public void testDataProviderReturnsFreshDataWhenTestRetried() {
+    TestNG testng = create(CacheTest.class);
+    TestListenerAdapter tla = new TestListenerAdapter();
+    testng.addListener(tla);
+    testng.run();
+    assertThat(tla.getFailedTests()).size().isEqualTo(0);
+    assertThat(tla.getSkippedTests()).size().isEqualTo(1);
   }
 
   private static void runTest(Class<?> clazz, boolean wireInListener) {
