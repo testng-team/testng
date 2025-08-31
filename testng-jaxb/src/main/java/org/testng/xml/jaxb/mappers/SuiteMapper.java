@@ -1,6 +1,5 @@
 package org.testng.xml.jaxb.mappers;
 
-import java.util.stream.Collectors;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.jaxb.Suite;
 
@@ -35,10 +34,7 @@ public class SuiteMapper {
 
     for (Object o : suite.getListenersOrPackagesOrTest()) {
       if (o instanceof org.testng.xml.jaxb.Listeners) {
-        xmlSuite.setListeners(
-            ListenersMapper.toXmlListeners((org.testng.xml.jaxb.Listeners) o).stream()
-                .map(l -> l.getClassName())
-                .collect(Collectors.toList()));
+        xmlSuite.setListeners(ListenersMapper.toXmlListeners((org.testng.xml.jaxb.Listeners) o));
       } else if (o instanceof org.testng.xml.jaxb.Packages) {
         xmlSuite.setPackages(PackagesMapper.toXmlPackages((org.testng.xml.jaxb.Packages) o));
       } else if (o instanceof org.testng.xml.jaxb.Test) {
@@ -54,9 +50,7 @@ public class SuiteMapper {
             MethodSelectorsMapper.toXmlMethodSelectors((org.testng.xml.jaxb.MethodSelectors) o));
       } else if (o instanceof org.testng.xml.jaxb.SuiteFiles) {
         xmlSuite.setSuiteFiles(
-            SuiteFilesMapper.toXmlSuiteFiles((org.testng.xml.jaxb.SuiteFiles) o).stream()
-                .map(sf -> sf.getPath())
-                .collect(Collectors.toList()));
+            SuiteFilesMapper.toXmlSuiteFiles((org.testng.xml.jaxb.SuiteFiles) o));
       }
     }
 

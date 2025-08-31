@@ -7,9 +7,9 @@ import org.testng.xml.jaxb.Packages;
 
 public class PackagesMapper {
 
-    public static List<XmlPackage> toXmlPackages(Packages packages) {
-        return packages.getPackage().stream()
-                .map(p -> new XmlPackage(p.getName()))
-                .collect(Collectors.toList());
-    }
+  public static List<XmlPackage> toXmlPackages(Packages packages) {
+    return packages.getPackage().stream()
+        .map(p -> new XmlPackage(p.getName()))
+        .collect(Collectors.toList());
+  }
 }
