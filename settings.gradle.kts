@@ -35,9 +35,7 @@ include(":testng-jaxb")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 for (project in rootProject.children) {
-    if (project.name != "testng-jaxb") {
-        project.apply {
-            buildFileName = "${project.name}-build.gradle.kts"
-        }
+    project.apply {
+        buildFileName = "${project.name}-build.gradle.kts"
     }
 }
