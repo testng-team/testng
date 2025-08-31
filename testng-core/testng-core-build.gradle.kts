@@ -28,6 +28,7 @@ tasks.withType<GroovyCompile>().configureEach {
 
 dependencies {
     api(projects.testngCoreApi)
+    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.2")
     // Annotations have to be available on the compile classpath for the proper compilation
     compileOnly("com.github.spotbugs:spotbugs:4.8.1")
     api("org.jcommander:jcommander:1.83")
