@@ -27,7 +27,7 @@ public class SampleCacheTestCase {
   @DataProvider(name = "dp", cacheDataForTestRetries = false)
   public Object[][] getData() {
     currentUuid = UUID.randomUUID().toString();
-    return new Object[][] {{ currentUuid }};
+    return new Object[][] {{currentUuid}};
   }
 
   public static class MyRetry implements IRetryAnalyzer {

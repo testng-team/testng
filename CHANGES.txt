@@ -1,5 +1,5 @@
 Current (7.12.0)
-Fixed: GITHUB-3236: DataProvider parameters are not refreshed on retry when cacheDataForTestRetries=false (Krishnan Mahadevan)
+Fixed: GITHUB-3236: DataProvider parameters are not refreshed on retry when cacheDataForTestRetries=false (Bartek Florczak)
 Fixed: GITHUB-3227: assertEqualsNoOrder false positive when collection has same size and actual Collection is subset of expected collection (Krishnan Mahadevan)
 Fixed: GITHUB-3177: Method org.testng.xml.XmlSuite#toXml do not save new properties like "share-thread-pool-for-data-providers" (Krishnan Mahadevan)
 Fixed: GITHUB-3179: ClassCastException when use shouldUseGlobalThreadPool(true) property (Krishnan Mahadevan)
