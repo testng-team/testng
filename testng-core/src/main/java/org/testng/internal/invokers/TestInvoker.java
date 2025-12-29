@@ -243,7 +243,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       boolean cacheData =
           Optional.ofNullable(arguments.getTestMethod().getDataProviderMethod())
               .map(IDataProviderMethod::cacheDataForTestRetries)
-              .orElse(false);
+              .orElse(true);
       Object[] parameterValues = arguments.getParameterValues();
       if (!cacheData) {
         Map<String, String> allParameters = Maps.newHashMap();
