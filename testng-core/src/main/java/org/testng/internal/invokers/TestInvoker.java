@@ -243,7 +243,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       boolean cacheData =
           Optional.ofNullable(arguments.getTestMethod().getDataProviderMethod())
               .map(IDataProviderMethod::cacheDataForTestRetries)
-              .orElse(false);
+              .orElse(true);
+      Object[] parameterValues = arguments.getParameterValues();
       if (!cacheData) {
         Map<String, String> allParameters = Maps.newHashMap();
         int verbose = testContext.getCurrentXmlTest().getVerbose();
@@ -257,8 +258,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         if (bag.hasErrors()) {
           continue;
         }
+        if (bag.parameterHolder != null) {
+          Iterator<Object[]> it = bag.parameterHolder.parameters;
+          int targetIndex = arguments.getParametersIndex();
+          for (int i = 0; it.hasNext(); i++) {
+            Object[] current = it.next();
+            if (i == targetIndex) {
+              parameterValues = current;
+              break;
+            }
+          }
+        }
       }
-      Object[] parameterValues = arguments.getParameterValues();
       TestMethodArguments tma =
           new TestMethodArguments.Builder()
               .usingArguments(arguments)
