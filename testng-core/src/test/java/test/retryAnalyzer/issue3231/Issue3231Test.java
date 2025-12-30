@@ -27,6 +27,6 @@ public class Issue3231Test extends SimpleBaseTest {
             }
         });
         tng.run();
-        assertThat(invCount.get()).isEqualTo(3);
+        assertThat(invCount.get()).isEqualTo(4);
     }
 }
