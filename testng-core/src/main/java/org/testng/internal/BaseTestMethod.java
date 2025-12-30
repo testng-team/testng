@@ -10,10 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.IClass;
@@ -843,13 +841,8 @@ public abstract class BaseTestMethod
         });
   }
 
-  private final Map<IObject.IdentifiableArrayObject, IObject.IdentifiableArrayObject> parameters =
-      new ConcurrentHashMap<>();
-
   private String parameterId(ITestResult itr) {
-    IObject.IdentifiableArrayObject parameter =
-        new IObject.IdentifiableArrayObject(itr.getParameters());
-    return parameters.computeIfAbsent(parameter, Function.identity()).getInstanceId();
+    return Integer.toString(itr.getParameterIndex());
   }
 
   private static boolean isNotParameterisedTest(ITestResult tr) {

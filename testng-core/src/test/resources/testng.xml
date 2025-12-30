@@ -735,6 +735,8 @@
       <class name="test.retryAnalyzer.dataprovider.RetryAnalyzerWithDataProviderTest" />
       <class name="test.retryAnalyzer.dataprovider.RetryAnalyzerWithComplexDataProviderTest" />
       <class name="test.retryAnalyzer.issue2148.IssueTest"/>
+      <class name="test.retryAnalyzer.issue3231.Issue3231Test" />
+      <class name="test.retryAnalyzer.issue3231.RetryLimitTest" />
     </classes>
   </test>
 
