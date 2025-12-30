@@ -20,7 +20,7 @@ matrix.addAxis({
   ]
 });
 
-const eaJava = '24';
+const eaJava = '25';
 matrix.addAxis({
   name: 'java_version',
   // Strings allow versions like 18-ea
