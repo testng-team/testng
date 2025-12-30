@@ -13,21 +13,22 @@ import test.retryAnalyzer.issue3231.samples.RetryLimitSample;
 
 public class RetryLimitTest extends SimpleBaseTest {
 
-    @Test
-    public void testEachRowHasItsOwnRetryLimit() {
-        AtomicInteger invCount = new AtomicInteger(0);
-        TestNG tng = create(RetryLimitSample.class);
-        tng.addListener(new IInvokedMethodListener() {
-            @Override
-            public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-                if (method.isTestMethod()) {
-                    invCount.incrementAndGet();
-                }
+  @Test
+  public void testEachRowHasItsOwnRetryLimit() {
+    AtomicInteger invCount = new AtomicInteger(0);
+    TestNG tng = create(RetryLimitSample.class);
+    tng.addListener(
+        new IInvokedMethodListener() {
+          @Override
+          public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+            if (method.isTestMethod()) {
+              invCount.incrementAndGet();
             }
+          }
         });
-        tng.run();
-        // Each row: 1 original + 1 retry = 2 attempts.
-        // 2 rows * 2 attempts = 4 total invocations.
-        assertThat(invCount.get()).isEqualTo(4);
-    }
+    tng.run();
+    // Each row: 1 original + 1 retry = 2 attempts.
+    // 2 rows * 2 attempts = 4 total invocations.
+    assertThat(invCount.get()).isEqualTo(4);
+  }
 }

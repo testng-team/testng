@@ -13,20 +13,21 @@ import test.retryAnalyzer.issue3231.samples.MutationSample;
 
 public class Issue3231Test extends SimpleBaseTest {
 
-    @Test
-    public void testMutationDoesNotCauseInfiniteRetryLoop() {
-        MutationSample.guardCounter.set(0);
-        AtomicInteger invCount = new AtomicInteger(0);
-        TestNG tng = create(MutationSample.class);
-        tng.addListener(new IInvokedMethodListener() {
-            @Override
-            public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-                if (method.isTestMethod()) {
-                    invCount.incrementAndGet();
-                }
+  @Test
+  public void testMutationDoesNotCauseInfiniteRetryLoop() {
+    MutationSample.guardCounter.set(0);
+    AtomicInteger invCount = new AtomicInteger(0);
+    TestNG tng = create(MutationSample.class);
+    tng.addListener(
+        new IInvokedMethodListener() {
+          @Override
+          public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+            if (method.isTestMethod()) {
+              invCount.incrementAndGet();
             }
+          }
         });
-        tng.run();
-        assertThat(invCount.get()).isEqualTo(4);
-    }
+    tng.run();
+    assertThat(invCount.get()).isEqualTo(4);
+  }
 }

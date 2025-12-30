@@ -115,9 +115,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   String id();
 
-  /**
-   * @return - The index of the parameter row when a @DataProvider is being used.
-   */
+  /** @return - The index of the parameter row when a @DataProvider is being used. */
   default int getParameterIndex() {
     return 0;
   }

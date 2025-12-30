@@ -8,25 +8,23 @@ import org.testng.annotations.Test;
 
 public class RetryLimitSample {
 
-    public static class MyRetry implements IRetryAnalyzer {
-        private int count = 0;
-        @Override
-        public boolean retry(ITestResult result) {
-            count++;
-            return count < 2; // Retry once (total 2 attempts)
-        }
-    }
+  public static class MyRetry implements IRetryAnalyzer {
+    private int count = 0;
 
-    @DataProvider(name = "dp")
-    public Object[][] dp() {
-        return new Object[][] {
-            { "a" },
-            { "a" }
-        };
+    @Override
+    public boolean retry(ITestResult result) {
+      count++;
+      return count < 2; // Retry once (total 2 attempts)
     }
+  }
 
-    @Test(dataProvider = "dp", retryAnalyzer = MyRetry.class)
-    public void test(String s) {
-        Assert.fail("fail");
-    }
+  @DataProvider(name = "dp")
+  public Object[][] dp() {
+    return new Object[][] {{"a"}, {"a"}};
+  }
+
+  @Test(dataProvider = "dp", retryAnalyzer = MyRetry.class)
+  public void test(String s) {
+    Assert.fail("fail");
+  }
 }
