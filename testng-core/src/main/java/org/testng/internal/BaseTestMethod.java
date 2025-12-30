@@ -841,7 +841,7 @@ public abstract class BaseTestMethod
         });
   }
 
-  private String parameterId(ITestResult itr) {
+  private static String parameterId(ITestResult itr) {
     return Integer.toString(itr.getParameterIndex());
   }
 
