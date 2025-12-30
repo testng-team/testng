@@ -354,22 +354,56 @@ public class TestResult implements ITestResult {
     m_name = name;
   }
 
+  /**
+   * Set the index of the parameterized invocation associated with this test result.
+   *
+   * @param parameterIndex the zero-based index identifying which parameter set produced this result
+   */
   public void setParameterIndex(int parameterIndex) {
     this.parameterIndex = parameterIndex;
   }
 
+  /**
+   * Index of the parameter set used for this test in parameterized runs.
+   *
+   * @return the parameter set index for this test
+   */
+  @Override
   public int getParameterIndex() {
     return parameterIndex;
   }
 
+  /**
+   * Indicates whether the test represented by this result was retried.
+   *
+   * @return true if the test was retried, false otherwise.
+   */
+  @Override
   public boolean wasRetried() {
     return m_wasRetried;
   }
 
+  /**
+   * Sets whether this test result was retried.
+   *
+   * @param wasRetried `true` if the test was retried, `false` otherwise
+   */
+  @Override
   public void setWasRetried(boolean wasRetried) {
     this.m_wasRetried = wasRetried;
   }
 
+  /**
+   * Identify test methods that caused this test to be skipped.
+   *
+   * <p>Analyzes configuration failures, group dependencies, and method dependencies within the test
+   * context to determine the upstream methods responsible for this test being skipped. The result
+   * of the analysis is cached and subsequent calls return the same unmodifiable list.
+   *
+   * @return a possibly-empty, unmodifiable {@code List<ITestNGMethod>} of methods that caused this
+   *     test to be skipped
+   */
+  @Override
   public List<ITestNGMethod> getSkipCausedBy() {
     if (this.m_status != SKIP || skipAnalysed) {
       return Collections.unmodifiableList(skippedDueTo);
@@ -433,6 +467,18 @@ public class TestResult implements ITestResult {
     return Collections.unmodifiableList(skippedDueTo);
   }
 
+  /**
+   * Determines whether the given test method matches any upstream specification,
+   * either by exact qualified/simple name or by regular-expression match.
+   *
+   * @param upstreamMethods a list of upstream method specifications; each entry
+   *                        may be an exact qualified name, an exact simple
+   *                        method name, or a regular expression
+   * @param method          the test method to check against the specifications
+   * @return                 `true` if the method's qualified name or simple name
+   *                         matches any specification (exact or regex), `false`
+   *                         otherwise
+   */
   private static boolean matches(List<String> upstreamMethods, ITestNGMethod method) {
     if (upstreamMethods.contains(method.getQualifiedName())
         || upstreamMethods.contains(method.getMethodName())) {
@@ -446,6 +492,12 @@ public class TestResult implements ITestResult {
                     || each.matcher(method.getMethodName()).matches());
   }
 
+  /**
+   * Retrieve the unique identifier of this TestResult.
+   *
+   * @return the UUID string identifying this TestResult instance
+   */
+  @Override
   public String id() {
     return id;
   }

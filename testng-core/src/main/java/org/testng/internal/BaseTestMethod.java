@@ -10,10 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.IClass;
@@ -824,6 +822,18 @@ public abstract class BaseTestMethod
     return invocationTime;
   }
 
+  /**
+   * Selects or creates the appropriate retry analyzer for the given test result, taking method
+   * parameterization into account.
+   *
+   * For non-parameterized tests, returns a single analyzer instance reused across invocations.
+   * For parameterized tests, returns a distinct analyzer instance for each parameter index (cached
+   * per method name and parameter index). If retrying is disabled, returns `null`.
+   *
+   * @param tr the test result whose context and parameters determine which analyzer to use
+   * @return `null` if retrying is disabled; otherwise the `IRetryAnalyzer` instance to use for the
+   *         provided test result
+   */
   private IRetryAnalyzer getRetryAnalyzerConsideringMethodParameters(ITestResult tr) {
     if (this.m_retryAnalyzerClass.equals(DisabledRetryAnalyzer.class)) {
       return null;
@@ -843,15 +853,22 @@ public abstract class BaseTestMethod
         });
   }
 
-  private final Map<IObject.IdentifiableArrayObject, IObject.IdentifiableArrayObject> parameters =
-      new ConcurrentHashMap<>();
-
+  /**
+   * Create an identifier for the test invocation based on its parameter index.
+   *
+   * @param itr the test result containing the parameter index
+   * @return the parameter index as a decimal string
+   */
   private String parameterId(ITestResult itr) {
-    IObject.IdentifiableArrayObject parameter =
-        new IObject.IdentifiableArrayObject(itr.getParameters());
-    return parameters.computeIfAbsent(parameter, Function.identity()).getInstanceId();
+    return Integer.toString(itr.getParameterIndex());
   }
 
+  /**
+   * Determines whether the given test result represents a non-parameterized test.
+   *
+   * @param tr the test result to inspect
+   * @return `true` if the test result has no parameters, `false` otherwise
+   */
   private static boolean isNotParameterisedTest(ITestResult tr) {
     return Optional.ofNullable(tr.getParameters()).orElse(new Object[0]).length == 0;
   }

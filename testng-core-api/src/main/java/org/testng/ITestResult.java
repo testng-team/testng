@@ -110,10 +110,20 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   }
 
   /**
-   * @return - A unique id for the current JVM that represents a unique way of identifying a
-   *     specific test method's result.
-   */
+ * Produce a unique identifier for this test result within the current JVM.
+ *
+ * @return a string that uniquely identifies this test result in the current JVM
+ */
   String id();
+
+  /**
+   * The zero-based index of the data-provider row used for this test invocation.
+   *
+   * @return the zero-based index of the data-provider row; 0 if no data-provider index is available
+   */
+  default int getParameterIndex() {
+    return 0;
+  }
 
   /**
    * @return - <code>true</code> if the current test result is either {@link ITestResult#STARTED} or
