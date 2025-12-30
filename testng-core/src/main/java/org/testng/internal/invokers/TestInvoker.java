@@ -259,16 +259,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           continue;
         }
         if (bag.parameterHolder != null) {
-          Iterator<Object[]> iterator = bag.parameterHolder.parameters;
-          int idx = 0;
+          Iterator<Object[]> it = bag.parameterHolder.parameters;
           int targetIndex = arguments.getParametersIndex();
-          while (iterator.hasNext()) {
-            Object[] tmp = iterator.next();
-            if (idx == targetIndex) {
-              parameterValues = tmp;
+          for (int i = 0; it.hasNext(); i++) {
+            Object[] current = it.next();
+            if (i == targetIndex) {
+              parameterValues = current;
               break;
             }
-            idx++;
           }
         }
       }
