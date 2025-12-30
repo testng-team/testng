@@ -1,6 +1,7 @@
 package test.retryAnalyzer.issue3231.samples;
 
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.Assert;
 import org.testng.IRetryAnalyzer;
@@ -10,47 +11,50 @@ import org.testng.annotations.Test;
 
 public class MutationSample {
 
-    public static class MutableObject {
-        private int id;
-        public MutableObject(int id) { this.id = id; }
-        public void setId(int id) { this.id = id; }
+    public static class Custom {
+        private UUID id;
+        public Custom(UUID id) { this.id = id; }
+        public UUID getId() { return id; }
+        public void setId(UUID id) { this.id = id; }
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            MutableObject that = (MutableObject) o;
-            return id == that.id;
+            Custom custom = (Custom) o;
+            return Objects.equals(id, custom.id);
         }
         @Override
         public int hashCode() { return Objects.hash(id); }
-        @Override
-        public String toString() { return "MutableObject{id=" + id + "}"; }
     }
 
     public static class MyRetry implements IRetryAnalyzer {
-        private int count = 0;
+        private int retryCount = 0;
+        private int maxRetryCount = 3;
         @Override
         public boolean retry(ITestResult result) {
-            count++;
-            return count < 3; // Should retry max 2 times (total 3 attempts)
+            if (retryCount < maxRetryCount) {
+                retryCount++;
+                return true;
+            }
+            return false;
         }
     }
 
     public static final AtomicInteger guardCounter = new AtomicInteger(0);
 
-    @DataProvider(name = "dp")
-    public Object[][] dp() {
+    @DataProvider(name = "dpCustomObject")
+    public Object[][] dpCustomObject() {
         return new Object[][] {
-            { new MutableObject(1) }
+            { new Custom(UUID.randomUUID()) }
         };
     }
 
-    @Test(dataProvider = "dp", retryAnalyzer = MyRetry.class)
-    public void test(MutableObject obj) {
+    @Test(dataProvider = "dpCustomObject", retryAnalyzer = MyRetry.class)
+    public void willNotStopAfter3FailuresCustom(Custom newObject) {
         if (guardCounter.incrementAndGet() > 100) {
             return; 
         }
-        obj.setId(obj.id + 1); // Mutate!
-        Assert.fail("fail");
+        newObject.setId(UUID.randomUUID()); // Mutate!
+        Assert.fail();
     }
 }
