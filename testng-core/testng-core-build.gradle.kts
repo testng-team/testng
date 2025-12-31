@@ -41,7 +41,9 @@ dependencies {
     implementation(projects.testngRunnerApi)
     implementation("org.webjars:jquery:3.7.1")
     testImplementation(projects.testngAsserts)
-    testImplementation("org.codehaus.groovy:groovy-all:3.0.13") {
+    // Groovy 4.x is required to support Java 21 bytecode (class file major version 65)
+    // Groovy 3.x doesn't support reading Java 21 bytecode
+    testImplementation("org.apache.groovy:groovy-all:4.0.29") {
         exclude("org.testng", "testng")
     }
     testImplementation("org.apache-extras.beanshell:bsh:2.0b6")
@@ -59,9 +61,8 @@ tasks.compileTestGroovy {
     dependsOn(tasks.compileTestKotlin)
     classpath += files(tasks.compileTestKotlin)
 }
-tasks.compileTestKotlin {
-    classpath = sourceSets.test.get().compileClasspath
-}
+// Note: In Kotlin 2.3.0+, the classpath property on KotlinCompile task has been removed.
+// The classpath is now automatically managed through source sets, so no manual configuration is needed.
 
 tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
