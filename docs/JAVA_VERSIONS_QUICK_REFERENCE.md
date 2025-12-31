@@ -4,7 +4,7 @@ This is a quick reference guide for understanding how TestNG uses different Java
 
 ## TL;DR
 
-- **You need Java 17+ installed** to run any Gradle command
+- **You need Java 21 installed** to run any Gradle command
 - **TestNG artifacts target Java 11** (they work on Java 11+)
 - **Tests can run on Java 11, 17, 21, or 24** to verify compatibility
 
@@ -16,15 +16,15 @@ TestNG's build uses **three different Java versions** for different purposes:
 ┌─────────────────────────────────────────────────────────┐
 │                    Your Machine                         │
 │                                                         │
-│  Java 17 (default) ──────────────┐                      │
+│  Java 21 (default) ──────────────┐                      │
 │  Java 11 (installed)             │                      │
 │                                  │                      │
 │  ┌───────────────────────────────▼─────────────────-─┐  │
-│  │ Gradle Process (runs with Java 17)                │  │
+│  │ Gradle Process (runs with Java 21)                │  │
 │  │                                                   │  │
 │  │  ┌───────────────────────────────────────────--─┐ │  │
 │  │  │ Compile Task                                 │ │  │
-│  │  │ • Uses: Java 17 toolchain                    │ │  │
+│  │  │ • Uses: Java 21 toolchain                    │ │  │
 │  │  │ • Produces: Java 11 bytecode                 │ │  │
 │  │  └──────────────────────────────────────────--──┘ │  │
 │  │                                                   │  │
@@ -38,41 +38,41 @@ TestNG's build uses **three different Java versions** for different purposes:
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 1. Gradle Runtime (Java 17+)
+### 1. Gradle Runtime (Java 21)
 
 **What:** The Java version that runs Gradle itself
 
-**Why Java 17+:** The `com.gradleup.nmcp` plugin (for Maven Central publishing) requires Java 17+
+**Why Java 21:** The `com.gradleup.nmcp` plugin requires Java 17+, and we use Java 21 (latest LTS) for modern tooling
 
 **How to check:**
 
 ```bash
 java -version
-# Should show Java 17 or higher
+# Should show Java 21 or higher
 ```
 
 **How to set:**
 
 ```bash
 # Using SDKMAN
-sdk use java 17.0.14-tem
+sdk use java 21.0.5-tem
 
 # Using jenv
-jenv local 17
+jenv local 21
 
 # Or set JAVA_HOME
-export JAVA_HOME=/path/to/java-17
+export JAVA_HOME=/path/to/java-21
 ```
 
-### 2. Build Toolchain (Java 17)
+### 2. Build Toolchain (Java 21)
 
 **What:** The Java version used to compile TestNG code
 
-**Configured by:** `-PjdkBuildVersion=17` (default: 17)
+**Configured by:** `-PjdkBuildVersion=21` (default: 21)
 
-**Why Java 17:** Modern Java features and tooling
+**Why Java 21:** Latest LTS version with modern Java features and tooling
 
-**Note:** Even though we compile with Java 17, we use `--release=11` flag to ensure the bytecode is Java 11 compatible
+**Note:** Even though we compile with Java 21, we use `--release=11` flag to ensure the bytecode is Java 11 compatible
 
 ### 3. Target Bytecode (Java 11)
 
@@ -110,27 +110,27 @@ export JAVA_HOME=/path/to/java-17
 
 ### Scenario 1: Local Development
 
-**You have:** Java 17 installed
+**You have:** Java 21 installed
 
 **You run:** `./gradlew build`
 
 **What happens:**
 
-- ✅ Gradle runs with Java 17
-- ✅ Code compiles with Java 17 toolchain
+- ✅ Gradle runs with Java 21
+- ✅ Code compiles with Java 21 toolchain
 - ✅ Bytecode targets Java 11
-- ✅ Tests run with Java 17 (default)
+- ✅ Tests run with Java 21 (default)
 
 ### Scenario 2: Testing Java 11 Compatibility
 
-**You have:** Java 17 and Java 11 installed
+**You have:** Java 21 and Java 11 installed
 
 **You run:** `./gradlew test -PjdkTestVersion=11`
 
 **What happens:**
 
-- ✅ Gradle runs with Java 17
-- ✅ Code compiles with Java 17 toolchain
+- ✅ Gradle runs with Java 21
+- ✅ Code compiles with Java 21 toolchain
 - ✅ Bytecode targets Java 11
 - ✅ Tests run with Java 11 (via toolchain)
 
@@ -138,12 +138,12 @@ export JAVA_HOME=/path/to/java-17
 
 **GitHub Actions has:** Java 11, 17, 21, 24 installed
 
-**Workflow runs:** `./gradlew build -PjdkBuildVersion=17 -PjdkTestVersion=11`
+**Workflow runs:** `./gradlew build -PjdkBuildVersion=21 -PjdkTestVersion=11`
 
 **What happens:**
 
-- ✅ Gradle runs with Java 17 (default, listed last in setup-java)
-- ✅ Code compiles with Java 17 toolchain
+- ✅ Gradle runs with Java 21 (default, listed last in setup-java)
+- ✅ Code compiles with Java 21 toolchain
 - ✅ Bytecode targets Java 11
 - ✅ Tests run with Java 11 (via toolchain)
 
@@ -153,19 +153,19 @@ export JAVA_HOME=/path/to/java-17
 
 ### Q: Why can't I use Java 11 to run Gradle?
 
-**A:** The `com.gradleup.nmcp.aggregation` plugin (for Maven Central publishing) requires Java 17+. This plugin is applied in the root `build.gradle.kts`, so it's loaded for every Gradle command, not just publishing.
+**A:** The `com.gradleup.nmcp.aggregation` plugin (for Maven Central publishing) requires Java 17+. We use Java 21 (latest LTS) for modern tooling. This plugin is applied in the root `build.gradle.kts`, so it's loaded for every Gradle command, not just publishing.
 
-### Q: If we compile with Java 17, how are the artifacts Java 11 compatible?
+### Q: If we compile with Java 21, how are the artifacts Java 11 compatible?
 
-**A:** We use the `--release=11` flag, which tells the Java 17 compiler to:
+**A:** We use the `--release=11` flag, which tells the Java 21 compiler to:
 
-1. Only allow Java 11 APIs (compilation error if you use Java 17+ APIs)
+1. Only allow Java 11 APIs (compilation error if you use Java 21+ APIs)
 2. Generate Java 11 bytecode
 3. Use Java 11 standard library signatures
 
 This is better than the old `-source 11 -target 11` approach.
 
-### Q: How does Gradle run tests with Java 11 when Gradle itself runs with Java 17?
+### Q: How does Gradle run tests with Java 11 when Gradle itself runs with Java 21?
 
 **A:** Gradle uses **toolchains**. When you set `-PjdkTestVersion=11`, Gradle:
 
@@ -189,14 +189,14 @@ Then run:
 
 Gradle will automatically download Java 11 and use it for tests.
 
-### Q: Do I need to install Java 17 if I only want to run TestNG in my project?
+### Q: Do I need to install Java 21 if I only want to run TestNG in my project?
 
 **A:** No! This is only for **building** TestNG itself. If you're just **using** TestNG in your project, you only need Java 11+ (whatever version your project uses).
 
 ## Quick Command Reference
 
 ```bash
-# Build with default settings (Java 17 for build, Java 17 for tests)
+# Build with default settings (Java 21 for build, Java 21 for tests)
 ./gradlew build
 
 # Build and test with Java 11
@@ -219,8 +219,8 @@ Gradle will automatically download Java 11 and use it for tests.
 │ Java Version Usage in TestNG Build                           │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
-│  Gradle Runtime:     Java 17+  (required by nmcp plugin)     │
-│  Build Toolchain:    Java 17   (modern compilation)          │
+│  Gradle Runtime:     Java 21   (latest LTS)                  │
+│  Build Toolchain:    Java 21   (modern compilation)          │
 │  Target Bytecode:    Java 11   (compatibility)               │
 │  Test Runtime:       Java 11+  (configurable via parameter)  │
 │                                                              │

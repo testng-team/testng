@@ -1,4 +1,6 @@
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.signing
+import org.gradle.kotlin.dsl.the
 
 plugins {
     signing
@@ -23,5 +25,14 @@ plugins.withId("signing") {
         val signingEnabled = providers.gradleProperty("signing.pgp.enabled").orElse("AUTO")
         val isRelease = providers.gradleProperty("release").map { it.toBoolean() }.orElse(false)
         isRequired = signingEnabled.get() == "AUTO" && isRelease.get()
+    }
+}
+
+// Sign all publications when maven-publish plugin is applied
+plugins.withId("maven-publish") {
+    configure<SigningExtension> {
+        afterEvaluate {
+            sign(the<PublishingExtension>().publications)
+        }
     }
 }
