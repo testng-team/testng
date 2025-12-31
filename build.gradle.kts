@@ -1,11 +1,11 @@
 plugins {
     id("testng.repositories")
-    id("com.github.vlsi.stage-vote-release") version "1.90"
     id("idea")
+    id("com.gradleup.nmcp.aggregation") version "1.0.2"
 }
 
 val String.v: String get() = rootProject.extra["$this.version"] as String
-val buildVersion = "testng".v + releaseParams.snapshotSuffix
+val buildVersion = "testng".v
 version = buildVersion
 
 println("Building testng $buildVersion")
@@ -16,47 +16,35 @@ tasks.register("parameters") {
     dependsOn(gradle.includedBuild("build-logic").task(":build-parameters:parameters"))
 }
 
+// Configure Maven Central Portal publishing
+nmcpAggregation {
+    centralPortal {
+        username.set(providers.environmentVariable("CENTRAL_PORTAL_USERNAME"))
+        password.set(providers.environmentVariable("CENTRAL_PORTAL_PASSWORD"))
+        publishingType.set(providers.gradleProperty("centralPortal.publishingType").orElse("AUTOMATIC"))
+    }
+    // Publish all projects that apply the 'maven-publish' plugin
+    publishAllProjectsProbablyBreakingProjectIsolation()
+}
+
 /**
  * Release procedure:
- *   1. ./gradlew prepareVote -Prc=1 -Pgh    (builds artifacts, stages them to Central, closes staging repository)
- *   2. ./gradlew publishDist -Prc=1 -Pgh    (publishes staging repository and pushes release tag)
+ *   Publishing to Maven Central is now done via the Central Portal API using the com.gradleup.nmcp plugin.
  *
- * See https://github.com/vlsi/vlsi-release-plugins#stage-vote-release-plugin
- * The following properties (e.g. $HOME/.gradle/gradle.properties) configure credentials.
- * The plugin would raise a warning if the property is not found.
- *   signing.gnupg.keyName=...
- *   signing.password=...
- *   signing.secretKeyRingFile=...
- *   ghNexusUsername=...
- *   ghNexusPassword=...
- *   ghGitSourceUsername=...
- *   ghGitSourcePassword=...
+ *   For releases:
+ *     Use the GitHub Actions workflow: .github/workflows/publish-maven-central.yml
+ *     This will build, sign, and publish artifacts to Maven Central Portal.
  *
- * You can use https://github.com/vlsi/asflike-release-environment as a playground to dry run releases.
+ *   For snapshots:
+ *     Snapshots are automatically published on push to master via .github/workflows/publish-snapshot.yml
+ *
+ *   Manual publishing (if needed):
+ *     ./gradlew publishAggregationToCentralPortal -Prelease=true
+ *
+ *   Required environment variables for publishing:
+ *     CENTRAL_PORTAL_USERNAME - Your Sonatype account username
+ *     CENTRAL_PORTAL_PASSWORD - Your Sonatype account password
+ *     SIGNING_PGP_PRIVATE_KEY - PGP private key for signing artifacts
+ *     SIGNING_PGP_PASSPHRASE  - Passphrase for the PGP private key
  */
-
-fun property(name: String) =
-    providers.gradleProperty(name)
-
-releaseParams {
-    tlp.set(property("github.repository"))
-    organizationName.set(property("github.organization"))
-    componentName.set(property("project.name"))
-    prefixForProperties.set("gh")
-    svnDistEnabled.set(false)
-    sitePreviewEnabled.set(false)
-    releaseTag.set(buildVersion) // or "testng-$buildVersion"
-    nexus {
-        packageGroup.set(property("nexus.profile"))
-        mavenCentral()
-    }
-    voteText.set {
-        """
-        ${it.componentName} v${it.version}-rc${it.rc} is ready for preview.
-
-        Git SHA: ${it.gitSha}
-        Staging repository: ${it.nexusRepositoryUri}
-        """.trimIndent()
-    }
-}
 
