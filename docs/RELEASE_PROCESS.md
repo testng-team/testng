@@ -89,14 +89,16 @@ You need:
 
 ### Required Secrets (Already Configured)
 
-The following secrets must be configured in GitHub repository settings:
+The following secrets must be configured in GitHub repository settings. The GitHub Actions workflows automatically map these secrets to the environment variables required by the build:
 
-| Secret Name | Description | Where to Get |
-|-------------|-------------|--------------|
-| `NEXUS_USERNAME` | Central Portal username/token | https://central.sonatype.com/ → Generate User Token |
-| `NEXUS_PASSWORD` | Central Portal password/token | https://central.sonatype.com/ → Generate User Token |
-| `GPG_PRIVATE_KEY` | PGP private key for signing | Your PGP keyring |
-| `GPG_PASSPHRASE` | PGP key passphrase | Your PGP key passphrase |
+| GitHub Secret Name | Maps to Environment Variable | Description | Where to Get |
+|-------------------|------------------------------|-------------|--------------|
+| `NEXUS_USERNAME` | `CENTRAL_PORTAL_USERNAME` | Central Portal username/token | https://central.sonatype.com/ → Generate User Token |
+| `NEXUS_PASSWORD` | `CENTRAL_PORTAL_PASSWORD` | Central Portal password/token | https://central.sonatype.com/ → Generate User Token |
+| `GPG_PRIVATE_KEY` | `SIGNING_PGP_PRIVATE_KEY` | PGP private key for signing | Your PGP keyring |
+| `GPG_PASSPHRASE` | `SIGNING_PGP_PASSPHRASE` | PGP key passphrase | Your PGP key passphrase |
+
+**Note**: When publishing manually (outside of GitHub Actions), you must export the environment variable names shown in the second column (e.g., `CENTRAL_PORTAL_USERNAME`, not `NEXUS_USERNAME`).
 
 ## Release Workflow
 
@@ -121,7 +123,7 @@ This is the simplest approach - artifacts are automatically published to Maven C
 The workflow will:
 
 1. ✅ **Validate Gradle wrapper** (security check)
-2. ✅ **Set up JDK 17** (required for building and nmcp plugin)
+2. ✅ **Set up JDK 21** (required for building and nmcp plugin)
 3. ✅ **Build all artifacts** (testng.jar, sources, javadoc)
 4. ✅ **Sign artifacts** with PGP key
 5. ✅ **Upload to Central Portal**
@@ -181,7 +183,7 @@ This approach uploads artifacts to Central Portal but waits for you to manually 
 The workflow will:
 
 1. ✅ **Validate Gradle wrapper** (security check)
-2. ✅ **Set up JDK 17** (required for building and nmcp plugin)
+2. ✅ **Set up JDK 21** (required for building and nmcp plugin)
 3. ✅ **Build all artifacts** (testng.jar, sources, javadoc)
 4. ✅ **Sign artifacts** with PGP key
 5. ✅ **Upload to Central Portal**
@@ -258,7 +260,7 @@ Snapshots are automatically published to Maven Central Snapshots repository when
 <!-- Maven -->
 <repository>
     <id>central-snapshots</id>
-    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+    <url>https://central.sonatype.com/repository/maven-snapshots/</url>
 </repository>
 
 <dependency>
@@ -272,7 +274,7 @@ Snapshots are automatically published to Maven Central Snapshots repository when
 // Gradle
 repositories {
     maven {
-        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        url = uri("https://central.sonatype.com/repository/maven-snapshots/")
     }
 }
 
@@ -280,6 +282,8 @@ dependencies {
     testImplementation("org.testng:testng:7.10.0-SNAPSHOT")
 }
 ```
+
+**Note**: As of June 30, 2025, the old OSSRH snapshot repository (`s01.oss.sonatype.org`) was shut down. Use the new Central Portal snapshot URL shown above.
 
 ### Manual Snapshot Publishing
 
@@ -292,12 +296,14 @@ If you need to manually publish a snapshot:
   --stacktrace
 ```
 
-**Required environment variables**:
+**Required environment variables** (see the [Required Secrets](#required-secrets-already-configured) table):
 
 ```bash
 export CENTRAL_PORTAL_USERNAME="your-token-username"
 export CENTRAL_PORTAL_PASSWORD="your-token-password"
 ```
+
+**Note**: Use the environment variable names (`CENTRAL_PORTAL_*`), not the GitHub secret names (`NEXUS_*`).
 
 ---
 
@@ -409,9 +415,9 @@ If there are documentation changes:
 
 **Problem**: The nmcp plugin requires Java 17 or higher.
 
-**Solution**: The workflow already uses JDK 17. If you see this error, check:
+**Solution**: The workflow already uses JDK 21. If you see this error, check:
 
-- The workflow file uses `java-version: 17`
+- The workflow file uses `java-version: 21`
 - The setup-java step completed successfully
 
 ### Workflow Fails: "Authentication failed"
@@ -618,6 +624,8 @@ Developer                    GitHub Actions              Central Portal         
 
 ### Common Commands
 
+**Note**: All publishing commands require environment variables to be set. See [Required Secrets](#required-secrets-already-configured) for details.
+
 ```bash
 # Publish release (automatic)
 ./gradlew publishAggregationToCentralPortal \
@@ -630,11 +638,19 @@ Developer                    GitHub Actions              Central Portal         
   -PcentralPortal.publishingType=USER_MANAGED
 
 # Publish snapshot
-./gradlew publishAllPublicationsToCentralSnapshotsRepository \
+./gradlew publishAggregationToCentralPortalSnapshots \
   -Prelease=false
 
 # Build without publishing
 ./gradlew build -Prelease=true
+```
+
+**Required environment variables for publishing**:
+```bash
+export CENTRAL_PORTAL_USERNAME="your-token-username"
+export CENTRAL_PORTAL_PASSWORD="your-token-password"
+export SIGNING_PGP_PRIVATE_KEY="your-pgp-private-key"
+export SIGNING_PGP_PASSPHRASE="your-pgp-passphrase"
 ```
 
 ### Important URLs

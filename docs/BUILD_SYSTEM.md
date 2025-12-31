@@ -204,7 +204,7 @@ TestNG uses the new **Maven Central Portal API** (replacing the legacy OSSRH sys
 │ Root Project (build.gradle.kts)                          │
 │                                                          │
 │  plugins {                                               │
-│      id("com.gradleup.nmcp.aggregation") version "1.0.2" │
+│      id("com.gradleup.nmcp.aggregation") version "1.0.3" │
 │  }                                                       │
 │                                                          │
 │  nmcpAggregation {                                       │
