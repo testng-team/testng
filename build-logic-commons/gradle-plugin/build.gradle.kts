@@ -15,8 +15,8 @@ dependencies {
 }
 
 // We need to figure out a version that is supported by the current JVM, and by the Kotlin Gradle plugin
-// So we settle on 17 or 11 if the current JVM supports it
-listOf(17, 11)
+// We use Java 21 (our build JDK) or fall back to 11 (our target compatibility) if running on an older JVM
+listOf(21, 11)
     .firstOrNull { JavaVersion.toVersion(it) <= JavaVersion.current() }
     ?.let { buildScriptJvmTarget ->
         java {

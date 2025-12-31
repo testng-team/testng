@@ -2,6 +2,7 @@ plugins {
     `maven-publish`
     id("testng.local-maven-repo")
     id("testng.signing")
+    id("build-logic.build-params")
 }
 
 // It takes value from root project always: https://github.com/gradle/gradle/issues/13302
@@ -45,6 +46,28 @@ publishing {
                 scm {
                     connection.set(scmUrl.map { "scm:git:$it" })
                     url.set(scmUrl)
+                }
+            }
+        }
+    }
+}
+
+// Configure Maven Central Portal publishing via nmcp plugin
+// The nmcp plugin is applied in the root build.gradle.kts and configured there
+// Individual projects just need to have publications configured via maven-publish plugin
+// For snapshot versions, configure Central Snapshots repository
+// Note: As of June 30, 2025, OSSRH (s01.oss.sonatype.org) was shut down.
+// The new Central Portal snapshot URL is: https://central.sonatype.com/repository/maven-snapshots/
+val isRelease = providers.gradleProperty("release").map { it.toBoolean() }.orElse(false)
+if (!isRelease.get()) {
+    publishing {
+        repositories {
+            maven {
+                name = "centralSnapshots"
+                url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+                credentials {
+                    username = providers.environmentVariable("CENTRAL_PORTAL_USERNAME").orNull
+                    password = providers.environmentVariable("CENTRAL_PORTAL_PASSWORD").orNull
                 }
             }
         }
