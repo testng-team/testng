@@ -36,6 +36,25 @@ This pull request will be a perfect start to find the fix :)
 
 # Working with the codebase
 
+### JDK Requirements
+
+**Important:** TestNG requires **JDK 17 or higher** to build, but the compiled artifacts target **Java 11**.
+
+- **For users**: TestNG can run on Java 11 or higher
+- **For contributors**: You need JDK 17 or higher installed to build TestNG
+
+This is because:
+1. The Gradle build toolchain uses JDK 17 (`jdkBuildVersion=17`)
+2. The publishing plugins (nmcp) require Java 17+
+3. The compiled bytecode targets Java 11 (`targetJavaVersion=11`)
+
+To check your Java version, run:
+```bash
+java -version
+```
+
+If you need to install JDK 17, we recommend using [SDKMAN!](https://sdkman.io/) or downloading from [Adoptium](https://adoptium.net/).
+
 ### List all tasks
 
 After cloning the project, run `./gradlew tasks` to list out all the tasks that are available.

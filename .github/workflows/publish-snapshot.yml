@@ -1,26 +1,41 @@
 name: Publish Snapshot
 
-# Trigger this workflow whenever code is pushed to "master" branch.defaults:
-# We would like to publish to maven central for both snapshot and release versions.
+# Automatically publish snapshot versions to Maven Central Snapshots repository
+# whenever code is pushed to the master branch
 on:
   push:
     branches: [ master ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  publish-snapshot:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
     - name: Gradle wrapper validation
       uses: gradle/actions/wrapper-validation@v3
 
-    - name: Publish to GitHub
+    # JDK 17 is required for:
+    # 1. Building TestNG (jdkBuildVersion=17 in build-parameters)
+    # 2. Running the nmcp plugin (requires Java 17+)
+    # Note: TestNG artifacts still target Java 11 (targetJavaVersion=11)
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: 17
+
+    - name: Publish Snapshot to Central
+      env:
+        CENTRAL_PORTAL_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+        CENTRAL_PORTAL_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
-        ./gradlew -PghNexusUsername=${{ secrets.NEXUS_USERNAME }} -PghNexusPassword=${{ secrets.NEXUS_PASSWORD }} -Pgh publish
+        ./gradlew publishAllPublicationsToCentralSnapshotsRepository \
+          -Prelease=false \
+          --no-daemon \
+          --stacktrace
+
+    - name: Display completion message
+      run: |
+        echo "✅ Snapshot published to Maven Central Snapshots repository"
+        echo "Snapshots are available at: https://central.sonatype.com/artifact/org.testng/testng"

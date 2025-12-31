@@ -53,4 +53,24 @@ buildParameters {
         defaultValue.set(false)
         description.set("Skip Error Prone verifications")
     }
+    bool("release") {
+        defaultValue.set(false)
+        description.set("Create a release version (without -SNAPSHOT suffix)")
+    }
+    group("centralPortal") {
+        enumeration("publishingType") {
+            defaultValue.set("AUTOMATIC")
+            values.addAll("AUTOMATIC", "USER_MANAGED")
+            description.set("Publishing type for Central Portal: AUTOMATIC (auto-release) or USER_MANAGED (manual release from portal)")
+        }
+    }
+    group("signing") {
+        group("pgp") {
+            enumeration("enabled") {
+                defaultValue.set("AUTO")
+                values.addAll("AUTO", "OFF")
+                description.set("Configures whether PGP signing should be enabled. AUTO enables signing for release versions, OFF disables signing")
+            }
+        }
+    }
 }

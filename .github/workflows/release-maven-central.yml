@@ -1,51 +1,38 @@
-# This is a basic workflow to help you get started with Actions
+# DEPRECATED: This workflow is no longer needed with the new Central Portal publishing.
+# The publish-maven-central.yml workflow now handles both staging and releasing in one step.
+#
+# If you used USER_MANAGED publishing type, you can manually release from:
+# https://central.sonatype.com/publishing
+#
+# This file is kept for reference but should not be used.
 
-name: Release TestNG to Maven Central
+name: Release TestNG to Maven Central (DEPRECATED)
 
-# Trigger this workflow whenever code is pushed to "master" branch.defaults:
-# We would like to publish to maven central for both snapshot and release versions.
 on:
   workflow_dispatch:
     inputs:
-      release_candidate:
-        description: The release candidate number that was already published
-        required: true
-        default: '1'
-      staging_repository_id:
-        description: The staging repository ID obtained from workflow run logs of "publish-maven-central.yml" for e.g., (orgtestng-1082)
-        required: true
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+      deployment_id:
+        description: 'The deployment ID from Central Portal (if using USER_MANAGED publishing)'
+        required: false
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  deprecated-notice:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Gradle wrapper validation
-      uses: gradle/actions/wrapper-validation@v3
-
-    - name: Create Nexus.txt with staging repository details
+    - name: Show deprecation notice
       run: |
-         mkdir -p build/stagingRepositories
-         echo -n ${{ github.event.inputs.staging_repository_id }} > build/stagingRepositories/nexus.txt
-
-    # FIXME Check https://github.com/allure-framework/allure2/blob/430255d8cf5c236ed29bc0df0b72dcd9389c3df9/.github/workflows/release.yaml
-    - name: Publish Release Candidate
-      env:
-        ORG_GRADLE_PROJECT_ghGitSourceUsername: ${{ github.actor }}
-        ORG_GRADLE_PROJECT_ghGitSourcePassword: ${{ secrets.GITHUB_TOKEN }}
-        ORG_GRADLE_PROJECT_ghNexusUsername: ${{ secrets.NEXUS_USERNAME }}
-        ORG_GRADLE_PROJECT_ghNexusPassword: ${{ secrets.NEXUS_PASSWORD }}
-        ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.GPG_KEY_ID }}
-        ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
-        ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_PASSPHRASE }}
-        ORG_GRADLE_PROJECT_rc: ${{ github.event.inputs.release_candidate }}
-      run: |
-        ./gradlew -PghDryRun publishDist
+        echo "⚠️  This workflow is DEPRECATED."
+        echo ""
+        echo "With the new Central Portal API, releases are handled differently:"
+        echo ""
+        echo "Option 1 (Recommended): Use AUTOMATIC publishing"
+        echo "  - Run 'publish-maven-central.yml' with publishing_type=AUTOMATIC"
+        echo "  - Artifacts are automatically published to Maven Central"
+        echo ""
+        echo "Option 2: Use USER_MANAGED publishing"
+        echo "  - Run 'publish-maven-central.yml' with publishing_type=USER_MANAGED"
+        echo "  - Go to https://central.sonatype.com/publishing"
+        echo "  - Review and manually publish your deployment"
+        echo ""
+        echo "This two-step workflow (stage then release) is no longer necessary."
+        exit 1
