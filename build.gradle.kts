@@ -1,11 +1,13 @@
 plugins {
     id("testng.repositories")
     id("idea")
-    id("com.gradleup.nmcp.aggregation") version "1.0.2"
+    id("com.gradleup.nmcp.aggregation") version "1.4.1"
 }
 
 val String.v: String get() = rootProject.extra["$this.version"] as String
-val buildVersion = "testng".v
+val baseVersion = "testng".v
+val isRelease = providers.gradleProperty("release").map { it.toBoolean() }.orElse(false).get()
+val buildVersion = if (isRelease) baseVersion else "$baseVersion-SNAPSHOT"
 version = buildVersion
 
 println("Building testng $buildVersion")

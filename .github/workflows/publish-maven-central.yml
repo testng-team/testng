@@ -29,15 +29,15 @@ jobs:
     - name: Gradle wrapper validation
       uses: gradle/actions/wrapper-validation@v3
 
-    # JDK 17 is required for:
-    # 1. Building TestNG (jdkBuildVersion=17 in build-parameters)
+    # JDK 21 is used for:
+    # 1. Building TestNG (jdkBuildVersion=21 in build-parameters)
     # 2. Running the nmcp plugin (requires Java 17+)
     # Note: TestNG artifacts still target Java 11 (targetJavaVersion=11)
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: 17
+        java-version: 21
 
     - name: Publish to Central Portal
       env:

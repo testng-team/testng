@@ -62,7 +62,7 @@ if (!isRelease.get()) {
         repositories {
             maven {
                 name = "centralSnapshots"
-                url = uri("https://central.sonatype.com/repository/maven-snapshots")
+                url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
                 credentials {
                     username = providers.environmentVariable("CENTRAL_PORTAL_USERNAME").orNull
                     password = providers.environmentVariable("CENTRAL_PORTAL_PASSWORD").orNull

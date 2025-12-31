@@ -53,13 +53,13 @@ jobs:
         with:
           website: ${{ matrix.oracle_java_website }}
           release: ${{ matrix.java_version }}
-      - name: Set up Java 17 and ${{ matrix.non_ea_java_version }}, ${{ matrix.java_distribution }}
+      - name: Set up Java 21 and ${{ matrix.non_ea_java_version }}, ${{ matrix.java_distribution }}
         uses: actions/setup-java@v4
         with:
-          # The latest one will be the default, so we use Java 17 for launching Gradle
+          # The latest one will be the default, so we use Java 21 for launching Gradle
           java-version: |
             ${{ matrix.non_ea_java_version }}
-            17
+            21
           distribution: ${{ matrix.java_distribution }}
           architecture: x64
       - name: Steps to reproduce

@@ -34,7 +34,7 @@ This pull request will be a perfect start to find the fix :)
   If your pull request involves fixing SonarQube issues then we would suggest that you please discuss this with the 
   [TestNG-dev](https://groups.google.com/forum/#!forum/testng-dev) before you spend time working on it.
 
-# Working with the codebase
+## Working with the codebase
 
 ### JDK Requirements
 

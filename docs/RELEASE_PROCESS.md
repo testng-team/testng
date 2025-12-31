@@ -114,7 +114,7 @@ This is the simplest approach - artifacts are automatically published to Maven C
    - **Branch**: `master` (or your release branch)
    - **Publishing type**: `AUTOMATIC`
 
-5.Click **"Run workflow"**
+5.Click **"Run workflow"**.
 
 #### Step 2: Monitor Progress
 
@@ -258,7 +258,7 @@ Snapshots are automatically published to Maven Central Snapshots repository when
 <!-- Maven -->
 <repository>
     <id>central-snapshots</id>
-    <url>https://central.sonatype.com/repository/maven-snapshots</url>
+    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
 </repository>
 
 <dependency>
@@ -272,7 +272,7 @@ Snapshots are automatically published to Maven Central Snapshots repository when
 // Gradle
 repositories {
     maven {
-        url = uri("https://central.sonatype.com/repository/maven-snapshots")
+        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
