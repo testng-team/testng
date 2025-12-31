@@ -358,18 +358,22 @@ public class TestResult implements ITestResult {
     this.parameterIndex = parameterIndex;
   }
 
+  @Override
   public int getParameterIndex() {
     return parameterIndex;
   }
 
+  @Override
   public boolean wasRetried() {
     return m_wasRetried;
   }
 
+  @Override
   public void setWasRetried(boolean wasRetried) {
     this.m_wasRetried = wasRetried;
   }
 
+  @Override
   public List<ITestNGMethod> getSkipCausedBy() {
     if (this.m_status != SKIP || skipAnalysed) {
       return Collections.unmodifiableList(skippedDueTo);
@@ -446,6 +450,7 @@ public class TestResult implements ITestResult {
                     || each.matcher(method.getMethodName()).matches());
   }
 
+  @Override
   public String id() {
     return id;
   }

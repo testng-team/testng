@@ -115,6 +115,11 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   String id();
 
+  /** @return - The index of the parameter row when a @DataProvider is being used. */
+  default int getParameterIndex() {
+    return -1;
+  }
+
   /**
    * @return - <code>true</code> if the current test result is either {@link ITestResult#STARTED} or
    *     {@link ITestResult#CREATED}
