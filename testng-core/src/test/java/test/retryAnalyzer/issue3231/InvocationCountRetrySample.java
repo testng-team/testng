@@ -19,9 +19,7 @@ public class InvocationCountRetrySample {
 
   public static final AtomicInteger invocationCount = new AtomicInteger(0);
 
-  @Test(
-      invocationCount = 2,
-      retryAnalyzer = MyRetry.class)
+  @Test(invocationCount = 2, retryAnalyzer = MyRetry.class)
   public void test() {
     invocationCount.incrementAndGet();
     Assert.fail("fail");

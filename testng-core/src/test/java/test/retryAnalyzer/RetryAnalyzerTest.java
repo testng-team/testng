@@ -8,9 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.testng.Assert;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -40,12 +43,9 @@ import test.retryAnalyzer.issue1946.TestclassSample2;
 import test.retryAnalyzer.issue2684.SampleTestClassWithGroupConfigs;
 import test.retryAnalyzer.issue2798.HashCodeAwareRetryAnalyzer;
 import test.retryAnalyzer.issue2798.TestClassSample;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
+import test.retryAnalyzer.issue3231.InvocationCountRetrySample;
 import test.retryAnalyzer.issue3231.MutationSample;
 import test.retryAnalyzer.issue3231.RetryLimitSample;
-import test.retryAnalyzer.issue3231.InvocationCountRetrySample;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
 
