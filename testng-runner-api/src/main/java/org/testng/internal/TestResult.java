@@ -36,7 +36,7 @@ public class TestResult implements ITestResult {
   private Object[] m_parameters = {};
   private String m_instanceName;
   private ITestContext m_context;
-  private int parameterIndex;
+  private int m_parameterIndex = -1;
   private boolean m_wasRetried;
   private final IAttributes m_attributes = new Attributes();
   private final String id = UUID.randomUUID().toString();
@@ -355,12 +355,15 @@ public class TestResult implements ITestResult {
   }
 
   public void setParameterIndex(int parameterIndex) {
-    this.parameterIndex = parameterIndex;
+    if (this.m_parameterIndex != -1 && this.m_parameterIndex != parameterIndex) {
+      throw new IllegalStateException("parameterIndex is already set to " + this.m_parameterIndex);
+    }
+    this.m_parameterIndex = parameterIndex;
   }
 
   @Override
   public int getParameterIndex() {
-    return parameterIndex;
+    return m_parameterIndex;
   }
 
   @Override
