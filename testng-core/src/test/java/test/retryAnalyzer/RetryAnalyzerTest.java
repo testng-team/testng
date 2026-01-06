@@ -43,8 +43,8 @@ import test.retryAnalyzer.issue2798.TestClassSample;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
-import test.retryAnalyzer.issue3231.samples.MutationSample;
-import test.retryAnalyzer.issue3231.samples.RetryLimitSample;
+import test.retryAnalyzer.issue3231.MutationSample;
+import test.retryAnalyzer.issue3231.RetryLimitSample;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
 
