@@ -45,8 +45,18 @@ import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import test.retryAnalyzer.issue3231.MutationSample;
 import test.retryAnalyzer.issue3231.RetryLimitSample;
+import test.retryAnalyzer.issue3231.InvocationCountRetrySample;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
+
+  @Test
+  public void testRetryWithInvocationCount() {
+    InvocationCountRetrySample.invocationCount.set(0);
+    TestNG tng = create(InvocationCountRetrySample.class);
+    tng.run();
+    // 2 invocations * 2 attempts each = 4 total calls
+    assertThat(InvocationCountRetrySample.invocationCount.get()).isEqualTo(4);
+  }
 
   @Test(description = "GITHUB-3231")
   public void testMutationDoesNotCauseInfiniteRetryLoop() {
