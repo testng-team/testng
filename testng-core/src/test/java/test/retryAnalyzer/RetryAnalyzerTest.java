@@ -40,8 +40,50 @@ import test.retryAnalyzer.issue1946.TestclassSample2;
 import test.retryAnalyzer.issue2684.SampleTestClassWithGroupConfigs;
 import test.retryAnalyzer.issue2798.HashCodeAwareRetryAnalyzer;
 import test.retryAnalyzer.issue2798.TestClassSample;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.testng.IInvokedMethod;
+import org.testng.IInvokedMethodListener;
+import test.retryAnalyzer.issue3231.samples.MutationSample;
+import test.retryAnalyzer.issue3231.samples.RetryLimitSample;
 
 public class RetryAnalyzerTest extends SimpleBaseTest {
+
+  @Test(description = "GITHUB-3231")
+  public void testMutationDoesNotCauseInfiniteRetryLoop() {
+    MutationSample.guardCounter.set(0);
+    AtomicInteger invCount = new AtomicInteger(0);
+    TestNG tng = create(MutationSample.class);
+    tng.addListener(
+        new IInvokedMethodListener() {
+          @Override
+          public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+            if (method.isTestMethod()) {
+              invCount.incrementAndGet();
+            }
+          }
+        });
+    tng.run();
+    assertThat(invCount.get()).isEqualTo(4);
+  }
+
+  @Test(description = "GITHUB-3231")
+  public void testEachRowHasItsOwnRetryLimit() {
+    AtomicInteger invCount = new AtomicInteger(0);
+    TestNG tng = create(RetryLimitSample.class);
+    tng.addListener(
+        new IInvokedMethodListener() {
+          @Override
+          public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
+            if (method.isTestMethod()) {
+              invCount.incrementAndGet();
+            }
+          }
+        });
+    tng.run();
+    // Each row: 1 original + 1 retry = 2 attempts.
+    // 2 rows * 2 attempts = 4 total invocations.
+    assertThat(invCount.get()).isEqualTo(4);
+  }
 
   @Test(description = "GITHUB-2798")
   public void ensureNoDuplicateRetryAnalyzerInstancesAreCreated() {
