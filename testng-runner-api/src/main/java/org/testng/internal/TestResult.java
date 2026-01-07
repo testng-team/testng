@@ -49,6 +49,13 @@ public class TestResult implements ITestResult {
     return new TestResult();
   }
 
+  public static TestResult newTestResult(Object[] parameters, int index) {
+    TestResult result = newEmptyTestResult();
+    result.setParameters(parameters);
+    result.initParameterIndex(index);
+    return result;
+  }
+
   public static TestResult newTestResultFor(ITestNGMethod method) {
     return newContextAwareTestResult(method, null);
   }
@@ -78,10 +85,9 @@ public class TestResult implements ITestResult {
 
   public static TestResult newTestResultFrom(
       TestResult result, ITestNGMethod method, ITestContext ctx, long start) {
-    TestResult testResult = newEmptyTestResult();
+    TestResult testResult =
+        TestResult.newTestResult(result.getParameters(), result.getParameterIndex());
     testResult.setHost(result.getHost());
-    testResult.setParameters(result.getParameters());
-    testResult.setParameterIndex(result.getParameterIndex());
     testResult.init(method, ctx, null, start, 0L);
     TestResult.copyAttributes(result, testResult);
     return testResult;
@@ -354,12 +360,11 @@ public class TestResult implements ITestResult {
     m_name = name;
   }
 
-  public void setParameterIndex(int parameterIndex) {
-    if (this.m_parameterIndex != -1 && this.m_parameterIndex != parameterIndex) {
-      throw new IllegalStateException("parameterIndex is already set to " + this.m_parameterIndex);
-    }
-    this.m_parameterIndex = parameterIndex;
+  private void initParameterIndex(int index) {
+    this.m_parameterIndex = index;
   }
+
+  public void setParameterIndex(int parameterIndex) {}
 
   @Override
   public int getParameterIndex() {

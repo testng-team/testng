@@ -1,6 +1,5 @@
 package org.testng.internal;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -112,38 +111,6 @@ public interface IObject {
     @Override
     public int hashCode() {
       return Objects.hash(instanceId);
-    }
-  }
-
-  /**
-   * A wrapper class that wraps around an array and associates a unique Id that can be used as a key
-   * for the array.
-   */
-  class IdentifiableArrayObject {
-
-    private final String instanceId = UUID.randomUUID().toString();
-
-    private final Object[] parameters;
-
-    public IdentifiableArrayObject(Object[] parameters) {
-      this.parameters = parameters;
-    }
-
-    public String getInstanceId() {
-      return instanceId;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-      if (this == object) return true;
-      if (object == null || getClass() != object.getClass()) return false;
-      IdentifiableArrayObject that = (IdentifiableArrayObject) object;
-      return Arrays.equals(parameters, that.parameters);
-    }
-
-    @Override
-    public int hashCode() {
-      return Arrays.hashCode(parameters);
     }
   }
 }

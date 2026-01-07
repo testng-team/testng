@@ -592,9 +592,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   // pass both paramValues and paramIndex to be thread safe in case parallel=true + dataprovider.
   private ITestResult invokeMethod(
       TestMethodArguments arguments, XmlSuite suite, FailureContext failureContext) {
-    TestResult testResult = TestResult.newEmptyTestResult();
-    testResult.setParameters(arguments.getParameterValues());
-    testResult.setParameterIndex(arguments.getParametersIndex());
+    TestResult testResult =
+        TestResult.newTestResult(arguments.getParameterValues(), arguments.getParametersIndex());
     testResult.setHost(m_testContext.getHost());
 
     GroupConfigMethodArguments cfgArgs =

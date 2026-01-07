@@ -22,6 +22,10 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   int SUCCESS_PERCENTAGE_FAILURE = 4;
   int STARTED = 16;
 
+  default int getParameterIndex() {
+    return -1;
+  }
+
   /** @return The status of this result, using one of the constants above. */
   int getStatus();
 
@@ -115,14 +119,9 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   String id();
 
-  /** @return - The index of the parameter row when a @DataProvider is being used. */
-  default int getParameterIndex() {
-    return -1;
-  }
-
   /**
    * @return - <code>true</code> if the current test result is either {@link ITestResult#STARTED} or
-   *     {@link ITestResult#CREATED}
+   *     * {@link ITestResult#CREATED}
    */
   default boolean isNotRunning() {
     return getStatus() == STARTED || getStatus() == CREATED;
