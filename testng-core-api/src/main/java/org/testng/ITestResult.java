@@ -121,7 +121,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   /**
    * @return - <code>true</code> if the current test result is either {@link ITestResult#STARTED} or
-   *     * {@link ITestResult#CREATED}
+   *     {@link ITestResult#CREATED}
    */
   default boolean isNotRunning() {
     return getStatus() == STARTED || getStatus() == CREATED;
