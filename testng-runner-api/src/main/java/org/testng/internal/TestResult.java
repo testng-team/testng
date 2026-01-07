@@ -364,6 +364,8 @@ public class TestResult implements ITestResult {
     this.m_parameterIndex = index;
   }
 
+  /** @deprecated This method is a no-op and will be removed in a future release. */
+  @Deprecated
   public void setParameterIndex(int parameterIndex) {}
 
   @Override
