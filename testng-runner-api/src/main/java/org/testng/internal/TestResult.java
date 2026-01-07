@@ -365,7 +365,7 @@ public class TestResult implements ITestResult {
   }
 
   /** @deprecated This method is a no-op and will be removed in a future release. */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   public void setParameterIndex(int parameterIndex) {}
 
   @Override
@@ -399,15 +399,15 @@ public class TestResult implements ITestResult {
       }
       if (belongToSameGroup(skippedConfig)) {
         // If its @BeforeGroups then there's a chance that there could be more than one
-        // method. So lets add everything.
+        // method. So let's add everything.
         skippedDueTo.add(skippedConfig.getMethod());
       }
     }
     if (!skippedDueTo.isEmpty()) {
-      // If we found atleast one skipped due to reason, then its time to return back.
+      // If we found at least one skipped due to reason, then it's time to return back.
       return Collections.unmodifiableList(skippedDueTo);
     }
-    // Looks like we didnt have any configuration failures. So some upstream method perhaps failed.
+    // Looks like we didn't have any configuration failures. So some upstream method perhaps failed.
     if (m_method.getMethodsDependedUpon().length == 0) {
       // Maybe group dependencies exist ?
       if (m_method.getGroupsDependedUpon().length == 0) {
@@ -424,9 +424,9 @@ public class TestResult implements ITestResult {
               .filter(
                   method -> {
                     List<String> currentMethodGroups = Arrays.asList(method.getGroups());
-                    List<String> interection =
+                    List<String> intersection =
                         Lists.intersection(upstreamGroups, currentMethodGroups);
-                    return !interection.isEmpty();
+                    return !intersection.isEmpty();
                   })
               .collect(Collectors.toList());
 
@@ -435,12 +435,12 @@ public class TestResult implements ITestResult {
     List<String> upstreamMethods = Arrays.asList(m_method.getMethodsDependedUpon());
 
     // So we have dependsOnMethod failures
-    List<ITestResult> allfailures =
+    List<ITestResult> allFailures =
         Lists.merge(
             m_context.getFailedTests().getAllResults(),
             m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
     skippedDueTo =
-        allfailures.stream()
+        allFailures.stream()
             .map(ITestResult::getMethod)
             .filter(method -> matches(upstreamMethods, method))
             .collect(Collectors.toList());
@@ -486,13 +486,13 @@ public class TestResult implements ITestResult {
     if (!m.isBeforeGroupsConfiguration()) {
       return false;
     }
-    String[] mygroups = this.m_method.getGroups();
-    if (mygroups.length == 0 || m.getGroups().length == 0) {
+    String[] myGroups = this.m_method.getGroups();
+    if (myGroups.length == 0 || m.getGroups().length == 0) {
       return false;
     }
 
     List<String> cfgMethodGroups = Arrays.asList(m.getGroups());
-    return Arrays.stream(mygroups).anyMatch(cfgMethodGroups::contains);
+    return Arrays.stream(myGroups).anyMatch(cfgMethodGroups::contains);
   }
 
   public static void copyAttributes(ITestResult source, ITestResult target) {
