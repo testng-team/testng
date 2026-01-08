@@ -36,7 +36,7 @@ public class TestResult implements ITestResult {
   private Object[] m_parameters = {};
   private String m_instanceName;
   private ITestContext m_context;
-  private int parameterIndex;
+  private int m_parameterIndex = -1;
   private boolean m_wasRetried;
   private final IAttributes m_attributes = new Attributes();
   private final String id = UUID.randomUUID().toString();
@@ -47,6 +47,13 @@ public class TestResult implements ITestResult {
 
   public static TestResult newEmptyTestResult() {
     return new TestResult();
+  }
+
+  public static TestResult newTestResult(Object[] parameters, int index) {
+    TestResult result = newEmptyTestResult();
+    result.setParameters(parameters);
+    result.initParameterIndex(index);
+    return result;
   }
 
   public static TestResult newTestResultFor(ITestNGMethod method) {
@@ -78,10 +85,9 @@ public class TestResult implements ITestResult {
 
   public static TestResult newTestResultFrom(
       TestResult result, ITestNGMethod method, ITestContext ctx, long start) {
-    TestResult testResult = newEmptyTestResult();
+    TestResult testResult =
+        TestResult.newTestResult(result.getParameters(), result.getParameterIndex());
     testResult.setHost(result.getHost());
-    testResult.setParameters(result.getParameters());
-    testResult.setParameterIndex(result.getParameterIndex());
     testResult.init(method, ctx, null, start, 0L);
     TestResult.copyAttributes(result, testResult);
     return testResult;
@@ -354,22 +360,30 @@ public class TestResult implements ITestResult {
     m_name = name;
   }
 
-  public void setParameterIndex(int parameterIndex) {
-    this.parameterIndex = parameterIndex;
+  private void initParameterIndex(int index) {
+    this.m_parameterIndex = index;
   }
 
+  /** @deprecated This method is a no-op and will be removed in a future release. */
+  @Deprecated(forRemoval = true)
+  public void setParameterIndex(int parameterIndex) {}
+
+  @Override
   public int getParameterIndex() {
-    return parameterIndex;
+    return m_parameterIndex;
   }
 
+  @Override
   public boolean wasRetried() {
     return m_wasRetried;
   }
 
+  @Override
   public void setWasRetried(boolean wasRetried) {
     this.m_wasRetried = wasRetried;
   }
 
+  @Override
   public List<ITestNGMethod> getSkipCausedBy() {
     if (this.m_status != SKIP || skipAnalysed) {
       return Collections.unmodifiableList(skippedDueTo);
@@ -385,15 +399,15 @@ public class TestResult implements ITestResult {
       }
       if (belongToSameGroup(skippedConfig)) {
         // If its @BeforeGroups then there's a chance that there could be more than one
-        // method. So lets add everything.
+        // method. So let's add everything.
         skippedDueTo.add(skippedConfig.getMethod());
       }
     }
     if (!skippedDueTo.isEmpty()) {
-      // If we found atleast one skipped due to reason, then its time to return back.
+      // If we found at least one skipped due to reason, then it's time to return back.
       return Collections.unmodifiableList(skippedDueTo);
     }
-    // Looks like we didnt have any configuration failures. So some upstream method perhaps failed.
+    // Looks like we didn't have any configuration failures. So some upstream method perhaps failed.
     if (m_method.getMethodsDependedUpon().length == 0) {
       // Maybe group dependencies exist ?
       if (m_method.getGroupsDependedUpon().length == 0) {
@@ -410,9 +424,9 @@ public class TestResult implements ITestResult {
               .filter(
                   method -> {
                     List<String> currentMethodGroups = Arrays.asList(method.getGroups());
-                    List<String> interection =
+                    List<String> intersection =
                         Lists.intersection(upstreamGroups, currentMethodGroups);
-                    return !interection.isEmpty();
+                    return !intersection.isEmpty();
                   })
               .collect(Collectors.toList());
 
@@ -421,12 +435,12 @@ public class TestResult implements ITestResult {
     List<String> upstreamMethods = Arrays.asList(m_method.getMethodsDependedUpon());
 
     // So we have dependsOnMethod failures
-    List<ITestResult> allfailures =
+    List<ITestResult> allFailures =
         Lists.merge(
             m_context.getFailedTests().getAllResults(),
             m_context.getFailedButWithinSuccessPercentageTests().getAllResults());
     skippedDueTo =
-        allfailures.stream()
+        allFailures.stream()
             .map(ITestResult::getMethod)
             .filter(method -> matches(upstreamMethods, method))
             .collect(Collectors.toList());
@@ -446,6 +460,7 @@ public class TestResult implements ITestResult {
                     || each.matcher(method.getMethodName()).matches());
   }
 
+  @Override
   public String id() {
     return id;
   }
@@ -471,13 +486,13 @@ public class TestResult implements ITestResult {
     if (!m.isBeforeGroupsConfiguration()) {
       return false;
     }
-    String[] mygroups = this.m_method.getGroups();
-    if (mygroups.length == 0 || m.getGroups().length == 0) {
+    String[] myGroups = this.m_method.getGroups();
+    if (myGroups.length == 0 || m.getGroups().length == 0) {
       return false;
     }
 
     List<String> cfgMethodGroups = Arrays.asList(m.getGroups());
-    return Arrays.stream(mygroups).anyMatch(cfgMethodGroups::contains);
+    return Arrays.stream(myGroups).anyMatch(cfgMethodGroups::contains);
   }
 
   public static void copyAttributes(ITestResult source, ITestResult target) {

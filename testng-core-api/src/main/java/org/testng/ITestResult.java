@@ -22,6 +22,10 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   int SUCCESS_PERCENTAGE_FAILURE = 4;
   int STARTED = 16;
 
+  default int getParameterIndex() {
+    return -1;
+  }
+
   /** @return The status of this result, using one of the constants above. */
   int getStatus();
 
