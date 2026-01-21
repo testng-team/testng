@@ -5,6 +5,12 @@
 
 Documentation available at [TestNG's main web site](https://testng.org). Visit [TestNG Documentation's GitHub Repo](https://github.com/testng-team/testng-team.github.io) to contribute to it.
 
+### Requirements
+
+**TestNG requires Java 11 or higher** to run. The library is compiled to target Java 11 bytecode, ensuring compatibility with Java 11+.
+
+> **Note for contributors:** Building TestNG from source requires JDK 21 or higher. See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for details.
+
 ### Release Notes
 * [7.11.0](https://groups.google.com/g/testng-users/c/2z_tdavjZbA)
 * [7.10.0](https://groups.google.com/g/testng-users/c/6DmFaKUjIxY)

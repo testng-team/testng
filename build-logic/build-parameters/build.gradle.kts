@@ -18,7 +18,7 @@ buildParameters {
         description.set("Java version for source and target compatibility")
     }
     integer("jdkBuildVersion") {
-        defaultValue.set(17)
+        defaultValue.set(21)
         mandatory.set(true)
         description.set("JDK version to use for building JMeter. If the value is 0, then the current Java is used. (see https://docs.gradle.org/8.0/userguide/toolchains.html#sec:consuming)")
     }
@@ -52,5 +52,25 @@ buildParameters {
     bool("skipErrorProne") {
         defaultValue.set(false)
         description.set("Skip Error Prone verifications")
+    }
+    bool("release") {
+        defaultValue.set(false)
+        description.set("Create a release version (without -SNAPSHOT suffix)")
+    }
+    group("centralPortal") {
+        enumeration("publishingType") {
+            defaultValue.set("AUTOMATIC")
+            values.addAll("AUTOMATIC", "USER_MANAGED")
+            description.set("Publishing type for Central Portal: AUTOMATIC (auto-release) or USER_MANAGED (manual release from portal)")
+        }
+    }
+    group("signing") {
+        group("pgp") {
+            enumeration("enabled") {
+                defaultValue.set("AUTO")
+                values.addAll("AUTO", "OFF")
+                description.set("Configures whether PGP signing should be enabled. AUTO enables signing for release versions, OFF disables signing")
+            }
+        }
     }
 }

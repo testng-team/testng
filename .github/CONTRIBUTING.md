@@ -34,7 +34,26 @@ This pull request will be a perfect start to find the fix :)
   If your pull request involves fixing SonarQube issues then we would suggest that you please discuss this with the 
   [TestNG-dev](https://groups.google.com/forum/#!forum/testng-dev) before you spend time working on it.
 
-# Working with the codebase
+## Working with the codebase
+
+### JDK Requirements
+
+**Important:** TestNG requires **JDK 21 or higher** to build, but the compiled artifacts target **Java 11**.
+
+- **For users**: TestNG can run on Java 11 or higher
+- **For contributors**: You need JDK 21 or higher installed to build TestNG
+
+This is because:
+1. The Gradle build toolchain uses JDK 21 (`jdkBuildVersion=21`)
+2. The publishing plugins (nmcp) require Java 17+
+3. The compiled bytecode targets Java 11 (`targetJavaVersion=11`)
+
+To check your Java version, run:
+```bash
+java -version
+```
+
+If you need to install JDK 21, we recommend using [SDKMAN!](https://sdkman.io/) or downloading from [Adoptium](https://adoptium.net/).
 
 ### List all tasks
 
