@@ -57,7 +57,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           # Install multiple Java versions:
-          # - Test version (11, 17, 21, or 24/25): Used to run TestNG tests
+          # - Test version (11, 17, 21, 25, or 26): Used to run TestNG tests
           # - Java 21: Default for running Gradle, building TestNG, and compiling build-logic (the last one in the list becomes default)
           java-version: |
             ${{ matrix.non_ea_java_version }}

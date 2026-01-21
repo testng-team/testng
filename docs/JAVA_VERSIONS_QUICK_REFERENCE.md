@@ -6,7 +6,7 @@ This is a quick reference guide for understanding how TestNG uses different Java
 
 - **You need Java 21 installed** to run any Gradle command
 - **TestNG artifacts target Java 11** (they work on Java 11+)
-- **Tests can run on Java 11, 17, 21, or 24** to verify compatibility
+- **Tests can run on Java 11, 17, 21, 25, or 26** to verify compatibility
 
 ## The Three Java Versions
 
@@ -136,9 +136,9 @@ export JAVA_HOME=/path/to/java-21
 
 ### Scenario 3: CI Testing Multiple Java Versions
 
-**GitHub Actions has:** Java 11, 17, 21, 24 installed
+**GitHub Actions installs:** Java 21 (for Gradle) + one test version (11, 17, 21, 25, or 26)
 
-**Workflow runs:** `./gradlew build -PjdkBuildVersion=21 -PjdkTestVersion=11`
+**For a Java 11 test job, the workflow runs:** `./gradlew build -PjdkBuildVersion=21 -PjdkTestVersion=11`
 
 **What happens:**
 
@@ -147,7 +147,7 @@ export JAVA_HOME=/path/to/java-21
 - ✅ Bytecode targets Java 11
 - ✅ Tests run with Java 11 (via toolchain)
 
-**Then repeats with:** `-PjdkTestVersion=17`, `-PjdkTestVersion=21`, `-PjdkTestVersion=24`
+**The CI runs separate jobs for each test version:** Java 11, 17, 21, 25, and 26
 
 ## FAQ
 

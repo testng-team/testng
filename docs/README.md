@@ -2,6 +2,35 @@
 
 This directory contains documentation about TestNG's build system, development workflow, and publishing process.
 
+## Audience
+
+This documentation is intended for:
+
+- **TestNG Contributors** - Developers who want to contribute code, fix bugs, or add features to TestNG
+- **TestNG Maintainers** - Core team members responsible for releases, CI/CD, and project maintenance
+- **Build System Developers** - Anyone interested in understanding TestNG's Gradle build architecture
+- **Advanced Users** - Developers who need to build TestNG from source for custom modifications
+
+**Note:** If you're just **using** TestNG in your project, you don't need this documentation. Simply add TestNG as a dependency to your project - see the [main README](../README.md) for usage instructions.
+
+## When to Read This
+
+Read this documentation when you need to:
+
+- **Set up a development environment** to contribute to TestNG
+- **Build TestNG from source** for the first time
+- **Understand the build system** architecture and conventions
+- **Publish a release** to Maven Central (maintainers only)
+- **Troubleshoot build issues** or CI failures
+- **Modify build configuration** or add new modules
+- **Understand Java version requirements** for building vs. using TestNG
+
+**Quick navigation:**
+- 🚀 **First-time contributors**: Start with [Quick Start](#quick-start) below
+- 📦 **Publishing a release**: Go directly to [RELEASE_PROCESS.md](RELEASE_PROCESS.md)
+- ☕ **Confused about Java versions**: See [JAVA_VERSIONS_QUICK_REFERENCE.md](JAVA_VERSIONS_QUICK_REFERENCE.md)
+- 🔧 **Build system deep dive**: Read [BUILD_SYSTEM.md](BUILD_SYSTEM.md)
+
 ## Documentation Index
 
 ### 📚 Core Documentation
@@ -23,7 +52,7 @@ This directory contains documentation about TestNG's build system, development w
   - Common build commands and troubleshooting
 
 - **[JAVA_VERSIONS_QUICK_REFERENCE.md](JAVA_VERSIONS_QUICK_REFERENCE.md)** - Quick reference for Java version usage
-  - Why TestNG requires Java 17+ to build
+  - Why TestNG requires Java 21+ to build
   - How toolchains enable multi-version testing
   - Common scenarios and FAQ
   - Visual diagrams and examples
@@ -40,7 +69,7 @@ This directory contains documentation about TestNG's build system, development w
 
 ### Prerequisites
 
-- **Java 17+** installed (required to run Gradle)
+- **Java 21+** installed (required to run Gradle)
 - **Git** for version control
 
 ### Building TestNG
@@ -82,12 +111,12 @@ cd testng
 
 TestNG's build uses **three different Java versions**:
 
-1. **Gradle Runtime**: Java 17+ (required by nmcp plugin)
-2. **Build Toolchain**: Java 17 (for compilation)
+1. **Gradle Runtime**: Java 21+ (required by nmcp plugin)
+2. **Build Toolchain**: Java 21 (for compilation)
 3. **Target Bytecode**: Java 11 (for compatibility)
 4. **Test Runtime**: Configurable (11, 17, 21, 24)
 
-**Result:** TestNG artifacts work on Java 11+, but you need Java 17+ to build.
+**Result:** TestNG artifacts work on Java 11+, but you need Java 21+ to build.
 
 See [JAVA_VERSIONS_QUICK_REFERENCE.md](JAVA_VERSIONS_QUICK_REFERENCE.md) for details.
 
@@ -97,7 +126,7 @@ TestNG uses the `org.gradlex.build-parameters` plugin for flexible configuration
 
 ```bash
 # Java versions
--PjdkBuildVersion=17          # JDK for building (default: 17)
+-PjdkBuildVersion=21          # JDK for building (default: 21)
 -PtargetJavaVersion=11        # Target bytecode (default: 11)
 -PjdkTestVersion=11           # JDK for tests (default: buildJdk)
 
@@ -130,12 +159,12 @@ testng/
 
 ### Setting Up Development Environment
 
-1. **Install Java 17+**
+1. **Install Java 21+**
    ```bash
    # Using SDKMAN
-   sdk install java 17.0.14-tem
-   sdk use java 17.0.14-tem
-   
+   sdk install java 21.0.5-tem
+   sdk use java 21.0.5-tem
+
    # Verify
    java -version
    ```
@@ -239,8 +268,8 @@ Snapshots are automatically published on every push to master via GitHub Actions
 
 ### Common Issues
 
-1. **"Nmcp requires Java 17+"**
-   - Solution: Use Java 17+ to run Gradle
+1. **"Nmcp requires Java 21+"**
+   - Solution: Use Java 21+ to run Gradle
    - Check: `java -version`
 
 2. **"Could not find matching toolchain"**

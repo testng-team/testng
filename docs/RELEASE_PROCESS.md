@@ -116,7 +116,7 @@ This is the simplest approach - artifacts are automatically published to Maven C
    - **Branch**: `master` (or your release branch)
    - **Publishing type**: `AUTOMATIC`
 
-5.Click **"Run workflow"**.
+5. Click **"Run workflow"**.
 
 #### Step 2: Monitor Progress
 
@@ -638,7 +638,7 @@ Developer                    GitHub Actions              Central Portal         
   -PcentralPortal.publishingType=USER_MANAGED
 
 # Publish snapshot
-./gradlew publishAggregationToCentralPortalSnapshots \
+./gradlew publishAllPublicationsToCentralSnapshotsRepository \
   -Prelease=false
 
 # Build without publishing
