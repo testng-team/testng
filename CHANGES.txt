@@ -1,4 +1,6 @@
-Current (7.12.0)
+Current (7.13.0)
+
+7.12.0
 Fixed: GITHUB-3231: TestNG retry is going into infinite loop when the data provider returned object is modified before failure (Bartek Florczak)
 Update: Updated GitHub Actions test matrix to include JDK 25 and JDK 26 EA (Bartek Florczak)
 Fixed: GITHUB-3236: DataProvider parameters are not refreshed on retry when cacheDataForTestRetries=false (Bartek Florczak)
