@@ -381,10 +381,10 @@ public class TestRunner
     ITestNGListenerFactory factory;
     if (listenerFactoryClass != null) {
       factory = m_objectFactory.newInstance(listenerFactoryClass);
+    } else if (m_configuration.getListenerFactory() != null) {
+      factory = m_configuration.getListenerFactory();
     } else {
-      factory =
-          Optional.ofNullable(m_configuration.getListenerFactory())
-              .orElse(new DefaultListenerFactory(m_objectFactory, this));
+      factory = new DefaultListenerFactory(m_objectFactory, this);
     }
 
     // Instantiate all the listeners
