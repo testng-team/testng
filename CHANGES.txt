@@ -1,4 +1,5 @@
 Current (7.13.0)
+Fixed: GITHUB-3120: ITestNGListenerFactory is broken and never invoked (Krishnan Mahadevan)
 
 7.12.0
 Fixed: GITHUB-3231: TestNG retry is going into infinite loop when the data provider returned object is modified before failure (Bartek Florczak)

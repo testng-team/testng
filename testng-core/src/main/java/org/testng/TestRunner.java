@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -372,19 +371,20 @@ public class TestRunner
       listenerClasses.addAll(listenerHolder.getListenerClasses());
     }
 
-    if (listenerFactoryClass == null) {
-      listenerFactoryClass = DefaultListenerFactory.class;
-    }
-
     //
     // Now we have all the listeners collected from @Listeners and at most one
     // listener factory collected from a class implementing ITestNGListenerFactory.
     // Instantiate all the requested listeners.
     //
 
-    ITestNGListenerFactory factory =
-        Optional.ofNullable(m_configuration.getListenerFactory())
-            .orElse(new DefaultListenerFactory(m_objectFactory, this));
+    ITestNGListenerFactory factory;
+    if (listenerFactoryClass != null) {
+      factory = m_objectFactory.newInstance(listenerFactoryClass);
+    } else if (m_configuration.getListenerFactory() != null) {
+      factory = m_configuration.getListenerFactory();
+    } else {
+      factory = new DefaultListenerFactory(m_objectFactory, this);
+    }
 
     // Instantiate all the listeners
     for (Class<? extends ITestNGListener> c : listenerClasses) {
