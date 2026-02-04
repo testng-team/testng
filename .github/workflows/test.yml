@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 10
       - name: Set up Java ${{ matrix.java_version }}, oracle
         if: ${{ matrix.oracle_java_website != '' }}
-        uses: oracle-actions/setup-java@83e2004a40aaa491fbc6b4697353b9a75b095efb # v1.3.4
+        uses: oracle-actions/setup-java@2e744f723b003fdd759727d0ff654c8717024845 # v1.4.0
         with:
           website: ${{ matrix.oracle_java_website }}
           release: ${{ matrix.java_version }}
@@ -73,7 +73,7 @@ jobs:
         run: echo "unique_id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Test
         id: run_test_cases
-        uses: burrunan/gradle-cache-action@v1
+        uses: burrunan/gradle-cache-action@v2
         with:
           job-id: jdk${{ matrix.jdk.version }}
           arguments: |

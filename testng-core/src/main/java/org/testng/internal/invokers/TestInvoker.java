@@ -557,7 +557,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (holder.status == ITestResult.FAILURE && !holder.handled) {
         int count = failure.count.getAndIncrement();
         if (testMethod.isDataDriven()) {
-          count = 0;
+          String key = Arrays.toString(testResult.getParameters());
+          count = failure.counter.computeIfAbsent(key, k -> new AtomicInteger()).incrementAndGet();
         }
         handleException(testResult.getThrowable(), testMethod, testResult, count);
       }
@@ -763,7 +764,9 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         if (null != testResult.getMethod().getFactoryMethodParamsInfo()) {
           parametersIndex = testResult.getMethod().getFactoryMethodParamsInfo().getIndex();
         }
-        arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
+        if (!willRetryMethod) {
+          arguments.getTestMethod().addFailedInvocationNumber(parametersIndex);
+        }
       }
 
       //

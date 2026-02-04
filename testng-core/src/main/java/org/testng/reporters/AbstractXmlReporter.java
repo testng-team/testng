@@ -228,7 +228,7 @@ public abstract class AbstractXmlReporter implements IReporter, ICustomizeXmlRep
       this.failed += count.failed;
       this.skipped += count.skipped;
       this.retried += count.retried;
-      this.ignored += count.retried;
+      this.ignored += count.ignored;
     }
 
     private Count(Builder builder) {

@@ -8,7 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.IReporter;
@@ -42,6 +44,7 @@ public class FailedReporter implements IReporter {
   public static final String TESTNG_FAILED_XML = "testng-failed.xml";
 
   private XmlSuite m_xmlSuite;
+  private final Map<String, Map<String, String>> keyCache = new ConcurrentHashMap<>();
 
   public FailedReporter() {}
 
@@ -69,11 +72,12 @@ public class FailedReporter implements IReporter {
       ISuiteResult suiteResult = entry.getValue();
       ITestContext testContext = suiteResult.getTestContext();
 
-      generateXmlTest(
-          testContext.getCurrentXmlTest(),
-          testContext,
-          testContext.getFailedTests().getAllResults(),
-          testContext.getSkippedTests().getAllResults());
+      boolean shouldWriteIntoFile = generateXmlTest(testContext);
+      XmlTest current = testContext.getCurrentXmlTest();
+      failedSuite
+          .getTests()
+          .removeIf(it -> !shouldWriteIntoFile && it.getName().equals(current.getName()));
+      clearKeyCache(testContext);
     }
 
     if (null != failedSuite.getTests() && !failedSuite.getTests().isEmpty()) {
@@ -88,71 +92,108 @@ public class FailedReporter implements IReporter {
     }
   }
 
-  private void generateXmlTest(
-      XmlTest xmlTest,
-      ITestContext context,
-      Set<ITestResult> failedTests,
-      Set<ITestResult> skippedTests) {
+  private void clearKeyCache(ITestContext ctx) {
+    keyCache.remove(ctx.getName());
+  }
+
+  private static String key(ITestResult it) {
+    String prefix = it.getMethod().getQualifiedName() + it.getInstance().toString();
+    if (it.getParameters().length != 0) {
+      return prefix + Arrays.toString(it.getParameters());
+    }
+    return prefix + it.getMethod().getCurrentInvocationCount();
+  }
+
+  private static Map<String, String> buildMap(Set<ITestResult> passed) {
+    return passed
+        .parallelStream()
+        .map(FailedReporter::key)
+        .collect(
+            Collectors.toUnmodifiableMap(Function.identity(), Function.identity(), (s1, s2) -> s1));
+  }
+
+  private boolean isFlakyTest(Set<ITestResult> passed, ITestResult result) {
+    String ctxKey = result.getTestContext().getName();
+    String individualKey = key(result);
+    return keyCache.computeIfAbsent(ctxKey, k -> buildMap(passed)).containsKey(individualKey);
+  }
+
+  private boolean generateXmlTest(ITestContext context) {
+    XmlTest xmlTest = context.getCurrentXmlTest();
+    Set<ITestResult> failedTests = context.getFailedTests().getAllResults();
+    Set<ITestResult> skippedTests = context.getSkippedTests().getAllResults();
     // Note:  we can have skipped tests and no failed tests
     // if a method depends on nonexistent groups
-    if (!skippedTests.isEmpty() || !failedTests.isEmpty()) {
-      Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
-
-      // Get the transitive closure of all the failed methods and the methods
-      // they depend on
-      Set<ITestResult> allTests = Sets.newHashSet();
-      allTests.addAll(failedTests);
-      allTests.addAll(skippedTests);
-      ITestNGMethod[] allTestMethods = context.getAllTestMethods();
-      for (ITestResult failedTest : allTests) {
-        ITestNGMethod current = failedTest.getMethod();
-        if (!current.isTest()) { // Don't count configuration methods
-          continue;
-        }
-        methodsToReRun.add(current);
-        List<ITestNGMethod> methodsDependedUpon =
-            MethodHelper.getMethodsDependedUpon(current, allTestMethods, MethodSorting.basedOn());
-
-        for (ITestNGMethod m : methodsDependedUpon) {
-          if (m.isTest()) {
-            methodsToReRun.add(m);
-          }
-        }
-      }
-
-      //
-      // Now we have all the right methods.  Go through the list of
-      // all the methods that were run and only pick those that are
-      // in the methodToReRun map.  Since the methods are already
-      // sorted, we don't need to sort them again.
-      //
-      List<ITestNGMethod> result = Lists.newArrayList();
-      Set<ITestNGMethod> relevantConfigs = Sets.newHashSet();
-      for (ITestNGMethod m : allTestMethods) {
-        if (RuntimeBehavior.isMemoryFriendlyMode()) {
-          // We are doing this because the `m` would not be of type
-          // LiteWeightTestNGMethod and hence the hashCode() and equals()
-          // computation would be different.
-          m = new LiteWeightTestNGMethod(m);
-        }
-        if (methodsToReRun.contains(m)) {
-          result.add(m);
-          getAllApplicableConfigs(relevantConfigs, m.getTestClass());
-          getAllGroupApplicableConfigs(context, relevantConfigs, m);
-        }
-      }
-
-      Set<ITestNGMethod> upstreamConfigFailures =
-          Stream.of(
-                  context.getFailedConfigurations().getAllMethods(),
-                  context.getSkippedConfigurations().getAllMethods())
-              .flatMap(Collection::stream)
-              .filter(FailedReporter::isNotClassLevelConfigurationMethod)
-              .collect(Collectors.toSet());
-      result.addAll(upstreamConfigFailures);
-      result.addAll(relevantConfigs);
-      createXmlTest(context, result, xmlTest);
+    if (skippedTests.isEmpty() && failedTests.isEmpty()) {
+      return false;
     }
+    Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
+    Set<ITestResult> passedTests = context.getPassedTests().getAllResults();
+
+    // Get the transitive closure of all the failed methods and the methods
+    // they depend on
+    Set<ITestResult> allTests = Sets.newHashSet();
+    allTests.addAll(failedTests);
+    allTests.addAll(skippedTests);
+    ITestNGMethod[] allTestMethods = context.getAllTestMethods();
+    for (ITestResult failedTest : allTests) {
+      ITestNGMethod current = failedTest.getMethod();
+      if (!current.isTest()) { // Don't count configuration methods
+        continue;
+      }
+      boolean repetitiveTest = failedTest.getMethod().getInvocationCount() > 0;
+      boolean isDataDriven = failedTest.getMethod().isDataDriven();
+      if ((repetitiveTest || isDataDriven) && isFlakyTest(passedTests, failedTest)) {
+        continue;
+      }
+      methodsToReRun.add(current);
+      List<ITestNGMethod> methodsDependedUpon =
+          MethodHelper.getMethodsDependedUpon(current, allTestMethods, MethodSorting.basedOn());
+
+      for (ITestNGMethod m : methodsDependedUpon) {
+        if (m.isTest()) {
+          methodsToReRun.add(m);
+        }
+      }
+    }
+
+    //
+    // Now we have all the right methods.  Go through the list of
+    // all the methods that were run and only pick those that are
+    // in the methodToReRun map.  Since the methods are already
+    // sorted, we don't need to sort them again.
+    //
+    List<ITestNGMethod> result = Lists.newArrayList();
+    Set<ITestNGMethod> relevantConfigs = Sets.newHashSet();
+    for (ITestNGMethod m : allTestMethods) {
+      if (RuntimeBehavior.isMemoryFriendlyMode()) {
+        // We are doing this because the `m` would not be of type
+        // LiteWeightTestNGMethod and hence the hashCode() and equals()
+        // computation would be different.
+        m = new LiteWeightTestNGMethod(m);
+      }
+      if (methodsToReRun.contains(m)) {
+        result.add(m);
+        getAllApplicableConfigs(relevantConfigs, m.getTestClass());
+        getAllGroupApplicableConfigs(context, relevantConfigs, m);
+      }
+    }
+
+    if (methodsToReRun.isEmpty()) {
+      return false;
+    }
+
+    Set<ITestNGMethod> upstreamConfigFailures =
+        Stream.of(
+                context.getFailedConfigurations().getAllMethods(),
+                context.getSkippedConfigurations().getAllMethods())
+            .flatMap(Collection::stream)
+            .filter(FailedReporter::isNotClassLevelConfigurationMethod)
+            .collect(Collectors.toSet());
+    result.addAll(upstreamConfigFailures);
+    result.addAll(relevantConfigs);
+    createXmlTest(context, result, xmlTest);
+    return true;
   }
 
   private static boolean isNotClassLevelConfigurationMethod(ITestNGMethod each) {
