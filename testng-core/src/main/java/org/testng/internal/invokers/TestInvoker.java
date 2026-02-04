@@ -62,6 +62,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private final List<IClassListener> m_classListeners;
   private final boolean m_skipFailedInvocationCounts;
 
+  // ThreadLocal to track if we're currently inside runTestResultListener()
+  // Used to prevent duplicate listener invocations when a listener throws an exception.
+  // See GITHUB-3238.
+  private static final ThreadLocal<Boolean> isInvokingListeners =
+      ThreadLocal.withInitial(() -> false);
+
   public TestInvoker(
       ITestResultNotifier m_notifier,
       ITestContext m_testContext,
@@ -293,9 +299,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 m_notifier.getTestListeners(), m_configuration.getListenerComparator())
             : ListenerOrderDeterminer.order(
                 m_notifier.getTestListeners(), m_configuration.getListenerComparator());
+    isInvokingListeners.set(true);
     TestListenerHelper.runTestListeners(tr, listeners);
     TestListenerHelper.runTestListeners(
         tr, Collections.singletonList(m_notifier.getExitCodeListener()));
+    // Only reset the flag on successful completion. If an exception is thrown,
+    // we want the flag to remain true so the catch block can detect it.
+    isInvokingListeners.set(false);
   }
 
   private Collection<IDataProviderListener> dataProviderListeners() {
@@ -1020,7 +1030,16 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .ifPresent(it -> TestResult.copyAttributes(it, r));
         r.setStatus(TestResult.FAILURE);
         result.add(r);
-        runTestResultListener(r);
+        // Only invoke listeners if the exception didn't come from a listener invocation.
+        // If we're inside a listener invocation, the exception came from a listener,
+        // so don't invoke listeners again to prevent duplicate invocations.
+        // See GITHUB-3238.
+        if (!isInvokingListeners.get()) {
+          runTestResultListener(r);
+        } else {
+          // Reset the flag since we're handling the listener exception here
+          isInvokingListeners.set(false);
+        }
         m_notifier.addFailedTest(arguments.getTestMethod(), r);
       } // catch
       return invocationCount.get();

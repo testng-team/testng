@@ -31,7 +31,7 @@ public class TestNGFutureTask<T> extends FutureTask<IWorker<T>> implements IWork
     } catch (InterruptedException | ExecutionException e) {
       throwable = e;
     }
-    callback.accept(result, throwable);
+    callback.accept(result == null ? worker : result, throwable);
   }
 
   @Override
