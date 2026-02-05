@@ -10,15 +10,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.CommandLineArgs;
+import org.testng.ITestListener;
 import org.testng.ITestNGListener;
+import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.ExitCode;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlSuite.ParallelMode;
 import test.SimpleBaseTest;
 import test.listeners.issue2381.FactoryTestClassSample;
 import test.listeners.issue2381.SampleGlobalListener;
@@ -56,6 +60,8 @@ import test.listeners.issue3064.SampleTestCase;
 import test.listeners.issue3082.ObjectRepository;
 import test.listeners.issue3082.ObjectTrackingMethodListener;
 import test.listeners.issue3095.ChildClassSample;
+import test.listeners.issue3238.TestClassWithFailingTestMethodSample;
+import test.listeners.issue3238.TestClassWithPassingTestMethodSample;
 
 public class ListenersTest extends SimpleBaseTest {
   public static final String[] github2638ExpectedList =
@@ -683,6 +689,40 @@ public class ListenersTest extends SimpleBaseTest {
     TestNG testng = create(ChildClassSample.class);
     testng.run();
     assertThat(testng.getStatus()).isZero();
+  }
+
+  @Test(description = "GITHUB-3238", dataProvider = "dp-3238")
+  public void ensureListenerFailureDoesNotBreakTestNG(ParallelMode parallelMode) {
+    XmlSuite xmlSuite =
+        createXmlSuite(
+            "3238_suite",
+            "3238_test",
+            TestClassWithFailingTestMethodSample.class,
+            TestClassWithPassingTestMethodSample.class);
+    xmlSuite.setParallel(parallelMode);
+    TestNG testng = create(xmlSuite);
+    AtomicInteger failingCount = new AtomicInteger(0);
+    AtomicInteger passingCount = new AtomicInteger(0);
+    testng.addListener(
+        new ITestListener() {
+          @Override
+          public void onTestFailure(ITestResult result) {
+            failingCount.incrementAndGet();
+          }
+
+          @Override
+          public void onTestSuccess(ITestResult result) {
+            passingCount.incrementAndGet();
+          }
+        });
+    testng.run();
+    assertThat(failingCount.get()).isEqualTo(1);
+    assertThat(passingCount.get()).isEqualTo(5);
+  }
+
+  @DataProvider(name = "dp-3238")
+  public Object[][] getTestData() {
+    return new Object[][] {{ParallelMode.CLASSES}, {ParallelMode.METHODS}};
   }
 
   private void setupTest(boolean addExplicitListener) {
