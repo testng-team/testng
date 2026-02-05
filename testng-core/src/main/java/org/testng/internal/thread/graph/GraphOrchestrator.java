@@ -3,6 +3,7 @@ package org.testng.internal.thread.graph;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.*;
 import org.testng.IDynamicGraph;
 import org.testng.collections.Maps;
@@ -73,7 +74,8 @@ public class GraphOrchestrator<T> {
     }
   }
 
-  private void afterExecute(IWorker<T> r, Throwable t) {
+  private void afterExecute(IWorker<T> original, IWorker<T> result) {
+    IWorker<T> r = Optional.ofNullable(result).orElse(original);
     try (AutoCloseableLock ignore = internalLock.lock()) {
       setStatus(r, computeStatus(r));
       if (graph.getNodeCount() == graph.getNodeCountWithStatus(IDynamicGraph.Status.FINISHED)) {

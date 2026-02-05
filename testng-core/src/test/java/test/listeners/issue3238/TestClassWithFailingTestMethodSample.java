@@ -9,7 +9,6 @@ public class TestClassWithFailingTestMethodSample {
 
   @Test
   public void failingTest() {
-    System.err.println(":::::");
     Assert.fail();
   }
 }

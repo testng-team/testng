@@ -9,9 +9,9 @@ import org.testng.thread.IWorker;
 public class TestNGFutureTask<T> extends FutureTask<IWorker<T>> implements IWorker<T> {
 
   private final IWorker<T> worker;
-  private final BiConsumer<IWorker<T>, Throwable> callback;
+  private final BiConsumer<IWorker<T>, IWorker<T>> callback;
 
-  public TestNGFutureTask(IWorker<T> worker, BiConsumer<IWorker<T>, Throwable> callback) {
+  public TestNGFutureTask(IWorker<T> worker, BiConsumer<IWorker<T>, IWorker<T>> callback) {
     super(worker, worker);
     this.callback = callback;
     this.worker = worker;
@@ -24,14 +24,13 @@ public class TestNGFutureTask<T> extends FutureTask<IWorker<T>> implements IWork
 
   @Override
   protected void done() {
-    Throwable throwable = null;
     IWorker<T> result = null;
     try {
       result = super.get();
     } catch (InterruptedException | ExecutionException e) {
-      throwable = e;
+      // Gobble exception and do nothing.
     }
-    callback.accept(result == null ? worker : result, throwable);
+    callback.accept(worker, result);
   }
 
   @Override

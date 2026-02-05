@@ -1036,10 +1036,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         // See GITHUB-3238.
         if (!isInvokingListeners.get()) {
           runTestResultListener(r);
-        } else {
-          // Reset the flag since we're handling the listener exception here
-          isInvokingListeners.set(false);
         }
+        isInvokingListeners.set(false);
         m_notifier.addFailedTest(arguments.getTestMethod(), r);
       } // catch
       return invocationCount.get();

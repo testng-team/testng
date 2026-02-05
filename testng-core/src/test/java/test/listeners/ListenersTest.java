@@ -691,12 +691,16 @@ public class ListenersTest extends SimpleBaseTest {
     assertThat(testng.getStatus()).isZero();
   }
 
-  @Test(description = "GITHUB-3238")
-  public void ensureListenerFailureDoesNotBreakTestNG() {
-    TestNG testng =
-        create(
-            TestClassWithFailingTestMethodSample.class, TestClassWithPassingTestMethodSample.class);
-    testng.setParallel(ParallelMode.CLASSES);
+  @Test(description = "GITHUB-3238", dataProvider = "dp-3238")
+  public void ensureListenerFailureDoesNotBreakTestNG(ParallelMode parallelMode) {
+    XmlSuite xmlSuite =
+        createXmlSuite(
+            "3238_suite",
+            "3238_test",
+            TestClassWithFailingTestMethodSample.class,
+            TestClassWithPassingTestMethodSample.class);
+    xmlSuite.setParallel(parallelMode);
+    TestNG testng = create(xmlSuite);
     AtomicInteger failingCount = new AtomicInteger(0);
     AtomicInteger passingCount = new AtomicInteger(0);
     testng.addListener(
@@ -713,7 +717,12 @@ public class ListenersTest extends SimpleBaseTest {
         });
     testng.run();
     assertThat(failingCount.get()).isEqualTo(1);
-    assertThat(passingCount.get()).isEqualTo(1);
+    assertThat(passingCount.get()).isEqualTo(5);
+  }
+
+  @DataProvider(name = "dp-3238")
+  public Object[][] getTestData() {
+    return new Object[][] {{ParallelMode.CLASSES}, {ParallelMode.METHODS}};
   }
 
   private void setupTest(boolean addExplicitListener) {
