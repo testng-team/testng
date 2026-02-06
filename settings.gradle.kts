@@ -30,6 +30,7 @@ include(":testng-reflection-utils")
 include(":testng-runner-api")
 include(":testng-test-kit")
 include(":testng-test-osgi")
+include(":testng-jaxb")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
