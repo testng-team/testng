@@ -575,18 +575,24 @@ public class Parameters {
       return methodLevel;
     }
 
-    if (Strings.isNullOrEmpty(methodLevel.getDataProvider())
-        && Strings.isNotNullAndNotEmpty(classLevel.getDataProvider())) {
-      methodLevel.setDataProvider(classLevel.getDataProvider());
-    }
-    if (isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel)) {
-      methodLevel.setDataProviderClass(classLevel.getDataProviderClass());
-    }
-    if (isDynamicDataProviderClassEmpty(methodLevel)
-        && !isDynamicDataProviderClassEmpty(classLevel)) {
-      methodLevel.setDataProviderDynamicClass(classLevel.getDataProviderDynamicClass());
-    }
-    return methodLevel;
+    String dataProvider =
+        (Strings.isNullOrEmpty(methodLevel.getDataProvider())
+                && Strings.isNotNullAndNotEmpty(classLevel.getDataProvider()))
+            ? classLevel.getDataProvider()
+            : methodLevel.getDataProvider();
+
+    Class<?> dataProviderClass =
+        (isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel))
+            ? classLevel.getDataProviderClass()
+            : methodLevel.getDataProviderClass();
+
+    String dataProviderDynamicClass =
+        (isDynamicDataProviderClassEmpty(methodLevel)
+                && !isDynamicDataProviderClassEmpty(classLevel))
+            ? classLevel.getDataProviderDynamicClass()
+            : methodLevel.getDataProviderDynamicClass();
+
+    return new ImmutableDataProvidable(dataProvider, dataProviderClass, dataProviderDynamicClass);
   }
 
   private static boolean isDataProviderClassEmpty(ITestAnnotation annotation) {
@@ -959,5 +965,43 @@ public class Parameters {
       parameterValues = pv;
       testResult = tr;
     }
+  }
+
+  private static final class ImmutableDataProvidable implements IDataProvidable {
+    private final String dataProvider;
+    private final Class<?> dataProviderClass;
+    private final String dataProviderDynamicClass;
+
+    private ImmutableDataProvidable(
+        String dataProvider, Class<?> dataProviderClass, String dataProviderDynamicClass) {
+      this.dataProvider = dataProvider;
+      this.dataProviderClass = dataProviderClass;
+      this.dataProviderDynamicClass =
+          dataProviderDynamicClass != null ? dataProviderDynamicClass : "";
+    }
+
+    @Override
+    public String getDataProvider() {
+      return dataProvider;
+    }
+
+    @Override
+    public void setDataProvider(String v) {}
+
+    @Override
+    public Class<?> getDataProviderClass() {
+      return dataProviderClass;
+    }
+
+    @Override
+    public void setDataProviderClass(Class<?> v) {}
+
+    @Override
+    public String getDataProviderDynamicClass() {
+      return dataProviderDynamicClass;
+    }
+
+    @Override
+    public void setDataProviderDynamicClass(String v) {}
   }
 }
