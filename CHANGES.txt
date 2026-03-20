@@ -1,4 +1,5 @@
 Current (7.13.0)
+Fixed: GITHUB-3263: dataProviderClass cache mutation causes subclasses to use wrong data provider when run together (Aleksei Dobrynin)
 Fixed: GITHUB-3120: ITestNGListenerFactory is broken and never invoked (Krishnan Mahadevan)
 
 7.12.0

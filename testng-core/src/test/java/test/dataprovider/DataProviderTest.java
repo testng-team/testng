@@ -61,6 +61,8 @@ import test.dataprovider.issue3045.DataProviderTestClassSample;
 import test.dataprovider.issue3045.DataProviderWithoutListenerTestClassSample;
 import test.dataprovider.issue3081.NoOpMethodInterceptor;
 import test.dataprovider.issue3081.TestClassWithPrioritiesSample;
+import test.dataprovider.issue3263.FirstSubclassTestSample;
+import test.dataprovider.issue3263.SecondSubclassTestSample;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -162,6 +164,16 @@ public class DataProviderTest extends SimpleBaseTest {
       {ChildClassHasFullDefinitionOfDataProviderAtClassLevel.class},
       {ChildClassWithNoDataProviderInformationInTestMethod.class},
     };
+  }
+
+  @Test(description = "GITHUB-3263")
+  public void testDifferentDataProviderClassesForMultipleSubclassesRunTogether() {
+    InvokedMethodNameListener listener =
+        run(FirstSubclassTestSample.class, SecondSubclassTestSample.class);
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactlyInAnyOrder(
+            "verifyPlace(alpha_place1,alpha_city1)", "verifyPlace(alpha_place2,alpha_city2)",
+            "verifyPlace(beta_place1,beta_city1)", "verifyPlace(beta_place2,beta_city2)");
   }
 
   @Test(description = "GITHUB-1139")
