@@ -24,7 +24,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      # Ask matrix.js to produce 7 jobs
+      # Ask matrix.mjs to produce 7 jobs
       MATRIX_JOBS: 7
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,8 @@ jobs:
           fetch-depth: 1
       - id: set-matrix
         run: |
-          node .github/workflows/matrix.js
+          npm ci --prefix .github/workflows
+          node .github/workflows/matrix.mjs
 
   build:
     needs: matrix_prep

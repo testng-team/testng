@@ -27,3 +27,4 @@ z_build
 outputDir/
 **/Version.java
 **/bin/
+node_modules
