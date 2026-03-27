@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+  Here is a quick overview of the main parts of this DTD.  For more information,
+  refer to the <a href="https://testng.org">main web site</a>.
+
+  A <b>suite</b> is made of <b>tests</b> and <b>parameters</b>.
+
+  A <b>test</b> is made of three parts:
+
+  <ul>
+  <li> <b>parameters</b>, which override the suite parameters
+  <li> <b>groups</b>, made of two parts
+  <li> <b>classes</b>, defining which classes are going to be part
+    of this test run
+  </ul>
+
+  In turn, <b>groups</b> are made of two parts:
+  <ul>
+  <li> Definitions, which allow you to group groups into
+    bigger groups
+  <li> Runs, which defines the groups that the methods
+    must belong to in order to be run during this test
+  </ul>
+
+  Cedric Beust & Alexandru Popescu
+  @title DTD for TestNG
+  @root suite
+
+-->
+<!-- A suite is the top-level element of a testng.xml file -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="suite">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="groups"/>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="listeners"/>
+          <xs:element ref="packages"/>
+          <xs:element ref="test"/>
+          <xs:element ref="parameter"/>
+          <xs:element ref="method-selectors"/>
+          <xs:element ref="suite-files"/>
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="verbose"/>
+      <xs:attribute name="parallel" default="none">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="false"/>
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="none"/>
+            <xs:enumeration value="methods"/>
+            <xs:enumeration value="tests"/>
+            <xs:enumeration value="classes"/>
+            <xs:enumeration value="instances"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="parent-module"/>
+      <xs:attribute name="guice-stage" default="DEVELOPMENT">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="DEVELOPMENT"/>
+            <xs:enumeration value="PRODUCTION"/>
+            <xs:enumeration value="TOOL"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="configfailurepolicy" default="skip">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="skip"/>
+            <xs:enumeration value="continue"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="thread-count" default="5"/>
+      <xs:attribute name="annotations"/>
+      <xs:attribute name="time-out"/>
+      <xs:attribute name="skipfailedinvocationcounts" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="use-global-thread-pool" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="data-provider-thread-count" default="10"/>
+      <xs:attribute name="share-thread-pool-for-data-providers" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="object-factory"/>
+      <xs:attribute name="group-by-instances" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="preserve-order" default="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="allow-return-values" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- Attributes: -->
+  <!--
+    @attr  name        The name of this suite (as it will appear in the reports)
+    @attr  verbose     How verbose the output on the console will be.
+                    This setting has no impact on the HTML reports.
+    @attr  parallel   Whether TestNG should use different threads
+                    to run your tests (might speed up the process)
+                    Do not use "true" and "false" values, they are now deprecated.
+    @attr  parent-module A module used to create the parent injector of all guice injectors used
+           in tests of the suite
+    @attr  guice-stage The stage with which the parent injector is created
+    @attr  configfailurepolicy  Whether to continue attempting Before/After
+                    Class/Methods after they've failed once or just skip remaining.
+    @attr  thread-count An integer giving the size of the thread pool to use
+                    if you set parallel.
+    @attr  annotations  If "javadoc", TestNG will look for
+                    JavaDoc annotations in your sources, otherwise it will
+                    use JDK5 annotations.
+    @attr  time-out     The time to wait in milliseconds before aborting the
+                    method (if parallel="methods") or the test (parallel="tests")
+    @attr  skipfailedinvocationcounts Whether to skip failed invocations.
+    @attr use-global-thread-pool - Whether TestNG should use a common thread pool
+    for running both regular and data driven tests in parallel. (Works only with TestNG versions 7.9.0 or higher)
+    @attr  data-provider-thread-count An integer giving the size of the thread pool to use
+           for parallel data providers.
+    @attr share-thread-pool-for-data-providers - Whether TestNG should use a common thread pool
+          for running parallel data providers. (Works only with TestNG versions 7.9.0 or higher)
+    @attr  object-factory A class that implements IObjectFactory that will be used to
+           instantiate the test objects.
+    @attr allow-return-values If true, tests that return a value will be run as well
+  -->
+  <!-- A list of XML files that contain more suite descriptions -->
+  <xs:element name="suite-files">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="suite-file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="suite-file">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="path" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    Parameters can be defined at the <suite> or at the <test> level.
+    Parameters defined at the <test> level override parameters of the same name in <suite>
+    Parameters are used to link Java method parameters to their actual value, defined here.
+  -->
+  <xs:element name="parameter">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="name" use="required"/>
+          <xs:attribute name="value" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    Method selectors define user classes used to select which methods to run.
+    They need to implement <tt>org.testng.IMethodSelector</tt>
+  -->
+  <xs:element name="method-selectors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="method-selector"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="method-selector">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="selector-class"/>
+        <xs:element ref="script"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="selector-class">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="name" use="required"/>
+          <xs:attribute name="priority"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="script">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="language" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- A test contains parameters and classes.  Additionally, you can define additional groups ("groups of groups") -->
+  <xs:element name="test">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="method-selectors"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="parameter"/>
+        <xs:element minOccurs="0" ref="groups"/>
+        <xs:element minOccurs="0" ref="packages"/>
+        <xs:element minOccurs="0" ref="classes"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="verbose"/>
+      <xs:attribute name="parallel">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="false"/>
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="none"/>
+            <xs:enumeration value="methods"/>
+            <xs:enumeration value="tests"/>
+            <xs:enumeration value="classes"/>
+            <xs:enumeration value="instances"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="thread-count"/>
+      <xs:attribute name="annotations"/>
+      <xs:attribute name="time-out"/>
+      <xs:attribute name="enabled">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="skipfailedinvocationcounts" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="preserve-order" default="true">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="group-by-instances" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="allow-return-values" default="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    @attr  name         The name of this test (as it will appear in the reports)
+    @attr  verbose      How verbose the output on the console will be.
+                    This setting has no impact on the HTML reports.
+                    Default value: suite level verbose.
+    @attr  parallel     Whether TestNG should use different threads
+                    to run your tests (might speed up the process)
+                    Do not use "true" and "false" values, they are now deprecated.
+    @attr  thread-count An integer giving the size of the thread pool to be used if
+                    parallel mode is used. Overrides the suite level value.
+    @attr  annotations  If "javadoc", TestNG will look for
+                    JavaDoc annotations in your sources, otherwise it will
+                    use JDK5 annotations.
+    @attr  time-out     the time to wait in milliseconds before aborting
+                    the method (if parallel="methods") or the test (if parallel="tests")
+    @attr  enabled      flag to enable/disable current test. Default value: true
+    @attr  skipfailedinvocationcounts Whether to skip failed invocations.
+    @attr preserve-order If true, the classes in this tag will be run in the same order as
+    found in the XML file.
+    @attr allow-return-values If true, tests that return a value will be run as well
+  -->
+  <!-- Defines additional groups ("groups of groups") and also which groups to include in this test run -->
+  <xs:element name="groups">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="define"/>
+        <xs:element minOccurs="0" ref="run"/>
+        <xs:element minOccurs="0" ref="dependencies"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="define">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="include"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- Defines which groups to include in the current group of groups -->
+  <xs:element name="include">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="name" use="required"/>
+          <xs:attribute name="description"/>
+          <xs:attribute name="invocation-numbers"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- Defines which groups to exclude from the current group of groups -->
+  <xs:element name="exclude">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="name" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- The subtag of groups used to define which groups should be run -->
+  <xs:element name="run">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element minOccurs="0" ref="include"/>
+        <xs:element minOccurs="0" ref="exclude"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dependencies">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="group"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="group">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="name" use="required"/>
+          <xs:attribute name="depends-on" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- The list of classes to include in this test -->
+  <xs:element name="classes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="class"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="class">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="methods"/>
+        <xs:element ref="parameter"/>
+      </xs:choice>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- The list of packages to include in this test -->
+  <xs:element name="packages">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="package"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The package description.
+    If the package name ends with .* then subpackages are included too.
+  -->
+  <xs:element name="package">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element minOccurs="0" ref="include"/>
+        <xs:element minOccurs="0" ref="exclude"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- The list of methods to include/exclude from this test -->
+  <xs:element name="methods">
+    <xs:complexType>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <xs:element minOccurs="0" ref="include"/>
+        <xs:element minOccurs="0" ref="exclude"/>
+        <xs:element minOccurs="0" ref="parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- The list of listeners that will be passed to TestNG -->
+  <xs:element name="listeners">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="listener"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="listener">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="any">
+          <xs:attribute name="class-name" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="any" mixed="true">
+    <xs:sequence>
+      <xs:any minOccurs="0" maxOccurs="unbounded" processContents="strict"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
