@@ -1,5 +1,8 @@
 package org.testng.internal.objects;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
@@ -23,15 +26,13 @@ public final class InstanceCreator {
 
   public static <T> T newInstance(Class<T> clazz) {
     try {
-      return clazz.getDeclaredConstructor().newInstance();
-    } catch (IllegalAccessException
-        | InstantiationException
-        | ExceptionInInitializerError
-        | NoSuchMethodException
-        | SecurityException e) {
+      MethodHandle constructor =
+          MethodHandles.lookup().findConstructor(clazz, MethodType.methodType(void.class));
+      return (T) constructor.invoke();
+    } catch (IllegalAccessException | NoSuchMethodException | SecurityException e) {
       throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
-    } catch (InvocationTargetException e) {
-      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e.getCause());
+    } catch (Throwable e) {
+      throw new TestNGException(CANNOT_INSTANTIATE_CLASS + clazz.getName(), e);
     }
   }
 
@@ -45,6 +46,9 @@ public final class InstanceCreator {
   }
 
   public static <T> T newInstance(Class<T> cls, Object... parameters) {
+    if (parameters.length == 0) {
+      return newInstance(cls);
+    }
     Constructor<T> ctor = null;
     for (Constructor<?> c : cls.getConstructors()) {
       // Just comparing parameter array sizes. Comparing the parameter types
