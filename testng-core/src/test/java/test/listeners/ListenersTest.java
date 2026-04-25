@@ -1,6 +1,8 @@
 package test.listeners;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +25,8 @@ import test.SimpleBaseTest;
 import test.listeners.issue2381.FactoryTestClassSample;
 import test.listeners.issue2381.SampleGlobalListener;
 import test.listeners.issue2381.SampleTransformer;
+import test.listeners.issue2578.ListenerWithMissingConstructorDependency;
+import test.listeners.issue2578.MissingDependencyClassLoader;
 import test.listeners.issue2638.DummyInvokedMethodListener;
 import test.listeners.issue2638.TestClassASample;
 import test.listeners.issue2638.TestClassBSample;
@@ -683,6 +687,20 @@ public class ListenersTest extends SimpleBaseTest {
     TestNG testng = create(ChildClassSample.class);
     testng.run();
     assertThat(testng.getStatus()).isZero();
+  }
+
+  @Test(description = "GITHUB-2578")
+  public void ensureListenerWithUnavailableConstructorDependencyDoesNotFail()
+      throws ClassNotFoundException {
+    MissingDependencyClassLoader classLoader = new MissingDependencyClassLoader();
+    Class<?> listenerClass = classLoader.loadClass(ListenerWithMissingConstructorDependency.class);
+    Class<?> testClass = classLoader.loadClass(test.listeners.issue2578.TestClassSample.class);
+    TestNG testng = create(testClass);
+
+    assertThatThrownBy(listenerClass::getConstructors)
+        .isInstanceOf(NoClassDefFoundError.class)
+        .hasCauseInstanceOf(ClassNotFoundException.class);
+    assertThatCode(testng::run).doesNotThrowAnyException();
   }
 
   private void setupTest(boolean addExplicitListener) {
