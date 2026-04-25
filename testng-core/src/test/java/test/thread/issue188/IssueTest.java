@@ -1,10 +1,6 @@
 package test.thread.issue188;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -18,6 +14,7 @@ public class IssueTest extends SimpleBaseTest {
   public void testSuiteLevelParallelMode() {
     System.setProperty(RuntimeBehavior.STRICTLY_HONOUR_PARALLEL_MODE, "true");
     try {
+      Issue188TestSample.reset();
       TestNG testng = new TestNG();
       XmlSuite xmlSuite = new XmlSuite();
       xmlSuite.setParallel(XmlSuite.ParallelMode.METHODS);
@@ -28,35 +25,12 @@ public class IssueTest extends SimpleBaseTest {
       createXmlTest(xmlSuite, "Test3", Issue188TestSample.class);
       testng.setXmlSuites(Collections.singletonList(xmlSuite));
       testng.run();
-      Set<Long> timestamps = Issue188TestSample.timestamps.keySet();
-      if (timestamps.size() == 1) {
-        Assertions.assertThat(Issue188TestSample.timestamps.values().iterator().next())
-            .withFailMessage(
-                "Since all tests were started simultaneously,test method count should have been 6")
-            .hasSize(6);
-      } else {
-        List<Long> keyset =
-            Issue188TestSample.timestamps.keySet().stream().sorted().collect(Collectors.toList());
-        String allTimeStamps =
-            keyset.stream().map(Objects::toString).collect(Collectors.joining(","));
-        long prev = keyset.get(0);
-        int permissibleLag = 40;
-        for (int i = 1; i < keyset.size(); i++) {
-          long current = keyset.get(i);
-          long diff = current - prev;
-          Assertions.assertThat(diff)
-              .withFailMessage(
-                  "Test methods should have started within a lag of max "
-                      + permissibleLag
-                      + " ms but it was "
-                      + diff
-                      + " ms ["
-                      + allTimeStamps
-                      + "]")
-              .isLessThanOrEqualTo(permissibleLag);
-          prev = current;
-        }
-      }
+      Assertions.assertThat(Issue188TestSample.getStartedTestMethods())
+          .withFailMessage("All test methods should have started")
+          .isEqualTo(Issue188TestSample.EXPECTED_METHOD_INVOCATIONS);
+      Assertions.assertThat(Issue188TestSample.getMaxActiveTestMethods())
+          .withFailMessage("All test methods should have run in parallel")
+          .isEqualTo(Issue188TestSample.EXPECTED_METHOD_INVOCATIONS);
     } finally {
       System.setProperty(RuntimeBehavior.STRICTLY_HONOUR_PARALLEL_MODE, "false");
     }
