@@ -2,25 +2,24 @@ package test.factory.issue326;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 public class LocalTrackingListener implements IInvokedMethodListener {
 
-  private final Map<String, List<Statistics>> results = Maps.newConcurrentMap();
-  private final Map<String, Long> threadIds = Maps.newConcurrentMap();
+  private final ConcurrentMap<String, List<Statistics>> results = new ConcurrentHashMap<>();
+  private final ConcurrentMap<String, Long> threadIds = new ConcurrentHashMap<>();
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
     String key = testResult.getInstance().toString();
-    results.computeIfAbsent(key, k -> Lists.newArrayList()).add(new Statistics(testResult));
-    if (!threadIds.containsKey(key)) {
-      Long threadId = Long.parseLong(testResult.getAttribute(SampleTestClass.THREAD_ID).toString());
-      threadIds.put(key, threadId);
-    }
+    results.computeIfAbsent(key, k -> new CopyOnWriteArrayList<>()).add(new Statistics(testResult));
+    Long threadId = asLong(testResult);
+    threadIds.putIfAbsent(key, threadId);
   }
 
   public Map<String, List<Statistics>> getResults() {
@@ -31,17 +30,29 @@ public class LocalTrackingListener implements IInvokedMethodListener {
     return threadIds;
   }
 
-  static class Statistics {
+  public static class Statistics {
     String methodName;
     long startTimeInMs;
+    long endTimeInMs;
+    long threadId;
 
     public Statistics(ITestResult testResult) {
-      this(testResult.getMethod().getMethodName(), testResult.getStartMillis());
+      this(
+          testResult.getMethod().getMethodName(),
+          testResult.getStartMillis(),
+          testResult.getEndMillis(),
+          asLong(testResult));
     }
 
-    public Statistics(String methodName, long startTimeInMs) {
+    public Statistics(String methodName, long startTimeInMs, long endTimeInMs, long threadId) {
       this.methodName = methodName;
       this.startTimeInMs = startTimeInMs;
+      this.endTimeInMs = endTimeInMs;
+      this.threadId = threadId;
     }
+  }
+
+  private static long asLong(ITestResult itr) {
+    return ((Number) itr.getAttribute(SampleTestClass.THREAD_ID)).longValue();
   }
 }
