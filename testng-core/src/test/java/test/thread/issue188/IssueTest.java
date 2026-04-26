@@ -1,7 +1,8 @@
 package test.thread.issue188;
 
-import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Collections;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
