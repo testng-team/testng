@@ -1,7 +1,7 @@
 package test.thread.issue188;
 
 import java.util.Collections;
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
@@ -25,10 +25,10 @@ public class IssueTest extends SimpleBaseTest {
       createXmlTest(xmlSuite, "Test3", Issue188TestSample.class);
       testng.setXmlSuites(Collections.singletonList(xmlSuite));
       testng.run();
-      Assertions.assertThat(Issue188TestSample.getStartedTestMethods())
+      assertThat(Issue188TestSample.getStartedTestMethods())
           .withFailMessage("All test methods should have started")
           .isEqualTo(Issue188TestSample.EXPECTED_METHOD_INVOCATIONS);
-      Assertions.assertThat(Issue188TestSample.getMaxActiveTestMethods())
+      assertThat(Issue188TestSample.getMaxActiveTestMethods())
           .withFailMessage("All test methods should have run in parallel")
           .isEqualTo(Issue188TestSample.EXPECTED_METHOD_INVOCATIONS);
     } finally {
