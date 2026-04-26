@@ -18,7 +18,7 @@ public class LocalTrackingListener implements IInvokedMethodListener {
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
     String key = testResult.getInstance().toString();
     results.computeIfAbsent(key, k -> new CopyOnWriteArrayList<>()).add(new Statistics(testResult));
-    Long threadId = Long.parseLong(testResult.getAttribute(SampleTestClass.THREAD_ID).toString());
+    Long threadId = asLong(testResult);
     threadIds.putIfAbsent(key, threadId);
   }
 
@@ -41,7 +41,7 @@ public class LocalTrackingListener implements IInvokedMethodListener {
           testResult.getMethod().getMethodName(),
           testResult.getStartMillis(),
           testResult.getEndMillis(),
-          Long.parseLong(testResult.getAttribute(SampleTestClass.THREAD_ID).toString()));
+          asLong(testResult));
     }
 
     public Statistics(String methodName, long startTimeInMs, long endTimeInMs, long threadId) {
@@ -50,5 +50,9 @@ public class LocalTrackingListener implements IInvokedMethodListener {
       this.endTimeInMs = endTimeInMs;
       this.threadId = threadId;
     }
+  }
+
+  private static long asLong(ITestResult itr) {
+    return ((Number) itr.getAttribute(SampleTestClass.THREAD_ID)).longValue();
   }
 }

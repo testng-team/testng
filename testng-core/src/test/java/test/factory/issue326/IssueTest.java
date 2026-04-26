@@ -27,17 +27,38 @@ public class IssueTest extends SimpleBaseTest {
 
     Map<String, List<Statistics>> results = listener.getResults();
 
+    // 1. We should be having only 2 instances (factory gets only 2 iterations via dataprovider)
     assertThat(results).containsOnlyKeys(SampleTestClass.FREDDY, SampleTestClass.BARNEY);
+    // 2. Every instance has 2 method invocations
     assertThat(results.get(SampleTestClass.FREDDY)).hasSize(2);
     assertThat(results.get(SampleTestClass.BARNEY)).hasSize(2);
 
+    // 3. The thread id for the methods that belong to each instance is the same.
     assertThat(threadIdsFor(results, SampleTestClass.FREDDY)).hasSize(1);
     assertThat(threadIdsFor(results, SampleTestClass.BARNEY)).hasSize(1);
 
+    // 4. Check to ensure that the thread id on which methods belonging to first instance ran
+    // is not the same as that of the methods that belong to second instance.
     long threadIdFreddyInstance = listener.getThreadIds().get(SampleTestClass.FREDDY);
     long threadIdBarneyInstance = listener.getThreadIds().get(SampleTestClass.BARNEY);
     assertThat(threadIdFreddyInstance).isNotEqualTo(threadIdBarneyInstance);
 
+    //    Illustration:
+    //
+    //    Time --->
+    //    Freddy:  |-------------|
+    //        100ms       900ms
+    //
+    //    Barney:       |-------------|
+    //        300ms       1100ms
+    //
+    //    Check:
+    //
+    //    Freddy starts before Barney ends: 100 < 1100  true
+    //    Barney starts before Freddy ends: 300 < 900   true
+    //
+    // So the windows overlap,
+    // meaning TestNG did not run Freddy completely first and Barney completely second.
     assertThat(executionWindowsOverlap(results, SampleTestClass.FREDDY, SampleTestClass.BARNEY))
         .isTrue();
   }
