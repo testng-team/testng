@@ -13,6 +13,6 @@ jobs:
     if: github.repository_owner == 'testng-team'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Label Commenter
         uses: peaceiris/actions-label-commenter@v1
