@@ -38,44 +38,45 @@ public class InvokeMethodRunnable implements Callable<Boolean> {
 
   private boolean runOne() {
     boolean invoked;
+    RuntimeException t = null;
     try {
-      RuntimeException t = null;
-      try {
-        ConstructorOrMethod m = m_method.getConstructorOrMethod();
-        if (m_hookable == null) {
-          invoked = true;
-          MethodInvocationHelper.invokeMethod(m.getMethod(), m_instance, m_parameters);
-        } else {
-          invoked =
-              MethodInvocationHelper.invokeHookable(
-                  m_instance, m_parameters, m_hookable, m.getMethod(), m_testResult);
-        }
-      } catch (Throwable e) {
+      ConstructorOrMethod m = m_method.getConstructorOrMethod();
+      if (m_hookable == null) {
         invoked = true;
-        Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
-        t = new TestNGRuntimeException(cause);
+        MethodInvocationHelper.invokeMethod(m.getMethod(), m_instance, m_parameters);
+      } else {
+        invoked =
+            MethodInvocationHelper.invokeHookable(
+                m_instance, m_parameters, m_hookable, m.getMethod(), m_testResult);
       }
-      if (null != t) {
-        Thread.currentThread().interrupt();
-        throw t;
-      }
-      return invoked;
-    } finally {
-      m_method.incrementCurrentInvocationCount();
+    } catch (Throwable e) {
+      invoked = true;
+      Throwable cause = Optional.ofNullable(e.getCause()).orElse(e);
+      t = new TestNGRuntimeException(cause);
     }
+    if (null != t) {
+      Thread.currentThread().interrupt();
+      throw t;
+    }
+    return invoked;
   }
 
   @Override
   public Boolean call() throws Exception {
     boolean flag = true;
-    if (m_method.getInvocationTimeOut() > 0) {
-      for (int i = 0; i < m_method.getInvocationCount(); i++) {
-        flag = flag && runOne();
+    try {
+      if (m_method.getInvocationTimeOut() > 0) {
+        for (int i = 0; i < m_method.getInvocationCount(); i++) {
+          flag = flag && runOne();
+        }
+      } else {
+        flag = runOne();
       }
-    } else {
-      flag = runOne();
+      return flag;
+    } finally {
+      // Ensure method increment happens always, even if there's an exception
+      m_method.incrementCurrentInvocationCount();
     }
-    return flag;
   }
 
   public static class TestNGRuntimeException extends RuntimeException {
