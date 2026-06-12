@@ -289,6 +289,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
           // Set test result as 'SKIP' in 'beforeConfiguration' & 'beforeInvocation' if
           // config method is skip.
           testResult.setStatus(ITestResult.SKIP);
+          testResult.setThrowable(ExceptionUtils.getExceptionDetails(m_testContext, inst));
           runConfigurationListeners(testResult, arguments.getTestMethod(), true /* before */);
           runInvokedMethodListeners(BEFORE_INVOCATION, invokedMethod, testResult);
           testResult.setEndMillis(testResult.getStartMillis());
