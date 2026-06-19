@@ -15,67 +15,21 @@ public class IssueTest extends SimpleBaseTest {
     testNG.addListener(new TestListener());
     testNG.run();
 
-    assertThat(ITestResult.STARTED)
-        .isEqualTo(
-            TestListener.beforeInvocation
-                .get("test.listeners.github2522.FirstTestSamplefirstMethod")
-                .intValue());
-    assertThat(ITestResult.STARTED)
-        .isEqualTo(
-            TestListener.beforeInvocation
-                .get("test.listeners.github2522.FirstTestSamplesecondMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.beforeInvocation
-                .get("test.listeners.github2522.FirstTestSamplethirdMethod")
-                .intValue());
-    assertThat(ITestResult.STARTED)
-        .isEqualTo(
-            TestListener.beforeInvocation
-                .get("test.listeners.github2522.SecondTestSamplefirstMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.beforeInvocation
-                .get("test.listeners.github2522.SecondTestSamplesecondMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.beforeInvocation
-                .get("test.listeners.github2522.SecondTestSamplethirdMethod")
-                .intValue());
+    assertThat(TestListener.beforeInvocation)
+        .containsEntry("test.listeners.github2522.FirstTestSamplefirstMethod", ITestResult.STARTED)
+        .containsEntry("test.listeners.github2522.FirstTestSamplesecondMethod", ITestResult.STARTED)
+        .containsEntry("test.listeners.github2522.FirstTestSamplethirdMethod", ITestResult.SKIP)
+        .containsEntry("test.listeners.github2522.SecondTestSamplefirstMethod", ITestResult.STARTED)
+        .containsEntry("test.listeners.github2522.SecondTestSamplesecondMethod", ITestResult.SKIP)
+        .containsEntry("test.listeners.github2522.SecondTestSamplethirdMethod", ITestResult.SKIP);
 
-    assertThat(ITestResult.SUCCESS)
-        .isEqualTo(
-            TestListener.afterInvocation
-                .get("test.listeners.github2522.FirstTestSamplefirstMethod")
-                .intValue());
-    assertThat(ITestResult.FAILURE)
-        .isEqualTo(
-            TestListener.afterInvocation
-                .get("test.listeners.github2522.FirstTestSamplesecondMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.afterInvocation
-                .get("test.listeners.github2522.FirstTestSamplethirdMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.afterInvocation
-                .get("test.listeners.github2522.SecondTestSamplefirstMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.afterInvocation
-                .get("test.listeners.github2522.SecondTestSamplesecondMethod")
-                .intValue());
-    assertThat(ITestResult.SKIP)
-        .isEqualTo(
-            TestListener.afterInvocation
-                .get("test.listeners.github2522.SecondTestSamplethirdMethod")
-                .intValue());
+    assertThat(TestListener.afterInvocation)
+        .containsEntry("test.listeners.github2522.FirstTestSamplefirstMethod", ITestResult.SUCCESS)
+        .containsEntry("test.listeners.github2522.FirstTestSamplesecondMethod", ITestResult.FAILURE)
+        .containsEntry("test.listeners.github2522.FirstTestSamplethirdMethod", ITestResult.SKIP)
+        .containsEntry("test.listeners.github2522.SecondTestSamplefirstMethod", ITestResult.SKIP)
+        .containsEntry("test.listeners.github2522.SecondTestSamplesecondMethod", ITestResult.SKIP)
+        .containsEntry("test.listeners.github2522.SecondTestSamplethirdMethod", ITestResult.SKIP);
   }
 
   @Test

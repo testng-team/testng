@@ -16,6 +16,6 @@ public class AbstractTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(tla.getPassedTests()).hasSize(2);
   }
 }

@@ -19,6 +19,6 @@ public class SingleThreadForParallelMethodsTest extends BaseTest {
 
     run();
 
-    assertThat(PriorityInSingleThreadTest.getThreadCount()).isEqualTo(1);
+    assertThat(PriorityInSingleThreadTest.getThreadCount()).isOne();
   }
 }

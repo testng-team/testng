@@ -11,14 +11,14 @@ public class TwoTestMethodsShareSameDataProviderSample {
   @Test(dataProvider = "cookie-master")
   public void testHowMuchPoAte(String cookieName, int count) {
     assertThat("oreo").isEqualTo(cookieName);
-    assertThat(count > 100).isTrue();
+    assertThat(count).isGreaterThan(100);
   }
 
   @TestInfo(name = "nibbler")
   @Test(dataProvider = "cookie-master")
   public void testHowMuchMasterShifuAte(String cookieName, int count) {
     assertThat("marie-gold").isEqualTo(cookieName);
-    assertThat(count < 100).isTrue();
+    assertThat(count).isLessThan(100);
   }
 
   @DataProvider(name = "cookie-master")

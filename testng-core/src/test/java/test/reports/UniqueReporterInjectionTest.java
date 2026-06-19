@@ -25,8 +25,8 @@ public class UniqueReporterInjectionTest extends SimpleBaseTest {
     tng.run();
     // Since we have another reporting listener that is injected via the service loader file
     // reporting listeners size will now have to be two
-    assertThat(tng.getReporters().size()).isEqualTo(2);
-    assertThat(ReporterListenerForIssue1227.counter).isEqualTo(1);
+    assertThat(tng.getReporters()).hasSize(2);
+    assertThat(ReporterListenerForIssue1227.counter).isOne();
   }
 
   public static class ReporterListenerForIssue1227 implements IReporter {

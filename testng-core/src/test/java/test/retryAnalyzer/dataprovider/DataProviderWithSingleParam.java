@@ -24,23 +24,23 @@ public class DataProviderWithSingleParam {
     // If the param is 1 then decrement the counter countWithSingleParam1 and assert true to check
     // if it is 0.
     if (param == 1) {
-      assertThat(countWithSingleParam1-- == 0)
+      assertThat(countWithSingleParam1--)
           .withFailMessage(
               "Test execution is not"
                   + "successful after 3 retry attempts configured in retryAnalyzer for this data "
                   + param)
-          .isTrue();
+          .isZero();
     }
 
     // If the param is 2 then decrement the counter countWithSingleParam2 and assert true to check
     // if it is 0.
     if (param == 2) {
-      assertThat(countWithSingleParam2-- == 0)
+      assertThat(countWithSingleParam2--)
           .withFailMessage(
               "Test execution is not"
                   + "successful after 3 retry attempts configured in retryAnalyzer for this data "
                   + param)
-          .isTrue();
+          .isZero();
     }
   }
 }

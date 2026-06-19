@@ -12,7 +12,7 @@ public class MethodTest extends BaseTest {
   @Test(groups = {"current"})
   public void includeMethodsOnly() {
     addClass(CLASS_NAME);
-    assertThat(getTest().getXmlClasses().size()).isEqualTo(1);
+    assertThat(getTest().getXmlClasses()).hasSize(1);
     addIncludedMethod(CLASS_NAME, ".*method2");
     run();
     String[] passed = {
@@ -26,7 +26,7 @@ public class MethodTest extends BaseTest {
   @Test(groups = {"current"})
   public void excludeMethodsOnly() {
     addClass(CLASS_NAME);
-    assertThat(getTest().getXmlClasses().size()).isEqualTo(1);
+    assertThat(getTest().getXmlClasses()).hasSize(1);
     addExcludedMethod(CLASS_NAME, ".*method2");
     run();
     String[] passed = {"method1", "method3"};

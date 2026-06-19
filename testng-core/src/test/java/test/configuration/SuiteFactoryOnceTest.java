@@ -15,7 +15,7 @@ public class SuiteFactoryOnceTest extends SimpleBaseTest {
     SuiteFactoryOnceSample1Test.m_after = 0;
     tng.run();
 
-    assertThat(SuiteFactoryOnceSample1Test.m_before).isEqualTo(1);
-    assertThat(SuiteFactoryOnceSample1Test.m_after).isEqualTo(1);
+    assertThat(SuiteFactoryOnceSample1Test.m_before).isOne();
+    assertThat(SuiteFactoryOnceSample1Test.m_after).isOne();
   }
 }

@@ -40,12 +40,12 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     run(new Class[] {Failure.class}, l);
     assertMethodCount(l);
     assertThat(l.getSuiteStatus()).isEqualTo(ITestResult.FAILURE);
-    assertThat(null != l.getSuiteThrowable()).isTrue();
-    assertThat(l.getSuiteThrowable().getClass() == RuntimeException.class).isTrue();
+    assertThat(l.getSuiteThrowable()).isNotNull();
+    assertThat(l.getSuiteThrowable().getClass()).isSameAs(RuntimeException.class);
 
     assertThat(l.getMethodStatus()).isEqualTo(ITestResult.FAILURE);
-    assertThat(null != l.getMethodThrowable()).isTrue();
-    assertThat(l.getMethodThrowable().getClass() == IllegalArgumentException.class).isTrue();
+    assertThat(l.getMethodThrowable()).isNotNull();
+    assertThat(l.getMethodThrowable().getClass()).isSameAs(IllegalArgumentException.class);
   }
 
   /**
@@ -69,7 +69,7 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     IInvokedMethod after2 = m.get(4);
     assertThat(after2.getTestMethod().isAfterMethodConfiguration()).isTrue();
     assertThat(after2.isConfigurationMethod()).isTrue();
-    assertThat(after1.getDate() != after2.getDate()).isTrue();
+    assertThat(after1.getDate()).isNotSameAs(after2.getDate());
   }
 
   @Test(
@@ -90,31 +90,31 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     InvokedMethodNameListener l = new InvokedMethodNameListener();
     run(new Class[] {Success.class}, l);
 
-    assertThat(l.testMethods.size()).isEqualTo(1);
-    assertThat(l.testMethods.contains("a")).isTrue();
+    assertThat(l.testMethods).hasSize(1).contains("a");
 
-    assertThat(l.testMethodsFromTM.size()).isEqualTo(1);
-    assertThat(l.testMethodsFromTM.contains("a")).isTrue();
+    assertThat(l.testMethodsFromTM).hasSize(1).contains("a");
 
-    assertThat(l.configurationMethods.size()).isEqualTo(8);
-    assertThat(l.configurationMethods.contains("beforeMethod")).isTrue();
-    assertThat(l.configurationMethods.contains("afterMethod")).isTrue();
-    assertThat(l.configurationMethods.contains("beforeTest")).isTrue();
-    assertThat(l.configurationMethods.contains("afterTest")).isTrue();
-    assertThat(l.configurationMethods.contains("beforeClass")).isTrue();
-    assertThat(l.configurationMethods.contains("afterClass")).isTrue();
-    assertThat(l.configurationMethods.contains("beforeSuite")).isTrue();
-    assertThat(l.configurationMethods.contains("afterSuite")).isTrue();
+    assertThat(l.configurationMethods)
+        .hasSize(8)
+        .contains("beforeMethod")
+        .contains("afterMethod")
+        .contains("beforeTest")
+        .contains("afterTest")
+        .contains("beforeClass")
+        .contains("afterClass")
+        .contains("beforeSuite")
+        .contains("afterSuite");
 
-    assertThat(l.configurationMethodsFromTM.size()).isEqualTo(8);
-    assertThat(l.configurationMethodsFromTM.contains("beforeMethod")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("afterMethod")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("beforeTest")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("afterTest")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("beforeClass")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("afterClass")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("beforeSuite")).isTrue();
-    assertThat(l.configurationMethodsFromTM.contains("afterSuite")).isTrue();
+    assertThat(l.configurationMethodsFromTM)
+        .hasSize(8)
+        .contains("beforeMethod")
+        .contains("afterMethod")
+        .contains("beforeTest")
+        .contains("afterTest")
+        .contains("beforeClass")
+        .contains("afterClass")
+        .contains("beforeSuite")
+        .contains("afterSuite");
   }
 
   @Test
@@ -135,6 +135,6 @@ public class InvokedMethodListenerTest extends SimpleBaseTest {
     assertThat(m.get(0).getTestMethod().getMethodName()).isEqualTo("someMethod1");
     assertThat(m.get(1).getTestMethod().getMethodName()).isEqualTo("someMethod3");
     assertThat(m.get(2).getTestMethod().getMethodName()).isEqualTo("someTest");
-    assertThat(m.size()).isEqualTo(3);
+    assertThat(m).hasSize(3);
   }
 }

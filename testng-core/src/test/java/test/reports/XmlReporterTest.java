@@ -87,7 +87,7 @@ public class XmlReporterTest extends SimpleBaseTest {
                                         t,
                                         new MethodInstance(new WrappedTestNGMethod(t.getMethod()))))
                             .collect(Collectors.toList())));
-    assertThat(file.exists()).isTrue();
+    assertThat(file).exists();
   }
 
   @Test(description = "GITHUB-2886")
@@ -108,7 +108,7 @@ public class XmlReporterTest extends SimpleBaseTest {
     int total = Integer.parseInt(node.getAttributes().getNamedItem("total").getNodeValue());
     int passed = Integer.parseInt(node.getAttributes().getNamedItem("passed").getNodeValue());
     int failed = Integer.parseInt(node.getAttributes().getNamedItem("failed").getNodeValue());
-    assertThat(ignored).isEqualTo(1);
+    assertThat(ignored).isOne();
     assertThat(total).isEqualTo(3);
     assertThat(passed).isEqualTo(2);
     assertThat(failed).isZero();

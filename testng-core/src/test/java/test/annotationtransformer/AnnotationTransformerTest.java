@@ -135,7 +135,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     List<ITestResult> results = passedName != null ? tla.getPassedTests() : tla.getFailedTests();
     String name = passedName != null ? passedName : failedName;
 
-    assertThat(results.size()).isEqualTo(1);
+    assertThat(results).hasSize(1);
     assertThat(name).isEqualTo(results.get(0).getMethod().getMethodName());
     assertThat(MySuiteListener.triggered).isTrue();
     assertThat(MySuiteListener2.triggered).isFalse();
@@ -177,7 +177,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 
   public static class CustomizedTestListenerAdaptor extends TestListenerAdapter {}
@@ -193,7 +193,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
     String[] expectedLogs =
         new String[] {
           "transform_data_provider",
@@ -214,7 +214,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(3);
+    assertThat(tla.getPassedTests()).hasSize(3);
 
     tng = create();
     tng.addListener(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
@@ -224,7 +224,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(5);
+    assertThat(tla.getPassedTests()).hasSize(5);
   }
 
   @Test
@@ -252,7 +252,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 
   @Test(description = "GITHUB-1790")
@@ -273,7 +273,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG myTestNG = create(myTest.getSuite());
     myTestNG.run();
     int retried = RetryListener.getExecutionCount();
-    assertThat(retried).isEqualTo(1);
+    assertThat(retried).isOne();
   }
 
   @Test(description = "GITHUB-2536", dataProvider = "getXmlPackages")

@@ -43,7 +43,7 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void failsForOddNumbersOnly(int i) {
-      assertThat(i % 2).isEqualTo(0);
+      assertThat(i % 2).isZero();
     }
   }
 
@@ -62,7 +62,7 @@ public class SampleTestContainer {
 
     @Test(invocationCount = 10, successPercentage = 90, retryAnalyzer = RetryAnalyzer.class)
     public void invocationCountTestWhichEventuallyPassesDueToSuccessFactors() {
-      assertThat(switcher.getAndIncrement() < 9).isTrue();
+      assertThat(switcher.getAndIncrement()).isLessThan(9);
     }
   }
 
@@ -87,7 +87,7 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void failsForOddNumbersOnly(int i) {
-      assertThat(i % 2).isEqualTo(0);
+      assertThat(i % 2).isZero();
     }
 
     @Test(
@@ -100,7 +100,7 @@ public class SampleTestContainer {
 
     @Test(invocationCount = 10, successPercentage = 90)
     public void invocationCountTestWhichEventuallyPassesDueToSuccessFactors() {
-      assertThat(switcher.getAndIncrement() < 9).isTrue();
+      assertThat(switcher.getAndIncrement()).isLessThan(9);
     }
   }
 }

@@ -159,7 +159,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
     tng.run();
-    assertThat(listener.getSkippedMethodNames().size()).isEqualTo(size);
+    assertThat(listener.getSkippedMethodNames()).hasSize(size);
   }
 
   @DataProvider(name = "1706")
@@ -177,16 +177,12 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(
-            tla.getPassedTests().stream()
-                .map(RetryAnalyzerTest::methodName)
-                .collect(Collectors.toList()))
+    assertThat(tla.getPassedTests())
+        .extracting(RetryAnalyzerTest::methodName)
         .containsExactly("a", "b");
     assertThat(tla.getFailedTests()).isEmpty();
-    assertThat(
-            tla.getSkippedTests().stream()
-                .map(RetryAnalyzerTest::methodName)
-                .collect(Collectors.toList()))
+    assertThat(tla.getSkippedTests())
+        .extracting(RetryAnalyzerTest::methodName)
         .containsExactly("a");
   }
 

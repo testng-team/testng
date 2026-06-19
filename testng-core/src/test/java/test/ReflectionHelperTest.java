@@ -21,11 +21,11 @@ public class ReflectionHelperTest {
 
     // Testing a straight forward use case of retrieving concrete methods
     methods = prune(ReflectionHelper.getLocalMethods(Dog.class));
-    assertThat(methods.length).isEqualTo(1);
+    assertThat(methods.length).isOne();
 
     // When class has no methods count should be zero.
     methods = prune(ReflectionHelper.getLocalMethods(Dinosaur.class));
-    assertThat(methods.length).isEqualTo(0);
+    assertThat(methods.length).isZero();
 
     // Abstract methods should be included.
     methods = prune(ReflectionHelper.getLocalMethods(Dragon.class));
@@ -33,7 +33,7 @@ public class ReflectionHelperTest {
 
     // main methods should be pruned
     methods = prune(ReflectionHelper.getLocalMethods(TestClassSample.class));
-    assertThat(methods.length).isEqualTo(1);
+    assertThat(methods.length).isOne();
   }
 
   /**

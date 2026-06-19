@@ -83,9 +83,9 @@ public class MethodSelectorTest extends BaseTest {
     addIncludedMethod(className, "train_Local");
     addIncludedMethod(className, "flight_Domestic");
     run();
-    assertThat(getPassedTests().isEmpty()).isTrue();
-    assertThat(getFailedTests().isEmpty()).isTrue();
-    assertThat(getSkippedTests().isEmpty()).isTrue();
+    assertThat(getPassedTests()).isEmpty();
+    assertThat(getFailedTests()).isEmpty();
+    assertThat(getSkippedTests()).isEmpty();
   }
 
   @Test(description = "GITHUB-1985")

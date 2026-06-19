@@ -33,7 +33,7 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(tla.getPassedTests()).hasSize(2);
   }
 
   @Test

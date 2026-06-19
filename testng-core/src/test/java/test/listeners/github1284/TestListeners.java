@@ -16,7 +16,7 @@ public class TestListeners extends SimpleBaseTest {
         Collections.singletonList(
             getPathToResource("test/listeners/github1284/github1284_nolistener.xml")));
     testNG.run();
-    assertThat(testNG.getStatus()).isEqualTo(0);
+    assertThat(testNG.getStatus()).isZero();
   }
 
   @Test(priority = 2)
@@ -26,7 +26,7 @@ public class TestListeners extends SimpleBaseTest {
         Collections.singletonList(
             getPathToResource("test/listeners/github1284/github1284_withlistener.xml")));
     testNG.run();
-    assertThat(testNG.getStatus()).isEqualTo(0);
+    assertThat(testNG.getStatus()).isZero();
   }
 
   @Test(priority = 3)
@@ -35,6 +35,6 @@ public class TestListeners extends SimpleBaseTest {
     testNG.setTestSuites(
         Collections.singletonList(getPathToResource("test/listeners/github1284/github1284.xml")));
     testNG.run();
-    assertThat(testNG.getStatus()).isEqualTo(0);
+    assertThat(testNG.getStatus()).isZero();
   }
 }

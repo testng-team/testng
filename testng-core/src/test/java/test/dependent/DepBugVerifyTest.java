@@ -12,7 +12,7 @@ public class DepBugVerifyTest {
     List<String> log = DepBugSampleTest.getLog();
     String[] expected = new String[] {"setup", "send", "get", "destroy"};
     for (int i = 0; i < log.size(); i++) {
-      assertThat(expected[i]).isEqualTo(log.get(i));
+      assertThat(log.get(i)).isEqualTo(expected[i]);
     }
   }
 }

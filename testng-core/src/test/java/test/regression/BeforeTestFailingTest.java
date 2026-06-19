@@ -17,7 +17,7 @@ public class BeforeTestFailingTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getSkippedTests().size()).isEqualTo(1);
-    assertThat(tla.getPassedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests()).hasSize(1);
+    assertThat(tla.getPassedTests()).isEmpty();
   }
 }

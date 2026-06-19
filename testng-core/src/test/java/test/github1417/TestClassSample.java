@@ -17,6 +17,6 @@ public class TestClassSample {
 
   @Test
   public void testMethod() {
-    assertThat("firefox").isEqualTo(browsername);
+    assertThat(browsername).isEqualTo("firefox");
   }
 }

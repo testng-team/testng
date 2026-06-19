@@ -102,21 +102,21 @@ public class ParallelByMethodsTestCase1Scenario1 extends BaseParallelizationTest
   // Verifies that the expected number of suite, test and test method level events were logged.
   @Test
   public void sanityCheck() {
-    assertThat(suiteLevelEventLogs.size())
+    assertThat(suiteLevelEventLogs)
         .withFailMessage(
             "There should be 2 suite level events logged for " + SUITE + ": " + suiteLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(testLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(testLevelEventLogs)
         .withFailMessage(
             "There should be 2 test level events logged for " + SUITE + ": " + testLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(testMethodLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(testMethodLevelEventLogs)
         .withFailMessage(
             "There should be 15 test method level event logged for "
                 + SUITE
                 + ": "
                 + testMethodLevelEventLogs)
-        .isEqualTo(15);
+        .hasSize(15);
   }
 
   // Verify that the suite listener and test listener events have timestamps in the following order:

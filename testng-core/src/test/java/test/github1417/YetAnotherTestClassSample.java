@@ -34,7 +34,7 @@ public class YetAnotherTestClassSample {
 
   @Test
   public void testMethod() {
-    assertThat(browsers.isEmpty()).isFalse();
+    assertThat(browsers).isNotEmpty();
   }
 
   @Parameters({"browsername"})

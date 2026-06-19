@@ -34,7 +34,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      assertThat(expected.toArray(new String[0])).containsExactlyInAnyOrder(test1.getGroups());
+      assertThat(test1.getGroups()).containsExactlyInAnyOrderElementsOf(expected);
     }
   }
 
@@ -49,8 +49,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      assertThat(expected.toArray(new String[0]))
-          .containsExactlyInAnyOrder(test1.getDependsOnGroups());
+      assertThat(test1.getDependsOnGroups()).containsExactlyInAnyOrderElementsOf(expected);
     }
   }
 
@@ -64,8 +63,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      assertThat(expected.toArray(new String[0]))
-          .containsExactlyInAnyOrder(test1.getDependsOnMethods());
+      assertThat(test1.getDependsOnMethods()).containsExactlyInAnyOrderElementsOf(expected);
     }
   }
 
@@ -75,7 +73,7 @@ public class MAnnotation2SampleTest {
     Method method = MTest3.class.getMethod("beforeSuite");
     IConfigurationAnnotation test1 =
         (IConfigurationAnnotation) m_finder.findAnnotation(method, IBeforeSuite.class);
-    assertThat(new String[] {"method-test3"}).containsExactlyInAnyOrder(test1.getGroups());
+    assertThat(test1.getGroups()).containsExactlyInAnyOrder("method-test3");
   }
 
   @Test(groups = "current")

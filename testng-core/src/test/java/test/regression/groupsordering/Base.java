@@ -11,7 +11,10 @@ public abstract class Base {
 
   @BeforeGroups(value = "a", groups = "a")
   public void setUp() {
-    assertThat(s_childAWasRun || s_childBWasRun)
+    assertThat(s_childAWasRun)
+        .withFailMessage("Static field was not reset: @AfterGroup method not invoked")
+        .isFalse();
+    assertThat(s_childBWasRun)
         .withFailMessage("Static field was not reset: @AfterGroup method not invoked")
         .isFalse();
   }

@@ -36,8 +36,7 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
     NameCollector collector = new NameCollector();
     testNG.addListener(collector);
     testNG.run();
-    assertThat(collector.names.contains("overrideTest")).isTrue();
-    assertThat(collector.names.contains("defaultTest")).isFalse();
+    assertThat(collector.names).contains("overrideTest").doesNotContain("defaultTest");
   }
 
   @Test(description = "GITHUB-2974")
@@ -54,7 +53,6 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
     NameCollector collector = new NameCollector();
     testNG.addListener(collector);
     testNG.run();
-    assertThat(collector.names.contains("defaultTest")).isTrue();
-    assertThat(collector.names.contains("overrideTest")).isFalse();
+    assertThat(collector.names).contains("defaultTest").doesNotContain("overrideTest");
   }
 }

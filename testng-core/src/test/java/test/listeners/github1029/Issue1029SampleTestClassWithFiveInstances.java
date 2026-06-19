@@ -17,7 +17,7 @@ public class Issue1029SampleTestClassWithFiveInstances {
 
   @Test
   public void a() {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
   }
 
   @DataProvider(name = "dp")

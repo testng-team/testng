@@ -19,9 +19,9 @@ public class SampleInheritance extends BaseSampleInheritance {
       groups = "final",
       dependsOnGroups = {"configuration1"})
   public void configuration2() {
-    assertThat(m_configurations.size())
+    assertThat(m_configurations)
         .withFailMessage("Expected size 2 found " + m_configurations.size())
-        .isEqualTo(2);
+        .hasSize(2);
     assertThat(m_configurations.get(0))
         .withFailMessage("Expected configuration0 to be run")
         .isEqualTo("configuration0");
@@ -45,7 +45,7 @@ public class SampleInheritance extends BaseSampleInheritance {
 
   @Test(groups = "final2", dependsOnGroups = "final")
   public void configurationsWereCalledInOrder() {
-    assertThat(m_configurations.size()).isEqualTo(3);
+    assertThat(m_configurations).hasSize(3);
     assertThat(m_configurations.get(0))
         .withFailMessage("Expected configuration0 to be run")
         .isEqualTo("configuration0");

@@ -15,7 +15,7 @@ public class TestAfter {
     tng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     tng.setTestClasses(new Class[] {TestAfter1.class, TestAfter2.class});
     tng.run();
-    assertThat(BaseAfter.m_afterCount).isEqualTo(1);
+    assertThat(BaseAfter.m_afterCount).isOne();
   }
 
   @AfterTest

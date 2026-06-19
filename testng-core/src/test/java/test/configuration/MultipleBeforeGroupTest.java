@@ -19,6 +19,6 @@ public class MultipleBeforeGroupTest {
 
   @Test(dependsOnMethods = "test")
   public void verify() {
-    assertThat(1).isEqualTo(m_count);
+    assertThat(m_count).isOne();
   }
 }

@@ -20,21 +20,21 @@ public class CtorCalledOnce {
   public void testMethod1() {
     assertThat(instantiated)
         .withFailMessage("Expected 1, was invoked " + instantiated + " times")
-        .isEqualTo(1);
+        .isOne();
   }
 
   @Test
   public void testMethod2() {
     assertThat(instantiated)
         .withFailMessage("Expected 1, was invoked " + instantiated + " times")
-        .isEqualTo(1);
+        .isOne();
   }
 
   @Test
   public void testMethod3() {
     assertThat(instantiated)
         .withFailMessage("Expected 1, was invoked " + instantiated + " times")
-        .isEqualTo(1);
+        .isOne();
   }
 
   @AfterTest

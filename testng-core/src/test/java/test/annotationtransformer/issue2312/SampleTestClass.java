@@ -8,6 +8,6 @@ public class SampleTestClass {
 
   @Test
   public void testMethod() {
-    assertThat(1).isEqualTo(1);
+    assertThat(1).isOne();
   }
 }

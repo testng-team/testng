@@ -12,7 +12,7 @@ public class DataDrivenSample {
 
   @Test(retryAnalyzer = LocalRetry.class, dataProvider = "getdata")
   public void testMethod(int i) {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
     if (counter.incrementAndGet() != 3) {
       fail();
     }

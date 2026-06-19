@@ -107,7 +107,7 @@ public class YamlTest extends SimpleBaseTest {
     String yamlSuiteFile = "src/test/resources/yaml/testXmlTestIndex.yaml";
     XmlSuite suite = yamlParser.parse(yamlSuiteFile, new FileInputStream(yamlSuiteFile), false);
     List<XmlTest> tests = suite.getTests();
-    assertThat(tests.size()).isEqualTo(3);
+    assertThat(tests).hasSize(3);
     for (int i = 0; i < tests.size(); i++) {
       assertThat(tests.get(i).getIndex()).isEqualTo(i);
     }

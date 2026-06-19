@@ -34,8 +34,8 @@ public class Issue565Test extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(0);
-    assertThat(tla.getPassedTests().size()).isEqualTo(2 + 4 * GeneratedClassFactory.SIZE);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).hasSize(2 + 4 * GeneratedClassFactory.SIZE);
   }
 }

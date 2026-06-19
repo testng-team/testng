@@ -34,7 +34,7 @@ public class SampleTestClassWithGroupConfigs {
   @Test(groups = "2684_group", retryAnalyzer = RerunAnalyzer.class)
   public void testMethod() {
     RerunAnalyzer.secondTestRetryCount++;
-    assertThat(RerunAnalyzer.secondTestRetryCount > RerunAnalyzer.maxRetryCount).isTrue();
+    assertThat(RerunAnalyzer.secondTestRetryCount).isGreaterThan(RerunAnalyzer.maxRetryCount);
   }
 
   @AfterMethod(alwaysRun = true)

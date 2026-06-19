@@ -15,8 +15,9 @@ public class IssueTest extends SimpleBaseTest {
     String cls = SingleTest.class.getCanonicalName() + ".test";
     tng.run();
     Map<String, Boolean> actual = LocalTestListener.data;
-    assertThat(actual.get("onTestSkipped_" + cls)).isEqualTo(false);
-    assertThat(actual.get("onTestStart_" + cls)).isEqualTo(false);
-    assertThat(actual.get("tearDown_" + cls)).isEqualTo(false);
+    assertThat(actual)
+        .containsEntry("onTestSkipped_" + cls, false)
+        .containsEntry("onTestStart_" + cls, false)
+        .containsEntry("tearDown_" + cls, false);
   }
 }

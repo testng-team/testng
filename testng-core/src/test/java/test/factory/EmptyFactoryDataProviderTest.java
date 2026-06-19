@@ -19,8 +19,8 @@ public class EmptyFactoryDataProviderTest extends SimpleBaseTest {
 
     testng.run();
 
-    assertThat(tla.getFailedTests().isEmpty()).isTrue();
-    assertThat(tla.getSkippedTests().isEmpty()).isTrue();
-    assertThat(tla.getPassedTests().isEmpty()).isTrue();
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).isEmpty();
   }
 }

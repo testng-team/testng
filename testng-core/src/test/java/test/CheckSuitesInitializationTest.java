@@ -34,6 +34,6 @@ public class CheckSuitesInitializationTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener(tla);
     tng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(4);
+    assertThat(tla.getPassedTests()).hasSize(4);
   }
 }

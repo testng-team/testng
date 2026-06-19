@@ -24,7 +24,7 @@ public class TimeoutWithNoExecutorTest extends SimpleBaseTest {
     TestListenerAdapter listener = new TestListenerAdapter();
     testNG.addListener(listener);
     testNG.run();
-    assertThat(listener.getFailedTests().isEmpty()).isTrue();
-    assertThat(listener.getConfigurationFailures().isEmpty()).isTrue();
+    assertThat(listener.getFailedTests()).isEmpty();
+    assertThat(listener.getConfigurationFailures()).isEmpty();
   }
 }

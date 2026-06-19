@@ -13,12 +13,12 @@ public class JUnitSample3 extends TestCase {
   private int m_count = 0;
 
   public void test1() {
-    assertThat(m_count).isEqualTo(0);
+    assertThat(m_count).isZero();
     m_count++;
   }
 
   public void test2() {
-    assertThat(m_count).isEqualTo(0);
+    assertThat(m_count).isZero();
     m_count++;
   }
 }

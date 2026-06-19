@@ -16,7 +16,7 @@ public class VerifyTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(expected);
+    assertThat(tla.getPassedTests()).hasSize(expected);
   }
 
   @Test
@@ -34,7 +34,7 @@ public class VerifyTest extends SimpleBaseTest {
     TestNG tng = create(Verify2SampleTest.class);
     VerifyTestListener.m_count = 0;
     tng.run();
-    assertThat(VerifyTestListener.m_count).isEqualTo(1);
+    assertThat(VerifyTestListener.m_count).isOne();
   }
 
   @Test
@@ -42,6 +42,6 @@ public class VerifyTest extends SimpleBaseTest {
     TestNG tng = create(Verify3SampleTest.class);
     VerifyTestListener.m_count = 0;
     tng.run();
-    assertThat(VerifyTestListener.m_count).isEqualTo(1);
+    assertThat(VerifyTestListener.m_count).isOne();
   }
 }

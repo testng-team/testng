@@ -20,10 +20,10 @@ public class SkippedExceptionTest {
     test.run();
     List<ITestResult> confSkips = listener.getConfigurationSkips();
     List<ITestResult> testSkips = listener.getSkippedTests();
-    assertThat(testSkips.size()).isEqualTo(1);
+    assertThat(testSkips).hasSize(1);
     assertThat(testSkips.get(0).getMethod().getMethodName()).isEqualTo("dummyTest");
 
-    assertThat(confSkips.size()).isEqualTo(1);
+    assertThat(confSkips).hasSize(1);
     assertThat(confSkips.get(0).getMethod().getMethodName())
         .isEqualTo("configurationLevelSkipException");
   }
@@ -38,9 +38,9 @@ public class SkippedExceptionTest {
     List<ITestResult> skips = listener.getSkippedTests();
     List<ITestResult> failures = listener.getFailedTests();
     List<ITestResult> passed = listener.getPassedTests();
-    assertThat(skips.size()).isEqualTo(1);
-    assertThat(failures.size()).isEqualTo(1);
-    assertThat(passed.size()).isEqualTo(1);
+    assertThat(skips).hasSize(1);
+    assertThat(failures).hasSize(1);
+    assertThat(passed).hasSize(1);
     assertThat(skips.get(0).getMethod().getMethodName()).isEqualTo("genericSkipException");
     assertThat(failures.get(0).getMethod().getMethodName()).isEqualTo("timedSkipException");
     assertThat(passed.get(0).getMethod().getMethodName()).isEqualTo("genericExpectedSkipException");

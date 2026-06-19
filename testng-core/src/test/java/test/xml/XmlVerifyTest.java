@@ -35,8 +35,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
   public void testToXmlWithComments() {
     XmlSuite suite = createSuite();
     String xml = suite.toXml();
-    assertThat(xml).contains(COMMAND_LINE_TEST);
-    assertThat(xml).contains(DEFAULT_SUITE);
+    assertThat(xml).contains(COMMAND_LINE_TEST).contains(DEFAULT_SUITE);
   }
 
   @Test(description = "github-1455", dependsOnMethods = "testToXmlWithComments")
@@ -44,8 +43,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
     System.setProperty("testng.xml.weaver", "org.testng.xml.CommentDisabledXmlWeaver");
     XmlSuite suite = createSuite();
     String xml = suite.toXml();
-    assertThat(xml).doesNotContain(COMMAND_LINE_TEST);
-    assertThat(xml).doesNotContain(DEFAULT_SUITE);
+    assertThat(xml).doesNotContain(COMMAND_LINE_TEST).doesNotContain(DEFAULT_SUITE);
   }
 
   @Test(description = "GITHUB-3177")
@@ -59,7 +57,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
     Document document = builder.parse(new InputSource(new StringReader(xml)));
     document.getDocumentElement().normalize();
     NodeList allSuites = document.getElementsByTagName("suite");
-    assertThat(allSuites.getLength()).isEqualTo(1);
+    assertThat(allSuites.getLength()).isOne();
     Node xmlSuite = allSuites.item(0);
     assertThat(xmlSuite.getNodeType()).isEqualTo(Node.ELEMENT_NODE);
     Element element = (Element) xmlSuite;
@@ -98,7 +96,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
       tng.addListener((ITestNGListener) tla);
       tng.run();
     } catch (TestNGException ex) {
-      assertThat(tla.getPassedTests().size()).isEqualTo(0);
+      assertThat(tla.getPassedTests()).isEmpty();
     }
   }
 

@@ -26,6 +26,6 @@ public class NestedStaticTest extends SimpleBaseTest {
       actual.add(t.getMethod().getMethodName());
     }
 
-    assertThat(actual).isEqualTo(expected);
+    assertThat(actual).hasSameElementsAs(expected);
   }
 }

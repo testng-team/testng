@@ -40,7 +40,7 @@ public class TestListenerInstances extends SimpleBaseTest {
     tng.addListener((ITestNGListener) anotherListener);
     tng.run();
     for (CounterTypes type : CounterTypes.values()) {
-      assertThat(TestListenerFor1232.counters.get(type).intValue()).isEqualTo(1);
+      assertThat(TestListenerFor1232.counters.get(type).intValue()).isOne();
     }
   }
 

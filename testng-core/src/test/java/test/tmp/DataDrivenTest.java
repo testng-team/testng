@@ -32,6 +32,6 @@ public class DataDrivenTest {
 
   @Test(dataProvider = "provider")
   public void foo(int n) {
-    assertThat(n > 0).isTrue();
+    assertThat(n).isPositive();
   }
 }

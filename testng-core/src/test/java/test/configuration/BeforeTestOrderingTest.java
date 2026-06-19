@@ -52,6 +52,6 @@ public class BeforeTestOrderingTest {
     tng.setXmlSuites(Collections.singletonList(s));
     tng.run();
 
-    assertThat(m_testNames).isEqualTo(expected);
+    assertThat(m_testNames).containsExactlyElementsOf(expected);
   }
 }

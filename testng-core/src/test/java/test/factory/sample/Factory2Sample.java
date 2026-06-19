@@ -51,7 +51,7 @@ public class Factory2Sample {
 
   @AfterSuite
   public void afterSuite() {
-    assertThat(methods).isEqualTo(EXPECTED_METHODS);
+    assertThat(methods).containsExactlyElementsOf(EXPECTED_METHODS);
   }
 
   @Test

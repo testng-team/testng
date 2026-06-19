@@ -28,8 +28,8 @@ public class PriorityTest {
     if (passedTests.length == 2) {
       String passed0 = passed.get(0).getName();
       String passed1 = passed.get(1).getName();
-      assertThat(passed0.equals(passedTests[0]) || passed0.equals(passedTests[1])).isTrue();
-      assertThat(passed1.equals(passedTests[0]) || passed1.equals(passedTests[1])).isTrue();
+      assertThat(passed0).isIn(passedTests[0], passedTests[1]);
+      assertThat(passed1).isIn(passedTests[0], passedTests[1]);
     }
   }
 

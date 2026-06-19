@@ -135,7 +135,7 @@ public class JarFileUtilsTest {
     testNg.initializeSuitesAndJarFile();
     // "testng-tests-child2", "testng-tests-child4", "testng-tests-child5" are from 3 different test
     // suites
-    assertThat(testNg.m_suites.size()).isEqualTo(3);
+    assertThat(testNg.m_suites).hasSize(3);
   }
 
   /**
@@ -154,7 +154,7 @@ public class JarFileUtilsTest {
     testNg.setXmlPathInJar("jarfileutils/testng-tests.xml");
     testNg.setTestJar(jar.getAbsolutePath());
     testNg.initializeSuitesAndJarFile();
-    assertThat(testNg.m_suites.size()).isEqualTo(1);
+    assertThat(testNg.m_suites).hasSize(1);
   }
 
   @Test

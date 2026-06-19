@@ -33,17 +33,17 @@ public class ReflectMethodParametrizedConfigurationMethodTest {
 
   @AfterClass
   public void assertBeforeAfterMethodsInvocations() {
-    assertThat(m_before.containsKey("test1"))
+    assertThat(m_before)
         .withFailMessage("@Test method should have been passed to @BeforeMethod")
-        .isTrue();
-    assertThat(m_before.containsKey("test2"))
+        .containsKey("test1");
+    assertThat(m_before)
         .withFailMessage("@Test method should have been passed to @BeforeMethod")
-        .isTrue();
-    assertThat(m_after.containsKey("test1"))
+        .containsKey("test2");
+    assertThat(m_after)
         .withFailMessage("@Test method should have been passed to @AfterMethod")
-        .isTrue();
-    assertThat(m_before.containsKey("test2"))
+        .containsKey("test1");
+    assertThat(m_before)
         .withFailMessage("@Test method should have been passed to @AfterMethod")
-        .isTrue();
+        .containsKey("test2");
   }
 }

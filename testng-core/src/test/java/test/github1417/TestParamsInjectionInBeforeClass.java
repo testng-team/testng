@@ -19,7 +19,6 @@ public class TestParamsInjectionInBeforeClass {
     assertThat(testNG.hasSkip()).isFalse();
     assertThat(AnotherTestClassSample.getInstance().getBrowsername()).isEqualTo("chrome");
     List<String> actual = YetAnotherTestClassSample.getInstance().getBrowsers();
-    assertThat(actual.size()).isEqualTo(2);
-    assertThat(actual).isEqualTo(Arrays.asList("safari", "safari"));
+    assertThat(actual).containsExactlyElementsOf(Arrays.asList("safari", "safari"));
   }
 }

@@ -17,6 +17,6 @@ public class ParametersPackageLevelMethodTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 }

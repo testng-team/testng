@@ -24,7 +24,7 @@ public class Test1 extends SimpleBaseTest {
   public void includedGroups() {
     XmlSuite suite = createXmlSuite("Internal_suite");
     XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
-    assertThat(test.getXmlClasses().size()).isEqualTo(1);
+    assertThat(test.getXmlClasses()).hasSize(1);
     test.addIncludedGroup("odd");
     TestNG tng = create(suite);
 
@@ -41,7 +41,7 @@ public class Test1 extends SimpleBaseTest {
   public void groupsOfGroupsSimple() {
     XmlSuite suite = createXmlSuite("Internal_suite");
     XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
-    assertThat(test.getXmlClasses().size()).isEqualTo(1);
+    assertThat(test.getXmlClasses()).hasSize(1);
     // should match all methods belonging to group "odd" and "even"
     test.addIncludedGroup("evenodd");
     test.addMetaGroup("evenodd", "even", "odd");

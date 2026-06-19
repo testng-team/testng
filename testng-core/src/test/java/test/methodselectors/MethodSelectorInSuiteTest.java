@@ -72,7 +72,7 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
 
   private void validate(String[] expectPassed) {
     List<ITestResult> passed = m_tla.getPassedTests();
-    assertThat(passed.size()).isEqualTo(expectPassed.length);
+    assertThat(passed).hasSameSizeAs(expectPassed);
     // doing this index based is probably not the best
     for (int i = 0; i < expectPassed.length; i++) {
       assertThat(passed.get(i).getName()).isEqualTo(expectPassed[i]);

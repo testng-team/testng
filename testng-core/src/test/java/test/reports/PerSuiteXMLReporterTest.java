@@ -78,8 +78,8 @@ public class PerSuiteXMLReporterTest extends SimpleBaseTest {
     int failed = Integer.parseInt(node.getAttributes().getNamedItem("failed").getNodeValue());
     assertThat(ignored).isZero();
     assertThat(total).isEqualTo(2);
-    assertThat(passed).isEqualTo(1);
-    assertThat(failed).isEqualTo(1);
+    assertThat(passed).isOne();
+    assertThat(failed).isOne();
     String text =
         (String)
             xPath

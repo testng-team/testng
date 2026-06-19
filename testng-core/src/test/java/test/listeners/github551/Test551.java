@@ -15,6 +15,7 @@ public class Test551 extends SimpleBaseTest {
     TestNG testNG = create(TestWithFailingConfig.class);
     testNG.addListener(listener);
     testNG.run();
-    assertThat(ConfigListener.executionTime >= TestWithFailingConfig.EXEC_TIME).isTrue();
+    assertThat(ConfigListener.executionTime)
+        .isGreaterThanOrEqualTo(TestWithFailingConfig.EXEC_TIME);
   }
 }

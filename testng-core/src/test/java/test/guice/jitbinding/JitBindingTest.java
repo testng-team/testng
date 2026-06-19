@@ -15,8 +15,8 @@ public class JitBindingTest extends SimpleBaseTest {
     TestListenerAdapter adapter = new TestListenerAdapter();
     tng.addListener(adapter);
     tng.run();
-    assertThat(adapter.getFailedTests().isEmpty()).isTrue();
-    assertThat(adapter.getSkippedTests().isEmpty()).isTrue();
-    assertThat(adapter.getPassedTests().size()).isEqualTo(2);
+    assertThat(adapter.getFailedTests()).isEmpty();
+    assertThat(adapter.getSkippedTests()).isEmpty();
+    assertThat(adapter.getPassedTests()).hasSize(2);
   }
 }

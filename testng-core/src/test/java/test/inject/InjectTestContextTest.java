@@ -21,7 +21,7 @@ public class InjectTestContextTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(xmlTest.getName()).isEqualTo("Injection");
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
     assertThat(tla.getPassedTests().get(0).getMethod().getMethodName()).isEqualTo("f");
   }
 

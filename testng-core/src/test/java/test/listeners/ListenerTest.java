@@ -51,14 +51,14 @@ public class ListenerTest extends SimpleBaseTest {
   public void listenerShouldBeCalledBeforeConfiguration() {
     TestNG tng = create(OrderedListenerSampleTest.class);
     tng.run();
-    assertThat(SimpleListener.m_list).isEqualTo(Arrays.asList(1, 2, 3, 4));
+    assertThat(SimpleListener.m_list).containsExactly(1, 2, 3, 4);
   }
 
   @Test(description = "TESTNG-400: onTestFailure should be called before @AfterMethod")
   public void failureBeforeAfterMethod() {
     TestNG tng = create(FailingSampleTest.class);
     tng.run();
-    assertThat(SimpleListener.m_list).isEqualTo(Arrays.asList(4, 5, 6));
+    assertThat(SimpleListener.m_list).containsExactly(4, 5, 6);
   }
 
   @Test(description = "Inherited @Listeners annotations should aggregate")
@@ -83,8 +83,8 @@ public class ListenerTest extends SimpleBaseTest {
     SuiteListener.start = 0;
     SuiteListener.finish = 0;
     tng.run();
-    assertThat(SuiteListener.start).isEqualTo(1);
-    assertThat(SuiteListener.finish).isEqualTo(1);
+    assertThat(SuiteListener.start).isOne();
+    assertThat(SuiteListener.finish).isOne();
   }
 
   @Test(description = "GITHUB-767: ISuiteListener called twice when @Listeners")
@@ -93,8 +93,8 @@ public class ListenerTest extends SimpleBaseTest {
     SuiteListener2.start = 0;
     SuiteListener2.finish = 0;
     tng.run();
-    assertThat(SuiteListener2.start).isEqualTo(1);
-    assertThat(SuiteListener2.finish).isEqualTo(1);
+    assertThat(SuiteListener2.start).isOne();
+    assertThat(SuiteListener2.finish).isOne();
   }
 
   @Test(description = "GITHUB-171")
@@ -103,8 +103,8 @@ public class ListenerTest extends SimpleBaseTest {
     SuiteListener.start = 0;
     SuiteListener.finish = 0;
     tng.run();
-    assertThat(SuiteListener.start).isEqualTo(1);
-    assertThat(SuiteListener.finish).isEqualTo(1);
+    assertThat(SuiteListener.start).isOne();
+    assertThat(SuiteListener.finish).isOne();
   }
 
   @Test(description = "GITHUB-795")
@@ -113,8 +113,8 @@ public class ListenerTest extends SimpleBaseTest {
     SuiteListener.start = 0;
     SuiteListener.finish = 0;
     tng.run();
-    assertThat(SuiteListener.start).isEqualTo(1);
-    assertThat(SuiteListener.finish).isEqualTo(1);
+    assertThat(SuiteListener.start).isOne();
+    assertThat(SuiteListener.finish).isOne();
   }
 
   @Test(description = "GITHUB-169")
@@ -133,7 +133,7 @@ public class ListenerTest extends SimpleBaseTest {
     MyMethodInterceptor interceptor = new MyMethodInterceptor();
     tng.addListener(interceptor);
     tng.run();
-    assertThat(interceptor.getCount()).isEqualTo(1);
+    assertThat(interceptor.getCount()).isOne();
   }
 
   @Test(
@@ -146,7 +146,7 @@ public class ListenerTest extends SimpleBaseTest {
         new InterceptorInvokeTwiceSimulateListener();
     tng.addListener(interceptor);
     tng.run();
-    assertThat(interceptor.getCount()).isEqualTo(1);
+    assertThat(interceptor.getCount()).isOne();
   }
 
   @Test(description = "GITHUB-356: Add listeners for @BeforeClass/@AfterClass")
@@ -225,8 +225,8 @@ public class ListenerTest extends SimpleBaseTest {
     tng.run();
     assertThat(adapter.getFailedTests()).isEmpty();
     assertThat(adapter.getSkippedTests()).isEmpty();
-    assertThat(tacl.getBeforeClassCount()).isEqualTo(1);
-    assertThat(tacl.getAfterClassCount()).isEqualTo(1);
+    assertThat(tacl.getBeforeClassCount()).isOne();
+    assertThat(tacl.getAfterClassCount()).isOne();
   }
 
   @Test(description = "GITHUB-911: Should not call method listeners for skipped methods")
@@ -235,12 +235,12 @@ public class ListenerTest extends SimpleBaseTest {
     TestNG tng = create(GitHub911Sample.class);
     tng.addListener(listener);
     tng.run();
-    assertThat(listener.onStart).isEqualTo(1);
-    assertThat(listener.onFinish).isEqualTo(1);
+    assertThat(listener.onStart).isOne();
+    assertThat(listener.onFinish).isOne();
     assertThat(listener.onTestStart).isEqualTo(2);
-    assertThat(listener.onTestSuccess).isEqualTo(0);
-    assertThat(listener.onTestFailure).isEqualTo(0);
-    assertThat(listener.onTestFailedButWithinSuccessPercentage).isEqualTo(0);
+    assertThat(listener.onTestSuccess).isZero();
+    assertThat(listener.onTestFailure).isZero();
+    assertThat(listener.onTestFailedButWithinSuccessPercentage).isZero();
     assertThat(listener.onTestSkipped).isEqualTo(2);
   }
 
@@ -250,11 +250,10 @@ public class ListenerTest extends SimpleBaseTest {
     TestNG tng = create(SetStatusSample.class);
     tng.addListener(listener);
     tng.run();
-    assertThat(listener.getContext().getFailedTests().size()).isEqualTo(0);
-    assertThat(listener.getContext().getFailedButWithinSuccessPercentageTests().size())
-        .isEqualTo(0);
-    assertThat(listener.getContext().getSkippedTests().size()).isEqualTo(0);
-    assertThat(listener.getContext().getPassedTests().size()).isEqualTo(1);
+    assertThat(listener.getContext().getFailedTests().size()).isZero();
+    assertThat(listener.getContext().getFailedButWithinSuccessPercentageTests().size()).isZero();
+    assertThat(listener.getContext().getSkippedTests().size()).isZero();
+    assertThat(listener.getContext().getPassedTests().size()).isOne();
   }
 
   @Test(
@@ -268,14 +267,14 @@ public class ListenerTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) listener);
     tng.addListener((ITestNGListener) listener);
     tng.run();
-    assertThat(listener.getOnSuiteStartCount()).isEqualTo(1);
-    assertThat(listener.getOnSuiteFinishCount()).isEqualTo(1);
-    assertThat(listener.getOnTestStartCount()).isEqualTo(1);
-    assertThat(listener.getOnTestFinishCount()).isEqualTo(1);
-    assertThat(listener.getBeforeInvocationCount()).isEqualTo(1);
-    assertThat(listener.getAfterInvocationCount()).isEqualTo(1);
-    assertThat(listener.getOnMethodTestStartCount()).isEqualTo(1);
-    assertThat(listener.getOnMethodTestSuccessCount()).isEqualTo(1);
+    assertThat(listener.getOnSuiteStartCount()).isOne();
+    assertThat(listener.getOnSuiteFinishCount()).isOne();
+    assertThat(listener.getOnTestStartCount()).isOne();
+    assertThat(listener.getOnTestFinishCount()).isOne();
+    assertThat(listener.getBeforeInvocationCount()).isOne();
+    assertThat(listener.getAfterInvocationCount()).isOne();
+    assertThat(listener.getOnMethodTestStartCount()).isOne();
+    assertThat(listener.getOnMethodTestSuccessCount()).isOne();
   }
 
   @Test
@@ -291,7 +290,7 @@ public class ListenerTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
     List<String> messages = ListenerFor956.getMessages();
-    assertThat(messages.size()).isEqualTo(1);
+    assertThat(messages).hasSize(1);
     assertThat(messages.get(0)).isEqualTo("Executing test956");
   }
 
@@ -302,8 +301,8 @@ public class ListenerTest extends SimpleBaseTest {
     tng.addListener(adapter);
     tng.addListener(new Listener1393());
     tng.run();
-    assertThat(adapter.getPassedTests().size()).isEqualTo(0);
-    assertThat(adapter.getFailedTests().size()).isEqualTo(1);
+    assertThat(adapter.getPassedTests()).isEmpty();
+    assertThat(adapter.getFailedTests()).hasSize(1);
   }
 
   @Test(dataProvider = "dp", description = "GITHUB-1029")
@@ -363,7 +362,7 @@ public class ListenerTest extends SimpleBaseTest {
   public void ensureDynamicListenerAdditionsDontTriggerConcurrentModificationExceptions() {
     TestNG testng = create(test.listeners.issue2061.TestClassSample.class);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 
   @Test(description = "GITHUB-2558")

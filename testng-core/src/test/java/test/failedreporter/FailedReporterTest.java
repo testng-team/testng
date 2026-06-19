@@ -196,14 +196,14 @@ public class FailedReporterTest extends SimpleBaseTest {
     File failed = new File(outputDir, "testng-failed.xml");
     for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
-      assertThat(failed.exists())
+      assertThat(failed)
           .withFailMessage(String.format("File %s not exists", failed.getName()))
-          .isTrue();
+          .exists();
       grep(failed, String.format(expectedLine, s), resultLines);
 
-      assertThat(resultLines.size())
+      assertThat(resultLines)
           .withFailMessage(String.format("Matched lines:\n %s", String.join(",\n", resultLines)))
-          .isEqualTo(expected);
+          .hasSize(expected);
     }
   }
 }

@@ -19,8 +19,8 @@ public class TestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(getPathToResource("testnames/upstream-suite.xml")));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).hasSize(1);
     assertThat(tla.getPassedTests().get(0).getMethod().getMethodName())
         .isEqualTo("sampleOutputTest2");
   }

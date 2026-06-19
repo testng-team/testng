@@ -32,6 +32,6 @@ public class SuiteAndConfigurationListenerTest {
   public void bothListenersShouldRun() {
     assertThat(MyListener.started.get())
         .withFailMessage("ISuiteListener was not invoked exactly once:")
-        .isEqualTo(1);
+        .isOne();
   }
 }

@@ -12,8 +12,11 @@ import org.testng.annotations.Test;
 public class PartialGroupVerification {
   @Test
   public void verify() {
-    assertThat(PartialGroupTest.m_successMethod && PartialGroupTest.m_successClass)
-        .withFailMessage("test1 and test2 should have been invoked both")
+    assertThat(PartialGroupTest.m_successMethod)
+        .withFailMessage("test1 (method) should have been invoked")
+        .isTrue();
+    assertThat(PartialGroupTest.m_successClass)
+        .withFailMessage("test2 (class) should have been invoked")
         .isTrue();
   }
 }

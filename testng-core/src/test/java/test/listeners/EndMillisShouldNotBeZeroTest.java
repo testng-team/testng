@@ -40,6 +40,6 @@ public class EndMillisShouldNotBeZeroTest {
       description = "Make sure that ITestResult#getEndMillis is properly set",
       dependsOnMethods = "f1")
   public void f2() {
-    assertThat(m_end > 0).isTrue();
+    assertThat(m_end).isPositive();
   }
 }

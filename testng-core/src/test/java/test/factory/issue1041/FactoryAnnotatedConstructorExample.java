@@ -31,7 +31,7 @@ public class FactoryAnnotatedConstructorExample {
 
   @Test
   public void testMethod() {
-    assertThat(data > 0).isTrue();
+    assertThat(data).isPositive();
   }
 
   @Override

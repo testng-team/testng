@@ -22,7 +22,7 @@ public class Bug92Test extends SimpleBaseTest {
     TestBase.beforeTestCount = 0;
     TestBase.beforeTestAlwaysCount = 0;
     tng.run();
-    assertThat(TestBase.beforeTestCount).isEqualTo(1);
-    assertThat(TestBase.beforeTestAlwaysCount).isEqualTo(1);
+    assertThat(TestBase.beforeTestCount).isOne();
+    assertThat(TestBase.beforeTestAlwaysCount).isOne();
   }
 }

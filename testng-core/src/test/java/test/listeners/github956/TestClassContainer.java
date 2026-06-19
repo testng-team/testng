@@ -10,7 +10,7 @@ public class TestClassContainer {
   public static class FirstTestClass {
     @Test
     public void testMethod() {
-      assertThat(true).isEqualTo(true);
+      assertThat(true).isTrue();
     }
   }
 
@@ -18,7 +18,7 @@ public class TestClassContainer {
   public static class SecondTestClass {
     @Test
     public void testMethod() {
-      assertThat(true).isEqualTo(true);
+      assertThat(true).isTrue();
     }
   }
 }

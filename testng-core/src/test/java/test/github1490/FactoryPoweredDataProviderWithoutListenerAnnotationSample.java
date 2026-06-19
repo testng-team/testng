@@ -16,7 +16,7 @@ public class FactoryPoweredDataProviderWithoutListenerAnnotationSample {
 
   @Test
   public void testMethod() {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
   }
 
   @DataProvider(name = "dp")

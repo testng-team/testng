@@ -26,6 +26,6 @@ public class TestCustomNamesForTests extends SimpleBaseTest {
     }
     expectedNames.add("ordinaryTestMethod_TestNG_TestCase_999");
     expectedNames.add("dontChangeName");
-    assertThat(reporter.getTestnames()).containsExactlyInAnyOrderElementsOf(expectedNames);
+    assertThat(reporter.getTestnames()).hasSameElementsAs(expectedNames);
   }
 }

@@ -64,8 +64,8 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       },
       alwaysRun = true)
   public void checkInvocationCounts() {
-    assertThat(invocations.count("testAnnotationWithNoRetries")).isEqualTo(0);
-    assertThat(invocations.count("testAnnotationWithOneRetry")).isEqualTo(1);
+    assertThat(invocations.count("testAnnotationWithNoRetries")).isZero();
+    assertThat(invocations.count("testAnnotationWithOneRetry")).isOne();
     assertThat(invocations.count("testAnnotationWithSevenRetries")).isEqualTo(7);
     assertThat(invocations.count("failAfterThreeRetries")).isEqualTo(4);
   }

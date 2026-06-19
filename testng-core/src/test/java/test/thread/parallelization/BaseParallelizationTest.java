@@ -108,7 +108,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     List<Long> threadIds = new ArrayList<>();
 
     for (EventLog eventLog : eventLogs) {
-      assertThat(threadIds.contains(eventLog.getThreadId())).withFailMessage(failMessage).isFalse();
+      assertThat(threadIds).withFailMessage(failMessage).doesNotContain(eventLog.getThreadId());
       threadIds.add(eventLog.getThreadId());
     }
   }
@@ -125,7 +125,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     }
 
     for (EventLog eventLog : eventLogsTwo) {
-      assertThat(threadIds.contains(eventLog.getThreadId())).withFailMessage(failMessage).isFalse();
+      assertThat(threadIds).withFailMessage(failMessage).doesNotContain(eventLog.getThreadId());
     }
   }
 
@@ -149,7 +149,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
   public static void verifyEventThreadsSpawnedAfter(
       Long earlierThreadId, List<EventLog> eventsFromLaterThread, String failMessage) {
     for (EventLog eventLog : eventsFromLaterThread) {
-      assertThat(eventLog.getThreadId() > earlierThreadId).withFailMessage(failMessage).isTrue();
+      assertThat(eventLog.getThreadId())
+          .withFailMessage(failMessage)
+          .isGreaterThan(earlierThreadId);
     }
   }
 
@@ -229,11 +231,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
       EventLog laterEventLog,
       String failMessage) {
     for (EventLog eventLog : inBetweenEventLogs) {
-      assertThat(
-              eventLog.getTimeOfEvent() >= earlierEventLog.getTimeOfEvent()
-                  && eventLog.getTimeOfEvent() <= laterEventLog.getTimeOfEvent())
+      assertThat(eventLog.getTimeOfEvent())
           .withFailMessage(failMessage)
-          .isTrue();
+          .isBetween(earlierEventLog.getTimeOfEvent(), laterEventLog.getTimeOfEvent());
     }
   }
 
@@ -244,9 +244,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
   // the assertion on the timestamps fails
   public static void verifySequentialTimingOfEvents(List<EventLog> eventLogs, String failMessage) {
     for (int i = 0; i + 1 < eventLogs.size(); i++) {
-      assertThat(eventLogs.get(i).getTimeOfEvent() < eventLogs.get(i + 1).getTimeOfEvent())
+      assertThat(eventLogs.get(i).getTimeOfEvent())
           .withFailMessage(failMessage)
-          .isTrue();
+          .isLessThan(eventLogs.get(i + 1).getTimeOfEvent());
     }
   }
 
@@ -262,9 +262,9 @@ public class BaseParallelizationTest extends SimpleBaseTest {
       Pair<Long, Long> timestampsListTwo = getEarliestAndLatestTimestamps(secondEventLogs);
       assertThat(timestampsListTwo).isNotNull();
 
-      assertThat(timestampsListTwo.first() > timestampsListOne.second())
+      assertThat(timestampsListTwo.first())
           .withFailMessage(failMessage)
-          .isTrue();
+          .isGreaterThan(timestampsListOne.second());
     }
   }
 
@@ -312,7 +312,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
     Multimap<Object, EventLog> eventLogMap =
         getTestMethodEventLogsForMethod(suiteName, testName, clazz.getCanonicalName(), methodName);
 
-    assertThat(eventLogMap.keySet().size())
+    assertThat(eventLogMap.keySet())
         .withFailMessage(
             "There should be "
                 + numInstances
@@ -328,7 +328,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                 + suiteName
                 + ": "
                 + eventLogMap)
-        .isEqualTo(numInstances);
+        .hasSize(numInstances);
   }
 
   // Verify that all the test methods declared in the specified list of classes have the same
@@ -357,9 +357,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
       if (instanceKeys == null) {
         instanceKeys = eventLogMap.keySet();
       } else {
-        assertThat(
-                instanceKeys.containsAll(eventLogMap.keySet())
-                    && eventLogMap.keySet().containsAll(instanceKeys))
+        assertThat(eventLogMap.keySet())
             .withFailMessage(
                 "The same instances of "
                     + clazz.getCanonicalName()
@@ -367,7 +365,7 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     + testName
                     + " in the suite "
                     + suiteName)
-            .isTrue();
+            .hasSameElementsAs(instanceKeys);
       }
     }
   }
@@ -450,10 +448,10 @@ public class BaseParallelizationTest extends SimpleBaseTest {
               "There should only be one start "
                   + "event logged for a method in the first block of test method events")
           .isNull();
-      assertThat(executingMethodThreadIds.contains(eventLog.getThreadId()))
+      assertThat(executingMethodThreadIds)
           .withFailMessage(
               "The first block of test method " + "events should all have different thread IDs")
-          .isFalse();
+          .doesNotContain(eventLog.getThreadId());
 
       methodsExecuting.put(classAndMethodNameAndInstanceHash, eventLog);
       executingMethodThreadIds.add(eventLog.getThreadId());
@@ -474,19 +472,19 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                     && methodsCompleted.get(classAndMethodNameAndInstanceHash) == null)
             .withFailMessage("There should only be one " + "execution of any given method")
             .isTrue();
-        assertThat(executingMethodThreadIds.contains(eventLog.getThreadId()))
+        assertThat(executingMethodThreadIds)
             .withFailMessage(
                 "Event logs for currently "
                     + "executing test methods should have different thread IDs")
-            .isFalse();
-        assertThat(allThreadIds.contains(eventLog.getThreadId()))
+            .doesNotContain(eventLog.getThreadId());
+        assertThat(allThreadIds)
             .withFailMessage(
                 "All of the test method event logs should "
                     + "have the same "
                     + threadCount
                     + " thread IDs: "
                     + allThreadIds)
-            .isTrue();
+            .contains(eventLog.getThreadId());
         assertThat(methodsExecuting.size() < threadCount)
             .withFailMessage(
                 "The current event log is a test method start "
@@ -676,14 +674,14 @@ public class BaseParallelizationTest extends SimpleBaseTest {
           }
         }
 
-        assertThat(allThreadIds.contains(eventLog.getThreadId()))
+        assertThat(allThreadIds)
             .withFailMessage(
                 "All of the test method event logs should "
                     + "have the same "
                     + threadCount
                     + " thread IDs: "
                     + allThreadIds)
-            .isTrue();
+            .contains(eventLog.getThreadId());
 
         if (methodsExecuting.get(classAndMethodName) == null) {
           assertThat(methodsExecuting.size() < threadCount)
@@ -977,10 +975,10 @@ public class BaseParallelizationTest extends SimpleBaseTest {
                   suitesExecuting.get(suiteName) != null || suitesCompleted.get(suiteName) != null)
               .withFailMessage("There should only be one execution of any given suite")
               .isFalse();
-          assertThat(executingSuiteThreadIds.contains(eventLog.getThreadId()))
+          assertThat(executingSuiteThreadIds)
               .withFailMessage(
                   "Event logs for currently " + "executing suites should have different thread IDs")
-              .isFalse();
+              .doesNotContain(eventLog.getThreadId());
 
           suitesExecuting.put(suiteName, eventLog);
           executingSuiteThreadIds.add(eventLog.getThreadId());

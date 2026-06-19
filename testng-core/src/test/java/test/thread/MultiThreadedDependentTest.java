@@ -28,9 +28,9 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
         Arrays.asList(
             "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t");
     int size = expectedMethods.size();
-    assertThat(methods.size()).isEqualTo(size);
+    assertThat(methods).hasSize(size);
     for (String em : expectedMethods) {
-      assertThat(methods.contains(em)).isTrue();
+      assertThat(methods).contains(em);
     }
     Map<String, Boolean> map = Maps.newHashMap();
     for (String m : methods) {
@@ -49,7 +49,7 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
         assertThat(map.get("b2")).isTrue();
       }
     }
-    assertThat(map.size()).isEqualTo(size);
+    assertThat(map).hasSize(size);
     for (Boolean val : map.values()) {
       assertThat(val).isTrue();
     }
@@ -76,9 +76,9 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
     try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(map)) {
       tng.run();
-      assertThat(map.size() > 1)
+      assertThat(map)
           .withFailMessage("Map size:" + map.size() + " expected more than 1")
-          .isTrue();
+          .hasSizeGreaterThan(1);
       assertOrder(MultiThreadedDependentSampleTest.m_methods);
     }
   }

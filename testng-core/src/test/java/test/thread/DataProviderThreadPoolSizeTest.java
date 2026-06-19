@@ -21,7 +21,7 @@ public class DataProviderThreadPoolSizeTest extends SimpleBaseTest {
     TestNG tng = create(DataProviderThreadPoolSizeSampleTest.class);
     tng.setGroups("sequential");
     tng.run();
-    assertThat(DataProviderThreadPoolSizeSampleTest.getThreadCount()).isEqualTo(1);
+    assertThat(DataProviderThreadPoolSizeSampleTest.getThreadCount()).isOne();
   }
 
   @Test

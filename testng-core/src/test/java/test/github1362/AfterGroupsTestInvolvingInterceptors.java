@@ -35,10 +35,6 @@ public class AfterGroupsTestInvolvingInterceptors extends SimpleBaseTest {
       testng.addListener(interceptor);
     }
     testng.run();
-    for (String each : listener.getInvokedMethodNames()) {
-      assertThat(expected.contains(each))
-          .withFailMessage(each + " not found in expected invocation methods " + expected)
-          .isTrue();
-    }
+    assertThat(listener.getInvokedMethodNames()).isSubsetOf(expected);
   }
 }

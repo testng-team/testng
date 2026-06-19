@@ -23,6 +23,6 @@ public class ReverseOrderTestSample {
   @Test
   public void test() {
     Reporter.log(Integer.toString(num));
-    assertThat(num > 0).isTrue();
+    assertThat(num).isPositive();
   }
 }

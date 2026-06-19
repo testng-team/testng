@@ -14,7 +14,6 @@ public class XClassOrderWithFactoryTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(XClassOrderWithFactory.LOG.toString())
-        .isEqualTo(XClassOrderWithFactory.EXPECTED_LOG);
+    assertThat(XClassOrderWithFactory.LOG).hasToString(XClassOrderWithFactory.EXPECTED_LOG);
   }
 }

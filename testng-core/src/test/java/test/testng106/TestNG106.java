@@ -21,6 +21,6 @@ public class TestNG106 extends SimpleBaseTest {
     tng.run();
     assertThat(FailingSuiteFixture.s_invocations)
         .withFailMessage("@BeforeSuite has failed. All tests should be skipped.")
-        .isEqualTo(0);
+        .isZero();
   }
 }

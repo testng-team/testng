@@ -25,6 +25,6 @@ public class ComplexDataProviderWithObjectAndArraySample {
                 + Arrays.toString(values)
                 + "with boolean flag as "
                 + flag)
-        .isEqualTo(0);
+        .isZero();
   }
 }

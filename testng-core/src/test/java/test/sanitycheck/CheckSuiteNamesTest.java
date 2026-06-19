@@ -26,7 +26,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(4);
+    assertThat(tla.getPassedTests()).hasSize(4);
   }
 
   /** Child suites have same names */

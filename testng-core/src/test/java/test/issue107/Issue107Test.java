@@ -47,7 +47,7 @@ public class Issue107Test extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).hasSize(2);
   }
 }

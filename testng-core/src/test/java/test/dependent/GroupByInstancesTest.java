@@ -29,15 +29,15 @@ public class GroupByInstancesTest extends SimpleBaseTest {
     List<String> log = GroupByInstancesSampleTest.m_log;
     int i = 0;
     if (group) {
-      assertThat(log.get(i++).startsWith("signIn")).isTrue();
-      assertThat(log.get(i++).startsWith("signOut")).isTrue();
-      assertThat(log.get(i++).startsWith("signIn")).isTrue();
-      assertThat(log.get(i++).startsWith("signOut")).isTrue();
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signOut");
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signOut");
     } else {
-      assertThat(log.get(i++).startsWith("signIn")).isTrue();
-      assertThat(log.get(i++).startsWith("signIn")).isTrue();
-      assertThat(log.get(i++).startsWith("signOut")).isTrue();
-      assertThat(log.get(i++).startsWith("signOut")).isTrue();
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signOut");
+      assertThat(log.get(i++)).startsWith("signOut");
     }
   }
 }

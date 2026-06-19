@@ -31,16 +31,8 @@ public class BaseOrderMethodTest {
   }
 
   protected void verifyGroup(int groupNumber, boolean[] group) {
-    for (int i = 0; i < group.length; i++) {
-      assertThat(group[i])
-          .withFailMessage(
-              "Error while running group "
-                  + groupNumber
-                  + ": "
-                  + " index "
-                  + i
-                  + " of previous group should have been run before.")
-          .isTrue();
-    }
+    assertThat(group)
+        .as("group %d: every method of the previous group should have run before", groupNumber)
+        .containsOnly(true);
   }
 }

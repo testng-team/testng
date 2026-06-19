@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class Issue1029SampleTestClassWithDataDrivenMethod {
   @Test(dataProvider = "dp")
   public void a(int i) {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
   }
 
   @DataProvider(name = "dp", parallel = true)

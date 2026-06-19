@@ -42,7 +42,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
 
       tng.run();
 
-      assertThat(tla.getPassedTests().size()).isEqualTo(1);
+      assertThat(tla.getPassedTests()).hasSize(1);
     } finally {
       try {
         os.close();
@@ -64,6 +64,6 @@ public class ParamInheritanceTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(3);
+    assertThat(tla.getPassedTests()).hasSize(3);
   }
 }

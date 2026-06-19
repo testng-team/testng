@@ -20,7 +20,7 @@ public class IssueTest extends SimpleBaseTest {
     xmlTest.setParallel(ParallelMode.METHODS);
     TestNG testng = create(suite);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 
   @DataProvider(name = "dp")

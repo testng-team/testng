@@ -12,7 +12,7 @@ public class GitHub447Sample {
   @Test(dataProvider = "add")
   public void add(List<Object> list, Object e, String expected) {
     assertThat(list.add(e)).isTrue();
-    assertThat(list.toString()).isEqualTo(expected);
+    assertThat(list).hasToString(expected);
   }
 
   @DataProvider(name = "add")

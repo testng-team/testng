@@ -17,9 +17,9 @@ public class TestResultTest extends SimpleBaseTest {
   public void ensureITestResultHasValidStatusAndTimestampWhenInvokingConfigurationMethod() {
     TestNG testng = create(TestclassSample.class);
     testng.run();
-    assertThat(TestclassSample.startTimestamp).isLessThanOrEqualTo(0);
+    assertThat(TestclassSample.startTimestamp).isNotPositive();
     assertThat(TestclassSample.startStatus).isEqualTo(ITestResult.STARTED);
-    assertThat(TestclassSample.endTimestamp).isGreaterThan(0);
+    assertThat(TestclassSample.endTimestamp).isPositive();
     assertThat(TestclassSample.endStatus).isEqualTo(ITestResult.SUCCESS);
   }
 

@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class SimpleDataProviderWithoutListenerAnnotationSample {
   @Test(dataProvider = "getData")
   public void testMethod(int i) {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
   }
 
   @DataProvider

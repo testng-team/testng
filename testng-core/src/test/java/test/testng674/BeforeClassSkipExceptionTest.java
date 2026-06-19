@@ -66,10 +66,10 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     tng.addListener((ITestNGListener) reporter);
     tng.run();
-    assertThat(reporter.getErrors().size()).isEqualTo(2);
+    assertThat(reporter.getErrors()).hasSize(2);
     for (Throwable error : reporter.getErrors()) {
       assertThat(error.getMessage()).isEqualTo(TestClassSampleContainer.ERROR_MSG);
-      assertThat((error instanceof RuntimeException)).isTrue();
+      assertThat(error).isInstanceOf(RuntimeException.class);
     }
   }
 
@@ -98,10 +98,10 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     TestNG tng = create(xmlSuite);
     tng.addListener((ITestNGListener) reporter);
     tng.run();
-    assertThat(reporter.getErrors().size()).isEqualTo(expectedCount);
+    assertThat(reporter.getErrors()).hasSize(expectedCount);
     for (Throwable error : reporter.getErrors()) {
       assertThat(error.getMessage()).isEqualTo(TestClassSampleContainer.ERROR_MSG);
-      assertThat((error instanceof RuntimeException)).isTrue();
+      assertThat(error).isInstanceOf(RuntimeException.class);
     }
   }
 }

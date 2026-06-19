@@ -26,7 +26,7 @@ public class ITestSample implements ITest {
 
   @Test(dataProvider = "dp")
   public void run(String testName) {
-    assertThat(testName).isEqualTo(this.testName.get());
+    assertThat(this.testName.get()).isEqualTo(testName);
   }
 
   @BeforeMethod
@@ -36,7 +36,7 @@ public class ITestSample implements ITest {
 
   @AfterMethod
   public void tearDown(Object[] testArgs) {
-    assertThat((String) testArgs[0]).isEqualTo(this.testName.get());
+    assertThat(this.testName.get()).isEqualTo((String) testArgs[0]);
   }
 
   @Override

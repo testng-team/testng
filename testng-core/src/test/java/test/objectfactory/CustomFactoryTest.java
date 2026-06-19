@@ -22,7 +22,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     tng.setObjectFactory(LoggingObjectFactory.class);
     tng.run();
 
-    assertThat(LoggingObjectFactory.invoked).isEqualTo(1);
+    assertThat(LoggingObjectFactory.invoked).isOne();
   }
 
   @Test
@@ -32,7 +32,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    assertThat(LoggingObjectFactory.invoked).isEqualTo(1);
+    assertThat(LoggingObjectFactory.invoked).isOne();
   }
 
   @Test(description = "This broke after I made the change to enable AbstractTest")
@@ -43,7 +43,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    assertThat(LoggingObjectFactory.invoked).isEqualTo(1);
+    assertThat(LoggingObjectFactory.invoked).isOne();
   }
 
   @Test
@@ -55,7 +55,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    assertThat(ContextAwareObjectFactoryFactory.invoked).isEqualTo(1);
+    assertThat(ContextAwareObjectFactoryFactory.invoked).isOne();
   }
 
   @Test(expectedExceptions = TestNGException.class)
