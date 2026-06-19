@@ -34,7 +34,12 @@ import org.testng.collections.Lists;
  * assertFalse(var.equals(null))}.
  *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
+ * @deprecated As of release 7.13.0, this class is deprecated for removal. Use a dedicated assertion
+ *     library such as <a href="https://assertj.github.io/doc/">AssertJ</a> instead. The OpenRewrite
+ *     recipe {@code org.openrewrite.java.testing.testng.TestNGToAssertJ} migrates the whole class
+ *     automatically; see {@code docs/MIGRATING_ASSERTIONS.md} for details.
  */
+@Deprecated(since = "7.13.0", forRemoval = true)
 public class Assert {
 
   public static final String ARRAY_MISMATCH_TEMPLATE =
