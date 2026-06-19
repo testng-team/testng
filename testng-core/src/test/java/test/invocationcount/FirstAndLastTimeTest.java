@@ -9,6 +9,8 @@ import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 import test.invocationcount.issue426.SampleTestClassWithNoThreadPoolSizeDefined;
+import test.invocationcount.issue426.SampleTestClassWithThreadPoolAndFailingFirstTimeConfig;
+import test.invocationcount.issue426.SampleTestClassWithThreadPoolAndFirstLastTimeConfigs;
 import test.invocationcount.issue426.SampleTestClassWithThreadPoolSizeDefined;
 
 /**
@@ -151,6 +153,11 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
   public void verifyFirstTimeOnly(Class<?> clazz) {
     List<String> invokedMethodNames = run(clazz);
     String[] expected = new String[] {"beforeMethod", "testMethod", "testMethod"};
+    // The order is asserted on purpose, including for the sample class that runs its
+    // invocations through a thread pool: a firstTimeOnly @BeforeMethod must complete
+    // *before the first test invocation*, even when the invocations run in parallel.
+    // The engine enforces this by running the firstTimeOnly configuration once, as a
+    // barrier, before the pool starts (see TestInvoker#invokePooledTestMethods).
     assertThat(invokedMethodNames).containsExactly(expected);
   }
 
@@ -162,13 +169,40 @@ public class FirstAndLastTimeTest extends SimpleBaseTest {
     };
   }
 
+  @Test(description = "GITHUB-426")
+  public void verifyFirstAndLastTimeOnlyWithThreadPool() {
+    List<String> invokedMethodNames =
+        run(SampleTestClassWithThreadPoolAndFirstLastTimeConfigs.class);
+    // Even though the two invocations run in parallel through a thread pool, the
+    // firstTimeOnly @BeforeMethod must run once before any invocation and the
+    // lastTimeOnly @AfterMethod once after every invocation has completed.
+    assertThat(invokedMethodNames)
+        .containsExactly("beforeMethod", "testMethod", "testMethod", "afterMethod");
+  }
+
+  @Test(description = "GITHUB-426")
+  public void verifyFailingFirstTimeOnlySkipsAllParallelInvocations() {
+    InvokedMethodNameListener listener =
+        runWithListener(SampleTestClassWithThreadPoolAndFailingFirstTimeConfig.class);
+    // The firstTimeOnly @BeforeMethod is shared by every parallel invocation and is run
+    // once, as a barrier, before the pool starts. When it fails, every invocation must be
+    // skipped and none must be executed - the failure must not be swallowed by the pool.
+    assertThat(listener.getFailedMethodNames()).containsExactly("beforeMethod");
+    assertThat(listener.getSkippedMethodNames()).containsExactly("testMethod", "testMethod");
+    assertThat(listener.getSucceedMethodNames()).isEmpty();
+  }
+
   private static List<String> run(Class<?> cls) {
+    return runWithListener(cls).getInvokedMethodNames();
+  }
+
+  private static InvokedMethodNameListener runWithListener(Class<?> cls) {
     TestNG tng = create(cls);
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
 
     tng.run();
 
-    return listener.getInvokedMethodNames();
+    return listener;
   }
 }

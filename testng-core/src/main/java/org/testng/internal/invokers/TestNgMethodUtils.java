@@ -4,11 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.collections.Lists;
 import org.testng.collections.Sets;
+import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.Utils;
 
@@ -156,12 +158,58 @@ class TestNgMethodUtils {
 
   private static boolean doesSetupMethodPassFirstTimeFilter(
       ConfigurationMethod cm, ITestNGMethod tm) {
-    return !cm.isFirstTimeOnly() || (cm.isFirstTimeOnly() && tm.getCurrentInvocationCount() == 0);
+    if (cm.isFirstTimeOnly() && skipsTimeScopedConfigs(tm)) {
+      // This is one invocation of a parallel invocationCount; the firstTimeOnly
+      // @BeforeMethod is run once around the thread pool, not inside the invocation.
+      return false;
+    }
+    return !cm.isFirstTimeOnly() || tm.getCurrentInvocationCount() == 0;
   }
 
   private static boolean doesTeardownMethodPassLastTimeFilter(
       ConfigurationMethod cm, ITestNGMethod tm) {
-    return !cm.isLastTimeOnly() || (cm.isLastTimeOnly() && !tm.hasMoreInvocation());
+    if (cm.isLastTimeOnly() && skipsTimeScopedConfigs(tm)) {
+      // This is one invocation of a parallel invocationCount; the lastTimeOnly
+      // @AfterMethod is run once around the thread pool, not inside the invocation.
+      return false;
+    }
+    return !cm.isLastTimeOnly() || !tm.hasMoreInvocation();
+  }
+
+  private static boolean skipsTimeScopedConfigs(ITestNGMethod tm) {
+    return tm instanceof BaseTestMethod && ((BaseTestMethod) tm).skipFirstAndLastTimeOnlyConfigs();
+  }
+
+  /**
+   * @return the subset of {@code methods} that are firstTimeOnly @BeforeMethod configuration
+   *     methods applicable to {@code tm}. Used to run them once, as a barrier, before a parallel
+   *     invocationCount thread pool starts.
+   */
+  static ITestNGMethod[] filterFirstTimeOnlySetupMethods(
+      ITestNGMethod tm, ITestNGMethod[] methods) {
+    return filterTimeOnlyConfigMethods(tm, methods, ConfigurationMethod::isFirstTimeOnly);
+  }
+
+  /**
+   * @return the subset of {@code methods} that are lastTimeOnly @AfterMethod configuration methods
+   *     applicable to {@code tm}. Used to run them once, as a barrier, after a parallel
+   *     invocationCount thread pool completes.
+   */
+  static ITestNGMethod[] filterLastTimeOnlyTeardownMethods(
+      ITestNGMethod tm, ITestNGMethod[] methods) {
+    return filterTimeOnlyConfigMethods(tm, methods, ConfigurationMethod::isLastTimeOnly);
+  }
+
+  private static ITestNGMethod[] filterTimeOnlyConfigMethods(
+      ITestNGMethod tm, ITestNGMethod[] methods, Predicate<ConfigurationMethod> timeScope) {
+    List<ITestNGMethod> result = Lists.newArrayList();
+    for (ITestNGMethod m : methods) {
+      ConfigurationMethod cm = (ConfigurationMethod) m;
+      if (timeScope.test(cm) && doesConfigMethodPassGroupFilters(cm, tm)) {
+        result.add(m);
+      }
+    }
+    return result.toArray(new ITestNGMethod[0]);
   }
 
   private static boolean doesConfigMethodPassGroupFilters(
