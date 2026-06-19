@@ -1,6 +1,6 @@
 package test.name.github1046;
 
-import static org.testng.Assert.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.IHookCallBack;
 import org.testng.IHookable;
@@ -17,12 +17,12 @@ public class TestClassSample implements IHookable {
 
   @Test(dataProvider = "dp")
   public void testSample1(int num) {
-    assertNotEquals(num, 0);
+    assertThat(num).isNotEqualTo(0);
   }
 
   @Test(dataProvider = "dp")
   public void testSample2(int num) {
-    assertNotEquals(num, 0);
+    assertThat(num).isNotEqualTo(0);
   }
 
   @Test

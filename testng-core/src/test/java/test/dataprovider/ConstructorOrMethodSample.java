@@ -1,8 +1,9 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -19,14 +20,14 @@ public class ConstructorOrMethodSample {
 
   @DataProvider(name = "dp1")
   public static Object[][] createData1(ConstructorOrMethod cOrM) {
-    Assert.assertEquals(cOrM.getDeclaringClass(), ConstructorOrMethodSample.class);
-    Assert.assertNull(cOrM.getMethod());
-    Assert.assertNotNull(cOrM.getConstructor());
+    assertThat(cOrM.getDeclaringClass()).isEqualTo(ConstructorOrMethodSample.class);
+    assertThat(cOrM.getMethod()).isNull();
+    assertThat(cOrM.getConstructor()).isNotNull();
 
     Constructor<?> c = cOrM.getConstructor();
-    Assert.assertNotNull(c.getAnnotation(Factory.class));
-    Assert.assertEquals(c.getParameterTypes().length, 1);
-    Assert.assertEquals(c.getParameterTypes()[0], String.class);
+    assertThat(c.getAnnotation(Factory.class)).isNotNull();
+    assertThat(c.getParameterTypes().length).isEqualTo(1);
+    assertThat(c.getParameterTypes()[0]).isEqualTo(String.class);
 
     return new Object[][] {{"0"}, {"1"}};
   }
@@ -36,12 +37,12 @@ public class ConstructorOrMethodSample {
 
   @DataProvider(name = "dp2")
   public Object[][] createData2(ConstructorOrMethod cOrM) {
-    Assert.assertEquals(cOrM.getDeclaringClass(), ConstructorOrMethodSample.class);
-    Assert.assertNotNull(cOrM.getMethod());
-    Assert.assertNull(cOrM.getConstructor());
+    assertThat(cOrM.getDeclaringClass()).isEqualTo(ConstructorOrMethodSample.class);
+    assertThat(cOrM.getMethod()).isNotNull();
+    assertThat(cOrM.getConstructor()).isNull();
 
     Method m = cOrM.getMethod();
-    Assert.assertEquals(m.getName(), "test2");
+    assertThat(m.getName()).isEqualTo("test2");
 
     return new Object[][] {{"Cedric" + s}, {"Alois" + s}};
   }

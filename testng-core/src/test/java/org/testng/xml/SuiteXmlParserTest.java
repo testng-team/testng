@@ -1,10 +1,10 @@
 package org.testng.xml;
 
+import static org.assertj.core.api.Assertions.fail;
 import static test.SimpleBaseTest.getPathToResource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -30,11 +30,11 @@ public class SuiteXmlParserTest {
     try (FileInputStream stream = new FileInputStream(new File(PARENT, fileName))) {
       XmlSuite suite = parser.parse(fileName, stream, false);
       if (!shouldWork) {
-        Assert.fail("Parsing of " + fileName + " is supposed to fail");
+        fail("Parsing of " + fileName + " is supposed to fail");
       }
     } catch (Exception e) {
       if (shouldWork) {
-        Assert.fail("Parsing of " + fileName + " is supposed to work");
+        fail("Parsing of " + fileName + " is supposed to work");
       }
     }
   }

@@ -1,8 +1,9 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlSuite;
@@ -73,7 +74,7 @@ public class SequentialTest extends BaseTest {
         };
 
     for (Map<Long, Long> m : maps) {
-      Assert.assertEquals(m.size(), 1);
+      assertThat(m.size()).isEqualTo(1);
     }
 
     long[] ids =
@@ -88,7 +89,7 @@ public class SequentialTest extends BaseTest {
       verifyMap.put(id, id);
     }
 
-    Assert.assertEquals(verifyMap.size(), threadCount);
+    assertThat(verifyMap.size()).isEqualTo(threadCount);
 
     debug("COUNT:" + threadCount + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
   }

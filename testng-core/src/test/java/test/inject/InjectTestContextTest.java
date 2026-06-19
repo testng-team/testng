@@ -1,6 +1,7 @@
 package test.inject;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestContext;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -19,9 +20,9 @@ public class InjectTestContextTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    Assert.assertEquals(xmlTest.getName(), "Injection");
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
-    Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getMethodName(), "f");
+    assertThat(xmlTest.getName()).isEqualTo("Injection");
+    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests().get(0).getMethod().getMethodName()).isEqualTo("f");
   }
 
   @Parameters("string")

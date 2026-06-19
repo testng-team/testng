@@ -1,7 +1,6 @@
 package test.factory;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Factory;
@@ -14,8 +13,8 @@ public class FactoryTest {
   @Parameters({"factory-param"})
   @Factory
   public Object[] createObjects(String param) {
-    assertEquals(param, "FactoryParam");
-    assertFalse(isInvoked, "Should only be invoked once");
+    assertThat(param).isEqualTo("FactoryParam");
+    assertThat(isInvoked).withFailMessage("Should only be invoked once").isFalse();
     isInvoked = true;
 
     return new Object[] {new FactoryTest2(42), new FactoryTest2(43)};

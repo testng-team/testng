@@ -1,7 +1,8 @@
 package test.inject;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -16,7 +17,7 @@ public class InjectBeforeMethodTest {
 
   @BeforeMethod
   public void before(Object[] parameters) {
-    Assert.assertEquals(DATA[m_beforeIndex], parameters);
+    assertThat(DATA[m_beforeIndex]).isEqualTo(parameters);
     m_beforeIndex++;
   }
 
@@ -33,7 +34,7 @@ public class InjectBeforeMethodTest {
 
   @AfterMethod
   public void after(Object[] parameters) {
-    Assert.assertEquals(DATA[m_afterIndex], parameters);
+    assertThat(DATA[m_afterIndex]).isEqualTo(parameters);
     m_afterIndex++;
   }
 

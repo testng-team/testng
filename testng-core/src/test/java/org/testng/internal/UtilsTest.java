@@ -3,7 +3,6 @@ package org.testng.internal;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertEquals;
 import static org.testng.internal.Utils.join;
 
 import java.util.List;
@@ -20,27 +19,27 @@ public class UtilsTest {
 
   @Test
   public void escapeUnicode() {
-    assertEquals(Utils.escapeUnicode("test"), "test");
-    assertEquals(
-        Utils.escapeUnicode(String.valueOf(INVALID_CHAR)), String.valueOf(REPLACEMENT_CHAR));
+    assertThat(Utils.escapeUnicode("test")).isEqualTo("test");
+    assertThat(Utils.escapeUnicode(String.valueOf(INVALID_CHAR)))
+        .isEqualTo(String.valueOf(REPLACEMENT_CHAR));
   }
 
   @Test
   public void createEmptyStringWhenJoiningEmptyListWithJoin() {
     List<String> emptyList = emptyList();
-    assertEquals("", join(emptyList, ","));
+    assertThat("").isEqualTo(join(emptyList, ","));
   }
 
   @Test
   public void joinTwoStringsWithJoinStrings() {
     List<String> twoStrings = asList("one", "two");
-    assertEquals("one,two", Utils.join(twoStrings, ","));
+    assertThat("one,two").isEqualTo(Utils.join(twoStrings, ","));
   }
 
   @Test
   public void createEmptyStringWhenJoiningEmptyListWithJoinStrings() {
     List<String> emptyList = emptyList();
-    assertEquals("", Utils.join(emptyList, ","));
+    assertThat("").isEqualTo(Utils.join(emptyList, ","));
   }
 
   @Test

@@ -1,6 +1,7 @@
 package test.retryAnalyzer.dataprovider;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class RetryAnalyzerWithoutDataProvider {
@@ -10,6 +11,6 @@ public class RetryAnalyzerWithoutDataProvider {
   // attempts
   @Test(retryAnalyzer = DataProviderRetryAnalyzer.class)
   public void test() {
-    Assert.assertTrue(countWithoutDataProvider-- == 0);
+    assertThat(countWithoutDataProvider-- == 0).isTrue();
   }
 }

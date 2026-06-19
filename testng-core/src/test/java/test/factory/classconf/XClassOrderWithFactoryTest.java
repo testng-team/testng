@@ -1,6 +1,7 @@
 package test.factory.classconf;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -13,6 +14,7 @@ public class XClassOrderWithFactoryTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    Assert.assertEquals(XClassOrderWithFactory.LOG.toString(), XClassOrderWithFactory.EXPECTED_LOG);
+    assertThat(XClassOrderWithFactory.LOG.toString())
+        .isEqualTo(XClassOrderWithFactory.EXPECTED_LOG);
   }
 }

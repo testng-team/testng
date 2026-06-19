@@ -1,6 +1,7 @@
 package test.listeners.github1029;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -16,7 +17,7 @@ public class Issue1029SampleTestClassWithFiveInstances {
 
   @Test
   public void a() {
-    Assert.assertTrue(i > 0);
+    assertThat(i > 0).isTrue();
   }
 
   @DataProvider(name = "dp")

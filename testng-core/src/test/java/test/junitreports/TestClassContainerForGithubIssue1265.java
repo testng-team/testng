@@ -1,6 +1,6 @@
 package test.junitreports;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
@@ -20,12 +20,12 @@ public class TestClassContainerForGithubIssue1265 {
 
     @Test
     public void should_pass() {
-      assertEquals("abc", "abc");
+      assertThat("abc").isEqualTo("abc");
     }
 
     @Test(enabled = false)
     public void should_be_ignored() {
-      assertEquals("abcd", "abc");
+      assertThat("abcd").isEqualTo("abc");
     }
   }
 
@@ -33,7 +33,7 @@ public class TestClassContainerForGithubIssue1265 {
 
     @Test
     public void should_pass_second() {
-      assertEquals("abc", "abc");
+      assertThat("abc").isEqualTo("abc");
     }
   }
 
@@ -41,7 +41,7 @@ public class TestClassContainerForGithubIssue1265 {
 
     @Test
     public void should_pass_third() {
-      assertEquals("abc", "abc");
+      assertThat("abc").isEqualTo("abc");
     }
   }
 }

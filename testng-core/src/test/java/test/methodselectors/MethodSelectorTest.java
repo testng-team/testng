@@ -1,6 +1,7 @@
 package test.methodselectors;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 import test.BaseTest;
 import test.methodselectors.issue1985.FilteringMethodSelector;
@@ -82,9 +83,9 @@ public class MethodSelectorTest extends BaseTest {
     addIncludedMethod(className, "train_Local");
     addIncludedMethod(className, "flight_Domestic");
     run();
-    Assert.assertTrue(getPassedTests().isEmpty());
-    Assert.assertTrue(getFailedTests().isEmpty());
-    Assert.assertTrue(getSkippedTests().isEmpty());
+    assertThat(getPassedTests().isEmpty()).isTrue();
+    assertThat(getFailedTests().isEmpty()).isTrue();
+    assertThat(getSkippedTests().isEmpty()).isTrue();
   }
 
   @Test(description = "GITHUB-1985")

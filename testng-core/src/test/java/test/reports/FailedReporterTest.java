@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -107,13 +106,13 @@ public class FailedReporterTest extends SimpleBaseTest {
         new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
             .parse();
     XmlSuite failedSuite = failedSuites.iterator().next();
-    Assert.assertEquals("42", failedSuite.getParameter("n"));
+    assertThat("42").isEqualTo(failedSuite.getParameter("n"));
 
     XmlTest failedTest = failedSuite.getTests().get(0);
-    Assert.assertEquals("43", failedTest.getParameter("o"));
+    assertThat("43").isEqualTo(failedTest.getParameter("o"));
 
     XmlClass failedClass = failedTest.getClasses().get(0);
-    Assert.assertEquals("44", failedClass.getAllParameters().get("p"));
+    assertThat("44").isEqualTo(failedClass.getAllParameters().get("p"));
   }
 
   @Test(description = "ISSUE-2445")

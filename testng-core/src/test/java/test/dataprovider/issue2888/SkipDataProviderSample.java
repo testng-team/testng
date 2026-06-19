@@ -1,6 +1,7 @@
 package test.dataprovider.issue2888;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -9,7 +10,7 @@ import org.testng.annotations.Test;
 public class SkipDataProviderSample {
   @Test(groups = "SkipMe")
   public void testSkip() {
-    Assert.fail("This test should not execute, it should be skipped");
+    fail("This test should not execute, it should be skipped");
   }
 
   @DataProvider(name = "dataProvider")
@@ -19,6 +20,6 @@ public class SkipDataProviderSample {
 
   @Test(dataProvider = "dataProvider", groups = "SkipMe")
   public void testSkipWithDataProvider(String a) {
-    Assert.fail("This test should not execute, it should be skipped");
+    fail("This test should not execute, it should be skipped");
   }
 }

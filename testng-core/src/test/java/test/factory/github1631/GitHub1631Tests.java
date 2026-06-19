@@ -1,6 +1,8 @@
 package test.factory.github1631;
 
-import org.testng.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
@@ -10,14 +12,14 @@ public class GitHub1631Tests extends SimpleBaseTest {
       description = "Test @Factory(dataProvider) should implicitly inject data provider class name")
   public void factoryWithLocalDataProviderShouldUseHostClassName() {
     final DataProviderTransformer transformer = runTest(FactoryWithLocalDataProviderTests.class);
-    Assert.assertEquals(
-        transformer.getDataProviderClass(), FactoryWithLocalDataProviderTests.class);
+    assertThat(transformer.getDataProviderClass())
+        .isEqualTo(FactoryWithLocalDataProviderTests.class);
   }
 
   @Test(description = "Test @Factory(dataProvider) should explicitly set data provider class name")
   public void factoryWithExplicitDataProviderShouldUseExternalClassName() {
     final DataProviderTransformer transformer = runTest(FactoryWithExternalDataProviderTests.class);
-    Assert.assertEquals(transformer.getDataProviderClass(), ExternalDataProviders.class);
+    assertThat(transformer.getDataProviderClass()).isEqualTo(ExternalDataProviders.class);
   }
 
   private DataProviderTransformer runTest(final Class<?> cls) {

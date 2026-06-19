@@ -1,6 +1,7 @@
 package test.dependent;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class SampleDependentMethods4 {
@@ -10,7 +11,7 @@ public class SampleDependentMethods4 {
 
   @Test(dependsOnMethods = {"step1"})
   public void step2() {
-    Assert.assertTrue(false, "Problem in step2");
+    assertThat(false).withFailMessage("Problem in step2").isTrue();
   }
 
   @Test(dependsOnMethods = {"step2"})

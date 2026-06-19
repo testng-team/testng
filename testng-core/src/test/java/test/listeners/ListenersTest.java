@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.CommandLineArgs;
 import org.testng.ITestNGListener;
@@ -568,7 +567,7 @@ public class ListenersTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.run();
 
-    Assertions.assertThat(listener.getInterruptedMethods()).isEmpty();
+    assertThat(listener.getInterruptedMethods()).isEmpty();
   }
 
   @DataProvider(name = "suiteProvider")

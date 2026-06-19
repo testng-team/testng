@@ -1,7 +1,7 @@
 package test.thread.issue2361;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.annotations.Test;
@@ -14,7 +14,7 @@ public class BaseTestClassExample {
   protected void test() {
     int currentTests = this.currentTests.incrementAndGet();
     try {
-      assertEquals(currentTests, 1);
+      assertThat(currentTests).isEqualTo(1);
       MILLISECONDS.sleep(10);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);

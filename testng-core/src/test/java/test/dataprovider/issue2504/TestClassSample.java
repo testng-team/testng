@@ -1,6 +1,7 @@
 package test.dataprovider.issue2504;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -21,6 +22,6 @@ public class TestClassSample {
 
   @Test(dataProvider = "data")
   void testSuccess(int i) {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

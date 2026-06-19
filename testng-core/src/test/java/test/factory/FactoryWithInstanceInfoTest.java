@@ -1,7 +1,6 @@
 package test.factory;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.IInstanceInfo;
 import org.testng.annotations.BeforeSuite;
@@ -15,8 +14,8 @@ public class FactoryWithInstanceInfoTest {
   @Parameters({"factory-param"})
   @Factory
   public IInstanceInfo[] createObjectsWithInstanceInfo(String param) {
-    assertEquals(param, "FactoryParam", "Incorrect param: " + param);
-    assertFalse(isInvoked, "Should only be invoked once");
+    assertThat(param).withFailMessage("Incorrect param: " + param).isEqualTo("FactoryParam");
+    assertThat(isInvoked).withFailMessage("Should only be invoked once").isFalse();
     isInvoked = true;
 
     return new IInstanceInfo[] {

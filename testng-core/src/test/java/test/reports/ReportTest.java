@@ -41,7 +41,7 @@ public class ReportTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertTrue(Files.exists(f), f.toString());
+    assertThat(Files.exists(f)).withFailMessage(f.toString()).isTrue();
   }
 
   @Test
@@ -63,8 +63,8 @@ public class ReportTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertTrue(Files.exists(f));
-    Assert.assertTrue(Files.exists(f2));
+    assertThat(Files.exists(f)).isTrue();
+    assertThat(Files.exists(f2)).isTrue();
   }
 
   @Test
@@ -85,8 +85,8 @@ public class ReportTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertTrue(Files.exists(f1));
-    Assert.assertTrue(Files.exists(f2));
+    assertThat(Files.exists(f1)).isTrue();
+    assertThat(Files.exists(f2)).isTrue();
   }
 
   private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName)
@@ -105,13 +105,13 @@ public class ReportTest extends SimpleBaseTest {
 
     Path fileA = outputDirectory.resolve("SuiteA-JDK5");
     Path fileB = outputDirectory.resolve("SuiteB-JDK5");
-    Assert.assertTrue(Files.notExists(fileA));
-    Assert.assertTrue(Files.notExists(fileB));
+    assertThat(Files.notExists(fileA)).isTrue();
+    assertThat(Files.notExists(fileB)).isTrue();
 
     tng.run();
 
-    Assert.assertTrue(Files.exists(fileA));
-    Assert.assertTrue(Files.exists(fileB));
+    assertThat(Files.exists(fileA)).isTrue();
+    assertThat(Files.exists(fileB)).isTrue();
   }
 
   private static boolean m_success;
@@ -133,7 +133,7 @@ public class ReportTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
 
-    Assert.assertTrue(m_success);
+    assertThat(m_success).isTrue();
   }
 
   @Test
@@ -160,22 +160,22 @@ public class ReportTest extends SimpleBaseTest {
     tng.run();
 
     List<Object[]> parameters = reporter.getParameters();
-    Assert.assertEquals(parameters.size(), 5);
-    Assert.assertEquals(parameters.get(0)[0].toString(), "[]");
-    Assert.assertNull(parameters.get(0)[1]);
-    Assert.assertEquals(parameters.get(0)[2].toString(), "[null]");
-    Assert.assertEquals(parameters.get(1)[0].toString(), "[null]");
-    Assert.assertEquals(parameters.get(1)[1], "dup");
-    Assert.assertEquals(parameters.get(1)[2].toString(), "[null, dup]");
-    Assert.assertEquals(parameters.get(2)[0].toString(), "[null, dup]");
-    Assert.assertEquals(parameters.get(2)[1], "dup");
-    Assert.assertEquals(parameters.get(2)[2].toString(), "[null, dup, dup]");
-    Assert.assertEquals(parameters.get(3)[0].toString(), "[null, dup, dup]");
-    Assert.assertEquals(parameters.get(3)[1], "str");
-    Assert.assertEquals(parameters.get(3)[2].toString(), "[null, dup, dup, str]");
-    Assert.assertEquals(parameters.get(4)[0].toString(), "[null, dup, dup, str]");
-    Assert.assertNull(parameters.get(4)[1]);
-    Assert.assertEquals(parameters.get(4)[2].toString(), "[null, dup, dup, str, null]");
+    assertThat(parameters.size()).isEqualTo(5);
+    assertThat(parameters.get(0)[0].toString()).isEqualTo("[]");
+    assertThat(parameters.get(0)[1]).isNull();
+    assertThat(parameters.get(0)[2].toString()).isEqualTo("[null]");
+    assertThat(parameters.get(1)[0].toString()).isEqualTo("[null]");
+    assertThat(parameters.get(1)[1]).isEqualTo("dup");
+    assertThat(parameters.get(1)[2].toString()).isEqualTo("[null, dup]");
+    assertThat(parameters.get(2)[0].toString()).isEqualTo("[null, dup]");
+    assertThat(parameters.get(2)[1]).isEqualTo("dup");
+    assertThat(parameters.get(2)[2].toString()).isEqualTo("[null, dup, dup]");
+    assertThat(parameters.get(3)[0].toString()).isEqualTo("[null, dup, dup]");
+    assertThat(parameters.get(3)[1]).isEqualTo("str");
+    assertThat(parameters.get(3)[2].toString()).isEqualTo("[null, dup, dup, str]");
+    assertThat(parameters.get(4)[0].toString()).isEqualTo("[null, dup, dup, str]");
+    assertThat(parameters.get(4)[1]).isNull();
+    assertThat(parameters.get(4)[2].toString()).isEqualTo("[null, dup, dup, str, null]");
   }
 
   @DataProvider
@@ -287,8 +287,8 @@ public class ReportTest extends SimpleBaseTest {
     tng.run();
     System.setOut(previousOut);
 
-    Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1])"));
-    Assert.assertTrue(systemOutCapture.toString().contains("testMethod([ITEM1, ITEM2])"));
+    assertThat(systemOutCapture.toString().contains("testMethod([ITEM1])")).isTrue();
+    assertThat(systemOutCapture.toString().contains("testMethod([ITEM1, ITEM2])")).isTrue();
   }
 
   @Test
@@ -303,8 +303,9 @@ public class ReportTest extends SimpleBaseTest {
     System.setOut(previousOut);
     String actual = systemOutCapture.toString();
 
-    Assert.assertTrue(
-        actual.contains(
-            "PASSED: test.reports.ReportTest$NullParameter.testMethod(null, \"Bazinga!\")"));
+    assertThat(
+            actual.contains(
+                "PASSED: test.reports.ReportTest$NullParameter.testMethod(null, \"Bazinga!\")"))
+        .isTrue();
   }
 }

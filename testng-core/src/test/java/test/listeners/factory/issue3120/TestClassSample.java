@@ -1,6 +1,7 @@
 package test.listeners.factory.issue3120;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -9,7 +10,11 @@ public class TestClassSample {
 
   @Test
   public void sampleTestMethod() {
-    Assert.assertTrue(CustomFactory.factoryInvoked, "Factory should have been invoked");
-    Assert.assertTrue(CustomFactory.listenerInvoked, "Listener should have been invoked");
+    assertThat(CustomFactory.factoryInvoked)
+        .withFailMessage("Factory should have been invoked")
+        .isTrue();
+    assertThat(CustomFactory.listenerInvoked)
+        .withFailMessage("Listener should have been invoked")
+        .isTrue();
   }
 }

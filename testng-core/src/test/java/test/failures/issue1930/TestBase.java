@@ -1,6 +1,7 @@
 package test.failures.issue1930;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -8,7 +9,7 @@ public class TestBase {
 
   @Test(dataProvider = "test2")
   public void testNumberEquality(Integer i1, Integer i2) {
-    Assert.assertEquals(i1, i2);
+    assertThat(i1).isEqualTo(i2);
   }
 
   @DataProvider(name = "test2")

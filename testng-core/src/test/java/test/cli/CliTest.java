@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-import org.testng.Assert;
 import org.testng.CommandLineArgs;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -72,7 +71,7 @@ public class CliTest extends SimpleBaseTest {
   public void testExitCodeListenerBehavior(Class<?> clazz, int expectedStatus) {
     TestNG testNG = create(clazz);
     testNG.run();
-    Assert.assertEquals(testNG.getStatus(), expectedStatus);
+    assertThat(testNG.getStatus()).isEqualTo(expectedStatus);
   }
 
   @DataProvider

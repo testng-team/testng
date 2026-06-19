@@ -1,6 +1,7 @@
 package test.dependent.issue141;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class MultipleMatchesTestClassSample {
@@ -10,7 +11,7 @@ public class MultipleMatchesTestClassSample {
 
   @Test
   public void test_C6390323() {
-    Assert.fail();
+    fail();
   }
 
   @Test

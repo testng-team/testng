@@ -1,7 +1,6 @@
 package org.testng.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -194,23 +193,23 @@ public class XmlSuiteTest extends SimpleBaseTest {
     Parser parser = new Parser(path);
     List<XmlSuite> suites = parser.parseToList();
     XmlSuite rootSuite = suites.get(0);
-    assertEquals(rootSuite.getChildSuites().size(), 4);
+    assertThat(rootSuite.getChildSuites().size()).isEqualTo(4);
 
     XmlSuite suite3 = rootSuite.getChildSuites().get(1);
-    assertEquals(suite3.getName(), "Child Suite 3");
-    assertEquals(suite3.getChildSuites().size(), 3);
+    assertThat(suite3.getName()).isEqualTo("Child Suite 3");
+    assertThat(suite3.getChildSuites().size()).isEqualTo(3);
 
     XmlSuite suite3_0 = rootSuite.getChildSuites().get(3);
-    assertEquals(suite3.getName(), "Child Suite 3");
-    assertEquals(suite3_0.getChildSuites().size(), 3);
+    assertThat(suite3.getName()).isEqualTo("Child Suite 3");
+    assertThat(suite3_0.getChildSuites().size()).isEqualTo(3);
 
     XmlSuite suite5 = suite3.getChildSuites().get(2);
-    assertEquals(suite5.getName(), "Child Suite 5");
-    assertEquals(suite5.getTests().size(), 1);
+    assertThat(suite5.getName()).isEqualTo("Child Suite 5");
+    assertThat(suite5.getTests().size()).isEqualTo(1);
 
     XmlSuite suite5_0 = suite3_0.getChildSuites().get(2);
-    assertEquals(suite5_0.getName(), "Child Suite 5");
-    assertEquals(suite5_0.getTests().size(), 1);
+    assertThat(suite5_0.getName()).isEqualTo("Child Suite 5");
+    assertThat(suite5_0.getTests().size()).isEqualTo(1);
   }
 
   private static void runTests(
@@ -221,13 +220,13 @@ public class XmlSuiteTest extends SimpleBaseTest {
     } catch (IOException e) {
       throw new TestNGException(e);
     }
-    assertEquals(suites.size(), 1);
-    assertEquals(suites.get(0).getChildSuites().size(), childSuitesCount);
+    assertThat(suites.size()).isEqualTo(1);
+    assertThat(suites.get(0).getChildSuites().size()).isEqualTo(childSuitesCount);
     TestNG testng = create(suites);
     SuiteCounter listener = new SuiteCounter();
     testng.addListener((ITestNGListener) listener);
     testng.run();
-    assertEquals(listener.getCounter(), suiteCounter);
+    assertThat(listener.getCounter()).isEqualTo(suiteCounter);
     assertThat(listener.getSuiteNames()).containsExactly(suiteNames);
   }
 

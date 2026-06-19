@@ -1,6 +1,7 @@
 package test.testng37;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -9,7 +10,7 @@ public class NullParameterTest {
   @Test
   @Parameters({"notnull", "nullvalue"})
   public void nullParameter(String notNull, int mustBeNull) {
-    Assert.assertNotNull(notNull, "not null parameter expected");
-    Assert.assertNull(mustBeNull, "null parameter expected");
+    assertThat(notNull).withFailMessage("not null parameter expected").isNotNull();
+    assertThat(mustBeNull).withFailMessage("null parameter expected").isNull();
   }
 }

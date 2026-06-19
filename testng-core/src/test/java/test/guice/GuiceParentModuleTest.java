@@ -1,7 +1,8 @@
 package test.guice;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.inject.Inject;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
@@ -14,11 +15,11 @@ public class GuiceParentModuleTest {
   @Inject ITestContext context;
 
   public void testService() {
-    Assert.assertNotNull(myService);
-    Assert.assertNotNull(mySession);
+    assertThat(myService).isNotNull();
+    assertThat(mySession).isNotNull();
     myService.serve(mySession);
-    Assert.assertNotNull(context);
-    Assert.assertEquals(context.getName(), "Guice");
-    Assert.assertEquals(context.getSuite().getName(), "parent-module-suite");
+    assertThat(context).isNotNull();
+    assertThat(context.getName()).isEqualTo("Guice");
+    assertThat(context.getSuite().getName()).isEqualTo("parent-module-suite");
   }
 }

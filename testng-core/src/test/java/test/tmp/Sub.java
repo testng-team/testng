@@ -1,6 +1,7 @@
 package test.tmp;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
@@ -27,7 +28,7 @@ public class Sub extends Base {
 
   @AfterSuite
   public void verify() {
-    Assert.assertTrue(m_beforeTest);
-    Assert.assertTrue(m_afterTest);
+    assertThat(m_beforeTest).isTrue();
+    assertThat(m_afterTest).isTrue();
   }
 }

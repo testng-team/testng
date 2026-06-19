@@ -1,9 +1,10 @@
 package test.dependent.xml;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -58,7 +59,7 @@ public class GroupDependencyTest extends SimpleBaseTest {
     if (multi) {
       // When we have "a depends on groups b and c", the only certainty is that "a"
       // will be run last
-      Assert.assertEquals(method2, a[5]);
+      assertThat(method2).isEqualTo(a[5]);
     } else {
       assertTestResultsEqual(tla.getPassedTests(), Arrays.asList(a[3], a[4], a[5]));
     }

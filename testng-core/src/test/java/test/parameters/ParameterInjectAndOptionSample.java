@@ -1,6 +1,7 @@
 package test.parameters;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Optional;
@@ -14,12 +15,12 @@ public class ParameterInjectAndOptionSample {
   @Parameters({"beforesuitedata"})
   public void beforeSuite(
       ITestContext context, @Optional("optionalbeforesuitedata") String beforesuitedata) {
-    Assert.assertEquals(beforesuitedata, "optionalbeforesuitedata");
+    assertThat(beforesuitedata).isEqualTo("optionalbeforesuitedata");
   }
 
   @Test
   @Parameters({"testdata"})
   public void test(XmlTest xmlTest, @Optional("optionaltestdata") String testdata) {
-    Assert.assertEquals(testdata, "optionaltestdata");
+    assertThat(testdata).isEqualTo("optionaltestdata");
   }
 }

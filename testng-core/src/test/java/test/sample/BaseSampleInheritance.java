@@ -1,6 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,11 @@ public class BaseSampleInheritance {
 
   @Test(dependsOnGroups = {"inheritedTestMethod"})
   public void testBooleans() {
-    assertTrue(m_invokedBaseMethod, "Didn't invoke test method in base class");
-    assertTrue(m_invokedBaseConfiguration, "Didn't invoke configuration method in base class");
+    assertThat(m_invokedBaseMethod)
+        .withFailMessage("Didn't invoke test method in base class")
+        .isTrue();
+    assertThat(m_invokedBaseConfiguration)
+        .withFailMessage("Didn't invoke configuration method in base class")
+        .isTrue();
   }
 }

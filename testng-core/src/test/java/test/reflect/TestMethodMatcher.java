@@ -1,9 +1,9 @@
 package test.reflect;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
@@ -109,7 +109,7 @@ public class TestMethodMatcher {
     final MethodMatcher matcher =
         new DataProviderMethodMatcher(
             new MethodMatcherContext(method, params, iTestContext, iTestResult));
-    Assert.assertFalse(matcher.conforms());
+    assertThat(matcher.conforms()).isFalse();
     assertThatThrownBy(
             () -> {
               method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
@@ -126,29 +126,29 @@ public class TestMethodMatcher {
     for (String item : strings) {
       log.debug("An item is \"" + item + "\"");
     }
-    Assert.assertEquals(s, "3");
+    assertThat(s).isEqualTo("3");
   }
 
   public void badTestIssue122(String s, String... strings) {
     for (String item : strings) {
       log.debug("An item is \"" + item + "\"");
     }
-    Assert.assertEquals(s, "3");
+    assertThat(s).isEqualTo("3");
   }
 
   public void mixedArgs(final int i, final Boolean b, final String[] s1, final String... strings) {
     for (String item : strings) {
       log.debug("An item is \"" + item + "\"");
     }
-    Assert.assertEquals(i, 3);
-    Assert.assertNotNull(b);
-    Assert.assertTrue(b);
-    Assert.assertNotNull(s1);
-    Assert.assertEquals(s1.length, 1);
-    Assert.assertEquals(s1[0], "three");
-    Assert.assertNotNull(strings);
-    Assert.assertEquals(strings.length, 1);
-    Assert.assertEquals(strings[0], "four");
+    assertThat(i).isEqualTo(3);
+    assertThat(b).isNotNull();
+    assertThat(b).isTrue();
+    assertThat(s1).isNotNull();
+    assertThat(s1.length).isEqualTo(1);
+    assertThat(s1[0]).isEqualTo("three");
+    assertThat(strings).isNotNull();
+    assertThat(strings.length).isEqualTo(1);
+    assertThat(strings[0]).isEqualTo("four");
   }
 
   public void potpourri0(
@@ -177,27 +177,27 @@ public class TestMethodMatcher {
     for (String item : strings) {
       log.debug("An item is \"" + item + "\"");
     }
-    Assert.assertNotNull(myTestContext);
-    Assert.assertTrue(myTestContext instanceof TestContextJustForTesting);
-    Assert.assertNotNull(myTestResult);
-    Assert.assertTrue(myTestResult instanceof TestResultJustForTesting);
-    Assert.assertNotNull(myXmlTest);
-    Assert.assertTrue(myXmlTest instanceof XmlTestJustForTesting);
-    Assert.assertNotNull(currentTestMethod);
-    Assert.assertEquals("potpourri0", currentTestMethod.getName());
-    Assert.assertNotNull(myMethod1);
-    Assert.assertEquals("mixedArgs", myMethod1.getName());
-    Assert.assertNotNull(myMethod2);
-    Assert.assertEquals("badTestIssue122", myMethod2.getName());
-    Assert.assertEquals(i, 3);
-    Assert.assertNotNull(b);
-    Assert.assertTrue(b);
-    Assert.assertNotNull(s1);
-    Assert.assertEquals(s1.length, 1);
-    Assert.assertEquals(s1[0], "three");
-    Assert.assertNotNull(strings);
-    Assert.assertEquals(strings.length, 1);
-    Assert.assertEquals(strings[0], "four");
+    assertThat(myTestContext).isNotNull();
+    assertThat((myTestContext instanceof TestContextJustForTesting)).isTrue();
+    assertThat(myTestResult).isNotNull();
+    assertThat((myTestResult instanceof TestResultJustForTesting)).isTrue();
+    assertThat(myXmlTest).isNotNull();
+    assertThat((myXmlTest instanceof XmlTestJustForTesting)).isTrue();
+    assertThat(currentTestMethod).isNotNull();
+    assertThat("potpourri0").isEqualTo(currentTestMethod.getName());
+    assertThat(myMethod1).isNotNull();
+    assertThat("mixedArgs").isEqualTo(myMethod1.getName());
+    assertThat(myMethod2).isNotNull();
+    assertThat("badTestIssue122").isEqualTo(myMethod2.getName());
+    assertThat(i).isEqualTo(3);
+    assertThat(b).isNotNull();
+    assertThat(b).isTrue();
+    assertThat(s1).isNotNull();
+    assertThat(s1.length).isEqualTo(1);
+    assertThat(s1[0]).isEqualTo("three");
+    assertThat(strings).isNotNull();
+    assertThat(strings.length).isEqualTo(1);
+    assertThat(strings[0]).isEqualTo("four");
   }
 
   public void potpourri1(
@@ -226,26 +226,26 @@ public class TestMethodMatcher {
     for (String item : strings) {
       log.debug("An item is \"" + item + "\"");
     }
-    Assert.assertNotNull(myTestContext);
-    Assert.assertTrue(myTestContext instanceof TestContextJustForTesting);
-    Assert.assertNotNull(myTestResult);
-    Assert.assertTrue(myTestResult instanceof TestResultJustForTesting);
-    Assert.assertNotNull(myXmlTest);
-    Assert.assertTrue(myXmlTest instanceof XmlTestJustForTesting);
-    Assert.assertNotNull(currentTestMethod);
-    Assert.assertEquals("potpourri1", currentTestMethod.getName());
-    Assert.assertNotNull(myMethod1);
-    Assert.assertEquals("mixedArgs", myMethod1.getName());
-    Assert.assertNotNull(myMethod2);
-    Assert.assertEquals("badTestIssue122", myMethod2.getName());
-    Assert.assertEquals(i, 3);
-    Assert.assertNotNull(b);
-    Assert.assertTrue(b);
-    Assert.assertNotNull(s1);
-    Assert.assertEquals(s1.length, 1);
-    Assert.assertEquals(s1[0], "three");
-    Assert.assertNotNull(strings);
-    Assert.assertEquals(strings.length, 1);
-    Assert.assertEquals(strings[0], "four");
+    assertThat(myTestContext).isNotNull();
+    assertThat((myTestContext instanceof TestContextJustForTesting)).isTrue();
+    assertThat(myTestResult).isNotNull();
+    assertThat((myTestResult instanceof TestResultJustForTesting)).isTrue();
+    assertThat(myXmlTest).isNotNull();
+    assertThat((myXmlTest instanceof XmlTestJustForTesting)).isTrue();
+    assertThat(currentTestMethod).isNotNull();
+    assertThat("potpourri1").isEqualTo(currentTestMethod.getName());
+    assertThat(myMethod1).isNotNull();
+    assertThat("mixedArgs").isEqualTo(myMethod1.getName());
+    assertThat(myMethod2).isNotNull();
+    assertThat("badTestIssue122").isEqualTo(myMethod2.getName());
+    assertThat(i).isEqualTo(3);
+    assertThat(b).isNotNull();
+    assertThat(b).isTrue();
+    assertThat(s1).isNotNull();
+    assertThat(s1.length).isEqualTo(1);
+    assertThat(s1[0]).isEqualTo("three");
+    assertThat(strings).isNotNull();
+    assertThat(strings.length).isEqualTo(1);
+    assertThat(strings[0]).isEqualTo("four");
   }
 }

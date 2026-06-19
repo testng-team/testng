@@ -60,7 +60,7 @@ testImplementation("org.assertj:assertj-core:<latest>")
 `org.testng.Assert` API to AssertJ. The full Assert coverage is available since
 [rewrite-testing-frameworks v3.39.0](https://github.com/openrewrite/rewrite-testing-frameworks/releases/tag/v3.39.0).
 
-Recipe: `org.openrewrite.java.testing.testng.TestNGToAssertJ` — *"Migrate TestNG assertions to
+Recipe: `org.openrewrite.java.testing.testng.TestNgToAssertj` — *"Migrate TestNG assertions to
 AssertJ"*. It handles both qualified (`Assert.assertEquals(...)`) and static-import
 (`assertEquals(...)`) usages.
 
@@ -78,7 +78,7 @@ dependencies {
 }
 
 rewrite {
-    activeRecipe("org.openrewrite.java.testing.testng.TestNGToAssertJ")
+    activeRecipe("org.openrewrite.java.testing.testng.TestNgToAssertj")
 }
 ```
 
@@ -97,7 +97,7 @@ Run it:
   <version><!-- latest --></version>
   <configuration>
     <activeRecipes>
-      <recipe>org.openrewrite.java.testing.testng.TestNGToAssertJ</recipe>
+      <recipe>org.openrewrite.java.testing.testng.TestNgToAssertj</recipe>
     </activeRecipes>
   </configuration>
   <dependencies>

@@ -1,7 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterTest;
@@ -14,7 +13,7 @@ public class Basic2 {
   @Test(dependsOnGroups = {"basic1"})
   public void basic2() {
     m_basic2WasRun = true;
-    assertTrue(Basic1.getCount() > 0, "COUNT WAS NOT INCREMENTED");
+    assertThat(Basic1.getCount() > 0).withFailMessage("COUNT WAS NOT INCREMENTED").isTrue();
   }
 
   @AfterTest
@@ -26,8 +25,11 @@ public class Basic2 {
   @AfterClass
   public void checkTestAtClassLevelWasRun() {
     m_afterClass++;
-    assertTrue(m_basic2WasRun, "Class annotated with @Test didn't have its methods run.");
-    assertEquals(
-        m_afterClass, 1, "After class should have been called exactly once, not " + m_afterClass);
+    assertThat(m_basic2WasRun)
+        .withFailMessage("Class annotated with @Test didn't have its methods run.")
+        .isTrue();
+    assertThat(m_afterClass)
+        .withFailMessage("After class should have been called exactly once, not " + m_afterClass)
+        .isEqualTo(1);
   }
 }

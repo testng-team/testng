@@ -1,6 +1,7 @@
 package test.issue1430;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 import org.testng.internal.ClassHelper;
 
@@ -11,7 +12,7 @@ public class TestFileToClass {
     Class c1 = this.getClass();
     String p = c1.getResource("TestFileToClass.class").getPath();
     Class c2 = ClassHelper.fileToClass(p);
-    Assert.assertNotNull(c2);
-    Assert.assertEquals(c1.getName(), c2.getName());
+    assertThat(c2).isNotNull();
+    assertThat(c1.getName()).isEqualTo(c2.getName());
   }
 }

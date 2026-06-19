@@ -1,6 +1,7 @@
 package test.configurationfailurepolicy.issue2862;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -13,7 +14,7 @@ public class AnnotationBeforeMethodSample {
     public void beforeMethod1() {
       if (fail) {
         fail = false;
-        Assert.fail();
+        fail();
       }
     }
 

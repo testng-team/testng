@@ -2,7 +2,7 @@ package test.junitreports;
 
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.*;
+import static org.assertj.core.api.Assertions.fail;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
 
 import com.beust.jcommander.internal.Lists;
@@ -83,16 +83,24 @@ public class JUnitReportsTest extends SimpleBaseTest {
     for (Class<?> clazz : classes) {
       Testsuite suite = reportReporter.getTestsuite(clazz.getName());
       Map<String, Integer> attributes = mapping.get(clazz);
-      assertEquals(suite.getName(), clazz.getName(), "Suite Name validation.");
-      assertEquals(suite.getTests(), attributes.get(TESTS).intValue(), "<test> count validation.");
-      assertEquals(
-          suite.getErrors(), attributes.get(ERRORS).intValue(), "errored count validation.");
-      assertEquals(
-          suite.getIgnored(), attributes.get(IGNORED).intValue(), "ignored count validation.");
-      assertEquals(
-          suite.getFailures(), attributes.get(FAILURES).intValue(), "failure count validation.");
-      assertEquals(
-          suite.getSkipped(), attributes.get(SKIPPED).intValue(), "skipped count validation.");
+      assertThat(suite.getName())
+          .withFailMessage("Suite Name validation.")
+          .isEqualTo(clazz.getName());
+      assertThat(suite.getTests())
+          .withFailMessage("<test> count validation.")
+          .isEqualTo(attributes.get(TESTS).intValue());
+      assertThat(suite.getErrors())
+          .withFailMessage("errored count validation.")
+          .isEqualTo(attributes.get(ERRORS).intValue());
+      assertThat(suite.getIgnored())
+          .withFailMessage("ignored count validation.")
+          .isEqualTo(attributes.get(IGNORED).intValue());
+      assertThat(suite.getFailures())
+          .withFailMessage("failure count validation.")
+          .isEqualTo(attributes.get(FAILURES).intValue());
+      assertThat(suite.getSkipped())
+          .withFailMessage("skipped count validation.")
+          .isEqualTo(attributes.get(SKIPPED).intValue());
     }
   }
 
@@ -110,7 +118,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     for (Testcase testcase : suite.getTestcase()) {
       actual.add(testcase.getName().trim());
     }
-    assertEquals(actual, expected);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -123,7 +131,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     Testsuite suite = reportReporter.getTestsuite(SampleTestClass.class.getName());
     Testcase testcase = suite.getTestcase().get(0);
     String actual = testcase.getName();
-    assertEquals(actual, "Test_001");
+    assertThat(actual).isEqualTo("Test_001");
   }
 
   @Test
@@ -347,18 +355,22 @@ public class JUnitReportsTest extends SimpleBaseTest {
       suitename = xmlTest.getName();
     }
     Testsuite suite = reportReporter.getTestsuite(suitename);
-    assertEquals(suite.getName(), suitename, "Suite Name validation.");
-    assertEquals(suite.getTests(), tests, "<test> count validation.");
-    assertEquals(suite.getErrors(), errors, "errored count validation.");
-    assertEquals(suite.getIgnored(), ignored, "ignored count validation.");
-    assertEquals(suite.getFailures(), failures, "failure count validation.");
-    assertEquals(suite.getSkipped(), skipped, "skipped count validation.");
-    assertEquals(suite.getTestcase().size(), 3, "test case count validation.");
+    assertThat(suite.getName()).withFailMessage("Suite Name validation.").isEqualTo(suitename);
+    assertThat(suite.getTests()).withFailMessage("<test> count validation.").isEqualTo(tests);
+    assertThat(suite.getErrors()).withFailMessage("errored count validation.").isEqualTo(errors);
+    assertThat(suite.getIgnored()).withFailMessage("ignored count validation.").isEqualTo(ignored);
+    assertThat(suite.getFailures())
+        .withFailMessage("failure count validation.")
+        .isEqualTo(failures);
+    assertThat(suite.getSkipped()).withFailMessage("skipped count validation.").isEqualTo(skipped);
+    assertThat(suite.getTestcase().size())
+        .withFailMessage("test case count validation.")
+        .isEqualTo(3);
     List<Testcase> actualTestcases = suite.getTestcase();
     for (Testcase actualTestcase : actualTestcases) {
-      assertTrue(
-          testcaseList.contains(actualTestcase),
-          "Validation of " + actualTestcase.getName() + " " + "presence.");
+      assertThat(testcaseList.contains(actualTestcase))
+          .withFailMessage("Validation of " + actualTestcase.getName() + " " + "presence.")
+          .isTrue();
     }
   }
 }

@@ -1,8 +1,9 @@
 package test.failedreporter.issue2517;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -48,7 +49,7 @@ public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
     for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
       grep(failed, String.format(expectedLine, s), resultLines);
-      Assert.assertEquals(resultLines.size(), expected);
+      assertThat(resultLines.size()).isEqualTo(expected);
     }
   }
 }
