@@ -65,6 +65,11 @@ public abstract class BaseTestMethod
   private String m_description = null;
   protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
+  // Set on the per-invocation clones created for a parallel (threadPoolSize > 1)
+  // invocationCount. For those clones the firstTimeOnly @BeforeMethod and the
+  // lastTimeOnly @AfterMethod are run once - as a barrier - around the whole pool
+  // instead of inside each parallel invocation, so the clones must not run them.
+  private boolean m_skipFirstAndLastTimeOnlyConfigs;
   private Callable<Boolean> m_moreInvocationChecker;
   private IRetryAnalyzer m_retryAnalyzer = null;
   private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
@@ -653,6 +658,19 @@ public abstract class BaseTestMethod
   @Override
   public int getCurrentInvocationCount() {
     return m_currentInvocationCount.get();
+  }
+
+  /**
+   * @return {@code true} when this (cloned) method represents a single invocation of a parallel
+   *     {@code invocationCount}, for which the firstTimeOnly/lastTimeOnly configuration methods are
+   *     run around the thread pool rather than inside the invocation.
+   */
+  public boolean skipFirstAndLastTimeOnlyConfigs() {
+    return m_skipFirstAndLastTimeOnlyConfigs;
+  }
+
+  public void setSkipFirstAndLastTimeOnlyConfigs(boolean skip) {
+    m_skipFirstAndLastTimeOnlyConfigs = skip;
   }
 
   @Override

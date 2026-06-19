@@ -500,14 +500,67 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       ITestNGMethod clonedMethod = testMethod.clone();
       clonedMethod.setInvocationCount(1);
       clonedMethod.setThreadPoolSize(1);
+      // The invocations run in parallel, so the firstTimeOnly @BeforeMethod and
+      // lastTimeOnly @AfterMethod cannot be run inside an invocation (none of them is
+      // guaranteed to be the "first"/"last"). They are run once around the pool below,
+      // hence the clones must not run them.
+      if (clonedMethod instanceof BaseTestMethod) {
+        ((BaseTestMethod) clonedMethod).setSkipFirstAndLastTimeOnlyConfigs(true);
+      }
 
       MethodInstance mi = new MethodInstance(clonedMethod);
       workers.add(
           new SingleTestMethodWorker(this, invoker, mi, parameters, testContext, m_classListeners));
     }
 
-    return runWorkers(
-        testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, parameters);
+    // Run the firstTimeOnly @BeforeMethod once, before the pool starts, so it acts as a
+    // barrier for every parallel invocation (GITHUB-426).
+    invokeTimeOnlyConfigurations(testMethod, parameters, true);
+    try {
+      return runWorkers(
+          testMethod, workers, testMethod.getThreadPoolSize(), groupMethods, parameters);
+    } finally {
+      // Run the lastTimeOnly @AfterMethod once, after every invocation has completed.
+      invokeTimeOnlyConfigurations(testMethod, parameters, false);
+    }
+  }
+
+  /**
+   * Runs the firstTimeOnly @BeforeMethod (when {@code before} is {@code true}) or the
+   * lastTimeOnly @AfterMethod (when {@code before} is {@code false}) exactly once for a parallel
+   * {@code invocationCount}. Running them outside the thread pool turns them into a barrier, which
+   * the per-invocation filtering inside the pool cannot provide.
+   */
+  private void invokeTimeOnlyConfigurations(
+      ITestNGMethod testMethod, Map<String, String> parameters, boolean before) {
+    ITestClass testClass = testMethod.getTestClass();
+    XmlSuite suite = m_testContext.getSuite().getXmlSuite();
+    for (IObject.IdentifiableObject identifiable : IObject.objects(testClass, true)) {
+      Object instance = identifiable.getInstance();
+      ITestNGMethod[] configMethods =
+          before
+              ? TestNgMethodUtils.filterFirstTimeOnlySetupMethods(
+                  testMethod,
+                  TestNgMethodUtils.filterBeforeTestMethods(
+                      instance, testClass, CAN_RUN_FROM_CLASS))
+              : TestNgMethodUtils.filterLastTimeOnlyTeardownMethods(
+                  testMethod,
+                  TestNgMethodUtils.filterAfterTestMethods(
+                      instance, testClass, CAN_RUN_FROM_CLASS));
+      if (configMethods.length == 0) {
+        continue;
+      }
+      ConfigMethodArguments cfgArgs =
+          new ConfigMethodArguments.Builder()
+              .forTestClass(testClass)
+              .forTestMethod(testMethod)
+              .usingConfigMethodsAs(configMethods)
+              .forSuite(suite)
+              .usingParameters(parameters)
+              .usingInstance(instance)
+              .build();
+      invoker.invokeConfigurations(cfgArgs);
+    }
   }
 
   private void collectResults(ITestNGMethod testMethod, ITestResult result) {
