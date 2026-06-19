@@ -1,6 +1,7 @@
 package org.testng;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.testng.internal.EclipseInterface.ASSERT_EQUAL_LEFT;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
@@ -2379,25 +2380,27 @@ public class Assert {
   /**
    * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed.
    * If it does not throw an exception, an {@link AssertionError} is thrown. If it throws the wrong
-   * type of exception, an {@code AssertionError} is thrown describing the mismatch; the exception
-   * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
+   * type of exception, an {@code AssertionError} is thrown describing the mismatch. To obtain the
+   * exception that was actually thrown, use {@link #expectThrows} instead.
    *
    * @param throwableClass the expected type of the exception
    * @param <T> the expected type of the exception
    * @param runnable A function that is expected to throw an exception when invoked
    * @since 6.9.5
    */
-  @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
   public static <T extends Throwable> void assertThrows(
       Class<T> throwableClass, ThrowingRunnable runnable) {
-    expectThrows(throwableClass, runnable);
+    // Delegated to AssertJ; the thrown-type check keeps TestNG semantics (subtypes accepted), only
+    // the failure message differs. expectThrows is kept as-is because it returns the caught
+    // exception, which AssertJ's fluent API does not expose.
+    assertThatExceptionOfType(throwableClass).isThrownBy(runnable::run);
   }
 
   /**
    * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed.
    * If it does not throw an exception, an {@link AssertionError} is thrown. If it throws the wrong
-   * type of exception, an {@code AssertionError} is thrown describing the mismatch; the exception
-   * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
+   * type of exception, an {@code AssertionError} is thrown describing the mismatch. To obtain the
+   * exception that was actually thrown, use {@link #expectThrows} instead.
    *
    * @param message fail message
    * @param throwableClass the expected type of the exception
@@ -2406,7 +2409,8 @@ public class Assert {
    */
   public static <T extends Throwable> void assertThrows(
       String message, Class<T> throwableClass, ThrowingRunnable runnable) {
-    expectThrows(message, throwableClass, runnable);
+    // Delegated to AssertJ (see the typed overload above).
+    assertThatExceptionOfType(throwableClass).as(message).isThrownBy(runnable::run);
   }
 
   /**
