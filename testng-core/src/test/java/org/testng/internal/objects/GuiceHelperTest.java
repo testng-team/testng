@@ -29,7 +29,7 @@ public final class GuiceHelperTest {
     assertThat(injector).isNotNull();
     Module[] modules = injector.getModules();
     assertThat(modules).isNotNull();
-    assertThat(modules.length).isEqualTo(1);
+    assertThat(modules.length).isOne();
     assertThat(modules[0]).isEqualTo(new SampleIModule().getModule());
   }
 

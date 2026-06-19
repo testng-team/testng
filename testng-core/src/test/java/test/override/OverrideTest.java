@@ -55,7 +55,7 @@ public class OverrideTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(f.getAbsolutePath()));
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 
   @Test(description = "Override -groups")

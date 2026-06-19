@@ -51,6 +51,6 @@ public class ConfigurationGroups5SampleTest {
     assertThat(m_run1).withFailMessage("run1() wasn't run").isTrue();
     assertThat(m_run2).withFailMessage("run2() wasn't run").isTrue();
     assertThat(m_after).withFailMessage("after1() wasn't run").isTrue();
-    assertThat(2).isEqualTo(m_afterCount);
+    assertThat(m_afterCount).isEqualTo(2);
   }
 }

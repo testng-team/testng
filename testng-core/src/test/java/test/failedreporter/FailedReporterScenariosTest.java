@@ -41,7 +41,7 @@ public class FailedReporterScenariosTest extends SimpleBaseTest {
     try {
       FailedReporterTest.runAssertions(
           fileLocation, new String[] {"testMethodWithFailure"}, "<include name=\"%s\"/>");
-      assertThat(getLocation(fileLocation).exists()).isTrue();
+      assertThat(getLocation(fileLocation)).exists();
     } finally {
       if (fileLocation.exists()) {
         deleteDir(fileLocation);

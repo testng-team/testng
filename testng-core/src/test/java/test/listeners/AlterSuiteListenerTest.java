@@ -38,7 +38,7 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
     XmlSuite suite =
         runTest(AlterSuiteListener1SampleTest.class, AlterXmlTestsInSuiteListener.class.getName())
             .second();
-    assertThat(suite.getTests().size()).isEqualTo(2);
+    assertThat(suite.getTests()).hasSize(2);
   }
 
   @Test(description = "GITHUB-2469")
@@ -50,10 +50,10 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
             AlteredXmlSuiteReadListener.class.getName());
     TestNG tng = retObjects.first();
     XmlSuite suite = retObjects.second();
-    assertThat(suite.getTests().size()).isEqualTo(2);
+    assertThat(suite.getTests()).hasSize(2);
     List<ISuiteListener> listeners =
         Optional.ofNullable(tng.getSuiteListeners()).orElse(new ArrayList<>());
-    assertThat(listeners.isEmpty()).isFalse();
+    assertThat(listeners).isNotEmpty();
     for (ISuiteListener iSuiteListener : listeners) {
       if (iSuiteListener instanceof AlteredXmlSuiteReadListener) {
         AlteredXmlSuiteReadListener alteredXmlSuiteReadListener =

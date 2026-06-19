@@ -118,7 +118,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     for (Testcase testcase : suite.getTestcase()) {
       actual.add(testcase.getName().trim());
     }
-    assertThat(actual).isEqualTo(expected);
+    assertThat(actual).containsExactlyElementsOf(expected);
   }
 
   @Test
@@ -241,7 +241,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
               String.format(
                   "Could not find an expected result for actual test case result %s",
                   actualTestCaseResult))
-          .isEqualTo(1);
+          .isOne();
     }
 
     // Verify the actual full system-out for the testsuite which includes output lines from
@@ -264,7 +264,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
 
     // Verify that the count of actual xml testsuite system-out lines matches the count of expected
     // output lines.
-    assertThat(actualFullOutputList.size()).isEqualTo(expectedFullOutputCount);
+    assertThat(actualFullOutputList).hasSize(expectedFullOutputCount);
 
     // Verify that before and after messages are at the beginning and end of the testsuite
     // system-out.
@@ -288,7 +288,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     Reporter.clear();
     tng.run();
     Document doc = getJunitReport(outputDir, testClass);
-    assertThat(doc.getElementsByTagName("system-out").getLength()).isEqualTo(0);
+    assertThat(doc.getElementsByTagName("system-out").getLength()).isZero();
   }
 
   private Document getJunitReport(Path outputDir, Class<?> testClass)
@@ -363,14 +363,12 @@ public class JUnitReportsTest extends SimpleBaseTest {
         .withFailMessage("failure count validation.")
         .isEqualTo(failures);
     assertThat(suite.getSkipped()).withFailMessage("skipped count validation.").isEqualTo(skipped);
-    assertThat(suite.getTestcase().size())
-        .withFailMessage("test case count validation.")
-        .isEqualTo(3);
+    assertThat(suite.getTestcase()).withFailMessage("test case count validation.").hasSize(3);
     List<Testcase> actualTestcases = suite.getTestcase();
     for (Testcase actualTestcase : actualTestcases) {
-      assertThat(testcaseList.contains(actualTestcase))
+      assertThat(testcaseList)
           .withFailMessage("Validation of " + actualTestcase.getName() + " " + "presence.")
-          .isTrue();
+          .contains(actualTestcase);
     }
   }
 }

@@ -47,7 +47,7 @@ public class ExpectedExceptionsTest extends BaseTest {
     addClass(test.expectedexceptions.github1409.TestClassSample.class);
     run();
     Collection<List<ITestResult>> failedTests = getFailedTests().values();
-    assertThat(failedTests.isEmpty()).isFalse();
+    assertThat(failedTests).isNotEmpty();
     ITestResult result = failedTests.iterator().next().get(0);
     String actual = result.getThrowable().getMessage().replaceAll("\\n", "");
     String expected =

@@ -22,7 +22,7 @@ public class MySample {
   public void testMethod() {
     FactoryInSeparateClassTest.addToSum(i);
     //    assert i > 0 : "MySample was not constructed with correct params";
-    assertThat(i).withFailMessage("My test was not created by the factory").isNotEqualTo(0);
+    assertThat(i).withFailMessage("My test was not created by the factory").isNotZero();
   }
 
   @Test(dependsOnGroups = "testMethodOnFactoryClass")

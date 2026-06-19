@@ -17,7 +17,7 @@ public class Github1298Test {
   @Test
   public void testPlugin() {
     ITestResult result = Reporter.getCurrentTestResult();
-    assertThat(result.getAttribute("class").toString()).isEqualTo(getClass().getName());
+    assertThat(result.getAttribute("class")).hasToString(getClass().getName());
     assertThat(result.getAttribute("toString")).isNotNull();
   }
 }

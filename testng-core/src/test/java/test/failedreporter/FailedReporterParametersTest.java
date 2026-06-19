@@ -105,13 +105,13 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
                 () -> new IllegalStateException("At-least one value should have been found"));
 
     // Cheeck class1 Parameters
-    assertThat("44").isEqualTo(failedClass1.getAllParameters().get("sharedParameter"));
-    assertThat("43").isEqualTo(failedClass1.getAllParameters().get("class1Parameter"));
+    assertThat(failedClass1.getAllParameters()).containsEntry("sharedParameter", "44");
+    assertThat(failedClass1.getAllParameters()).containsEntry("class1Parameter", "43");
     assertThat(failedClass1.getAllParameters().get("class2Parameter")).isNull();
 
     // Cheeck class2 Parameters
-    assertThat("55").isEqualTo(failedClass2.getAllParameters().get("sharedParameter"));
-    assertThat("56").isEqualTo(failedClass2.getAllParameters().get("class2Parameter"));
+    assertThat(failedClass2.getAllParameters()).containsEntry("sharedParameter", "55");
+    assertThat(failedClass2.getAllParameters()).containsEntry("class2Parameter", "56");
     assertThat(failedClass2.getAllParameters().get("class1Parameter")).isNull();
   }
 
@@ -127,9 +127,9 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
       List<String> resultLines = Lists.newArrayList();
       grep(failed, String.format(expectedFormat, expectedKey, expectedKey + "Value"), resultLines);
       int expectedSize = 1;
-      assertThat(resultLines.size())
+      assertThat(resultLines)
           .withFailMessage("Mismatch param:" + expectedKey)
-          .isEqualTo(expectedSize);
+          .hasSize(expectedSize);
     }
   }
 

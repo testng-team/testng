@@ -41,7 +41,7 @@ public class FactoryTest {
     B.setUp();
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
-    assertThat(B.m_threadIds.size()).isEqualTo(expectedThreadIdCount);
+    assertThat(tla.getPassedTests()).hasSize(2);
+    assertThat(B.m_threadIds).hasSize(expectedThreadIdCount);
   }
 }

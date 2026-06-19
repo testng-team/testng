@@ -48,7 +48,7 @@ public class XmlTestTest extends SimpleBaseTest {
     XmlTest copyXmlTest = (XmlTest) xmlTest.clone();
     assertThat(copyXmlTest).isNotNull();
     assertThat(copyXmlTest.getXmlClasses()).isNotNull();
-    assertThat(xmlTest.getXmlClasses().size()).isEqualTo(copyXmlTest.getXmlClasses().size());
+    assertThat(xmlTest.getXmlClasses()).hasSameSizeAs(copyXmlTest.getXmlClasses());
   }
 
   private static Map<String, String> newSetOfParameters(String key, String value) {

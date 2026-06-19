@@ -26,7 +26,7 @@ public class DefaultMethodTest extends SimpleBaseTest {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] testMethods = testClass.getTestMethods();
-    assertThat(testMethods.length).isEqualTo(1);
+    assertThat(testMethods.length).isOne();
     assertThat(testMethods[0].getMethodName()).isEqualTo("defaultMethodTest");
   }
 
@@ -37,7 +37,7 @@ public class DefaultMethodTest extends SimpleBaseTest {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] beforeClassMethods = testClass.getBeforeClassMethods();
-    assertThat(beforeClassMethods.length).isEqualTo(1);
+    assertThat(beforeClassMethods.length).isOne();
     assertThat(beforeClassMethods[0].getMethodName()).isEqualTo("beforeClassRun");
   }
 
@@ -48,7 +48,7 @@ public class DefaultMethodTest extends SimpleBaseTest {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] afterClassMethods = testClass.getAfterClassMethods();
-    assertThat(afterClassMethods.length).isEqualTo(1);
+    assertThat(afterClassMethods.length).isOne();
     assertThat(afterClassMethods[0].getMethodName()).isEqualTo("afterClassRun");
   }
 
@@ -59,7 +59,7 @@ public class DefaultMethodTest extends SimpleBaseTest {
     final ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] beforeMethods = testClass.getBeforeTestMethods();
-    assertThat(beforeMethods.length).isEqualTo(1);
+    assertThat(beforeMethods.length).isOne();
     assertThat(beforeMethods[0].getMethodName()).isEqualTo("beforeMethodRun");
   }
 
@@ -70,7 +70,7 @@ public class DefaultMethodTest extends SimpleBaseTest {
     final ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] afterMethods = testClass.getAfterTestMethods();
-    assertThat(afterMethods.length).isEqualTo(1);
+    assertThat(afterMethods.length).isOne();
     assertThat(afterMethods[0].getMethodName()).isEqualTo("afterMethodRun");
   }
 

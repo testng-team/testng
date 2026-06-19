@@ -16,9 +16,9 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
+    assertThat(tla.getPassedTests()).hasSize(1);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).hasSize(3);
   }
 
   // Test with string array of objects in data-provider with end result as success after 3 retry
@@ -29,9 +29,9 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
+    assertThat(tla.getPassedTests()).hasSize(1);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).hasSize(3);
   }
 
   // Test with multiple integer arrays in data-provider when parallel mode on and end result as
@@ -44,10 +44,10 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
     // Since 2 integer arrays are passing inside data-provider, number of test cases should be 2
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size())
-        .isEqualTo(6); // Number of total skipped count should be 6, each for a test
+    assertThat(tla.getPassedTests()).hasSize(2);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests())
+        .hasSize(6); // Number of total skipped count should be 6, each for a test
   }
 
   // Test with objects in data-provider with result as success after 3 retry attempts
@@ -57,9 +57,9 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
+    assertThat(tla.getPassedTests()).hasSize(1);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).hasSize(3);
   }
 
   // Test with objects in data-provider with result as failed after 3 retry attempts
@@ -69,8 +69,8 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getFailedTests().size()).isEqualTo(1);
-    assertThat(tla.getPassedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
+    assertThat(tla.getFailedTests()).hasSize(1);
+    assertThat(tla.getPassedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).hasSize(3);
   }
 }

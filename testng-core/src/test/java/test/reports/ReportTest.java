@@ -63,8 +63,8 @@ public class ReportTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(Files.exists(f)).isTrue();
-    assertThat(Files.exists(f2)).isTrue();
+    assertThat(f).exists();
+    assertThat(f2).exists();
   }
 
   @Test
@@ -85,8 +85,8 @@ public class ReportTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(Files.exists(f1)).isTrue();
-    assertThat(Files.exists(f2)).isTrue();
+    assertThat(f1).exists();
+    assertThat(f2).exists();
   }
 
   private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName)
@@ -110,8 +110,8 @@ public class ReportTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(Files.exists(fileA)).isTrue();
-    assertThat(Files.exists(fileB)).isTrue();
+    assertThat(fileA).exists();
+    assertThat(fileB).exists();
   }
 
   private static boolean m_success;
@@ -160,22 +160,22 @@ public class ReportTest extends SimpleBaseTest {
     tng.run();
 
     List<Object[]> parameters = reporter.getParameters();
-    assertThat(parameters.size()).isEqualTo(5);
-    assertThat(parameters.get(0)[0].toString()).isEqualTo("[]");
+    assertThat(parameters).hasSize(5);
+    assertThat(parameters.get(0)[0]).hasToString("[]");
     assertThat(parameters.get(0)[1]).isNull();
-    assertThat(parameters.get(0)[2].toString()).isEqualTo("[null]");
-    assertThat(parameters.get(1)[0].toString()).isEqualTo("[null]");
+    assertThat(parameters.get(0)[2]).hasToString("[null]");
+    assertThat(parameters.get(1)[0]).hasToString("[null]");
     assertThat(parameters.get(1)[1]).isEqualTo("dup");
-    assertThat(parameters.get(1)[2].toString()).isEqualTo("[null, dup]");
-    assertThat(parameters.get(2)[0].toString()).isEqualTo("[null, dup]");
+    assertThat(parameters.get(1)[2]).hasToString("[null, dup]");
+    assertThat(parameters.get(2)[0]).hasToString("[null, dup]");
     assertThat(parameters.get(2)[1]).isEqualTo("dup");
-    assertThat(parameters.get(2)[2].toString()).isEqualTo("[null, dup, dup]");
-    assertThat(parameters.get(3)[0].toString()).isEqualTo("[null, dup, dup]");
+    assertThat(parameters.get(2)[2]).hasToString("[null, dup, dup]");
+    assertThat(parameters.get(3)[0]).hasToString("[null, dup, dup]");
     assertThat(parameters.get(3)[1]).isEqualTo("str");
-    assertThat(parameters.get(3)[2].toString()).isEqualTo("[null, dup, dup, str]");
-    assertThat(parameters.get(4)[0].toString()).isEqualTo("[null, dup, dup, str]");
+    assertThat(parameters.get(3)[2]).hasToString("[null, dup, dup, str]");
+    assertThat(parameters.get(4)[0]).hasToString("[null, dup, dup, str]");
     assertThat(parameters.get(4)[1]).isNull();
-    assertThat(parameters.get(4)[2].toString()).isEqualTo("[null, dup, dup, str, null]");
+    assertThat(parameters.get(4)[2]).hasToString("[null, dup, dup, str, null]");
   }
 
   @DataProvider
@@ -246,9 +246,7 @@ public class ReportTest extends SimpleBaseTest {
     assertThat(listener.getFailedMethodNames()).containsExactly(failedMethods);
 
     Path testngFailedXml2 = outputDirectory.resolve(FailedReporter.TESTNG_FAILED_XML);
-    assertThat(testngFailedXml2).exists();
-
-    return testngFailedXml2;
+    return assertThat(testngFailedXml2).exists().actual();
   }
 
   public static class DpArrays {
@@ -287,8 +285,8 @@ public class ReportTest extends SimpleBaseTest {
     tng.run();
     System.setOut(previousOut);
 
-    assertThat(systemOutCapture.toString().contains("testMethod([ITEM1])")).isTrue();
-    assertThat(systemOutCapture.toString().contains("testMethod([ITEM1, ITEM2])")).isTrue();
+    assertThat(systemOutCapture.toString()).contains("testMethod([ITEM1])");
+    assertThat(systemOutCapture.toString()).contains("testMethod([ITEM1, ITEM2])");
   }
 
   @Test
@@ -303,9 +301,7 @@ public class ReportTest extends SimpleBaseTest {
     System.setOut(previousOut);
     String actual = systemOutCapture.toString();
 
-    assertThat(
-            actual.contains(
-                "PASSED: test.reports.ReportTest$NullParameter.testMethod(null, \"Bazinga!\")"))
-        .isTrue();
+    assertThat(actual)
+        .contains("PASSED: test.reports.ReportTest$NullParameter.testMethod(null, \"Bazinga!\")");
   }
 }

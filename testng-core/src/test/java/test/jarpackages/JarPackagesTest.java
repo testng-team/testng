@@ -28,22 +28,16 @@ public class JarPackagesTest extends SimpleBaseTest {
   @Test
   public void jarWithTestngXml() {
     TestListenerAdapter tla = init("withtestngxml.jar");
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
-    String first = tla.getPassedTests().get(0).getName();
-    String second = tla.getPassedTests().get(1).getName();
-    boolean fThenG = "f".equals(first) && "g".equals(second);
-    boolean gThenF = "g".equals(first) && "f".equals(second);
-    assertThat(fThenG || gThenF).isTrue();
+    assertThat(tla.getPassedTests())
+        .extracting(result -> result.getName())
+        .containsExactlyInAnyOrder("f", "g");
   }
 
   @Test
   public void jarWithoutTestngXml() {
     TestListenerAdapter tla = init("withouttestngxml.jar");
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
-    String first = tla.getPassedTests().get(0).getName();
-    String second = tla.getPassedTests().get(1).getName();
-    boolean fThenG = "f".equals(first) && "g".equals(second);
-    boolean gThenF = "g".equals(first) && "f".equals(second);
-    assertThat(fThenG || gThenF).isTrue();
+    assertThat(tla.getPassedTests())
+        .extracting(result -> result.getName())
+        .containsExactlyInAnyOrder("f", "g");
   }
 }

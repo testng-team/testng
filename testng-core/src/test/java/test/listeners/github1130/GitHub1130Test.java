@@ -31,8 +31,8 @@ public class GitHub1130Test extends SimpleBaseTest {
     // So the assertion should basically be able to check that ONLY 1 instance of the listener
     // is being used, even though TestNG created multiple instances of it.
     assertThat(MyListener.instance).isNotNull();
-    assertThat(MyListener.instance.beforeSuiteCount.size()).isEqualTo(1);
-    assertThat(MyListener.instance.beforeClassCount.size()).isEqualTo(2);
+    assertThat(MyListener.instance.beforeSuiteCount).hasSize(1);
+    assertThat(MyListener.instance.beforeClassCount).hasSize(2);
     assertThat(MyListener.instance.beforeSuiteCount.get(0))
         .isEqualTo(MyListener.instance.beforeClassCount.get(0))
         .isEqualTo(MyListener.instance.beforeClassCount.get(1));

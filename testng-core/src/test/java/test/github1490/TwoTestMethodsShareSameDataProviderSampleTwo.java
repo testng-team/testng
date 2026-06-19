@@ -9,13 +9,13 @@ public class TwoTestMethodsShareSameDataProviderSampleTwo {
   @Test(dataProvider = "cookie-master", dataProviderClass = DataProviderHouse.class)
   public void testHowMuchPoAte(String cookieName, int count) {
     assertThat("oreo").isEqualTo(cookieName);
-    assertThat(count > 100).isTrue();
+    assertThat(count).isGreaterThan(100);
   }
 
   @TestInfo(name = "nibbler")
   @Test(dataProvider = "cookie-master", dataProviderClass = DataProviderHouse.class)
   public void testHowMuchMasterShifuAte(String cookieName, int count) {
     assertThat("marie-gold").isEqualTo(cookieName);
-    assertThat(count < 100).isTrue();
+    assertThat(count).isLessThan(100);
   }
 }

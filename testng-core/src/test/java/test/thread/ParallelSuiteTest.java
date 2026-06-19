@@ -102,8 +102,8 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     tng.run();
 
     Map<String, Long> suitesMap = BaseThreadTest.getSuitesMap();
-    assertThat(BaseThreadTest.getThreadCount()).isEqualTo(1);
-    assertThat(suitesMap.keySet().size()).isEqualTo(3);
+    assertThat(BaseThreadTest.getThreadCount()).isOne();
+    assertThat(suitesMap.keySet()).hasSize(3);
 
     final String SUITE_NAME_PREFIX = "Suite Parallel ";
     if (suitesMap.get(SUITE_NAME_PREFIX + 1) > suitesMap.get(SUITE_NAME_PREFIX + 2)) {
@@ -113,8 +113,8 @@ public class ParallelSuiteTest extends SimpleBaseTest {
               + " should have run before "
               + (SUITE_NAME_PREFIX + 2));
     }
-    assertThat(suitesMap.get(SUITE_NAME_PREFIX + 2) <= suitesMap.get(SUITE_NAME_PREFIX + 0))
-        .isTrue();
+    assertThat(suitesMap.get(SUITE_NAME_PREFIX + 2))
+        .isLessThanOrEqualTo(suitesMap.get(SUITE_NAME_PREFIX + 0));
   }
 
   @Test(description = "Number of threads (1) is less than number of levels of suites (2)")
@@ -190,9 +190,9 @@ public class ParallelSuiteTest extends SimpleBaseTest {
                 + " actual:"
                 + BaseThreadTest.getThreadCount())
         .isEqualTo(expectedThreadCount);
-    assertThat(BaseThreadTest.getSuitesMap().keySet().size())
+    assertThat(BaseThreadTest.getSuitesMap().keySet())
         .withFailMessage("Suite count is incorrect")
-        .isEqualTo(expectedSuiteCount);
+        .hasSize(expectedSuiteCount);
   }
 
   private static String getPathToParallelResource(String resourceName) {

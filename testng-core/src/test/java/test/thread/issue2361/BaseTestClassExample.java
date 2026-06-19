@@ -14,7 +14,7 @@ public class BaseTestClassExample {
   protected void test() {
     int currentTests = this.currentTests.incrementAndGet();
     try {
-      assertThat(currentTests).isEqualTo(1);
+      assertThat(currentTests).isOne();
       MILLISECONDS.sleep(10);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);

@@ -18,10 +18,10 @@ public class RetryAnalyzerWithDataProviderTest extends SimpleBaseTest {
 
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
     assertThat(tla.getPassedTests().get(0).getParameters()).isEqualTo(new String[] {"c"});
 
-    assertThat(tla.getFailedTests().size()).isEqualTo(3);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(9);
+    assertThat(tla.getFailedTests()).hasSize(3);
+    assertThat(tla.getSkippedTests()).hasSize(9);
   }
 }

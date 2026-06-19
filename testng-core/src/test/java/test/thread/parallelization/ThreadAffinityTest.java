@@ -104,7 +104,7 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     createXmlTest(xmlsuite, "Test_1", TestMultipleInstance.class).setParallel(mode);
     TestNG testng = create(xmlsuite);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 
   @Test(description = "GITHUB-2110")

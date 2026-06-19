@@ -42,6 +42,6 @@ public class AnotherTestClassSample {
 
   @Test
   public void testMethod() {
-    assertThat("chrome").isEqualTo(browsername);
+    assertThat(browsername).isEqualTo("chrome");
   }
 }

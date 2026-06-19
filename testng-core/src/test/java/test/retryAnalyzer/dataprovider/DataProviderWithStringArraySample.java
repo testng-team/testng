@@ -23,6 +23,6 @@ public class DataProviderWithStringArraySample {
             "Test execution is not"
                 + "successful after 3 retry attempts configured in retryAnalyzer for this data "
                 + Arrays.toString(values))
-        .isEqualTo(0);
+        .isZero();
   }
 }

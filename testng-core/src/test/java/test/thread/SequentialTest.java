@@ -74,7 +74,7 @@ public class SequentialTest extends BaseTest {
         };
 
     for (Map<Long, Long> m : maps) {
-      assertThat(m.size()).isEqualTo(1);
+      assertThat(m).hasSize(1);
     }
 
     long[] ids =
@@ -89,7 +89,7 @@ public class SequentialTest extends BaseTest {
       verifyMap.put(id, id);
     }
 
-    assertThat(verifyMap.size()).isEqualTo(threadCount);
+    assertThat(verifyMap).hasSize(threadCount);
 
     debug("COUNT:" + threadCount + " THREAD ID'S:" + ids[0] + " " + ids[1] + " " + ids[2]);
   }

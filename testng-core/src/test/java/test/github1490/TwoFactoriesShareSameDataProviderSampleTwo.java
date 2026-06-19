@@ -19,6 +19,6 @@ public class TwoFactoriesShareSameDataProviderSampleTwo {
   @Test
   public void testHowMuchMasterShifuAte() {
     assertThat("marie-gold").isEqualTo(cookieName);
-    assertThat(count < 100).isTrue();
+    assertThat(count).isLessThan(100);
   }
 }

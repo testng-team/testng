@@ -14,9 +14,9 @@ public class IssueTest extends SimpleBaseTest {
     Reporter reporter = new Reporter();
     testng.addListener(reporter);
     testng.run();
-    assertThat(reporter.getResults().size())
+    assertThat(reporter.getResults())
         .withFailMessage(
             "Data provider generated 5 rows, so expecting 5 distinct test instances to be used")
-        .isEqualTo(5);
+        .hasSize(5);
   }
 }

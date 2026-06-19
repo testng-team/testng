@@ -29,8 +29,6 @@ public class SuiteThreadCountTest {
 
   @AfterClass
   public void checkThreading() {
-    assertThat(m_threads.size())
-        .withFailMessage("Test should use 2 threads (suite level)")
-        .isEqualTo(2);
+    assertThat(m_threads).withFailMessage("Test should use 2 threads (suite level)").hasSize(2);
   }
 }

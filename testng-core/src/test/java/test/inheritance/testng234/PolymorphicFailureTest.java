@@ -19,7 +19,7 @@ public class PolymorphicFailureTest extends SimpleBaseTest {
 
     assertTestResultsEqual(
         tla.getSkippedTests(), Arrays.asList("polymorphicMethod", "executePolymorphicMethod"));
-    assertThat(0).isEqualTo(tla.getPassedTests().size());
-    assertThat(0).isEqualTo(tla.getFailedTests().size());
+    assertThat(tla.getPassedTests()).isEmpty();
+    assertThat(tla.getFailedTests()).isEmpty();
   }
 }

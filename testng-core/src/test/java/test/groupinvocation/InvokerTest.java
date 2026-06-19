@@ -16,12 +16,12 @@ public class InvokerTest extends SimpleBaseTest {
 
   @Test
   public void testClassWithRedundantGroups() {
-    assertThat(2).isEqualTo(privateRun(RedundantGroupNamesSample.class, SMOKE, FUNCTIONAL_TESTS));
+    assertThat(privateRun(RedundantGroupNamesSample.class, SMOKE, FUNCTIONAL_TESTS)).isEqualTo(2);
   }
 
   @Test
   public void testClassWithUniqueGroups() {
-    assertThat(2).isEqualTo(privateRun(UniqueGroupNamesSample.class, SMOKE));
+    assertThat(privateRun(UniqueGroupNamesSample.class, SMOKE)).isEqualTo(2);
   }
 
   private int privateRun(final Class<?> className, String... groupNames) {

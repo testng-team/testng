@@ -34,6 +34,6 @@ public class TestClassSample {
     }
     assertThat(currentXmlTest).isNotNull();
     int number = Integer.parseInt(currentXmlTest.getParameter("number"));
-    assertThat(number != 0).isTrue();
+    assertThat(number).isNotEqualTo(0);
   }
 }

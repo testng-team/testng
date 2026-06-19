@@ -54,8 +54,8 @@ public class XmlSuiteTest extends SimpleBaseTest {
     StringReader stringReader = new StringReader(suite.toXml());
     List<String> resultLines = Lists.newArrayList();
     List<Integer> lineNumbers = grep(stringReader, "time-out=\"1000\"", resultLines);
-    assertThat(lineNumbers).size().isEqualTo(size);
-    assertThat(resultLines).size().isEqualTo(size);
+    assertThat(lineNumbers).hasSize(size);
+    assertThat(resultLines).hasSize(size);
     if (size > 0) {
       assertThat(lineNumbers.get(size - 1)).isEqualTo(lineNumber);
     }
@@ -88,12 +88,12 @@ public class XmlSuiteTest extends SimpleBaseTest {
     Parser parser = new Parser("src/test/resources/xml/issue435.xml");
     List<XmlSuite> suites = parser.parseToList();
     XmlSuite xmlsuite = suites.get(0);
-    assertThat(xmlsuite.getTests().get(0).getClasses().size()).isEqualTo(0);
+    assertThat(xmlsuite.getTests().get(0).getClasses()).isEmpty();
     TestNG testNG = create();
     testNG.setXmlSuites(suites);
     testNG.setUseDefaultListeners(false);
     testNG.run();
-    assertThat(xmlsuite.getTests().get(0).getClasses().size()).isEqualTo(1);
+    assertThat(xmlsuite.getTests().get(0).getClasses()).hasSize(1);
   }
 
   @Test(description = "GITHUB-1674")
@@ -105,12 +105,12 @@ public class XmlSuiteTest extends SimpleBaseTest {
       Parser parser = new Parser("src/test/resources/xml/issue1674.xml");
       List<XmlSuite> suites = parser.parseToList();
       XmlSuite xmlsuite = suites.get(0);
-      assertThat(xmlsuite.getTests().get(0).getMethodSelectors().size()).isEqualTo(0);
+      assertThat(xmlsuite.getTests().get(0).getMethodSelectors()).isEmpty();
       TestNG testNG = create();
       testNG.setXmlSuites(suites);
       testNG.setUseDefaultListeners(false);
       testNG.run();
-      assertThat(xmlsuite.getTests().get(0).getMethodSelectors().size()).isEqualTo(1);
+      assertThat(xmlsuite.getTests().get(0).getMethodSelectors()).hasSize(1);
       assertThat(stream.toString()).contains(Arrays.asList("rajni", "kamal", "mgr"));
     } finally {
       System.setOut(current);
@@ -193,23 +193,23 @@ public class XmlSuiteTest extends SimpleBaseTest {
     Parser parser = new Parser(path);
     List<XmlSuite> suites = parser.parseToList();
     XmlSuite rootSuite = suites.get(0);
-    assertThat(rootSuite.getChildSuites().size()).isEqualTo(4);
+    assertThat(rootSuite.getChildSuites()).hasSize(4);
 
     XmlSuite suite3 = rootSuite.getChildSuites().get(1);
     assertThat(suite3.getName()).isEqualTo("Child Suite 3");
-    assertThat(suite3.getChildSuites().size()).isEqualTo(3);
+    assertThat(suite3.getChildSuites()).hasSize(3);
 
     XmlSuite suite3_0 = rootSuite.getChildSuites().get(3);
     assertThat(suite3.getName()).isEqualTo("Child Suite 3");
-    assertThat(suite3_0.getChildSuites().size()).isEqualTo(3);
+    assertThat(suite3_0.getChildSuites()).hasSize(3);
 
     XmlSuite suite5 = suite3.getChildSuites().get(2);
     assertThat(suite5.getName()).isEqualTo("Child Suite 5");
-    assertThat(suite5.getTests().size()).isEqualTo(1);
+    assertThat(suite5.getTests()).hasSize(1);
 
     XmlSuite suite5_0 = suite3_0.getChildSuites().get(2);
     assertThat(suite5_0.getName()).isEqualTo("Child Suite 5");
-    assertThat(suite5_0.getTests().size()).isEqualTo(1);
+    assertThat(suite5_0.getTests()).hasSize(1);
   }
 
   private static void runTests(
@@ -220,8 +220,8 @@ public class XmlSuiteTest extends SimpleBaseTest {
     } catch (IOException e) {
       throw new TestNGException(e);
     }
-    assertThat(suites.size()).isEqualTo(1);
-    assertThat(suites.get(0).getChildSuites().size()).isEqualTo(childSuitesCount);
+    assertThat(suites).hasSize(1);
+    assertThat(suites.get(0).getChildSuites()).hasSize(childSuitesCount);
     TestNG testng = create(suites);
     SuiteCounter listener = new SuiteCounter();
     testng.addListener((ITestNGListener) listener);

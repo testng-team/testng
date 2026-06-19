@@ -9,7 +9,7 @@ public class TestClassSampleWithTestMethodDependencies {
 
   @Test(retryAnalyzer = RetryForIssue1538.class)
   public void a() {
-    assertThat(i++).isEqualTo(1);
+    assertThat(i++).isOne();
   }
 
   @Test(dependsOnMethods = "a", retryAnalyzer = RetryForIssue1538.class)

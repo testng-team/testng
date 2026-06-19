@@ -11,7 +11,7 @@ import test.listeners.github1490.DataProviderInfoProvider;
 public class InstanceBasedDataProviderWithListenerAnnotationSample {
   @Test(dataProvider = "getData")
   public void testMethod(int i) {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
   }
 
   @DataProvider

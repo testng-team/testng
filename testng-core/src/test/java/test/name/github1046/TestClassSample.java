@@ -17,12 +17,12 @@ public class TestClassSample implements IHookable {
 
   @Test(dataProvider = "dp")
   public void testSample1(int num) {
-    assertThat(num).isNotEqualTo(0);
+    assertThat(num).isNotZero();
   }
 
   @Test(dataProvider = "dp")
   public void testSample2(int num) {
-    assertThat(num).isNotEqualTo(0);
+    assertThat(num).isNotZero();
   }
 
   @Test

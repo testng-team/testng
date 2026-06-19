@@ -38,8 +38,8 @@ public class CheckTestNamesTest extends SimpleBaseTest {
       tng.run();
     } catch (TestNGException ex) {
       exceptionRaised = true;
-      assertThat(tla.getPassedTests().size()).isEqualTo(0);
-      assertThat(tla.getFailedTests().size()).isEqualTo(0);
+      assertThat(tla.getPassedTests()).isEmpty();
+      assertThat(tla.getFailedTests()).isEmpty();
     }
     assertThat(exceptionRaised).isTrue();
   }
@@ -53,7 +53,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(tla.getPassedTests()).hasSize(2);
   }
 
   /** Child suites and tests within different suites have same names */
@@ -65,7 +65,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    assertThat(tla.getPassedTests().size()).isEqualTo(4);
+    assertThat(tla.getPassedTests()).hasSize(4);
   }
 
   /** Checks that suites created programmatically also run as expected */

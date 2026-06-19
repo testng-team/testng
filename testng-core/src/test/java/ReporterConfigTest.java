@@ -17,7 +17,6 @@ public class ReporterConfigTest {
     ReporterConfig config = ReporterConfig.deserialize(CONFIG_STR);
     assertThat(Objects.requireNonNull(config).getClassName()).isEqualTo(CLASS_NAME);
     String serial = config.serialize();
-    assertThat(serial.contains(PROP_NAME_1 + "=true")).isTrue();
-    assertThat(serial.contains(PROP_NAME_2 + "=true")).isTrue();
+    assertThat(serial).contains(PROP_NAME_1 + "=true").contains(PROP_NAME_2 + "=true");
   }
 }

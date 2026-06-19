@@ -13,7 +13,7 @@ public class Basic2 {
   @Test(dependsOnGroups = {"basic1"})
   public void basic2() {
     m_basic2WasRun = true;
-    assertThat(Basic1.getCount() > 0).withFailMessage("COUNT WAS NOT INCREMENTED").isTrue();
+    assertThat(Basic1.getCount()).withFailMessage("COUNT WAS NOT INCREMENTED").isPositive();
   }
 
   @AfterTest
@@ -30,6 +30,6 @@ public class Basic2 {
         .isTrue();
     assertThat(m_afterClass)
         .withFailMessage("After class should have been called exactly once, not " + m_afterClass)
-        .isEqualTo(1);
+        .isOne();
   }
 }

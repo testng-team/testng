@@ -14,7 +14,7 @@ public class BaseClassSample {
   @BeforeMethod(alwaysRun = true)
   public void setUp(Method method) {
     if (method.getName().endsWith("test1")) {
-      assertThat(2).isEqualTo(1);
+      assertThat(2).isOne();
     }
     messages.add(getClass().getCanonicalName() + ".setup()");
   }

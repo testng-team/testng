@@ -70,7 +70,7 @@ public class GuiceTest extends SimpleBaseTest {
     suite.setParentModule(ParentModule.class.getCanonicalName());
     TestNG testng = create(suite);
     testng.run();
-    assertThat(Person.counter).isEqualTo(1);
+    assertThat(Person.counter).isOne();
   }
 
   @Test(description = "GITHUB-2355")
@@ -80,8 +80,8 @@ public class GuiceTest extends SimpleBaseTest {
     suite.setParentModule(AnotherParentModule.class.getCanonicalName());
     TestNG testng = create(suite);
     testng.run();
-    assertThat(AnotherParentModule.getCounter()).isEqualTo(1);
-    assertThat(Person.counter).isEqualTo(1);
+    assertThat(AnotherParentModule.getCounter()).isOne();
+    assertThat(Person.counter).isOne();
   }
 
   @Test(description = "GITHUB-2427")
@@ -92,13 +92,13 @@ public class GuiceTest extends SimpleBaseTest {
     testng.run();
     assertThat(TestParentConfigModule.counter.get())
         .withFailMessage("TestParentModule configuration called times")
-        .isEqualTo(1);
+        .isOne();
     assertThat(TestModuleOne.counter.get())
         .withFailMessage("TestModuleOne configuration called times")
-        .isEqualTo(1);
+        .isOne();
     assertThat(TestModuleTwo.counter.get())
         .withFailMessage("TestModuleTwo configuration called times")
-        .isEqualTo(1);
+        .isOne();
   }
 
   @Test(description = "GITHUB-2570")

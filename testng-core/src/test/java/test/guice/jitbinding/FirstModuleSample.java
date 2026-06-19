@@ -20,6 +20,6 @@ public class FirstModuleSample {
 
   @Test
   public void testInject() {
-    assertThat(value).isEqualTo("");
+    assertThat(value).isEmpty();
   }
 }

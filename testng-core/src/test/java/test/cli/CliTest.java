@@ -102,7 +102,7 @@ public class CliTest extends SimpleBaseTest {
     testng.addListener(logInvocations);
     testng.setVerbose(2);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
     assertThat(logInvocations.logs)
         .containsExactlyInAnyOrder(
             "com.kungfu.panda.DragonWarrior.testMethod", "com.kungfu.panda.Tigress.testMethod");

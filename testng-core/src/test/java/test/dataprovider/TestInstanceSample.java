@@ -24,7 +24,7 @@ public class TestInstanceSample {
   @DataProvider
   public Object[][] dp(Method m, @TestInstance Object instance) {
     TestInstanceSample o0 = (TestInstanceSample) instance;
-    assertThat(o0.m_n == 1 || o0.m_n == 2).isTrue();
+    assertThat(o0.m_n).isIn(1, 2);
     m_instanceCount++;
 
     return new Object[][] {{42}, {43}};

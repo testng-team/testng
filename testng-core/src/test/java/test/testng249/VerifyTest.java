@@ -35,6 +35,6 @@ public class VerifyTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(tla.getPassedTests()).hasSize(2);
   }
 }

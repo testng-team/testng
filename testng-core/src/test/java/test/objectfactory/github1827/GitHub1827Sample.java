@@ -14,6 +14,6 @@ public class GitHub1827Sample {
 
   @Test
   public void test() {
-    assertThat(value).isEqualTo(1);
+    assertThat(value).isOne();
   }
 }

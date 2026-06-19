@@ -31,19 +31,19 @@ public class ClassConfigurations {
 
   @Test
   public void testOne() {
-    assertThat(beforeCount).isEqualTo(1);
-    assertThat(afterCount).isEqualTo(0);
+    assertThat(beforeCount).isOne();
+    assertThat(afterCount).isZero();
   }
 
   @Test
   public void testTwo() {
-    assertThat(beforeCount).isEqualTo(1);
-    assertThat(afterCount).isEqualTo(0);
+    assertThat(beforeCount).isOne();
+    assertThat(afterCount).isZero();
   }
 
   @Test
   public void testThree() {
-    assertThat(beforeCount).isEqualTo(1);
-    assertThat(afterCount).isEqualTo(0);
+    assertThat(beforeCount).isOne();
+    assertThat(afterCount).isZero();
   }
 }

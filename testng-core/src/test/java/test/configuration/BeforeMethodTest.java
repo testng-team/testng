@@ -22,7 +22,7 @@ public class BeforeMethodTest {
   public void mainTest() {
     assertThat(m_method.getName()).isEqualTo("mainTest");
     ITestNGMethod[] methods = m_context.getAllTestMethods();
-    assertThat(1).isEqualTo(methods.length);
+    assertThat(methods).hasSize(1);
     assertThat(methods[0].getConstructorOrMethod().getName()).isEqualTo("mainTest");
   }
 }

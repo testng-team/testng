@@ -12,14 +12,14 @@ public class ExitCodeTest extends SimpleBaseTest {
   public void exitsWithZeroOnSuccess() {
     TestNG tng = create(ImmediateSuccess.class);
     tng.run();
-    assertThat(tng.getStatus()).isEqualTo(0);
+    assertThat(tng.getStatus()).isZero();
   }
 
   @Test
   public void exitsWithNonzeroOnFailure() {
     TestNG tng = create(PersistentFailure.class);
     tng.run();
-    assertThat(tng.getStatus() != 0).isTrue();
+    assertThat(tng.getStatus()).isNotEqualTo(0);
   }
 
   @Test
@@ -27,7 +27,7 @@ public class ExitCodeTest extends SimpleBaseTest {
     TestNG tng = create(EventualSuccess.class);
     tng.addListener((ITestNGListener) new TestResultPruner());
     tng.run();
-    assertThat(tng.getStatus()).isEqualTo(0);
+    assertThat(tng.getStatus()).isZero();
   }
 
   @Test(description = "GITHUB-217")

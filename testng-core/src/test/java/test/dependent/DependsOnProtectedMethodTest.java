@@ -22,8 +22,11 @@ public class DependsOnProtectedMethodTest {
 
   @Test
   public void verifyBeforeInvocations() {
-    assertThat(m_before1 && m_before2)
-        .withFailMessage("Protected dependent @BeforeMethods should have been invoked")
+    assertThat(m_before2)
+        .withFailMessage("@BeforeMethod before2() should have been invoked")
+        .isTrue();
+    assertThat(m_before1)
+        .withFailMessage("Protected dependent @BeforeMethod before() should have been invoked")
         .isTrue();
   }
 }

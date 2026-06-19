@@ -17,9 +17,9 @@ public class BaseDistributedTest {
       expected.put(element, element);
     }
 
-    assertThat(found.size())
+    assertThat(found)
         .withFailMessage("Verification for " + title + " tests failed:")
-        .isEqualTo(expected.size());
+        .hasSameSizeAs(expected);
 
     for (String o : expected.values()) {
       if (null == found.get(o)) {

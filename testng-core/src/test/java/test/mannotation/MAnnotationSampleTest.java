@@ -51,10 +51,10 @@ public class MAnnotationSampleTest {
     // test default for enabled
     assertThat(test2.getEnabled()).isTrue();
     assertThat(test2.getAlwaysRun()).isFalse();
-    assertThat(test2.getTimeOut()).isEqualTo(0);
-    assertThat(test2.getInvocationCount()).isEqualTo(1);
+    assertThat(test2.getTimeOut()).isZero();
+    assertThat(test2.getInvocationCount()).isOne();
     assertThat(test2.getSuccessPercentage()).isEqualTo(100);
-    assertThat(test2.getDataProvider()).isEqualTo("");
+    assertThat(test2.getDataProvider()).isEmpty();
   }
 
   public void verifyTestMethodLevel() throws SecurityException, NoSuchMethodException {
@@ -77,7 +77,7 @@ public class MAnnotationSampleTest {
     assertThat(test1.getDataProvider()).isEqualTo("dp2");
     assertThat(test1.getDescription()).isEqualTo("Method description");
     Class[] exceptions = test1.getExpectedExceptions();
-    assertThat(exceptions.length).isEqualTo(1);
+    assertThat(exceptions.length).isOne();
     assertThat(exceptions[0]).isEqualTo(NullPointerException.class);
   }
 

@@ -68,17 +68,17 @@ class MyReporter implements IReporter {
   @Override
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    assertThat(suites.size()).isEqualTo(1);
+    assertThat(suites).hasSize(1);
     ISuite suite = suites.get(0);
 
     List<IInvokedMethod> invoked = suite.getAllInvokedMethods();
-    assertThat(invoked.size()).isEqualTo(m_included.length);
+    assertThat(invoked).hasSameSizeAs(m_included);
     for (String s : m_included) {
       assertThat(containsInvokedMethod(invoked, s)).isTrue();
     }
 
     Collection<ITestNGMethod> excluded = suite.getExcludedMethods();
-    assertThat(excluded.size()).isEqualTo(m_excluded.length);
+    assertThat(excluded).hasSameSizeAs(m_excluded);
     for (String s : m_excluded) {
       assertThat(containsMethod(excluded, s)).isTrue();
     }

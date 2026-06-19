@@ -106,13 +106,13 @@ public class FailedReporterTest extends SimpleBaseTest {
         new Parser(temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString())
             .parse();
     XmlSuite failedSuite = failedSuites.iterator().next();
-    assertThat("42").isEqualTo(failedSuite.getParameter("n"));
+    assertThat(failedSuite.getParameter("n")).isEqualTo("42");
 
     XmlTest failedTest = failedSuite.getTests().get(0);
-    assertThat("43").isEqualTo(failedTest.getParameter("o"));
+    assertThat(failedTest.getParameter("o")).isEqualTo("43");
 
     XmlClass failedClass = failedTest.getClasses().get(0);
-    assertThat("44").isEqualTo(failedClass.getAllParameters().get("p"));
+    assertThat(failedClass.getAllParameters()).containsEntry("p", "44");
   }
 
   @Test(description = "ISSUE-2445")

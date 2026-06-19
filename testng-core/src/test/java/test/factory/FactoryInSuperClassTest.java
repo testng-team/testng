@@ -16,6 +16,6 @@ public class FactoryInSuperClassTest extends SimpleBaseTest {
     tng.addListener(tla);
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 }

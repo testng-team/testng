@@ -12,9 +12,9 @@ public class TestResultInstanceCheckTest extends SimpleBaseTest {
     TestNG tng = create(TestSample.class);
     tng.run();
     int hashCode = TestSample.hashcode;
-    assertThat(TestSample.Listener.maps.size())
+    assertThat(TestSample.Listener.maps)
         .withFailMessage("Validating the number of instances")
-        .isEqualTo(6);
+        .hasSize(6);
     for (Object object : TestSample.Listener.maps.values()) {
       assertThat(object).isNotNull();
       assertThat(object.hashCode()).isEqualTo(hashCode);

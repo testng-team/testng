@@ -17,7 +17,7 @@ public class PrivateMethodTest {
       PrivateMethodTest pmt = new PrivateMethodTest("aname", 1);
       int returnValue = pmt.privateMethod();
 
-      assertThat(returnValue).isEqualTo(1);
+      assertThat(returnValue).isOne();
     }
   }
 }

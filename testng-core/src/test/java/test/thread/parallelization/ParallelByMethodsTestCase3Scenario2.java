@@ -355,7 +355,7 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
   // suites.
   @Test
   public void sanityCheck() {
-    assertThat(suiteLevelEventLogs.size())
+    assertThat(suiteLevelEventLogs)
         .withFailMessage(
             "There should be 4 suite level events logged for "
                 + SUITE_A
@@ -363,8 +363,8 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
                 + SUITE_B
                 + ": "
                 + suiteLevelEventLogs)
-        .isEqualTo(4);
-    assertThat(testLevelEventLogs.size())
+        .hasSize(4);
+    assertThat(testLevelEventLogs)
         .withFailMessage(
             "There should be 6 test level events logged for "
                 + SUITE_A
@@ -372,9 +372,9 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
                 + SUITE_B
                 + ": "
                 + testLevelEventLogs)
-        .isEqualTo(6);
+        .hasSize(6);
 
-    assertThat(testMethodLevelEventLogs.size())
+    assertThat(testMethodLevelEventLogs)
         .withFailMessage(
             "There should 150 test method level events logged for "
                 + SUITE_A
@@ -382,53 +382,53 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
                 + SUITE_B
                 + ": "
                 + testMethodLevelEventLogs)
-        .isEqualTo(150);
+        .hasSize(150);
 
-    assertThat(suiteOneSuiteLevelEventLogs.size())
+    assertThat(suiteOneSuiteLevelEventLogs)
         .withFailMessage(
             "There should be 2 suite level events logged for "
                 + SUITE_A
                 + ": "
                 + suiteOneSuiteLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(suiteOneTestLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(suiteOneTestLevelEventLogs)
         .withFailMessage(
             "There should be 2 test level events logged for "
                 + SUITE_A
                 + ": "
                 + suiteOneTestLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(suiteOneTestMethodLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(suiteOneTestMethodLevelEventLogs)
         .withFailMessage(
             "There should be 69 test method level events "
                 + "logged for "
                 + SUITE_A
                 + ": "
                 + suiteOneTestMethodLevelEventLogs)
-        .isEqualTo(69);
+        .hasSize(69);
 
-    assertThat(suiteTwoSuiteLevelEventLogs.size())
+    assertThat(suiteTwoSuiteLevelEventLogs)
         .withFailMessage(
             "There should be 2 suite level events logged for "
                 + SUITE_B
                 + ": "
                 + suiteTwoSuiteLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(suiteTwoTestLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(suiteTwoTestLevelEventLogs)
         .withFailMessage(
             "There should be 4 test level events logged for "
                 + SUITE_B
                 + ": "
                 + suiteTwoTestLevelEventLogs)
-        .isEqualTo(4);
-    assertThat(suiteTwoTestMethodLevelEventLogs.size())
+        .hasSize(4);
+    assertThat(suiteTwoTestMethodLevelEventLogs)
         .withFailMessage(
             "There should be 54 test method level events "
                 + "logged for "
                 + SUITE_B
                 + ": "
                 + suiteTwoTestMethodLevelEventLogs)
-        .isEqualTo(81);
+        .hasSize(81);
   }
 
   // Verify that all the events in the second suite and third suites run have timestamps later than

@@ -34,6 +34,6 @@ public class TestThreadCountTest {
 
   @AfterClass
   public void checkThreading() {
-    assertThat(m_threads.size()).withFailMessage("Test should use 3 threads").isEqualTo(3);
+    assertThat(m_threads).withFailMessage("Test should use 3 threads").hasSize(3);
   }
 }

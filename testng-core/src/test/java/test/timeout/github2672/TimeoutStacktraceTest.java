@@ -35,7 +35,7 @@ public class TimeoutStacktraceTest {
     testng.run();
 
     Throwable testError = listener.getTestError();
-    assertThat((testError instanceof ThreadTimeoutException)).isTrue();
+    assertThat(testError).isInstanceOf(ThreadTimeoutException.class);
     assertThat(
             Arrays.stream(testError.getStackTrace())
                 .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")))
@@ -52,7 +52,7 @@ public class TimeoutStacktraceTest {
     testng.run();
 
     Throwable testError = listener.getTestError();
-    assertThat((testError instanceof ThreadTimeoutException)).isTrue();
+    assertThat(testError).isInstanceOf(ThreadTimeoutException.class);
     assertThat(
             Throwables.getCausalChain(testError).stream()
                 .flatMap((Throwable throwable) -> Arrays.stream(throwable.getStackTrace()))

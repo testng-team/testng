@@ -42,9 +42,9 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(passed);
-    assertThat(tla.getFailedTests().size()).isEqualTo(failed);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(skipped);
+    assertThat(tla.getPassedTests()).hasSize(passed);
+    assertThat(tla.getFailedTests()).hasSize(failed);
+    assertThat(tla.getSkippedTests()).hasSize(skipped);
   }
 
   @Test
@@ -64,9 +64,9 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(8);
-    assertThat(tla.getFailedTests().size()).isEqualTo(7);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(5);
+    assertThat(tla.getPassedTests()).hasSize(8);
+    assertThat(tla.getFailedTests()).hasSize(7);
+    assertThat(tla.getSkippedTests()).hasSize(5);
   }
 
   @Test(dataProvider = "dp")

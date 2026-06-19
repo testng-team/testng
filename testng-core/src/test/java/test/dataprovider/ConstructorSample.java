@@ -24,7 +24,7 @@ public class ConstructorSample {
   public static Object[][] createData(Constructor<?> c) {
     assertThat(c.getDeclaringClass()).isEqualTo(ConstructorSample.class);
     assertThat(c.getAnnotation(Factory.class)).isNotNull();
-    assertThat(c.getParameterTypes().length).isEqualTo(1);
+    assertThat(c.getParameterTypes().length).isOne();
     assertThat(c.getParameterTypes()[0]).isEqualTo(String.class);
 
     return new Object[][] {{"Cedric"}, {"Alois"}};

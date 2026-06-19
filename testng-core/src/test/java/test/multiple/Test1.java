@@ -10,7 +10,7 @@ public class Test1 {
 
   @Test
   public void f1() {
-    assertThat(m_count < 1).withFailMessage("FAILING").isTrue();
+    assertThat(m_count).withFailMessage("FAILING").isLessThan(1);
     m_count++;
   }
 

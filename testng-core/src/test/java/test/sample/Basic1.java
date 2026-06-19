@@ -23,6 +23,6 @@ public class Basic1 {
 
   @Test(groups = {"basic1"})
   public void basic1() {
-    assertThat(getCount() > 0).withFailMessage("COUNT WAS NOT INCREMENTED").isTrue();
+    assertThat(getCount()).withFailMessage("COUNT WAS NOT INCREMENTED").isPositive();
   }
 }

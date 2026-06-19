@@ -17,7 +17,7 @@ public class ExcludeSyntheticMethodsFromTemplateCallsTest extends SimpleBaseTest
     testng.addListener(listener);
     testng.run();
     List<String> methods = listener.getMethodsForTestClass(DuplicateCallsSample.class);
-    assertThat(methods.size()).isEqualTo(1);
+    assertThat(methods).hasSize(1);
     assertThat(methods.get(0)).isEqualTo("callExecuteTest");
   }
 }

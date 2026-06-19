@@ -45,9 +45,9 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(0);
-    assertThat(tla.getFailedTests().size()).isEqualTo(0);
-    assertThat(tla.getSkippedTests().size()).isEqualTo(0);
+    assertThat(tla.getPassedTests()).isEmpty();
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
   }
 
   private void testFast(boolean useInterceptor) {
@@ -61,7 +61,7 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    assertThat(tla.getPassedTests().size()).isEqualTo(3);
+    assertThat(tla.getPassedTests()).hasSize(3);
     ITestResult first = tla.getPassedTests().get(0);
 
     String method = "zzzfast";

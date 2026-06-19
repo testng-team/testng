@@ -16,7 +16,7 @@ public class ParserTest {
   public void testParsing(String file) throws Exception {
     Parser parser = new Parser(file);
     List<XmlSuite> suites = parser.parseToList();
-    assertThat(suites.size()).isEqualTo(1);
+    assertThat(suites).hasSize(1);
   }
 
   @DataProvider(name = "dp")

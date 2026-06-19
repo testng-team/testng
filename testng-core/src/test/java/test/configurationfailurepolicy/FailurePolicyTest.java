@@ -181,15 +181,15 @@ public class FailurePolicyTest extends SimpleBaseTest {
       int configurationFailures,
       int configurationSkips,
       int skippedTests) {
-    assertThat(tla.getConfigurationFailures().size())
+    assertThat(tla.getConfigurationFailures())
         .withFailMessage("wrong number of configuration failures")
-        .isEqualTo(configurationFailures);
-    assertThat(tla.getConfigurationSkips().size())
+        .hasSize(configurationFailures);
+    assertThat(tla.getConfigurationSkips())
         .withFailMessage("wrong number of configuration skips")
-        .isEqualTo(configurationSkips);
-    assertThat(tla.getSkippedTests().size())
+        .hasSize(configurationSkips);
+    assertThat(tla.getSkippedTests())
         .withFailMessage("wrong number of skipped tests")
-        .isEqualTo(skippedTests);
+        .hasSize(skippedTests);
   }
 
   @Test(description = "GITHUB-2862")

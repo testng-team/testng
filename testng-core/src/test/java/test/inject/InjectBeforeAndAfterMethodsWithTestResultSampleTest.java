@@ -48,7 +48,7 @@ public class InjectBeforeAndAfterMethodsWithTestResultSampleTest {
   public void after(Method m, ITestResult r) {
     String name = m.getName();
     assertThat(m_testResult.getMethod()).isEqualTo(r.getMethod());
-    assertThat(attributesFrom(m_testResult)).isEqualTo(attributesFrom(r));
+    assertThat(attributesFrom(m_testResult)).containsExactlyInAnyOrderEntriesOf(attributesFrom(r));
     if (("pass".equals(name) && r.getStatus() == ITestResult.SUCCESS)
         || ("fail".equals(name) && r.getStatus() == ITestResult.FAILURE)
         || ("skip".equals(name) && r.getStatus() == ITestResult.SKIP)) {

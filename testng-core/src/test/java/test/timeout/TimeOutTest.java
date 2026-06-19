@@ -74,9 +74,9 @@ public class TimeOutTest extends BaseTest {
     addClass(TestClassSample.class);
     run();
     Collection<List<ITestResult>> failed = getFailedTests().values();
-    assertThat(failed.size()).isEqualTo(1);
+    assertThat(failed).hasSize(1);
     ITestResult failedResult = failed.iterator().next().get(0);
-    assertThat((failedResult.getThrowable() instanceof ThreadTimeoutException)).isTrue();
+    assertThat(failedResult.getThrowable()).isInstanceOf(ThreadTimeoutException.class);
     assertThat(failedResult.getThrowable().getMessage())
         .isEqualTo(
             String.format(
@@ -89,12 +89,12 @@ public class TimeOutTest extends BaseTest {
     addClass(TimeOutWithParallelSample.class);
     setParallel(ParallelMode.METHODS);
     run();
-    assertThat(getFailedTests().values().size()).isEqualTo(1);
-    assertThat(getSkippedTests().values().size()).isEqualTo(0);
-    assertThat(getPassedTests().values().size()).isEqualTo(0);
+    assertThat(getFailedTests().values()).hasSize(1);
+    assertThat(getSkippedTests()).isEmpty();
+    assertThat(getPassedTests()).isEmpty();
     ITestResult result = getFailedTests().values().iterator().next().get(0);
     long time = result.getEndMillis() - result.getStartMillis();
-    assertThat(time < 2000).isTrue();
+    assertThat(time).isLessThan(2000);
   }
 
   @Override

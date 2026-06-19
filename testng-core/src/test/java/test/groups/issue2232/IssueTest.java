@@ -28,7 +28,7 @@ public class IssueTest extends SimpleBaseTest {
   public void ensureNoNPEThrownWhenRunningGroups() throws InterruptedException {
     TestNG testng = create(constructSuite());
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 
   private XmlSuite constructSuite() {
@@ -58,7 +58,7 @@ public class IssueTest extends SimpleBaseTest {
             constructSuite().toXml().getBytes(Charset.defaultCharset()));
     List<String> args = Collections.singletonList(suitefile.toFile().getAbsolutePath());
     int status = exec(Collections.emptyList(), args);
-    assertThat(status).isEqualTo(0);
+    assertThat(status).isZero();
   }
 
   private int exec(List<String> jvmArgs, List<String> args)

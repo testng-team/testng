@@ -33,6 +33,6 @@ public class SingleConfigurationTest {
 
   @Test
   public void verify() {
-    assertThat(m_before).isEqualTo(1);
+    assertThat(m_before).isOne();
   }
 }

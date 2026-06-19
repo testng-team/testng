@@ -14,6 +14,6 @@ public class OddSample {
 
   @Test
   public void verify() {
-    assertThat(n % 2).isNotEqualTo(0);
+    assertThat(n % 2).isNotZero();
   }
 }

@@ -26,7 +26,7 @@ public class ConstructorOrMethodSample {
 
     Constructor<?> c = cOrM.getConstructor();
     assertThat(c.getAnnotation(Factory.class)).isNotNull();
-    assertThat(c.getParameterTypes().length).isEqualTo(1);
+    assertThat(c.getParameterTypes().length).isOne();
     assertThat(c.getParameterTypes()[0]).isEqualTo(String.class);
 
     return new Object[][] {{"0"}, {"1"}};

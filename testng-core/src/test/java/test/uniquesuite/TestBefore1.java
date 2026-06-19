@@ -8,6 +8,6 @@ public class TestBefore1 extends BaseBefore {
 
   @Test
   public void verify() {
-    assertThat(m_beforeCount).isEqualTo(1);
+    assertThat(m_beforeCount).isOne();
   }
 }

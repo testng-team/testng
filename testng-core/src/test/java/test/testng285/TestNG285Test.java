@@ -16,6 +16,6 @@ public class TestNG285Test extends BaseTest {
 
     run();
 
-    assertThat(BugBase.m_threadIds.size()).isEqualTo(1);
+    assertThat(BugBase.m_threadIds).hasSize(1);
   }
 }

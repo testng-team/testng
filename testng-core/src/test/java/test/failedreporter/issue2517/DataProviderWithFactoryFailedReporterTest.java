@@ -49,7 +49,7 @@ public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
     for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
       grep(failed, String.format(expectedLine, s), resultLines);
-      assertThat(resultLines.size()).isEqualTo(expected);
+      assertThat(resultLines).hasSize(expected);
     }
   }
 }

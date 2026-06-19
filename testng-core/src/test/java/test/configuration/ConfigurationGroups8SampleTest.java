@@ -3,7 +3,6 @@ package test.configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -44,6 +43,6 @@ public class ConfigurationGroups8SampleTest {
 
   @Test(dependsOnGroups = "A", groups = "B")
   public void verify() {
-    assertThat(Arrays.asList("1", "a", "1", "a")).isEqualTo(m_log);
+    assertThat(m_log).containsExactly("1", "a", "1", "a");
   }
 }

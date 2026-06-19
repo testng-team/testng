@@ -53,6 +53,6 @@ public class GroupsTest {
     m_testNg.setTestClasses(new Class<?>[] {cls});
     m_testNg.setGroups("twice");
     m_testNg.run();
-    assertThat(list).isEqualTo(expected);
+    assertThat(list).containsExactlyElementsOf(expected);
   }
 }

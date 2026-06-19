@@ -60,6 +60,6 @@ public class Sample1 extends BaseSample1 {
 
   @Test(groups = {"assert"})
   public void verifyLastNameShouldFail() {
-    assertThat("Beust").withFailMessage("Expected name Beust, found blah").isEqualTo("");
+    assertThat("Beust").withFailMessage("Expected name Beust, found blah").isEmpty();
   }
 }

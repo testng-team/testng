@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class Github1509TestClassSample {
   @Test(dataProvider = "dp")
   public void demo(int i) {
-    assertThat(i > 0).isTrue();
+    assertThat(i).isPositive();
   }
 
   @DataProvider(name = "dp")

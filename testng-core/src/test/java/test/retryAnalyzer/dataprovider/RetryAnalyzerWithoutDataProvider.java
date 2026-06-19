@@ -11,6 +11,6 @@ public class RetryAnalyzerWithoutDataProvider {
   // attempts
   @Test(retryAnalyzer = DataProviderRetryAnalyzer.class)
   public void test() {
-    assertThat(countWithoutDataProvider-- == 0).isTrue();
+    assertThat(countWithoutDataProvider--).isEqualTo(0);
   }
 }

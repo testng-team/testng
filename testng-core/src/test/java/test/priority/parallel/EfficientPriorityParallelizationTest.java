@@ -136,48 +136,48 @@ public class EfficientPriorityParallelizationTest extends BaseParallelizationTes
   // suites.
   @Test
   public void sanityCheck() {
-    assertThat(suiteLevelEventLogs.size())
+    assertThat(suiteLevelEventLogs)
         .withFailMessage(
             "There should be 2 suite level events logged for "
                 + SUITE_A
                 + ": "
                 + suiteLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(testLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(testLevelEventLogs)
         .withFailMessage(
             "There should be 4 test level events logged for " + SUITE_A + ": " + testLevelEventLogs)
-        .isEqualTo(4);
+        .hasSize(4);
 
-    assertThat(testMethodLevelEventLogs.size())
+    assertThat(testMethodLevelEventLogs)
         .withFailMessage(
             "There should 12 test method level events logged for "
                 + SUITE_A
                 + ": "
                 + testMethodLevelEventLogs)
-        .isEqualTo(12);
+        .hasSize(12);
 
-    assertThat(suiteOneSuiteLevelEventLogs.size())
+    assertThat(suiteOneSuiteLevelEventLogs)
         .withFailMessage(
             "There should be 2 suite level events logged for "
                 + SUITE_A
                 + ": "
                 + suiteOneSuiteLevelEventLogs)
-        .isEqualTo(2);
-    assertThat(suiteOneTestLevelEventLogs.size())
+        .hasSize(2);
+    assertThat(suiteOneTestLevelEventLogs)
         .withFailMessage(
             "There should be 4 test level events logged for "
                 + SUITE_A
                 + ": "
                 + suiteOneTestLevelEventLogs)
-        .isEqualTo(4);
-    assertThat(suiteOneTestMethodLevelEventLogs.size())
+        .hasSize(4);
+    assertThat(suiteOneTestMethodLevelEventLogs)
         .withFailMessage(
             "There should be 12 test method level events "
                 + "logged for "
                 + SUITE_A
                 + ": "
                 + suiteOneTestMethodLevelEventLogs)
-        .isEqualTo(12);
+        .hasSize(12);
   }
 
   // Verify that the suites run in parallel by checking that the suite and test level events for
