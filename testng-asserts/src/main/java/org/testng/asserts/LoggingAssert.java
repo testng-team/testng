@@ -1,12 +1,12 @@
 package org.testng.asserts;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 /** Log the messages of all the assertions that get run. */
 public class LoggingAssert extends Assertion {
 
-  private List<String> m_messages = Lists.newArrayList();
+  private List<String> m_messages = new ArrayList<>();
 
   @Override
   public void onBeforeAssert(IAssert<?> a) {

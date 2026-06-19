@@ -7,6 +7,7 @@ import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +18,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.testng.collections.Lists;
 
 /**
  * Assertion tool class. Presents assertion methods with a more natural parameter order. The order
@@ -1823,7 +1823,7 @@ public class Assert {
           "Arrays do not have the same size:" + actual.length + " != " + expected.length, message);
     }
 
-    List<Object> actualCollection = Lists.newArrayList(actual);
+    List<Object> actualCollection = new ArrayList<>(Arrays.asList(actual));
     for (Object o : expected) {
       actualCollection.remove(o);
     }
@@ -1859,8 +1859,15 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected, String message) {
-    validateEqualityNoOrder(
-        Lists.newArrayList(actual), Lists.newArrayList(expected), "Iterators", message);
+    validateEqualityNoOrder(toList(actual), toList(expected), "Iterators", message);
+  }
+
+  private static List<Object> toList(Iterator<?> iterator) {
+    List<Object> list = new ArrayList<>();
+    while (iterator.hasNext()) {
+      list.add(iterator.next());
+    }
+    return list;
   }
 
   private static void validateEqualityNoOrder(
@@ -1870,7 +1877,7 @@ public class Assert {
           prefix + " do not have the same size: " + actual.size() + " != " + expected.size(),
           message);
     }
-    List<?> actualCollection = Lists.newArrayList(actual);
+    List<?> actualCollection = new ArrayList<>(actual);
     for (Object o : expected) {
       actualCollection.remove(o);
     }

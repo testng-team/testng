@@ -26,8 +26,9 @@ java {
 
 dependencies {
     // Note: it is enough to mention key projects here, and testng transitives
-    // would be selected automatically
-    shadedDependencyElements(projects.testngAsserts)
+    // would be selected automatically.
+    // testng-asserts is intentionally NOT merged here: it is published as a separate, optional
+    // artifact (org.testng:testng-asserts). See GITHUB-2649 and GITHUB-3197.
     shadedDependencyElements(projects.testngCore)
 }
 
@@ -63,7 +64,6 @@ tasks.mergedJar {
             "Export-Package" to """
                 org.testng
                 org.testng.annotations
-                org.testng.asserts
                 org.testng.collections
                 org.testng.internal
                 org.testng.internal.annotations
