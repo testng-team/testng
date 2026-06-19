@@ -138,3 +138,22 @@ If you prefer to migrate by hand, the most common mappings are:
 | `fail(message)`                         | `fail(message)` (`org.assertj.core.api.Assertions.fail`) |
 
 See the [AssertJ documentation](https://assertj.github.io/doc/) for the full API.
+
+## Packaging notes
+
+`org.testng.Assert` is no longer bundled in the main `org.testng:testng` jar. To keep using it, add
+the standalone artifact, which brings AssertJ transitively:
+
+```xml
+<dependency>
+  <groupId>org.testng</groupId>
+  <artifactId>testng-asserts</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+> **OSGi:** `testng-asserts` currently ships as a plain JAR, not an OSGi bundle. `org.testng.Assert`
+> and `org.testng.FileAssert` share the `org.testng` package with the core classes exported by the
+> `testng` bundle, so giving `testng-asserts` its own bundle would create a split package. Proper
+> OSGi support is tracked as a follow-up ([GITHUB-3197](https://github.com/testng-team/testng/issues/3197));
+> OSGi users should prefer migrating to AssertJ.
