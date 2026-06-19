@@ -1,7 +1,7 @@
 package org.testng;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.internal.EclipseInterface.ASSERT_EQUAL_LEFT;
-import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
@@ -174,6 +174,17 @@ public class Assert {
     return !expected.equals(actual);
   }
 
+  // NOTE: equality comparison is intentionally NOT delegated to AssertJ; it keeps TestNG's own
+  // semantics, which differ from AssertJ on purpose:
+  //  - equality must be symmetric: both expected.equals(actual) and actual.equals(expected) must
+  //    hold (AssertJ only checks one direction);
+  //  - a broken equals() returning true for null does not make the values equal here, whereas
+  //    AssertJ trusts equals();
+  //  - arrays nested inside collections/maps/iterables are compared by reference (use
+  //    assertEqualsDeep for value comparison), whereas AssertJ compares them deeply.
+  // These behaviours are covered by regression tests (e.g. GITHUB-2483, GITHUB-2490, GITHUB-2500,
+  // ArrayEqualityAssertTest); only behaviour-identical assertions (assertNull/NotNull/Same/NotSame)
+  // are delegated to AssertJ.
   private static boolean areEqualImpl(Object actual, Object expected) {
     if ((expected == null) && (actual == null)) {
       return true;
@@ -1493,13 +1504,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNotNull(Object object, String message) {
-    if (object == null) {
-      String formatted = "";
-      if (message != null) {
-        formatted = message + " ";
-      }
-      fail(formatted + "expected object to not be null");
-    }
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(object).as(message).isNotNull();
   }
 
   /**
@@ -1520,9 +1526,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNull(Object object, String message) {
-    if (object != null) {
-      failNotSame(object, null, message);
-    }
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(object).as(message).isNull();
   }
 
   /**
@@ -1534,10 +1539,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      return;
-    }
-    failNotSame(actual, expected, message);
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(actual).as(message).isSameAs(expected);
   }
 
   /**
@@ -1559,9 +1562,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNotSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      failSame(actual, expected, message);
-    }
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(actual).as(message).isNotSameAs(expected);
   }
 
   /**
@@ -1573,22 +1575,6 @@ public class Assert {
    */
   public static void assertNotSame(Object actual, Object expected) {
     assertNotSame(actual, expected, null);
-  }
-
-  private static void failSame(Object actual, Object expected, String message) {
-    String formatted = "";
-    if (message != null) {
-      formatted = message + " ";
-    }
-    fail(formatted + ASSERT_LEFT2 + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
-  }
-
-  private static void failNotSame(Object actual, Object expected, String message) {
-    String formatted = "";
-    if (message != null) {
-      formatted = message + " ";
-    }
-    fail(formatted + ASSERT_EQUAL_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
   private static void failNotEquals(Object actual, Object expected, String message) {
