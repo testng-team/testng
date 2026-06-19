@@ -1,6 +1,6 @@
 # Configuration for Label Commenter - https://github.com/peaceiris/actions-label-commenter
 labels:
-  - name: needs-sample
+  - name: "Need: sample"
     labeled:
       issue:
         body: |
@@ -18,7 +18,7 @@ labels:
 
           It would be better if you could share a sample project that can be directly used to reproduce the problem.
           Reply to this issue when all information is provided, thank you.
-  - name: question
+  - name: "Type: Question"
     labeled:
       issue:
         body: |
@@ -26,7 +26,7 @@ labels:
           * 📫 The [TestNG user group](https://groups.google.com/forum/#!forum/testng-users)
           * 📮 [StackOverflow](https://stackoverflow.com/questions/tagged/testng)
         action: close
-  - name: help-wanted
+  - name: "Need: help"
     labeled:
       issue:
         body: |
