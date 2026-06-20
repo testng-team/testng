@@ -3,6 +3,7 @@ Deprecated: GITHUB-2649: org.testng.Assert is deprecated for removal in favor of
 Changed: GITHUB-2649: org.testng.Assert assertNull/assertNotNull/assertSame/assertNotSame now delegate to AssertJ; their failure messages now follow AssertJ's format (Julien Herr)
 Changed: GITHUB-2649: org.testng.Assert.assertThrows now delegates to AssertJ; its failure messages now follow AssertJ's format. expectThrows is unchanged as it returns the caught exception (Julien Herr)
 Changed: GITHUB-3197: testng-asserts (org.testng.Assert) is no longer bundled in the testng jar; it is now published as a separate optional artifact (org.testng:testng-asserts) which brings AssertJ transitively. Add this dependency to keep using org.testng.Assert (Julien Herr)
+Fixed: GITHUB-426: firstTimeOnly @BeforeMethod / lastTimeOnly @AfterMethod were not run as a barrier around a parallel invocationCount thread pool (firstTimeOnly could run concurrently with test invocations, lastTimeOnly ran once per invocation instead of once)
 Fixed: GITHUB-3166: Skipped configuration methods not receiving the causal throwable before configuration listeners are invoked
 Fixed: GITHUB-3263: dataProviderClass cache mutation causes subclasses to use wrong data provider when run together (Aleksei Dobrynin)
 Fixed: GITHUB-3120: ITestNGListenerFactory is broken and never invoked (Krishnan Mahadevan)

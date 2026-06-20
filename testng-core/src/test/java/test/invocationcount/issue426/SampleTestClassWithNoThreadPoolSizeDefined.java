@@ -7,6 +7,6 @@ public class SampleTestClassWithNoThreadPoolSizeDefined {
   @BeforeMethod(firstTimeOnly = true)
   public void beforeMethod() {}
 
-  @Test(invocationCount = 2, threadPoolSize = 5)
+  @Test(invocationCount = 2)
   public void testMethod() {}
 }
