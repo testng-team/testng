@@ -75,7 +75,11 @@ public class GraphOrchestrator<T> {
 
   private void afterExecute(IWorker<T> r, Throwable t) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
-      setStatus(r, computeStatus(r));
+      if (t != null){
+        Logger.getLogger(GraphOrchestrator.class).error(t.getMessage(), t);
+      } else {
+        setStatus(r, computeStatus(r));
+      }
       if (graph.getNodeCount() == graph.getNodeCountWithStatus(IDynamicGraph.Status.FINISHED)) {
         service.shutdown();
       } else {
