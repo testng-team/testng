@@ -532,6 +532,15 @@ public class AssertTest {
     Assert.assertSame(object2, object);
   }
 
+  @Test(
+      description = "GITHUB-561",
+      expectedExceptions = AssertionError.class,
+      expectedExceptionsMessageRegExp =
+          "expected \\[foo\\] but found equivalent but not same \\[foo\\]")
+  public void testAssertSameEqualObjectsMessage() {
+    Assert.assertSame(new String("foo"), "foo");
+  }
+
   @Test(description = "GITHUB-2490")
   public void testAssertNotEqualsWithActualBrokenEqualsTrue() {
     // BrokenEqualsTrue.equals(Object) always returns true, even for null

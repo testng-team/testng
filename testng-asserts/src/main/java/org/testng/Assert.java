@@ -1583,6 +1583,15 @@ public class Assert {
     if (message != null) {
       formatted = message + " ";
     }
+    if (areEqual(actual, expected)) {
+      fail(
+          formatted
+              + ASSERT_EQUAL_LEFT
+              + expected
+              + "] but found equivalent but not same ["
+              + actual
+              + "]");
+    }
     fail(formatted + ASSERT_EQUAL_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 

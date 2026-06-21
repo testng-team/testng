@@ -1,4 +1,5 @@
 Current (7.13.0)
+Fixed: GITHUB-561: Fixed assertSame failure message for equivalent but non-identical objects
 Fixed: GITHUB-426: firstTimeOnly @BeforeMethod / lastTimeOnly @AfterMethod were not run as a barrier around a parallel invocationCount thread pool (firstTimeOnly could run concurrently with test invocations, lastTimeOnly ran once per invocation instead of once)
 Fixed: GITHUB-3166: Skipped configuration methods not receiving the causal throwable before configuration listeners are invoked
 Fixed: GITHUB-3263: dataProviderClass cache mutation causes subclasses to use wrong data provider when run together (Aleksei Dobrynin)
