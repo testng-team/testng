@@ -15,6 +15,13 @@ public class InvokeMethodRunnable implements Callable<Boolean> {
   private final IHookable m_hookable;
   private final ITestResult m_testResult;
 
+  /**
+   * The wall-clock time at which the worker thread actually started executing the method body, or
+   * {@code -1} if it has not started yet. Used to tell apart a genuinely slow test method from a
+   * time-out exhausted by thread scheduling / pool start-up overhead.
+   */
+  private volatile long m_executionStartMillis = -1;
+
   public InvokeMethodRunnable(
       ITestNGMethod thisMethod,
       Object instance,
@@ -61,8 +68,17 @@ public class InvokeMethodRunnable implements Callable<Boolean> {
     return invoked;
   }
 
+  /**
+   * @return the wall-clock time (in milliseconds) at which the worker thread started executing the
+   *     method body, or {@code -1} if it never started.
+   */
+  public long getExecutionStartMillis() {
+    return m_executionStartMillis;
+  }
+
   @Override
   public Boolean call() throws Exception {
+    m_executionStartMillis = System.currentTimeMillis();
     boolean flag = true;
     try {
       if (m_method.getInvocationTimeOut() > 0) {
