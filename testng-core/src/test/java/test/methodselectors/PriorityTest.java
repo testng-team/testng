@@ -20,7 +20,7 @@ public class PriorityTest {
     tng.run();
 
     List<ITestResult> passed = tla.getPassedTests();
-    assertThat(passedTests.length).isEqualTo(passed.size());
+    assertThat(passedTests).hasSameSizeAs(passed);
     if (passedTests.length == 1) {
       String passed0 = passed.get(0).getName();
       assertThat(passed0).isEqualTo(passedTests[0]);

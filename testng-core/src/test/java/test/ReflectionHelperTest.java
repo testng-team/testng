@@ -17,7 +17,7 @@ public class ReflectionHelperTest {
     // Testing exclusion of synthetic methods Refer https://stackoverflow.com/a/5007394 to learn
     // more
     Method[] methods = prune(ReflectionHelper.getLocalMethods(DuplicateCallsSample.class));
-    assertThat(methods.length).isEqualTo(2);
+    assertThat(methods).hasSize(2);
 
     // Testing a straight forward use case of retrieving concrete methods
     methods = prune(ReflectionHelper.getLocalMethods(Dog.class));
@@ -25,11 +25,11 @@ public class ReflectionHelperTest {
 
     // When class has no methods count should be zero.
     methods = prune(ReflectionHelper.getLocalMethods(Dinosaur.class));
-    assertThat(methods.length).isZero();
+    assertThat(methods).isEmpty();
 
     // Abstract methods should be included.
     methods = prune(ReflectionHelper.getLocalMethods(Dragon.class));
-    assertThat(methods.length).isEqualTo(2);
+    assertThat(methods).hasSize(2);
 
     // main methods should be pruned
     methods = prune(ReflectionHelper.getLocalMethods(TestClassSample.class));

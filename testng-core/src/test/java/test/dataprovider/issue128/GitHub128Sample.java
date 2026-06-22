@@ -41,7 +41,7 @@ public class GitHub128Sample {
   @Test(dataProvider = "methods")
   public void testInvokeRemote2(@NoInjection Method param1, Object[] param2) {
     assertThat(param1.getName()).isEqualTo("toString");
-    assertThat(param2.length).isZero();
+    assertThat(param2).isEmpty();
   }
 
   @DataProvider(name = "methods2")
@@ -56,7 +56,7 @@ public class GitHub128Sample {
 
   @Test(dataProvider = "methods2")
   public void testInvokeRemoteReversed2(Object[] param1, @NoInjection Method param2) {
-    assertThat(param1.length).isZero();
+    assertThat(param1).isEmpty();
     assertThat(param2.getName()).isEqualTo("toString");
   }
 

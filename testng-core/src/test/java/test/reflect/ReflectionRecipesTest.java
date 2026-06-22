@@ -133,8 +133,7 @@ public class ReflectionRecipesTest {
       assertThat(filteredParameters).isNotNull();
 
       for (final Object[] expect : expected) {
-        assertThat(expect).isNotNull();
-        assertThat(expect.length).isEqualTo(2);
+        assertThat(expect).hasSize(2);
         assertThat(expect[0]).isInstanceOf(Object[].class);
         assertThat(expect[1]).isInstanceOf(Boolean.class);
         assertThat(ReflectionRecipes.matchArrayEnding(filteredParameters, (Object[]) expect[0]))
@@ -153,8 +152,7 @@ public class ReflectionRecipesTest {
       assertThat(filteredParameters).isNotNull();
 
       for (final Object[] expect : expected) {
-        assertThat(expect).isNotNull();
-        assertThat(expect.length).isEqualTo(2);
+        assertThat(expect).hasSize(2);
         assertThat(expect[0]).isInstanceOf(Object[].class);
         assertThat(expect[1]).isInstanceOf(Boolean.class);
         assertThat(ReflectionRecipes.exactMatch(filteredParameters, (Object[]) expect[0]))
@@ -169,7 +167,7 @@ public class ReflectionRecipesTest {
     final Parameter[] parameters1 =
         ReflectionRecipes.filter(parameters, InjectableParameter.Assistant.ALL_INJECTS);
     log.debug("Out: " + Arrays.asList(parameters1));
-    assertThat(parameters1.length).isEqualTo(2);
+    assertThat(parameters1).hasSize(2);
     assertThat(parameters1[0].getType()).isEqualTo(int.class);
     assertThat(parameters1[1].getType()).isEqualTo(Boolean.class);
   }
@@ -182,7 +180,7 @@ public class ReflectionRecipesTest {
         ReflectionRecipes.inject(
             parameters, InjectableParameter.Assistant.ALL_INJECTS, args, (Method) null, null, null);
     log.debug("injectedArgs: " + Arrays.asList(injectedArgs));
-    assertThat(injectedArgs.length).isEqualTo(parameters.length);
+    assertThat(injectedArgs).hasSameSizeAs(parameters);
   }
 
   @Test(dataProvider = "testContexts")

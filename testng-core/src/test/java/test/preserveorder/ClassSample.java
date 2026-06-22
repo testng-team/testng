@@ -22,6 +22,6 @@ public class ClassSample {
 
   @Test
   public void checkVal() {
-    assertThat(this.val).isNotEqualTo(0);
+    assertThat(this.val).isNotZero();
   }
 }

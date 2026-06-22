@@ -19,7 +19,7 @@ public class ExitCodeTest extends SimpleBaseTest {
   public void exitsWithNonzeroOnFailure() {
     TestNG tng = create(PersistentFailure.class);
     tng.run();
-    assertThat(tng.getStatus()).isNotEqualTo(0);
+    assertThat(tng.getStatus()).isNotZero();
   }
 
   @Test
