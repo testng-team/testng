@@ -51,9 +51,9 @@ public class MethodInvocationHelper {
   /**
    * How long, in milliseconds, we are willing to wait for the worker thread to even <em>start</em>
    * executing a timed-out method before declaring an infrastructure failure. This is intentionally
-   * generous: thread-pool start-up and OS scheduling normally take well under a millisecond, so this
-   * grace period is only ever consumed under pathological load or thread-pool starvation. It is
-   * deliberately not counted against the user's time-out budget.
+   * generous: thread-pool start-up and OS scheduling normally take well under a millisecond, so
+   * this grace period is only ever consumed under pathological load or thread-pool starvation. It
+   * is deliberately not counted against the user's time-out budget.
    */
   private static final long TIMEOUT_STARTUP_GRACE_MILLIS = 10_000;
 
@@ -412,10 +412,18 @@ public class MethodInvocationHelper {
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
 
     // The time-out must measure the method's own execution time, not the wall-clock time since we
-    // started waiting: thread-pool start-up and OS scheduling can otherwise consume the whole budget
+    // started waiting: thread-pool start-up and OS scheduling can otherwise consume the whole
+    // budget
     // under load and produce spurious time-outs. We therefore start the clock from the moment the
-    // worker thread actually begins running the method, while still bounding how long we wait for it
+    // worker thread actually begins running the method, while still bounding how long we wait for
+    // it
     // to start so a thread that can never be scheduled cannot hang us forever.
+    //
+    // The start-up grace scales with the execution time-out (rather than being a flat cap) so that
+    // we never wait less for the worker to start than the old implementation would have waited in
+    // total: a caller who tolerates a long execution time-out implicitly tolerates at least that
+    // long for the method to get going. In practice scheduling takes well under a millisecond, so
+    // this bound is only ever reached under pathological thread-pool starvation.
     long startupGraceMillis = Math.max(realTimeOut, TIMEOUT_STARTUP_GRACE_MILLIS);
     long startupDeadline = System.currentTimeMillis() + startupGraceMillis;
     boolean finished = false;
