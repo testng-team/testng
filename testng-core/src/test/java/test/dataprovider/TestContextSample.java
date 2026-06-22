@@ -27,11 +27,11 @@ public class TestContextSample {
 
   @Test(dataProvider = "testContext", groups = "10")
   public void verifyTen(Object[] objects) {
-    assertThat(objects.length).isEqualTo(10);
+    assertThat(objects).hasSize(10);
   }
 
   @Test(dataProvider = "testContext", groups = "5")
   public void verifyFive(Object[] objects) {
-    assertThat(objects.length).isEqualTo(5);
+    assertThat(objects).hasSize(5);
   }
 }

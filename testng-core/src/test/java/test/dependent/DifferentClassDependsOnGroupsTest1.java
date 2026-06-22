@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 public class DifferentClassDependsOnGroupsTest1 {
   @Test(groups = {"mainGroup"})
   public void test0() {
-    assertThat(1).isEqualTo(0); // Force a failure
+    assertThat(1).isZero(); // Force a failure
   }
 
   @Test(dependsOnGroups = {"mainGroup"})
