@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 import org.testng.Assert;
 import org.testng.CommandLineArgs;
@@ -113,7 +114,7 @@ public class CliTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-3230")
   public void missingSuiteFileIsRejected() {
-    String missingSuite = "target/missing-suite-3230.xml";
+    String missingSuite = "target/missing-suite-3230-" + UUID.randomUUID() + ".xml";
     TestNG testng = new TestNG();
     testng.setTestSuites(List.of(missingSuite));
 
