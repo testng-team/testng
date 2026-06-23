@@ -1,6 +1,7 @@
 package test.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
+import org.testng.TestNGException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -107,6 +109,17 @@ public class CliTest extends SimpleBaseTest {
     assertThat(logInvocations.logs)
         .containsExactlyInAnyOrder(
             "com.kungfu.panda.DragonWarrior.testMethod", "com.kungfu.panda.Tigress.testMethod");
+  }
+
+  @Test(description = "GITHUB-3230")
+  public void missingSuiteFileIsRejected() {
+    String missingSuite = "target/missing-suite-3230.xml";
+    TestNG testng = new TestNG();
+    testng.setTestSuites(List.of(missingSuite));
+
+    assertThatThrownBy(testng::initializeSuitesAndJarFile)
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining(missingSuite);
   }
 
   private static Class<?> compile(TestNGSimpleClassLoader loader, CompiledCode code) {
