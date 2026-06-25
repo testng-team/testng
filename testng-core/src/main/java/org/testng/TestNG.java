@@ -329,7 +329,7 @@ public class TestNG {
     try {
       return Parser.parse(suitePath, getProcessor());
     } catch (IOException e) {
-      e.printStackTrace(System.out);
+      throw new TestNGException("Failed to parse suite: " + suitePath, e);
     } catch (Exception ex) {
       // Probably a Yaml exception, unnest it
       Throwable t = ex;
@@ -341,8 +341,6 @@ public class TestNG {
       }
       throw new TestNGException(t);
     }
-
-    return Collections.emptySet();
   }
 
   private Collection<XmlSuite> processCommandLineArgs(Collection<XmlSuite> allSuites) {
