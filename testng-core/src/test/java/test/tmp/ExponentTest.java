@@ -1,6 +1,6 @@
 package test.tmp;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -28,7 +28,7 @@ public class ExponentTest {
   @Test(dataProvider = "random")
   public void testExponent(double exponent, double expected) {
     debug("COMPARING " + myExpFunction(exponent) + " AND " + expected);
-    assertEquals(myExpFunction(exponent), expected);
+    assertThat(myExpFunction(exponent)).isEqualTo(expected);
   }
 
   private void debug(String s) {

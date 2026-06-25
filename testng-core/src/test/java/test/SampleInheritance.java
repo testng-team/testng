@@ -1,7 +1,6 @@
 package test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -20,9 +19,15 @@ public class SampleInheritance extends BaseSampleInheritance {
       groups = "final",
       dependsOnGroups = {"configuration1"})
   public void configuration2() {
-    assertEquals(m_configurations.size(), 2, "Expected size 2 found " + m_configurations.size());
-    assertEquals(m_configurations.get(0), "configuration0", "Expected configuration0 to be run");
-    assertEquals(m_configurations.get(1), "configuration1", "Expected configuration1 to be run");
+    assertThat(m_configurations)
+        .withFailMessage("Expected size 2 found " + m_configurations.size())
+        .hasSize(2);
+    assertThat(m_configurations.get(0))
+        .withFailMessage("Expected configuration0 to be run")
+        .isEqualTo("configuration0");
+    assertThat(m_configurations.get(1))
+        .withFailMessage("Expected configuration1 to be run")
+        .isEqualTo("configuration1");
     addConfiguration("configuration2");
   }
 
@@ -30,15 +35,25 @@ public class SampleInheritance extends BaseSampleInheritance {
       groups = "final",
       dependsOnGroups = {"inheritedTestMethod"})
   public void inheritedMethodsWereCalledInOrder() {
-    assertTrue(m_invokedBaseMethod, "Didn't invoke test method in base class");
-    assertTrue(m_invokedBaseConfiguration, "Didn't invoke configuration method in base class");
+    assertThat(m_invokedBaseMethod)
+        .withFailMessage("Didn't invoke test method in base class")
+        .isTrue();
+    assertThat(m_invokedBaseConfiguration)
+        .withFailMessage("Didn't invoke configuration method in base class")
+        .isTrue();
   }
 
   @Test(groups = "final2", dependsOnGroups = "final")
   public void configurationsWereCalledInOrder() {
-    assertEquals(m_configurations.size(), 3);
-    assertEquals(m_configurations.get(0), "configuration0", "Expected configuration0 to be run");
-    assertEquals(m_configurations.get(1), "configuration1", "Expected configuration1 to be run");
-    assertEquals(m_configurations.get(2), "configuration2", "Expected configuration1 to be run");
+    assertThat(m_configurations).hasSize(3);
+    assertThat(m_configurations.get(0))
+        .withFailMessage("Expected configuration0 to be run")
+        .isEqualTo("configuration0");
+    assertThat(m_configurations.get(1))
+        .withFailMessage("Expected configuration1 to be run")
+        .isEqualTo("configuration1");
+    assertThat(m_configurations.get(2))
+        .withFailMessage("Expected configuration1 to be run")
+        .isEqualTo("configuration2");
   }
 }

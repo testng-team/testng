@@ -18,7 +18,7 @@ public class TestCaseSample {
 
   @Test(dataProvider = "testData", retryAnalyzer = RetryAnalyzer.class)
   public void API_dummyTest(int number) {
-    assertThat(number % 2).isEqualTo(0);
+    assertThat(number % 2).isZero();
   }
 
   @DataProvider(name = "testData")

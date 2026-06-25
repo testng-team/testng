@@ -1,13 +1,14 @@
 package org.testng.internal.paramhandler;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class DataDrivenSampleTestClass {
   @Test(dataProvider = "dp")
   public void testMethod(String i) {
-    Assertions.assertThat(i).isNotEmpty();
+    assertThat(i).isNotEmpty();
   }
 
   @DataProvider(name = "dp")

@@ -1,7 +1,9 @@
 package test.retryAnalyzer.github1706;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -10,9 +12,9 @@ public class DataDrivenSample {
 
   @Test(retryAnalyzer = LocalRetry.class, dataProvider = "getdata")
   public void testMethod(int i) {
-    Assert.assertTrue(i > 0);
+    assertThat(i).isPositive();
     if (counter.incrementAndGet() != 3) {
-      Assert.fail();
+      fail();
     }
     counter = new AtomicInteger(0);
   }

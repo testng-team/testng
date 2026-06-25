@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
@@ -50,7 +49,7 @@ public class YamlTest extends SimpleBaseTest {
     Collection<XmlSuite> s2 =
         new Parser(getPathToResource("yaml" + File.separator + name + ".xml")).parse();
 
-    Assert.assertEquals(s1, s2);
+    assertThat(s1).isEqualTo(s2);
   }
 
   @Test(description = "GITHUB-1787")
@@ -108,7 +107,7 @@ public class YamlTest extends SimpleBaseTest {
     String yamlSuiteFile = "src/test/resources/yaml/testXmlTestIndex.yaml";
     XmlSuite suite = yamlParser.parse(yamlSuiteFile, new FileInputStream(yamlSuiteFile), false);
     List<XmlTest> tests = suite.getTests();
-    assertThat(tests.size()).isEqualTo(3);
+    assertThat(tests).hasSize(3);
     for (int i = 0; i < tests.size(); i++) {
       assertThat(tests.get(i).getIndex()).isEqualTo(i);
     }

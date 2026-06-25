@@ -1,7 +1,8 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -26,11 +27,11 @@ public class TestContextSample {
 
   @Test(dataProvider = "testContext", groups = "10")
   public void verifyTen(Object[] objects) {
-    Assert.assertEquals(objects.length, 10);
+    assertThat(objects).hasSize(10);
   }
 
   @Test(dataProvider = "testContext", groups = "5")
   public void verifyFive(Object[] objects) {
-    Assert.assertEquals(objects.length, 5);
+    assertThat(objects).hasSize(5);
   }
 }

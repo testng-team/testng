@@ -1,7 +1,8 @@
 package org.testng.internal.objects;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestObjectFactory;
@@ -28,7 +29,7 @@ public class InstanceCreatorTest {
     Object object =
         SimpleObjectDispenser.createInstance(
             declaringClass, classes, xmlTest, finder, objectFactory, false, "");
-    Assert.assertTrue(object instanceof ITest);
-    Assert.assertEquals(((ITest) object).getTestName(), GITHUB_1456);
+    assertThat(object).isInstanceOf(ITest.class);
+    assertThat(((ITest) object).getTestName()).isEqualTo(GITHUB_1456);
   }
 }

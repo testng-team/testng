@@ -1,6 +1,6 @@
 package test.thread.parallelization;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -395,109 +395,109 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
   // suites.
   @Test
   public void sanityCheck() {
-    assertEquals(
-        suiteLevelEventLogs.size(),
-        6,
-        "There should be 6 suite level events logged for "
-            + SUITE_A
-            + ", "
-            + SUITE_B
-            + " and "
-            + SUITE_C
-            + ": "
-            + suiteLevelEventLogs);
-    assertEquals(
-        testLevelEventLogs.size(),
-        12,
-        "There should be 12 test level events logged for "
-            + SUITE_A
-            + ", "
-            + SUITE_B
-            + " and "
-            + SUITE_C
-            + ": "
-            + testLevelEventLogs);
+    assertThat(suiteLevelEventLogs)
+        .withFailMessage(
+            "There should be 6 suite level events logged for "
+                + SUITE_A
+                + ", "
+                + SUITE_B
+                + " and "
+                + SUITE_C
+                + ": "
+                + suiteLevelEventLogs)
+        .hasSize(6);
+    assertThat(testLevelEventLogs)
+        .withFailMessage(
+            "There should be 12 test level events logged for "
+                + SUITE_A
+                + ", "
+                + SUITE_B
+                + " and "
+                + SUITE_C
+                + ": "
+                + testLevelEventLogs)
+        .hasSize(12);
 
-    assertEquals(
-        testMethodLevelEventLogs.size(),
-        420,
-        "There should 420 test method level events logged for "
-            + SUITE_A
-            + ", "
-            + SUITE_B
-            + " and "
-            + SUITE_C
-            + ": "
-            + testMethodLevelEventLogs);
+    assertThat(testMethodLevelEventLogs)
+        .withFailMessage(
+            "There should 420 test method level events logged for "
+                + SUITE_A
+                + ", "
+                + SUITE_B
+                + " and "
+                + SUITE_C
+                + ": "
+                + testMethodLevelEventLogs)
+        .hasSize(420);
 
-    assertEquals(
-        suiteOneSuiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneSuiteLevelEventLogs);
-    assertEquals(
-        suiteOneTestLevelEventLogs.size(),
-        2,
-        "There should be 2 test level events logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneTestLevelEventLogs);
-    assertEquals(
-        suiteOneTestMethodLevelEventLogs.size(),
-        84,
-        "There should be 84 test method level events "
-            + "logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneTestMethodLevelEventLogs);
+    assertThat(suiteOneSuiteLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneSuiteLevelEventLogs)
+        .hasSize(2);
+    assertThat(suiteOneTestLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 test level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneTestLevelEventLogs)
+        .hasSize(2);
+    assertThat(suiteOneTestMethodLevelEventLogs)
+        .withFailMessage(
+            "There should be 84 test method level events "
+                + "logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneTestMethodLevelEventLogs)
+        .hasSize(84);
 
-    assertEquals(
-        suiteTwoSuiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for "
-            + SUITE_B
-            + ": "
-            + suiteTwoSuiteLevelEventLogs);
-    assertEquals(
-        suiteTwoTestLevelEventLogs.size(),
-        4,
-        "There should be 4 test level events logged for "
-            + SUITE_B
-            + ": "
-            + suiteTwoTestLevelEventLogs);
-    assertEquals(
-        suiteTwoTestMethodLevelEventLogs.size(),
-        219,
-        "There should be 219 test method level events "
-            + "logged for "
-            + SUITE_B
-            + ": "
-            + suiteTwoTestMethodLevelEventLogs);
+    assertThat(suiteTwoSuiteLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_B
+                + ": "
+                + suiteTwoSuiteLevelEventLogs)
+        .hasSize(2);
+    assertThat(suiteTwoTestLevelEventLogs)
+        .withFailMessage(
+            "There should be 4 test level events logged for "
+                + SUITE_B
+                + ": "
+                + suiteTwoTestLevelEventLogs)
+        .hasSize(4);
+    assertThat(suiteTwoTestMethodLevelEventLogs)
+        .withFailMessage(
+            "There should be 219 test method level events "
+                + "logged for "
+                + SUITE_B
+                + ": "
+                + suiteTwoTestMethodLevelEventLogs)
+        .hasSize(219);
 
-    assertEquals(
-        suiteThreeSuiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for "
-            + SUITE_C
-            + ": "
-            + suiteThreeSuiteLevelEventLogs);
-    assertEquals(
-        suiteThreeTestLevelEventLogs.size(),
-        6,
-        "There should be 6 test level events logged for "
-            + SUITE_C
-            + ": "
-            + suiteThreeTestLevelEventLogs);
-    assertEquals(
-        suiteThreeTestMethodLevelEventLogs.size(),
-        117,
-        "There should be 87 test method level events "
-            + "logged for "
-            + SUITE_C
-            + ": "
-            + suiteThreeTestMethodLevelEventLogs);
+    assertThat(suiteThreeSuiteLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_C
+                + ": "
+                + suiteThreeSuiteLevelEventLogs)
+        .hasSize(2);
+    assertThat(suiteThreeTestLevelEventLogs)
+        .withFailMessage(
+            "There should be 6 test level events logged for "
+                + SUITE_C
+                + ": "
+                + suiteThreeTestLevelEventLogs)
+        .hasSize(6);
+    assertThat(suiteThreeTestMethodLevelEventLogs)
+        .withFailMessage(
+            "There should be 87 test method level events "
+                + "logged for "
+                + SUITE_C
+                + ": "
+                + suiteThreeTestMethodLevelEventLogs)
+        .hasSize(117);
   }
 
   // Verify that the suites run in parallel by checking that the suite and test level events for

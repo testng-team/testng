@@ -1,8 +1,9 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Comparator;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
 import org.testng.internal.Graph;
@@ -33,17 +34,17 @@ public class GraphTest {
     g.topologicalSort();
     List<String> l = g.getStrictlySortedNodes();
     int i = 0;
-    Assert.assertEquals("1", l.get(i));
+    assertThat(l.get(i)).isEqualTo("1");
     i++;
-    Assert.assertTrue("2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i)));
+    assertThat(l.get(i)).isIn("2", "2.1", "2.2");
     i++;
-    Assert.assertTrue("2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i)));
+    assertThat(l.get(i)).isIn("2", "2.1", "2.2");
     i++;
-    Assert.assertTrue("2".equals(l.get(i)) || "2.1".equals(l.get(i)) || "2.2".equals(l.get(i)));
+    assertThat(l.get(i)).isIn("2", "2.1", "2.2");
     i++;
-    Assert.assertEquals("3", l.get(i));
+    assertThat(l.get(i)).isEqualTo("3");
 
-    Assert.assertEquals(1, g.getIndependentNodes().size());
+    assertThat(g.getIndependentNodes()).hasSize(1);
   }
 
   @Test(expectedExceptions = org.testng.TestNGException.class)
@@ -60,7 +61,7 @@ public class GraphTest {
       g.topologicalSort();
     } catch (TestNGException ex) {
       Tarjan<String> t = new Tarjan<>(g, "1");
-      Assert.assertEquals(t.getCycle().size(), 3);
+      assertThat(t.getCycle()).hasSize(3);
     }
   }
 
@@ -103,27 +104,18 @@ public class GraphTest {
     //
     {
       List<String> predecessors = g.findPredecessors("2");
-      Assert.assertEquals(1, predecessors.size());
-      Assert.assertEquals("1", predecessors.get(0));
+      assertThat(predecessors).hasSize(1);
+      assertThat(predecessors.get(0)).isEqualTo("1");
     }
 
     {
       List<String> predecessors = g.findPredecessors("3");
 
-      Assert.assertEquals(4, predecessors.size());
-      Assert.assertEquals("1", predecessors.get(0));
-      Assert.assertTrue(
-          predecessors.get(1).equals("2.1")
-              || predecessors.get(1).equals("2.2")
-              || predecessors.get(1).equals("2"));
-      Assert.assertTrue(
-          predecessors.get(2).equals("2.1")
-              || predecessors.get(2).equals("2.2")
-              || predecessors.get(2).equals("2"));
-      Assert.assertTrue(
-          predecessors.get(3).equals("2.1")
-              || predecessors.get(3).equals("2.2")
-              || predecessors.get(3).equals("2"));
+      assertThat(predecessors).hasSize(4);
+      assertThat(predecessors.get(0)).isEqualTo("1");
+      assertThat(predecessors.get(1)).isIn("2.1", "2.2", "2");
+      assertThat(predecessors.get(2)).isIn("2.1", "2.2", "2");
+      assertThat(predecessors.get(3)).isIn("2.1", "2.2", "2");
     }
   }
 
@@ -189,7 +181,7 @@ public class GraphTest {
     //
     {
       List<String> predecessors = g.findPredecessors(rootNode);
-      Assert.assertEquals(predecessors.size(), (maxDepth * nodesPerDepth));
+      assertThat(predecessors).hasSize(maxDepth * nodesPerDepth);
     }
   }
 }

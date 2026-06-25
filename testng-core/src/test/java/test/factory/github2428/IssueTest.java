@@ -1,6 +1,7 @@
 package test.factory.github2428;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -13,9 +14,9 @@ public class IssueTest extends SimpleBaseTest {
     Reporter reporter = new Reporter();
     testng.addListener(reporter);
     testng.run();
-    Assert.assertEquals(
-        reporter.getResults().size(),
-        5,
-        "Data provider generated 5 rows, so expecting 5 distinct test instances to be used");
+    assertThat(reporter.getResults())
+        .withFailMessage(
+            "Data provider generated 5 rows, so expecting 5 distinct test instances to be used")
+        .hasSize(5);
   }
 }

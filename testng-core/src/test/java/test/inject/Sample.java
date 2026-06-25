@@ -1,6 +1,7 @@
 package test.inject;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.Test;
@@ -9,9 +10,9 @@ public class Sample {
 
   @Test
   public void f(ITestContext tc) {
-    Assert.assertNotNull(tc);
+    assertThat(tc).isNotNull();
     ITestNGMethod[] allMethods = tc.getAllTestMethods();
-    Assert.assertEquals(allMethods.length, 1);
-    Assert.assertEquals(allMethods[0].getConstructorOrMethod().getName(), "f");
+    assertThat(allMethods.length).isOne();
+    assertThat(allMethods[0].getConstructorOrMethod().getName()).isEqualTo("f");
   }
 }

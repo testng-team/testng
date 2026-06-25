@@ -1,8 +1,9 @@
 package test.configuration.github1700;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.collections.Lists;
 
@@ -13,7 +14,7 @@ public class BaseClassSample {
   @BeforeMethod(alwaysRun = true)
   public void setUp(Method method) {
     if (method.getName().endsWith("test1")) {
-      Assert.assertEquals(2, 1);
+      assertThat(2).isOne();
     }
     messages.add(getClass().getCanonicalName() + ".setup()");
   }

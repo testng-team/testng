@@ -1,6 +1,7 @@
 package test.uniquesuite;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
@@ -14,7 +15,7 @@ public class TestAfter {
     tng.setOutputDirectory(OutputDirectoryPatch.getOutputDirectory());
     tng.setTestClasses(new Class[] {TestAfter1.class, TestAfter2.class});
     tng.run();
-    Assert.assertEquals(BaseAfter.m_afterCount, 1);
+    assertThat(BaseAfter.m_afterCount).isOne();
   }
 
   @AfterTest

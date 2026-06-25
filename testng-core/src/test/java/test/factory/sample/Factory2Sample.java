@@ -1,6 +1,6 @@
 package test.factory.sample;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class Factory2Sample {
 
   @AfterSuite
   public void afterSuite() {
-    assertEquals(methods, EXPECTED_METHODS);
+    assertThat(methods).containsExactlyElementsOf(EXPECTED_METHODS);
   }
 
   @Test

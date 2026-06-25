@@ -1,12 +1,13 @@
 package test.annotationtransformer.issue2312;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class SampleTestClass {
 
   @Test
   public void testMethod() {
-    Assert.assertEquals(1, 1);
+    assertThat(1).isOne();
   }
 }

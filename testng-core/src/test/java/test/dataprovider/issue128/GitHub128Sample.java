@@ -1,7 +1,9 @@
 package test.dataprovider.issue128;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -13,7 +15,7 @@ public class GitHub128Sample {
 
   @BeforeClass
   public void beforeClass(ITestContext ctx) {
-    Assert.assertNotNull(ctx);
+    assertThat(ctx).isNotNull();
   }
 
   @BeforeMethod
@@ -23,7 +25,7 @@ public class GitHub128Sample {
 
   @Test
   public void testMethod(ITestContext ctx) {
-    Assert.assertNotNull(ctx);
+    assertThat(ctx).isNotNull();
   }
 
   @DataProvider(name = "methods")
@@ -33,13 +35,13 @@ public class GitHub128Sample {
 
   @Test(dataProvider = "methods")
   public void testInvokeRemote(Method param1, Object[] param2) {
-    Assert.fail("The test is supposed to fail because the method param is not defined");
+    fail("The test is supposed to fail because the method param is not defined");
   }
 
   @Test(dataProvider = "methods")
   public void testInvokeRemote2(@NoInjection Method param1, Object[] param2) {
-    Assert.assertEquals(param1.getName(), "toString");
-    Assert.assertEquals(param2.length, 0);
+    assertThat(param1.getName()).isEqualTo("toString");
+    assertThat(param2).isEmpty();
   }
 
   @DataProvider(name = "methods2")
@@ -49,13 +51,13 @@ public class GitHub128Sample {
 
   @Test(dataProvider = "methods2")
   public void testInvokeRemoteReversed(Object[] param1, Method param2) {
-    Assert.fail("The test is supposed to fail because the method param is not defined");
+    fail("The test is supposed to fail because the method param is not defined");
   }
 
   @Test(dataProvider = "methods2")
   public void testInvokeRemoteReversed2(Object[] param1, @NoInjection Method param2) {
-    Assert.assertEquals(param1.length, 0);
-    Assert.assertEquals(param2.getName(), "toString");
+    assertThat(param1).isEmpty();
+    assertThat(param2.getName()).isEqualTo("toString");
   }
 
   // TODO Add similar test for Before/AfterMethod

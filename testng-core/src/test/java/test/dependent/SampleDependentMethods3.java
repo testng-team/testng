@@ -1,8 +1,6 @@
 package test.dependent;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Parameters;
@@ -20,30 +18,32 @@ public class SampleDependentMethods3 {
 
   @Test
   public void one() {
-    assertFalse(m_secondA, "secondA shouldn't have been run yet");
+    assertThat(m_secondA).withFailMessage("secondA shouldn't have been run yet").isFalse();
     m_oneA = true;
   }
 
   @Parameters({"foo"})
   @Test
   public void one(String s) {
-    assertFalse(m_secondA, "secondA shouldn't have been run yet");
-    assertEquals(s, "Cedric", "Expected parameter value Cedric but got " + s);
+    assertThat(m_secondA).withFailMessage("secondA shouldn't have been run yet").isFalse();
+    assertThat(s)
+        .withFailMessage("Expected parameter value Cedric but got " + s)
+        .isEqualTo("Cedric");
     m_oneB = true;
   }
 
   @Test(dependsOnMethods = {"one"})
   public void secondA() {
-    assertTrue(m_oneA, "oneA wasn't run");
-    assertTrue(m_oneB, "oneB wasn't run");
-    assertFalse(m_secondA, "secondA shouldn't have been run yet");
+    assertThat(m_oneA).withFailMessage("oneA wasn't run").isTrue();
+    assertThat(m_oneB).withFailMessage("oneB wasn't run").isTrue();
+    assertThat(m_secondA).withFailMessage("secondA shouldn't have been run yet").isFalse();
     m_secondA = true;
   }
 
   @AfterClass
   public void tearDown() {
-    assertTrue(m_oneA, "oneA wasn't run");
-    assertTrue(m_oneB, "oneB wasn't run");
-    assertTrue(m_secondA, "secondA wasn't run");
+    assertThat(m_oneA).withFailMessage("oneA wasn't run").isTrue();
+    assertThat(m_oneB).withFailMessage("oneB wasn't run").isTrue();
+    assertThat(m_secondA).withFailMessage("secondA wasn't run").isTrue();
   }
 }

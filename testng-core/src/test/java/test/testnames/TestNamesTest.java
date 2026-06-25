@@ -1,7 +1,8 @@
 package test.testnames;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -18,9 +19,9 @@ public class TestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(getPathToResource("testnames/upstream-suite.xml")));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getFailedTests().size(), 0);
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
-    Assert.assertEquals(
-        tla.getPassedTests().get(0).getMethod().getMethodName(), "sampleOutputTest2");
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).hasSize(1);
+    assertThat(tla.getPassedTests().get(0).getMethod().getMethodName())
+        .isEqualTo("sampleOutputTest2");
   }
 }

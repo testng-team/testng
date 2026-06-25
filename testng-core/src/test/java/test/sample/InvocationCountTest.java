@@ -1,6 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterSuite;
@@ -71,9 +71,9 @@ public class InvocationCountTest {
 
   @AfterClass(groups = {"invocationOnly"})
   public void verify() {
-    assertEquals(
-        m_count,
-        10,
-        "Method should have been invoked 10 times but was invoked " + m_count + " times");
+    assertThat(m_count)
+        .withFailMessage(
+            "Method should have been invoked 10 times but was invoked " + m_count + " times")
+        .isEqualTo(10);
   }
 }

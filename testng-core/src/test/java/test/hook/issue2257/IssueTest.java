@@ -16,6 +16,6 @@ public class IssueTest extends SimpleBaseTest {
     testng.run();
     assertThat(listener.getConfigurationSkips()).isEmpty();
     assertThat(listener.getConfigurationFailures()).isEmpty();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 }

@@ -1,6 +1,7 @@
 package test.dataprovider;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -10,7 +11,7 @@ public class DataProviderRetryTest {
   public void test(String verdict) {
     switch (verdict) {
       case "FAIL":
-        Assert.fail("This time test FAIL!");
+        fail("This time test FAIL!");
         break;
       case "SKIP":
         throw new SkipException("This time test SKIPPED!");

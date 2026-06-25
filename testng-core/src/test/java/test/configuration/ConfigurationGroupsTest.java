@@ -15,7 +15,7 @@ public class ConfigurationGroupsTest extends SimpleBaseTest {
     TestNG testng = create(MultipleBeforeGroupTest.class);
     testng.setGroups("foo");
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 
   @Test(dataProvider = "getTestData")
@@ -23,7 +23,7 @@ public class ConfigurationGroupsTest extends SimpleBaseTest {
     TestNG testng = create(testClass);
     testng.setGroups(groupName);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
   }
 
   @DataProvider

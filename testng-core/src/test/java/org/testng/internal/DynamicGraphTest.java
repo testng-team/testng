@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IDynamicGraph;
 import org.testng.IDynamicGraph.Status;
 import org.testng.ITestNGMethod;
@@ -44,7 +43,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
   private static <T> void assertFreeNodesEquals(IDynamicGraph<T> graph, List<T> expected) {
     // Compare free nodes using isEqualTo instead of containsOnly as we care about ordering too.
-    assertThat(graph.getFreeNodes()).isEqualTo(expected);
+    assertThat(graph.getFreeNodes()).containsExactlyElementsOf(expected);
   }
 
   @Test
@@ -262,7 +261,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
     tng.run();
-    Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder1);
+    assertThat(listener.getSucceedMethodNames()).containsExactlyElementsOf(expectedOrder1);
   }
 
   @Test
@@ -272,15 +271,15 @@ public class DynamicGraphTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
     tng.run();
-    Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
+    assertThat(listener.getSucceedMethodNames()).containsExactlyElementsOf(expectedOrder2);
   }
 
   private static void runAssertion(IDynamicGraph<ITestNGMethod> graph, List<String> expected) {
     List<ITestNGMethod> p1Methods = graph.getFreeNodes();
-    Assert.assertEquals(p1Methods.size(), 3);
+    assertThat(p1Methods).hasSize(3);
     graph.setStatus(p1Methods, Status.FINISHED);
     for (ITestNGMethod p1Method : p1Methods) {
-      Assert.assertTrue(expected.contains(constructName(p1Method)));
+      assertThat(expected).contains(constructName(p1Method));
     }
   }
 
@@ -298,7 +297,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
     int expected = tla.getMultiplyCount() + tla.getOriginalMethodCount();
-    assertThat(tla.getPassedTests().size()).isEqualTo(expected);
+    assertThat(tla.getPassedTests()).hasSize(expected);
   }
 
   @Test(expectedExceptions = IllegalStateException.class)
@@ -325,22 +324,22 @@ public class DynamicGraphTest extends SimpleBaseTest {
   public void testGainWeight() {
     DynamicGraph<String> dg = new DynamicGraph<>();
     dg.addEdge(1, "a", "b");
-    assertThat(dg.getEdges().values().size()).isEqualTo(1);
-    assertThat(dg.getEdges().get("a").get("b")).isEqualTo(1);
+    assertThat(dg.getEdges().values()).hasSize(1);
+    assertThat(dg.getEdges().get("a")).containsEntry("b", 1);
 
     // Duplicated edge, but with lower weight
     dg.addEdge(0, "a", "b");
 
     // Should only be one edge with same weight
-    assertThat(dg.getEdges().values().size()).isEqualTo(1);
-    assertThat(dg.getEdges().get("a").get("b")).isEqualTo(1);
+    assertThat(dg.getEdges().values()).hasSize(1);
+    assertThat(dg.getEdges().get("a")).containsEntry("b", 1);
 
     // Duplicated edge, but with higher weight
     dg.addEdge(2, "a", "b");
 
     // Should only be one edge with weight of 2 now.
-    assertThat(dg.getEdges().values().size()).isEqualTo(1);
-    assertThat(dg.getEdges().get("a").get("b")).isEqualTo(2);
+    assertThat(dg.getEdges().values()).hasSize(1);
+    assertThat(dg.getEdges().get("a")).containsEntry("b", 2);
   }
 
   /**
@@ -422,7 +421,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
 
     // all done
     assertThat(dg.getFreeNodes()).isEmpty();
-    assertThat(dg.getNodeCountWithStatus(Status.READY)).isEqualTo(0);
+    assertThat(dg.getNodeCountWithStatus(Status.READY)).isZero();
     assertThat(dg.getNodeCountWithStatus(Status.FINISHED)).isEqualTo(100);
   }
 }

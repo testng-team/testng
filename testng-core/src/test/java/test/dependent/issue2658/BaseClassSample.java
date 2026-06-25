@@ -1,12 +1,12 @@
 package test.dependent.issue2658;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
 public class BaseClassSample {
   @Test
   public void test() {
-    assertEquals(getClass(), PassingClassSample.class);
+    assertThat(getClass()).isEqualTo(PassingClassSample.class);
   }
 }

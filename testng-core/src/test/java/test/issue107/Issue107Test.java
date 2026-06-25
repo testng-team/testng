@@ -1,8 +1,9 @@
 package test.issue107;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -46,7 +47,7 @@ public class Issue107Test extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getFailedTests().size(), 0);
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).hasSize(2);
   }
 }

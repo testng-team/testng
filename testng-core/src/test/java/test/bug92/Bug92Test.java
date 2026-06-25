@@ -1,7 +1,8 @@
 package test.bug92;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -21,7 +22,7 @@ public class Bug92Test extends SimpleBaseTest {
     TestBase.beforeTestCount = 0;
     TestBase.beforeTestAlwaysCount = 0;
     tng.run();
-    Assert.assertEquals(TestBase.beforeTestCount, 1);
-    Assert.assertEquals(TestBase.beforeTestAlwaysCount, 1);
+    assertThat(TestBase.beforeTestCount).isOne();
+    assertThat(TestBase.beforeTestAlwaysCount).isOne();
   }
 }

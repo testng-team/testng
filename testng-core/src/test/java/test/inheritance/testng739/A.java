@@ -1,6 +1,7 @@
 package test.inheritance.testng739;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -8,7 +9,7 @@ public class A extends BaseClass {
 
   @BeforeClass
   public void beforeClassA() {
-    Assert.fail();
+    fail();
   }
 
   @Test

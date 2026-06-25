@@ -68,14 +68,14 @@ public class BeforeGroupsTest extends SimpleBaseTest {
     Map<String, List<String>> expected = new HashMap<>();
     expected.put(TEST_1, Collections.singletonList("beforeGroups:" + TEST_1 + TEST_1));
     expected.put(TEST_2, Collections.singletonList("afterGroups:" + TEST_2 + TEST_2));
-    assertThat(SampleTestClass.logs).isEqualTo(expected);
+    assertThat(SampleTestClass.logs).containsExactlyInAnyOrderEntriesOf(expected);
   }
 
   @Test(description = "GITHUB-2229")
   public void ensureBeforeGroupsAreInvokedByDefaultEvenWithoutGrouping() {
     TestNG testng = create(TestClassSample.class, AnotherTestClassSample.class);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
     List<String> expectedLogs =
         Arrays.asList(
             "TestA",

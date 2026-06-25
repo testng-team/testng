@@ -1,7 +1,6 @@
 package test.guice;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertEquals;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -71,7 +70,7 @@ public class GuiceTest extends SimpleBaseTest {
     suite.setParentModule(ParentModule.class.getCanonicalName());
     TestNG testng = create(suite);
     testng.run();
-    assertThat(Person.counter).isEqualTo(1);
+    assertThat(Person.counter).isOne();
   }
 
   @Test(description = "GITHUB-2355")
@@ -81,8 +80,8 @@ public class GuiceTest extends SimpleBaseTest {
     suite.setParentModule(AnotherParentModule.class.getCanonicalName());
     TestNG testng = create(suite);
     testng.run();
-    assertThat(AnotherParentModule.getCounter()).isEqualTo(1);
-    assertThat(Person.counter).isEqualTo(1);
+    assertThat(AnotherParentModule.getCounter()).isOne();
+    assertThat(Person.counter).isOne();
   }
 
   @Test(description = "GITHUB-2427")
@@ -91,10 +90,15 @@ public class GuiceTest extends SimpleBaseTest {
     suite.setParentModule(TestParentConfigModule.class.getCanonicalName());
     TestNG testng = create(suite);
     testng.run();
-    assertEquals(
-        TestParentConfigModule.counter.get(), 1, "TestParentModule configuration called times");
-    assertEquals(TestModuleOne.counter.get(), 1, "TestModuleOne configuration called times");
-    assertEquals(TestModuleTwo.counter.get(), 1, "TestModuleTwo configuration called times");
+    assertThat(TestParentConfigModule.counter.get())
+        .withFailMessage("TestParentModule configuration called times")
+        .isOne();
+    assertThat(TestModuleOne.counter.get())
+        .withFailMessage("TestModuleOne configuration called times")
+        .isOne();
+    assertThat(TestModuleTwo.counter.get())
+        .withFailMessage("TestModuleTwo configuration called times")
+        .isOne();
   }
 
   @Test(description = "GITHUB-2570")

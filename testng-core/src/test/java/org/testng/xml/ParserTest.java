@@ -1,6 +1,6 @@
 package org.testng.xml;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.List;
@@ -16,7 +16,7 @@ public class ParserTest {
   public void testParsing(String file) throws Exception {
     Parser parser = new Parser(file);
     List<XmlSuite> suites = parser.parseToList();
-    assertEquals(suites.size(), 1);
+    assertThat(suites).hasSize(1);
   }
 
   @DataProvider(name = "dp")

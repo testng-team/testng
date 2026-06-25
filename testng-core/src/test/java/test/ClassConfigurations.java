@@ -1,6 +1,6 @@
 package test;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
@@ -31,19 +31,19 @@ public class ClassConfigurations {
 
   @Test
   public void testOne() {
-    assertEquals(beforeCount, 1);
-    assertEquals(afterCount, 0);
+    assertThat(beforeCount).isOne();
+    assertThat(afterCount).isZero();
   }
 
   @Test
   public void testTwo() {
-    assertEquals(beforeCount, 1);
-    assertEquals(afterCount, 0);
+    assertThat(beforeCount).isOne();
+    assertThat(afterCount).isZero();
   }
 
   @Test
   public void testThree() {
-    assertEquals(beforeCount, 1);
-    assertEquals(afterCount, 0);
+    assertThat(beforeCount).isOne();
+    assertThat(afterCount).isZero();
   }
 }

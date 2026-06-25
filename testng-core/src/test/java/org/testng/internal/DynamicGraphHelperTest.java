@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -150,10 +149,8 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
     xmlTest.setPreserveOrder(true);
     DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
-    assertThat(
-            graph.getFreeNodes().stream()
-                .map(ITestNGMethod::getMethodName)
-                .collect(Collectors.toList()))
+    assertThat(graph.getFreeNodes())
+        .extracting(ITestNGMethod::getMethodName)
         .containsExactly("a1", "a2");
   }
 
@@ -162,10 +159,8 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     XmlTest xmlTest = createXmlTest("2249_suite", "2249_test", classes);
     xmlTest.setPreserveOrder(false);
     DynamicGraph<ITestNGMethod> graph = newGraph(xmlTest, classes);
-    assertThat(
-            graph.getFreeNodes().stream()
-                .map(ITestNGMethod::getMethodName)
-                .collect(Collectors.toList()))
+    assertThat(graph.getFreeNodes())
+        .extracting(ITestNGMethod::getMethodName)
         .containsExactly("a1", "a2", "b2", "b1");
   }
 

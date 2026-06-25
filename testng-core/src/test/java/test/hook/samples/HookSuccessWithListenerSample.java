@@ -1,8 +1,8 @@
 package test.hook.samples;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.hook.HookableTest.*;
 
-import org.testng.Assert;
 import org.testng.IHookCallBack;
 import org.testng.IHookable;
 import org.testng.ITestResult;
@@ -17,7 +17,7 @@ public class HookSuccessWithListenerSample {
   public void verify() {
     ITestResult itr = Reporter.getCurrentTestResult();
     boolean attribute = Boolean.parseBoolean(itr.getAttribute(HOOK_INVOKED_ATTRIBUTE).toString());
-    Assert.assertTrue(attribute);
+    assertThat(attribute).isTrue();
   }
 
   public static class HookListener implements IHookable {

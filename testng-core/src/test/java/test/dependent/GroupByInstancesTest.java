@@ -1,7 +1,8 @@
 package test.dependent;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -28,15 +29,15 @@ public class GroupByInstancesTest extends SimpleBaseTest {
     List<String> log = GroupByInstancesSampleTest.m_log;
     int i = 0;
     if (group) {
-      Assert.assertTrue(log.get(i++).startsWith("signIn"));
-      Assert.assertTrue(log.get(i++).startsWith("signOut"));
-      Assert.assertTrue(log.get(i++).startsWith("signIn"));
-      Assert.assertTrue(log.get(i++).startsWith("signOut"));
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signOut");
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signOut");
     } else {
-      Assert.assertTrue(log.get(i++).startsWith("signIn"));
-      Assert.assertTrue(log.get(i++).startsWith("signIn"));
-      Assert.assertTrue(log.get(i++).startsWith("signOut"));
-      Assert.assertTrue(log.get(i++).startsWith("signOut"));
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signIn");
+      assertThat(log.get(i++)).startsWith("signOut");
+      assertThat(log.get(i++)).startsWith("signOut");
     }
   }
 }

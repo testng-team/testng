@@ -1,6 +1,6 @@
 package test.github1362;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,9 +35,6 @@ public class AfterGroupsTestInvolvingInterceptors extends SimpleBaseTest {
       testng.addListener(interceptor);
     }
     testng.run();
-    for (String each : listener.getInvokedMethodNames()) {
-      assertTrue(
-          expected.contains(each), each + " not found in expected invocation methods " + expected);
-    }
+    assertThat(listener.getInvokedMethodNames()).isSubsetOf(expected);
   }
 }

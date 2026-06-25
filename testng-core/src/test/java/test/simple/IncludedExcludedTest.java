@@ -1,8 +1,9 @@
 package test.simple;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collection;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IReporter;
 import org.testng.ISuite;
@@ -67,19 +68,19 @@ class MyReporter implements IReporter {
   @Override
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {
-    Assert.assertEquals(suites.size(), 1);
+    assertThat(suites).hasSize(1);
     ISuite suite = suites.get(0);
 
     List<IInvokedMethod> invoked = suite.getAllInvokedMethods();
-    Assert.assertEquals(invoked.size(), m_included.length);
+    assertThat(invoked).hasSameSizeAs(m_included);
     for (String s : m_included) {
-      Assert.assertTrue(containsInvokedMethod(invoked, s));
+      assertThat(containsInvokedMethod(invoked, s)).isTrue();
     }
 
     Collection<ITestNGMethod> excluded = suite.getExcludedMethods();
-    Assert.assertEquals(excluded.size(), m_excluded.length);
+    assertThat(excluded).hasSameSizeAs(m_excluded);
     for (String s : m_excluded) {
-      Assert.assertTrue(containsMethod(excluded, s));
+      assertThat(containsMethod(excluded, s)).isTrue();
     }
   }
 

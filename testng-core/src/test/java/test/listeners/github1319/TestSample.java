@@ -1,8 +1,14 @@
 package test.listeners.github1319;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import com.google.common.collect.Maps;
 import java.util.Map;
-import org.testng.*;
+import org.testng.IConfigurationListener;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.SkipException;
 import org.testng.annotations.*;
 
 @Listeners(TestSample.Listener.class)
@@ -15,12 +21,12 @@ public class TestSample {
 
   @Test
   public void test1() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void test2() {
-    Assert.fail();
+    fail();
   }
 
   @Test

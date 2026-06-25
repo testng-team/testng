@@ -1,6 +1,7 @@
 package test.inject;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -12,6 +13,6 @@ public class InjectTestResultTest extends SimpleBaseTest {
     TestNG tng = create(InjectBeforeAndAfterMethodsWithTestResultSampleTest.class);
     tng.run();
 
-    Assert.assertEquals(InjectBeforeAndAfterMethodsWithTestResultSampleTest.m_success, 0);
+    assertThat(InjectBeforeAndAfterMethodsWithTestResultSampleTest.m_success).isZero();
   }
 }

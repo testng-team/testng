@@ -1,6 +1,7 @@
 package test.testng674;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -65,10 +66,10 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     ReportingListenerFor674 reporter = new ReportingListenerFor674();
     tng.addListener((ITestNGListener) reporter);
     tng.run();
-    Assert.assertEquals(reporter.getErrors().size(), 2);
+    assertThat(reporter.getErrors()).hasSize(2);
     for (Throwable error : reporter.getErrors()) {
-      Assert.assertEquals(error.getMessage(), TestClassSampleContainer.ERROR_MSG);
-      Assert.assertTrue(error instanceof RuntimeException);
+      assertThat(error.getMessage()).isEqualTo(TestClassSampleContainer.ERROR_MSG);
+      assertThat(error).isInstanceOf(RuntimeException.class);
     }
   }
 
@@ -97,10 +98,10 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     TestNG tng = create(xmlSuite);
     tng.addListener((ITestNGListener) reporter);
     tng.run();
-    Assert.assertEquals(reporter.getErrors().size(), expectedCount);
+    assertThat(reporter.getErrors()).hasSize(expectedCount);
     for (Throwable error : reporter.getErrors()) {
-      Assert.assertEquals(error.getMessage(), TestClassSampleContainer.ERROR_MSG);
-      Assert.assertTrue(error instanceof RuntimeException);
+      assertThat(error.getMessage()).isEqualTo(TestClassSampleContainer.ERROR_MSG);
+      assertThat(error).isInstanceOf(RuntimeException.class);
     }
   }
 }

@@ -1,7 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -25,29 +24,42 @@ public class AfterClassCalledAtEnd extends BaseAfterClassCalledAtEnd {
   @AfterClass(groups = {"someGroup"})
   public void afterClass() {
     m_afterClass = true;
-    assertTrue(
-        m_test1 && m_test2 && m_test3,
-        "One of the test methods was not invoked: " + m_test1 + " " + m_test2 + " " + m_test3);
+    assertThat(m_test1 && m_test2 && m_test3)
+        .withFailMessage(
+            "One of the test methods was not invoked: " + m_test1 + " " + m_test2 + " " + m_test3)
+        .isTrue();
   }
 
   @Test(description = "Verify that beforeClass and afterClass are called correctly")
   public void test1() {
     m_test1 = true;
-    assertTrue(m_before1Class, "beforeClass configuration must be called before method");
-    assertFalse(m_afterClass, "afterClass configuration must not be called before test method");
+    assertThat(m_before1Class)
+        .withFailMessage("beforeClass configuration must be called before method")
+        .isTrue();
+    assertThat(m_afterClass)
+        .withFailMessage("afterClass configuration must not be called before test method")
+        .isFalse();
   }
 
   @Test
   public void test2() {
     m_test2 = true;
-    assertTrue(m_before1Class, "beforeClass configuration must be called before method");
-    assertFalse(m_afterClass, "afterClass configuration must not be called before test method");
+    assertThat(m_before1Class)
+        .withFailMessage("beforeClass configuration must be called before method")
+        .isTrue();
+    assertThat(m_afterClass)
+        .withFailMessage("afterClass configuration must not be called before test method")
+        .isFalse();
   }
 
   @Test
   public void test3() {
     m_test3 = true;
-    assertTrue(m_before1Class, "beforeClass configuration must be called before method");
-    assertFalse(m_afterClass, "afterClass configuration must not be called before test method");
+    assertThat(m_before1Class)
+        .withFailMessage("beforeClass configuration must be called before method")
+        .isTrue();
+    assertThat(m_afterClass)
+        .withFailMessage("afterClass configuration must not be called before test method")
+        .isFalse();
   }
 }

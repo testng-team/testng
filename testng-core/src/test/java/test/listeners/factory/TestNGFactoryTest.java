@@ -1,6 +1,6 @@
 package test.listeners.factory;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -58,7 +58,7 @@ public class TestNGFactoryTest extends SimpleBaseTest {
         });
     testng.run();
     assertThat(testng.getStatus()).isZero();
-    assertThat(counter.get()).withFailMessage("No test should have failed").isEqualTo(0);
+    assertThat(counter.get()).withFailMessage("No test should have failed").isZero();
   }
 
   @DataProvider(name = "dp-3120")

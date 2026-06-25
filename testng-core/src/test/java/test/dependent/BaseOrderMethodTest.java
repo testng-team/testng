@@ -1,6 +1,6 @@
 package test.dependent;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
@@ -31,15 +31,8 @@ public class BaseOrderMethodTest {
   }
 
   protected void verifyGroup(int groupNumber, boolean[] group) {
-    for (int i = 0; i < group.length; i++) {
-      assertTrue(
-          group[i],
-          "Error while running group "
-              + groupNumber
-              + ": "
-              + " index "
-              + i
-              + " of previous group should have been run before.");
-    }
+    assertThat(group)
+        .as("group %d: every method of the previous group should have run before", groupNumber)
+        .containsOnly(true);
   }
 }

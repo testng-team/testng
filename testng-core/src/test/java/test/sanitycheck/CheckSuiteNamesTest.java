@@ -1,9 +1,10 @@
 package test.sanitycheck;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -25,7 +26,7 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().size(), 4);
+    assertThat(tla.getPassedTests()).hasSize(4);
   }
 
   /** Child suites have same names */
@@ -37,12 +38,12 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getTestContexts().get(0).getSuite().getName(), "SanityCheck suites");
-    Assert.assertEquals(tla.getTestContexts().get(1).getSuite().getName(), "SanityCheck suites");
-    Assert.assertEquals(
-        tla.getTestContexts().get(2).getSuite().getName(), "SanityCheck suites (0)");
-    Assert.assertEquals(
-        tla.getTestContexts().get(3).getSuite().getName(), "SanityCheck suites (0)");
+    assertThat(tla.getTestContexts().get(0).getSuite().getName()).isEqualTo("SanityCheck suites");
+    assertThat(tla.getTestContexts().get(1).getSuite().getName()).isEqualTo("SanityCheck suites");
+    assertThat(tla.getTestContexts().get(2).getSuite().getName())
+        .isEqualTo("SanityCheck suites (0)");
+    assertThat(tla.getTestContexts().get(3).getSuite().getName())
+        .isEqualTo("SanityCheck suites (0)");
   }
 
   /** Checks that suites created programmatically also works as expected */
@@ -65,8 +66,8 @@ public class CheckSuiteNamesTest extends SimpleBaseTest {
     TestNG tng = create();
     tng.setXmlSuites(Arrays.asList(xmlSuite1, xmlSuite2));
     tng.run();
-    Assert.assertEquals(xmlSuite1.getName(), "SanityCheckSuite");
-    Assert.assertEquals(xmlSuite2.getName(), "SanityCheckSuite (0)");
+    assertThat(xmlSuite1.getName()).isEqualTo("SanityCheckSuite");
+    assertThat(xmlSuite2.getName()).isEqualTo("SanityCheckSuite (0)");
   }
 
   @Test

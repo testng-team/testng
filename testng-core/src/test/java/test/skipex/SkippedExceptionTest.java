@@ -1,7 +1,8 @@
 package test.skipex;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -19,12 +20,12 @@ public class SkippedExceptionTest {
     test.run();
     List<ITestResult> confSkips = listener.getConfigurationSkips();
     List<ITestResult> testSkips = listener.getSkippedTests();
-    Assert.assertEquals(testSkips.size(), 1);
-    Assert.assertEquals(testSkips.get(0).getMethod().getMethodName(), "dummyTest");
+    assertThat(testSkips).hasSize(1);
+    assertThat(testSkips.get(0).getMethod().getMethodName()).isEqualTo("dummyTest");
 
-    Assert.assertEquals(confSkips.size(), 1);
-    Assert.assertEquals(
-        confSkips.get(0).getMethod().getMethodName(), "configurationLevelSkipException");
+    assertThat(confSkips).hasSize(1);
+    assertThat(confSkips.get(0).getMethod().getMethodName())
+        .isEqualTo("configurationLevelSkipException");
   }
 
   @Test
@@ -37,11 +38,11 @@ public class SkippedExceptionTest {
     List<ITestResult> skips = listener.getSkippedTests();
     List<ITestResult> failures = listener.getFailedTests();
     List<ITestResult> passed = listener.getPassedTests();
-    Assert.assertEquals(skips.size(), 1);
-    Assert.assertEquals(failures.size(), 1);
-    Assert.assertEquals(passed.size(), 1);
-    Assert.assertEquals(skips.get(0).getMethod().getMethodName(), "genericSkipException");
-    Assert.assertEquals(failures.get(0).getMethod().getMethodName(), "timedSkipException");
-    Assert.assertEquals(passed.get(0).getMethod().getMethodName(), "genericExpectedSkipException");
+    assertThat(skips).hasSize(1);
+    assertThat(failures).hasSize(1);
+    assertThat(passed).hasSize(1);
+    assertThat(skips.get(0).getMethod().getMethodName()).isEqualTo("genericSkipException");
+    assertThat(failures.get(0).getMethod().getMethodName()).isEqualTo("timedSkipException");
+    assertThat(passed.get(0).getMethod().getMethodName()).isEqualTo("genericExpectedSkipException");
   }
 }

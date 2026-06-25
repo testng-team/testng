@@ -1,6 +1,6 @@
 package test.listeners.issue3064;
 
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;

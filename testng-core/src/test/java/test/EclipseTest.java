@@ -1,6 +1,7 @@
 package test;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestContext;
 import org.testng.annotations.Test;
 
@@ -14,6 +15,6 @@ public class EclipseTest {
   @Test
   public void xmlFileShouldBeRunAtItsPlaceAndNotCopied(ITestContext ctx) {
     String fileName = ctx.getSuite().getXmlSuite().getFileName().replace("\\", "/");
-    Assert.assertTrue(fileName.contains("src/test/resources"));
+    assertThat(fileName).contains("src/test/resources");
   }
 }

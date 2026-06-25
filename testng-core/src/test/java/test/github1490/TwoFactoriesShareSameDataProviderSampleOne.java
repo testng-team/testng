@@ -1,6 +1,7 @@
 package test.github1490;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -17,7 +18,7 @@ public class TwoFactoriesShareSameDataProviderSampleOne {
 
   @Test
   public void testHowMuchMasterShifuAte() {
-    Assert.assertEquals("oreo", cookieName);
-    Assert.assertTrue(count > 100);
+    assertThat("oreo").isEqualTo(cookieName);
+    assertThat(count).isGreaterThan(100);
   }
 }

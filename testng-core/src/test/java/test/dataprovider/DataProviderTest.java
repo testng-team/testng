@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.SoftAssertions;
-import org.testng.Assert;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -83,7 +82,7 @@ public class DataProviderTest extends SimpleBaseTest {
     // Without retrying itself we would have already invoked the listener once.
     assertThat(listener.getBeforeInvocations()).isEqualTo(3);
     assertThat(listener.getFailureInvocations()).isEqualTo(2);
-    assertThat(listener.getAfterInvocations()).isEqualTo(1);
+    assertThat(listener.getAfterInvocations()).isOne();
   }
 
   @Test(description = "GITHUB-2819")
@@ -98,7 +97,7 @@ public class DataProviderTest extends SimpleBaseTest {
     // Without retrying itself we would have already invoked the listener once.
     assertThat(listener.getBeforeInvocations()).isEqualTo(3);
     assertThat(listener.getFailureInvocations()).isEqualTo(2);
-    assertThat(listener.getAfterInvocations()).isEqualTo(1);
+    assertThat(listener.getAfterInvocations()).isOne();
   }
 
   @Test(description = "GITHUB-2819")
@@ -121,9 +120,9 @@ public class DataProviderTest extends SimpleBaseTest {
     DataProviderListenerForRetryAwareTests listener = new DataProviderListenerForRetryAwareTests();
     testng.addListener(listener);
     testng.run();
-    assertThat(listener.getBeforeInvocations()).isEqualTo(1);
-    assertThat(listener.getFailureInvocations()).isEqualTo(1);
-    assertThat(listener.getAfterInvocations()).isEqualTo(0);
+    assertThat(listener.getBeforeInvocations()).isOne();
+    assertThat(listener.getFailureInvocations()).isOne();
+    assertThat(listener.getAfterInvocations()).isZero();
   }
 
   @Test(description = "GITHUB-2800")
@@ -294,8 +293,8 @@ public class DataProviderTest extends SimpleBaseTest {
 
     assertThat(listener.getSucceedMethodNames())
         .containsExactly("test1(Cedric)", "test1(Alois)", "test2(Cedric)", "test3(Cedric)");
-    Assert.assertEquals(MethodSample.m_test2, 1);
-    Assert.assertEquals(MethodSample.m_test3, 1);
+    assertThat(MethodSample.m_test2).isOne();
+    assertThat(MethodSample.m_test3).isOne();
   }
 
   @Test
@@ -354,7 +353,7 @@ public class DataProviderTest extends SimpleBaseTest {
     Data.INSTANCE.clear();
     run(cls);
     List<String> actualList = Data.INSTANCE.getData();
-    assertThat(actualList).isEqualTo(expected);
+    assertThat(actualList).containsExactlyElementsOf(expected);
   }
 
   @DataProvider(name = "2565")
@@ -500,7 +499,7 @@ public class DataProviderTest extends SimpleBaseTest {
     TestNG tng = create(Github1509TestClassSample.class);
     tng.addListener(tla);
     tng.run();
-    assertThat(tla.getFailedTests()).size().isEqualTo(1);
+    assertThat(tla.getFailedTests()).hasSize(1);
     ITestResult result = tla.getFailedTests().get(0);
     String className = Github1509TestClassSample.class.getName() + ".getData()";
     String msg =
@@ -513,7 +512,7 @@ public class DataProviderTest extends SimpleBaseTest {
     TestNG testng = create(test.dataprovider.issue2884.TestClassSample.class);
     testng.run();
     assertThat(test.dataprovider.issue2884.TestClassSample.dataProviderInvocationCount.get())
-        .isEqualTo(1);
+        .isOne();
   }
 
   @Test
@@ -522,8 +521,8 @@ public class DataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getFailedTests()).size().isEqualTo(1);
-    assertThat(tla.getSkippedTests()).size().isEqualTo(2);
+    assertThat(tla.getFailedTests()).hasSize(1);
+    assertThat(tla.getSkippedTests()).hasSize(2);
   }
 
   @Test(description = "GITHUB-217", expectedExceptions = TestNGException.class)
@@ -538,14 +537,14 @@ public class DataProviderTest extends SimpleBaseTest {
     TestNG testng = create(test.dataprovider.issue217.TestClassSample.class);
     testng.propagateDataProviderFailureAsTestFailure();
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(1);
+    assertThat(testng.getStatus()).isOne();
   }
 
   @Test(description = "GITHUB-217")
   public void ensureTestNGFailsDueToDataProviderFailure2() {
     TestNG testng = create(test.dataprovider.issue217.AnotherTestClassSample.class);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(1);
+    assertThat(testng.getStatus()).isOne();
   }
 
   @Test(description = "GITHUB-2888")
@@ -595,8 +594,8 @@ public class DataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertThat(tla.getFailedTests()).size().isEqualTo(1);
-    assertThat(tla.getSkippedTests()).size().isEqualTo(1);
+    assertThat(tla.getFailedTests()).hasSize(1);
+    assertThat(tla.getSkippedTests()).hasSize(1);
   }
 
   @Test(description = "GITHUB-2327")
@@ -606,7 +605,7 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
 
-    assertThat(tla.getSkippedTests().size()).isEqualTo(2);
+    assertThat(tla.getSkippedTests()).hasSize(2);
     SoftAssertions assertions = new SoftAssertions();
 
     for (ITestResult skippedTest : tla.getSkippedTests()) {
@@ -676,7 +675,7 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.shareThreadPoolForDataProviders(true);
     testng.setVerbose(2);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
     assertThat(test.dataprovider.issue3081.TestClassSample.getLogs())
         .withFailMessage(
             "There should have been 9 threads ONLY used by the data driven test "
@@ -696,7 +695,7 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.setThreadCount(10);
     testng.setVerbose(2);
     testng.run();
-    assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isZero();
     assertThat(TestClassWithPrioritiesSample.getLogs())
         .withFailMessage(
             "There should have been 9 threads ONLY used by the data driven test "
@@ -741,7 +740,6 @@ public class DataProviderTest extends SimpleBaseTest {
     testng.setXmlSuites(Collections.singletonList(xmlSuite));
     testng.setVerbose(2);
     testng.run();
-    assertThat(DataProviderListener.logs).hasSize(2);
     assertThat(DataProviderListener.logs)
         .containsExactly(
             "[Test2]-beforeDataProviderExecution-dataProvider",

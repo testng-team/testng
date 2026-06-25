@@ -1,7 +1,7 @@
 package test.factory;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -36,8 +36,7 @@ public class NestedFactorySample {
   public void verify() {
     // Should have three instances:  the default one created by TestNG
     // and two created by the factory
-    assertEquals(m_instanceCount, 3);
-    assertTrue(
-        (m_capacity == 1 && m_loadFactor == 0.1f) || m_capacity == 10 && m_loadFactor == 0.5f);
+    assertThat(m_instanceCount).isEqualTo(3);
+    assertThat(tuple(m_capacity, m_loadFactor)).isIn(tuple(1, 0.1f), tuple(10, 0.5f));
   }
 }

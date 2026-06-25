@@ -1,6 +1,7 @@
 package org.testng.test;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 /**
@@ -10,6 +11,6 @@ import org.testng.annotations.Test;
 public class VerifyShadedJarWorksTest {
   @Test
   public void testHelloWorld() {
-    Assert.assertEquals(4, 2 + 2, "2 + 2");
+    assertThat(2 + 2).as("2 + 2").isEqualTo(4);
   }
 }

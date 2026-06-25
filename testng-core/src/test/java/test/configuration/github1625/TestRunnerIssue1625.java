@@ -15,7 +15,7 @@ public class TestRunnerIssue1625 extends SimpleBaseTest {
     TestNG testNG = create(clazz);
     testNG.setParallel(XmlSuite.ParallelMode.METHODS);
     testNG.run();
-    assertThat(testNG.getStatus()).isEqualTo(0);
+    assertThat(testNG.getStatus()).isZero();
   }
 
   @DataProvider(name = "dp")

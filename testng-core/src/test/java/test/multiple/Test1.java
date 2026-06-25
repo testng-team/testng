@@ -1,6 +1,6 @@
 package test.multiple;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
@@ -10,7 +10,7 @@ public class Test1 {
 
   @Test
   public void f1() {
-    assertTrue(m_count < 1, "FAILING");
+    assertThat(m_count).withFailMessage("FAILING").isLessThan(1);
     m_count++;
   }
 

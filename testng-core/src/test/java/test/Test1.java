@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -25,7 +24,7 @@ public class Test1 extends SimpleBaseTest {
   public void includedGroups() {
     XmlSuite suite = createXmlSuite("Internal_suite");
     XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
-    Assert.assertEquals(test.getXmlClasses().size(), 1);
+    assertThat(test.getXmlClasses()).hasSize(1);
     test.addIncludedGroup("odd");
     TestNG tng = create(suite);
 
@@ -42,7 +41,7 @@ public class Test1 extends SimpleBaseTest {
   public void groupsOfGroupsSimple() {
     XmlSuite suite = createXmlSuite("Internal_suite");
     XmlTest test = createXmlTest(suite, "Internal_test_failures_are_expected", Sample1.class);
-    Assert.assertEquals(test.getXmlClasses().size(), 1);
+    assertThat(test.getXmlClasses()).hasSize(1);
     // should match all methods belonging to group "odd" and "even"
     test.addIncludedGroup("evenodd");
     test.addMetaGroup("evenodd", "even", "odd");

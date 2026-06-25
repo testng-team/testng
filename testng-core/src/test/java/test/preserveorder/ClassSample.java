@@ -8,7 +8,8 @@
  */
 package test.preserveorder;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class ClassSample {
@@ -21,6 +22,6 @@ public class ClassSample {
 
   @Test
   public void checkVal() {
-    Assert.assertTrue(this.val != 0);
+    assertThat(this.val).isNotZero();
   }
 }

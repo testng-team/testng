@@ -1,6 +1,7 @@
 package test.groupinvocation;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -15,12 +16,12 @@ public class InvokerTest extends SimpleBaseTest {
 
   @Test
   public void testClassWithRedundantGroups() {
-    Assert.assertEquals(2, privateRun(RedundantGroupNamesSample.class, SMOKE, FUNCTIONAL_TESTS));
+    assertThat(privateRun(RedundantGroupNamesSample.class, SMOKE, FUNCTIONAL_TESTS)).isEqualTo(2);
   }
 
   @Test
   public void testClassWithUniqueGroups() {
-    Assert.assertEquals(2, privateRun(UniqueGroupNamesSample.class, SMOKE));
+    assertThat(privateRun(UniqueGroupNamesSample.class, SMOKE)).isEqualTo(2);
   }
 
   private int privateRun(final Class<?> className, String... groupNames) {

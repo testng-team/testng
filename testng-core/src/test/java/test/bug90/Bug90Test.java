@@ -1,7 +1,8 @@
 package test.bug90;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
@@ -23,6 +24,6 @@ public class Bug90Test extends SimpleBaseTest {
     Sample.m_afterClassWasRun = false;
     tng.run();
 
-    Assert.assertTrue(Sample.m_afterClassWasRun);
+    assertThat(Sample.m_afterClassWasRun).isTrue();
   }
 }

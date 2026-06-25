@@ -1,12 +1,14 @@
 package org.testng;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.testng.internal.EclipseInterface.ASSERT_EQUAL_LEFT;
-import static org.testng.internal.EclipseInterface.ASSERT_LEFT2;
 import static org.testng.internal.EclipseInterface.ASSERT_MIDDLE;
 import static org.testng.internal.EclipseInterface.ASSERT_RIGHT;
 import static org.testng.internal.EclipseInterface.ASSERT_UNEQUAL_LEFT;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +19,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import org.testng.collections.Lists;
 
 /**
  * Assertion tool class. Presents assertion methods with a more natural parameter order. The order
@@ -34,7 +35,12 @@ import org.testng.collections.Lists;
  * assertFalse(var.equals(null))}.
  *
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
+ * @deprecated As of release 7.13.0, this class is deprecated for removal. Use a dedicated assertion
+ *     library such as <a href="https://assertj.github.io/doc/">AssertJ</a> instead. The OpenRewrite
+ *     recipe {@code org.openrewrite.java.testing.testng.TestNgToAssertj} migrates the whole class
+ *     automatically; see {@code docs/MIGRATING_ASSERTIONS.md} for details.
  */
+@Deprecated(since = "7.13.0", forRemoval = true)
 public class Assert {
 
   public static final String ARRAY_MISMATCH_TEMPLATE =
@@ -169,6 +175,17 @@ public class Assert {
     return !expected.equals(actual);
   }
 
+  // NOTE: equality comparison is intentionally NOT delegated to AssertJ; it keeps TestNG's own
+  // semantics, which differ from AssertJ on purpose:
+  //  - equality must be symmetric: both expected.equals(actual) and actual.equals(expected) must
+  //    hold (AssertJ only checks one direction);
+  //  - a broken equals() returning true for null does not make the values equal here, whereas
+  //    AssertJ trusts equals();
+  //  - arrays nested inside collections/maps/iterables are compared by reference (use
+  //    assertEqualsDeep for value comparison), whereas AssertJ compares them deeply.
+  // These behaviours are covered by regression tests (e.g. GITHUB-2483, GITHUB-2490, GITHUB-2500,
+  // ArrayEqualityAssertTest); only behaviour-identical assertions (assertNull/NotNull/Same/NotSame)
+  // are delegated to AssertJ.
   private static boolean areEqualImpl(Object actual, Object expected) {
     if ((expected == null) && (actual == null)) {
       return true;
@@ -1488,13 +1505,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNotNull(Object object, String message) {
-    if (object == null) {
-      String formatted = "";
-      if (message != null) {
-        formatted = message + " ";
-      }
-      fail(formatted + "expected object to not be null");
-    }
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(object).as(message).isNotNull();
   }
 
   /**
@@ -1515,9 +1527,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNull(Object object, String message) {
-    if (object != null) {
-      failNotSame(object, null, message);
-    }
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(object).as(message).isNull();
   }
 
   /**
@@ -1529,10 +1540,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      return;
-    }
-    failNotSame(actual, expected, message);
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(actual).as(message).isSameAs(expected);
   }
 
   /**
@@ -1554,9 +1563,8 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertNotSame(Object actual, Object expected, String message) {
-    if (expected == actual) {
-      failSame(actual, expected, message);
-    }
+    // Delegated to AssertJ (behaviour-identical, only the failure message differs).
+    assertThat(actual).as(message).isNotSameAs(expected);
   }
 
   /**
@@ -1568,22 +1576,6 @@ public class Assert {
    */
   public static void assertNotSame(Object actual, Object expected) {
     assertNotSame(actual, expected, null);
-  }
-
-  private static void failSame(Object actual, Object expected, String message) {
-    String formatted = "";
-    if (message != null) {
-      formatted = message + " ";
-    }
-    fail(formatted + ASSERT_LEFT2 + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
-  }
-
-  private static void failNotSame(Object actual, Object expected, String message) {
-    String formatted = "";
-    if (message != null) {
-      formatted = message + " ";
-    }
-    fail(formatted + ASSERT_EQUAL_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT);
   }
 
   private static void failNotEquals(Object actual, Object expected, String message) {
@@ -1832,7 +1824,7 @@ public class Assert {
           "Arrays do not have the same size:" + actual.length + " != " + expected.length, message);
     }
 
-    List<Object> actualCollection = Lists.newArrayList(actual);
+    List<Object> actualCollection = new ArrayList<>(Arrays.asList(actual));
     for (Object o : expected) {
       actualCollection.remove(o);
     }
@@ -1868,8 +1860,15 @@ public class Assert {
    * @param message the assertion error message
    */
   public static void assertEqualsNoOrder(Iterator<?> actual, Iterator<?> expected, String message) {
-    validateEqualityNoOrder(
-        Lists.newArrayList(actual), Lists.newArrayList(expected), "Iterators", message);
+    validateEqualityNoOrder(toList(actual), toList(expected), "Iterators", message);
+  }
+
+  private static List<Object> toList(Iterator<?> iterator) {
+    List<Object> list = new ArrayList<>();
+    while (iterator.hasNext()) {
+      list.add(iterator.next());
+    }
+    return list;
   }
 
   private static void validateEqualityNoOrder(
@@ -1879,7 +1878,7 @@ public class Assert {
           prefix + " do not have the same size: " + actual.size() + " != " + expected.size(),
           message);
     }
-    List<?> actualCollection = Lists.newArrayList(actual);
+    List<?> actualCollection = new ArrayList<>(actual);
     for (Object o : expected) {
       actualCollection.remove(o);
     }
@@ -2381,25 +2380,27 @@ public class Assert {
   /**
    * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed.
    * If it does not throw an exception, an {@link AssertionError} is thrown. If it throws the wrong
-   * type of exception, an {@code AssertionError} is thrown describing the mismatch; the exception
-   * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
+   * type of exception, an {@code AssertionError} is thrown describing the mismatch. To obtain the
+   * exception that was actually thrown, use {@link #expectThrows} instead.
    *
    * @param throwableClass the expected type of the exception
    * @param <T> the expected type of the exception
    * @param runnable A function that is expected to throw an exception when invoked
    * @since 6.9.5
    */
-  @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
   public static <T extends Throwable> void assertThrows(
       Class<T> throwableClass, ThrowingRunnable runnable) {
-    expectThrows(throwableClass, runnable);
+    // Delegated to AssertJ; the thrown-type check keeps TestNG semantics (subtypes accepted), only
+    // the failure message differs. expectThrows is kept as-is because it returns the caught
+    // exception, which AssertJ's fluent API does not expose.
+    assertThatExceptionOfType(throwableClass).isThrownBy(runnable::run);
   }
 
   /**
    * Asserts that {@code runnable} throws an exception of type {@code throwableClass} when executed.
    * If it does not throw an exception, an {@link AssertionError} is thrown. If it throws the wrong
-   * type of exception, an {@code AssertionError} is thrown describing the mismatch; the exception
-   * that was actually thrown can be obtained by calling {@link AssertionError#getCause}.
+   * type of exception, an {@code AssertionError} is thrown describing the mismatch. To obtain the
+   * exception that was actually thrown, use {@link #expectThrows} instead.
    *
    * @param message fail message
    * @param throwableClass the expected type of the exception
@@ -2408,7 +2409,8 @@ public class Assert {
    */
   public static <T extends Throwable> void assertThrows(
       String message, Class<T> throwableClass, ThrowingRunnable runnable) {
-    expectThrows(message, throwableClass, runnable);
+    // Delegated to AssertJ (see the typed overload above).
+    assertThatExceptionOfType(throwableClass).as(message).isThrownBy(runnable::run);
   }
 
   /**

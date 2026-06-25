@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -14,14 +15,15 @@ public abstract class ConfigurationBaseTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(
-        tla.getConfigurationFailures().size(),
-        0,
-        getFailedResultMessage(tla.getConfigurationFailures()));
-    Assert.assertEquals(
-        tla.getFailedTests().size(), 0, getFailedResultMessage(tla.getFailedTests()));
-    Assert.assertEquals(
-        tla.getSkippedTests().size(), 0, getFailedResultMessage(tla.getSkippedTests()));
-    Assert.assertFalse(tla.getPassedTests().isEmpty(), "All tests should pass");
+    assertThat(tla.getConfigurationFailures())
+        .withFailMessage(getFailedResultMessage(tla.getConfigurationFailures()))
+        .isEmpty();
+    assertThat(tla.getFailedTests())
+        .withFailMessage(getFailedResultMessage(tla.getFailedTests()))
+        .isEmpty();
+    assertThat(tla.getSkippedTests())
+        .withFailMessage(getFailedResultMessage(tla.getSkippedTests()))
+        .isEmpty();
+    assertThat(tla.getPassedTests()).withFailMessage("All tests should pass").isNotEmpty();
   }
 }

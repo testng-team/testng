@@ -1,6 +1,7 @@
 package test.factory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -18,8 +19,8 @@ public class EmptyFactoryDataProviderTest extends SimpleBaseTest {
 
     testng.run();
 
-    Assert.assertTrue(tla.getFailedTests().isEmpty());
-    Assert.assertTrue(tla.getSkippedTests().isEmpty());
-    Assert.assertTrue(tla.getPassedTests().isEmpty());
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).isEmpty();
   }
 }

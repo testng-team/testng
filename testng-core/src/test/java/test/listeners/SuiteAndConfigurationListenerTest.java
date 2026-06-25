@@ -1,7 +1,8 @@
 package test.listeners;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.IConfigurationListener;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
@@ -29,7 +30,8 @@ public class SuiteAndConfigurationListenerTest {
 
   @Test
   public void bothListenersShouldRun() {
-    Assert.assertEquals(
-        MyListener.started.get(), 1, "ISuiteListener was not invoked exactly once:");
+    assertThat(MyListener.started.get())
+        .withFailMessage("ISuiteListener was not invoked exactly once:")
+        .isOne();
   }
 }

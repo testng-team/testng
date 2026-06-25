@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** An assert class with various hooks allowing its behavior to be modified by subclasses. */
+@SuppressWarnings({"deprecation", "removal"}) // delegates to the deprecated org.testng.Assert
 public class Assertion implements IAssertLifecycle {
   protected void doAssert(IAssert<?> assertCommand) {
     onBeforeAssert(assertCommand);

@@ -1,6 +1,7 @@
 package test.inject;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
@@ -16,7 +17,7 @@ public class Github1298Test {
   @Test
   public void testPlugin() {
     ITestResult result = Reporter.getCurrentTestResult();
-    Assert.assertEquals(result.getAttribute("class").toString(), getClass().getName());
-    Assert.assertNotNull(result.getAttribute("toString"));
+    assertThat(result.getAttribute("class")).hasToString(getClass().getName());
+    assertThat(result.getAttribute("toString")).isNotNull();
   }
 }

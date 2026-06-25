@@ -1,6 +1,6 @@
 package test;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
@@ -34,15 +34,16 @@ public class Exclude {
       dependsOnGroups = {"group1"},
       groups = {"group2"})
   public void verify() {
-    assertTrue(
-        m_included1 && m_included2 && m_excluded1 && m_excluded2,
-        "Should all be true: "
-            + m_included1
-            + " "
-            + m_included2
-            + " "
-            + m_excluded1
-            + " "
-            + m_excluded2);
+    assertThat(m_included1 && m_included2 && m_excluded1 && m_excluded2)
+        .withFailMessage(
+            "Should all be true: "
+                + m_included1
+                + " "
+                + m_included2
+                + " "
+                + m_excluded1
+                + " "
+                + m_excluded2)
+        .isTrue();
   }
 }

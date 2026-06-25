@@ -1,7 +1,8 @@
 package test.github799;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -45,7 +46,7 @@ public class EnsureInstancesAreOrderedViaFactories extends SimpleBaseTest {
 
     for (int i = 0; i < expected.length; i++) {
       String actual = listener.messages.get(i);
-      Assert.assertEquals(actual, expected[i]);
+      assertThat(actual).isEqualTo(expected[i]);
     }
   }
 
