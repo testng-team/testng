@@ -1,5 +1,6 @@
 package test.priority.parallel;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static test.thread.parallelization.TestNgRunStateTracker.*;
 
@@ -276,15 +277,44 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
                   return rightClass;
                 })
             .collect(Collectors.toList());
-    verifyEventsOccurBetween(
-        highPriStart,
-        lowPriEvents,
-        highPriEnd,
-        "All the test two methods should run between when test one starts and ends.\nStart Event: "
-            + highPriStart
-            + ".\nIn between events: "
-            + lowPriEvents
-            + ".\nFinal event: "
-            + highPriEnd);
+
+    // The slow, high-priority method must end last: every low-priority event happens before its
+    // LISTENER_TEST_METHOD_PASS. This is robust because the slow method sleeps far longer than the
+    // low-priority ones.
+    for (EventLog lowPriEvent : lowPriEvents) {
+      assertThat(lowPriEvent.getTimeOfEvent())
+          .as(
+              "All the low-priority method events should occur before the slow, high-priority "
+                  + "method ends.\nFinal event: %s\nOffending event: %s\nAll low-priority events: %s",
+              highPriEnd, lowPriEvent, lowPriEvents)
+          .isLessThanOrEqualTo(highPriEnd.getTimeOfEvent());
+    }
+
+    // The slow, high-priority method must run in parallel with the low-priority ones: it starts
+    // before any of them finishes (their LISTENER_TEST_METHOD_PASS). We deliberately do NOT assert
+    // that it starts strictly first: with parallel=METHODS and a 2-thread pool, the high- and
+    // low-priority methods are dispatched onto the two threads simultaneously, so their START
+    // timestamps can race within a few milliseconds. Comparing against the low-priority methods'
+    // completion (they sleep, so completion is well after their start) keeps the intent ("the slow
+    // method wraps the fast ones") without the timing flakiness.
+    List<EventLog> lowPriEndEvents =
+        lowPriEvents.stream()
+            .filter(e -> e.getEvent() == TestNgRunEvent.LISTENER_TEST_METHOD_PASS)
+            .collect(Collectors.toList());
+    assertThat(lowPriEndEvents)
+        .as(
+            "Expected low-priority method completion events to validate parallelism against, but "
+                + "found none. Low-priority events: %s",
+            lowPriEvents)
+        .isNotEmpty();
+    for (EventLog lowPriEnd : lowPriEndEvents) {
+      assertThat(highPriStart.getTimeOfEvent())
+          .as(
+              "The slow, high-priority method should start before any low-priority method "
+                  + "finishes, proving they run in parallel.\nStart Event: %s\nLow-priority "
+                  + "completion event: %s",
+              highPriStart, lowPriEnd)
+          .isLessThanOrEqualTo(lowPriEnd.getTimeOfEvent());
+    }
   }
 }

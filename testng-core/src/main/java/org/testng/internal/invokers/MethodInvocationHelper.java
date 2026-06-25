@@ -48,6 +48,22 @@ import org.testng.xml.XmlSuite;
 /** Collections of helper methods to help deal with invocation of TestNG methods */
 public class MethodInvocationHelper {
 
+  /**
+   * How long, in milliseconds, we are willing to wait for the worker thread to even <em>start</em>
+   * executing a timed-out method before declaring an infrastructure failure. This is intentionally
+   * generous: thread-pool start-up and OS scheduling normally take well under a millisecond, so
+   * this grace period is only ever consumed under pathological load or thread-pool starvation. It
+   * is deliberately not counted against the user's time-out budget.
+   */
+  private static final long TIMEOUT_STARTUP_GRACE_MILLIS = 10_000;
+
+  /**
+   * Polling interval, in milliseconds, used while waiting for the worker thread to start. Short
+   * enough to react promptly once the method begins, so a method that hangs immediately still times
+   * out close to its configured time-out rather than after the whole start-up grace period.
+   */
+  private static final long TIMEOUT_STARTUP_POLL_MILLIS = 10;
+
   protected static Object invokeMethodNoCheckedException(
       Method thisMethod, Object instance, List<Object> parameters) {
     try {
@@ -394,10 +410,52 @@ public class MethodInvocationHelper {
     Future<Boolean> future = exec.submit(imr);
     exec.shutdown();
     long realTimeOut = MethodHelper.calculateTimeOut(tm);
-    boolean finished = exec.awaitTermination(realTimeOut, TimeUnit.MILLISECONDS);
+
+    // The time-out must measure the method's own execution time, not the wall-clock time since we
+    // started waiting: thread-pool start-up and OS scheduling can otherwise consume the whole
+    // budget
+    // under load and produce spurious time-outs. We therefore start the clock from the moment the
+    // worker thread actually begins running the method, while still bounding how long we wait for
+    // it
+    // to start so a thread that can never be scheduled cannot hang us forever.
+    //
+    // The start-up grace scales with the execution time-out (rather than being a flat cap) so that
+    // we never wait less for the worker to start than the old implementation would have waited in
+    // total: a caller who tolerates a long execution time-out implicitly tolerates at least that
+    // long for the method to get going. In practice scheduling takes well under a millisecond, so
+    // this bound is only ever reached under pathological thread-pool starvation.
+    long startupGraceMillis = Math.max(realTimeOut, TIMEOUT_STARTUP_GRACE_MILLIS);
+    long startupDeadline = System.currentTimeMillis() + startupGraceMillis;
+    boolean finished = false;
+    while (!finished) {
+      long executionStartMillis = imr.getExecutionStartMillis();
+      long waitMillis;
+      if (executionStartMillis < 0) {
+        // The worker thread has not started executing the method yet. Poll in short intervals so we
+        // react promptly once it does, but give up if it never starts within the start-up grace.
+        long remainingStartup = startupDeadline - System.currentTimeMillis();
+        if (remainingStartup <= 0) {
+          break;
+        }
+        waitMillis = Math.min(remainingStartup, TIMEOUT_STARTUP_POLL_MILLIS);
+      } else {
+        // The method is running: it has until its execution start plus the configured time-out.
+        waitMillis = executionStartMillis + realTimeOut - System.currentTimeMillis();
+        if (waitMillis <= 0) {
+          break;
+        }
+      }
+      finished = exec.awaitTermination(waitMillis, TimeUnit.MILLISECONDS);
+    }
 
     if (!finished) {
-      ThreadTimeoutException exception = new ThreadTimeoutException(tm, realTimeOut);
+      // A genuinely slow method (one that started but ran too long) keeps the canonical message so
+      // existing tooling and assertions still recognise it. Only a method that never started gets
+      // the infrastructure diagnostic, since that is not the user's method being slow.
+      ThreadTimeoutException exception =
+          imr.getExecutionStartMillis() < 0
+              ? new ThreadTimeoutException(buildNeverStartedMessage(tm, startupGraceMillis))
+              : new ThreadTimeoutException(tm, realTimeOut);
       StackTraceElement[] realStackTrace = getRunningMethodStackTrace(exec);
       if (realStackTrace != null) {
         exception.setStackTrace(realStackTrace);
@@ -420,6 +478,23 @@ public class MethodInvocationHelper {
     } catch (ExecutionException e) {
       throw new ThreadExecutionException(e.getCause());
     }
+  }
+
+  /**
+   * Builds the message for a {@link ThreadTimeoutException} raised because the worker thread never
+   * even started executing the method within the start-up grace period. This is an infrastructure
+   * problem (system load or thread-pool starvation), not a slow test method, so the message says so
+   * explicitly and points at actionable remedies rather than blaming the user's method.
+   */
+  private static String buildNeverStartedMessage(ITestNGMethod tm, long startupGraceMillis) {
+    return "Method "
+        + tm.getQualifiedName()
+        + "() never started executing within "
+        + startupGraceMillis
+        + "ms: the worker thread could not be scheduled in time. This is most likely caused by "
+        + "system load or thread-pool starvation (e.g. too many parallel tests) rather than a slow "
+        + "test method. Consider reducing the level of parallelism or increasing the thread-pool "
+        + "size.";
   }
 
   private static StackTraceElement[] getRunningMethodStackTrace(ExecutorService exec) {
