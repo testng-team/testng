@@ -1,5 +1,6 @@
 // The script generates a random subset of valid jdk, os, timezone, and other axes.
 // You can preview the results by running "node matrix.mjs"
+// Run "node matrix.mjs --coverage" to print pairwise coverage instead of the matrix.
 // See https://github.com/vlsi/github-actions-random-matrix
 import { appendFileSync } from 'fs';
 import { EOL } from 'os';
@@ -77,22 +78,23 @@ matrix.imply({java_distribution: {value: 'oracle'}}, {java_version: v => v === e
 // Semeru uses OpenJ9 jit which has no option for making hash codes the same
 // See https://github.com/eclipse-openj9/openj9/issues/17309
 matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
-// Ensure at least one job with "same" hashcode exists
-matrix.generateRow({hash: {value: 'same'}});
-// Ensure at least one windows and at least one linux job is present (macos is almost the same as linux)
-matrix.generateRow({os: 'windows-latest'});
-matrix.generateRow({os: 'ubuntu-latest'});
-// Ensure there will be at least one job with Java 11
-matrix.generateRow({java_version: "11"});
-// Ensure there will be at least one job with Java 17
-matrix.generateRow({java_version: "17"});
-// Ensure there will be at least one job with Java 21
-matrix.generateRow({java_version: "21"});
-// Ensure there will be at least one job with Java 25
-matrix.generateRow({java_version: "25"});
-// Ensure there will be at least one job with Java EA
-matrix.generateRow({java_version: eaJava});
-const include = matrix.generateRows(process.env.MATRIX_JOBS || 5);
+
+// Drive the whole matrix from one batch of requirements. generateRows guarantees a row for
+// each entry, packs them into as few jobs as it can, and spends the rest of the MATRIX_JOBS
+// budget on pairwise coverage. Unlike a sequence of generateRow() calls, the job count is
+// exactly MATRIX_JOBS and the result no longer depends on the order of the list.
+const include = matrix.generateRows(Number(process.env.MATRIX_JOBS || 5), {
+  require: [
+    // Ensure at least one job with "same" hashcode exists
+    {hash: {value: 'same'}},
+    // Ensure at least one windows and at least one linux job is present
+    // (macos is almost the same as linux, so it is left to the random fill)
+    {os: 'windows-latest'},
+    {os: 'ubuntu-latest'},
+    // Ensure every Java version under test gets at least one job
+    ...matrix.allAxisValues('java_version'),
+  ],
+});
 if (include.length === 0) {
   throw new Error('Matrix list is empty');
 }
@@ -147,10 +149,15 @@ include.forEach(v => {
   delete v.hash;
 });
 
-console.log(include);
-let filePath = process.env['GITHUB_OUTPUT'] || '';
-if (filePath) {
-  appendFileSync(filePath, `matrix<<MATRIX_BODY${EOL}${JSON.stringify({include})}${EOL}MATRIX_BODY${EOL}`, {
-    encoding: 'utf8'
-  });
+if (process.argv.includes('--coverage')) {
+  const coverage = matrix.pairCoverageReport();
+  console.log(`Pair coverage: ${coverage.covered}/${coverage.total} (${coverage.percentage}%), weight coverage ${coverage.weightPercentage}%`);
+} else {
+  console.log(include);
+  let filePath = process.env['GITHUB_OUTPUT'] || '';
+  if (filePath) {
+    appendFileSync(filePath, `matrix<<MATRIX_BODY${EOL}${JSON.stringify({include})}${EOL}MATRIX_BODY${EOL}`, {
+      encoding: 'utf8'
+    });
+  }
 }
