@@ -1,12 +1,12 @@
 package org.testng
 
-import org.testng.Assert.fail
+import org.assertj.core.api.Assertions.fail
 import org.testng.annotations.Test
 
 class BasicSample {
 
     @Test
     fun test() {
-        fail("BOUM")
+        fail<Nothing>("BOUM")
     }
 }

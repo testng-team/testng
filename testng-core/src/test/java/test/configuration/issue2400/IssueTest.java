@@ -1,8 +1,8 @@
 package test.configuration.issue2400;
 
+import org.assertj.core.api.SoftAssertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 import test.SimpleBaseTest;
 
 public class IssueTest extends SimpleBaseTest {
@@ -11,13 +11,15 @@ public class IssueTest extends SimpleBaseTest {
   public void ensureDefaultConfigurationsAreSkipped() {
     TestNG testng = create(TestNGTestClass.class);
     testng.run();
-    SoftAssert softAssert = new SoftAssert();
+    SoftAssertions softAssert = new SoftAssertions();
     DataStore.INSTANCE
         .getTracker()
         .forEach(
             (key, value) ->
-                softAssert.assertEquals(
-                    value.get(), 1, "Ensuring " + key + " got invoked only once"));
+                softAssert
+                    .assertThat(value.get())
+                    .as("Ensuring " + key + " got invoked only once")
+                    .isEqualTo(1));
     softAssert.assertAll();
   }
 }

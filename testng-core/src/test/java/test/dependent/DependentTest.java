@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import org.testng.Assert;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
@@ -207,10 +206,10 @@ public class DependentTest extends SimpleBaseTest {
     for (int i = 0; i < 12; i += 4) {
       String[] s = log.get(i).split("#");
       String instance = s[1];
-      Assert.assertEquals(log.get(i), "prepare#" + instance);
-      Assert.assertEquals(log.get(i + 1), "test1#" + instance);
-      Assert.assertEquals(log.get(i + 2), "test2#" + instance);
-      Assert.assertEquals(log.get(i + 3), "clean#" + instance);
+      assertThat(log.get(i)).isEqualTo("prepare#" + instance);
+      assertThat(log.get(i + 1)).isEqualTo("test1#" + instance);
+      assertThat(log.get(i + 2)).isEqualTo("test2#" + instance);
+      assertThat(log.get(i + 3)).isEqualTo("clean#" + instance);
     }
   }
 
