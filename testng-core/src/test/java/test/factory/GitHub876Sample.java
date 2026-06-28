@@ -1,6 +1,8 @@
 package test.factory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -24,13 +26,13 @@ public class GitHub876Sample {
   public void test() {
     switch (dataTest.s) {
       case "FOO":
-        Assert.assertFalse(dataTest.b);
+        assertThat(dataTest.b).isFalse();
         break;
       case "foo":
-        Assert.assertTrue(dataTest.b);
+        assertThat(dataTest.b).isTrue();
         break;
       default:
-        Assert.fail("Unknown value");
+        fail("Unknown value");
     }
   }
 

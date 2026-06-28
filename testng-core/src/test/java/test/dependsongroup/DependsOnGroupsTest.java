@@ -1,6 +1,7 @@
 package test.dependsongroup;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -24,7 +25,7 @@ public class DependsOnGroupsTest extends SimpleBaseTest {
         };
     for (int i = 0; i < expected.length; i++) {
       ITestResult testResult = tla.getPassedTests().get(i);
-      Assert.assertEquals(testResult.getMethod().getMethodName(), expected[i]);
+      assertThat(testResult.getMethod().getMethodName()).isEqualTo(expected[i]);
     }
   }
 }

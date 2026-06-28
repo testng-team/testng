@@ -1,7 +1,6 @@
 package test.listeners.github2385;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,65 +18,65 @@ public class IssueTest extends SimpleBaseTest {
   public void testExtendClass() {
     TestNG testNG = create(SonTestClassSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerExecuted);
-    assertTrue(TestListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerExecuted).isTrue();
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testClassAndInterface() {
     TestNG testNG = create(TestClassAndInterfaceInheritSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerExecuted);
-    assertTrue(TestListener.listenerMethodInvoked);
-    assertTrue(TestClassListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerExecuted).isTrue();
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
+    assertThat(TestClassListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testClassListeners() {
     TestNG testNG = create(TestClassListenersInheritSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerExecuted);
-    assertTrue(TestListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerExecuted).isTrue();
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testInterface() {
     TestNG testNG = create(TestInterfaceListenersInheritSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerExecuted);
-    assertTrue(TestListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerExecuted).isTrue();
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testMultiInherit() {
     TestNG testNG = create(TestMultiInheritSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerMethodInvoked);
-    assertTrue(TestClassListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
+    assertThat(TestClassListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testMultiInheritSameAnnotation() {
     TestNG testNG = create(TestMultiInheritSameAnnotationSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testMultiLevel() {
     TestNG testNG = create(TestMultiLevelInheritSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerExecuted);
-    assertTrue(TestListener.listenerMethodInvoked);
-    assertTrue(TestClassListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerExecuted).isTrue();
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
+    assertThat(TestClassListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
   public void testMultiLevelSameAnnotation() {
     TestNG testNG = create(TestMultiLevelInheritSameAnnotationSample.class);
     testNG.run();
-    assertTrue(TestListener.listenerExecuted);
-    assertTrue(TestListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerExecuted).isTrue();
+    assertThat(TestListener.listenerMethodInvoked).isTrue();
   }
 
   @Test
@@ -99,7 +98,7 @@ public class IssueTest extends SimpleBaseTest {
     tng.setXmlSuites(Collections.singletonList(xmlSuite));
     tng.run();
 
-    assertFalse(TestListener.listenerMethodInvoked);
+    assertThat(TestListener.listenerMethodInvoked).isFalse();
   }
 
   @AfterMethod

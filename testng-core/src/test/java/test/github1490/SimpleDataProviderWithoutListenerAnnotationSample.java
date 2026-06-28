@@ -1,13 +1,14 @@
 package test.github1490;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class SimpleDataProviderWithoutListenerAnnotationSample {
   @Test(dataProvider = "getData")
   public void testMethod(int i) {
-    Assert.assertTrue(i > 0);
+    assertThat(i > 0).isTrue();
   }
 
   @DataProvider

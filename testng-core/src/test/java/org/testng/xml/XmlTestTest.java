@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
@@ -33,7 +32,7 @@ public class XmlTestTest extends SimpleBaseTest {
     XmlTest test = createXmlTest("suite", "test", Issue1716TestSample.class);
     test.setParameters(data);
     test.toXml("   ");
-    Assert.assertTrue(true, "No exceptions should have been thrown");
+    assertThat(true).withFailMessage("No exceptions should have been thrown").isTrue();
   }
 
   @DataProvider(name = "dp")
@@ -47,9 +46,9 @@ public class XmlTestTest extends SimpleBaseTest {
     XmlTest xmlTest = createXmlTest(xmlSuite, "test");
     createXmlClass(xmlTest, SimpleTestSample.class);
     XmlTest copyXmlTest = (XmlTest) xmlTest.clone();
-    Assert.assertNotNull(copyXmlTest);
-    Assert.assertNotNull(copyXmlTest.getXmlClasses());
-    Assert.assertEquals(xmlTest.getXmlClasses().size(), copyXmlTest.getXmlClasses().size());
+    assertThat(copyXmlTest).isNotNull();
+    assertThat(copyXmlTest.getXmlClasses()).isNotNull();
+    assertThat(xmlTest.getXmlClasses().size()).isEqualTo(copyXmlTest.getXmlClasses().size());
   }
 
   private static Map<String, String> newSetOfParameters(String key, String value) {

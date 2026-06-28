@@ -1,6 +1,6 @@
 package test.listeners;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.testng.TestNG;
@@ -17,6 +17,6 @@ public class ExecutionListenerAndSuiteListenerTest extends SimpleBaseTest {
     TestNG testng = new TestNG();
     testng.setXmlSuites(suites);
     testng.run();
-    assertEquals(ExecutionListenerAndSuiteListener.getTmpString(), "INITIALIZED");
+    assertThat(ExecutionListenerAndSuiteListener.getTmpString()).isEqualTo("INITIALIZED");
   }
 }

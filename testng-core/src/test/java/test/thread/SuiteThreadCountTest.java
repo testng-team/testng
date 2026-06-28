@@ -1,9 +1,10 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.testng.internal.thread.ThreadUtil;
@@ -28,6 +29,8 @@ public class SuiteThreadCountTest {
 
   @AfterClass
   public void checkThreading() {
-    Assert.assertEquals(m_threads.size(), 2, "Test should use 2 threads (suite level)");
+    assertThat(m_threads.size())
+        .withFailMessage("Test should use 2 threads (suite level)")
+        .isEqualTo(2);
   }
 }

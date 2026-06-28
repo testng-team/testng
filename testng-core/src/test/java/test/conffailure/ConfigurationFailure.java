@@ -1,7 +1,6 @@
 package test.conffailure;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertTrue;
 
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -24,17 +23,17 @@ public class ConfigurationFailure extends SimpleBaseTest {
   @Test
   public void beforeTestClassFails() {
     runTest(ClassWithFailedBeforeTestClass.class, ClassWithFailedBeforeTestClassVerification.class);
-    assertTrue(
-        ClassWithFailedBeforeTestClassVerification.success(),
-        "Not all the @Configuration methods of Run2 were run");
+    assertThat(ClassWithFailedBeforeTestClassVerification.success())
+        .withFailMessage("Not all the @Configuration methods of Run2 were run")
+        .isTrue();
   }
 
   @Test
   public void beforeTestSuiteFails() {
     runTest(ClassWithFailedBeforeSuite.class, ClassWithFailedBeforeSuiteVerification.class);
-    assertTrue(
-        ClassWithFailedBeforeSuiteVerification.success(),
-        "No @Configuration methods should have run");
+    assertThat(ClassWithFailedBeforeSuiteVerification.success())
+        .withFailMessage("No @Configuration methods should have run")
+        .isTrue();
   }
 
   private static void runTest(Class<?>... classes) {

@@ -1,6 +1,7 @@
 package test.listeners.ordering;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
@@ -16,6 +17,6 @@ public class SimpleTestClassPoweredByFactoryWithFailedMethod {
 
   @Test
   public void testWillFail() {
-    Assert.fail();
+    fail();
   }
 }

@@ -1,7 +1,8 @@
 package test.listeners;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 
 public final class ListenerAssert {
@@ -15,6 +16,6 @@ public final class ListenerAssert {
         return;
       }
     }
-    Assert.fail();
+    fail();
   }
 }

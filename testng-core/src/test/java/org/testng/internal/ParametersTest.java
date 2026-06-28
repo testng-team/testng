@@ -1,7 +1,8 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -22,7 +23,7 @@ public class ParametersTest {
     FilterOutInjectedTypesResult filterOutResult =
         org.testng.internal.Parameters.filterOutInjectedTypesFromOptionalValues(
             curMethod.getParameterTypes(), finder.findOptionalValues(curMethod));
-    Assert.assertEquals(filterOutResult.getOptionalValues()[0], "optionaltestdata");
-    Assert.assertEquals(filterOutResult.getParameterTypes()[0], String.class);
+    assertThat(filterOutResult.getOptionalValues()[0]).isEqualTo("optionaltestdata");
+    assertThat(filterOutResult.getParameterTypes()[0]).isEqualTo(String.class);
   }
 }

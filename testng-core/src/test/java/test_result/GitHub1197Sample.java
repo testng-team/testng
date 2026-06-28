@@ -1,6 +1,7 @@
 package test_result;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.Test;
@@ -26,7 +27,7 @@ public class GitHub1197Sample {
   @Test
   public void succeedTest() {
     Reporter.getCurrentTestResult().setStatus(ITestResult.SUCCESS);
-    Assert.fail();
+    fail();
   }
 
   @Test

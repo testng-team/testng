@@ -1,16 +1,17 @@
 package test.inheritance.github980;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class ChildClassSample extends ParentClassSample {
   @Test
   public void c() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void d() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

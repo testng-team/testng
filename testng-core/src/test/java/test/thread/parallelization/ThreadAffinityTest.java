@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.TestNG;
 import org.testng.annotations.AfterClass;
@@ -105,7 +104,7 @@ public class ThreadAffinityTest extends SimpleBaseTest {
     createXmlTest(xmlsuite, "Test_1", TestMultipleInstance.class).setParallel(mode);
     TestNG testng = create(xmlsuite);
     testng.run();
-    Assertions.assertThat(testng.getStatus()).isEqualTo(0);
+    assertThat(testng.getStatus()).isEqualTo(0);
   }
 
   @Test(description = "GITHUB-2110")

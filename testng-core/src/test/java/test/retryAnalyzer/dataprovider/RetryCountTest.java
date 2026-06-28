@@ -1,6 +1,6 @@
 package test.retryAnalyzer.dataprovider;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -14,6 +14,6 @@ public final class RetryCountTest {
 
   @Test(dataProvider = "provider", retryAnalyzer = DataProviderRetryAnalyzer.class)
   public void test1(String param) {
-    assertEquals(param, "c");
+    assertThat(param).isEqualTo("c");
   }
 }

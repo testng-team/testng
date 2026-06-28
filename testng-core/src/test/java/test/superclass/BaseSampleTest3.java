@@ -1,12 +1,12 @@
 package test.superclass;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
 public class BaseSampleTest3 {
   @Test
   public void base() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

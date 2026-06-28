@@ -1,16 +1,17 @@
 package test.superclass;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class ChildSampleTest3 extends BaseSampleTest3 {
   @Test
   public void pass() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void fail() {
-    Assert.assertTrue(false);
+    assertThat(false).isTrue();
   }
 }

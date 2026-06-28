@@ -1,5 +1,4 @@
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 import org.testng.annotations.Test;
@@ -16,9 +15,9 @@ public class ReporterConfigTest {
   @Test
   public void testDeserialize() {
     ReporterConfig config = ReporterConfig.deserialize(CONFIG_STR);
-    assertEquals(Objects.requireNonNull(config).getClassName(), CLASS_NAME);
+    assertThat(Objects.requireNonNull(config).getClassName()).isEqualTo(CLASS_NAME);
     String serial = config.serialize();
-    assertTrue(serial.contains(PROP_NAME_1 + "=true"));
-    assertTrue(serial.contains(PROP_NAME_2 + "=true"));
+    assertThat(serial.contains(PROP_NAME_1 + "=true")).isTrue();
+    assertThat(serial.contains(PROP_NAME_2 + "=true")).isTrue();
   }
 }

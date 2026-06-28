@@ -1,6 +1,7 @@
 package test.beforegroups.issue118;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
@@ -14,6 +15,8 @@ public class TestclassSample {
   }
 
   public void test1() {
-    Assert.assertNotNull(testObject, "@BeforeGroups not invoked if nothing explicitly specified");
+    assertThat(testObject)
+        .withFailMessage("@BeforeGroups not invoked if nothing explicitly specified")
+        .isNotNull();
   }
 }

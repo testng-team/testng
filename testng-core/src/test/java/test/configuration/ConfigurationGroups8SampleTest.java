@@ -1,9 +1,10 @@
 package test.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
@@ -43,6 +44,6 @@ public class ConfigurationGroups8SampleTest {
 
   @Test(dependsOnGroups = "A", groups = "B")
   public void verify() {
-    Assert.assertEquals(Arrays.asList("1", "a", "1", "a"), m_log);
+    assertThat(Arrays.asList("1", "a", "1", "a")).isEqualTo(m_log);
   }
 }

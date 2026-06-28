@@ -1,8 +1,9 @@
 package test.dataprovider.issue3237;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
@@ -16,7 +17,9 @@ public class SampleCacheTestCase {
   @Test(dataProvider = "dp", retryAnalyzer = MyRetry.class)
   public void testMethod(String uuid) {
     // Verify that fresh UUID is generated on each retry (no caching)
-    Assert.assertEquals(uuid, currentUuid, "Received stale data from DataProvider!");
+    assertThat(uuid)
+        .withFailMessage("Received stale data from DataProvider!")
+        .isEqualTo(currentUuid);
 
     // Fail on first invocation to trigger retry, pass on second
     if (invocationCount.getAndIncrement() < 1) {

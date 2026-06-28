@@ -1,6 +1,7 @@
 package test.listeners;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.IConfigurationListener;
 import org.testng.ITestResult;
 import org.testng.SkipException;
@@ -61,7 +62,7 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
 
-    Assert.assertEquals(CL.m_status, expected);
+    assertThat(CL.m_status).isEqualTo(expected);
   }
 
   @Test
@@ -86,8 +87,8 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
     tng.addListener(listener);
     tng.run();
 
-    Assert.assertNotNull(listener.throwable);
-    Assert.assertTrue(listener.throwable instanceof SkipException);
-    Assert.assertEquals(listener.throwable.getMessage(), "Skip");
+    assertThat(listener.throwable).isNotNull();
+    assertThat((listener.throwable instanceof SkipException)).isTrue();
+    assertThat(listener.throwable.getMessage()).isEqualTo("Skip");
   }
 }

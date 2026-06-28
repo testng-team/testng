@@ -1,6 +1,7 @@
 package test;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -39,7 +40,9 @@ public class Test2 extends BaseTest {
   @Test
   public void setUpWithGroups() {
     run();
-    Assert.assertTrue(m_initializedCorrectly, "Should have run the correctSetup method");
+    assertThat(m_initializedCorrectly)
+        .withFailMessage("Should have run the correctSetup method")
+        .isTrue();
   }
 
   @Test

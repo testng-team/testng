@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.Test;
 
@@ -22,7 +23,7 @@ public class ConfigurationGroups5SampleTest {
   @Test(groups = "cg5-1")
   public void run1() {
     if (m_afterCount == 0) {
-      Assert.assertFalse(m_after);
+      assertThat(m_after).isFalse();
     }
     m_run1 = true;
   }
@@ -30,7 +31,7 @@ public class ConfigurationGroups5SampleTest {
   @Test(groups = "cg5-2")
   public void run2() {
     if (m_afterCount == 0) {
-      Assert.assertFalse(m_after);
+      assertThat(m_after).isFalse();
     }
     m_run2 = true;
   }
@@ -38,18 +39,18 @@ public class ConfigurationGroups5SampleTest {
   @AfterGroups({"cg5-1", "cg5-2"})
   public void after() {
     m_afterCount++;
-    Assert.assertTrue(m_run1 || m_run2);
+    assertThat(m_run1 || m_run2).isTrue();
     if (m_afterCount == 0) {
-      Assert.assertFalse(m_after);
+      assertThat(m_after).isFalse();
     }
     m_after = true;
   }
 
   @Test(dependsOnGroups = {"cg5-1", "cg5-2"})
   public void verify() {
-    Assert.assertTrue(m_run1, "run1() wasn't run");
-    Assert.assertTrue(m_run2, "run2() wasn't run");
-    Assert.assertTrue(m_after, "after1() wasn't run");
-    Assert.assertEquals(2, m_afterCount);
+    assertThat(m_run1).withFailMessage("run1() wasn't run").isTrue();
+    assertThat(m_run2).withFailMessage("run2() wasn't run").isTrue();
+    assertThat(m_after).withFailMessage("after1() wasn't run").isTrue();
+    assertThat(2).isEqualTo(m_afterCount);
   }
 }

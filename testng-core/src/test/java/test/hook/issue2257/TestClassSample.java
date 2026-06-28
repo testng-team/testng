@@ -1,6 +1,7 @@
 package test.hook.issue2257;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.ITestResult;
@@ -54,7 +55,7 @@ public class TestClassSample implements IConfigurable {
     if (counter++ == 2) {
       counter = 1;
     } else {
-      Assert.fail();
+      fail();
     }
   }
 }

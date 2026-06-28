@@ -1,8 +1,8 @@
 package test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.core.data.Offset;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -38,14 +38,14 @@ public class ParameterConstructorTest {
 
   @Test
   public void verify() {
-    assertEquals("Cedric", m_string);
-    assertEquals(42, m_int);
-    assertTrue(m_boolean);
-    assertEquals(43, m_byte);
-    assertEquals('c', m_char);
-    assertEquals(44.0, m_double, 0.1);
-    assertEquals(45.0f, m_float, 0.1);
-    assertEquals(46, m_long);
-    assertEquals(47, m_short);
+    assertThat("Cedric").isEqualTo(m_string);
+    assertThat(42).isEqualTo(m_int);
+    assertThat(m_boolean).isTrue();
+    assertThat(43).isEqualTo(m_byte);
+    assertThat('c').isEqualTo(m_char);
+    assertThat(44.0).isCloseTo(m_double, Offset.offset(0.1));
+    assertThat(45.0f).isCloseTo(m_float, Offset.offset(0.1f));
+    assertThat(46).isEqualTo(m_long);
+    assertThat(47).isEqualTo(m_short);
   }
 }

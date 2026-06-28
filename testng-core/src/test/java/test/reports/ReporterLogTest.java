@@ -1,7 +1,8 @@
 package test.reports;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
@@ -25,7 +26,7 @@ public class ReporterLogTest extends SimpleBaseTest {
     TestNG tng = create(testClass);
     tng.run();
     List<String> output = Reporter.getOutput();
-    Assert.assertTrue(contains(output, value));
+    assertThat(contains(output, value)).isTrue();
   }
 
   private static boolean contains(List<String> output, String logMessage) {

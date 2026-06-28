@@ -1,9 +1,9 @@
 package test.invocationcount.issue3180;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -25,14 +25,14 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void testDataProvider(AtomicInteger counter) {
-      assertEquals(counter.incrementAndGet(), 3);
+      assertThat(counter.incrementAndGet()).isEqualTo(3);
     }
   }
 
   public static class TestWithNormalFailingTest {
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void alwaysFailingRegularTest() {
-      Assert.fail();
+      fail();
     }
   }
 
@@ -43,7 +43,7 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void failsForOddNumbersOnly(int i) {
-      assertEquals(i % 2, 0);
+      assertThat(i % 2).isEqualTo(0);
     }
   }
 
@@ -53,7 +53,7 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void alwaysFailingDataDrivenTest(AtomicInteger ignored) {
-      Assert.fail();
+      fail();
     }
   }
 
@@ -62,7 +62,7 @@ public class SampleTestContainer {
 
     @Test(invocationCount = 10, successPercentage = 90, retryAnalyzer = RetryAnalyzer.class)
     public void invocationCountTestWhichEventuallyPassesDueToSuccessFactors() {
-      Assert.assertTrue(switcher.getAndIncrement() < 9);
+      assertThat(switcher.getAndIncrement() < 9).isTrue();
     }
   }
 
@@ -74,12 +74,12 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void testDataProvider(AtomicInteger counter) {
-      assertEquals(counter.incrementAndGet(), 3);
+      assertThat(counter.incrementAndGet()).isEqualTo(3);
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class)
     public void alwaysFailingRegularTest() {
-      Assert.fail();
+      fail();
     }
 
     @Test(
@@ -87,7 +87,7 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void failsForOddNumbersOnly(int i) {
-      assertEquals(i % 2, 0);
+      assertThat(i % 2).isEqualTo(0);
     }
 
     @Test(
@@ -95,12 +95,12 @@ public class SampleTestContainer {
         dataProviderClass = SampleTestContainer.class,
         retryAnalyzer = RetryAnalyzer.class)
     public void alwaysFailingDataDrivenTest(AtomicInteger ignored) {
-      Assert.fail();
+      fail();
     }
 
     @Test(invocationCount = 10, successPercentage = 90)
     public void invocationCountTestWhichEventuallyPassesDueToSuccessFactors() {
-      Assert.assertTrue(switcher.getAndIncrement() < 9);
+      assertThat(switcher.getAndIncrement() < 9).isTrue();
     }
   }
 }

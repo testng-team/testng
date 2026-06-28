@@ -1,6 +1,7 @@
 package test.guice.jitbinding;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -14,8 +15,8 @@ public class JitBindingTest extends SimpleBaseTest {
     TestListenerAdapter adapter = new TestListenerAdapter();
     tng.addListener(adapter);
     tng.run();
-    Assert.assertTrue(adapter.getFailedTests().isEmpty());
-    Assert.assertTrue(adapter.getSkippedTests().isEmpty());
-    Assert.assertEquals(adapter.getPassedTests().size(), 2);
+    assertThat(adapter.getFailedTests().isEmpty()).isTrue();
+    assertThat(adapter.getSkippedTests().isEmpty()).isTrue();
+    assertThat(adapter.getPassedTests().size()).isEqualTo(2);
   }
 }

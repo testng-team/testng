@@ -1,7 +1,8 @@
 package test.retryAnalyzer.github1519;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
@@ -11,6 +12,6 @@ public class TestClassSample {
 
   @Test(retryAnalyzer = MyAnalyzer.class)
   public void testMethod() {
-    Assert.assertTrue(retry);
+    assertThat(retry).isTrue();
   }
 }

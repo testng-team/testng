@@ -2,7 +2,6 @@ package test.factory.github1131;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
@@ -21,7 +20,7 @@ public class GitHub1131Test extends SimpleBaseTest {
     tng.run();
 
     assertThat(listener.getSucceedMethodNames()).containsExactly("test", "test");
-    Assert.assertEquals(EmptyConstructorSample.count, 2);
+    assertThat(EmptyConstructorSample.count).isEqualTo(2);
   }
 
   @Test

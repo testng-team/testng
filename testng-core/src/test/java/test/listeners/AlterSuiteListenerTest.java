@@ -1,9 +1,14 @@
 package test.listeners;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.testng.*;
+import org.testng.IAlterSuiteListener;
+import org.testng.ISuite;
+import org.testng.ISuiteListener;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.collections.Pair;
 import org.testng.xml.XmlSuite;
@@ -19,13 +24,13 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
     XmlSuite suite =
         runTest(AlterSuiteListener1SampleTest.class, AlterSuiteNameListener.class.getName())
             .second();
-    Assert.assertEquals(suite.getName(), AlterSuiteNameListener.class.getSimpleName());
+    assertThat(suite.getName()).isEqualTo(AlterSuiteNameListener.class.getSimpleName());
   }
 
   @Test
   public void executionListenerWithoutListener() {
     XmlSuite suite = runTest(AlterSuiteListener1SampleTest.class).second();
-    Assert.assertEquals(suite.getName(), ALTER_SUITE_LISTENER);
+    assertThat(suite.getName()).isEqualTo(ALTER_SUITE_LISTENER);
   }
 
   @Test
@@ -33,7 +38,7 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
     XmlSuite suite =
         runTest(AlterSuiteListener1SampleTest.class, AlterXmlTestsInSuiteListener.class.getName())
             .second();
-    Assert.assertEquals(suite.getTests().size(), 2);
+    assertThat(suite.getTests().size()).isEqualTo(2);
   }
 
   @Test(description = "GITHUB-2469")
@@ -45,10 +50,10 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
             AlteredXmlSuiteReadListener.class.getName());
     TestNG tng = retObjects.first();
     XmlSuite suite = retObjects.second();
-    Assert.assertEquals(suite.getTests().size(), 2);
+    assertThat(suite.getTests().size()).isEqualTo(2);
     List<ISuiteListener> listeners =
         Optional.ofNullable(tng.getSuiteListeners()).orElse(new ArrayList<>());
-    Assert.assertFalse(listeners.isEmpty());
+    assertThat(listeners.isEmpty()).isFalse();
     for (ISuiteListener iSuiteListener : listeners) {
       if (iSuiteListener instanceof AlteredXmlSuiteReadListener) {
         AlteredXmlSuiteReadListener alteredXmlSuiteReadListener =
@@ -57,7 +62,7 @@ public class AlterSuiteListenerTest extends SimpleBaseTest {
         List<XmlTest> tests = xmlSuite.getTests();
         int i = 1;
         for (XmlTest xmlTest : tests) {
-          Assert.assertEquals(xmlTest.getParameter("param"), String.valueOf(i));
+          assertThat(xmlTest.getParameter("param")).isEqualTo(String.valueOf(i));
           i++;
         }
       }

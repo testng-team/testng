@@ -1,6 +1,7 @@
 package test.listeners.github1319;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -11,10 +12,12 @@ public class TestResultInstanceCheckTest extends SimpleBaseTest {
     TestNG tng = create(TestSample.class);
     tng.run();
     int hashCode = TestSample.hashcode;
-    Assert.assertEquals(TestSample.Listener.maps.size(), 6, "Validating the number of instances");
+    assertThat(TestSample.Listener.maps.size())
+        .withFailMessage("Validating the number of instances")
+        .isEqualTo(6);
     for (Object object : TestSample.Listener.maps.values()) {
-      Assert.assertNotNull(object);
-      Assert.assertEquals(object.hashCode(), hashCode);
+      assertThat(object).isNotNull();
+      assertThat(object.hashCode()).isEqualTo(hashCode);
     }
   }
 }

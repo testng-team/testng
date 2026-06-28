@@ -1,6 +1,7 @@
 package test.listeners;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ISuite;
@@ -36,7 +37,9 @@ public class SuiteAndInvokedMethodListenerTest {
 
   @Test
   public void bothListenersShouldRun() {
-    Assert.assertTrue(MyListener.m_before, "IInvokedMethodListener was not invoked");
-    Assert.assertTrue(MyListener.m_start, "ISuiteListener was not invoked");
+    assertThat(MyListener.m_before)
+        .withFailMessage("IInvokedMethodListener was not invoked")
+        .isTrue();
+    assertThat(MyListener.m_start).withFailMessage("ISuiteListener was not invoked").isTrue();
   }
 }

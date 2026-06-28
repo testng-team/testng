@@ -1,6 +1,6 @@
 package test.retryAnalyzer;
 
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.testng.ITest;
 import org.testng.annotations.Test;

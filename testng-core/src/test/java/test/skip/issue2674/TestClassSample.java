@@ -1,13 +1,14 @@
 package test.skip.issue2674;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class TestClassSample {
   @Test
   void test1() {
-    Assert.fail();
+    fail();
   }
 
   @Test(

@@ -1,6 +1,6 @@
 package test.listeners.issue1777;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import org.testng.annotations.AfterMethod;
@@ -17,12 +17,12 @@ public class TestClassSample {
 
   @Test
   public void test1() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void test2() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @AfterMethod

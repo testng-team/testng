@@ -1,9 +1,9 @@
 package test.factory.github328;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.factory.github328.ExcludedFactory.EXCLUDED_GROUP;
 
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -21,6 +21,6 @@ public class GitHub328Test extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertFalse(ExcludedFactory.factoryRan);
+    assertThat(ExcludedFactory.factoryRan).isFalse();
   }
 }

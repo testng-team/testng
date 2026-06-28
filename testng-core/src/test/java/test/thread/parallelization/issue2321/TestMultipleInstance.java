@@ -1,6 +1,7 @@
 package test.thread.parallelization.issue2321;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -20,7 +21,7 @@ public class TestMultipleInstance {
   @Test(dependsOnMethods = "independent")
   public void dependent() {
     long currentThreadId = Thread.currentThread().getId();
-    Assert.assertEquals(currentThreadId, threadId, "Thread Ids didn't match");
+    assertThat(currentThreadId).withFailMessage("Thread Ids didn't match").isEqualTo(threadId);
   }
 
   @DataProvider(name = "dp")

@@ -1,7 +1,8 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
@@ -23,7 +24,7 @@ public class TestInstanceSample {
   @DataProvider
   public Object[][] dp(Method m, @TestInstance Object instance) {
     TestInstanceSample o0 = (TestInstanceSample) instance;
-    Assert.assertTrue(o0.m_n == 1 || o0.m_n == 2);
+    assertThat(o0.m_n == 1 || o0.m_n == 2).isTrue();
     m_instanceCount++;
 
     return new Object[][] {{42}, {43}};

@@ -1,9 +1,10 @@
 package test.hook.samples;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import javax.inject.Named;
-import org.testng.Assert;
 import org.testng.IHookCallBack;
 import org.testng.IHookable;
 import org.testng.ITestResult;
@@ -34,7 +35,7 @@ public class HookSuccessDynamicParametersSample implements IHookable {
 
   @Test(dataProvider = "dp")
   public void verify(@Named("bar") String bar, String test) {
-    Assert.assertEquals(bar, "foobar");
-    Assert.assertEquals(test, "test");
+    assertThat(bar).isEqualTo("foobar");
+    assertThat(test).isEqualTo("test");
   }
 }

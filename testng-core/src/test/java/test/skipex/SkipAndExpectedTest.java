@@ -1,6 +1,7 @@
 package test.skipex;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -16,8 +17,8 @@ public class SkipAndExpectedTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 0);
-    Assert.assertEquals(tla.getSkippedTests().size(), 1);
-    Assert.assertEquals(tla.getFailedTests().size(), 0);
+    assertThat(tla.getPassedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(1);
+    assertThat(tla.getFailedTests().size()).isEqualTo(0);
   }
 }

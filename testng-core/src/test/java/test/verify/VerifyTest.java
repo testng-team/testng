@@ -1,6 +1,7 @@
 package test.verify;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -15,7 +16,7 @@ public class VerifyTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), expected);
+    assertThat(tla.getPassedTests().size()).isEqualTo(expected);
   }
 
   @Test
@@ -33,7 +34,7 @@ public class VerifyTest extends SimpleBaseTest {
     TestNG tng = create(Verify2SampleTest.class);
     VerifyTestListener.m_count = 0;
     tng.run();
-    Assert.assertEquals(VerifyTestListener.m_count, 1);
+    assertThat(VerifyTestListener.m_count).isEqualTo(1);
   }
 
   @Test
@@ -41,6 +42,6 @@ public class VerifyTest extends SimpleBaseTest {
     TestNG tng = create(Verify3SampleTest.class);
     VerifyTestListener.m_count = 0;
     tng.run();
-    Assert.assertEquals(VerifyTestListener.m_count, 1);
+    assertThat(VerifyTestListener.m_count).isEqualTo(1);
   }
 }

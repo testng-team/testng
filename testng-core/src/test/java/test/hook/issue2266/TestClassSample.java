@@ -1,6 +1,7 @@
 package test.hook.issue2266;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.IHookCallBack;
 import org.testng.IHookable;
 import org.testng.ITestResult;
@@ -26,7 +27,7 @@ public class TestClassSample implements IHookable {
   @Test(description = "GITHUB-2266")
   public void runTest() {
     if (counter++ != 2) {
-      Assert.fail();
+      fail();
     }
   }
 }

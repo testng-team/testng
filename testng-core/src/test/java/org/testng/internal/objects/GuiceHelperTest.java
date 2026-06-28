@@ -1,13 +1,11 @@
 package org.testng.internal.objects;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import org.jetbrains.annotations.Nullable;
-import org.testng.Assert;
 import org.testng.IInjectorFactory;
 import org.testng.ITest;
 import org.testng.ITestObjectFactory;
@@ -28,11 +26,11 @@ public final class GuiceHelperTest {
     MockInjector injector =
         (MockInjector) guiceHelper.getInjector(new MockClass(), new MockInjectorFactory());
 
-    assertNotNull(injector);
+    assertThat(injector).isNotNull();
     Module[] modules = injector.getModules();
-    assertNotNull(modules);
-    assertEquals(modules.length, 1);
-    Assert.assertEquals(modules[0], new SampleIModule().getModule());
+    assertThat(modules).isNotNull();
+    assertThat(modules.length).isEqualTo(1);
+    assertThat(modules[0]).isEqualTo(new SampleIModule().getModule());
   }
 
   private static final class MockInjectorFactory implements IInjectorFactory {

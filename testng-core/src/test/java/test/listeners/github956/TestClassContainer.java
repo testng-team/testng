@@ -1,6 +1,7 @@
 package test.listeners.github956;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -9,7 +10,7 @@ public class TestClassContainer {
   public static class FirstTestClass {
     @Test
     public void testMethod() {
-      Assert.assertEquals(true, true);
+      assertThat(true).isEqualTo(true);
     }
   }
 
@@ -17,7 +18,7 @@ public class TestClassContainer {
   public static class SecondTestClass {
     @Test
     public void testMethod() {
-      Assert.assertEquals(true, true);
+      assertThat(true).isEqualTo(true);
     }
   }
 }

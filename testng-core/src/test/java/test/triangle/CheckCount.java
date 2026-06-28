@@ -1,6 +1,7 @@
 package test.triangle;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -14,6 +15,6 @@ public class CheckCount {
   public void testCheckCount(String expectedCalls) {
     int i = Integer.valueOf(expectedCalls);
     int numCalls = CountCalls.getNumCalls();
-    Assert.assertEquals(numCalls, i);
+    assertThat(numCalls).isEqualTo(i);
   }
 }

@@ -1,6 +1,7 @@
 package test.parameters;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -16,6 +17,6 @@ public class ParametersPackageLevelMethodTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    assertThat(tla.getPassedTests().size()).isEqualTo(1);
   }
 }
