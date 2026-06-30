@@ -1,9 +1,10 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -21,6 +22,6 @@ public class ParallelDataProvider2Sample {
 
   @Test(dataProvider = "provide", invocationCount = 2, threadPoolSize = 2)
   public void checkCME(Integer i) {
-    Assert.assertNotNull(i);
+    assertThat(i).isNotNull();
   }
 }

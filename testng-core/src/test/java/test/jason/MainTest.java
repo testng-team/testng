@@ -1,7 +1,8 @@
 package test.jason;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlClass;
@@ -23,6 +24,6 @@ public class MainTest extends SimpleBaseTest {
     tng.setXmlSuites(List.of(s));
     Main.m_passed = false;
     tng.run();
-    Assert.assertTrue(Main.m_passed);
+    assertThat(Main.m_passed).isTrue();
   }
 }

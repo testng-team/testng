@@ -1,9 +1,10 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -21,10 +22,10 @@ public class ConstructorSample {
 
   @DataProvider(name = "dp")
   public static Object[][] createData(Constructor<?> c) {
-    Assert.assertEquals(c.getDeclaringClass(), ConstructorSample.class);
-    Assert.assertNotNull(c.getAnnotation(Factory.class));
-    Assert.assertEquals(c.getParameterTypes().length, 1);
-    Assert.assertEquals(c.getParameterTypes()[0], String.class);
+    assertThat(c.getDeclaringClass()).isEqualTo(ConstructorSample.class);
+    assertThat(c.getAnnotation(Factory.class)).isNotNull();
+    assertThat(c.getParameterTypes().length).isOne();
+    assertThat(c.getParameterTypes()[0]).isEqualTo(String.class);
 
     return new Object[][] {{"Cedric"}, {"Alois"}};
   }

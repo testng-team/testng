@@ -1,6 +1,7 @@
 package test.groupinvocation;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
@@ -14,6 +15,8 @@ public class DummyTest2 {
 
   @AfterClass(alwaysRun = true)
   public void checkInvocations() {
-    Assert.assertFalse(m_invoked, "@Test method invoked even if @BeforeGroups failed");
+    assertThat(m_invoked)
+        .withFailMessage("@Test method invoked even if @BeforeGroups failed")
+        .isFalse();
   }
 }

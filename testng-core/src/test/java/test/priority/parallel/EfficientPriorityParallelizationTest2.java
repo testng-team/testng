@@ -1,7 +1,6 @@
 package test.priority.parallel;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertEquals;
 import static test.thread.parallelization.TestNgRunStateTracker.*;
 
 import java.util.HashMap;
@@ -117,45 +116,48 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
   // suites.
   @Test
   public void sanityCheck() {
-    assertEquals(
-        suiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for " + SUITE_A + ": " + suiteLevelEventLogs);
-    assertEquals(
-        testLevelEventLogs.size(),
-        2,
-        "There should be 2 test level events logged for " + SUITE_A + ": " + testLevelEventLogs);
+    assertThat(suiteLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteLevelEventLogs)
+        .hasSize(2);
+    assertThat(testLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 test level events logged for " + SUITE_A + ": " + testLevelEventLogs)
+        .hasSize(2);
 
-    assertEquals(
-        testMethodLevelEventLogs.size(),
-        12,
-        "There should 12 test method level events logged for "
-            + SUITE_A
-            + ": "
-            + testMethodLevelEventLogs);
+    assertThat(testMethodLevelEventLogs)
+        .withFailMessage(
+            "There should 12 test method level events logged for "
+                + SUITE_A
+                + ": "
+                + testMethodLevelEventLogs)
+        .hasSize(12);
 
-    assertEquals(
-        suiteOneSuiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneSuiteLevelEventLogs);
-    assertEquals(
-        suiteOneTestLevelEventLogs.size(),
-        2,
-        "There should be 2 test level events logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneTestLevelEventLogs);
-    assertEquals(
-        suiteOneTestMethodLevelEventLogs.size(),
-        12,
-        "There should be 12 test method level events "
-            + "logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneTestMethodLevelEventLogs);
+    assertThat(suiteOneSuiteLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneSuiteLevelEventLogs)
+        .hasSize(2);
+    assertThat(suiteOneTestLevelEventLogs)
+        .withFailMessage(
+            "There should be 2 test level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneTestLevelEventLogs)
+        .hasSize(2);
+    assertThat(suiteOneTestMethodLevelEventLogs)
+        .withFailMessage(
+            "There should be 12 test method level events "
+                + "logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneTestMethodLevelEventLogs)
+        .hasSize(12);
   }
 
   // Verify that the suites run in parallel by checking that the suite and test level events for

@@ -1,9 +1,10 @@
 package test.dataprovider.issue128;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -26,7 +27,9 @@ public class DataProviderParametersMismatchTest extends SimpleBaseTest {
       boolean contains =
           msg.contains(
               "Missing one or more parameters that are being injected by the data provider. Please add the below arguments to the method.");
-      Assert.assertTrue(contains, "Missing parameters warning should have triggered");
+      assertThat(contains)
+          .withFailMessage("Missing parameters warning should have triggered")
+          .isTrue();
     } finally {
       System.setErr(currentErr);
       System.setProperty("strictParameterMatch", "false");
@@ -42,9 +45,9 @@ public class DataProviderParametersMismatchTest extends SimpleBaseTest {
       tng.addListener(listener);
       tng.run();
       for (ITestResult each : listener.getFailedTests()) {
-        Assert.assertTrue(each.getThrowable() instanceof MethodMatcherException);
+        assertThat(each.getThrowable()).isInstanceOf(MethodMatcherException.class);
       }
-      Assert.assertEquals(listener.getFailedTests().size(), 2);
+      assertThat(listener.getFailedTests()).hasSize(2);
     } finally {
       System.setProperty("strictParameterMatch", "false");
     }

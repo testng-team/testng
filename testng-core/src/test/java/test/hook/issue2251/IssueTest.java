@@ -1,6 +1,7 @@
 package test.hook.issue2251;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -15,6 +16,6 @@ public class IssueTest extends SimpleBaseTest {
     testng.addListener(l);
     testng.run();
     Throwable t = l.getFailedTests().get(0).getThrowable();
-    Assertions.assertThat(t).isInstanceOf(NullPointerException.class);
+    assertThat(t).isInstanceOf(NullPointerException.class);
   }
 }

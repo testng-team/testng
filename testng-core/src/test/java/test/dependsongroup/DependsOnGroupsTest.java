@@ -1,7 +1,7 @@
 package test.dependsongroup;
 
-import org.testng.Assert;
-import org.testng.ITestResult;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -16,15 +16,8 @@ public class DependsOnGroupsTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
     tng.run();
-    String[] expected =
-        new String[] {
-          "zeroA", "zeroB",
-          "firstA", "firstB",
-          "secondA", "secondB"
-        };
-    for (int i = 0; i < expected.length; i++) {
-      ITestResult testResult = tla.getPassedTests().get(i);
-      Assert.assertEquals(testResult.getMethod().getMethodName(), expected[i]);
-    }
+    assertThat(tla.getPassedTests())
+        .extracting(testResult -> testResult.getMethod().getMethodName())
+        .containsExactly("zeroA", "zeroB", "firstA", "firstB", "secondA", "secondB");
   }
 }

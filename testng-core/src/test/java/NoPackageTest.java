@@ -1,4 +1,4 @@
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
@@ -14,6 +14,6 @@ public class NoPackageTest {
 
   @AfterMethod(groups = {"nopackage"})
   public void after() {
-    assertTrue(m_run, "test method was not run");
+    assertThat(m_run).withFailMessage("test method was not run").isTrue();
   }
 }

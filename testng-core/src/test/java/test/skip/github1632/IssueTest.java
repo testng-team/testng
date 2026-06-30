@@ -16,10 +16,10 @@ public class IssueTest extends SimpleBaseTest {
     SkipMonitoringListener listener = new SkipMonitoringListener();
     testng.addListener(listener);
     testng.run();
-    assertThat(listener.getStatus().get("skippingMethod")).isEqualTo(ITestResult.SKIP);
-    assertThat(listener.getStatus().get("passingMethod")).isEqualTo(ITestResult.SUCCESS);
-    assertThat(listener.getStatus().get("failingMethod")).isEqualTo(ITestResult.FAILURE);
-    assertThat(listener.getStatus().get("anotherFailingMethod")).isEqualTo(ITestResult.FAILURE);
+    assertThat(listener.getStatus()).containsEntry("skippingMethod", ITestResult.SKIP);
+    assertThat(listener.getStatus()).containsEntry("passingMethod", ITestResult.SUCCESS);
+    assertThat(listener.getStatus()).containsEntry("failingMethod", ITestResult.FAILURE);
+    assertThat(listener.getStatus()).containsEntry("anotherFailingMethod", ITestResult.FAILURE);
   }
 
   @Test

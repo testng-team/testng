@@ -1,8 +1,9 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Collections;
 import java.util.Iterator;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -15,7 +16,7 @@ public class EmptyDataProviderSample {
 
   @Test(dataProvider = "dp1")
   public void test1() {
-    Assert.fail();
+    fail();
   }
 
   @DataProvider(indices = {2})
@@ -25,6 +26,6 @@ public class EmptyDataProviderSample {
 
   @Test(dataProvider = "dp2")
   public void test2() {
-    Assert.fail();
+    fail();
   }
 }

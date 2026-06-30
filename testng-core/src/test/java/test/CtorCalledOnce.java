@@ -1,6 +1,6 @@
 package test;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
@@ -18,17 +18,23 @@ public class CtorCalledOnce {
 
   @Test
   public void testMethod1() {
-    assertEquals(instantiated, 1, "Expected 1, was invoked " + instantiated + " times");
+    assertThat(instantiated)
+        .withFailMessage("Expected 1, was invoked " + instantiated + " times")
+        .isOne();
   }
 
   @Test
   public void testMethod2() {
-    assertEquals(instantiated, 1, "Expected 1, was invoked " + instantiated + " times");
+    assertThat(instantiated)
+        .withFailMessage("Expected 1, was invoked " + instantiated + " times")
+        .isOne();
   }
 
   @Test
   public void testMethod3() {
-    assertEquals(instantiated, 1, "Expected 1, was invoked " + instantiated + " times");
+    assertThat(instantiated)
+        .withFailMessage("Expected 1, was invoked " + instantiated + " times")
+        .isOne();
   }
 
   @AfterTest

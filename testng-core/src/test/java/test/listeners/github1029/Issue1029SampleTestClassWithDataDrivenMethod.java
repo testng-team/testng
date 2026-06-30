@@ -1,13 +1,14 @@
 package test.listeners.github1029;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class Issue1029SampleTestClassWithDataDrivenMethod {
   @Test(dataProvider = "dp")
   public void a(int i) {
-    Assert.assertTrue(i > 0);
+    assertThat(i).isPositive();
   }
 
   @DataProvider(name = "dp", parallel = true)

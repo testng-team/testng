@@ -1,12 +1,13 @@
 package test.tmp;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -31,6 +32,6 @@ public class DataDrivenTest {
 
   @Test(dataProvider = "provider")
   public void foo(int n) {
-    Assert.assertTrue(n > 0);
+    assertThat(n).isPositive();
   }
 }

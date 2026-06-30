@@ -1,7 +1,8 @@
 package test.timeout.github2440;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -23,7 +24,7 @@ public class TimeoutWithNoExecutorTest extends SimpleBaseTest {
     TestListenerAdapter listener = new TestListenerAdapter();
     testNG.addListener(listener);
     testNG.run();
-    Assert.assertTrue(listener.getFailedTests().isEmpty());
-    Assert.assertTrue(listener.getConfigurationFailures().isEmpty());
+    assertThat(listener.getFailedTests()).isEmpty();
+    assertThat(listener.getConfigurationFailures()).isEmpty();
   }
 }

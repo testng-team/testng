@@ -1,6 +1,7 @@
 package test.github1490;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Listeners;
@@ -18,7 +19,7 @@ public class FactoryPoweredDataProviderWithListenerAnnotationSample {
 
   @Test
   public void testMethod() {
-    Assert.assertTrue(i > 0);
+    assertThat(i).isPositive();
   }
 
   @DataProvider(name = "dp")

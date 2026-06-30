@@ -1,6 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -11,12 +11,12 @@ public class Scope {
   @Parameters({"parameter"})
   @Test(groups = {"outer-group"})
   public void outerDeprecated(String s) {
-    assertEquals(s, "out", "Expected out got " + s);
+    assertThat(s).withFailMessage("Expected out got " + s).isEqualTo("out");
   }
 
   @Parameters({"parameter"})
   @Test(groups = {"inner-group"})
   public void innerDeprecated(String s) {
-    assertEquals(s, "in", "Expected in got " + s);
+    assertThat(s).withFailMessage("Expected in got " + s).isEqualTo("in");
   }
 }

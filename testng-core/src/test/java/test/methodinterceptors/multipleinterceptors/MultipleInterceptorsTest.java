@@ -1,7 +1,8 @@
 package test.methodinterceptors.multipleinterceptors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -19,8 +20,8 @@ public class MultipleInterceptorsTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
-    Assert.assertEquals(tla.getPassedTests().get(0).getName(), "d");
+    assertThat(tla.getPassedTests()).hasSize(1);
+    assertThat(tla.getPassedTests().get(0).getName()).isEqualTo("d");
   }
 
   @Test
@@ -33,6 +34,6 @@ public class MultipleInterceptorsTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().get(0).getMethod().getDescription(), "abc");
+    assertThat(tla.getPassedTests().get(0).getMethod().getDescription()).isEqualTo("abc");
   }
 }

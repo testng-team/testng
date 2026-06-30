@@ -1,6 +1,7 @@
 package test.listeners.github2522;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class FirstTestSample {
@@ -9,7 +10,7 @@ public class FirstTestSample {
 
   @Test(description = "Second test step", dependsOnMethods = "firstMethod")
   public void secondMethod() {
-    Assert.fail();
+    fail();
   }
 
   @Test(description = "Third test step", dependsOnMethods = "secondMethod")

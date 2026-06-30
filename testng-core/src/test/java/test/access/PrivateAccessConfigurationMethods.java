@@ -1,6 +1,7 @@
 package test.access;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -37,13 +38,21 @@ public class PrivateAccessConfigurationMethods extends BasePrivateAccessConfigur
 
   @Test
   public void allAccessModifiersConfiguration() {
-    Assert.assertTrue(m_private, "private @Configuration should have been run");
-    Assert.assertTrue(m_default, "default @Configuration should have been run");
-    Assert.assertTrue(m_protected, "protected @Configuration should have been run");
-    Assert.assertTrue(m_public, "public @Configuration should have been run");
+    assertThat(m_private).withFailMessage("private @Configuration should have been run").isTrue();
+    assertThat(m_default).withFailMessage("default @Configuration should have been run").isTrue();
+    assertThat(m_protected)
+        .withFailMessage("protected @Configuration should have been run")
+        .isTrue();
+    assertThat(m_public).withFailMessage("public @Configuration should have been run").isTrue();
 
-    Assert.assertTrue(m_baseProtected, "protected base @Configuration should have been run");
-    Assert.assertTrue(m_baseDefault, "default base @Configuration should have been run");
-    Assert.assertTrue(m_basePrivate, "private base @Configuration should not have been run");
+    assertThat(m_baseProtected)
+        .withFailMessage("protected base @Configuration should have been run")
+        .isTrue();
+    assertThat(m_baseDefault)
+        .withFailMessage("default base @Configuration should have been run")
+        .isTrue();
+    assertThat(m_basePrivate)
+        .withFailMessage("private base @Configuration should not have been run")
+        .isTrue();
   }
 }

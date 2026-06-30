@@ -1,7 +1,6 @@
 package test.configurationfailurepolicy;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,9 +31,8 @@ public class FailurePolicyTest extends SimpleBaseTest {
   // only if this is run from an xml file that sets this on the suite
   @BeforeClass(enabled = false)
   public void setupClass(ITestContext testContext) {
-    assertEquals(
-        testContext.getSuite().getXmlSuite().getConfigFailurePolicy(),
-        XmlSuite.FailurePolicy.CONTINUE);
+    assertThat(testContext.getSuite().getXmlSuite().getConfigFailurePolicy())
+        .isEqualTo(XmlSuite.FailurePolicy.CONTINUE);
   }
 
   @DataProvider(name = "dp")
@@ -183,15 +181,15 @@ public class FailurePolicyTest extends SimpleBaseTest {
       int configurationFailures,
       int configurationSkips,
       int skippedTests) {
-    assertEquals(
-        tla.getConfigurationFailures().size(),
-        configurationFailures,
-        "wrong number of configuration failures");
-    assertEquals(
-        tla.getConfigurationSkips().size(),
-        configurationSkips,
-        "wrong number of configuration skips");
-    assertEquals(tla.getSkippedTests().size(), skippedTests, "wrong number of skipped tests");
+    assertThat(tla.getConfigurationFailures())
+        .withFailMessage("wrong number of configuration failures")
+        .hasSize(configurationFailures);
+    assertThat(tla.getConfigurationSkips())
+        .withFailMessage("wrong number of configuration skips")
+        .hasSize(configurationSkips);
+    assertThat(tla.getSkippedTests())
+        .withFailMessage("wrong number of skipped tests")
+        .hasSize(skippedTests);
   }
 
   @Test(description = "GITHUB-2862")

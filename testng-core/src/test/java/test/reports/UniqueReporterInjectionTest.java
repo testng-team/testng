@@ -1,7 +1,12 @@
 package test.reports;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.*;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ITestNGListener;
+import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -20,8 +25,8 @@ public class UniqueReporterInjectionTest extends SimpleBaseTest {
     tng.run();
     // Since we have another reporting listener that is injected via the service loader file
     // reporting listeners size will now have to be two
-    Assert.assertEquals(tng.getReporters().size(), 2);
-    Assert.assertEquals(ReporterListenerForIssue1227.counter, 1);
+    assertThat(tng.getReporters()).hasSize(2);
+    assertThat(ReporterListenerForIssue1227.counter).isOne();
   }
 
   public static class ReporterListenerForIssue1227 implements IReporter {

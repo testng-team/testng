@@ -1,6 +1,7 @@
 package test.parameters;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -13,9 +14,9 @@ public class InheritFromSuiteChild2 {
   @Test
   @Parameters({"parameter1", "parameter2", "parameter3", "parameter4"})
   public void inheritedParameter(String p1, String p2, String p3, @Optional("abc") String p4) {
-    Assert.assertEquals(p1, "p1");
-    Assert.assertEquals(p2, "c2p2");
-    Assert.assertEquals(p3, "c2p3");
-    Assert.assertEquals(p4, "abc");
+    assertThat(p1).isEqualTo("p1");
+    assertThat(p2).isEqualTo("c2p2");
+    assertThat(p3).isEqualTo("c2p3");
+    assertThat(p4).isEqualTo("abc");
   }
 }

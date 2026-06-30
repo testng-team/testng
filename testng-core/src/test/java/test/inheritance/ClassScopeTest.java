@@ -1,6 +1,7 @@
 package test.inheritance;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class ClassScopeTest extends BaseClassScope {
@@ -13,6 +14,6 @@ public class ClassScopeTest extends BaseClassScope {
 
   @Test(dependsOnMethods = "setVerify")
   public void verify() {
-    Assert.assertTrue(m_verify);
+    assertThat(m_verify).isTrue();
   }
 }

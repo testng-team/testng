@@ -1,7 +1,8 @@
 package test.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.BeforeMethod;
@@ -19,9 +20,9 @@ public class BeforeMethodTest {
 
   @Test
   public void mainTest() {
-    Assert.assertEquals(m_method.getName(), "mainTest");
+    assertThat(m_method.getName()).isEqualTo("mainTest");
     ITestNGMethod[] methods = m_context.getAllTestMethods();
-    Assert.assertEquals(1, methods.length);
-    Assert.assertEquals(methods[0].getConstructorOrMethod().getName(), "mainTest");
+    assertThat(methods).hasSize(1);
+    assertThat(methods[0].getConstructorOrMethod().getName()).isEqualTo("mainTest");
   }
 }

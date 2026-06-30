@@ -1,6 +1,7 @@
 package test.github1417;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -41,6 +42,6 @@ public class AnotherTestClassSample {
 
   @Test
   public void testMethod() {
-    Assert.assertEquals("chrome", browsername);
+    assertThat(browsername).isEqualTo("chrome");
   }
 }

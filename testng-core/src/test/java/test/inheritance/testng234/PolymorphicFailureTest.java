@@ -1,7 +1,8 @@
 package test.inheritance.testng234;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
-import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -18,7 +19,7 @@ public class PolymorphicFailureTest extends SimpleBaseTest {
 
     assertTestResultsEqual(
         tla.getSkippedTests(), Arrays.asList("polymorphicMethod", "executePolymorphicMethod"));
-    Assert.assertEquals(0, tla.getPassedTests().size());
-    Assert.assertEquals(0, tla.getFailedTests().size());
+    assertThat(tla.getPassedTests()).isEmpty();
+    assertThat(tla.getFailedTests()).isEmpty();
   }
 }

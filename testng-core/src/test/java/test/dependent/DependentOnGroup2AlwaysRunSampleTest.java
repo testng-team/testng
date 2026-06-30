@@ -1,6 +1,7 @@
 package test.dependent;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 /**
@@ -29,6 +30,6 @@ public class DependentOnGroup2AlwaysRunSampleTest {
 
   @Test(dependsOnMethods = {"b"})
   public void verify() {
-    Assert.assertTrue(m_ok, "method b() should have been invoked");
+    assertThat(m_ok).withFailMessage("method b() should have been invoked").isTrue();
   }
 }

@@ -1,8 +1,9 @@
 package test.github1417;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.beust.jcommander.internal.Lists;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -33,7 +34,7 @@ public class YetAnotherTestClassSample {
 
   @Test
   public void testMethod() {
-    Assert.assertFalse(browsers.isEmpty());
+    assertThat(browsers).isNotEmpty();
   }
 
   @Parameters({"browsername"})

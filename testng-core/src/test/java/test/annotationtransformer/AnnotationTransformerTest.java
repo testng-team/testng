@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import org.testng.Assert;
 import org.testng.IAnnotationTransformer;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -136,10 +135,10 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     List<ITestResult> results = passedName != null ? tla.getPassedTests() : tla.getFailedTests();
     String name = passedName != null ? passedName : failedName;
 
-    Assert.assertEquals(results.size(), 1);
-    Assert.assertEquals(name, results.get(0).getMethod().getMethodName());
-    Assert.assertTrue(MySuiteListener.triggered);
-    Assert.assertFalse(MySuiteListener2.triggered);
+    assertThat(results).hasSize(1);
+    assertThat(name).isEqualTo(results.get(0).getMethod().getMethodName());
+    assertThat(MySuiteListener.triggered).isTrue();
+    assertThat(MySuiteListener2.triggered).isFalse();
   }
 
   @Test
@@ -151,8 +150,8 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     tng.setTestClasses(new Class[] {AnnotationTransformerClassSampleTest.class});
 
     tng.run();
-    Assert.assertFalse(MySuiteListener.triggered);
-    Assert.assertTrue(MySuiteListener2.triggered);
+    assertThat(MySuiteListener.triggered).isFalse();
+    assertThat(MySuiteListener2.triggered).isTrue();
   }
 
   @Test
@@ -165,7 +164,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(ConfigurationSampleTest.getBefore(), "correct");
+    assertThat(ConfigurationSampleTest.getBefore()).isEqualTo("correct");
   }
 
   @Test
@@ -178,7 +177,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 
   public static class CustomizedTestListenerAdaptor extends TestListenerAdapter {}
@@ -194,7 +193,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    assertThat(tla.getPassedTests()).hasSize(1);
     String[] expectedLogs =
         new String[] {
           "transform_data_provider",
@@ -215,7 +214,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 3);
+    assertThat(tla.getPassedTests()).hasSize(3);
 
     tng = create();
     tng.addListener(new AnnotationTransformerInvocationCountTest.InvocationCountTransformer(5));
@@ -225,7 +224,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 5);
+    assertThat(tla.getPassedTests()).hasSize(5);
   }
 
   @Test
@@ -253,7 +252,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 1);
+    assertThat(tla.getPassedTests()).hasSize(1);
   }
 
   @Test(description = "GITHUB-1790")
@@ -274,7 +273,7 @@ public class AnnotationTransformerTest extends SimpleBaseTest {
     TestNG myTestNG = create(myTest.getSuite());
     myTestNG.run();
     int retried = RetryListener.getExecutionCount();
-    assertThat(retried).isEqualTo(1);
+    assertThat(retried).isOne();
   }
 
   @Test(description = "GITHUB-2536", dataProvider = "getXmlPackages")

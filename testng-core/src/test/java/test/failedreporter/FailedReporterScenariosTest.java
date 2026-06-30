@@ -1,11 +1,11 @@
 package test.failedreporter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.failedreporter.FailedReporterLocalTestClass.WithFailure;
 import static test.failedreporter.FailedReporterLocalTestClass.WithoutFailure;
 
 import java.io.File;
 import java.util.UUID;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.reporters.FailedReporter;
@@ -17,7 +17,7 @@ public class FailedReporterScenariosTest extends SimpleBaseTest {
   public void testFileCreationSkipWhenNoFailuresExist() {
     File fileLocation = runTests(RUN_TYPES.WITHOUT_FAILURES);
     try {
-      Assert.assertFalse(getLocation(fileLocation).exists());
+      assertThat(getLocation(fileLocation).exists()).isFalse();
     } finally {
       if (fileLocation.exists()) {
         deleteDir(fileLocation);
@@ -41,7 +41,7 @@ public class FailedReporterScenariosTest extends SimpleBaseTest {
     try {
       FailedReporterTest.runAssertions(
           fileLocation, new String[] {"testMethodWithFailure"}, "<include name=\"%s\"/>");
-      Assert.assertTrue(getLocation(fileLocation).exists());
+      assertThat(getLocation(fileLocation)).exists();
     } finally {
       if (fileLocation.exists()) {
         deleteDir(fileLocation);

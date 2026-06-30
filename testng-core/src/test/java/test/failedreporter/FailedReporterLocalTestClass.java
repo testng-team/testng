@@ -1,6 +1,8 @@
 package test.failedreporter;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 /**
@@ -12,14 +14,14 @@ public class FailedReporterLocalTestClass {
   public static class WithFailure {
     @Test
     public void testMethodWithFailure() {
-      Assert.fail();
+      fail();
     }
   }
 
   public static class WithoutFailure {
     @Test
     public void testMethodWithoutFailure() {
-      Assert.assertTrue(true);
+      assertThat(true).isTrue();
     }
   }
 }

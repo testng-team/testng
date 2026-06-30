@@ -1,6 +1,7 @@
 package test.privatemethod;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class PrivateMethodTest {
@@ -16,7 +17,7 @@ public class PrivateMethodTest {
       PrivateMethodTest pmt = new PrivateMethodTest("aname", 1);
       int returnValue = pmt.privateMethod();
 
-      Assert.assertEquals(returnValue, 1);
+      assertThat(returnValue).isOne();
     }
   }
 }

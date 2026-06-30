@@ -1,6 +1,7 @@
 package test.inheritance.testng234;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -8,7 +9,7 @@ public class ChildTest extends ParentTest {
 
   @BeforeClass
   public void beforeClassMethod() {
-    Assert.assertTrue(false, "This is so sad... I must skip all my tests ...");
+    assertThat(false).withFailMessage("This is so sad... I must skip all my tests ...").isTrue();
   }
 
   @Override

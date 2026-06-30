@@ -1,9 +1,10 @@
 package test.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -32,13 +33,17 @@ public class ReflectMethodParametrizedConfigurationMethodTest {
 
   @AfterClass
   public void assertBeforeAfterMethodsInvocations() {
-    Assert.assertTrue(
-        m_before.containsKey("test1"), "@Test method should have been passed to @BeforeMethod");
-    Assert.assertTrue(
-        m_before.containsKey("test2"), "@Test method should have been passed to @BeforeMethod");
-    Assert.assertTrue(
-        m_after.containsKey("test1"), "@Test method should have been passed to @AfterMethod");
-    Assert.assertTrue(
-        m_before.containsKey("test2"), "@Test method should have been passed to @AfterMethod");
+    assertThat(m_before)
+        .withFailMessage("@Test method should have been passed to @BeforeMethod")
+        .containsKey("test1");
+    assertThat(m_before)
+        .withFailMessage("@Test method should have been passed to @BeforeMethod")
+        .containsKey("test2");
+    assertThat(m_after)
+        .withFailMessage("@Test method should have been passed to @AfterMethod")
+        .containsKey("test1");
+    assertThat(m_before)
+        .withFailMessage("@Test method should have been passed to @AfterMethod")
+        .containsKey("test2");
   }
 }

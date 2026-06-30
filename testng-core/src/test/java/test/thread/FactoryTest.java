@@ -1,6 +1,7 @@
 package test.thread;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -40,7 +41,7 @@ public class FactoryTest {
     B.setUp();
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
-    Assert.assertEquals(B.m_threadIds.size(), expectedThreadIdCount);
+    assertThat(tla.getPassedTests()).hasSize(2);
+    assertThat(B.m_threadIds).hasSize(expectedThreadIdCount);
   }
 }

@@ -1,6 +1,6 @@
 package test.expectedexceptions.issue2074;
 
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;

@@ -20,8 +20,7 @@ public class AttributeTest extends SimpleBaseTest {
   @Test
   public void f1(ITestContext ctx) {
     Set<String> names = ctx.getAttributeNames();
-    assertThat(names).hasSize(1);
-    assertThat(names).contains("test");
+    assertThat(names).hasSize(1).contains("test");
     assertThat(ctx.getAttribute("test")).isEqualTo("1");
     Object v = ctx.removeAttribute("test");
     assertThat(v).isNotNull();
@@ -31,8 +30,7 @@ public class AttributeTest extends SimpleBaseTest {
   @Test(dependsOnMethods = "f1")
   public void f2(ITestContext ctx) {
     Set<String> names = ctx.getAttributeNames();
-    assertThat(names).hasSize(1);
-    assertThat(names).contains("test2");
+    assertThat(names).hasSize(1).contains("test2");
     assertThat(ctx.getAttribute("test2")).isEqualTo("2");
   }
 

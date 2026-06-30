@@ -1,8 +1,9 @@
 package test.interleavedorder;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeTest;
@@ -19,12 +20,11 @@ public class InterleavedInvocationTest extends BaseTest {
   }
 
   private void verifyInvocation(int number, List<String> log, int index) {
-    Assert.assertEquals(log.get(index), "beforeTestChild" + number + "Class");
-    Assert.assertTrue(
-        ("test1".equals(log.get(index + 1)) && "test2".equals(LOG.get(index + 2)))
-            || ("test2".equals(LOG.get(index + 1)) && "test1".equals(LOG.get(index + 2))),
-        "test methods were not invoked correctly");
-    Assert.assertEquals(log.get(index + 3), "afterTestChild" + number + "Class");
+    assertThat(log.get(index)).isEqualTo("beforeTestChild" + number + "Class");
+    assertThat(log.subList(index + 1, index + 3))
+        .as("test methods were not invoked correctly")
+        .containsExactlyInAnyOrder("test1", "test2");
+    assertThat(log.get(index + 3)).isEqualTo("afterTestChild" + number + "Class");
   }
 
   @Test
@@ -36,7 +36,7 @@ public class InterleavedInvocationTest extends BaseTest {
     testng.addListener(tla);
     testng.run();
 
-    Assert.assertEquals(LOG.size(), 8, LOG.toString());
+    assertThat(LOG).withFailMessage(LOG.toString()).hasSize(8);
     int number1 = "beforeTestChild1Class".equals(LOG.get(0)) ? 1 : 2;
     int number2 = number1 == 1 ? 2 : 1;
     verifyInvocation(number1, LOG, 0);

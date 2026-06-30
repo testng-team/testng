@@ -1,5 +1,7 @@
 package test.failedreporter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,7 +9,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -104,14 +105,14 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
                 () -> new IllegalStateException("At-least one value should have been found"));
 
     // Cheeck class1 Parameters
-    Assert.assertEquals("44", failedClass1.getAllParameters().get("sharedParameter"));
-    Assert.assertEquals("43", failedClass1.getAllParameters().get("class1Parameter"));
-    Assert.assertNull(failedClass1.getAllParameters().get("class2Parameter"));
+    assertThat(failedClass1.getAllParameters()).containsEntry("sharedParameter", "44");
+    assertThat(failedClass1.getAllParameters()).containsEntry("class1Parameter", "43");
+    assertThat(failedClass1.getAllParameters().get("class2Parameter")).isNull();
 
     // Cheeck class2 Parameters
-    Assert.assertEquals("55", failedClass2.getAllParameters().get("sharedParameter"));
-    Assert.assertEquals("56", failedClass2.getAllParameters().get("class2Parameter"));
-    Assert.assertNull(failedClass2.getAllParameters().get("class1Parameter"));
+    assertThat(failedClass2.getAllParameters()).containsEntry("sharedParameter", "55");
+    assertThat(failedClass2.getAllParameters()).containsEntry("class2Parameter", "56");
+    assertThat(failedClass2.getAllParameters().get("class1Parameter")).isNull();
   }
 
   private static Map<String, String> create(String prefix) {
@@ -126,7 +127,9 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
       List<String> resultLines = Lists.newArrayList();
       grep(failed, String.format(expectedFormat, expectedKey, expectedKey + "Value"), resultLines);
       int expectedSize = 1;
-      Assert.assertEquals(resultLines.size(), expectedSize, "Mismatch param:" + expectedKey);
+      assertThat(resultLines)
+          .withFailMessage("Mismatch param:" + expectedKey)
+          .hasSize(expectedSize);
     }
   }
 

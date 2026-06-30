@@ -1,6 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -23,6 +23,6 @@ public class Basic1 {
 
   @Test(groups = {"basic1"})
   public void basic1() {
-    assertTrue(getCount() > 0, "COUNT WAS NOT INCREMENTED");
+    assertThat(getCount()).withFailMessage("COUNT WAS NOT INCREMENTED").isPositive();
   }
 }

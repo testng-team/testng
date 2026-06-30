@@ -106,8 +106,9 @@ class ClassHelperTest {
             .map {
                 it.declaringClass.name + "." + it.name
             }
-        assertThat(methods).hasSize(expectedCount)
-        assertThat(methods).contains(*expected)
+        assertThat(methods)
+                .hasSize(expectedCount)
+                .contains(*expected)
     }
 
     @DataProvider(name = "data")

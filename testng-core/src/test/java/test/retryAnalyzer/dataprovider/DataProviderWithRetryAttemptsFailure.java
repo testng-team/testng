@@ -1,7 +1,8 @@
 package test.retryAnalyzer.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -14,12 +15,13 @@ public class DataProviderWithRetryAttemptsFailure {
   // Test retry-analyzer with end result as failed after 3 successful retry attempts
   @Test(dataProvider = "getObjectData", retryAnalyzer = DataProviderRetryAnalyzer.class)
   public void test(boolean flag, String... values) {
-    Assert.assertTrue(
-        flag,
-        "Test execution is not"
-            + "successful after 3 retry attempts configured in retryAnalyzer for this data "
-            + Arrays.toString(values)
-            + "with boolean flag as "
-            + flag);
+    assertThat(flag)
+        .withFailMessage(
+            "Test execution is not"
+                + "successful after 3 retry attempts configured in retryAnalyzer for this data "
+                + Arrays.toString(values)
+                + "with boolean flag as "
+                + flag)
+        .isTrue();
   }
 }

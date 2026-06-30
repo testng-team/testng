@@ -1,8 +1,9 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Iterator;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -15,7 +16,7 @@ public class OneDimDataProviderSample {
 
   @Test(dataProvider = "staticArray")
   public void testStaticArray(String s) {
-    Assert.assertNotNull(s);
+    assertThat(s).isNotNull();
   }
 
   @DataProvider
@@ -25,7 +26,7 @@ public class OneDimDataProviderSample {
 
   @Test(dataProvider = "array")
   public void testArray(String s) {
-    Assert.assertNotNull(s);
+    assertThat(s).isNotNull();
   }
 
   @DataProvider
@@ -35,7 +36,7 @@ public class OneDimDataProviderSample {
 
   @Test(dataProvider = "staticIterator")
   public void testStaticIterator(String s) {
-    Assert.assertNotNull(s);
+    assertThat(s).isNotNull();
   }
 
   @DataProvider
@@ -45,6 +46,6 @@ public class OneDimDataProviderSample {
 
   @Test(dataProvider = "iterator")
   public void testIterator(String s) {
-    Assert.assertNotNull(s);
+    assertThat(s).isNotNull();
   }
 }

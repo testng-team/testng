@@ -1,7 +1,8 @@
 package test.methodselectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -19,16 +20,16 @@ public class PriorityTest {
     tng.run();
 
     List<ITestResult> passed = tla.getPassedTests();
-    Assert.assertEquals(passedTests.length, passed.size());
+    assertThat(passedTests).hasSameSizeAs(passed);
     if (passedTests.length == 1) {
       String passed0 = passed.get(0).getName();
-      Assert.assertEquals(passed0, passedTests[0]);
+      assertThat(passed0).isEqualTo(passedTests[0]);
     }
     if (passedTests.length == 2) {
       String passed0 = passed.get(0).getName();
       String passed1 = passed.get(1).getName();
-      Assert.assertTrue(passed0.equals(passedTests[0]) || passed0.equals(passedTests[1]));
-      Assert.assertTrue(passed1.equals(passedTests[0]) || passed1.equals(passedTests[1]));
+      assertThat(passed0).isIn(passedTests[0], passedTests[1]);
+      assertThat(passed1).isIn(passedTests[0], passedTests[1]);
     }
   }
 

@@ -22,6 +22,6 @@ public class InheritanceConfigTest extends SimpleBaseTest {
     xmlTest.addIncludedGroup("final");
     TestNG tng = create(xmlTest.getSuite());
     tng.run();
-    assertThat(tng.getStatus()).isEqualTo(0);
+    assertThat(tng.getStatus()).isZero();
   }
 }

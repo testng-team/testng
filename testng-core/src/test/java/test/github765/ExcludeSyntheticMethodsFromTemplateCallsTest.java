@@ -1,7 +1,8 @@
 package test.github765;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.InvokedMethodNameListener;
@@ -16,7 +17,7 @@ public class ExcludeSyntheticMethodsFromTemplateCallsTest extends SimpleBaseTest
     testng.addListener(listener);
     testng.run();
     List<String> methods = listener.getMethodsForTestClass(DuplicateCallsSample.class);
-    Assert.assertEquals(methods.size(), 1);
-    Assert.assertEquals(methods.get(0), "callExecuteTest");
+    assertThat(methods).hasSize(1);
+    assertThat(methods.get(0)).isEqualTo("callExecuteTest");
   }
 }

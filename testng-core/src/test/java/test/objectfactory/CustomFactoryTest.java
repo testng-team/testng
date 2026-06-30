@@ -1,6 +1,7 @@
 package test.objectfactory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.BeforeMethod;
@@ -21,7 +22,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     tng.setObjectFactory(LoggingObjectFactory.class);
     tng.run();
 
-    Assert.assertEquals(LoggingObjectFactory.invoked, 1);
+    assertThat(LoggingObjectFactory.invoked).isOne();
   }
 
   @Test
@@ -31,7 +32,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    Assert.assertEquals(LoggingObjectFactory.invoked, 1);
+    assertThat(LoggingObjectFactory.invoked).isOne();
   }
 
   @Test(description = "This broke after I made the change to enable AbstractTest")
@@ -42,7 +43,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    Assert.assertEquals(LoggingObjectFactory.invoked, 1);
+    assertThat(LoggingObjectFactory.invoked).isOne();
   }
 
   @Test
@@ -54,7 +55,7 @@ public class CustomFactoryTest extends SimpleBaseTest {
     TestNG tng = create(suite);
     tng.run();
 
-    Assert.assertEquals(ContextAwareObjectFactoryFactory.invoked, 1);
+    assertThat(ContextAwareObjectFactoryFactory.invoked).isOne();
   }
 
   @Test(expectedExceptions = TestNGException.class)

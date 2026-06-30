@@ -2,6 +2,7 @@ package test.reflect;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -12,7 +13,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.TestRunner;
@@ -76,10 +76,10 @@ public class ReflectionRecipesTest {
       if (annotation != null) {
         final String provider = annotation.expectationProvider();
         final int flag = annotation.flag();
-        Assert.assertNotNull(provider);
+        assertThat(provider).isNotNull();
         final Method providerMethod = ExactMatchTest.class.getMethod(provider, int.class);
         final Object out = providerMethod.invoke(ExactMatchTest.class, flag);
-        Assert.assertTrue(out instanceof Object[][]);
+        assertThat(out).isInstanceOf(Object[][].class);
         log.debug(method.getName() + ", " + out);
         objects.add(new Object[] {out, method});
       }
@@ -100,10 +100,10 @@ public class ReflectionRecipesTest {
       if (annotation != null) {
         final String provider = annotation.expectationProvider();
         final int flag = annotation.flag();
-        Assert.assertNotNull(provider);
+        assertThat(provider).isNotNull();
         final Method providerMethod = MatchArrayEndingTest.class.getMethod(provider, int.class);
         final Object out = providerMethod.invoke(MatchArrayEndingTest.class, flag);
-        Assert.assertTrue(out instanceof Object[][]);
+        assertThat(out).isInstanceOf(Object[][].class);
         log.debug(method.getName() + ", " + out);
         objects.add(new Object[] {out, method});
       }
@@ -127,21 +127,17 @@ public class ReflectionRecipesTest {
   public void matchArrayEndingTest(final Object[][] expected, @NoInjection final Method method) {
     if (expected != null) {
       final Parameter[] methodParameters = ReflectionRecipes.getMethodParameters(method);
-      Assert.assertNotNull(methodParameters);
+      assertThat(methodParameters).isNotNull();
       final Parameter[] filteredParameters =
           ReflectionRecipes.filter(methodParameters, InjectableParameter.Assistant.ALL_INJECTS);
-      Assert.assertNotNull(filteredParameters);
+      assertThat(filteredParameters).isNotNull();
 
       for (final Object[] expect : expected) {
-        Assert.assertNotNull(expect);
-        Assert.assertEquals(expect.length, 2);
-        Assert.assertNotNull(expect[0]);
-        Assert.assertTrue(expect[0] instanceof Object[]);
-        Assert.assertNotNull(expect[1]);
-        Assert.assertTrue(expect[1] instanceof Boolean);
-        Assert.assertEquals(
-            ReflectionRecipes.matchArrayEnding(filteredParameters, (Object[]) expect[0]),
-            expect[1]);
+        assertThat(expect).hasSize(2);
+        assertThat(expect[0]).isInstanceOf(Object[].class);
+        assertThat(expect[1]).isInstanceOf(Boolean.class);
+        assertThat(ReflectionRecipes.matchArrayEnding(filteredParameters, (Object[]) expect[0]))
+            .isEqualTo(expect[1]);
       }
     }
   }
@@ -150,20 +146,17 @@ public class ReflectionRecipesTest {
   public void exactMatchTest(final Object[][] expected, @NoInjection final Method method) {
     if (expected != null) {
       final Parameter[] methodParameters = ReflectionRecipes.getMethodParameters(method);
-      Assert.assertNotNull(methodParameters);
+      assertThat(methodParameters).isNotNull();
       final Parameter[] filteredParameters =
           ReflectionRecipes.filter(methodParameters, InjectableParameter.Assistant.ALL_INJECTS);
-      Assert.assertNotNull(filteredParameters);
+      assertThat(filteredParameters).isNotNull();
 
       for (final Object[] expect : expected) {
-        Assert.assertNotNull(expect);
-        Assert.assertEquals(expect.length, 2);
-        Assert.assertNotNull(expect[0]);
-        Assert.assertTrue(expect[0] instanceof Object[]);
-        Assert.assertNotNull(expect[1]);
-        Assert.assertTrue(expect[1] instanceof Boolean);
-        Assert.assertEquals(
-            ReflectionRecipes.exactMatch(filteredParameters, (Object[]) expect[0]), expect[1]);
+        assertThat(expect).hasSize(2);
+        assertThat(expect[0]).isInstanceOf(Object[].class);
+        assertThat(expect[1]).isInstanceOf(Boolean.class);
+        assertThat(ReflectionRecipes.exactMatch(filteredParameters, (Object[]) expect[0]))
+            .isEqualTo(expect[1]);
       }
     }
   }
@@ -174,9 +167,9 @@ public class ReflectionRecipesTest {
     final Parameter[] parameters1 =
         ReflectionRecipes.filter(parameters, InjectableParameter.Assistant.ALL_INJECTS);
     log.debug("Out: " + Arrays.asList(parameters1));
-    Assert.assertEquals(parameters1.length, 2);
-    Assert.assertEquals(parameters1[0].getType(), int.class);
-    Assert.assertEquals(parameters1[1].getType(), Boolean.class);
+    assertThat(parameters1).hasSize(2);
+    assertThat(parameters1[0].getType()).isEqualTo(int.class);
+    assertThat(parameters1[1].getType()).isEqualTo(Boolean.class);
   }
 
   @Test(dataProvider = "methodInputParamArgsPair")
@@ -187,17 +180,17 @@ public class ReflectionRecipesTest {
         ReflectionRecipes.inject(
             parameters, InjectableParameter.Assistant.ALL_INJECTS, args, (Method) null, null, null);
     log.debug("injectedArgs: " + Arrays.asList(injectedArgs));
-    Assert.assertEquals(injectedArgs.length, parameters.length);
+    assertThat(injectedArgs).hasSameSizeAs(parameters);
   }
 
   @Test(dataProvider = "testContexts")
   public void testIsOrImplementsInterface(final Class<?> clazz) {
-    Assert.assertTrue(ReflectionRecipes.isOrImplementsInterface(ITestContext.class, clazz));
+    assertThat(ReflectionRecipes.isOrImplementsInterface(ITestContext.class, clazz)).isTrue();
   }
 
   @Test(dataProvider = "notTestContexts")
   public void testNegativeCaseIsOrImplementsInterface(final Class<?> clazz) {
-    Assert.assertFalse(ReflectionRecipes.isOrImplementsInterface(ITestContext.class, clazz));
+    assertThat(ReflectionRecipes.isOrImplementsInterface(ITestContext.class, clazz)).isFalse();
   }
 
   private interface T {

@@ -1,6 +1,7 @@
 package test.reports.issue2611;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.AfterTest;
@@ -18,7 +19,7 @@ public class TestClassFailsAtBeforeSuiteWithBeforeGroupsSuiteTestSample {
 
   @BeforeSuite(groups = {"dragon-warrior"})
   public void beforeSuite() {
-    Assert.fail();
+    fail();
   }
 
   @AfterSuite(groups = {"dragon-warrior"})

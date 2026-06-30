@@ -1,6 +1,6 @@
 package test.dependent;
 
-import org.testng.Assert;
+import org.assertj.core.api.Assertions;
 import org.testng.annotations.Test;
 
 public class MultipleDependentSampleTest {
@@ -10,7 +10,7 @@ public class MultipleDependentSampleTest {
 
   @Test(dependsOnMethods = "init")
   public void fail() {
-    Assert.fail();
+    Assertions.fail();
   }
 
   @Test(dependsOnMethods = "fail")

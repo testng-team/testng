@@ -1,9 +1,10 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
@@ -27,30 +28,30 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
         Arrays.asList(
             "a1", "a2", "a3", "b1", "b2", "b3", "b4", "b5", "c1", "d", "x", "y", "z", "t");
     int size = expectedMethods.size();
-    Assert.assertEquals(methods.size(), size);
+    assertThat(methods).hasSize(size);
     for (String em : expectedMethods) {
-      Assert.assertTrue(methods.contains(em));
+      assertThat(methods).contains(em);
     }
     Map<String, Boolean> map = Maps.newHashMap();
     for (String m : methods) {
       map.put(m, Boolean.TRUE);
       if ("b1".equals(m) || "b2".equals(m) || "b3".equals(m) || "b4".equals(m) || "b5".equals(m)) {
-        Assert.assertTrue(map.get("a1"));
-        Assert.assertTrue(map.get("a2"));
-        Assert.assertTrue(map.get("a3"));
+        assertThat(map.get("a1")).isTrue();
+        assertThat(map.get("a2")).isTrue();
+        assertThat(map.get("a3")).isTrue();
       }
       if ("d".equals(m)) {
-        Assert.assertTrue(map.get("a1"));
-        Assert.assertTrue(map.get("a2"));
+        assertThat(map.get("a1")).isTrue();
+        assertThat(map.get("a2")).isTrue();
       }
       if ("c1".equals(m)) {
-        Assert.assertTrue(map.get("b1"));
-        Assert.assertTrue(map.get("b2"));
+        assertThat(map.get("b1")).isTrue();
+        assertThat(map.get("b2")).isTrue();
       }
     }
-    Assert.assertEquals(map.size(), size);
+    assertThat(map).hasSize(size);
     for (Boolean val : map.values()) {
-      Assert.assertTrue(val);
+      assertThat(val).isTrue();
     }
   }
 
@@ -75,7 +76,9 @@ public class MultiThreadedDependentTest extends SimpleBaseTest {
     Map<Long, Long> map = Helper.getMap(MultiThreadedDependentSampleTest.class.getName());
     try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(map)) {
       tng.run();
-      Assert.assertTrue(map.size() > 1, "Map size:" + map.size() + " expected more than 1");
+      assertThat(map)
+          .withFailMessage("Map size:" + map.size() + " expected more than 1")
+          .hasSizeGreaterThan(1);
       assertOrder(MultiThreadedDependentSampleTest.m_methods);
     }
   }

@@ -1,10 +1,12 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -48,7 +50,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
 
     BaseThreadTest.initThreadLog();
     tng.run(); // Shouldn't not deadlock
-    Assert.assertEquals(BaseThreadTest.getThreadCount(), SUITE_THREAD_POOL_SIZE);
+    assertThat(BaseThreadTest.getThreadCount()).isEqualTo(SUITE_THREAD_POOL_SIZE);
   }
 
   @Test
@@ -100,18 +102,19 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     tng.run();
 
     Map<String, Long> suitesMap = BaseThreadTest.getSuitesMap();
-    Assert.assertEquals(BaseThreadTest.getThreadCount(), 1);
-    Assert.assertEquals(suitesMap.keySet().size(), 3);
+    assertThat(BaseThreadTest.getThreadCount()).isOne();
+    assertThat(suitesMap.keySet()).hasSize(3);
 
     final String SUITE_NAME_PREFIX = "Suite Parallel ";
     if (suitesMap.get(SUITE_NAME_PREFIX + 1) > suitesMap.get(SUITE_NAME_PREFIX + 2)) {
-      Assert.fail(
+      fail(
           "Suite "
               + (SUITE_NAME_PREFIX + 1)
               + " should have run before "
               + (SUITE_NAME_PREFIX + 2));
     }
-    Assert.assertTrue(suitesMap.get(SUITE_NAME_PREFIX + 2) <= suitesMap.get(SUITE_NAME_PREFIX + 0));
+    assertThat(suitesMap.get(SUITE_NAME_PREFIX + 2))
+        .isLessThanOrEqualTo(suitesMap.get(SUITE_NAME_PREFIX + 0));
   }
 
   @Test(description = "Number of threads (1) is less than number of levels of suites (2)")
@@ -180,17 +183,16 @@ public class ParallelSuiteTest extends SimpleBaseTest {
     BaseThreadTest.initThreadLog();
     tng.run();
 
-    Assert.assertEquals(
-        BaseThreadTest.getThreadCount(),
-        expectedThreadCount,
-        "Thread count expected:"
-            + expectedThreadCount
-            + " actual:"
-            + BaseThreadTest.getThreadCount());
-    Assert.assertEquals(
-        BaseThreadTest.getSuitesMap().keySet().size(),
-        expectedSuiteCount,
-        "Suite count is incorrect");
+    assertThat(BaseThreadTest.getThreadCount())
+        .withFailMessage(
+            "Thread count expected:"
+                + expectedThreadCount
+                + " actual:"
+                + BaseThreadTest.getThreadCount())
+        .isEqualTo(expectedThreadCount);
+    assertThat(BaseThreadTest.getSuitesMap().keySet())
+        .withFailMessage("Suite count is incorrect")
+        .hasSize(expectedSuiteCount);
   }
 
   private static String getPathToParallelResource(String resourceName) {

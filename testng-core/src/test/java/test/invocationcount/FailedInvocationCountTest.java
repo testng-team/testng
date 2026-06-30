@@ -13,7 +13,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import org.assertj.core.api.SoftAssertions;
-import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -43,9 +42,9 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), passed);
-    Assert.assertEquals(tla.getFailedTests().size(), failed);
-    Assert.assertEquals(tla.getSkippedTests().size(), skipped);
+    assertThat(tla.getPassedTests()).hasSize(passed);
+    assertThat(tla.getFailedTests()).hasSize(failed);
+    assertThat(tla.getSkippedTests()).hasSize(skipped);
   }
 
   @Test
@@ -65,9 +64,9 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 8);
-    Assert.assertEquals(tla.getFailedTests().size(), 7);
-    Assert.assertEquals(tla.getSkippedTests().size(), 5);
+    assertThat(tla.getPassedTests()).hasSize(8);
+    assertThat(tla.getFailedTests()).hasSize(7);
+    assertThat(tla.getSkippedTests()).hasSize(5);
   }
 
   @Test(dataProvider = "dp")

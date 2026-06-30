@@ -1,10 +1,10 @@
 package test.listeners.ordering;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.listeners.ordering.Constants.*;
 
 import java.util.Arrays;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
@@ -570,6 +570,6 @@ public class ListenerInvocationDefaultBehaviorTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.alwaysRunListeners(true);
     testng.run();
-    Assertions.assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
+    assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
   }
 }

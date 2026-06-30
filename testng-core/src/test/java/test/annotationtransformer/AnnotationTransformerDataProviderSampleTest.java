@@ -1,6 +1,7 @@
 package test.annotationtransformer;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -15,6 +16,6 @@ public class AnnotationTransformerDataProviderSampleTest {
 
   @Test(dataProvider = "dataProvider")
   public void f(Integer n) {
-    Assert.assertEquals(n, Integer.valueOf(42));
+    assertThat(n).isEqualTo(Integer.valueOf(42));
   }
 }

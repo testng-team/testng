@@ -2,56 +2,56 @@ package test.groovy.issue2854
 
 import org.testng.annotations.Test
 
-import static org.testng.Assert.assertEquals
+import static org.assertj.core.api.Assertions.assertThat
 
 class AssertionsTestSample {
 
     @Test
     void testAssertEqualsWorksWithBooleans() {
-        assertEquals(true, true)
-        assertEquals(true, true, "Sample Message")
+        assertThat(true).isEqualTo(true)
+        assertThat(true).as("Sample Message").isEqualTo(true)
     }
 
     @Test
     void testAssertEqualsWorksWithBytes() {
-        assertEquals(Byte.valueOf((byte) 10), Byte.valueOf((byte) 10))
-        assertEquals(Byte.valueOf((byte) 10), Byte.valueOf((byte) 10), "Sample Message")
+        assertThat(Byte.valueOf((byte) 10)).isEqualTo(Byte.valueOf((byte) 10))
+        assertThat(Byte.valueOf((byte) 10)).as("Sample Message").isEqualTo(Byte.valueOf((byte) 10))
     }
 
     @Test
     void testAssertEqualsWorksWithChars() {
-        assertEquals(Character.valueOf((char) 10), Character.valueOf((char) 10))
-        assertEquals(Character.valueOf((char) 10), Character.valueOf((char) 10), "Sample Message")
+        assertThat(Character.valueOf((char) 10)).isEqualTo(Character.valueOf((char) 10))
+        assertThat(Character.valueOf((char) 10)).as("Sample Message").isEqualTo(Character.valueOf((char) 10))
     }
 
     @Test
     void testAssertEqualsWorksWithShorts() {
-        assertEquals(Short.valueOf((short) 10), Short.valueOf((short) 10))
-        assertEquals(Short.valueOf((short) 10), Short.valueOf((short) 10), "Sample Message")
+        assertThat(Short.valueOf((short) 10)).isEqualTo(Short.valueOf((short) 10))
+        assertThat(Short.valueOf((short) 10)).as("Sample Message").isEqualTo(Short.valueOf((short) 10))
     }
 
     @Test
     void testAssertEqualsWorksWithInts() {
-        assertEquals(10, 10)
-        assertEquals(10, 10, "Sample Message")
+        assertThat(10).isEqualTo(10)
+        assertThat(10).as("Sample Message").isEqualTo(10)
     }
 
     @Test
     void testAssertEqualsWorksWithLongs() {
-        assertEquals(Long.valueOf((long) 10), Long.valueOf((long) 10))
-        assertEquals(Long.valueOf((long) 10), Long.valueOf((long) 10), "Sample Message")
+        assertThat(Long.valueOf((long) 10)).isEqualTo(Long.valueOf((long) 10))
+        assertThat(Long.valueOf((long) 10)).as("Sample Message").isEqualTo(Long.valueOf((long) 10))
     }
 
     @Test
     void testAssertEqualsWorksWithFloats() {
-        assertEquals(Float.valueOf((float) 10), Float.valueOf((float) 10))
-        assertEquals(Float.valueOf((float) 10), Float.valueOf((float) 10), "Sample Message")
+        assertThat(Float.valueOf((float) 10)).isEqualTo(Float.valueOf((float) 10))
+        assertThat(Float.valueOf((float) 10)).as("Sample Message").isEqualTo(Float.valueOf((float) 10))
     }
 
     @Test
     void testAssertEqualsWorksWithDoubles() {
-        assertEquals(Double.valueOf((double) 10), Double.valueOf((double) 10))
-        assertEquals(Double.valueOf((double) 10), Double.valueOf((double) 10), "Sample Message")
+        assertThat(Double.valueOf((double) 10)).isEqualTo(Double.valueOf((double) 10))
+        assertThat(Double.valueOf((double) 10)).as("Sample Message").isEqualTo(Double.valueOf((double) 10))
     }
 
 }

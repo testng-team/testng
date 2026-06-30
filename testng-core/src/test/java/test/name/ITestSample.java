@@ -1,6 +1,7 @@
 package test.name;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITest;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -25,7 +26,7 @@ public class ITestSample implements ITest {
 
   @Test(dataProvider = "dp")
   public void run(String testName) {
-    Assert.assertEquals(testName, this.testName.get());
+    assertThat(this.testName.get()).isEqualTo(testName);
   }
 
   @BeforeMethod
@@ -35,7 +36,7 @@ public class ITestSample implements ITest {
 
   @AfterMethod
   public void tearDown(Object[] testArgs) {
-    Assert.assertEquals((String) testArgs[0], this.testName.get());
+    assertThat(this.testName.get()).isEqualTo((String) testArgs[0]);
   }
 
   @Override

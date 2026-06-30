@@ -108,7 +108,7 @@ public class ParameterTest extends SimpleBaseTest {
     TestListenerAdapter listener = new TestListenerAdapter();
     testng.addListener(listener);
     testng.run();
-    assertThat(listener.getFailedTests().size()).isEqualTo(2);
+    assertThat(listener.getFailedTests()).hasSize(2);
     String[] expectedMsgs =
         new String[] {
           "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 1000",
@@ -132,7 +132,7 @@ public class ParameterTest extends SimpleBaseTest {
     TestListenerAdapter listener = new TestListenerAdapter();
     testng.addListener(listener);
     testng.run();
-    assertThat(listener.getPassedTests().isEmpty()).isFalse();
+    assertThat(listener.getPassedTests()).isNotEmpty();
   }
 
   @Test(description = "GITHUB-581")

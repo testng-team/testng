@@ -1,7 +1,9 @@
 package test.retryAnalyzer.github1706;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -11,9 +13,9 @@ public class ParameterInjectionSample {
   @Test(retryAnalyzer = LocalRetry.class)
   @Parameters({"counter"})
   public void testMethod(int paramCounter) {
-    Assert.assertTrue(paramCounter > 0);
+    assertThat(paramCounter).isPositive();
     if (counter.incrementAndGet() != 3) {
-      Assert.fail();
+      fail();
     }
   }
 }

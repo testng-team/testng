@@ -1,6 +1,6 @@
 package test.alwaysrun;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -18,7 +18,9 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.setTestClasses(new Class[] {AlwaysRunAfter1.class});
     testng.addListener(tla);
     testng.run();
-    assertTrue(AlwaysRunAfter1.success(), "afterTestMethod should have run");
+    assertThat(AlwaysRunAfter1.success())
+        .withFailMessage("afterTestMethod should have run")
+        .isTrue();
   }
 
   @Test
@@ -29,7 +31,7 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.setTestClasses(new Class[] {AlwaysRunAfter3.class});
     testng.addListener(tla);
     testng.run();
-    assertTrue(AlwaysRunAfter3.success(), "afterMethod should have run");
+    assertThat(AlwaysRunAfter3.success()).withFailMessage("afterMethod should have run").isTrue();
   }
 
   @Test
@@ -40,7 +42,9 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.setTestClasses(new Class[] {AlwaysRunAfter2.class});
     testng.addListener(tla);
     testng.run();
-    assertTrue(AlwaysRunAfter2.success(), "afterTestMethod should not have run");
+    assertThat(AlwaysRunAfter2.success())
+        .withFailMessage("afterTestMethod should not have run")
+        .isTrue();
   }
 
   @Test
@@ -52,6 +56,8 @@ public class AlwaysRunTest extends SimpleBaseTest {
     testng.setGroups("A");
     testng.addListener(tla);
     testng.run();
-    assertTrue(AlwaysRunBefore1.success(), "before alwaysRun methods should have been run");
+    assertThat(AlwaysRunBefore1.success())
+        .withFailMessage("before alwaysRun methods should have been run")
+        .isTrue();
   }
 }

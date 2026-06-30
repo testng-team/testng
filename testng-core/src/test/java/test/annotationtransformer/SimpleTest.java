@@ -1,6 +1,7 @@
 package test.annotationtransformer;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestListenerAdapter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
@@ -19,6 +20,6 @@ public class SimpleTest {
 
   @Test
   public void run() {
-    Assert.assertEquals(m_n, 42);
+    assertThat(m_n).isEqualTo(42);
   }
 }

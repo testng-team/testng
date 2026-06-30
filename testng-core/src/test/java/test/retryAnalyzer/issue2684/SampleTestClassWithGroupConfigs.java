@@ -1,6 +1,6 @@
 package test.retryAnalyzer.issue2684;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterGroups;
@@ -34,7 +34,7 @@ public class SampleTestClassWithGroupConfigs {
   @Test(groups = "2684_group", retryAnalyzer = RerunAnalyzer.class)
   public void testMethod() {
     RerunAnalyzer.secondTestRetryCount++;
-    assertTrue(RerunAnalyzer.secondTestRetryCount > RerunAnalyzer.maxRetryCount);
+    assertThat(RerunAnalyzer.secondTestRetryCount).isGreaterThan(RerunAnalyzer.maxRetryCount);
   }
 
   @AfterMethod(alwaysRun = true)

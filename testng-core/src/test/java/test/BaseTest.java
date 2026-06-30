@@ -1,7 +1,6 @@
 package test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,8 +150,9 @@ public class BaseTest extends BaseDistributedTest {
   }
 
   protected void run() {
-    assertNotNull(
-        getTest(), "Test wasn't set, maybe @Configuration methodSetUp() was never called");
+    assertThat(getTest())
+        .withFailMessage("Test wasn't set, maybe @Configuration methodSetUp() was never called")
+        .isNotNull();
     setPassedTests(Maps.newHashMap());
     setFailedTests(Maps.newHashMap());
     setSkippedTests(Maps.newHashMap());
@@ -307,9 +307,13 @@ public class BaseTest extends BaseDistributedTest {
       Object firstKey = keys.iterator().next();
       List<ITestResult> passedResult = tests.get(firstKey);
       int n = passedResult.size();
-      assertEquals(n, expected, "Expected " + expected + " " + message + " but found " + n);
+      assertThat(n)
+          .withFailMessage("Expected " + expected + " " + message + " but found " + n)
+          .isEqualTo(expected);
     } else {
-      assertEquals(0, expected, "Expected " + expected + " " + message + " but found 0.");
+      assertThat(0)
+          .withFailMessage("Expected " + expected + " " + message + " but found 0.")
+          .isEqualTo(expected);
     }
   }
 

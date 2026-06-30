@@ -1,6 +1,6 @@
 package test.methods;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
@@ -43,8 +43,9 @@ public class SampleMethod1 {
   }
 
   public static void verify() {
-    assertTrue(
-        m_ok1 && m_ok2 && m_ok3 && m_ok4,
-        "All booleans should be true: " + m_ok1 + " " + m_ok2 + " " + m_ok3 + " " + m_ok4);
+    assertThat(m_ok1).withFailMessage("m_ok1 should be true").isTrue();
+    assertThat(m_ok2).withFailMessage("m_ok2 should be true").isTrue();
+    assertThat(m_ok3).withFailMessage("m_ok3 should be true").isTrue();
+    assertThat(m_ok4).withFailMessage("m_ok4 should be true").isTrue();
   }
 }

@@ -16,6 +16,6 @@ public class ResultEndMillisTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) new ResultListener());
     tng.run();
 
-    assertThat(ResultListener.m_end > 0).isTrue();
+    assertThat(ResultListener.m_end).isPositive();
   }
 }

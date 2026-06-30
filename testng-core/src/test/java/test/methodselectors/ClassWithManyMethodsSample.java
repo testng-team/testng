@@ -1,24 +1,25 @@
 package test.methodselectors;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 @Test(description = "GITHUB-1507")
 public class ClassWithManyMethodsSample {
 
   public void testa() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   public void testb() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   public void testc() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   public void testd() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

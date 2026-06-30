@@ -1,8 +1,9 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.Set;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -25,6 +26,6 @@ public class NestedStaticTest extends SimpleBaseTest {
       actual.add(t.getMethod().getMethodName());
     }
 
-    Assert.assertEquals(actual, expected);
+    assertThat(actual).hasSameElementsAs(expected);
   }
 }

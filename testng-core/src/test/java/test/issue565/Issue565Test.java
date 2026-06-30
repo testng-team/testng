@@ -1,6 +1,7 @@
 package test.issue565;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -33,8 +34,8 @@ public class Issue565Test extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getFailedTests().size(), 0);
-    Assert.assertEquals(tla.getSkippedTests().size(), 0);
-    Assert.assertEquals(tla.getPassedTests().size(), 2 + 4 * GeneratedClassFactory.SIZE);
+    assertThat(tla.getFailedTests()).isEmpty();
+    assertThat(tla.getSkippedTests()).isEmpty();
+    assertThat(tla.getPassedTests()).hasSize(2 + 4 * GeneratedClassFactory.SIZE);
   }
 }

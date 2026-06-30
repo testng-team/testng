@@ -1,6 +1,7 @@
 package test.testng1232;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -39,7 +40,7 @@ public class TestListenerInstances extends SimpleBaseTest {
     tng.addListener((ITestNGListener) anotherListener);
     tng.run();
     for (CounterTypes type : CounterTypes.values()) {
-      Assert.assertEquals(TestListenerFor1232.counters.get(type).intValue(), 1);
+      assertThat(TestListenerFor1232.counters.get(type).intValue()).isOne();
     }
   }
 

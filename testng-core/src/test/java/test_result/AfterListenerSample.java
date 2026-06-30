@@ -1,6 +1,7 @@
 package test_result;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -21,7 +22,7 @@ public class AfterListenerSample {
 
   @Test
   public void succeedTest() {
-    Assert.fail();
+    fail();
   }
 
   @Test

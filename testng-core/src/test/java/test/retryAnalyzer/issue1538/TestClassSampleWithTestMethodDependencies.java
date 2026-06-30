@@ -1,6 +1,7 @@
 package test.retryAnalyzer.issue1538;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class TestClassSampleWithTestMethodDependencies {
@@ -8,11 +9,11 @@ public class TestClassSampleWithTestMethodDependencies {
 
   @Test(retryAnalyzer = RetryForIssue1538.class)
   public void a() {
-    Assert.assertEquals(i++, 1);
+    assertThat(i++).isOne();
   }
 
   @Test(dependsOnMethods = "a", retryAnalyzer = RetryForIssue1538.class)
   public void b() {
-    Assert.assertEquals(i++, 2);
+    assertThat(i++).isEqualTo(2);
   }
 }

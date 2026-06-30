@@ -1,7 +1,6 @@
 package test.reports;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +11,8 @@ public class GitHub447Sample {
 
   @Test(dataProvider = "add")
   public void add(List<Object> list, Object e, String expected) {
-    assertTrue(list.add(e));
-    assertEquals(list.toString(), expected);
+    assertThat(list.add(e)).isTrue();
+    assertThat(list).hasToString(expected);
   }
 
   @DataProvider(name = "add")

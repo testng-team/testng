@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -17,6 +18,6 @@ public class ConfigurationWithParameters {
   @Parameters({"param"})
   @Test
   public void testMethod(String param) {
-    Assert.assertEquals(m_param, param);
+    assertThat(m_param).isEqualTo(param);
   }
 }

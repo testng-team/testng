@@ -1,6 +1,7 @@
 package test.dependent;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -39,9 +40,9 @@ public class ImplicitGroupInclusion4SampleTest {
 
   @AfterClass(groups = {"g2"})
   public void verify() {
-    Assert.assertFalse(m_m1, "Shouldn't have invoked m1()");
-    Assert.assertFalse(m_m2);
-    Assert.assertTrue(m_m3);
-    Assert.assertTrue(m_m4);
+    assertThat(m_m1).withFailMessage("Shouldn't have invoked m1()").isFalse();
+    assertThat(m_m2).isFalse();
+    assertThat(m_m3).isTrue();
+    assertThat(m_m4).isTrue();
   }
 }

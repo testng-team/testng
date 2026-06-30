@@ -1,11 +1,12 @@
 package test.parameters;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -41,7 +42,7 @@ public class ParamInheritanceTest extends SimpleBaseTest {
 
       tng.run();
 
-      Assert.assertEquals(tla.getPassedTests().size(), 1);
+      assertThat(tla.getPassedTests()).hasSize(1);
     } finally {
       try {
         os.close();
@@ -63,6 +64,6 @@ public class ParamInheritanceTest extends SimpleBaseTest {
 
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 3);
+    assertThat(tla.getPassedTests()).hasSize(3);
   }
 }

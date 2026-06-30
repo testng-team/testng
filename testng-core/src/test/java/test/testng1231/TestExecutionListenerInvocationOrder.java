@@ -1,7 +1,8 @@
 package test.testng1231;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.beust.jcommander.internal.Lists;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.testng.*;
@@ -20,8 +21,7 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
     TestListenerFor1231 listener = new TestListenerFor1231();
     tng.addListener((ITestNGListener) listener);
     tng.run();
-    List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5, 6);
-    Assert.assertEquals(TestListenerFor1231.order, expected);
+    assertThat(TestListenerFor1231.order).containsExactly(1, 2, 3, 4, 5, 6);
   }
 
   public static class TestListenerFor1231
