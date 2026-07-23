@@ -1,6 +1,6 @@
 package test.testng1396;
 
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.Comparator;
 import java.util.List;

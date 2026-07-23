@@ -1,6 +1,7 @@
 package test.github1362;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
@@ -12,17 +13,17 @@ public class TestSample {
 
   @Test(groups = {"exTests"})
   public void test1() {
-    Assert.assertTrue(true, "test1");
+    assertThat(true).withFailMessage("test1").isTrue();
   }
 
   @Test(groups = {"exTests"})
   public void test2() {
-    Assert.assertTrue(true, "test2");
+    assertThat(true).withFailMessage("test2").isTrue();
   }
 
   @Test(groups = {"exTests"})
   public void test3() {
-    Assert.assertTrue(true, "test3");
+    assertThat(true).withFailMessage("test3").isTrue();
   }
 
   @AfterGroups(groups = {"exTests"})

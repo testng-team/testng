@@ -1,6 +1,7 @@
 package test;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -23,6 +24,6 @@ public class IndividualMethodsTest {
   @Test
   public void testMethod() {
     // this line causes the test to fail, showing that setUp() hadn't been run
-    Assert.assertTrue(m_setUpCalled);
+    assertThat(m_setUpCalled).isTrue();
   }
 }

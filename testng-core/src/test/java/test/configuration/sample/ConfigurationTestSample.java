@@ -1,7 +1,6 @@
 package test.configuration.sample;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -21,76 +20,76 @@ public class ConfigurationTestSample {
 
   @BeforeSuite
   public void beforeSuite() {
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
-    assertFalse(m_beforeClass, "beforeClass shouldn't have run");
-    assertFalse(m_afterClass, "afterClass shouldn't have run");
-    assertFalse(m_beforeMethod, "beforeMethod shouldn't have run");
-    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
+    assertThat(m_beforeClass).withFailMessage("beforeClass shouldn't have run").isFalse();
+    assertThat(m_afterClass).withFailMessage("afterClass shouldn't have run").isFalse();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod shouldn't have run").isFalse();
+    assertThat(m_afterMethod).withFailMessage("afterMethod shouldn't have run").isFalse();
     m_beforeSuite = true;
   }
 
   @BeforeClass
   public void beforeClass() {
-    assertTrue(m_beforeSuite, "beforeSuite should have run");
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
-    assertFalse(m_beforeClass, "beforeClass shouldn't have run");
-    assertFalse(m_afterClass, "afterClass shouldn't have run");
-    assertFalse(m_beforeMethod, "beforeMethod shouldn't have run");
-    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have run").isTrue();
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
+    assertThat(m_beforeClass).withFailMessage("beforeClass shouldn't have run").isFalse();
+    assertThat(m_afterClass).withFailMessage("afterClass shouldn't have run").isFalse();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod shouldn't have run").isFalse();
+    assertThat(m_afterMethod).withFailMessage("afterMethod shouldn't have run").isFalse();
     m_beforeClass = true;
   }
 
   @BeforeMethod
   public void beforeMethod() {
-    assertTrue(m_beforeSuite, "beforeSuite should have run");
-    assertTrue(m_beforeClass, "beforeClass have run");
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
-    assertFalse(m_afterClass, "afterClass shouldn't have run");
-    assertFalse(m_beforeMethod, "beforeMethod shouldn't have run");
-    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have run").isTrue();
+    assertThat(m_beforeClass).withFailMessage("beforeClass have run").isTrue();
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
+    assertThat(m_afterClass).withFailMessage("afterClass shouldn't have run").isFalse();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod shouldn't have run").isFalse();
+    assertThat(m_afterMethod).withFailMessage("afterMethod shouldn't have run").isFalse();
     m_beforeMethod = true;
   }
 
   @AfterMethod
   public void afterMethod() {
-    assertTrue(m_beforeSuite, "beforeSuite should have run");
-    assertTrue(m_beforeClass, "beforeClass have run");
-    assertTrue(m_beforeMethod, "beforeMethod should have run");
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
-    assertFalse(m_afterClass, "afterClass shouldn't have run");
-    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have run").isTrue();
+    assertThat(m_beforeClass).withFailMessage("beforeClass have run").isTrue();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod should have run").isTrue();
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
+    assertThat(m_afterClass).withFailMessage("afterClass shouldn't have run").isFalse();
+    assertThat(m_afterMethod).withFailMessage("afterMethod shouldn't have run").isFalse();
     m_afterMethod = true;
   }
 
   @AfterClass
   public void afterClass() {
-    assertTrue(m_beforeSuite, "beforeSuite should have run");
-    assertTrue(m_beforeClass, "beforeClass have run");
-    assertTrue(m_beforeMethod, "beforeMethod should have run");
-    assertTrue(m_afterMethod, "afterMethod should have run");
-    assertFalse(m_afterClass, "afterClass shouldn't have run");
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have run").isTrue();
+    assertThat(m_beforeClass).withFailMessage("beforeClass have run").isTrue();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod should have run").isTrue();
+    assertThat(m_afterMethod).withFailMessage("afterMethod should have run").isTrue();
+    assertThat(m_afterClass).withFailMessage("afterClass shouldn't have run").isFalse();
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
     m_afterClass = true;
   }
 
   @AfterSuite
   public void afterSuite() {
-    assertTrue(m_beforeSuite, "beforeSuite should have run");
-    assertTrue(m_beforeClass, "beforeClass have run");
-    assertTrue(m_beforeMethod, "beforeMethod should have run");
-    assertTrue(m_afterMethod, "afterMethod should have run");
-    assertTrue(m_afterClass, "afterClass should have run");
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have run").isTrue();
+    assertThat(m_beforeClass).withFailMessage("beforeClass have run").isTrue();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod should have run").isTrue();
+    assertThat(m_afterMethod).withFailMessage("afterMethod should have run").isTrue();
+    assertThat(m_afterClass).withFailMessage("afterClass should have run").isTrue();
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
     m_afterSuite = true;
   }
 
   @Test
   public void verify() {
-    assertTrue(m_beforeSuite, "beforeSuite should have run");
-    assertTrue(m_beforeClass, "beforeClass have run");
-    assertTrue(m_beforeMethod, "beforeMethod should have run");
-    assertFalse(m_afterSuite, "afterSuite shouldn't have run");
-    assertFalse(m_afterClass, "afterClass shouldn't have run");
-    assertFalse(m_afterMethod, "afterMethod shouldn't have run");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have run").isTrue();
+    assertThat(m_beforeClass).withFailMessage("beforeClass have run").isTrue();
+    assertThat(m_beforeMethod).withFailMessage("beforeMethod should have run").isTrue();
+    assertThat(m_afterSuite).withFailMessage("afterSuite shouldn't have run").isFalse();
+    assertThat(m_afterClass).withFailMessage("afterClass shouldn't have run").isFalse();
+    assertThat(m_afterMethod).withFailMessage("afterMethod shouldn't have run").isFalse();
   }
 }

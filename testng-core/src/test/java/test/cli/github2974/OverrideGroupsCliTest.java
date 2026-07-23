@@ -1,8 +1,9 @@
 package test.cli.github2974;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.CommandLineArgs;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -35,8 +36,8 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
     NameCollector collector = new NameCollector();
     testNG.addListener(collector);
     testNG.run();
-    Assert.assertTrue(collector.names.contains("overrideTest"));
-    Assert.assertFalse(collector.names.contains("defaultTest"));
+    assertThat(collector.names.contains("overrideTest")).isTrue();
+    assertThat(collector.names.contains("defaultTest")).isFalse();
   }
 
   @Test(description = "GITHUB-2974")
@@ -53,7 +54,7 @@ public class OverrideGroupsCliTest extends SimpleBaseTest {
     NameCollector collector = new NameCollector();
     testNG.addListener(collector);
     testNG.run();
-    Assert.assertTrue(collector.names.contains("defaultTest"));
-    Assert.assertFalse(collector.names.contains("overrideTest"));
+    assertThat(collector.names.contains("defaultTest")).isTrue();
+    assertThat(collector.names.contains("overrideTest")).isFalse();
   }
 }

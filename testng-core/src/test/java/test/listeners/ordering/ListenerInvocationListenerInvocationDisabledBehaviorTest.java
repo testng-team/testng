@@ -1,5 +1,6 @@
 package test.listeners.ordering;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.listeners.ordering.Constants.IALTERSUITELISTENER_ALTER;
 import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_DATAPROVIDER;
 import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_FACTORY;
@@ -33,7 +34,6 @@ import static test.listeners.ordering.Constants.METHODINTERCEPTOR_INTERCEPT;
 
 import java.util.Arrays;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -458,6 +458,6 @@ public class ListenerInvocationListenerInvocationDisabledBehaviorTest extends Si
     testng.addListener(listener);
     testng.alwaysRunListeners(false);
     testng.run();
-    Assertions.assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
+    assertThat(listener.getMessages()).containsExactlyElementsOf(expected);
   }
 }

@@ -1,6 +1,7 @@
 package test.dataprovider;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -16,7 +17,7 @@ public class ClassSample {
 
   @DataProvider(name = "dp1")
   public static Object[][] createData1(Class clazz) {
-    Assert.assertEquals(clazz, ClassSample.class);
+    assertThat(clazz).isEqualTo(ClassSample.class);
     return new Object[][] {{"0"}, {"1"}};
   }
 
@@ -25,7 +26,7 @@ public class ClassSample {
 
   @DataProvider(name = "dp2")
   public Object[][] createData2(Class clazz) {
-    Assert.assertEquals(clazz, ClassSample.class);
+    assertThat(clazz).isEqualTo(ClassSample.class);
     return new Object[][] {{"Cedric" + s}, {"Alois" + s}};
   }
 

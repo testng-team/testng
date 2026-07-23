@@ -1,6 +1,7 @@
 package test.retryAnalyzer.github2669;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.ITestContext;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -12,6 +13,6 @@ public class RetryTestSample {
   @Test(retryAnalyzer = FailedRetry.class)
   public void create(String id, String name, String age, ITestContext context) {
     count++;
-    Assert.fail();
+    fail();
   }
 }

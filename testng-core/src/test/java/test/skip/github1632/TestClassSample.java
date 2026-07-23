@@ -1,6 +1,7 @@
 package test.skip.github1632;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class TestClassSample {
@@ -14,7 +15,7 @@ public class TestClassSample {
 
   @Test
   public void failingMethod() {
-    Assert.fail();
+    fail();
   }
 
   @Test

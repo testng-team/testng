@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.Test;
 
@@ -20,28 +21,28 @@ public class ConfigurationGroups6SampleTest {
 
   @Test(groups = "cg6-1")
   public void run1() {
-    Assert.assertFalse(m_after);
+    assertThat(m_after).isFalse();
     m_run1 = true;
   }
 
   @Test(groups = "cg6-1")
   public void run2() {
-    Assert.assertFalse(m_after);
+    assertThat(m_after).isFalse();
     m_run2 = true;
   }
 
   @AfterGroups("cg6-1")
   public void after() {
-    Assert.assertTrue(m_run1);
-    Assert.assertTrue(m_run2);
-    Assert.assertFalse(m_after);
+    assertThat(m_run1).isTrue();
+    assertThat(m_run2).isTrue();
+    assertThat(m_after).isFalse();
     m_after = true;
   }
 
   @Test(dependsOnGroups = {"cg6-1"})
   public void verify() {
-    Assert.assertTrue(m_run1, "run1() wasn't run");
-    Assert.assertTrue(m_run2, "run2() wasn't run");
-    Assert.assertTrue(m_after, "after1() wasn't run");
+    assertThat(m_run1).withFailMessage("run1() wasn't run").isTrue();
+    assertThat(m_run2).withFailMessage("run2() wasn't run").isTrue();
+    assertThat(m_after).withFailMessage("after1() wasn't run").isTrue();
   }
 }

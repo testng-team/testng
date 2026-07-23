@@ -1,8 +1,11 @@
 package test.failedreporter;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -195,13 +198,14 @@ public class FailedReporterTest extends SimpleBaseTest {
     File failed = new File(outputDir, "testng-failed.xml");
     for (String s : expectedMethods) {
       List<String> resultLines = Lists.newArrayList();
-      Assert.assertTrue(failed.exists(), String.format("File %s not exists", failed.getName()));
-      grep(failed, String.format(expectedLine, s), resultLines);
+      assertThat(failed.exists())
+          .withFailMessage(format("File %s not exists", failed.getName()))
+          .isTrue();
+      grep(failed, format(expectedLine, s), resultLines);
 
-      Assert.assertEquals(
-          resultLines.size(),
-          expected,
-          String.format("Matched lines:\n %s", String.join(",\n", resultLines)));
+      assertThat(resultLines.size())
+          .withFailMessage(format("Matched lines:\n %s", join(",\n", resultLines)))
+          .isEqualTo(expected);
     }
   }
 }

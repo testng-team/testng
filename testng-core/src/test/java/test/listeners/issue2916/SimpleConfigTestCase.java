@@ -1,6 +1,7 @@
 package test.listeners.issue2916;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.*;
 
 public class SimpleConfigTestCase {
@@ -15,7 +16,7 @@ public class SimpleConfigTestCase {
 
   @BeforeMethod
   public void beforeMethod() {
-    Assert.fail();
+    fail();
   }
 
   @Test

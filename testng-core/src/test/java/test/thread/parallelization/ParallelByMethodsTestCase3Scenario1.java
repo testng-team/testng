@@ -1,6 +1,6 @@
 package test.thread.parallelization;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteAndTestLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllTestLevelEventLogs;
@@ -139,21 +139,21 @@ public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest
   // Verifies that the expected number of suite, test and test method level events were logged.
   @Test
   public void sanityCheck() {
-    assertEquals(
-        suiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for " + SUITE + ": " + suiteLevelEventLogs);
-    assertEquals(
-        testLevelEventLogs.size(),
-        2,
-        "There should be 2 test level events logged for " + SUITE + ": " + testLevelEventLogs);
-    assertEquals(
-        testMethodLevelEventLogs.size(),
-        45,
-        "There should be 45 test method level events logged for "
-            + SUITE
-            + ": "
-            + testMethodLevelEventLogs);
+    assertThat(suiteLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 2 suite level events logged for " + SUITE + ": " + suiteLevelEventLogs)
+        .isEqualTo(2);
+    assertThat(testLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 2 test level events logged for " + SUITE + ": " + testLevelEventLogs)
+        .isEqualTo(2);
+    assertThat(testMethodLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 45 test method level events logged for "
+                + SUITE
+                + ": "
+                + testMethodLevelEventLogs)
+        .isEqualTo(45);
   }
 
   // Verify that the suite listener and test listener events have timestamps in the following order:

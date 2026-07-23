@@ -1,5 +1,7 @@
 package test.testng1231;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.beust.jcommander.internal.Lists;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -21,7 +23,7 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
     tng.addListener((ITestNGListener) listener);
     tng.run();
     List<Integer> expected = Arrays.asList(1, 2, 3, 4, 5, 6);
-    Assert.assertEquals(TestListenerFor1231.order, expected);
+    assertThat(TestListenerFor1231.order).isEqualTo(expected);
   }
 
   public static class TestListenerFor1231

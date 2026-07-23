@@ -1,6 +1,7 @@
 package test.listeners.ordering;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
@@ -9,7 +10,7 @@ public class SimpleTestClassWithFailedMethodHasRetryAnalyzer {
 
   @Test(retryAnalyzer = OnceMore.class)
   public void testWillFail() {
-    Assert.fail();
+    fail();
   }
 
   public static class OnceMore implements IRetryAnalyzer {

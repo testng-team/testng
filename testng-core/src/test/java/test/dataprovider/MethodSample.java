@@ -1,7 +1,8 @@
 package test.dataprovider;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -9,8 +10,8 @@ public class MethodSample {
 
   @DataProvider(name = "dp1")
   public Object[][] createData(Method m) {
-    Assert.assertEquals(m.getName(), "test1");
-    Assert.assertEquals(m.getDeclaringClass(), MethodSample.class);
+    assertThat(m.getName()).isEqualTo("test1");
+    assertThat(m.getDeclaringClass()).isEqualTo(MethodSample.class);
 
     return new Object[][] {{"Cedric"}, {"Alois"}};
   }
@@ -33,7 +34,7 @@ public class MethodSample {
       default:
         throw new RuntimeException("Received method " + m + ", expected test2 or test3");
     }
-    Assert.assertEquals(m.getDeclaringClass(), MethodSample.class);
+    assertThat(m.getDeclaringClass()).isEqualTo(MethodSample.class);
 
     return new Object[][] {{"Cedric"}};
   }

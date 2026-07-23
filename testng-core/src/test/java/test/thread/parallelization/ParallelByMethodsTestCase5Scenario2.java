@@ -1,6 +1,6 @@
 package test.thread.parallelization;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllEventLogsForSuite;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteLevelEventLogs;
 import static test.thread.parallelization.TestNgRunStateTracker.getAllSuiteListenerStartEventLogs;
@@ -244,80 +244,80 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
   // suites.
   @Test
   public void sanityCheck() {
-    assertEquals(
-        suiteLevelEventLogs.size(),
-        4,
-        "There should be 4 suite level events logged for "
-            + SUITE_A
-            + " and "
-            + SUITE_B
-            + ": "
-            + suiteLevelEventLogs);
-    assertEquals(
-        testLevelEventLogs.size(),
-        6,
-        "There should be 6 test level events logged for "
-            + SUITE_A
-            + " and "
-            + SUITE_B
-            + ": "
-            + testLevelEventLogs);
+    assertThat(suiteLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 4 suite level events logged for "
+                + SUITE_A
+                + " and "
+                + SUITE_B
+                + ": "
+                + suiteLevelEventLogs)
+        .isEqualTo(4);
+    assertThat(testLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 6 test level events logged for "
+                + SUITE_A
+                + " and "
+                + SUITE_B
+                + ": "
+                + testLevelEventLogs)
+        .isEqualTo(6);
 
-    assertEquals(
-        testMethodLevelEventLogs.size(),
-        303,
-        "There should 303 test method level events logged for "
-            + SUITE_A
-            + " and "
-            + SUITE_B
-            + ": "
-            + testMethodLevelEventLogs);
+    assertThat(testMethodLevelEventLogs.size())
+        .withFailMessage(
+            "There should 303 test method level events logged for "
+                + SUITE_A
+                + " and "
+                + SUITE_B
+                + ": "
+                + testMethodLevelEventLogs)
+        .isEqualTo(303);
 
-    assertEquals(
-        suiteOneSuiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneSuiteLevelEventLogs);
-    assertEquals(
-        suiteOneTestLevelEventLogs.size(),
-        2,
-        "There should be 2 test level events logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneTestLevelEventLogs);
-    assertEquals(
-        suiteOneTestMethodLevelEventLogs.size(),
-        84,
-        "There should be 84 test method level events "
-            + "logged for "
-            + SUITE_A
-            + ": "
-            + suiteOneTestMethodLevelEventLogs);
+    assertThat(suiteOneSuiteLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneSuiteLevelEventLogs)
+        .isEqualTo(2);
+    assertThat(suiteOneTestLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 2 test level events logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneTestLevelEventLogs)
+        .isEqualTo(2);
+    assertThat(suiteOneTestMethodLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 84 test method level events "
+                + "logged for "
+                + SUITE_A
+                + ": "
+                + suiteOneTestMethodLevelEventLogs)
+        .isEqualTo(84);
 
-    assertEquals(
-        suiteTwoSuiteLevelEventLogs.size(),
-        2,
-        "There should be 2 suite level events logged for "
-            + SUITE_B
-            + ": "
-            + suiteTwoSuiteLevelEventLogs);
-    assertEquals(
-        suiteTwoTestLevelEventLogs.size(),
-        4,
-        "There should be 4 test level events logged for "
-            + SUITE_B
-            + ": "
-            + suiteTwoTestLevelEventLogs);
-    assertEquals(
-        suiteTwoTestMethodLevelEventLogs.size(),
-        219,
-        "There should be 219 test method level events "
-            + "logged for "
-            + SUITE_B
-            + ": "
-            + suiteTwoTestMethodLevelEventLogs);
+    assertThat(suiteTwoSuiteLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 2 suite level events logged for "
+                + SUITE_B
+                + ": "
+                + suiteTwoSuiteLevelEventLogs)
+        .isEqualTo(2);
+    assertThat(suiteTwoTestLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 4 test level events logged for "
+                + SUITE_B
+                + ": "
+                + suiteTwoTestLevelEventLogs)
+        .isEqualTo(4);
+    assertThat(suiteTwoTestMethodLevelEventLogs.size())
+        .withFailMessage(
+            "There should be 219 test method level events "
+                + "logged for "
+                + SUITE_B
+                + ": "
+                + suiteTwoTestMethodLevelEventLogs)
+        .isEqualTo(219);
   }
 
   // Verify that all the events in the second suite run have timestamps later than the suite

@@ -1,6 +1,8 @@
 package test.thread;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static test.thread.BaseThreadTest.getThreadCount;
+
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import test.BaseTest;
@@ -18,6 +20,6 @@ public class SingleThreadForParallelMethodsTest extends BaseTest {
 
     run();
 
-    Assert.assertEquals(PriorityInSingleThreadTest.getThreadCount(), 1);
+    assertThat(getThreadCount()).isEqualTo(1);
   }
 }

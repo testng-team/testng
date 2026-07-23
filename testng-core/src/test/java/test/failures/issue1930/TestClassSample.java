@@ -1,6 +1,7 @@
 package test.failures.issue1930;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -21,6 +22,6 @@ public class TestClassSample extends TestBase {
 
   @Test(dataProvider = "test1")
   public void testPrimeNumberChecker(int inputNumber, boolean expectedResult) {
-    Assert.assertEquals(expectedResult, primeNumberChecker.validate(inputNumber));
+    assertThat(expectedResult).isEqualTo(primeNumberChecker.validate(inputNumber));
   }
 }

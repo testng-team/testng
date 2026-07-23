@@ -1,7 +1,8 @@
 package test.testng106;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
@@ -18,9 +19,8 @@ public class TestNG106 extends SimpleBaseTest {
     createXmlTest(s, "myTest-last", Test2.class.getName());
     tng.setXmlSuites(List.of(s));
     tng.run();
-    Assert.assertEquals(
-        FailingSuiteFixture.s_invocations,
-        0,
-        "@BeforeSuite has failed. All tests should be skipped.");
+    assertThat(FailingSuiteFixture.s_invocations)
+        .withFailMessage("@BeforeSuite has failed. All tests should be skipped.")
+        .isEqualTo(0);
   }
 }

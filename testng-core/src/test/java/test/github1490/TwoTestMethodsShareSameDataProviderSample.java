@@ -1,6 +1,7 @@
 package test.github1490;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.ConstructorOrMethod;
@@ -9,15 +10,15 @@ public class TwoTestMethodsShareSameDataProviderSample {
   @TestInfo(name = "glutton")
   @Test(dataProvider = "cookie-master")
   public void testHowMuchPoAte(String cookieName, int count) {
-    Assert.assertEquals("oreo", cookieName);
-    Assert.assertTrue(count > 100);
+    assertThat("oreo").isEqualTo(cookieName);
+    assertThat(count > 100).isTrue();
   }
 
   @TestInfo(name = "nibbler")
   @Test(dataProvider = "cookie-master")
   public void testHowMuchMasterShifuAte(String cookieName, int count) {
-    Assert.assertEquals("marie-gold", cookieName);
-    Assert.assertTrue(count < 100);
+    assertThat("marie-gold").isEqualTo(cookieName);
+    assertThat(count < 100).isTrue();
   }
 
   @DataProvider(name = "cookie-master")

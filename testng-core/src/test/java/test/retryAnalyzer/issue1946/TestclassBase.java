@@ -1,6 +1,6 @@
 package test.retryAnalyzer.issue1946;
 
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;

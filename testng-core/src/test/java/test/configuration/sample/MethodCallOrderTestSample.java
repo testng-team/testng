@@ -1,7 +1,6 @@
 package test.configuration.sample;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -18,10 +17,10 @@ public class MethodCallOrderTestSample {
 
   @BeforeClass
   public void beforeClass() {
-    assertTrue(s_beforeSuite);
-    assertTrue(s_beforeTest);
-    assertFalse(s_beforeClass);
-    assertFalse(s_beforeMethod);
+    assertThat(s_beforeSuite).isTrue();
+    assertThat(s_beforeTest).isTrue();
+    assertThat(s_beforeClass).isFalse();
+    assertThat(s_beforeMethod).isFalse();
 
     s_beforeClass = true;
   }
@@ -36,39 +35,47 @@ public class MethodCallOrderTestSample {
 
   @BeforeMethod
   public void beforeMethod() {
-    assertTrue(s_beforeSuite);
-    assertTrue(s_beforeTest);
-    assertTrue(s_beforeClass);
-    assertFalse(s_beforeMethod);
+    assertThat(s_beforeSuite).isTrue();
+    assertThat(s_beforeTest).isTrue();
+    assertThat(s_beforeClass).isTrue();
+    assertThat(s_beforeMethod).isFalse();
     s_beforeMethod = true;
   }
 
   @Test
   public void realTest() {
-    assertTrue(s_beforeSuite);
-    assertTrue(s_beforeTest);
-    assertTrue(s_beforeClass);
-    assertTrue(s_beforeMethod);
+    assertThat(s_beforeSuite).isTrue();
+    assertThat(s_beforeTest).isTrue();
+    assertThat(s_beforeClass).isTrue();
+    assertThat(s_beforeMethod).isTrue();
   }
 
   @AfterMethod
   public void afterMethod() {
-    assertFalse(
-        ExternalConfigurationClassSample.s_afterMethod, "afterTestMethod shouldn't have been run");
-    assertFalse(
-        ExternalConfigurationClassSample.s_afterClass, "afterTestClass shouldn't have been run");
-    assertFalse(ExternalConfigurationClassSample.s_afterTest, "afterTest should haven't been run");
+    assertThat(ExternalConfigurationClassSample.s_afterMethod)
+        .withFailMessage("afterTestMethod shouldn't have been run")
+        .isFalse();
+    assertThat(ExternalConfigurationClassSample.s_afterClass)
+        .withFailMessage("afterTestClass shouldn't have been run")
+        .isFalse();
+    assertThat(ExternalConfigurationClassSample.s_afterTest)
+        .withFailMessage("afterTest should haven't been run")
+        .isFalse();
 
     ExternalConfigurationClassSample.s_afterMethod = true;
   }
 
   @AfterClass
   public void afterClass() {
-    assertTrue(
-        ExternalConfigurationClassSample.s_afterMethod, "afterTestMethod should have been run");
-    assertFalse(
-        ExternalConfigurationClassSample.s_afterClass, "afterTestClass shouldn't have been run");
-    assertFalse(ExternalConfigurationClassSample.s_afterTest, "afterTest should haven't been run");
+    assertThat(ExternalConfigurationClassSample.s_afterMethod)
+        .withFailMessage("afterTestMethod should have been run")
+        .isTrue();
+    assertThat(ExternalConfigurationClassSample.s_afterClass)
+        .withFailMessage("afterTestClass shouldn't have been run")
+        .isFalse();
+    assertThat(ExternalConfigurationClassSample.s_afterTest)
+        .withFailMessage("afterTest should haven't been run")
+        .isFalse();
     ExternalConfigurationClassSample.s_afterClass = true;
   }
 }

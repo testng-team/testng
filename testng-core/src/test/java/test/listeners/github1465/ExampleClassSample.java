@@ -1,6 +1,6 @@
 package test.listeners.github1465;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import org.testng.SkipException;
@@ -18,12 +18,12 @@ public class ExampleClassSample {
 
   @Test
   public void test1() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void test2() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @AfterMethod

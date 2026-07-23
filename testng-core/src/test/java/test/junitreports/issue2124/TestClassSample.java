@@ -1,6 +1,7 @@
 package test.junitreports.issue2124;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.Reporter;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
@@ -56,12 +57,12 @@ public class TestClassSample {
   @Test
   public void testFailWithReporter() {
     Reporter.log(MESSAGE_5, true);
-    Assert.fail(MESSAGE_FAIL);
+    fail(MESSAGE_FAIL);
   }
 
   @Test
   public void testFailNoReporter() {
-    Assert.fail(MESSAGE_FAIL);
+    fail(MESSAGE_FAIL);
   }
 
   @Test

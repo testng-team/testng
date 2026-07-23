@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
@@ -16,8 +17,8 @@ public class ConfigurationGroups3SampleTest extends Base3 {
 
   @BeforeGroups("cg34-1")
   public void before1() {
-    Assert.assertFalse(m_before);
-    Assert.assertFalse(m_f1);
+    assertThat(m_before).isFalse();
+    assertThat(m_f1).isFalse();
     m_before = true;
   }
 
@@ -26,16 +27,16 @@ public class ConfigurationGroups3SampleTest extends Base3 {
 
   @Test(groups = "cg34-1")
   public void f1() {
-    Assert.assertTrue(m_before);
-    Assert.assertTrue(Base3.getBefore());
+    assertThat(m_before).isTrue();
+    assertThat(Base3.getBefore()).isTrue();
     m_f1 = true;
   }
 
   @Test(dependsOnGroups = {"cg34-a", "cg34-1"})
   public void verify() {
-    Assert.assertTrue(m_before);
-    Assert.assertTrue(Base3.getBefore());
-    Assert.assertTrue(m_f1);
+    assertThat(m_before).isTrue();
+    assertThat(Base3.getBefore()).isTrue();
+    assertThat(m_f1).isTrue();
   }
 
   public static boolean getF1() {

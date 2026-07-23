@@ -1,6 +1,7 @@
 package test.dataprovider.issue2267;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -18,6 +19,6 @@ public class TestClassSample extends SimpleBaseTest {
 
   @Test(dataProvider = "dp")
   public void testWithRetryAndDataProvider(int testNumber) {
-    Assert.fail("This time test FAIL! with testNumber: " + testNumber);
+    fail("This time test FAIL! with testNumber: " + testNumber);
   }
 }

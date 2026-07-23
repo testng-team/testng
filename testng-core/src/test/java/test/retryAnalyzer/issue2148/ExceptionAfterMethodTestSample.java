@@ -1,9 +1,10 @@
 package test.retryAnalyzer.issue2148;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.AfterMethod;
@@ -24,7 +25,7 @@ public class ExceptionAfterMethodTestSample {
   public void testMethod() {
     ITestResult method = Reporter.getCurrentTestResult();
     logs.add("Test Method [" + method.getMethod().getMethodName() + "] #" + counter.get());
-    Assert.fail();
+    fail();
   }
 
   @AfterMethod(alwaysRun = true)

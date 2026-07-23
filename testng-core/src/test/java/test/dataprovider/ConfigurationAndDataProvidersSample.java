@@ -1,6 +1,7 @@
 package test.dataprovider;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -18,10 +19,12 @@ public class ConfigurationAndDataProvidersSample {
 
   @DataProvider(name = "test1")
   public Object[][] createData() {
-    Assert.assertTrue(m_beforeSuite, "beforeSuite should have been invoked");
-    Assert.assertTrue(m_beforeTest, "beforeTest should have been invoked");
-    Assert.assertTrue(m_beforeClass, "beforeClass should have been invoked");
-    Assert.assertFalse(m_beforeTestMethod, "beforeMethod should not have been invoked");
+    assertThat(m_beforeSuite).withFailMessage("beforeSuite should have been invoked").isTrue();
+    assertThat(m_beforeTest).withFailMessage("beforeTest should have been invoked").isTrue();
+    assertThat(m_beforeClass).withFailMessage("beforeClass should have been invoked").isTrue();
+    assertThat(m_beforeTestMethod)
+        .withFailMessage("beforeMethod should not have been invoked")
+        .isFalse();
 
     return new Object[][] {{"Test"}};
   }

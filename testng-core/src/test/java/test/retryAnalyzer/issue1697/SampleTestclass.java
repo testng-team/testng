@@ -1,6 +1,7 @@
 package test.retryAnalyzer.issue1697;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class SampleTestclass {
@@ -9,13 +10,13 @@ public class SampleTestclass {
   @Test(retryAnalyzer = SimpleRetrier.class)
   public void dataDrivenTest() {
     if (counter++ != 1) {
-      Assert.fail();
+      fail();
     }
   }
 
   @Test
   public void parent() {
-    Assert.fail();
+    fail();
   }
 
   @Test(dependsOnMethods = "parent")

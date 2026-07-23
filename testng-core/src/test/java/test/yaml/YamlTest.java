@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
@@ -50,7 +49,7 @@ public class YamlTest extends SimpleBaseTest {
     Collection<XmlSuite> s2 =
         new Parser(getPathToResource("yaml" + File.separator + name + ".xml")).parse();
 
-    Assert.assertEquals(s1, s2);
+    assertThat(s1).isEqualTo(s2);
   }
 
   @Test(description = "GITHUB-1787")

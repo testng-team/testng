@@ -1,6 +1,7 @@
 package test.objectfactory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class ClassObjectFactorySampleTest implements ISetValue {
@@ -9,7 +10,7 @@ public class ClassObjectFactorySampleTest implements ISetValue {
 
   @Test
   public void f() {
-    Assert.assertEquals(m_n, 42);
+    assertThat(m_n).isEqualTo(42);
   }
 
   @Override

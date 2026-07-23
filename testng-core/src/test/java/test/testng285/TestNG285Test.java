@@ -1,6 +1,7 @@
 package test.testng285;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 import org.testng.xml.XmlSuite;
 import test.BaseTest;
@@ -15,6 +16,6 @@ public class TestNG285Test extends BaseTest {
 
     run();
 
-    Assert.assertEquals(BugBase.m_threadIds.size(), 1);
+    assertThat(BugBase.m_threadIds.size()).isEqualTo(1);
   }
 }

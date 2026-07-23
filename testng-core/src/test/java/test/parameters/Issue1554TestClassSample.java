@@ -1,6 +1,7 @@
 package test.parameters;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
@@ -19,7 +20,7 @@ public class Issue1554TestClassSample {
 
   @Test()
   public void aTest() {
-    Assert.assertNotNull(browser);
-    Assert.assertNotNull(context);
+    assertThat(browser).isNotNull();
+    assertThat(context).isNotNull();
   }
 }

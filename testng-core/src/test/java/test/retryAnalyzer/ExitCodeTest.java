@@ -1,7 +1,6 @@
 package test.retryAnalyzer;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.ITestNGListener;
 import org.testng.TestNG;
@@ -13,14 +12,14 @@ public class ExitCodeTest extends SimpleBaseTest {
   public void exitsWithZeroOnSuccess() {
     TestNG tng = create(ImmediateSuccess.class);
     tng.run();
-    assertEquals(tng.getStatus(), 0);
+    assertThat(tng.getStatus()).isEqualTo(0);
   }
 
   @Test
   public void exitsWithNonzeroOnFailure() {
     TestNG tng = create(PersistentFailure.class);
     tng.run();
-    assertTrue(tng.getStatus() != 0);
+    assertThat(tng.getStatus() != 0).isTrue();
   }
 
   @Test
@@ -28,20 +27,20 @@ public class ExitCodeTest extends SimpleBaseTest {
     TestNG tng = create(EventualSuccess.class);
     tng.addListener((ITestNGListener) new TestResultPruner());
     tng.run();
-    assertEquals(tng.getStatus(), 0);
+    assertThat(tng.getStatus()).isEqualTo(0);
   }
 
   @Test(description = "GITHUB-217")
   public void exitWithNonzeroOnSkips() {
     TestNG tng = create(Issue217TestClassSample.class);
     tng.run();
-    assertEquals(tng.getStatus(), 2);
+    assertThat(tng.getStatus()).isEqualTo(2);
   }
 
   @Test(description = "GITHUB-217")
   public void exitWithNonzeroOnSkips1() {
     TestNG tng = create(Issue217TestClassSampleWithOneDataProvider.class);
     tng.run();
-    assertEquals(tng.getStatus(), 2);
+    assertThat(tng.getStatus()).isEqualTo(2);
   }
 }

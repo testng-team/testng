@@ -1,7 +1,6 @@
 package test.beforegroups.issue2229;
 
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,25 +51,25 @@ public class TestClassSample {
   @Test(groups = "groupA")
   public void testGroupA1() {
     logs.add("testGroupA1");
-    assertTrue(valueA, "BeforeGroupA was not executed");
+    assertThat(valueA).withFailMessage("BeforeGroupA was not executed").isTrue();
   }
 
   @Test(groups = "groupA")
   public void testGroupA2() {
     logs.add("testGroupA2");
-    assertTrue(valueA, "BeforeGroupA was not executed");
+    assertThat(valueA).withFailMessage("BeforeGroupA was not executed").isTrue();
   }
 
   @Test(groups = "groupA")
   public void testGroupA3() {
     logs.add("testGroupA3");
-    assertTrue(valueA, "BeforeGroupA was not executed");
+    assertThat(valueA).withFailMessage("BeforeGroupA was not executed").isTrue();
   }
 
   @Test(groups = "groupB")
   public void testGroupB() {
     logs.add("testGroupB");
-    assertTrue(valueB, "BeforeGroupB was not executed");
+    assertThat(valueB).withFailMessage("BeforeGroupB was not executed").isTrue();
   }
 
   @AfterGroups(groups = "groupA")
@@ -87,7 +86,7 @@ public class TestClassSample {
 
   @AfterClass
   public void afterClass() {
-    assertFalse(valueA, "AfterGroupsA was not executed");
-    assertFalse(valueB, "AfterGroupsB was not executed");
+    assertThat(valueA).withFailMessage("AfterGroupsA was not executed").isFalse();
+    assertThat(valueB).withFailMessage("AfterGroupsB was not executed").isFalse();
   }
 }

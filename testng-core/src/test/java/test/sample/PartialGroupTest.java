@@ -1,6 +1,7 @@
 package test.sample;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -28,12 +29,12 @@ public class PartialGroupTest {
 
   @Test
   public void testClassGroupShouldFail() {
-    Assert.assertTrue(false);
+    assertThat(false).isTrue();
   }
 
   @Test(groups = {"methodGroup"})
   public void testMethodGroupShouldFail() {
-    Assert.assertTrue(false);
+    assertThat(false).isTrue();
   }
 
   @Test

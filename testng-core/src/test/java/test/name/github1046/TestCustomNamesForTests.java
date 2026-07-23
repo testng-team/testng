@@ -1,8 +1,9 @@
 package test.name.github1046;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Set;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import org.testng.collections.Sets;
@@ -25,6 +26,6 @@ public class TestCustomNamesForTests extends SimpleBaseTest {
     }
     expectedNames.add("ordinaryTestMethod_TestNG_TestCase_999");
     expectedNames.add("dontChangeName");
-    Assert.assertEqualsNoOrder(reporter.getTestnames(), expectedNames);
+    assertThat(reporter.getTestnames()).containsExactlyInAnyOrderElementsOf(expectedNames);
   }
 }

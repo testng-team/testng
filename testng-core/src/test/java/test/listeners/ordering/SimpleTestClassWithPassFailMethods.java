@@ -1,6 +1,7 @@
 package test.listeners.ordering;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class SimpleTestClassWithPassFailMethods {
@@ -10,7 +11,7 @@ public class SimpleTestClassWithPassFailMethods {
 
   @Test
   public void testWillFail() {
-    Assert.fail();
+    fail();
   }
 
   @Test(dependsOnMethods = "testWillFail")

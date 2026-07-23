@@ -1,8 +1,9 @@
 package test.methodselectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -71,10 +72,10 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
 
   private void validate(String[] expectPassed) {
     List<ITestResult> passed = m_tla.getPassedTests();
-    Assert.assertEquals(passed.size(), expectPassed.length);
+    assertThat(passed.size()).isEqualTo(expectPassed.length);
     // doing this index based is probably not the best
     for (int i = 0; i < expectPassed.length; i++) {
-      Assert.assertEquals(passed.get(i).getName(), expectPassed[i]);
+      assertThat(passed.get(i).getName()).isEqualTo(expectPassed[i]);
     }
   }
 }

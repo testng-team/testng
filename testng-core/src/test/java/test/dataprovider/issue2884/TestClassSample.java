@@ -1,7 +1,8 @@
 package test.dataprovider.issue2884;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 import org.testng.annotations.DataProvider;
@@ -13,7 +14,7 @@ public class TestClassSample {
 
   @Test(dataProvider = "dp", retryAnalyzer = TryAgain.class)
   public void testMethod(Pojo user) {
-    Assert.fail();
+    fail();
   }
 
   @DataProvider(name = "dp")

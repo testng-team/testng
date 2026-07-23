@@ -1,6 +1,7 @@
 package test.dependent;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -25,14 +26,14 @@ public class SampleDependentTest extends SimpleBaseTest {
         oneB = true;
       }
       if ("secondA".equals(s)) {
-        Assert.assertTrue(oneA);
-        Assert.assertTrue(oneB);
+        assertThat(oneA).isTrue();
+        assertThat(oneB).isTrue();
         secondA = true;
       }
       if ("thirdA".equals(s)) {
-        Assert.assertTrue(oneA);
-        Assert.assertTrue(oneB);
-        Assert.assertTrue(secondA);
+        assertThat(oneA).isTrue();
+        assertThat(oneB).isTrue();
+        assertThat(secondA).isTrue();
       }
     }
   }

@@ -1,6 +1,7 @@
 package test.testng59;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
@@ -15,6 +16,8 @@ public class Test1 {
 
   @AfterClass
   public void checkWasRun() {
-    Assert.assertTrue(m_run, "test1() should have been run according to testng-59.xml");
+    assertThat(m_run)
+        .withFailMessage("test1() should have been run according to testng-59.xml")
+        .isTrue();
   }
 }

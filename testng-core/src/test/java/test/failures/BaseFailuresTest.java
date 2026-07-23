@@ -1,5 +1,7 @@
 package test.failures;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -9,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.regex.Pattern;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.reporters.FailedReporter;
 import test.SimpleBaseTest;
@@ -59,7 +60,7 @@ public abstract class BaseFailuresTest extends SimpleBaseTest {
   protected static void verify(Path outputDir, String suiteName, String[] expected)
       throws IOException {
     Path f = outputDir.resolve(suiteName).resolve(FailedReporter.TESTNG_FAILED_XML);
-    Assert.assertTrue(containsRegularExpressions(f, expected));
+    assertThat(containsRegularExpressions(f, expected)).isTrue();
 
     Files.walkFileTree(
         outputDir,

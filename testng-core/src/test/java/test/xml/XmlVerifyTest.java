@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -99,7 +98,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
       tng.addListener((ITestNGListener) tla);
       tng.run();
     } catch (TestNGException ex) {
-      Assert.assertEquals(tla.getPassedTests().size(), 0);
+      assertThat(tla.getPassedTests().size()).isEqualTo(0);
     }
   }
 
@@ -110,30 +109,30 @@ public class XmlVerifyTest extends SimpleBaseTest {
 
     suite.setPreserveOrder(true);
     test.setPreserveOrder(false);
-    Assert.assertFalse(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isFalse();
 
     suite.setPreserveOrder(false);
     test.setPreserveOrder(true);
-    Assert.assertTrue(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isTrue();
 
     suite.setPreserveOrder((Boolean) null);
     test.setPreserveOrder(false);
-    Assert.assertFalse(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isFalse();
 
     suite.setPreserveOrder(false);
     test.setPreserveOrder((Boolean) null);
-    Assert.assertFalse(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isFalse();
 
     suite.setPreserveOrder((Boolean) null);
     test.setPreserveOrder(true);
-    Assert.assertTrue(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isTrue();
 
     suite.setPreserveOrder(true);
     test.setPreserveOrder((Boolean) null);
-    Assert.assertTrue(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isTrue();
 
     suite.setPreserveOrder((Boolean) null);
     test.setPreserveOrder((Boolean) null);
-    Assert.assertNull(test.getPreserveOrder());
+    assertThat(test.getPreserveOrder()).isNull();
   }
 }

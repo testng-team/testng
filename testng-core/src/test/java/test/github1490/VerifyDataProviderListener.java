@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IDataProviderMethod;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
@@ -25,9 +24,9 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     tng.run();
     IDataProviderMethod before = DataProviderInfoProvider.before;
     IDataProviderMethod after = DataProviderInfoProvider.after;
-    Assert.assertEquals(before, after);
-    Assert.assertEquals(before.getInstance(), after.getInstance());
-    Assert.assertEquals(before.getMethod().getName(), "getData");
+    assertThat(before).isEqualTo(after);
+    assertThat(before.getInstance()).isEqualTo(after.getInstance());
+    assertThat(before.getMethod().getName()).isEqualTo("getData");
   }
 
   @Test
@@ -36,9 +35,9 @@ public class VerifyDataProviderListener extends SimpleBaseTest {
     tng.run();
     IDataProviderMethod before = DataProviderInfoProvider.before;
     IDataProviderMethod after = DataProviderInfoProvider.after;
-    Assert.assertEquals(before, after);
-    Assert.assertNull(before.getInstance());
-    Assert.assertEquals(before.getMethod().getName(), "getStaticData");
+    assertThat(before).isEqualTo(after);
+    assertThat(before.getInstance()).isNull();
+    assertThat(before.getMethod().getName()).isEqualTo("getStaticData");
   }
 
   @Test

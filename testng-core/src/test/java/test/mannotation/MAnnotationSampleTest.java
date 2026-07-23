@@ -1,7 +1,8 @@
 package test.mannotation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.IDataProviderAnnotation;
@@ -29,30 +30,31 @@ public class MAnnotationSampleTest {
     // Tests on MTest1SampleTest
     //
     ITestAnnotation test1 = m_finder.findAnnotation(MTest1.class, ITestAnnotation.class);
-    Assert.assertTrue(test1.getEnabled());
-    Assert.assertEquals(test1.getGroups(), new String[] {"group1", "group2"});
-    Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEqualsNoOrder(
-        test1.getDependsOnGroups(), new String[] {"dg1", "dg2"}, "depends on groups");
-    Assert.assertEqualsNoOrder(test1.getDependsOnMethods(), new String[] {"dm1", "dm2"});
-    Assert.assertEquals(test1.getTimeOut(), 42);
-    Assert.assertEquals(test1.getInvocationCount(), 43);
-    Assert.assertEquals(test1.getSuccessPercentage(), 44);
-    Assert.assertEquals(test1.getThreadPoolSize(), 3);
-    Assert.assertEquals(test1.getDataProvider(), "dp");
-    Assert.assertEquals(test1.getDescription(), "Class level description");
+    assertThat(test1.getEnabled()).isTrue();
+    assertThat(test1.getGroups()).isEqualTo(new String[] {"group1", "group2"});
+    assertThat(test1.getAlwaysRun()).isTrue();
+    assertThat(test1.getDependsOnGroups())
+        .withFailMessage("depends on groups")
+        .containsExactlyInAnyOrder(new String[] {"dg1", "dg2"});
+    assertThat(test1.getDependsOnMethods()).containsExactlyInAnyOrder(new String[] {"dm1", "dm2"});
+    assertThat(test1.getTimeOut()).isEqualTo(42);
+    assertThat(test1.getInvocationCount()).isEqualTo(43);
+    assertThat(test1.getSuccessPercentage()).isEqualTo(44);
+    assertThat(test1.getThreadPoolSize()).isEqualTo(3);
+    assertThat(test1.getDataProvider()).isEqualTo("dp");
+    assertThat(test1.getDescription()).isEqualTo("Class level description");
 
     //
     // Tests on MTest1SampleTest (test defaults)
     //
     ITestAnnotation test2 = m_finder.findAnnotation(MTest2.class, ITestAnnotation.class);
     // test default for enabled
-    Assert.assertTrue(test2.getEnabled());
-    Assert.assertFalse(test2.getAlwaysRun());
-    Assert.assertEquals(test2.getTimeOut(), 0);
-    Assert.assertEquals(test2.getInvocationCount(), 1);
-    Assert.assertEquals(test2.getSuccessPercentage(), 100);
-    Assert.assertEquals(test2.getDataProvider(), "");
+    assertThat(test2.getEnabled()).isTrue();
+    assertThat(test2.getAlwaysRun()).isFalse();
+    assertThat(test2.getTimeOut()).isEqualTo(0);
+    assertThat(test2.getInvocationCount()).isEqualTo(1);
+    assertThat(test2.getSuccessPercentage()).isEqualTo(100);
+    assertThat(test2.getDataProvider()).isEqualTo("");
   }
 
   public void verifyTestMethodLevel() throws SecurityException, NoSuchMethodException {
@@ -61,70 +63,70 @@ public class MAnnotationSampleTest {
     //
     Method method = MTest1.class.getMethod("f");
     ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
-    Assert.assertTrue(test1.getEnabled());
-    Assert.assertEqualsNoOrder(
-        test1.getGroups(), new String[] {"group1", "group3", "group4", "group2"});
-    Assert.assertTrue(test1.getAlwaysRun());
-    Assert.assertEqualsNoOrder(
-        test1.getDependsOnGroups(), new String[] {"dg1", "dg2", "dg3", "dg4"});
-    Assert.assertEqualsNoOrder(
-        test1.getDependsOnMethods(), new String[] {"dm1", "dm2", "dm3", "dm4"});
-    Assert.assertEquals(test1.getTimeOut(), 142);
-    Assert.assertEquals(test1.getInvocationCount(), 143);
-    Assert.assertEquals(test1.getSuccessPercentage(), 61);
-    Assert.assertEquals(test1.getDataProvider(), "dp2");
-    Assert.assertEquals(test1.getDescription(), "Method description");
+    assertThat(test1.getEnabled()).isTrue();
+    assertThat(test1.getGroups())
+        .containsExactlyInAnyOrder(new String[] {"group1", "group3", "group4", "group2"});
+    assertThat(test1.getAlwaysRun()).isTrue();
+    assertThat(test1.getDependsOnGroups())
+        .containsExactlyInAnyOrder(new String[] {"dg1", "dg2", "dg3", "dg4"});
+    assertThat(test1.getDependsOnMethods())
+        .containsExactlyInAnyOrder(new String[] {"dm1", "dm2", "dm3", "dm4"});
+    assertThat(test1.getTimeOut()).isEqualTo(142);
+    assertThat(test1.getInvocationCount()).isEqualTo(143);
+    assertThat(test1.getSuccessPercentage()).isEqualTo(61);
+    assertThat(test1.getDataProvider()).isEqualTo("dp2");
+    assertThat(test1.getDescription()).isEqualTo("Method description");
     Class[] exceptions = test1.getExpectedExceptions();
-    Assert.assertEquals(exceptions.length, 1);
-    Assert.assertEquals(exceptions[0], NullPointerException.class);
+    assertThat(exceptions.length).isEqualTo(1);
+    assertThat(exceptions[0]).isEqualTo(NullPointerException.class);
   }
 
   public void verifyDataProvider() throws SecurityException, NoSuchMethodException {
     Method method = MTest1.class.getMethod("otherConfigurations");
     IDataProviderAnnotation dataProvider =
         m_finder.findAnnotation(method, IDataProviderAnnotation.class);
-    Assert.assertNotNull(dataProvider);
-    Assert.assertEquals(dataProvider.getName(), "dp4");
+    assertThat(dataProvider).isNotNull();
+    assertThat(dataProvider.getName()).isEqualTo("dp4");
   }
 
   public void verifyFactory() throws SecurityException, NoSuchMethodException {
     Method method = MTest1.class.getMethod("factory");
     IFactoryAnnotation factory = m_finder.findAnnotation(method, IFactoryAnnotation.class);
 
-    Assert.assertNotNull(factory);
+    assertThat(factory).isNotNull();
   }
 
   public void verifyParameters() throws SecurityException, NoSuchMethodException {
     Method method = MTest1.class.getMethod("parameters");
     IParametersAnnotation parameters = m_finder.findAnnotation(method, IParametersAnnotation.class);
 
-    Assert.assertNotNull(parameters);
-    Assert.assertEquals(parameters.getValue(), new String[] {"pp1", "pp2", "pp3"});
+    assertThat(parameters).isNotNull();
+    assertThat(parameters.getValue()).isEqualTo(new String[] {"pp1", "pp2", "pp3"});
   }
 
   public void verifyNewConfigurationBefore() throws SecurityException, NoSuchMethodException {
     Method method = MTest1.class.getMethod("newBefore");
     IConfigurationAnnotation configuration =
         (IConfigurationAnnotation) m_finder.findAnnotation(method, IBeforeSuite.class);
-    Assert.assertNotNull(configuration);
-    Assert.assertTrue(configuration.getBeforeSuite());
+    assertThat(configuration).isNotNull();
+    assertThat(configuration.getBeforeSuite()).isTrue();
 
     // Default values
-    Assert.assertTrue(configuration.getEnabled());
-    Assert.assertTrue(configuration.getInheritGroups());
-    Assert.assertFalse(configuration.getAlwaysRun());
+    assertThat(configuration.getEnabled()).isTrue();
+    assertThat(configuration.getInheritGroups()).isTrue();
+    assertThat(configuration.getAlwaysRun()).isFalse();
   }
 
   public void verifyNewConfigurationAfter() throws SecurityException, NoSuchMethodException {
     Method method = MTest1.class.getMethod("newAfter");
     IConfigurationAnnotation configuration =
         (IConfigurationAnnotation) m_finder.findAnnotation(method, IAfterSuite.class);
-    Assert.assertNotNull(configuration);
-    Assert.assertTrue(configuration.getAfterSuite());
+    assertThat(configuration).isNotNull();
+    assertThat(configuration.getAfterSuite()).isTrue();
 
     // Default values
-    Assert.assertTrue(configuration.getEnabled());
-    Assert.assertTrue(configuration.getInheritGroups());
-    Assert.assertFalse(configuration.getAlwaysRun());
+    assertThat(configuration.getEnabled()).isTrue();
+    assertThat(configuration.getInheritGroups()).isTrue();
+    assertThat(configuration.getAlwaysRun()).isFalse();
   }
 }

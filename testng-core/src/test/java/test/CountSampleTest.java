@@ -1,6 +1,7 @@
 package test;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.SkipException;
 import org.testng.annotations.Test;
 
@@ -20,7 +21,7 @@ public class CountSampleTest {
   @Test(groups = {"functional"})
   public static void testInvokedAndFailed() {
     //        System.out.println("Failing this test after it is invoked.");
-    Assert.fail("Failing this test on purpose");
+    fail("Failing this test on purpose");
   }
 
   @Test(

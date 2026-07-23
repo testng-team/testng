@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.SoftAssertions;
-import org.testng.Assert;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -294,8 +293,8 @@ public class DataProviderTest extends SimpleBaseTest {
 
     assertThat(listener.getSucceedMethodNames())
         .containsExactly("test1(Cedric)", "test1(Alois)", "test2(Cedric)", "test3(Cedric)");
-    Assert.assertEquals(MethodSample.m_test2, 1);
-    Assert.assertEquals(MethodSample.m_test3, 1);
+    assertThat(MethodSample.m_test2).isEqualTo(1);
+    assertThat(MethodSample.m_test3).isEqualTo(1);
   }
 
   @Test

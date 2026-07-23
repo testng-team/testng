@@ -1,12 +1,11 @@
 package test.inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.testng.Reporter.getCurrentTestResult;
 
 import java.lang.reflect.Method;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.ITestResult;
-import org.testng.Reporter;
 import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -20,8 +19,8 @@ public class InjectBeforeAndAfterMethodsWithTestResultSampleTest {
 
   @Test
   public void pass() {
-    Assert.assertEquals(Reporter.getCurrentTestResult().getAttribute("before"), 10);
-    Assert.assertEquals(m_testResult.getAttribute("before"), 10);
+    assertThat(getCurrentTestResult().getAttribute("before")).isEqualTo(10);
+    assertThat(m_testResult.getAttribute("before")).isEqualTo(10);
   }
 
   @Test

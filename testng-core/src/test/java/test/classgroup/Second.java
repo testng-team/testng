@@ -1,6 +1,7 @@
 package test.classgroup;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static test.classgroup.First.allRun;
 
 import org.testng.annotations.Test;
 
@@ -9,6 +10,8 @@ public class Second {
 
   @Test
   public void verify() {
-    assertTrue(First.allRun(), "Methods for class First should have been invoked first.");
+    assertThat(allRun())
+        .withFailMessage("Methods for class First should have been invoked first.")
+        .isTrue();
   }
 }

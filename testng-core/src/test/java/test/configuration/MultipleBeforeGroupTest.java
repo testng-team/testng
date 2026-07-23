@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Test;
 
@@ -18,6 +19,6 @@ public class MultipleBeforeGroupTest {
 
   @Test(dependsOnMethods = "test")
   public void verify() {
-    Assert.assertEquals(1, m_count);
+    assertThat(1).isEqualTo(m_count);
   }
 }

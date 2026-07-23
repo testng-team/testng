@@ -1,6 +1,6 @@
 package test.dependent;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -16,13 +16,13 @@ public class SampleDependentConfigurationMethods {
 
   @BeforeMethod(dependsOnMethods = {"createInstance"})
   public void firstInvocation() {
-    assertTrue(m_create, "createInstance() was never called");
+    assertThat(m_create).withFailMessage("createInstance() was never called").isTrue();
     m_first = true;
   }
 
   @Test
   public void verifyDependents() {
-    assertTrue(m_create, "createInstance() was never called");
-    assertTrue(m_first, "firstInvocation() was never called");
+    assertThat(m_create).withFailMessage("createInstance() was never called").isTrue();
+    assertThat(m_first).withFailMessage("firstInvocation() was never called").isTrue();
   }
 }

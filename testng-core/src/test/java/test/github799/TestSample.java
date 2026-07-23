@@ -1,6 +1,7 @@
 package test.github799;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
@@ -22,6 +23,6 @@ public class TestSample {
   @Test
   public void test() {
     Reporter.log(Integer.toString(num));
-    Assert.assertTrue(num > 0);
+    assertThat(num > 0).isTrue();
   }
 }

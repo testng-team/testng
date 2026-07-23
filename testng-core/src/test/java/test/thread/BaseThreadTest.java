@@ -1,9 +1,10 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.testng.Assert;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Sets;
@@ -78,9 +79,8 @@ public class BaseThreadTest extends SimpleBaseTest {
   }
 
   protected void verifyThreads(int expected) {
-    Assert.assertEquals(
-        getThreadCount(),
-        expected,
-        "Ran on " + getThreadCount() + " threads instead of " + expected);
+    assertThat(getThreadCount())
+        .withFailMessage("Ran on " + getThreadCount() + " threads instead of " + expected)
+        .isEqualTo(expected);
   }
 }

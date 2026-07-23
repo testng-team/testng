@@ -1,6 +1,6 @@
 package test.listeners.github1296;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -15,7 +15,7 @@ public class MyTest {
 
   @Test
   public void test() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @AfterTest

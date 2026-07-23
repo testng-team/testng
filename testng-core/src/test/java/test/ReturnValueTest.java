@@ -1,7 +1,8 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
@@ -45,13 +46,13 @@ public class ReturnValueTest extends SimpleBaseTest {
     tng.run();
 
     if (allowed) {
-      Assert.assertEquals(tla.getFailedTests().size(), 0);
-      Assert.assertEquals(tla.getSkippedTests().size(), 0);
+      assertThat(tla.getFailedTests().size()).isEqualTo(0);
+      assertThat(tla.getSkippedTests().size()).isEqualTo(0);
       assertTestResultsEqual(tla.getPassedTests(), Collections.singletonList("shouldRun"));
     } else {
-      Assert.assertEquals(tla.getFailedTests().size(), 0);
-      Assert.assertEquals(tla.getPassedTests().size(), 0);
-      Assert.assertEquals(tla.getSkippedTests().size(), 0);
+      assertThat(tla.getFailedTests().size()).isEqualTo(0);
+      assertThat(tla.getPassedTests().size()).isEqualTo(0);
+      assertThat(tla.getSkippedTests().size()).isEqualTo(0);
     }
   }
 }

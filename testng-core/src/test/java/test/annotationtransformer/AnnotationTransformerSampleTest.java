@@ -1,6 +1,7 @@
 package test.annotationtransformer;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class AnnotationTransformerSampleTest {
@@ -32,9 +33,9 @@ public class AnnotationTransformerSampleTest {
 
   @Test(dependsOnMethods = {"two", "three", "four", "five"})
   public void verify() {
-    Assert.assertEquals(m_two, 2);
-    Assert.assertEquals(m_three, 3);
-    Assert.assertEquals(m_four, 4);
-    Assert.assertEquals(m_five, 5);
+    assertThat(m_two).isEqualTo(2);
+    assertThat(m_three).isEqualTo(3);
+    assertThat(m_four).isEqualTo(4);
+    assertThat(m_five).isEqualTo(5);
   }
 }

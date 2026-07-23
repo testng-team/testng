@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.TestNGContentHandler;
@@ -24,7 +23,7 @@ public class TestNGContentHandlerTest extends SimpleBaseTest {
     List<XmlInclude> includes =
         handler.getSuite().getTests().get(0).getXmlClasses().get(0).getIncludedMethods();
     String desc = includes.get(0).getDescription();
-    Assert.assertEquals("simple-description", desc);
+    assertThat("simple-description").isEqualTo(desc);
   }
 
   @Test(description = "GITHUB-2501")

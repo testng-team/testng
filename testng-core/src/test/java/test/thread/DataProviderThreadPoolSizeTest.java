@@ -1,6 +1,8 @@
 package test.thread;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static test.thread.BaseThreadTest.getThreadCount;
+
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -12,7 +14,7 @@ public class DataProviderThreadPoolSizeTest extends SimpleBaseTest {
     TestNG tng = create(DataProviderThreadPoolSizeSampleTest.class);
     tng.setGroups("parallel");
     tng.run();
-    Assert.assertEquals(DataProviderThreadPoolSizeSampleTest.getThreadCount(), 10);
+    assertThat(getThreadCount()).isEqualTo(10);
   }
 
   @Test
@@ -20,7 +22,7 @@ public class DataProviderThreadPoolSizeTest extends SimpleBaseTest {
     TestNG tng = create(DataProviderThreadPoolSizeSampleTest.class);
     tng.setGroups("sequential");
     tng.run();
-    Assert.assertEquals(DataProviderThreadPoolSizeSampleTest.getThreadCount(), 1);
+    assertThat(getThreadCount()).isEqualTo(1);
   }
 
   @Test
@@ -29,6 +31,6 @@ public class DataProviderThreadPoolSizeTest extends SimpleBaseTest {
     tng.setGroups("parallel");
     tng.setDataProviderThreadCount(3);
     tng.run();
-    Assert.assertEquals(DataProviderThreadPoolSizeSampleTest.getThreadCount(), 3);
+    assertThat(getThreadCount()).isEqualTo(3);
   }
 }

@@ -1,8 +1,10 @@
 package test.retryAnalyzer.github1706;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class NativeInjectionSample {
@@ -10,9 +12,9 @@ public class NativeInjectionSample {
 
   @Test(retryAnalyzer = LocalRetry.class)
   public void testMethod(Method method) {
-    Assert.assertNotNull(method);
+    assertThat(method).isNotNull();
     if (counter.incrementAndGet() != 3) {
-      Assert.fail();
+      fail();
     }
   }
 }

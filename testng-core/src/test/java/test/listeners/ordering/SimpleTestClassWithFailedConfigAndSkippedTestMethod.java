@@ -1,13 +1,14 @@
 package test.listeners.ordering;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class SimpleTestClassWithFailedConfigAndSkippedTestMethod {
   @BeforeClass
   public void beforeClass() {
-    Assert.fail();
+    fail();
   }
 
   @Test
