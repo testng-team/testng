@@ -27,7 +27,7 @@ java {
 dependencies {
     // Note: it is enough to mention key projects here, and testng transitives
     // would be selected automatically
-    shadedDependencyElements(projects.testngAsserts)
+    shadedDependencyElements("org.testng:testng-asserts:1.0.0")
     shadedDependencyElements(projects.testngCore)
 }
 
@@ -63,7 +63,6 @@ tasks.mergedJar {
             "Export-Package" to """
                 org.testng
                 org.testng.annotations
-                org.testng.asserts
                 org.testng.collections
                 org.testng.internal
                 org.testng.internal.annotations

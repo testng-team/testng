@@ -7,7 +7,7 @@ plugins {
 dependencies {
     constraints {
         api(projects.testngApi)
-        api(projects.testngAsserts)
+        api("org.testng:testng-asserts:1.0.0")
         api(projects.testngCollections)
         api(projects.testngCoreApi)
         api(projects.testngCore)
