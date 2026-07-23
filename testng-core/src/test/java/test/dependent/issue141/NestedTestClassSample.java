@@ -1,6 +1,7 @@
 package test.dependent.issue141;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class NestedTestClassSample {
@@ -19,7 +20,7 @@ public class NestedTestClassSample {
 
     @Test
     public void test_C6390323() {
-      Assert.fail();
+      fail();
     }
   }
 }

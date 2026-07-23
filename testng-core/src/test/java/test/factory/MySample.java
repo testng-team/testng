@@ -1,6 +1,8 @@
 package test.factory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static test.factory.FactoryInSeparateClassTest.wasRun;
+
 import org.testng.annotations.Test;
 
 public class MySample {
@@ -21,12 +23,11 @@ public class MySample {
   public void testMethod() {
     FactoryInSeparateClassTest.addToSum(i);
     //    assert i > 0 : "MySample was not constructed with correct params";
-    Assert.assertNotEquals(i, 0, "My test was not created by the factory");
+    assertThat(i).withFailMessage("My test was not created by the factory").isNotEqualTo(0);
   }
 
   @Test(dependsOnGroups = "testMethodOnFactoryClass")
   public void verifyThatTestMethodOnFactoryClassWasRun() {
-    Assert.assertTrue(
-        FactoryInSeparateClassTest.wasRun(), "Test method on factory class wasn't run");
+    assertThat(wasRun()).withFailMessage("Test method on factory class wasn't run").isTrue();
   }
 }

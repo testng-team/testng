@@ -1,6 +1,7 @@
 package test.listeners;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -8,7 +9,7 @@ public class GitHub911Sample {
 
   @BeforeSuite(alwaysRun = true)
   public void setUp() {
-    Assert.fail();
+    fail();
   }
   // TODO check before invocation
 

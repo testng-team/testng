@@ -1,9 +1,9 @@
 package test.timeout.github2672;
 
-import static org.testng.Assert.assertTrue;
+import static com.google.common.base.Throwables.getCausalChain;
+import static java.util.Arrays.stream;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.google.common.base.Throwables;
-import java.util.Arrays;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
@@ -35,10 +35,11 @@ public class TimeoutStacktraceTest {
     testng.run();
 
     Throwable testError = listener.getTestError();
-    assertTrue(testError instanceof ThreadTimeoutException);
-    assertTrue(
-        Arrays.stream(testError.getStackTrace())
-            .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")));
+    assertThat((testError instanceof ThreadTimeoutException)).isTrue();
+    assertThat(
+            stream(testError.getStackTrace())
+                .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")))
+        .isTrue();
   }
 
   @Test
@@ -51,10 +52,11 @@ public class TimeoutStacktraceTest {
     testng.run();
 
     Throwable testError = listener.getTestError();
-    assertTrue(testError instanceof ThreadTimeoutException);
-    assertTrue(
-        Throwables.getCausalChain(testError).stream()
-            .flatMap((Throwable throwable) -> Arrays.stream(throwable.getStackTrace()))
-            .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")));
+    assertThat((testError instanceof ThreadTimeoutException)).isTrue();
+    assertThat(
+            getCausalChain(testError).stream()
+                .flatMap((Throwable throwable) -> stream(throwable.getStackTrace()))
+                .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")))
+        .isTrue();
   }
 }

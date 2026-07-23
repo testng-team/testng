@@ -1,6 +1,7 @@
 package test.alwaysrun;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -36,10 +37,10 @@ public class AlwaysRunBefore1 {
 
   @Test(groups = "A")
   public void foo() {
-    Assert.assertTrue(m_beforeSuiteSuccess);
-    Assert.assertTrue(m_beforeTestSuccess);
-    Assert.assertTrue(m_beforeTestClassSuccess);
-    Assert.assertTrue(m_beforeTestMethodSuccess);
+    assertThat(m_beforeSuiteSuccess).isTrue();
+    assertThat(m_beforeTestSuccess).isTrue();
+    assertThat(m_beforeTestClassSuccess).isTrue();
+    assertThat(m_beforeTestMethodSuccess).isTrue();
   }
 
   public static boolean success() {

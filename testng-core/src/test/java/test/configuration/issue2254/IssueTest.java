@@ -1,9 +1,10 @@
 package test.configuration.issue2254;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -41,8 +42,8 @@ public class IssueTest extends SimpleBaseTest {
     tng.setXmlSuites(Collections.singletonList(xmlSuite));
     tng.run();
 
-    Assert.assertEquals(listener.beforeCount, 9);
-    Assert.assertEquals(listener.afterCount, 9);
+    assertThat(listener.beforeCount).isEqualTo(9);
+    assertThat(listener.afterCount).isEqualTo(9);
   }
 
   public static class MyInvokedMethodListener implements IInvokedMethodListener {

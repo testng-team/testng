@@ -1,8 +1,9 @@
 package test_result.issue2535;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -20,7 +21,7 @@ public class CalculatorTestSample {
 
   @BeforeClass
   public void setup() {
-    Assert.fail();
+    fail();
   }
 
   @BeforeMethod

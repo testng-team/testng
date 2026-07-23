@@ -1,7 +1,8 @@
 package test.methodselectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -193,7 +194,7 @@ public class CommandLineTest extends SimpleBaseTest {
 
   private void verifyTests(String title, String[] expected, List<ITestResult> found) {
 
-    Assertions.assertThat(found.stream().map(ITestResult::getName).toArray(String[]::new))
+    assertThat(found.stream().map(ITestResult::getName).toArray(String[]::new))
         .describedAs(title)
         .isEqualTo(expected);
   }

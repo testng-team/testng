@@ -1,6 +1,6 @@
 package test.retryAnalyzer.dataprovider;
 
-import static org.testng.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -16,9 +16,9 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertEquals(tla.getPassedTests().size(), 1);
-    assertEquals(tla.getFailedTests().size(), 0);
-    assertEquals(tla.getSkippedTests().size(), 3);
+    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getFailedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
   }
 
   // Test with string array of objects in data-provider with end result as success after 3 retry
@@ -29,9 +29,9 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertEquals(tla.getPassedTests().size(), 1);
-    assertEquals(tla.getFailedTests().size(), 0);
-    assertEquals(tla.getSkippedTests().size(), 3);
+    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getFailedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
   }
 
   // Test with multiple integer arrays in data-provider when parallel mode on and end result as
@@ -44,11 +44,10 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     testng.addListener(tla);
     testng.run();
     // Since 2 integer arrays are passing inside data-provider, number of test cases should be 2
-    assertEquals(tla.getPassedTests().size(), 2);
-    assertEquals(tla.getFailedTests().size(), 0);
-    assertEquals(
-        tla.getSkippedTests().size(),
-        6); // Number of total skipped count should be 6, each for a test
+    assertThat(tla.getPassedTests().size()).isEqualTo(2);
+    assertThat(tla.getFailedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size())
+        .isEqualTo(6); // Number of total skipped count should be 6, each for a test
   }
 
   // Test with objects in data-provider with result as success after 3 retry attempts
@@ -58,9 +57,9 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertEquals(tla.getPassedTests().size(), 1);
-    assertEquals(tla.getFailedTests().size(), 0);
-    assertEquals(tla.getSkippedTests().size(), 3);
+    assertThat(tla.getPassedTests().size()).isEqualTo(1);
+    assertThat(tla.getFailedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
   }
 
   // Test with objects in data-provider with result as failed after 3 retry attempts
@@ -70,8 +69,8 @@ public class RetryAnalyzerWithComplexDataProviderTest extends SimpleBaseTest {
     TestListenerAdapter tla = new TestListenerAdapter();
     testng.addListener(tla);
     testng.run();
-    assertEquals(tla.getFailedTests().size(), 1);
-    assertEquals(tla.getPassedTests().size(), 0);
-    assertEquals(tla.getSkippedTests().size(), 3);
+    assertThat(tla.getFailedTests().size()).isEqualTo(1);
+    assertThat(tla.getPassedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(3);
   }
 }

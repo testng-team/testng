@@ -1,7 +1,8 @@
 package test.jarpackages;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -27,22 +28,22 @@ public class JarPackagesTest extends SimpleBaseTest {
   @Test
   public void jarWithTestngXml() {
     TestListenerAdapter tla = init("withtestngxml.jar");
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
+    assertThat(tla.getPassedTests().size()).isEqualTo(2);
     String first = tla.getPassedTests().get(0).getName();
     String second = tla.getPassedTests().get(1).getName();
     boolean fThenG = "f".equals(first) && "g".equals(second);
     boolean gThenF = "g".equals(first) && "f".equals(second);
-    Assert.assertTrue(fThenG || gThenF);
+    assertThat(fThenG || gThenF).isTrue();
   }
 
   @Test
   public void jarWithoutTestngXml() {
     TestListenerAdapter tla = init("withouttestngxml.jar");
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
+    assertThat(tla.getPassedTests().size()).isEqualTo(2);
     String first = tla.getPassedTests().get(0).getName();
     String second = tla.getPassedTests().get(1).getName();
     boolean fThenG = "f".equals(first) && "g".equals(second);
     boolean gThenF = "g".equals(first) && "f".equals(second);
-    Assert.assertTrue(fThenG || gThenF);
+    assertThat(fThenG || gThenF).isTrue();
   }
 }

@@ -1,31 +1,32 @@
 package test.listeners.github1029;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class Issue1029SampleTestClassWithFiveMethods {
   @Test
   public void a() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void b() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void c() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void d() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test
   public void e() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

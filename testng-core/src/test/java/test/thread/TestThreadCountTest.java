@@ -1,9 +1,10 @@
 package test.thread;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 import org.testng.internal.thread.ThreadUtil;
@@ -33,6 +34,6 @@ public class TestThreadCountTest {
 
   @AfterClass
   public void checkThreading() {
-    Assert.assertEquals(m_threads.size(), 3, "Test should use 3 threads");
+    assertThat(m_threads.size()).withFailMessage("Test should use 3 threads").isEqualTo(3);
   }
 }

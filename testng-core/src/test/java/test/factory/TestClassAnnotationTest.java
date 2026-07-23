@@ -1,6 +1,7 @@
 package test.factory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -26,6 +27,6 @@ public class TestClassAnnotationTest {
 
   @AfterClass
   public void verify() {
-    Assert.assertEquals(count, 2);
+    assertThat(count).isEqualTo(2);
   }
 }

@@ -1,6 +1,7 @@
 package test.reports;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -8,6 +9,6 @@ import org.testng.annotations.Test;
 public class UniqueReporterInjectionSample2 {
   @Test
   public void testMethod() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

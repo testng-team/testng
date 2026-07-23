@@ -1,7 +1,7 @@
 package test.retryAnalyzer;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
@@ -64,10 +64,10 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       },
       alwaysRun = true)
   public void checkInvocationCounts() {
-    assertEquals(invocations.count("testAnnotationWithNoRetries"), 0);
-    assertEquals(invocations.count("testAnnotationWithOneRetry"), 1);
-    assertEquals(invocations.count("testAnnotationWithSevenRetries"), 7);
-    assertEquals(invocations.count("failAfterThreeRetries"), 4);
+    assertThat(invocations.count("testAnnotationWithNoRetries")).isEqualTo(0);
+    assertThat(invocations.count("testAnnotationWithOneRetry")).isEqualTo(1);
+    assertThat(invocations.count("testAnnotationWithSevenRetries")).isEqualTo(7);
+    assertThat(invocations.count("failAfterThreeRetries")).isEqualTo(4);
   }
 
   @Test(retryAnalyzer = InvocationCountTest.class, dataProvider = "dataProvider3")
@@ -94,9 +94,9 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       dependsOnMethods = {"retryWithDataProvider"},
       alwaysRun = true)
   public void checkRetryCounts() {
-    assertEquals(tcid1, 3);
-    assertEquals(tcid2, 3);
-    assertEquals(tcid3, 3);
+    assertThat(tcid1).isEqualTo(3);
+    assertThat(tcid2).isEqualTo(3);
+    assertThat(tcid3).isEqualTo(3);
   }
 
   @DataProvider(name = "dataProvider")
@@ -126,7 +126,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       }
     }
     if (paf == 4) {
-      assertEquals(executionNumber, 5);
+      assertThat(executionNumber).isEqualTo(5);
     }
   }
 
@@ -137,7 +137,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
       r3--;
       fail();
     } else if (r3 == 0) {
-      assertEquals(value, 42);
+      assertThat(value).isEqualTo(42);
     }
   }
 
@@ -149,7 +149,7 @@ public final class InvocationCountTest implements IRetryAnalyzer {
 
     tng.run();
 
-    assertEquals(FactoryTest.m_count, 4);
+    assertThat(FactoryTest.m_count).isEqualTo(4);
   }
 
   @Override

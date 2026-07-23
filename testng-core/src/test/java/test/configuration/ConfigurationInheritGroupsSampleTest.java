@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -14,6 +15,6 @@ public class ConfigurationInheritGroupsSampleTest {
   }
 
   public void test1() {
-    Assert.assertTrue(m_ok);
+    assertThat(m_ok).isTrue();
   }
 }

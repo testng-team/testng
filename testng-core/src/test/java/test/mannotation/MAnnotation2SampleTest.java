@@ -1,11 +1,12 @@
 package test.mannotation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
@@ -33,7 +34,7 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      Assert.assertEqualsNoOrder(expected.toArray(new String[0]), test1.getGroups());
+      assertThat(expected.toArray(new String[0])).containsExactlyInAnyOrder(test1.getGroups());
     }
   }
 
@@ -48,7 +49,8 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      Assert.assertEqualsNoOrder(expected.toArray(new String[0]), test1.getDependsOnGroups());
+      assertThat(expected.toArray(new String[0]))
+          .containsExactlyInAnyOrder(test1.getDependsOnGroups());
     }
   }
 
@@ -62,7 +64,8 @@ public class MAnnotation2SampleTest {
       Method method = MTest3.class.getMethod(data.getKey());
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
       List<String> expected = data.getValue();
-      Assert.assertEqualsNoOrder(expected.toArray(new String[0]), test1.getDependsOnMethods());
+      assertThat(expected.toArray(new String[0]))
+          .containsExactlyInAnyOrder(test1.getDependsOnMethods());
     }
   }
 
@@ -72,7 +75,7 @@ public class MAnnotation2SampleTest {
     Method method = MTest3.class.getMethod("beforeSuite");
     IConfigurationAnnotation test1 =
         (IConfigurationAnnotation) m_finder.findAnnotation(method, IBeforeSuite.class);
-    Assert.assertEqualsNoOrder(new String[] {"method-test3"}, test1.getGroups());
+    assertThat(new String[] {"method-test3"}).containsExactlyInAnyOrder(test1.getGroups());
   }
 
   @Test(groups = "current")
@@ -82,7 +85,7 @@ public class MAnnotation2SampleTest {
     for (int i = 0; i < methods.length; i++) {
       Method method = MTest3.class.getMethod(methods[i]);
       ITestAnnotation test1 = m_finder.findAnnotation(method, ITestAnnotation.class);
-      Assert.assertEquals(test1.getEnabled(), expected[i].booleanValue());
+      assertThat(test1.getEnabled()).isEqualTo(expected[i].booleanValue());
     }
   }
 }

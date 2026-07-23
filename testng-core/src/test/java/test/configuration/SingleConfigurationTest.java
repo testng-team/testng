@@ -1,6 +1,7 @@
 package test.configuration;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
@@ -32,6 +33,6 @@ public class SingleConfigurationTest {
 
   @Test
   public void verify() {
-    Assert.assertEquals(m_before, 1);
+    assertThat(m_before).isEqualTo(1);
   }
 }

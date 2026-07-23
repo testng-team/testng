@@ -1,6 +1,7 @@
 package test.listeners;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -39,6 +40,6 @@ public class EndMillisShouldNotBeZeroTest {
       description = "Make sure that ITestResult#getEndMillis is properly set",
       dependsOnMethods = "f1")
   public void f2() {
-    Assert.assertTrue(m_end > 0);
+    assertThat(m_end > 0).isTrue();
   }
 }

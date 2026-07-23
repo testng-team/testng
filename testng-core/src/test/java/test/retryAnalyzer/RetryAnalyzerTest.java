@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.testng.Assert;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
@@ -322,7 +321,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
     createXmlTest(suite, "2669_Test", RetryTestSample.class);
     TestNG testng = create(suite);
     testng.run();
-    Assert.assertEquals(RetryTestSample.count, 3);
+    assertThat(RetryTestSample.count).isEqualTo(3);
   }
 
   @Test(description = "GITHUB-2684")

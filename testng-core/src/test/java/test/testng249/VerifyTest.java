@@ -1,8 +1,9 @@
 package test.testng249;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -34,6 +35,6 @@ public class VerifyTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
+    assertThat(tla.getPassedTests().size()).isEqualTo(2);
   }
 }

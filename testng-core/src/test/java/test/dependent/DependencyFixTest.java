@@ -1,18 +1,18 @@
 package test.dependent;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
 public class DependencyFixTest {
   @Test(dependsOnMethods = "helloWorld", ignoreMissingDependencies = true)
   public void dependentOnNonExistingMethod() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test(dependsOnMethods = "dependentOnNonExistingMethod")
   public void dependentOnExistingMethod() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 
   @Test(
@@ -20,6 +20,6 @@ public class DependencyFixTest {
       dependsOnGroups = "nonExistingGroup",
       ignoreMissingDependencies = true)
   public void dependentOnNonExistingGroup() {
-    assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

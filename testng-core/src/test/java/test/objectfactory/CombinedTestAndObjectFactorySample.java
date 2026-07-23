@@ -1,7 +1,8 @@
 package test.objectfactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Constructor;
-import org.testng.Assert;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ObjectFactory;
 import org.testng.annotations.Test;
@@ -18,7 +19,9 @@ public class CombinedTestAndObjectFactorySample implements ITestObjectFactory {
 
   @Test
   public void isConfigured() {
-    Assert.assertTrue(configured, "Should have been configured by object factory");
+    assertThat(configured)
+        .withFailMessage("Should have been configured by object factory")
+        .isTrue();
   }
 
   @Override

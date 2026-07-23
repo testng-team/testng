@@ -1,7 +1,6 @@
 package test.factory.issue1745;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.ITestContext;
 import org.testng.annotations.Test;
@@ -30,11 +29,11 @@ public class TestClassSample {
   @Test
   public void testMethod() {
     if ("testcontext".equalsIgnoreCase(whatWasPassed)) { // only testcontext was provided
-      assertNotNull(ctx);
+      assertThat(ctx).isNotNull();
       currentXmlTest = ctx.getCurrentXmlTest();
     }
-    assertNotNull(currentXmlTest);
+    assertThat(currentXmlTest).isNotNull();
     int number = Integer.parseInt(currentXmlTest.getParameter("number"));
-    assertTrue(number != 0);
+    assertThat(number != 0).isTrue();
   }
 }

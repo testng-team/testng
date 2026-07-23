@@ -1,6 +1,7 @@
 package test.failedreporter.issue1297.depend;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class PassDependsOnFailureSample {
@@ -9,6 +10,6 @@ public class PassDependsOnFailureSample {
 
   @Test
   public void newTest2() {
-    Assert.fail();
+    fail();
   }
 }

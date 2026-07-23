@@ -1,11 +1,12 @@
 package test.methodinterceptors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -44,9 +45,9 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 0);
-    Assert.assertEquals(tla.getFailedTests().size(), 0);
-    Assert.assertEquals(tla.getSkippedTests().size(), 0);
+    assertThat(tla.getPassedTests().size()).isEqualTo(0);
+    assertThat(tla.getFailedTests().size()).isEqualTo(0);
+    assertThat(tla.getSkippedTests().size()).isEqualTo(0);
   }
 
   private void testFast(boolean useInterceptor) {
@@ -60,14 +61,14 @@ public class MethodInterceptorTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) tla);
     tng.run();
 
-    Assert.assertEquals(tla.getPassedTests().size(), 3);
+    assertThat(tla.getPassedTests().size()).isEqualTo(3);
     ITestResult first = tla.getPassedTests().get(0);
 
     String method = "zzzfast";
     if (useInterceptor) {
-      Assert.assertEquals(first.getMethod().getMethodName(), method);
+      assertThat(first.getMethod().getMethodName()).isEqualTo(method);
     } else {
-      Assert.assertNotSame(first.getMethod().getMethodName(), method);
+      assertThat(first.getMethod().getMethodName()).isNotSameAs(method);
     }
   }
 

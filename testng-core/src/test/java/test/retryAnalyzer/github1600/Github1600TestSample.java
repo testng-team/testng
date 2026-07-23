@@ -1,6 +1,7 @@
 package test.retryAnalyzer.github1600;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public class Github1600TestSample {
@@ -8,7 +9,7 @@ public class Github1600TestSample {
 
   @Test
   public void test1() {
-    Assert.assertEquals(a, 2);
+    assertThat(a).isEqualTo(2);
     a++;
   }
 }

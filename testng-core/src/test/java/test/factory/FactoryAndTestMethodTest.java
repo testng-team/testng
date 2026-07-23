@@ -1,6 +1,7 @@
 package test.factory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -22,7 +23,7 @@ public class FactoryAndTestMethodTest {
 
     @Test
     public void test() {
-      Assert.assertNotNull(s);
+      assertThat(s).isNotNull();
     }
   }
 

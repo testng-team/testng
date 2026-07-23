@@ -1,6 +1,7 @@
 package test.cli.github1517;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.SkipException;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -13,6 +14,6 @@ public class TestClassWithConfigSkipSample {
 
   @Test
   public void testMethod() {
-    Assert.assertTrue(true);
+    assertThat(true).isTrue();
   }
 }

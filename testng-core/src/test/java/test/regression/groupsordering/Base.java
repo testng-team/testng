@@ -1,6 +1,7 @@
 package test.regression.groupsordering;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.BeforeGroups;
 
@@ -10,15 +11,15 @@ public abstract class Base {
 
   @BeforeGroups(value = "a", groups = "a")
   public void setUp() {
-    Assert.assertFalse(
-        s_childAWasRun || s_childBWasRun,
-        "Static field was not reset: @AfterGroup method not invoked");
+    assertThat(s_childAWasRun || s_childBWasRun)
+        .withFailMessage("Static field was not reset: @AfterGroup method not invoked")
+        .isFalse();
   }
 
   @AfterGroups(value = "a", groups = "a")
   public void tearDown() {
-    Assert.assertTrue(s_childAWasRun, "Child A was not run");
-    Assert.assertTrue(s_childBWasRun, "Child B was not run");
+    assertThat(s_childAWasRun).withFailMessage("Child A was not run").isTrue();
+    assertThat(s_childBWasRun).withFailMessage("Child B was not run").isTrue();
     s_childAWasRun = false;
     s_childBWasRun = false;
   }

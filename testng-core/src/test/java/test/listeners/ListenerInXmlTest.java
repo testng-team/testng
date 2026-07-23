@@ -1,7 +1,8 @@
 package test.listeners;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
 import test.SimpleBaseTest;
@@ -14,6 +15,6 @@ public class ListenerInXmlTest extends SimpleBaseTest {
     tng.setTestSuites(List.of(getPathToResource("listener-in-xml.xml")));
     LListener.invoked = false;
     tng.run();
-    Assert.assertTrue(LListener.invoked);
+    assertThat(LListener.invoked).isTrue();
   }
 }

@@ -1,6 +1,7 @@
 package test.dataprovider;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -12,6 +13,6 @@ public class DataProviderIntegrationSample {
 
   @Test(dataProvider = "testInts", expectedExceptions = IllegalArgumentException.class)
   public void theTest(String aString) {
-    Assert.assertNotNull(aString);
+    assertThat(aString).isNotNull();
   }
 }

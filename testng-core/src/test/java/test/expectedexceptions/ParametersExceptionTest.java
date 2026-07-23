@@ -1,8 +1,9 @@
 package test.expectedexceptions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -22,6 +23,6 @@ public class ParametersExceptionTest {
 
   @AfterMethod
   protected void verify(Method method) {
-    Assert.assertTrue(false, "forced failure");
+    assertThat(false).withFailMessage("forced failure").isTrue();
   }
 }

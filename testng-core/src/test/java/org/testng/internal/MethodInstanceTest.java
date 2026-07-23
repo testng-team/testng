@@ -1,11 +1,12 @@
 package org.testng.internal;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.testng.Assert;
 import org.testng.IClass;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
@@ -69,7 +70,7 @@ public class MethodInstanceTest {
     try {
       methods.sort(MethodInstance.SORT_BY_INDEX);
     } catch (IllegalArgumentException ex) {
-      Assert.fail("Comparison method violates its general contract!");
+      fail("Comparison method violates its general contract!");
     }
   }
 

@@ -1,6 +1,7 @@
 package test.guice.issue2570;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -8,17 +9,17 @@ public class SampleTestClass {
 
   @Test(retryAnalyzer = GuicePoweredConstructorInjectedRetry.class)
   public void test() {
-    Assert.fail();
+    fail();
   }
 
   @Test(retryAnalyzer = GuicePoweredSetterInjectedRetry.class)
   public void anotherTest() {
-    Assert.fail();
+    fail();
   }
 
   @Test(dataProvider = "dp", retryAnalyzer = GuicePoweredConstructorInjectedRetryForDPTest.class)
   public void dataDrivenTest(int i) {
-    Assert.fail();
+    fail();
   }
 
   @DataProvider(name = "dp")

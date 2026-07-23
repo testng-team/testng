@@ -1,6 +1,6 @@
 package test.attributes.issue2346;
 
-import static org.testng.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

@@ -1,8 +1,9 @@
 package test.github1336;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 
 public class BaseClass {
@@ -36,6 +37,6 @@ public class BaseClass {
 
   void runTest(String url) {
     getDriver().get(url);
-    Assert.assertEquals(getDriver().getCurrentUrl(), url);
+    assertThat(getDriver().getCurrentUrl()).isEqualTo(url);
   }
 }

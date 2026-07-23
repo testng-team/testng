@@ -1,8 +1,9 @@
 package test.factory.issue1041;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import java.util.Objects;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -30,7 +31,7 @@ public class FactoryAnnotatedConstructorExample {
 
   @Test
   public void testMethod() {
-    Assert.assertTrue(data > 0);
+    assertThat(data > 0).isTrue();
   }
 
   @Override

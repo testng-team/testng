@@ -1,7 +1,8 @@
 package test.sanitycheck;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
-import org.testng.Assert;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -37,10 +38,10 @@ public class CheckTestNamesTest extends SimpleBaseTest {
       tng.run();
     } catch (TestNGException ex) {
       exceptionRaised = true;
-      Assert.assertEquals(tla.getPassedTests().size(), 0);
-      Assert.assertEquals(tla.getFailedTests().size(), 0);
+      assertThat(tla.getPassedTests().size()).isEqualTo(0);
+      assertThat(tla.getFailedTests().size()).isEqualTo(0);
     }
-    Assert.assertTrue(exceptionRaised);
+    assertThat(exceptionRaised).isTrue();
   }
 
   /** Simple suite with no two tests with same name */
@@ -52,7 +53,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().size(), 2);
+    assertThat(tla.getPassedTests().size()).isEqualTo(2);
   }
 
   /** Child suites and tests within different suites have same names */
@@ -64,7 +65,7 @@ public class CheckTestNamesTest extends SimpleBaseTest {
     tng.setTestSuites(Collections.singletonList(testngXmlPath));
     tng.addListener((ITestNGListener) tla);
     tng.run();
-    Assert.assertEquals(tla.getPassedTests().size(), 4);
+    assertThat(tla.getPassedTests().size()).isEqualTo(4);
   }
 
   /** Checks that suites created programmatically also run as expected */

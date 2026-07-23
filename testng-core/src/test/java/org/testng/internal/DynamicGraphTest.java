@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IDynamicGraph;
 import org.testng.IDynamicGraph.Status;
 import org.testng.ITestNGMethod;
@@ -262,7 +261,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
     tng.run();
-    Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder1);
+    assertThat(listener.getSucceedMethodNames()).isEqualTo(expectedOrder1);
   }
 
   @Test
@@ -272,15 +271,15 @@ public class DynamicGraphTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
     tng.run();
-    Assert.assertEquals(listener.getSucceedMethodNames(), expectedOrder2);
+    assertThat(listener.getSucceedMethodNames()).isEqualTo(expectedOrder2);
   }
 
   private static void runAssertion(IDynamicGraph<ITestNGMethod> graph, List<String> expected) {
     List<ITestNGMethod> p1Methods = graph.getFreeNodes();
-    Assert.assertEquals(p1Methods.size(), 3);
+    assertThat(p1Methods.size()).isEqualTo(3);
     graph.setStatus(p1Methods, Status.FINISHED);
     for (ITestNGMethod p1Method : p1Methods) {
-      Assert.assertTrue(expected.contains(constructName(p1Method)));
+      assertThat(expected.contains(constructName(p1Method))).isTrue();
     }
   }
 

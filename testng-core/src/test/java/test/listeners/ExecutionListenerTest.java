@@ -1,7 +1,8 @@
 package test.listeners;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IExecutionListener;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -57,7 +58,7 @@ public class ExecutionListenerTest extends SimpleBaseTest {
     ExecutionListener.m_finish = false;
     tng.run();
 
-    Assert.assertEquals(ExecutionListener.m_start, expected);
-    Assert.assertEquals(ExecutionListener.m_finish, expected);
+    assertThat(ExecutionListener.m_start).isEqualTo(expected);
+    assertThat(ExecutionListener.m_finish).isEqualTo(expected);
   }
 }

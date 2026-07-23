@@ -1,6 +1,7 @@
 package test.factory;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -17,6 +18,6 @@ public class ArrayEmptyFactorySample {
 
   @Test
   public void test() {
-    Assert.fail();
+    fail();
   }
 }

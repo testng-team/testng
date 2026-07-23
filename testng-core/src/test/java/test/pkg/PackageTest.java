@@ -1,6 +1,6 @@
 package test.pkg;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 import test.BaseTest;
@@ -32,7 +32,9 @@ public class PackageTest extends BaseTest {
   public void packageWithNonTestClasses() {
     addPackage("test.pkg2", new String[0], new String[0]);
     run();
-    assertTrue(!NON_TEST_CONSTRUCTOR, Test2.class.getName() + " should not be considered");
+    assertThat(!NON_TEST_CONSTRUCTOR)
+        .withFailMessage(Test2.class.getName() + " should not be considered")
+        .isTrue();
   }
 
   @Test

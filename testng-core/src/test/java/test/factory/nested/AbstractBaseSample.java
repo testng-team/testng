@@ -1,6 +1,7 @@
 package test.factory.nested;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Test;
 
 public abstract class AbstractBaseSample {
@@ -10,6 +11,6 @@ public abstract class AbstractBaseSample {
   @Test
   public void test() {
     String result = someMethod("hello");
-    Assert.assertEquals(result, "hello world");
+    assertThat(result).isEqualTo("hello world");
   }
 }

@@ -1,6 +1,7 @@
 package test.reports.issue2879;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class TestClassSample {
@@ -13,11 +14,11 @@ public class TestClassSample {
 
   @Test
   public void failingOne() {
-    Assert.fail();
+    fail();
   }
 
   @Test
   public void failingTwo() {
-    Assert.fail();
+    fail();
   }
 }

@@ -1,6 +1,6 @@
 package test.sample;
 
-import static org.testng.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.testng.annotations.Test;
 
@@ -12,8 +12,8 @@ import org.testng.annotations.Test;
 public class PartialGroupVerification {
   @Test
   public void verify() {
-    assertTrue(
-        PartialGroupTest.m_successMethod && PartialGroupTest.m_successClass,
-        "test1 and test2 should have been invoked both");
+    assertThat(PartialGroupTest.m_successMethod && PartialGroupTest.m_successClass)
+        .withFailMessage("test1 and test2 should have been invoked both")
+        .isTrue();
   }
 }

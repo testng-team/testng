@@ -1,6 +1,7 @@
 package test.defaultmethods;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.TestNG;
@@ -25,8 +26,8 @@ public class DefaultMethodTest extends SimpleBaseTest {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] testMethods = testClass.getTestMethods();
-    Assert.assertEquals(testMethods.length, 1);
-    Assert.assertEquals(testMethods[0].getMethodName(), "defaultMethodTest");
+    assertThat(testMethods.length).isEqualTo(1);
+    assertThat(testMethods[0].getMethodName()).isEqualTo("defaultMethodTest");
   }
 
   @Test(
@@ -36,8 +37,8 @@ public class DefaultMethodTest extends SimpleBaseTest {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] beforeClassMethods = testClass.getBeforeClassMethods();
-    Assert.assertEquals(beforeClassMethods.length, 1);
-    Assert.assertEquals(beforeClassMethods[0].getMethodName(), "beforeClassRun");
+    assertThat(beforeClassMethods.length).isEqualTo(1);
+    assertThat(beforeClassMethods[0].getMethodName()).isEqualTo("beforeClassRun");
   }
 
   @Test(
@@ -47,8 +48,8 @@ public class DefaultMethodTest extends SimpleBaseTest {
     ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] afterClassMethods = testClass.getAfterClassMethods();
-    Assert.assertEquals(afterClassMethods.length, 1);
-    Assert.assertEquals(afterClassMethods[0].getMethodName(), "afterClassRun");
+    assertThat(afterClassMethods.length).isEqualTo(1);
+    assertThat(afterClassMethods[0].getMethodName()).isEqualTo("afterClassRun");
   }
 
   @Test(
@@ -58,8 +59,8 @@ public class DefaultMethodTest extends SimpleBaseTest {
     final ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] beforeMethods = testClass.getBeforeTestMethods();
-    Assert.assertEquals(beforeMethods.length, 1);
-    Assert.assertEquals(beforeMethods[0].getMethodName(), "beforeMethodRun");
+    assertThat(beforeMethods.length).isEqualTo(1);
+    assertThat(beforeMethods[0].getMethodName()).isEqualTo("beforeMethodRun");
   }
 
   @Test(
@@ -69,8 +70,8 @@ public class DefaultMethodTest extends SimpleBaseTest {
     final ITestClass testClass = runTestWithDefaultMethods(clazz);
 
     ITestNGMethod[] afterMethods = testClass.getAfterTestMethods();
-    Assert.assertEquals(afterMethods.length, 1);
-    Assert.assertEquals(afterMethods[0].getMethodName(), "afterMethodRun");
+    assertThat(afterMethods.length).isEqualTo(1);
+    assertThat(afterMethods[0].getMethodName()).isEqualTo("afterMethodRun");
   }
 
   private ITestClass runTestWithDefaultMethods(Class<?> clazz) {

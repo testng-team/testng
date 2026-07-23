@@ -1,6 +1,7 @@
 package test.github799;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
@@ -27,7 +28,7 @@ public class InstanceTestSample {
   @Test
   public void testMethod() {
     Reporter.log(toString());
-    Assert.assertNotNull(this.name);
+    assertThat(this.name).isNotNull();
   }
 
   @Override

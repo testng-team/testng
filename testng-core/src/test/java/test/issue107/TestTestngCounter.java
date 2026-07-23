@@ -1,6 +1,7 @@
 package test.issue107;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -15,12 +16,12 @@ public class TestTestngCounter {
   @Parameters({PARAMETER_NAME})
   @Test
   public void testParameter(String key) {
-    Assert.assertEquals(key, EXPECTED_VALUE);
+    assertThat(key).isEqualTo(EXPECTED_VALUE);
   }
 
   @Parameters({PARAMETER_NAME})
   @Test
   public void testParameterAsOptional(@Optional("Unknown") String key) {
-    Assert.assertEquals(key, EXPECTED_VALUE);
+    assertThat(key).isEqualTo(EXPECTED_VALUE);
   }
 }

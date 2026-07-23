@@ -1,6 +1,7 @@
 package test.retryAnalyzer.issue1697;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -11,7 +12,7 @@ public class DatadrivenSample {
   public void testMethod(int data) {
     if (data == 1 && flag) {
       flag = false;
-      Assert.fail();
+      fail();
     }
   }
 

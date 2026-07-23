@@ -1,12 +1,13 @@
 package test.listeners;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.annotations.Test;
 
 public class SetStatusSample {
 
   @Test
   public void aFailingTest() {
-    Assert.fail("Failing deliberately");
+    fail("Failing deliberately");
   }
 }

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.testng.Assert;
 import org.testng.CommandLineArgs;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -84,7 +83,7 @@ public class ServiceLoaderTest extends SimpleBaseTest {
     TestNG tng = create(ServiceLoaderSampleTest.class);
     tng.run();
 
-    Assert.assertEquals(2, tng.getServiceLoaderListeners().size());
+    assertThat(2).isEqualTo(tng.getServiceLoaderListeners().size());
     ListenerAssert.assertListenerType(
         tng.getServiceLoaderListeners(), MyConfigurationListener.class);
   }

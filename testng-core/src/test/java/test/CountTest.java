@@ -1,7 +1,8 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
-import org.testng.Assert;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ISuiteResult;
@@ -24,7 +25,7 @@ public class CountTest extends SimpleBaseTest {
             for (ISuite s : suites) {
               for (ISuiteResult sr : s.getResults().values()) {
                 ITestContext ctx = sr.getTestContext();
-                Assert.assertEquals(2, ctx.getSkippedTests().size());
+                assertThat(2).isEqualTo(ctx.getSkippedTests().size());
               }
             }
           }

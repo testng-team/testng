@@ -1,6 +1,8 @@
 package test.dataprovider;
 
-import org.testng.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -20,7 +22,7 @@ public class TestNG411Sample {
           "Number of parameters to this test don't match the ones passed by data provider",
       dataProvider = CHECK_MAX_DATA)
   public void checkMaxTest(int nr1, int nr2, int expected) {
-    Assert.fail("This code shouldn't be executed");
+    fail("This code shouldn't be executed");
   }
 
   @DataProvider(name = CHECK_MIN_DATA)
@@ -33,7 +35,7 @@ public class TestNG411Sample {
           "Number of parameters to this test don't match the ones passed by data provider",
       dataProvider = CHECK_MIN_DATA)
   public void checkMinTest(int nr1, int nr2, int expected) {
-    Assert.fail("This code shouldn't be executed");
+    fail("This code shouldn't be executed");
   }
 
   @Test(
@@ -43,7 +45,7 @@ public class TestNG411Sample {
       dataProvider = CHECK_MIN_DATA)
   public void checkMinTest_injection(int nr1, int nr2, ITestContext ctx) {
     int result = Math.min(nr1, nr2);
-    Assert.assertEquals(result, nr1);
-    Assert.assertNotNull(ctx);
+    assertThat(result).isEqualTo(nr1);
+    assertThat(ctx).isNotNull();
   }
 }

@@ -1,11 +1,12 @@
 package test.configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -51,6 +52,6 @@ public class BeforeTestOrderingTest {
     tng.setXmlSuites(Collections.singletonList(s));
     tng.run();
 
-    Assert.assertEquals(m_testNames, expected);
+    assertThat(m_testNames).isEqualTo(expected);
   }
 }

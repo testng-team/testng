@@ -1,11 +1,11 @@
 package test.configuration;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.testng.Assert;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.TestNG;
@@ -40,7 +40,7 @@ public class ConfigurationTest extends ConfigurationBaseTest {
   @Test
   public void testSuite() {
     testConfiguration(SuiteTestSample.class);
-    Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), SuiteTestSample.m_order);
+    assertThat(asList(1, 2, 3, 4, 5)).isEqualTo(SuiteTestSample.m_order);
   }
 
   @Test
@@ -48,7 +48,7 @@ public class ConfigurationTest extends ConfigurationBaseTest {
     TestNG testNG = create(SuiteRunnerIssueTestSample.class);
     testNG.run();
 
-    Assert.assertEquals(testNG.getStatus(), 0);
+    assertThat(testNG.getStatus()).isEqualTo(0);
   }
 
   @Test(description = "GITHUB-2726")

@@ -1,7 +1,8 @@
 package test.inject;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.NoInjection;
 import org.testng.annotations.Test;
@@ -20,12 +21,12 @@ public class NoInjectionTest {
 
   @Test(dataProvider = "provider")
   public void withoutInjection(@NoInjection Method m) {
-    Assert.assertEquals(m.getName(), "f");
+    assertThat(m.getName()).isEqualTo("f");
   }
 
   @Test(dataProvider = "provider")
   public void withInjection(Method m) {
-    Assert.assertEquals(m.getName(), "withInjection");
+    assertThat(m.getName()).isEqualTo("withInjection");
   }
 }
 

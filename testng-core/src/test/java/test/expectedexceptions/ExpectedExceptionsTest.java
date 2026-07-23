@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
 import java.util.List;
-import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
@@ -48,11 +47,11 @@ public class ExpectedExceptionsTest extends BaseTest {
     addClass(test.expectedexceptions.github1409.TestClassSample.class);
     run();
     Collection<List<ITestResult>> failedTests = getFailedTests().values();
-    Assert.assertFalse(failedTests.isEmpty());
+    assertThat(failedTests.isEmpty()).isFalse();
     ITestResult result = failedTests.iterator().next().get(0);
     String actual = result.getThrowable().getMessage().replaceAll("\\n", "");
     String expected =
         "The exception was thrown with the wrong message: expected \"expected\" but got \"actual\"";
-    Assert.assertEquals(actual, expected);
+    assertThat(actual).isEqualTo(expected);
   }
 }

@@ -1,8 +1,9 @@
 package test.factory;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Collections;
 import java.util.Iterator;
-import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -19,6 +20,6 @@ public class IteratorEmptyFactorySample {
 
   @Test
   public void test() {
-    Assert.fail();
+    fail();
   }
 }
