@@ -40,7 +40,7 @@ dependencies {
     implementation(projects.testngReflectionUtils)
     implementation(projects.testngRunnerApi)
     implementation("org.webjars:jquery:3.7.1")
-    testImplementation(projects.testngAsserts)
+    testImplementation("org.testng:testng-asserts:1.0.0")
     // Groovy 4.x is required to support Java 21 bytecode (class file major version 65)
     // Groovy 3.x doesn't support reading Java 21 bytecode
     testImplementation("org.apache.groovy:groovy-all:4.0.29") {

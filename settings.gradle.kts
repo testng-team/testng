@@ -21,7 +21,6 @@ develocity {
 // Sorted by name
 include(":testng")
 include(":testng-api")
-include(":testng-asserts")
 include(":testng-bom")
 include(":testng-collections")
 include(":testng-core")

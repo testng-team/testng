@@ -6,6 +6,6 @@ plugins {
 javaPlatform.allowDependencies()
 
 dependencies {
-    api(projects.testngAsserts)
+    api("org.testng:testng-asserts:1.0.0")
     api(projects.testngCoreApi)
 }
