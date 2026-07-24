@@ -41,7 +41,8 @@ abstract class OptionalFeaturesExtension(private val project: Project) {
     init {
         // By default, shade all modules from the current build
         shadedDependenciesFilter.convention {
-            it.owner.let { id -> id is ProjectComponentIdentifier && id.build.isCurrentBuild }
+            // BuildIdentifier.isCurrentBuild() was removed in Gradle 9; the root build's path is ":".
+            it.owner.let { id -> id is ProjectComponentIdentifier && id.build.buildPath == ":" }
         }
     }
 
