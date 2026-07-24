@@ -26,20 +26,28 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
     return -1;
   }
 
-  /** @return The status of this result, using one of the constants above. */
+  /**
+   * @return The status of this result, using one of the constants above.
+   */
   int getStatus();
 
   void setStatus(int status);
 
-  /** @return The test method this result represents. */
+  /**
+   * @return The test method this result represents.
+   */
   ITestNGMethod getMethod();
 
-  /** @return The parameters this method was invoked with. */
+  /**
+   * @return The parameters this method was invoked with.
+   */
   Object[] getParameters();
 
   void setParameters(Object[] parameters);
 
-  /** @return The test class used this object is a result for. */
+  /**
+   * @return The test class used this object is a result for.
+   */
   IClass getTestClass();
 
   /**
@@ -50,18 +58,26 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   void setThrowable(Throwable throwable);
 
-  /** @return the start date for this test, in milliseconds. */
+  /**
+   * @return the start date for this test, in milliseconds.
+   */
   long getStartMillis();
 
-  /** @return the end date for this test, in milliseconds. */
+  /**
+   * @return the end date for this test, in milliseconds.
+   */
   long getEndMillis();
 
   void setEndMillis(long millis);
 
-  /** @return The name of this TestResult, typically identical to the name of the method. */
+  /**
+   * @return The name of this TestResult, typically identical to the name of the method.
+   */
   String getName();
 
-  /** @return true if if this test run is a SUCCESS */
+  /**
+   * @return true if if this test run is a SUCCESS
+   */
   boolean isSuccess();
 
   /**
@@ -70,7 +86,9 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    */
   String getHost();
 
-  /** @return The instance on which this method was run. */
+  /**
+   * @return The instance on which this method was run.
+   */
   Object getInstance();
 
   /**
@@ -87,10 +105,14 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
 
   String getInstanceName();
 
-  /** @return the {@link ITestContext} for this test result. */
+  /**
+   * @return the {@link ITestContext} for this test result.
+   */
   ITestContext getTestContext();
 
-  /** @param name - The new name to be used as a test name */
+  /**
+   * @param name - The new name to be used as a test name
+   */
   void setTestName(String name);
 
   /**

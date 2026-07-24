@@ -324,7 +324,9 @@ public class XMLStringBuffer {
     m_buffer.append(EOL);
   }
 
-  /** @return The StringBuffer used to create the document. */
+  /**
+   * @return The StringBuffer used to create the document.
+   */
   public IBuffer getStringBuffer() {
     return m_buffer;
   }
@@ -333,7 +335,9 @@ public class XMLStringBuffer {
       Pattern.compile(
           "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
 
-  /** @return The String representation of the XML for this XMLStringBuffer. */
+  /**
+   * @return The String representation of the XML for this XMLStringBuffer.
+   */
   public String toXML() {
     return INVALID_XML_CHARS.matcher(m_buffer.toString()).replaceAll("");
   }

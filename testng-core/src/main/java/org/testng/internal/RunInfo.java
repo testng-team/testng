@@ -33,7 +33,9 @@ public class RunInfo {
     m_methodSelectors.add(md);
   }
 
-  /** @return true as soon as we fond a Method Selector that returns true for the method "tm". */
+  /**
+   * @return true as soon as we fond a Method Selector that returns true for the method "tm".
+   */
   public boolean includeMethod(ITestNGMethod tm, boolean isTestMethod) {
     boolean foundNegative = false;
     IMethodSelectorContext context = new DefaultMethodSelectorContext();

@@ -25,13 +25,17 @@ public class TestAnnotation extends TestOrConfiguration implements ITestAnnotati
   private boolean m_ignoreMissingDependencies;
   private CustomAttribute[] m_attributes = {};
 
-  /** @return the expectedExceptions */
+  /**
+   * @return the expectedExceptions
+   */
   @Override
   public Class<?>[] getExpectedExceptions() {
     return m_expectedExceptions;
   }
 
-  /** @param expectedExceptions the expectedExceptions to set */
+  /**
+   * @param expectedExceptions the expectedExceptions to set
+   */
   @Override
   public void setExpectedExceptions(Class<?>[] expectedExceptions) {
     m_expectedExceptions = expectedExceptions;

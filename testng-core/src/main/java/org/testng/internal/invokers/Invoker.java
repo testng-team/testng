@@ -24,6 +24,7 @@ public class Invoker implements IInvoker {
   /** Predicate to filter methods */
   static final BiPredicate<ITestNGMethod, IClass> CAN_RUN_FROM_CLASS =
       ITestNGMethod::canRunFromClass;
+
   /** Predicate to filter methods */
   static final BiPredicate<ITestNGMethod, IClass> SAME_CLASS =
       (m, c) -> c == null || m.getTestClass().getName().equals(c.getName());

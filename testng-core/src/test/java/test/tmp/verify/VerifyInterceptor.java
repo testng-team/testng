@@ -40,7 +40,9 @@ public class VerifyInterceptor implements IMethodInterceptor {
     return result;
   }
 
-  /** @return all the @Verify methods found on @code{realClass} */
+  /**
+   * @return all the @Verify methods found on @code{realClass}
+   */
   private List<IMethodInstance> findVerifyMethods(Class realClass, final ITestNGMethod tm) {
     List<IMethodInstance> result = new ArrayList<>();
     for (final Method m : realClass.getDeclaredMethods()) {

@@ -524,7 +524,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     return cfg.isFirstTimeOnly();
   }
 
-  /** @return true if this class or a parent class failed to initialize. */
+  /**
+   * @return true if this class or a parent class failed to initialize.
+   */
   private boolean classConfigurationFailed(Class<?> cls, Object instance) {
     return m_classInvocationResults.entrySet().stream()
         .anyMatch(

@@ -102,8 +102,7 @@ public class FailedReporter implements IReporter {
   }
 
   private static Map<Object, MethodInvocationKey> buildMap(Set<ITestResult> passed) {
-    return passed
-        .parallelStream()
+    return passed.parallelStream()
         .map(FailedReporter::key)
         .collect(
             Collectors.toUnmodifiableMap(Function.identity(), Function.identity(), (s1, s2) -> s1));

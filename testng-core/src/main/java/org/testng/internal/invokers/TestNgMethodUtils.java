@@ -81,7 +81,9 @@ final class TestNgMethodUtils {
     return filterMethods(instance, testClass, testClass.getAfterTestMethods(), predicate);
   }
 
-  /** @return Only the ITestNGMethods applicable for this testClass */
+  /**
+   * @return Only the ITestNGMethods applicable for this testClass
+   */
   static ITestNGMethod[] filterMethods(
       Object instance,
       IClass testClass,

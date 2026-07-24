@@ -9,7 +9,9 @@ public final class Dispenser {
     // Defeat instantiation
   }
 
-  /** @return - An {@link IObjectDispenser} that backed by the chain of responsibilities. */
+  /**
+   * @return - An {@link IObjectDispenser} that backed by the chain of responsibilities.
+   */
   public static IObjectDispenser newInstance(ITestObjectFactory objectFactory) {
     GuiceBasedObjectDispenser dispenser = new GuiceBasedObjectDispenser();
     dispenser.setNextDispenser(new SimpleObjectDispenser(objectFactory));

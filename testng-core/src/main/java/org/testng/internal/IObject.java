@@ -21,10 +21,14 @@ public interface IObject {
    */
   IdentifiableObject[] getObjects(boolean create, String errorMsgPrefix);
 
-  /** @return - An array representing the hash codes of the corresponding instances. */
+  /**
+   * @return - An array representing the hash codes of the corresponding instances.
+   */
   long[] getInstanceHashCodes();
 
-  /** @param instance - The instance that should be added to the list of instances. */
+  /**
+   * @param instance - The instance that should be added to the list of instances.
+   */
   void addObject(IdentifiableObject instance);
 
   /**

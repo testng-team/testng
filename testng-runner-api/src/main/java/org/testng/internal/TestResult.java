@@ -177,24 +177,32 @@ public final class TestResult implements ITestResult {
     return m_name;
   }
 
-  /** @return Returns the method. */
+  /**
+   * @return Returns the method.
+   */
   @Override
   public ITestNGMethod getMethod() {
     return m_method;
   }
 
-  /** @param method The method to set. */
+  /**
+   * @param method The method to set.
+   */
   public void setMethod(ITestNGMethod method) {
     m_method = method;
   }
 
-  /** @return Returns the status. */
+  /**
+   * @return Returns the status.
+   */
   @Override
   public int getStatus() {
     return m_status;
   }
 
-  /** @param status The status to set. */
+  /**
+   * @param status The status to set.
+   */
   @Override
   public void setStatus(int status) {
     m_status = status;
@@ -205,31 +213,41 @@ public final class TestResult implements ITestResult {
     return ITestResult.SUCCESS == m_status;
   }
 
-  /** @return Returns the testClass. */
+  /**
+   * @return Returns the testClass.
+   */
   @Override
   public IClass getTestClass() {
     return m_method.getTestClass();
   }
 
-  /** @return Returns the throwable. */
+  /**
+   * @return Returns the throwable.
+   */
   @Override
   public Throwable getThrowable() {
     return m_throwable;
   }
 
-  /** @param throwable The throwable to set. */
+  /**
+   * @param throwable The throwable to set.
+   */
   @Override
   public void setThrowable(Throwable throwable) {
     m_throwable = throwable;
   }
 
-  /** @return Returns the endMillis. */
+  /**
+   * @return Returns the endMillis.
+   */
   @Override
   public long getEndMillis() {
     return m_endMillis;
   }
 
-  /** @return Returns the startMillis. */
+  /**
+   * @return Returns the startMillis.
+   */
   @Override
   public long getStartMillis() {
     return m_startMillis;
@@ -364,7 +382,9 @@ public final class TestResult implements ITestResult {
     this.m_parameterIndex = index;
   }
 
-  /** @deprecated This method is a no-op and will be removed in a future release. */
+  /**
+   * @deprecated This method is a no-op and will be removed in a future release.
+   */
   @Deprecated(forRemoval = true)
   public void setParameterIndex(int parameterIndex) {}
 

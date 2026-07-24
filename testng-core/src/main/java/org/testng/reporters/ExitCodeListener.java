@@ -44,15 +44,21 @@ public class ExitCodeListener implements IResultListener2 {
 
   private void setHasRunTests() {}
 
-  /** @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationFailure(ITestResult itr) {}
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSkip(ITestResult itr) {}
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {}
 }

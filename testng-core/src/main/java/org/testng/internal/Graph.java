@@ -73,12 +73,16 @@ public class Graph<T> {
     return m_nodes.values();
   }
 
-  /** @return All the nodes that don't have any order with each other. */
+  /**
+   * @return All the nodes that don't have any order with each other.
+   */
   public Set<T> getIndependentNodes() {
     return m_independentNodes.keySet();
   }
 
-  /** @return All the nodes that have an order with each other, sorted in one of the valid sorts. */
+  /**
+   * @return All the nodes that have an order with each other, sorted in one of the valid sorts.
+   */
   public List<T> getStrictlySortedNodes() {
     return m_strictlySortedNodes;
   }
@@ -93,8 +97,7 @@ public class Graph<T> {
     // not independent.
     //
     List<Node<T>> nodes2 =
-        getNodes()
-            .parallelStream()
+        getNodes().parallelStream()
             .filter(n -> !isIndependent(n.getObject()))
             .map(Node::clone)
             .sorted(comparator)

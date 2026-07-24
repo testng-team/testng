@@ -17,8 +17,10 @@ public class XmlClass implements Cloneable {
   private List<String> m_excludedMethods = Lists.newArrayList();
   private String m_name;
   private Class m_class;
+
   /** The index of this class in the &lt;test&gt; tag */
   private int m_index;
+
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;
 
@@ -75,7 +77,9 @@ public class XmlClass implements Cloneable {
     }
   }
 
-  /** @return Returns the className. */
+  /**
+   * @return Returns the className.
+   */
   public Class<?> getSupportClass() {
     if (m_class == null) {
       loadClass();
@@ -83,42 +87,58 @@ public class XmlClass implements Cloneable {
     return m_class;
   }
 
-  /** @param className The className to set. */
+  /**
+   * @param className The className to set.
+   */
   public void setClass(Class className) {
     m_class = className;
   }
 
-  /** @return Returns the excludedMethods. */
+  /**
+   * @return Returns the excludedMethods.
+   */
   public List<String> getExcludedMethods() {
     return m_excludedMethods;
   }
 
-  /** @param excludedMethods The excludedMethods to set. */
+  /**
+   * @param excludedMethods The excludedMethods to set.
+   */
   public void setExcludedMethods(List<String> excludedMethods) {
     m_excludedMethods = excludedMethods;
   }
 
-  /** @return Returns the includedMethods. */
+  /**
+   * @return Returns the includedMethods.
+   */
   public List<XmlInclude> getIncludedMethods() {
     return m_includedMethods;
   }
 
-  /** @param includedMethods The includedMethods to set. */
+  /**
+   * @param includedMethods The includedMethods to set.
+   */
   public void setIncludedMethods(List<XmlInclude> includedMethods) {
     m_includedMethods = includedMethods;
   }
 
-  /** @return Returns the name. */
+  /**
+   * @return Returns the name.
+   */
   public String getName() {
     return m_name;
   }
 
-  /** @param name The name to set. */
+  /**
+   * @param name The name to set.
+   */
   public void setName(String name) {
     m_name = name;
   }
 
-  /** @return true if the classes need to be loaded. */
+  /**
+   * @return true if the classes need to be loaded.
+   */
   public boolean loadClasses() {
     return m_loadClasses;
   }
@@ -241,7 +261,9 @@ public class XmlClass implements Cloneable {
     m_parameters.putAll(parameters);
   }
 
-  /** @return The parameters defined in this test tag and the tags above it. */
+  /**
+   * @return The parameters defined in this test tag and the tags above it.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlTest != null) {

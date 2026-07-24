@@ -110,8 +110,7 @@ public class MethodGroupsHelper {
 
   private static boolean isMethodAlreadyNotPresent(List<ITestNGMethod> result, ITestNGMethod tm) {
     Class<?> cls = tm.getConstructorOrMethod().getDeclaringClass();
-    return result
-        .parallelStream()
+    return result.parallelStream()
         .map(ITestNGMethod::getConstructorOrMethod)
         .filter(m -> m.getName().equals(tm.getConstructorOrMethod().getName()))
         .map(ConstructorOrMethod::getDeclaringClass)

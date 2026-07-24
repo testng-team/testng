@@ -648,7 +648,9 @@ public class EmailableReporter2 implements IReporter {
       return suiteName;
     }
 
-    /** @return the test results (possibly empty) */
+    /**
+     * @return the test results (possibly empty)
+     */
     public List<TestResult> getTestResults() {
       return testResults;
     }
@@ -786,22 +788,30 @@ public class EmailableReporter2 implements IReporter {
       return testName;
     }
 
-    /** @return the results for failed configurations (possibly empty) */
+    /**
+     * @return the results for failed configurations (possibly empty)
+     */
     public List<ClassResult> getFailedConfigurationResults() {
       return failedConfigurationResults;
     }
 
-    /** @return the results for failed tests (possibly empty) */
+    /**
+     * @return the results for failed tests (possibly empty)
+     */
     public List<ClassResult> getFailedTestResults() {
       return failedTestResults;
     }
 
-    /** @return the results for skipped configurations (possibly empty) */
+    /**
+     * @return the results for skipped configurations (possibly empty)
+     */
     public List<ClassResult> getSkippedConfigurationResults() {
       return skippedConfigurationResults;
     }
 
-    /** @return the results for skipped tests (possibly empty) */
+    /**
+     * @return the results for skipped tests (possibly empty)
+     */
     public List<ClassResult> getSkippedTestResults() {
       return skippedTestResults;
     }
@@ -810,7 +820,9 @@ public class EmailableReporter2 implements IReporter {
       return retriedTestResults;
     }
 
-    /** @return the results for passed tests (possibly empty) */
+    /**
+     * @return the results for passed tests (possibly empty)
+     */
     public List<ClassResult> getPassedTestResults() {
       return passedTestResults;
     }
@@ -881,7 +893,9 @@ public class EmailableReporter2 implements IReporter {
       return className;
     }
 
-    /** @return the non-null, non-empty {@link MethodResult} list */
+    /**
+     * @return the non-null, non-empty {@link MethodResult} list
+     */
     public List<MethodResult> getMethodResults() {
       return methodResults;
     }
@@ -891,12 +905,16 @@ public class EmailableReporter2 implements IReporter {
   protected static class MethodResult {
     private final List<ITestResult> results;
 
-    /** @param results the non-null, non-empty result list */
+    /**
+     * @param results the non-null, non-empty result list
+     */
     public MethodResult(List<ITestResult> results) {
       this.results = results;
     }
 
-    /** @return the non-null, non-empty result list */
+    /**
+     * @return the non-null, non-empty result list
+     */
     public List<ITestResult> getResults() {
       return results;
     }

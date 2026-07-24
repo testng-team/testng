@@ -88,7 +88,9 @@ public class Parser {
     m_postProcessor = processor;
   }
 
-  /** @param loadClasses If false, don't try to load the classes during the parsing. */
+  /**
+   * @param loadClasses If false, don't try to load the classes during the parsing.
+   */
   public void setLoadClasses(boolean loadClasses) {
     m_loadClasses = loadClasses;
   }

@@ -18,7 +18,9 @@ public interface IAttributes {
    */
   void setAttribute(String name, Object value);
 
-  /** @return all the attributes names. */
+  /**
+   * @return all the attributes names.
+   */
   Set<String> getAttributeNames();
 
   /**

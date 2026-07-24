@@ -15,12 +15,17 @@ class SuiteResult implements ISuiteResult, Comparable<SuiteResult> {
     m_testContext = tr;
   }
 
-  /** @return Returns the singleTestRunner. */
+  /**
+   * @return Returns the singleTestRunner.
+   */
   @Override
   public ITestContext getTestContext() {
     return m_testContext;
   }
-  /** @return Returns the suite. */
+
+  /**
+   * @return Returns the suite.
+   */
   public XmlSuite getSuite() {
     return m_suite;
   }

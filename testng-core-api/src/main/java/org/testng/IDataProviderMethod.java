@@ -17,16 +17,24 @@ public interface IDataProviderMethod {
    */
   Method getMethod();
 
-  /** @return The name of this DataProvider. */
+  /**
+   * @return The name of this DataProvider.
+   */
   String getName();
 
-  /** @return Whether this data provider should be run in parallel. */
+  /**
+   * @return Whether this data provider should be run in parallel.
+   */
   boolean isParallel();
 
-  /** @return Which indices to run from this data provider, default: all. */
+  /**
+   * @return Which indices to run from this data provider, default: all.
+   */
   List<Integer> getIndices();
 
-  /** @return Whether failures in data providers should be treated as test failures */
+  /**
+   * @return Whether failures in data providers should be treated as test failures
+   */
   default boolean propagateFailureAsTestFailure() {
     return false;
   }

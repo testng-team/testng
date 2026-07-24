@@ -43,9 +43,9 @@ buildParameters {
         defaultValue.set(false)
         description.set("Report verification results to Sonarqube")
     }
-    bool("skipAutostyle") {
+    bool("skipSpotless") {
         defaultValue.set(false)
-        description.set("Skip AutoStyle verifications")
+        description.set("Skip Spotless verifications")
     }
     bool("failOnJavadocWarning") {
         defaultValue.set(true)

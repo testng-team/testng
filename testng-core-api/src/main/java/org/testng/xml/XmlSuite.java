@@ -201,17 +201,23 @@ public class XmlSuite implements Cloneable {
     this.parsed = parsed;
   }
 
-  /** @return - <code>true</code> if the current {@link XmlSuite} has already been parsed. */
+  /**
+   * @return - <code>true</code> if the current {@link XmlSuite} has already been parsed.
+   */
   public boolean isParsed() {
     return parsed;
   }
 
-  /** @return The fileName. */
+  /**
+   * @return The fileName.
+   */
   public String getFileName() {
     return m_fileName;
   }
 
-  /** @param fileName The fileName to set. */
+  /**
+   * @param fileName The fileName to set.
+   */
   public void setFileName(String fileName) {
     m_fileName = fileName;
   }
@@ -418,7 +424,9 @@ public class XmlSuite implements Cloneable {
     return m_parameters;
   }
 
-  /** @return The parameters defined in this suite and all its XmlTests. */
+  /**
+   * @return The parameters defined in this suite and all its XmlTests.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     result.putAll(m_parameters);
@@ -440,7 +448,9 @@ public class XmlSuite implements Cloneable {
     return m_parameters.get(name);
   }
 
-  /** @return The threadCount. */
+  /**
+   * @return The threadCount.
+   */
   public int getThreadCount() {
     return m_threadCount;
   }
@@ -494,12 +504,16 @@ public class XmlSuite implements Cloneable {
     setXmlPackages(packages);
   }
 
-  /** @return A String representation of this XML suite. */
+  /**
+   * @return A String representation of this XML suite.
+   */
   public String toXml() {
     return XmlWeaver.asXml(this);
   }
 
-  /** @return - The list of listener names that are local to the current &lt;suite&gt;. */
+  /**
+   * @return - The list of listener names that are local to the current &lt;suite&gt;.
+   */
   public List<String> getLocalListeners() {
     return m_listeners;
   }
@@ -849,7 +863,9 @@ public class XmlSuite implements Cloneable {
     m_xmlGroups.getRun().onInclude(g);
   }
 
-  /** @param g - The list of groups to include. */
+  /**
+   * @param g - The list of groups to include.
+   */
   public void setIncludedGroups(List<String> g) {
     initGroupsRun();
     List<String> includes = m_xmlGroups.getRun().getIncludes();
@@ -857,7 +873,9 @@ public class XmlSuite implements Cloneable {
     includes.addAll(g);
   }
 
-  /** @param g The excludedGrousps to set. */
+  /**
+   * @param g The excludedGrousps to set.
+   */
   public void setExcludedGroups(List<String> g) {
     initGroupsRun();
     List<String> excludes = m_xmlGroups.getRun().getExcludes();

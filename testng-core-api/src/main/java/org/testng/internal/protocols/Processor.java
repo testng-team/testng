@@ -93,7 +93,9 @@ public abstract class Processor {
     return classes;
   }
 
-  /** @return true if name should be included. */
+  /**
+   * @return true if name should be included.
+   */
   private static boolean isIncluded(String name, List<String> included, List<String> excluded) {
     //
     // If no includes nor excludes were specified, return true.

@@ -2,6 +2,9 @@ plugins {
     id("testng.repositories")
     id("idea")
     id("com.gradleup.nmcp.aggregation") version "1.4.1"
+    // Loaded once in the root scope so all subprojects share a single Spotless build service
+    // (precompiled convention plugins would otherwise load it per-project). See Spotless docs.
+    id("com.diffplug.spotless") version "8.8.0" apply false
 }
 
 val String.v: String get() = rootProject.extra["$this.version"] as String

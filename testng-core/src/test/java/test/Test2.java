@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/** @author Cedric Beust, May 5, 2004 */
+/**
+ * @author Cedric Beust, May 5, 2004
+ */
 public class Test2 extends BaseTest {
   private boolean m_initializedCorrectly;
 

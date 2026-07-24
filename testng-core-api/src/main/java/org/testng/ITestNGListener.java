@@ -7,7 +7,9 @@ package org.testng;
  */
 public interface ITestNGListener {
 
-  /** @return - <code>true</code> if the current listener can be considered for execution. */
+  /**
+   * @return - <code>true</code> if the current listener can be considered for execution.
+   */
   default boolean isEnabled() {
     return true;
   }

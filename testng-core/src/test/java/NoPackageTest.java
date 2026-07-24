@@ -3,7 +3,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-/** @author Filippo Diotalevi */
+/**
+ * @author Filippo Diotalevi
+ */
 public class NoPackageTest {
   private boolean m_run;
 

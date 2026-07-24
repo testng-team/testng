@@ -145,7 +145,9 @@ public class XmlInclude {
     return m_parameters;
   }
 
-  /** @return the parameters defined in this tag and the tags above it. */
+  /**
+   * @return the parameters defined in this tag and the tags above it.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     if (m_xmlClass != null) {

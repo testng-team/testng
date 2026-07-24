@@ -16,7 +16,9 @@ public class ThreadUtil {
 
   public static final String THREAD_NAME = "TestNG";
 
-  /** @return true if the current thread was created by TestNG. */
+  /**
+   * @return true if the current thread was created by TestNG.
+   */
   public static boolean isTestNGThread() {
     return Thread.currentThread().getName().contains(THREAD_NAME);
   }

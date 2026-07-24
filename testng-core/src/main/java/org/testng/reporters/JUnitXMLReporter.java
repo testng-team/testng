@@ -81,19 +81,25 @@ public class JUnitXMLReporter implements IResultListener2 {
     resetAll();
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_configIssues.add(itr);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_configIssues.add(itr);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {}
 

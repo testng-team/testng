@@ -32,7 +32,9 @@ public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
     return matching;
   }
 
-  /** @return injects to check against. */
+  /**
+   * @return injects to check against.
+   */
   protected abstract List<Set<InjectableParameter>> getConformanceInjectsOrder();
 
   /**

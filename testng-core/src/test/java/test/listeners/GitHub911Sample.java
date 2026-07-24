@@ -11,6 +11,7 @@ public class GitHub911Sample {
   public void setUp() {
     fail();
   }
+
   // TODO check before invocation
 
   @Test

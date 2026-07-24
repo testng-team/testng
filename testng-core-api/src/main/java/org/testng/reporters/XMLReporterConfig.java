@@ -73,6 +73,7 @@ public class XMLReporterConfig implements IReporterConfig {
    * generator to write all the results in one big file. Not recommended for large test suites.
    */
   public static final int FF_LEVEL_NONE = 1;
+
   /**
    * Will cause the XML generator to create separate files for each of the suites. A separate
    * directory will be generated for each suite having the name of the suite and containing a <code>
@@ -80,6 +81,7 @@ public class XMLReporterConfig implements IReporterConfig {
    * attribute
    */
   public static final int FF_LEVEL_SUITE = 2;
+
   /**
    * It behaves like <code>FF_LEVEL_SUITE</code>, except that it will also create a file for each
    * <code>ISuiteResult</code>

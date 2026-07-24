@@ -464,7 +464,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     }
   }
 
-  /** @param reporter The ISuiteListener interested in reporting the result of the current suite. */
+  /**
+   * @param reporter The ISuiteListener interested in reporting the result of the current suite.
+   */
   protected void addListener(ISuiteListener reporter) {
     listeners.putIfAbsent(reporter.getClass(), reporter);
   }
@@ -528,7 +530,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return xmlSuite.getParameter(parameterName);
   }
 
-  /** @see org.testng.ISuite#getMethodsByGroups() */
+  /**
+   * @see org.testng.ISuite#getMethodsByGroups()
+   */
   @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
     Map<String, Collection<ITestNGMethod>> result = Maps.newHashMap();
@@ -548,7 +552,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return result;
   }
 
-  /** @see org.testng.ISuite#getExcludedMethods() */
+  /**
+   * @see org.testng.ISuite#getExcludedMethods()
+   */
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
     return testRunners.stream()
@@ -724,7 +730,9 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     return remoteHost;
   }
 
-  /** @see org.testng.ISuite#getSuiteState() */
+  /**
+   * @see org.testng.ISuite#getSuiteState()
+   */
   @Override
   public SuiteRunState getSuiteState() {
     return suiteState;

@@ -25,7 +25,9 @@ public class PerformanceUtils {
     return GET_THREAD_ALLOCATED_BYTES != null;
   }
 
-  /** @return amount of memory (in bytes) allocated by current thread until now */
+  /**
+   * @return amount of memory (in bytes) allocated by current thread until now
+   */
   public static long measureAllocatedMemory() {
     if (GET_THREAD_ALLOCATED_BYTES == null) {
       throw new IllegalStateException(

@@ -19,6 +19,8 @@ public interface IConfigureCallBack {
    */
   void runConfigurationMethod(ITestResult testResult);
 
-  /** @return the parameters that will be used to invoke the configuration method. */
+  /**
+   * @return the parameters that will be used to invoke the configuration method.
+   */
   Object[] getParameters();
 }

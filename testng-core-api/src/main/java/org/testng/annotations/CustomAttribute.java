@@ -11,9 +11,13 @@ import java.lang.annotation.Target;
 @Target({METHOD, TYPE})
 public @interface CustomAttribute {
 
-  /** @return - The name for the custom attribute */
+  /**
+   * @return - The name for the custom attribute
+   */
   String name();
 
-  /** @return - The custom attribute values as an array. */
+  /**
+   * @return - The custom attribute values as an array.
+   */
   String[] values() default {};
 }

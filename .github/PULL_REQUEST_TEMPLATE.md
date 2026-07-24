@@ -4,7 +4,7 @@ Fixes # .
 
 - [ ] Add test case(s)
 - [ ] Update `CHANGES.txt`
-- [ ] Auto applied styling via `./gradlew autostyleApply`
+- [ ] Auto applied styling via `./gradlew spotlessApply`
 
 We encourage pull requests that:
 

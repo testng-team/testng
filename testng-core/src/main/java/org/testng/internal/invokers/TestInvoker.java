@@ -414,8 +414,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Collect all the TestResults
     //
     List<ITestResult> result =
-        workers
-            .parallelStream()
+        workers.parallelStream()
             .filter(TestMethodWorker.class::isInstance)
             .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
             .collect(Collectors.toList());
@@ -460,10 +459,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     return false;
   }
 
-  /** @return the test results that apply to one of the instances of the testMethod. */
+  /**
+   * @return the test results that apply to one of the instances of the testMethod.
+   */
   private Set<ITestResult> keepSameInstances(ITestNGMethod method, Set<ITestResult> results) {
-    return results
-        .parallelStream()
+    return results.parallelStream()
         .filter(
             r -> {
               Object instance =

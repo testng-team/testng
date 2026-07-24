@@ -10,6 +10,8 @@ import org.testng.ITestNGMethod;
 @FunctionalInterface
 public interface IOrderMethods {
 
-  /** @return - The {@link Comparator} to be used. */
+  /**
+   * @return - The {@link Comparator} to be used.
+   */
   Comparator<ITestNGMethod> comparator();
 }

@@ -14,22 +14,34 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
    */
   boolean getAfterTestClass();
 
-  /** @return true true if the annotated method will be run before any test method is invoked. */
+  /**
+   * @return true true if the annotated method will be run before any test method is invoked.
+   */
   boolean getBeforeTestMethod();
 
-  /** @return true if the annotated method will be run after any test method is invoked. */
+  /**
+   * @return true if the annotated method will be run after any test method is invoked.
+   */
   boolean getAfterTestMethod();
 
-  /** @return true if the annotated method will be run before this suite starts. */
+  /**
+   * @return true if the annotated method will be run before this suite starts.
+   */
   boolean getBeforeSuite();
 
-  /** @return true if the annotated method will be run after all tests in this suite have run. */
+  /**
+   * @return true if the annotated method will be run after all tests in this suite have run.
+   */
   boolean getAfterSuite();
 
-  /** @return true if the annotated method will be run before every test */
+  /**
+   * @return true if the annotated method will be run before every test
+   */
   boolean getBeforeTest();
 
-  /** @return true if the annotated method will be run after all every test. */
+  /**
+   * @return true if the annotated method will be run after all every test.
+   */
   boolean getAfterTest();
 
   /**
@@ -46,10 +58,14 @@ public interface IConfigurationAnnotation extends ITestOrConfiguration {
    */
   boolean getInheritGroups();
 
-  /** @return The list of groups that this configuration method will run before. */
+  /**
+   * @return The list of groups that this configuration method will run before.
+   */
   String[] getBeforeGroups();
 
-  /** @return The list of groups that this configuration method will run after. */
+  /**
+   * @return The list of groups that this configuration method will run after.
+   */
   String[] getAfterGroups();
 
   /**

@@ -48,7 +48,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     }
   }
 
-  /** @return a set of all the nodes that don't depend on any other nodes. */
+  /**
+   * @return a set of all the nodes that don't depend on any other nodes.
+   */
   public List<T> getFreeNodes() {
     // Get a list of nodes that are ready and have no outgoing edges.
     Set<T> free = Sets.newLinkedHashSet(m_nodesReady);
@@ -145,7 +147,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     this.visualisers.forEach(visualiser -> visualiser.consumeDotDefinition(toDot()));
   }
 
-  /** @return the number of nodes in this graph. */
+  /**
+   * @return the number of nodes in this graph.
+   */
   public int getNodeCount() {
     return m_nodesReady.size() + m_nodesRunning.size() + m_nodesFinished.size();
   }
@@ -187,7 +191,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     return s.substring(0, n2).replaceAll("\\Q.\\E", "_");
   }
 
-  /** @return a .dot file (GraphViz) version of this graph. */
+  /**
+   * @return a .dot file (GraphViz) version of this graph.
+   */
   public String toDot() {
     String FREE = "[style=filled color=yellow]";
     String RUNNING = "[style=filled color=green]";
@@ -246,7 +252,9 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
       addEdgeToMap(m_outgoingEdges, from, to, weight);
     }
 
-    /** @return the set of nodes that have outgoing edges. */
+    /**
+     * @return the set of nodes that have outgoing edges.
+     */
     Set<T> fromNodes() {
       return m_outgoingEdges.keySet();
     }

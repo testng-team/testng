@@ -47,8 +47,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   private static List<ITestNGMethod> getAllClassLevelConfigs(
       IdentityHashMap<Object, List<ITestNGMethod>> map) {
-    return map.values()
-        .parallelStream()
+    return map.values().parallelStream()
         .reduce(
             (a, b) -> {
               List<ITestNGMethod> methodList = new ArrayList<>(a);

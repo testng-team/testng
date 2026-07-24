@@ -12,6 +12,8 @@ public interface IObjectDispenser {
 
   Object dispense(CreationAttributes attributes);
 
-  /** @param dispenser - The {@link IObjectDispenser} to dispense */
+  /**
+   * @param dispenser - The {@link IObjectDispenser} to dispense
+   */
   void setNextDispenser(IObjectDispenser dispenser);
 }

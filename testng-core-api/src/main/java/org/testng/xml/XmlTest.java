@@ -104,7 +104,9 @@ public class XmlTest implements Cloneable {
     return m_suite;
   }
 
-  /** @return the includedGroups. */
+  /**
+   * @return the includedGroups.
+   */
   public List<String> getIncludedGroups() {
     List<String> result = Lists.newArrayList();
     if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
@@ -118,7 +120,9 @@ public class XmlTest implements Cloneable {
     return getIncludedGroups().isEmpty() && getExcludedGroups().isEmpty();
   }
 
-  /** @return Returns the classes. */
+  /**
+   * @return Returns the classes.
+   */
   public List<XmlClass> getXmlClasses() {
     return m_xmlClasses;
   }
@@ -142,17 +146,23 @@ public class XmlTest implements Cloneable {
     m_xmlClasses = classes;
   }
 
-  /** @return Returns the name. */
+  /**
+   * @return Returns the name.
+   */
   public String getName() {
     return m_name;
   }
 
-  /** @param name The name to set. */
+  /**
+   * @param name The name to set.
+   */
   public void setName(String name) {
     m_name = name;
   }
 
-  /** @param v - Verbosity level. */
+  /**
+   * @param v - Verbosity level.
+   */
   public void setVerbose(int v) {
     m_verbose = v;
   }
@@ -216,7 +226,9 @@ public class XmlTest implements Cloneable {
     m_xmlGroups.getRun().getExcludes().add(g);
   }
 
-  /** @return Returns the verbose. */
+  /**
+   * @return Returns the verbose.
+   */
   public int getVerbose() {
     Integer result = m_verbose;
     if (null == result || XmlSuite.DEFAULT_VERBOSE.equals(m_verbose)) {
@@ -243,7 +255,9 @@ public class XmlTest implements Cloneable {
     m_skipFailedInvocationCounts = skip;
   }
 
-  /** @return Returns the isJUnit. */
+  /**
+   * @return Returns the isJUnit.
+   */
   public boolean skipFailedInvocationCounts() {
     Boolean result = m_skipFailedInvocationCounts;
     if (null == result) {
@@ -274,7 +288,9 @@ public class XmlTest implements Cloneable {
     }
   }
 
-  /** @return Returns the metaGroups. */
+  /**
+   * @return Returns the metaGroups.
+   */
   public Map<String, List<String>> getMetaGroups() {
     if (m_xmlGroups == null) {
       return Collections.emptyMap();
@@ -287,7 +303,9 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
-  /** @param parameters - A {@link Map} of parameters. */
+  /**
+   * @param parameters - A {@link Map} of parameters.
+   */
   public void setParameters(Map<String, String> parameters) {
     m_parameters = parameters;
   }
@@ -305,7 +323,9 @@ public class XmlTest implements Cloneable {
     return result;
   }
 
-  /** @return the parameters defined in this test tag and the tags above it. */
+  /**
+   * @return the parameters defined in this test tag and the tags above it.
+   */
   public Map<String, String> getAllParameters() {
     Map<String, String> result = Maps.newHashMap();
     result.putAll(getSuite().getParameters());

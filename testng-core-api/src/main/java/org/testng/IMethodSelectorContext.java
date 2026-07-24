@@ -12,7 +12,9 @@ import java.util.Map;
  */
 public interface IMethodSelectorContext {
 
-  /** @return true if no more Method Selectors should be invoked after the current one. */
+  /**
+   * @return true if no more Method Selectors should be invoked after the current one.
+   */
   boolean isStopped();
 
   /**

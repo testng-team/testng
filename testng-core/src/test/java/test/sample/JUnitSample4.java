@@ -4,7 +4,9 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.junit.Assert;
 
-/** @author lukas */
+/**
+ * @author lukas
+ */
 public abstract class JUnitSample4 extends TestCase {
 
   private final int i;

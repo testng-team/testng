@@ -72,11 +72,11 @@ To run all the test cases (build the code) run `./gradlew test`
 * First list the sub-modules that are available in the TestNG codebase by running `./gradlew projects`
 * Now you can run tests that belong to any specific module by running `./gradlew :<moduleNameGoesHere>:test`. For e.g., to run tests under the sub-module **testng-asserts** run the command : `./gradlew :testng-asserts:test`
 
-The codebase makes use of [autostyle](https://github.com/autostyle/autostyle) to enforce code formatting and also fixing code formatting.
+The codebase makes use of [Spotless](https://github.com/diffplug/spotless) to enforce code formatting and also fixing code formatting.
 
-To check if there are any code formatting/styling issues (Its best to run this before every pull request), run `./gradlew autostyleCheck`
+To check if there are any code formatting/styling issues (Its best to run this before every pull request), run `./gradlew spotlessCheck`
 
-To automatically fix any styling issues run `./gradlew autostyleApply`
+To automatically fix any styling issues run `./gradlew spotlessApply`
 
 **Tip:**
 
@@ -87,12 +87,12 @@ In order to automatically have the formatting applied as and when you commit cod
 
 ```
 # run the auto style applying on the code
-./gradlew autostyleApply
+./gradlew spotlessApply
 
 # store the last exit code in a variable
 RESULT=$?
 
-# return the './gradlew autostyleApply' exit code
+# return the './gradlew spotlessApply' exit code
 exit $RESULT
 ```
 

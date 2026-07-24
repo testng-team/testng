@@ -17,7 +17,9 @@ import org.testng.xml.XmlSuite;
  * <code>Listeners</code> annotation.
  */
 public interface IAlterSuiteListener extends ITestNGListener {
-  /** @param suites - The list of {@link XmlSuite}s that are part of the current execution. */
+  /**
+   * @param suites - The list of {@link XmlSuite}s that are part of the current execution.
+   */
   default void alter(List<XmlSuite> suites) {
     // not implemented
   }

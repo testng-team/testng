@@ -491,7 +491,9 @@ public class MethodHelper {
     return result;
   }
 
-  /** @return A sorted array containing all the methods 'method' depends on */
+  /**
+   * @return A sorted array containing all the methods 'method' depends on
+   */
   public static List<ITestNGMethod> getMethodsDependedUpon(
       ITestNGMethod method, ITestNGMethod[] methods, Comparator<ITestNGMethod> comparator) {
     Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);

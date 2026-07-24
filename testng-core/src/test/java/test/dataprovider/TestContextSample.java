@@ -13,7 +13,9 @@ import org.testng.annotations.Test;
  */
 public class TestContextSample {
 
-  /** @return As many parameters as the name of the included group */
+  /**
+   * @return As many parameters as the name of the included group
+   */
   @DataProvider(name = "testContext")
   public Object[] createContext(ITestContext ctx) {
     String[] groups = ctx.getIncludedGroups();

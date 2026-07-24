@@ -58,6 +58,7 @@ public class Parameters {
           Factory.class);
 
   private static final Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+
   /*
            +--------------+--------------+---------+--------+----------+-------------+
            |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |

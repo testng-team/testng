@@ -115,8 +115,7 @@ public class MethodInheritance {
     //
     // Each bucket that has a list bigger than one element gets sorted
     //
-    map.values()
-        .parallelStream()
+    map.values().parallelStream()
         .filter(l -> l.size() > 1)
         .forEach(
             l -> {

@@ -146,7 +146,9 @@ public final class TestListenerHelper {
     return result;
   }
 
-  /** @deprecated - This method stands deprecated as of TestNG version <code>7.10.0</code> */
+  /**
+   * @deprecated - This method stands deprecated as of TestNG version <code>7.10.0</code>
+   */
   @Deprecated
   public static ITestNGListenerFactory createListenerFactory(
       ITestObjectFactory objectFactory,

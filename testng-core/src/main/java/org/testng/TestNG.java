@@ -175,6 +175,7 @@ public class TestNG {
   private Integer m_dataProviderThreadCount;
 
   private String m_jarPath;
+
   /** The path of the testng.xml file inside the jar file */
   private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
 
@@ -289,7 +290,9 @@ public class TestNG {
     m_jarPath = jarPath;
   }
 
-  /** @param xmlPathInJar Sets the path to the XML file in the test jar file. */
+  /**
+   * @param xmlPathInJar Sets the path to the XML file in the test jar file.
+   */
   public void setXmlPathInJar(String xmlPathInJar) {
     m_xmlPathInJar = xmlPathInJar;
   }
@@ -425,7 +428,9 @@ public class TestNG {
     m_suites.addAll(allSuites);
   }
 
-  /** @param threadCount Define the number of threads in the thread pool. */
+  /**
+   * @param threadCount Define the number of threads in the thread pool.
+   */
   public void setThreadCount(int threadCount) {
     if (threadCount < 1) {
       exitWithError("Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
@@ -1778,7 +1783,9 @@ public class TestNG {
     configure(result);
   }
 
-  /** @param testNames Only run the specified tests from the suite. */
+  /**
+   * @param testNames Only run the specified tests from the suite.
+   */
   public void setTestNames(List<String> testNames) {
     m_testNames = testNames;
   }
@@ -1844,17 +1851,23 @@ public class TestNG {
     }
   }
 
-  /** @return true if at least one test failed. */
+  /**
+   * @return true if at least one test failed.
+   */
   public boolean hasFailure() {
     return this.exitCode.hasFailure();
   }
 
-  /** @return true if at least one test failed within success percentage. */
+  /**
+   * @return true if at least one test failed within success percentage.
+   */
   public boolean hasFailureWithinSuccessPercentage() {
     return this.exitCode.hasFailureWithinSuccessPercentage();
   }
 
-  /** @return true if at least one test was skipped. */
+  /**
+   * @return true if at least one test was skipped.
+   */
   public boolean hasSkip() {
     return this.exitCode.hasSkip();
   }
@@ -1881,22 +1894,30 @@ public class TestNG {
     m_annotationTransformer = t;
   }
 
-  /** @return the defaultSuiteName */
+  /**
+   * @return the defaultSuiteName
+   */
   public String getDefaultSuiteName() {
     return m_defaultSuiteName;
   }
 
-  /** @param defaultSuiteName the defaultSuiteName to set */
+  /**
+   * @param defaultSuiteName the defaultSuiteName to set
+   */
   public void setDefaultSuiteName(String defaultSuiteName) {
     m_defaultSuiteName = defaultSuiteName;
   }
 
-  /** @return the defaultTestName */
+  /**
+   * @return the defaultTestName
+   */
   public String getDefaultTestName() {
     return m_defaultTestName;
   }
 
-  /** @param defaultTestName the defaultTestName to set */
+  /**
+   * @param defaultTestName the defaultTestName to set
+   */
   public void setDefaultTestName(String defaultTestName) {
     m_defaultTestName = defaultTestName;
   }

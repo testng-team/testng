@@ -345,34 +345,49 @@ public class ConfigurationMethod extends BaseTestMethod {
         instance);
   }
 
-  /** @return Returns the isAfterClassConfiguration. */
+  /**
+   * @return Returns the isAfterClassConfiguration.
+   */
   @Override
   public boolean isAfterClassConfiguration() {
     return m_isAfterClassConfiguration;
   }
-  /** @return Returns the isAfterMethodConfiguration. */
+
+  /**
+   * @return Returns the isAfterMethodConfiguration.
+   */
   @Override
   public boolean isAfterMethodConfiguration() {
     return m_isAfterMethodConfiguration;
   }
-  /** @return Returns the isBeforeClassConfiguration. */
+
+  /**
+   * @return Returns the isBeforeClassConfiguration.
+   */
   @Override
   public boolean isBeforeClassConfiguration() {
     return m_isBeforeClassConfiguration;
   }
-  /** @return Returns the isBeforeMethodConfiguration. */
+
+  /**
+   * @return Returns the isBeforeMethodConfiguration.
+   */
   @Override
   public boolean isBeforeMethodConfiguration() {
     return m_isBeforeMethodConfiguration;
   }
 
-  /** @return Returns the isAfterSuiteConfiguration. */
+  /**
+   * @return Returns the isAfterSuiteConfiguration.
+   */
   @Override
   public boolean isAfterSuiteConfiguration() {
     return m_isAfterSuiteConfiguration;
   }
 
-  /** @return Returns the isBeforeSuiteConfiguration. */
+  /**
+   * @return Returns the isBeforeSuiteConfiguration.
+   */
   @Override
   public boolean isBeforeSuiteConfiguration() {
     return m_isBeforeSuiteConfiguration;

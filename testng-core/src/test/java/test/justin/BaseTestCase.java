@@ -2,7 +2,9 @@ package test.justin;
 
 import org.testng.annotations.Test;
 
-/** @author <a href="mailto:jlee@antwerkz.com">Justin Lee</a> Date: Aug 15, 2004 */
+/**
+ * @author <a href="mailto:jlee@antwerkz.com">Justin Lee</a> Date: Aug 15, 2004
+ */
 @Test
 public abstract class BaseTestCase {
   protected static final String TEST_PASSWORD = "testPassword";

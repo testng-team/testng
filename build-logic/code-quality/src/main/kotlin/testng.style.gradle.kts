@@ -1,11 +1,13 @@
 plugins {
-    id("com.github.autostyle")
+    id("com.diffplug.spotless")
 }
 
-autostyle {
+spotless {
     java {
         importOrder()
-        removeUnusedImports()
+        // Use the JavaParser-based engine: the default (google-java-format) engine throws
+        // NoClassDefFoundError com.google.common.collect.ImmutableList in this build's classloader.
+        removeUnusedImports("cleanthat-javaparser-unnecessaryimport")
         trimTrailingWhitespace()
         endWithNewline()
         googleJavaFormat()

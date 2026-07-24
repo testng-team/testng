@@ -55,7 +55,9 @@ public class Reporter {
     m_output.clear();
   }
 
-  /** @return If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...). */
+  /**
+   * @return If true, use HTML entities for special HTML characters (&lt;, &gt;, &amp;, ...).
+   */
   public static boolean getEscapeHtml() {
     return m_escapeHtml;
   }
@@ -148,6 +150,7 @@ public class Reporter {
       System.out.println(s);
     }
   }
+
   /**
    * Log the passed string to the HTML reports if the current verbosity is equal to or greater than
    * the one passed as a parameter.
@@ -161,7 +164,9 @@ public class Reporter {
     }
   }
 
-  /** @return the current test result. */
+  /**
+   * @return the current test result.
+   */
   public static ITestResult getCurrentTestResult() {
     return m_currentTestResult.get();
   }

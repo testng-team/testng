@@ -5,7 +5,9 @@ import org.testng.IRetryDataProvider;
 
 /** Encapsulate the @DataProvider / @testng.data-provider annotation */
 public interface IDataProviderAnnotation extends IAnnotation {
-  /** @return The name of this DataProvider. */
+  /**
+   * @return The name of this DataProvider.
+   */
   String getName();
 
   void setName(String name);
@@ -26,7 +28,9 @@ public interface IDataProviderAnnotation extends IAnnotation {
   /** Have TestNG consider failures in data provider methods as test failures. */
   void propagateFailureAsTestFailure();
 
-  /** @return - <code>true</code>If data provider failures should be propagated as test failures */
+  /**
+   * @return - <code>true</code>If data provider failures should be propagated as test failures
+   */
   boolean isPropagateFailureAsTestFailure();
 
   /**

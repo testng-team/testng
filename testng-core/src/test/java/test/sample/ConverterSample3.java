@@ -20,7 +20,9 @@ public class ConverterSample3 {
     // We are just checking appropriate annotations are added so we don't care about body
   }
 
-  /** @testng.test */
+  /**
+   * @testng.test
+   */
   public void plainTest() {
     // Empty body
   }
@@ -34,12 +36,16 @@ public class ConverterSample3 {
     // Empty body
   }
 
-  /** @testng.test groups = "groupA groupB" */
+  /**
+   * @testng.test groups = "groupA groupB"
+   */
   public void testGroups() {
     // Empty body
   }
 
-  /** @testng.after-method */
+  /**
+   * @testng.after-method
+   */
   public void afterMethod() {
     // Empty body
   }
@@ -59,23 +65,31 @@ public class ConverterSample3 {
     // Lots and lots of stuff
   }
 
-  /** @testng.data-provider name="test1" */
+  /**
+   * @testng.data-provider name="test1"
+   */
   public Object[][] dataProvider() {
     return null;
   }
 
-  /** @testng.factory */
+  /**
+   * @testng.factory
+   */
   public Object[] factory() {
     return null;
   }
 
-  /** @testng.test */
+  /**
+   * @testng.test
+   */
   public static class TestInnerClass {
     public void bareInnerMethod() {
       // Empty body
     }
 
-    /** @testng.test */
+    /**
+     * @testng.test
+     */
     public void testInnerMethod() {
       // empty body
     }

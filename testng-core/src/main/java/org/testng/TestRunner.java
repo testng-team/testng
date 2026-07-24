@@ -928,13 +928,17 @@ public class TestRunner
     return m_testName;
   }
 
-  /** @return Returns the startDate. */
+  /**
+   * @return Returns the startDate.
+   */
   @Override
   public Date getStartDate() {
     return m_startDate;
   }
 
-  /** @return Returns the endDate. */
+  /**
+   * @return Returns the endDate.
+   */
   @Override
   public Date getEndDate() {
     return m_endDate;
@@ -977,7 +981,9 @@ public class TestRunner
     return m_outputDirectory;
   }
 
-  /** @return Returns the suite. */
+  /**
+   * @return Returns the suite.
+   */
   @Override
   public ISuite getSuite() {
     return m_suite;
@@ -1004,7 +1010,9 @@ public class TestRunner
     return vResult.keySet();
   }
 
-  /** @see org.testng.ITestContext#getFailedConfigurations() */
+  /**
+   * @see org.testng.ITestContext#getFailedConfigurations()
+   */
   @Override
   public IResultMap getFailedConfigurations() {
     return m_failedConfigurations;
@@ -1015,13 +1023,17 @@ public class TestRunner
     return m_configsToBeInvoked;
   }
 
-  /** @see org.testng.ITestContext#getPassedConfigurations() */
+  /**
+   * @see org.testng.ITestContext#getPassedConfigurations()
+   */
   @Override
   public IResultMap getPassedConfigurations() {
     return m_passedConfigurations;
   }
 
-  /** @see org.testng.ITestContext#getSkippedConfigurations() */
+  /**
+   * @see org.testng.ITestContext#getSkippedConfigurations()
+   */
   @Override
   public IResultMap getSkippedConfigurations() {
     return m_skippedConfigurations;

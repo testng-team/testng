@@ -47,6 +47,7 @@ public class TestHTMLReporter implements ITestListener {
         context.getSkippedTests().getAllResults(),
         context.getFailedButWithinSuccessPercentageTests().getAllResults());
   }
+
   //
   // implements ITestListener
   /////

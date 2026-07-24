@@ -69,32 +69,48 @@ public class TestListenerAdapter implements IResultListener2 {
     m_testContexts.add(testContext);
   }
 
-  /** @return Returns the failedButWithinSuccessPercentageTests. */
+  /**
+   * @return Returns the failedButWithinSuccessPercentageTests.
+   */
   public List<ITestResult> getFailedButWithinSuccessPercentageTests() {
     return new ArrayList<>(m_failedButWSPerTests);
   }
-  /** @return Returns the failedTests. */
+
+  /**
+   * @return Returns the failedTests.
+   */
   public List<ITestResult> getFailedTests() {
     return new ArrayList<>(m_failedTests);
   }
-  /** @return Returns the passedTests. */
+
+  /**
+   * @return Returns the passedTests.
+   */
   public List<ITestResult> getPassedTests() {
     return new ArrayList<>(m_passedTests);
   }
-  /** @return Returns the skippedTests. */
+
+  /**
+   * @return Returns the skippedTests.
+   */
   public List<ITestResult> getSkippedTests() {
     return new ArrayList<>(m_skippedTests);
   }
 
-  /** @return Returns the tests that failed due to a timeout */
+  /**
+   * @return Returns the tests that failed due to a timeout
+   */
   public Collection<ITestResult> getTimedoutTests() {
     return new ArrayList<>(m_timedOutTests);
   }
 
-  /** @param allTestMethods The allTestMethods to set. */
+  /**
+   * @param allTestMethods The allTestMethods to set.
+   */
   public void setAllTestMethods(List<ITestNGMethod> allTestMethods) {
     m_allTestMethods = allTestMethods;
   }
+
   /**
    * @param failedButWithinSuccessPercentageTests The failedButWithinSuccessPercentageTests to set.
    */
@@ -102,15 +118,24 @@ public class TestListenerAdapter implements IResultListener2 {
       List<ITestResult> failedButWithinSuccessPercentageTests) {
     m_failedButWSPerTests = failedButWithinSuccessPercentageTests;
   }
-  /** @param failedTests The failedTests to set. */
+
+  /**
+   * @param failedTests The failedTests to set.
+   */
   public void setFailedTests(List<ITestResult> failedTests) {
     m_failedTests = failedTests;
   }
-  /** @param passedTests The passedTests to set. */
+
+  /**
+   * @param passedTests The passedTests to set.
+   */
   public void setPassedTests(List<ITestResult> passedTests) {
     m_passedTests = passedTests;
   }
-  /** @param skippedTests The skippedTests to set. */
+
+  /**
+   * @param skippedTests The skippedTests to set.
+   */
   public void setSkippedTests(List<ITestResult> skippedTests) {
     m_skippedTests = skippedTests;
   }
@@ -123,7 +148,9 @@ public class TestListenerAdapter implements IResultListener2 {
     return new ArrayList<>(m_failedConfs);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationFailure(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationFailure(ITestResult itr) {
     m_failedConfs.add(itr);
@@ -133,13 +160,17 @@ public class TestListenerAdapter implements IResultListener2 {
     return new ArrayList<>(m_skippedConfs);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSkip(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSkip(ITestResult itr) {
     m_skippedConfs.add(itr);
   }
 
-  /** @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult) */
+  /**
+   * @see org.testng.IConfigurationListener#onConfigurationSuccess(org.testng.ITestResult)
+   */
   @Override
   public void onConfigurationSuccess(ITestResult itr) {
     m_passedConfs.add(itr);

@@ -10,7 +10,9 @@ public interface ITestOrConfiguration extends IParameterizable {
 
   void setTimeOut(long l);
 
-  /** @return The list of groups this class/method belongs to. */
+  /**
+   * @return The list of groups this class/method belongs to.
+   */
   String[] getGroups();
 
   void setGroups(String[] groups);
@@ -36,7 +38,9 @@ public interface ITestOrConfiguration extends IParameterizable {
 
   void setDependsOnMethods(String[] dependsOnMethods);
 
-  /** @return The description for this method, which will be shown in the reports. */
+  /**
+   * @return The description for this method, which will be shown in the reports.
+   */
   String getDescription();
 
   void setDescription(String description);

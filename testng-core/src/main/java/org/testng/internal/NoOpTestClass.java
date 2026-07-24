@@ -63,31 +63,41 @@ public class NoOpTestClass implements ITestClass, IObject {
     m_afterTestMethods = List.of(afterTestMethods);
   }
 
-  /** @return Returns the afterClassMethods. */
+  /**
+   * @return Returns the afterClassMethods.
+   */
   @Override
   public ITestNGMethod[] getAfterClassMethods() {
     return m_afterClassMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @return Returns the afterTestMethods. */
+  /**
+   * @return Returns the afterTestMethods.
+   */
   @Override
   public ITestNGMethod[] getAfterTestMethods() {
     return m_afterTestMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @return Returns the beforeClassMethods. */
+  /**
+   * @return Returns the beforeClassMethods.
+   */
   @Override
   public ITestNGMethod[] getBeforeClassMethods() {
     return m_beforeClassMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @return Returns the beforeTestMethods. */
+  /**
+   * @return Returns the beforeTestMethods.
+   */
   @Override
   public ITestNGMethod[] getBeforeTestMethods() {
     return m_beforeTestMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @return Returns the testMethods. */
+  /**
+   * @return Returns the testMethods.
+   */
   @Override
   public ITestNGMethod[] getTestMethods() {
     return m_testMethods;
@@ -113,19 +123,25 @@ public class NoOpTestClass implements ITestClass, IObject {
     return m_afterTestConfMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @return all @Configuration methods that should be invoked before certain groups */
+  /**
+   * @return all @Configuration methods that should be invoked before certain groups
+   */
   @Override
   public ITestNGMethod[] getBeforeGroupsMethods() {
     return m_beforeGroupsMethods;
   }
 
-  /** @return all @Configuration methods that should be invoked after certain groups */
+  /**
+   * @return all @Configuration methods that should be invoked after certain groups
+   */
   @Override
   public ITestNGMethod[] getAfterGroupsMethods() {
     return m_afterGroupsMethods.toArray(ITestNGMethod[]::new);
   }
 
-  /** @see org.testng.internal.IObject#getInstanceHashCodes() */
+  /**
+   * @see org.testng.internal.IObject#getInstanceHashCodes()
+   */
   @Override
   public long[] getInstanceHashCodes() {
     return m_instanceHashes;

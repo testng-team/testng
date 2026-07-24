@@ -262,22 +262,30 @@ public class XmlMethodSelector implements IMethodSelector {
     }
   }
 
-  /** @return Returns the excludedGroups. */
+  /**
+   * @return Returns the excludedGroups.
+   */
   public Map<String, String> getExcludedGroups() {
     return m_excludedGroups;
   }
 
-  /** @return Returns the includedGroups. */
+  /**
+   * @return Returns the includedGroups.
+   */
   public Map<String, String> getIncludedGroups() {
     return m_includedGroups;
   }
 
-  /** @param excludedGroups The excludedGroups to set. */
+  /**
+   * @param excludedGroups The excludedGroups to set.
+   */
   public void setExcludedGroups(Map<String, String> excludedGroups) {
     m_excludedGroups = excludedGroups;
   }
 
-  /** @param includedGroups The includedGroups to set. */
+  /**
+   * @param includedGroups The includedGroups to set.
+   */
   public void setIncludedGroups(Map<String, String> includedGroups) {
     m_includedGroups = includedGroups;
   }

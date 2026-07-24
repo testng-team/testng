@@ -25,7 +25,9 @@ import org.testng.internal.reflect.ReflectionRecipes;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlTest;
 
-/** @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a> */
+/**
+ * @author <a href="mailto:nitin.matrix@gmail.com">Nitin Verma</a>
+ */
 public class ReflectionRecipesTest {
   private static final Logger log = Logger.getLogger(ReflectionRecipesTest.class);
 
