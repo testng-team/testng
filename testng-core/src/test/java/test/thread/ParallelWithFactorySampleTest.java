@@ -5,7 +5,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 public class ParallelWithFactorySampleTest extends BaseSequentialSample {
-  private int m_n;
+  private final int m_n;
 
   @DataProvider
   public static Object[][] dp() {

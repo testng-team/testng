@@ -10,7 +10,9 @@ public class KeyAwareAutoCloseableLockTest {
   public void ensureLockIsReEntrant() {
     String key = "TestNG";
     KeyAwareAutoCloseableLock lock = new KeyAwareAutoCloseableLock();
-    KeyAwareAutoCloseableLock.AutoReleasable outer, inner1, inner2;
+    KeyAwareAutoCloseableLock.AutoReleasable outer;
+    KeyAwareAutoCloseableLock.AutoReleasable inner1;
+    KeyAwareAutoCloseableLock.AutoReleasable inner2;
     try (KeyAwareAutoCloseableLock.AutoReleasable ignore = lock.lockForObject(key)) {
       outer = ignore;
       try (KeyAwareAutoCloseableLock.AutoReleasable ignore1 = lock.lockForObject(key)) {

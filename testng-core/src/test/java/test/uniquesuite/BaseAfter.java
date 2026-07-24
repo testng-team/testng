@@ -4,7 +4,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 public class BaseAfter {
-  public static int m_afterCount = 0;
+  public static int m_afterCount;
 
   @BeforeSuite
   public void beforeSuite() {

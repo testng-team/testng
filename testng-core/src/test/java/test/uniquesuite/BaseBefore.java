@@ -4,8 +4,8 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
 public class BaseBefore {
-  public static int m_beforeCount = 0;
-  public static int m_afterCount = 0;
+  public static int m_beforeCount;
+  public static int m_afterCount;
 
   @BeforeSuite
   public void incrementBefore() {

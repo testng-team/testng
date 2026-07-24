@@ -6,8 +6,8 @@ import org.testng.ITestListener;
 
 public class TestAndClassListener implements ITestListener, IClassListener {
 
-  private int beforeClassCount = 0;
-  private int afterClassCount = 0;
+  private int beforeClassCount;
+  private int afterClassCount;
 
   @Override
   public void onBeforeClass(ITestClass testClass) {

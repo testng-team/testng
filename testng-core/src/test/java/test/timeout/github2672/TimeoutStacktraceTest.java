@@ -13,7 +13,7 @@ import org.testng.internal.thread.ThreadTimeoutException;
 public class TimeoutStacktraceTest {
 
   private static class TimeoutStacktraceTestListener implements ITestListener {
-    private Throwable testError = null;
+    private Throwable testError;
 
     @Override
     public void onTestSuccess(ITestResult result) {
@@ -35,10 +35,10 @@ public class TimeoutStacktraceTest {
     testng.run();
 
     Throwable testError = listener.getTestError();
-    assertThat((testError instanceof ThreadTimeoutException)).isTrue();
+    assertThat(testError instanceof ThreadTimeoutException).isTrue();
     assertThat(
             stream(testError.getStackTrace())
-                .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")))
+                .anyMatch(s -> "testTimeoutStacktrace".equals(s.getMethodName())))
         .isTrue();
   }
 
@@ -52,11 +52,11 @@ public class TimeoutStacktraceTest {
     testng.run();
 
     Throwable testError = listener.getTestError();
-    assertThat((testError instanceof ThreadTimeoutException)).isTrue();
+    assertThat(testError instanceof ThreadTimeoutException).isTrue();
     assertThat(
             getCausalChain(testError).stream()
                 .flatMap((Throwable throwable) -> stream(throwable.getStackTrace()))
-                .anyMatch(s -> s.getMethodName().equals("testTimeoutStacktrace")))
+                .anyMatch(s -> "testTimeoutStacktrace".equals(s.getMethodName())))
         .isTrue();
   }
 }

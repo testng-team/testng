@@ -41,11 +41,11 @@ import org.testng.xml.XmlTest;
 public class BaseTest extends BaseDistributedTest {
   private static final String m_outputDirectory = "test-output-tests";
 
-  private XmlSuite m_suite = null;
+  private XmlSuite m_suite;
   private final ITestRunnerFactory m_testRunnerFactory;
   private final IConfiguration m_configuration;
 
-  private Integer m_verbose = null;
+  private Integer m_verbose;
   private SuiteRunner suiteRunner;
 
   public BaseTest() {
@@ -378,7 +378,7 @@ public class BaseTest extends BaseDistributedTest {
 ////////////////////////////
 
 class TestListener extends TestListenerAdapter {
-  private static BaseTest m_test = null;
+  private static BaseTest m_test;
 
   public TestListener(BaseTest t1) {
     m_test = t1;

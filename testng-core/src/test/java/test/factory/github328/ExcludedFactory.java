@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 public class ExcludedFactory {
 
   public static final String EXCLUDED_GROUP = "excludedCtorFactory";
-  public static boolean factoryRan = false;
+  public static boolean factoryRan;
 
   @Factory(dataProvider = "empty")
   public ExcludedFactory(int a) {

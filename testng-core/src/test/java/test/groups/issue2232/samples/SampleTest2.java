@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 @Test(groups = {"Group1", "Group2", "Group3"})
 public class SampleTest2 {
 
-  private int variable = 0;
+  private int variable;
 
   @BeforeClass
   public void setUp() throws Exception {

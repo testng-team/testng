@@ -6,7 +6,7 @@ import org.testng.annotations.IFactoryAnnotation;
 /** An implementation of IFactory */
 public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
 
-  private String m_dataProvider = null;
+  private String m_dataProvider;
   private Class<?> m_dataProviderClass;
   private String m_dataProviderDynamicClass;
   private boolean m_enabled = true;

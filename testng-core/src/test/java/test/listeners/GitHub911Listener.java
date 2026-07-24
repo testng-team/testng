@@ -6,13 +6,13 @@ import org.testng.ITestResult;
 
 public class GitHub911Listener implements ITestListener {
 
-  int onTestStart = 0;
-  int onTestSuccess = 0;
-  int onTestFailure = 0;
-  int onTestSkipped = 0;
-  int onTestFailedButWithinSuccessPercentage = 0;
-  int onStart = 0;
-  int onFinish = 0;
+  int onTestStart;
+  int onTestSuccess;
+  int onTestFailure;
+  int onTestSkipped;
+  int onTestFailedButWithinSuccessPercentage;
+  int onStart;
+  int onFinish;
 
   @Override
   public void onTestStart(ITestResult result) {

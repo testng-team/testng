@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 public class TestClassUsingDataProviderRetrySample {
 
-  private int counter = 0;
+  private int counter;
 
   @Test(dataProvider = "dp")
   public void sampleTest(int ignored) {}

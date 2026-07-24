@@ -19,9 +19,9 @@ public class MyParamTransformer implements IAnnotationTransformer {
 
   public static boolean onlyOneNonNull(
       Class testClass, Constructor testConstructor, Method testMethod) {
-    return ((testClass != null && testConstructor == null && testMethod == null)
+    return (testClass != null && testConstructor == null && testMethod == null)
         || (testClass == null && testConstructor != null && testMethod == null)
-        || (testClass == null && testConstructor == null && testMethod != null));
+        || (testClass == null && testConstructor == null && testMethod != null);
   }
 
   public boolean isSuccess() {

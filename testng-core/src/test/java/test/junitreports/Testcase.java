@@ -73,8 +73,7 @@ public class Testcase {
   public int hashCode() {
     int result = name.hashCode();
     result = 31 * result + classname.hashCode();
-    result = 31 * result + innerTagType.hashCode();
-    return result;
+    return 31 * result + innerTagType.hashCode();
   }
 
   public static Testcase newInstance(String name, String classname, String innerTagType) {

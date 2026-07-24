@@ -1,9 +1,9 @@
 package org.testng.internal;
 
 public class ParameterInfo implements IParameterInfo {
-  private Object instance;
+  private final Object instance;
   private final int index;
-  private Object[] parameters;
+  private final Object[] parameters;
 
   public ParameterInfo(Object instance, int index, Object[] parameters) {
     this.instance = instance;

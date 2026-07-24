@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 /** This class/interface */
 public class Test1 {
-  private boolean m_run = false;
+  private boolean m_run;
 
   @Test
   public void test1() {

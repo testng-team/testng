@@ -88,7 +88,7 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
     XmlTest failedTest = failedSuite.getTests().get(0);
     XmlClass failedClass1 =
         failedTest.getClasses().stream()
-            .filter(failedClass -> failedClass.getName().equals("test.reports.SimpleFailedSample"))
+            .filter(failedClass -> "test.reports.SimpleFailedSample".equals(failedClass.getName()))
             .findFirst()
             .orElseThrow(
                 () -> new IllegalStateException("At-least one value should have been found"));
@@ -96,10 +96,8 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
         failedTest.getClasses().stream()
             .filter(
                 failedClass ->
-                    failedClass
-                        .getName()
-                        .equals(
-                            "test.failedreporter.FailedReporterParametersTest$AnotherSimpleFailedSample"))
+                    "test.failedreporter.FailedReporterParametersTest$AnotherSimpleFailedSample"
+                        .equals(failedClass.getName()))
             .findFirst()
             .orElseThrow(
                 () -> new IllegalStateException("At-least one value should have been found"));

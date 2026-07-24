@@ -92,5 +92,5 @@ public class Testsuite {
   private int failures;
   private int skipped;
   private int errors;
-  private List<Testcase> testcase = new ArrayList<>();
+  private final List<Testcase> testcase = new ArrayList<>();
 }

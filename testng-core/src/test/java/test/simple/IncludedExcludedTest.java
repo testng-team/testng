@@ -57,8 +57,8 @@ public class IncludedExcludedTest {
 
 class MyReporter implements IReporter {
 
-  private String[] m_included;
-  private String[] m_excluded;
+  private final String[] m_included;
+  private final String[] m_excluded;
 
   public MyReporter(String[] included, String[] excluded) {
     m_included = included;

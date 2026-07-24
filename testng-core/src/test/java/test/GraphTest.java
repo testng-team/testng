@@ -114,19 +114,19 @@ public class GraphTest {
       assertThat(4).isEqualTo(predecessors.size());
       assertThat("1").isEqualTo(predecessors.get(0));
       assertThat(
-              predecessors.get(1).equals("2.1")
-                  || predecessors.get(1).equals("2.2")
-                  || predecessors.get(1).equals("2"))
+              "2.1".equals(predecessors.get(1))
+                  || "2.2".equals(predecessors.get(1))
+                  || "2".equals(predecessors.get(1)))
           .isTrue();
       assertThat(
-              predecessors.get(2).equals("2.1")
-                  || predecessors.get(2).equals("2.2")
-                  || predecessors.get(2).equals("2"))
+              "2.1".equals(predecessors.get(2))
+                  || "2.2".equals(predecessors.get(2))
+                  || "2".equals(predecessors.get(2)))
           .isTrue();
       assertThat(
-              predecessors.get(3).equals("2.1")
-                  || predecessors.get(3).equals("2.2")
-                  || predecessors.get(3).equals("2"))
+              "2.1".equals(predecessors.get(3))
+                  || "2.2".equals(predecessors.get(3))
+                  || "2".equals(predecessors.get(3)))
           .isTrue();
     }
   }

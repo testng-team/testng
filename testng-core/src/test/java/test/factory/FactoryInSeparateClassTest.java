@@ -11,8 +11,8 @@ import org.testng.annotations.Test;
  * class
  */
 public class FactoryInSeparateClassTest {
-  private static boolean m_wasRun = false;
-  private static int m_checkSum = 0;
+  private static boolean m_wasRun;
+  private static int m_checkSum;
 
   public static void addToSum(int i) {
     m_checkSum += i;

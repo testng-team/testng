@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.fail;
 import org.testng.annotations.Test;
 
 public class SampleTestclass {
-  public static int counter = 0;
+  public static int counter;
 
   @Test(retryAnalyzer = SimpleRetrier.class)
   public void dataDrivenTest() {

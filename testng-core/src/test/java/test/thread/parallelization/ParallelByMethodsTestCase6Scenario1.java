@@ -94,7 +94,8 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
 
   private static final int THREAD_POOL_SIZE = 2;
 
-  private Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap = new HashMap<>();
+  private final Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap =
+      new HashMap<>();
 
   private List<TestNgRunStateTracker.EventLog> suiteLevelEventLogs;
   private List<TestNgRunStateTracker.EventLog> testLevelEventLogs;
@@ -175,7 +176,7 @@ public class ParallelByMethodsTestCase6Scenario1 extends BaseParallelizationTest
     suiteTwo.setParallel(XmlSuite.ParallelMode.METHODS);
 
     for (XmlTest test : suiteTwo.getTests()) {
-      if (test.getName().equals(SUITE_B_TEST_A)) {
+      if (SUITE_B_TEST_A.equals(test.getName())) {
         test.setThreadCount(3);
       } else {
         test.setThreadCount(20);

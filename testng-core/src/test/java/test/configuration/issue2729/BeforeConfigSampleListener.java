@@ -7,7 +7,7 @@ import org.testng.ITestResult;
 
 public class BeforeConfigSampleListener
     implements ITestListener, IInvokedMethodListener, IConfigurationListener {
-  public static int count = 0;
+  public static int count;
 
   @Override
   public void beforeConfiguration(ITestResult testResult) {

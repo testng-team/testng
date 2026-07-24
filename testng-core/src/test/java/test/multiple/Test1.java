@@ -6,7 +6,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 
 public class Test1 {
-  private static int m_count = 0;
+  private static int m_count;
 
   @Test
   public void f1() {

@@ -23,7 +23,7 @@ public class SimpleRetry implements IRetryDataProvider {
     objectIds.add(UUID.randomUUID().toString());
   }
 
-  private int counter = 0;
+  private int counter;
 
   @Override
   public boolean retry(IDataProviderMethod dataProvider) {

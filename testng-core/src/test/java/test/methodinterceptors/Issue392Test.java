@@ -21,7 +21,7 @@ public class Issue392Test extends SimpleBaseTest {
               List<IMethodInstance> methods, ITestContext context) {
             List<IMethodInstance> instances = new ArrayList<>();
             for (IMethodInstance instance : methods) {
-              if (!instance.getMethod().getMethodName().equals("test1")) {
+              if (!"test1".equals(instance.getMethod().getMethodName())) {
                 instances.add(instance);
               }
             }

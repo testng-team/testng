@@ -6,7 +6,7 @@ import org.testng.ITestResult;
 
 public class ResultContextListener implements ITestListener {
 
-  public static boolean contextProvided = false;
+  public static boolean contextProvided;
 
   public void onTestStart(ITestResult result) {
     ITestContext context = result.getTestContext();

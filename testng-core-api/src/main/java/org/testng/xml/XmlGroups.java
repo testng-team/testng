@@ -10,7 +10,7 @@ public class XmlGroups {
 
   private List<XmlDefine> m_defines = Lists.newArrayList();
   private XmlRun m_run;
-  private List<XmlDependencies> m_dependencies = Lists.newArrayList();
+  private final List<XmlDependencies> m_dependencies = Lists.newArrayList();
 
   public List<XmlDefine> getDefines() {
     return m_defines;

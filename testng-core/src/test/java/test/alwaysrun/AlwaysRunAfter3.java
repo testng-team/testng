@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class AlwaysRunAfter3 {
 
-  private static boolean m_success = false;
+  private static boolean m_success;
 
   @BeforeMethod
   public void setUpShouldFail() {

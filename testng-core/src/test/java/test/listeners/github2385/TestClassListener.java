@@ -5,8 +5,8 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 public class TestClassListener implements IInvokedMethodListener {
-  public static boolean listenerExecuted = false;
-  public static boolean listenerMethodInvoked = false;
+  public static boolean listenerExecuted;
+  public static boolean listenerMethodInvoked;
 
   public TestClassListener() {
     listenerExecuted = true;

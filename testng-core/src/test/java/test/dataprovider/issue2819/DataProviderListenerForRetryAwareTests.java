@@ -7,9 +7,9 @@ import org.testng.ITestNGMethod;
 
 public class DataProviderListenerForRetryAwareTests implements IDataProviderListener {
 
-  private int beforeInvocations = 0;
-  private int afterInvocations = 0;
-  private int failureInvocations = 0;
+  private int beforeInvocations;
+  private int afterInvocations;
+  private int failureInvocations;
 
   public int getBeforeInvocations() {
     return beforeInvocations;

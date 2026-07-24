@@ -82,8 +82,8 @@ public class ParallelByMethodsTestCase1Scenario2 extends BaseParallelizationTest
   private static final String SUITE_C_TEST_B = "TestSuiteC-TwoTestClassTest";
   private static final String SUITE_C_TEST_C = "TestSuiteC-FourTestClassTest";
 
-  private Map<String, List<EventLog>> suiteEventLogsMap = new HashMap<>();
-  private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
+  private final Map<String, List<EventLog>> suiteEventLogsMap = new HashMap<>();
+  private final Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
 
   private List<EventLog> suiteLevelEventLogs;
   private List<EventLog> testLevelEventLogs;
@@ -164,7 +164,7 @@ public class ParallelByMethodsTestCase1Scenario2 extends BaseParallelizationTest
     suiteTwo.setParallel(XmlSuite.ParallelMode.METHODS);
 
     for (XmlTest test : suiteTwo.getTests()) {
-      if (test.getName().equals(SUITE_B_TEST_A)) {
+      if (SUITE_B_TEST_A.equals(test.getName())) {
         test.setThreadCount(6);
       } else {
         test.setThreadCount(20);

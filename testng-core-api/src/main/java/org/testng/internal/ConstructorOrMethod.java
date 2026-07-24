@@ -86,8 +86,11 @@ public class ConstructorOrMethod {
 
   @Override
   public String toString() {
-    if (m_method != null) return m_method.toString();
-    else return m_constructor.toString();
+    if (m_method != null) {
+      return m_method.toString();
+    } else {
+      return m_constructor.toString();
+    }
   }
 
   public String stringifyParameterTypes() {

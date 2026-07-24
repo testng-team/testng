@@ -8,7 +8,7 @@ import org.testng.reporters.XMLStringBuffer;
 
 public class XmlMethodSelectors {
 
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private final List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
 
   public XmlMethodSelectors() {}
 

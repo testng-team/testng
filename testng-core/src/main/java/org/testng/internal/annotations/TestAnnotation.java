@@ -7,22 +7,22 @@ import org.testng.annotations.ITestAnnotation;
 /** An implementation of ITest */
 public class TestAnnotation extends TestOrConfiguration implements ITestAnnotation {
 
-  private long m_invocationTimeOut = 0;
+  private long m_invocationTimeOut;
   private int m_invocationCount = 1;
-  private int m_threadPoolSize = 0;
+  private int m_threadPoolSize;
   private int m_successPercentage = 100;
   private String m_dataProvider = "";
-  private boolean m_alwaysRun = false;
+  private boolean m_alwaysRun;
   private Class<?>[] m_expectedExceptions = {};
   private String m_expectedExceptionsMessageRegExp = ".*";
   private String m_suiteName = "";
   private String m_testName = "";
-  private boolean m_singleThreaded = false;
-  private Class<?> m_dataProviderClass = null;
-  private String m_dataProviderDynamicClass = null;
-  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
-  private boolean m_skipFailedInvocations = false;
-  private boolean m_ignoreMissingDependencies = false;
+  private boolean m_singleThreaded;
+  private Class<?> m_dataProviderClass;
+  private String m_dataProviderDynamicClass;
+  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass;
+  private boolean m_skipFailedInvocations;
+  private boolean m_ignoreMissingDependencies;
   private CustomAttribute[] m_attributes = {};
 
   /** @return the expectedExceptions */

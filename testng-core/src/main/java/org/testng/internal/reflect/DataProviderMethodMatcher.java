@@ -5,7 +5,7 @@ public class DataProviderMethodMatcher extends AbstractMethodMatcher {
 
   private final DirectMethodMatcher directMethodMatcher;
   private final ArrayEndingMethodMatcher arrayEndingMethodMatcher;
-  private MethodMatcher matchingMatcher = null;
+  private MethodMatcher matchingMatcher;
 
   public DataProviderMethodMatcher(final MethodMatcherContext context) {
     super(context);

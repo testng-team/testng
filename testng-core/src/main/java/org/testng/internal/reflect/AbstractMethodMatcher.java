@@ -3,9 +3,9 @@ package org.testng.internal.reflect;
 public abstract class AbstractMethodMatcher implements MethodMatcher {
 
   private final MethodMatcherContext context;
-  private Boolean conforms = null;
+  private Boolean conforms;
 
-  public AbstractMethodMatcher(final MethodMatcherContext context) {
+  protected AbstractMethodMatcher(final MethodMatcherContext context) {
     this.context = context;
   }
 

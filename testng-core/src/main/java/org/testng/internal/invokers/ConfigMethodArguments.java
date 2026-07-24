@@ -7,7 +7,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 
-public class ConfigMethodArguments extends MethodArguments {
+public final class ConfigMethodArguments extends MethodArguments {
 
   private IClass testClass;
   private final ITestNGMethod[] allMethods;

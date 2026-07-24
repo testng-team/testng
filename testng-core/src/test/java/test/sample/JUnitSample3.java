@@ -10,7 +10,7 @@ import junit.framework.TestCase;
  * @author cbeust
  */
 public class JUnitSample3 extends TestCase {
-  private int m_count = 0;
+  private int m_count;
 
   public void test1() {
     assertThat(m_count).isEqualTo(0);

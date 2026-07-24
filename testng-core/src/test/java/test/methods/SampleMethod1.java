@@ -10,8 +10,8 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class SampleMethod1 {
-  private static boolean m_ok1 = false;
-  private static boolean m_ok2 = false;
+  private static boolean m_ok1;
+  private static boolean m_ok2;
   private static boolean m_ok3 = true;
   private static boolean m_ok4 = true;
 

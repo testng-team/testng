@@ -10,20 +10,20 @@ import org.testng.internal.IResultListener;
 
 public class MultiListener implements ISuiteListener, IResultListener, IInvokedMethodListener {
 
-  private int onConfigurationSuccessCount = 0;
-  private int onConfigurationFailureCount = 0;
-  private int onConfigurationSkipCount = 0;
-  private int beforeInvocationCount = 0;
-  private int afterInvocationCount = 0;
-  private int onSuiteStartCount = 0;
-  private int onSuiteFinishCount = 0;
-  private int onMethodTestStartCount = 0;
-  private int onMethodTestSuccessCount = 0;
-  private int onMethodTestFailureCount = 0;
-  private int onMethodTestSkippedCount = 0;
-  private int onMethodTestFailedButWithinSuccessPercentageCount = 0;
-  private int onTestStartCount = 0;
-  private int onTestFinishCount = 0;
+  private int onConfigurationSuccessCount;
+  private int onConfigurationFailureCount;
+  private int onConfigurationSkipCount;
+  private int beforeInvocationCount;
+  private int afterInvocationCount;
+  private int onSuiteStartCount;
+  private int onSuiteFinishCount;
+  private int onMethodTestStartCount;
+  private int onMethodTestSuccessCount;
+  private int onMethodTestFailureCount;
+  private int onMethodTestSkippedCount;
+  private int onMethodTestFailedButWithinSuccessPercentageCount;
+  private int onTestStartCount;
+  private int onTestFinishCount;
 
   @Override
   public void onConfigurationSuccess(ITestResult itr) {

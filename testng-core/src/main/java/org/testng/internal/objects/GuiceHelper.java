@@ -204,8 +204,7 @@ class GuiceHelper {
         result = Lists.merge(result, CLASS_EQUALITY, Collections.singletonList(module));
       }
     }
-    result = Lists.merge(result, CLASS_EQUALITY, LazyHolder.getSpiModules());
-    return result;
+    return Lists.merge(result, CLASS_EQUALITY, LazyHolder.getSpiModules());
   }
 
   private static final class LazyHolder {

@@ -97,7 +97,9 @@ public final class ReflectionRecipes {
         final Class<?>[] interfaces = clazz.getInterfaces();
         for (final Class<?> interfaceClazz : interfaces) {
           implementsInterface = interfaceClazz.equals(reference);
-          if (implementsInterface) break;
+          if (implementsInterface) {
+            break;
+          }
         }
       }
     }
@@ -204,7 +206,9 @@ public final class ReflectionRecipes {
         }
         matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
         i++;
-        if (!matching) break;
+        if (!matching) {
+          break;
+        }
       }
     } else {
       matching = false;
@@ -214,7 +218,9 @@ public final class ReflectionRecipes {
       final Class<?> componentType = classes[classes.length - 1].getComponentType();
       for (; i < args.length; i++) {
         matching = ReflectionRecipes.isInstanceOf(componentType, args[i]);
-        if (!matching) break;
+        if (!matching) {
+          break;
+        }
       }
     }
 
@@ -245,7 +251,9 @@ public final class ReflectionRecipes {
       for (final Class<?> clazz : classes) {
         matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
         i++;
-        if (!matching) break;
+        if (!matching) {
+          break;
+        }
       }
     } else {
       matching = false;
@@ -277,7 +285,9 @@ public final class ReflectionRecipes {
     for (final Class<?> clazz : classes) {
       matching = ReflectionRecipes.isInstanceOf(clazz, args[i]);
       i++;
-      if (!matching) break;
+      if (!matching) {
+        break;
+      }
     }
     return matching;
   }

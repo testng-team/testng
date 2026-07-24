@@ -46,8 +46,8 @@ public final class ObjectBag {
 
   public void cleanup() {
     bag.values().stream()
-        .filter(it -> it instanceof ExecutorService)
-        .map(it -> (ExecutorService) it)
+        .filter(ExecutorService.class::isInstance)
+        .map(ExecutorService.class::cast)
         .forEach(ExecutorService::shutdown);
     bag.clear();
   }

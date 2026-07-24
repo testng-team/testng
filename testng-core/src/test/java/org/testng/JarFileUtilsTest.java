@@ -22,7 +22,7 @@ import org.testng.xml.XmlTest;
 
 public class JarFileUtilsTest {
 
-  private static File jar = null;
+  private static File jar;
 
   @BeforeClass
   public void generateTestJar() throws IOException {

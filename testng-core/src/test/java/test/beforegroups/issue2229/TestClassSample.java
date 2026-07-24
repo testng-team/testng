@@ -13,8 +13,8 @@ public class TestClassSample {
 
   public static List<String> logs = new ArrayList<>();
 
-  boolean valueA = false;
-  boolean valueB = false;
+  boolean valueA;
+  boolean valueB;
 
   @BeforeGroups(groups = "groupA")
   public void beforeGroupA() {

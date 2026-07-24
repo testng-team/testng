@@ -15,7 +15,7 @@ public class XmlPackage {
   private String m_name;
   private List<String> m_include = Lists.newArrayList();
   private List<String> m_exclude = Lists.newArrayList();
-  private List<XmlClass> m_xmlClasses = null;
+  private List<XmlClass> m_xmlClasses;
 
   public XmlPackage() {}
 
@@ -109,31 +109,52 @@ public class XmlPackage {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((m_exclude == null) ? 0 : m_exclude.hashCode());
-    result = prime * result + ((m_include == null) ? 0 : m_include.hashCode());
-    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    result = prime * result + ((m_xmlClasses == null) ? 0 : m_xmlClasses.hashCode());
-    return result;
+    result = prime * result + (m_exclude == null ? 0 : m_exclude.hashCode());
+    result = prime * result + (m_include == null ? 0 : m_include.hashCode());
+    result = prime * result + (m_name == null ? 0 : m_name.hashCode());
+    return prime * result + (m_xmlClasses == null ? 0 : m_xmlClasses.hashCode());
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlPackage other = (XmlPackage) obj;
     if (m_exclude == null) {
-      if (other.m_exclude != null) return XmlSuite.f();
-    } else if (!m_exclude.equals(other.m_exclude)) return XmlSuite.f();
+      if (other.m_exclude != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_exclude.equals(other.m_exclude)) {
+      return XmlSuite.f();
+    }
     if (m_include == null) {
-      if (other.m_include != null) return XmlSuite.f();
-    } else if (!m_include.equals(other.m_include)) return XmlSuite.f();
+      if (other.m_include != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_include.equals(other.m_include)) {
+      return XmlSuite.f();
+    }
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_name.equals(other.m_name)) {
+      return XmlSuite.f();
+    }
     if (m_xmlClasses == null) {
-      if (other.m_xmlClasses != null) return XmlSuite.f();
-    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) return XmlSuite.f();
+      if (other.m_xmlClasses != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) {
+      return XmlSuite.f();
+    }
     return true;
   }
 }

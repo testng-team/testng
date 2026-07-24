@@ -28,7 +28,7 @@ public class XMLStringBuffer {
   /** A string of space character representing the current indentation. */
   private String m_currentIndent = "";
 
-  private String defaultComment = null;
+  private String defaultComment;
 
   public XMLStringBuffer() {
     init(Buffer.create(), "", "1.0", "UTF-8");

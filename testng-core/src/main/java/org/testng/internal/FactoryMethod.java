@@ -31,7 +31,7 @@ public class FactoryMethod extends BaseTestMethod {
   private final IFactoryAnnotation factoryAnnotation;
   private final Object m_instance;
   private final ITestContext m_testContext;
-  private String m_factoryCreationFailedMessage = null;
+  private String m_factoryCreationFailedMessage;
   private final DataProviderHolder holder;
 
   public String getFactoryCreationFailedMessage() {

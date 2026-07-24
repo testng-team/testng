@@ -212,7 +212,7 @@ public abstract class AbstractXmlReporter implements IReporter, ICustomizeXmlRep
         .build();
   }
 
-  public static class Count {
+  public static final class Count {
     private int passed;
     private int failed;
     private int skipped;

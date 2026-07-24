@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class ClassObjectFactorySampleTest implements ISetValue {
 
-  public static int m_n = 0;
+  public static int m_n;
 
   @Test
   public void f() {

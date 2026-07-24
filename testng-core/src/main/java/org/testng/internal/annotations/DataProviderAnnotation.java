@@ -10,7 +10,7 @@ public class DataProviderAnnotation extends BaseAnnotation implements IDataProvi
   private String m_name;
   private boolean m_parallel;
   private List<Integer> m_indices;
-  private boolean m_bubbleUpFailures = false;
+  private boolean m_bubbleUpFailures;
   private Class<? extends IRetryDataProvider> retryUsing;
 
   private boolean cachedDataForTestRetries = true;

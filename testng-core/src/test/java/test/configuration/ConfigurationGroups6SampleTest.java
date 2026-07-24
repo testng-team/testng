@@ -12,9 +12,9 @@ import org.testng.annotations.Test;
  */
 public class ConfigurationGroups6SampleTest {
 
-  private boolean m_after = false;
-  private boolean m_run1 = false;
-  private boolean m_run2 = false;
+  private boolean m_after;
+  private boolean m_run1;
+  private boolean m_run2;
 
   @Test
   public void f() {}

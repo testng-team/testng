@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeSuite;
  * @author cbeust
  */
 public class Base {
-  protected boolean m_isInitialized = false;
+  protected boolean m_isInitialized;
 
   @BeforeSuite
   public void beforeSuite() {

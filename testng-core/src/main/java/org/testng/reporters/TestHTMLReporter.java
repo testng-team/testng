@@ -24,7 +24,7 @@ public class TestHTMLReporter implements ITestListener {
   private static final Comparator<ITestResult> CONFIGURATION_COMPARATOR =
       new ConfigurationComparator();
 
-  private ITestContext m_testContext = null;
+  private ITestContext m_testContext;
 
   /////
   // implements ITestListener

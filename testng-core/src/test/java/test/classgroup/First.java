@@ -4,8 +4,8 @@ import org.testng.annotations.Test;
 
 @Test(groups = {"first"})
 public class First {
-  private static boolean m_first1 = false;
-  private static boolean m_first2 = false;
+  private static boolean m_first1;
+  private static boolean m_first2;
 
   @Test
   public void first1() {

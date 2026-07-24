@@ -15,7 +15,7 @@ import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.Utils;
 
 /** Collections of helper methods to help deal with TestNG configuration methods */
-class TestNgMethodUtils {
+final class TestNgMethodUtils {
 
   private TestNgMethodUtils() {
     // Utility class. So hiding the constructor.

@@ -43,21 +43,21 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 // TODO move to internal
 public class TestNGContentHandler extends DefaultHandler {
-  private XmlSuite m_currentSuite = null;
-  private XmlTest m_currentTest = null;
-  private XmlDefine m_currentDefine = null;
-  private XmlRun m_currentRun = null;
-  private List<XmlClass> m_currentClasses = null;
-  private int m_currentTestIndex = 0;
-  private int m_currentClassIndex = 0;
-  private int m_currentIncludeIndex = 0;
-  private List<XmlPackage> m_currentPackages = null;
-  private XmlPackage m_currentPackage = null;
+  private XmlSuite m_currentSuite;
+  private XmlTest m_currentTest;
+  private XmlDefine m_currentDefine;
+  private XmlRun m_currentRun;
+  private List<XmlClass> m_currentClasses;
+  private int m_currentTestIndex;
+  private int m_currentClassIndex;
+  private int m_currentIncludeIndex;
+  private List<XmlPackage> m_currentPackages;
+  private XmlPackage m_currentPackage;
   private final List<XmlSuite> m_suites = Lists.newArrayList();
-  private XmlGroups m_currentGroups = null;
-  private Map<String, String> m_currentTestParameters = null;
-  private Map<String, String> m_currentSuiteParameters = null;
-  private Map<String, String> m_currentClassParameters = null;
+  private XmlGroups m_currentGroups;
+  private Map<String, String> m_currentTestParameters;
+  private Map<String, String> m_currentSuiteParameters;
+  private Map<String, String> m_currentClassParameters;
   private Include m_currentInclude;
 
   // Borrowed this implementation from this SO post : https://stackoverflow.com/a/29751441/679824
@@ -76,9 +76,9 @@ public class TestNGContentHandler extends DefaultHandler {
             HttpURLConnection conn = (HttpURLConnection) urlConnection;
 
             int status = conn.getResponseCode();
-            if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+            if (status == HttpURLConnection.HTTP_MOVED_TEMP
                 || status == HttpURLConnection.HTTP_MOVED_PERM
-                || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+                || status == HttpURLConnection.HTTP_SEE_OTHER) {
 
               String newUrl = conn.getHeaderField("Location");
               conn = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -101,23 +101,23 @@ public class TestNGContentHandler extends DefaultHandler {
   }
 
   private final Stack<Location> m_locations = new Stack<>();
-  private boolean isSuiteFileTag = false;
+  private boolean isSuiteFileTag;
 
-  private XmlClass m_currentClass = null;
-  private ArrayList<XmlInclude> m_currentIncludedMethods = null;
-  private List<String> m_currentExcludedMethods = null;
-  private ArrayList<XmlMethodSelector> m_currentSelectors = null;
-  private XmlMethodSelector m_currentSelector = null;
-  private String m_currentLanguage = null;
-  private String m_currentExpression = null;
+  private XmlClass m_currentClass;
+  private ArrayList<XmlInclude> m_currentIncludedMethods;
+  private List<String> m_currentExcludedMethods;
+  private ArrayList<XmlMethodSelector> m_currentSelectors;
+  private XmlMethodSelector m_currentSelector;
+  private String m_currentLanguage;
+  private String m_currentExpression;
   private final List<String> m_suiteFiles = Lists.newArrayList();
   private boolean m_enabledTest;
   private List<String> m_listeners;
 
   private final String m_fileName;
   private final boolean m_loadClasses;
-  private boolean m_validate = false;
-  private boolean m_hasWarn = false;
+  private boolean m_validate;
+  private boolean m_hasWarn;
 
   public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
@@ -160,7 +160,7 @@ public class TestNGContentHandler extends DefaultHandler {
     try {
 
       URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8).trim());
-      if (url.getProtocol().equals("file")) {
+      if ("file".equals(url.getProtocol())) {
         File file = new File(url.getFile());
         boolean isDirectory = file.isDirectory();
         boolean fileExists = file.exists();
@@ -180,7 +180,7 @@ public class TestNGContentHandler extends DefaultHandler {
       throw new RuntimeException(e);
     }
     // scheme is null for local uri
-    return uri.getScheme() != null && uri.getScheme().equals("http");
+    return "http".equals(uri.getScheme());
   }
 
   private InputStream loadDtdUsingClassLoader() {
@@ -850,6 +850,5 @@ public class TestNGContentHandler extends DefaultHandler {
             + " https://github.com/junit-team/testng-engine which is now maintained by the JUnit team";
     // Intentionally logging this to the error console so that it's visible to the user.
     System.err.println(msg);
-    ;
   }
 }

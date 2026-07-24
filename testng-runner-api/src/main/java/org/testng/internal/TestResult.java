@@ -22,16 +22,16 @@ import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 
 /** This class represents the result of a test. */
-public class TestResult implements ITestResult {
+public final class TestResult implements ITestResult {
 
-  private ITestNGMethod m_method = null;
+  private ITestNGMethod m_method;
   private List<ITestNGMethod> skippedDueTo = Lists.newArrayList();
-  private boolean skipAnalysed = false;
+  private boolean skipAnalysed;
   private int m_status = CREATED;
-  private Throwable m_throwable = null;
-  private long m_startMillis = 0;
-  private long m_endMillis = 0;
-  private String m_name = null;
+  private Throwable m_throwable;
+  private long m_startMillis;
+  private long m_endMillis;
+  private String m_name;
   private String m_host;
   private Object[] m_parameters = {};
   private String m_instanceName;
@@ -244,7 +244,7 @@ public class TestResult implements ITestResult {
         .add("name", getName())
         .add("status", toString(m_status))
         .add("method", m_method)
-        .add("output", !output.isEmpty() ? output.get(0) : null)
+        .add("output", output.isEmpty() ? null : output.get(0))
         .toString();
   }
 

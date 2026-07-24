@@ -22,16 +22,16 @@ public final class InvocationCountTest implements IRetryAnalyzer {
   private static final AtomicInteger retriesRemaining = new AtomicInteger(100);
   private static final int MAX_RETRY = 2;
 
-  static int tcid1 = 0;
-  static int tcid2 = 0;
-  static int tcid3 = 0;
+  static int tcid1;
+  static int tcid2;
+  static int tcid3;
 
-  private int r1 = 0;
+  private int r1;
   private int r2 = 1;
-  private int r3 = 0;
-  private int r7 = 0;
+  private int r3;
+  private int r7;
   private static int value = 42;
-  private int executionNumber = 0;
+  private int executionNumber;
 
   @Test(retryAnalyzer = InvocationCountTest.class)
   public void testAnnotationWithNoRetries() {}

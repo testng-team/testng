@@ -11,10 +11,10 @@ import org.testng.annotations.Test;
  * reverse order of the before methods.
  */
 public class AfterClassCalledAtEnd extends BaseAfterClassCalledAtEnd {
-  boolean m_before1Class = false;
-  boolean m_test1 = false;
-  boolean m_test2 = false;
-  boolean m_test3 = false;
+  boolean m_before1Class;
+  boolean m_test1;
+  boolean m_test2;
+  boolean m_test3;
 
   @BeforeClass(groups = {"before1Class"})
   public void before1Class() {

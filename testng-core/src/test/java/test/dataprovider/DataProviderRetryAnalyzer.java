@@ -4,7 +4,7 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 public class DataProviderRetryAnalyzer implements IRetryAnalyzer {
-  private int currentTry = 0;
+  private int currentTry;
   private static final int MAXRERUNTIMES = 1;
 
   @Override

@@ -133,7 +133,7 @@ public class TestNG {
   private String[] m_includedGroups;
   private String[] m_excludedGroups;
   protected boolean m_useDefaultListeners = true;
-  private boolean m_failIfAllTestsSkipped = false;
+  private boolean m_failIfAllTestsSkipped;
   private final List<String> m_listenersToSkipFromBeingWiredIn = new ArrayList<>();
 
   private ITestRunnerFactory m_testRunnerFactory;
@@ -155,7 +155,7 @@ public class TestNG {
 
   // Command line suite parameters
   private int m_threadCount = -1;
-  private XmlSuite.ParallelMode m_parallelMode = null;
+  private XmlSuite.ParallelMode m_parallelMode;
   private XmlSuite.FailurePolicy m_configFailurePolicy;
   private Class<?>[] m_commandLineTestClasses;
 
@@ -172,7 +172,7 @@ public class TestNG {
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       m_invokedMethodListeners = Maps.newLinkedHashMap();
 
-  private Integer m_dataProviderThreadCount = null;
+  private Integer m_dataProviderThreadCount;
 
   private String m_jarPath;
   /** The path of the testng.xml file inside the jar file */
@@ -189,8 +189,8 @@ public class TestNG {
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener>
       m_alterSuiteListeners = Maps.newLinkedHashMap();
 
-  private boolean m_isInitialized = false;
-  private boolean isSuiteInitialized = false;
+  private boolean m_isInitialized;
+  private boolean isSuiteInitialized;
   private final org.testng.internal.ExitCodeListener exitCodeListener =
       new org.testng.internal.ExitCodeListener();
   private ExitCode exitCode;
@@ -805,7 +805,7 @@ public class TestNG {
   }
 
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
-  private Integer m_verbose = null;
+  private Integer m_verbose;
 
   private final IAnnotationTransformer m_defaultAnnoProcessor = new DefaultAnnotationTransformer();
   private IAnnotationTransformer m_annotationTransformer = m_defaultAnnoProcessor;
@@ -827,7 +827,7 @@ public class TestNG {
 
   private Boolean m_preserveOrder = XmlSuite.DEFAULT_PRESERVE_ORDER;
   private Boolean m_groupByInstances;
-  private boolean m_generateResultsPerSuite = false;
+  private boolean m_generateResultsPerSuite;
 
   private IConfiguration m_configuration;
 
@@ -1455,7 +1455,7 @@ public class TestNG {
         .map(ClassHelper::forName)
         .filter(ITestNGListenerFactory.class::isAssignableFrom)
         .map(it -> m_objectFactory.newInstance(it))
-        .map(it -> (ITestNGListenerFactory) it)
+        .map(ITestNGListenerFactory.class::cast)
         .ifPresent(this::setListenerFactory);
 
     Optional.ofNullable(cla.generateResultsPerSuite).ifPresent(this::setGenerateResultsPerSuite);
@@ -1464,7 +1464,7 @@ public class TestNG {
         .map(ClassHelper::forName)
         .filter(ListenerComparator.class::isAssignableFrom)
         .map(it -> m_objectFactory.newInstance(it))
-        .map(it -> (ListenerComparator) it)
+        .map(ListenerComparator.class::cast)
         .ifPresent(this::setListenerComparator);
 
     if (cla.verbose != null) {
@@ -1481,7 +1481,7 @@ public class TestNG {
         .map(ClassHelper::forName)
         .filter(IExecutorServiceFactory.class::isAssignableFrom)
         .map(it -> m_objectFactory.newInstance(it))
-        .map(it -> (IExecutorServiceFactory) it)
+        .map(IExecutorServiceFactory.class::cast)
         .ifPresent(this::setExecutorServiceFactory);
 
     setOutputDirectory(cla.outputDirectory);

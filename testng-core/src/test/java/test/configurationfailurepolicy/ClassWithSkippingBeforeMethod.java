@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class ClassWithSkippingBeforeMethod {
 
-  private int invocations = 0;
+  private int invocations;
 
   @BeforeMethod
   public void beforeMethod() {

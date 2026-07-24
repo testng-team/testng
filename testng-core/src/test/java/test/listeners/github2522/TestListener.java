@@ -7,7 +7,7 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 public class TestListener implements IInvokedMethodListener {
-  private boolean hasFailures = false;
+  private boolean hasFailures;
   public static Map<String, Integer> beforeInvocation = new HashMap<>();
   public static Map<String, Integer> afterInvocation = new HashMap<>();
 

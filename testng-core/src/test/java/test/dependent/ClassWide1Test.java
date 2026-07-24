@@ -4,7 +4,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class ClassWide1Test {
-  private static boolean m_ok = false;
+  private static boolean m_ok;
 
   @BeforeTest
   public void init() {

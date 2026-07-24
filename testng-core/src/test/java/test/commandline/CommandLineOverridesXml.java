@@ -43,8 +43,12 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     XmlSuite s = createXmlSuite(getClass().getName());
     createXmlTest(s, "Test", OverrideSampleTest.class.getName());
     TestNG tng = create();
-    if (group != null) tng.setGroups(group);
-    if (excludedGroups != null) tng.setExcludedGroups(excludedGroups);
+    if (group != null) {
+      tng.setGroups(group);
+    }
+    if (excludedGroups != null) {
+      tng.setExcludedGroups(excludedGroups);
+    }
     tng.setXmlSuites(Collections.singletonList(s));
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);

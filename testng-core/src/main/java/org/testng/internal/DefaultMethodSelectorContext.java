@@ -13,7 +13,7 @@ import org.testng.collections.Maps;
  */
 public class DefaultMethodSelectorContext implements IMethodSelectorContext {
   private final Map<Object, Object> m_userData = Maps.newHashMap();
-  private boolean m_isStopped = false;
+  private boolean m_isStopped;
 
   @Override
   public Map<Object, Object> getUserData() {

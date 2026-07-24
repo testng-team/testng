@@ -9,8 +9,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class InjectBeforeMethodTest {
-  private int m_beforeIndex = 0;
-  private int m_afterIndex = 0;
+  private int m_beforeIndex;
+  private int m_afterIndex;
   private static final Object[][] DATA = {
     new Object[] {"a"}, new Object[] {"b"},
   };

@@ -5,7 +5,7 @@ import org.testng.ITestResult;
 
 public class ConfigListener implements IConfigurationListener {
 
-  public static long executionTime = 0;
+  public static long executionTime;
 
   @Override
   public void onConfigurationFailure(ITestResult itr) {

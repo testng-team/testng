@@ -13,7 +13,7 @@ import org.testng.collections.Maps;
  * @author cbeust
  */
 public class Tarjan<T> {
-  int m_index = 0;
+  int m_index;
   private final ArrayDeque<T> stack;
   Map<T, Integer> visitedNodes = Maps.newHashMap();
   Map<T, Integer> m_lowlinks = Maps.newHashMap();

@@ -48,8 +48,8 @@ public class JUnitReportsTest extends SimpleBaseTest {
   private static final String IGNORED = "ignored";
   private static final String SKIPPED = "skipped";
   private static final String JUNIT_XSD = "jenkins-junit.xsd";
-  private static String clazz = SimpleTestSample.class.getName();
-  private static List<Testcase> testcaseList =
+  private static final String clazz = SimpleTestSample.class.getName();
+  private static final List<Testcase> testcaseList =
       Arrays.asList(
           Testcase.newInstance("childTest", clazz, SKIPPED),
           Testcase.newInstance("masterTest", clazz, "error"),

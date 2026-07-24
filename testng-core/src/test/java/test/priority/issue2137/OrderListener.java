@@ -7,7 +7,7 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 public class OrderListener implements IInvokedMethodListener {
-  private List<String> logs = new ArrayList<>();
+  private final List<String> logs = new ArrayList<>();
 
   public List<String> getLogs() {
     return logs;

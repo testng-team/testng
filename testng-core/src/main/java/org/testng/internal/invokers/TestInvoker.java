@@ -372,7 +372,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
                 .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstance().toString())
                 .collect(Collectors.joining("\n"));
         return String.format(
-            "Method %s() on instance %s depends on not successfully finished methods \n[%s]",
+            "Method %s() on instance %s depends on not successfully finished methods %n[%s]",
             testMethod.getQualifiedName(), testMethod.getInstance().toString(), methodsInfo);
       }
     }
@@ -416,7 +416,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     List<ITestResult> result =
         workers
             .parallelStream()
-            .filter(tmw -> tmw instanceof TestMethodWorker)
+            .filter(TestMethodWorker.class::isInstance)
             .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
             .collect(Collectors.toList());
 
@@ -597,7 +597,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private static class StatusHolder {
 
-    boolean handled = false;
+    boolean handled;
     int originalStatus;
     int status;
   }

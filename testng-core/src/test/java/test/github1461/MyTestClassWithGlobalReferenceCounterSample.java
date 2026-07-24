@@ -9,7 +9,7 @@ public class MyTestClassWithGlobalReferenceCounterSample {
       Logger.getLogger(MyTestClassWithGlobalReferenceCounterSample.class);
 
   /** global counter that keeps track on how many objects are currently on the heap */
-  public static int currentNumberOfMyTestObjects = 0;
+  public static int currentNumberOfMyTestObjects;
 
   public MyTestClassWithGlobalReferenceCounterSample() {
     log.debug("constructor");
@@ -25,13 +25,5 @@ public class MyTestClassWithGlobalReferenceCounterSample {
   @Test
   public void aTestMethod2() {
     log.debug("test method 2");
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  protected void finalize() {
-    log.debug("finalize");
-    // this will be called when this object is removed from the heap
-    --currentNumberOfMyTestObjects;
   }
 }

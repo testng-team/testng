@@ -35,7 +35,7 @@ public class MethodInstance implements IMethodInstance {
   }
 
   public static final Comparator<IMethodInstance> SORT_BY_INDEX =
-      new Comparator<IMethodInstance>() {
+      new Comparator<>() {
         @Override
         public int compare(IMethodInstance o1, IMethodInstance o2) {
           // If the two methods are in different <test>
@@ -57,8 +57,12 @@ public class MethodInstance implements IMethodInstance {
           // This can happen if these classes came from a @Factory, in which case, they
           // don't have an associated XmlClass
           if (class1 == null || class2 == null) {
-            if (class1 != null) return -1;
-            if (class2 != null) return 1;
+            if (class1 != null) {
+              return -1;
+            }
+            if (class2 != null) {
+              return 1;
+            }
             return 0;
           }
 

@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 public class TestClassSample {
-  static boolean retry = false;
+  static boolean retry;
   public static List<String> messages = Lists.newArrayList();
 
   @Test(retryAnalyzer = MyAnalyzer.class)

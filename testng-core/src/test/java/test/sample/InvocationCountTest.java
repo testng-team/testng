@@ -16,7 +16,7 @@ public class InvocationCountTest {
   //
   // Invocation test
   //
-  private static int m_count = 0;
+  private static int m_count;
 
   @AfterSuite(groups = {"invocationOnly"})
   public void afterSuite() {
@@ -37,7 +37,7 @@ public class InvocationCountTest {
   // This method will work the first 8 times and fail after that, but overall
   // the test should still pass because successPercentage = 80
   //
-  private static int m_count2 = 0;
+  private static int m_count2;
 
   @Test(
       groups = {"successPercentageThatSucceedsOnly"},
@@ -56,7 +56,7 @@ public class InvocationCountTest {
   // the failures will fall under the percentage tolerance but the next one
   // will not.
   //
-  private static int m_count3 = 0;
+  private static int m_count3;
 
   @Test(
       groups = {"successPercentageThatFailsOnly"},

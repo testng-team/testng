@@ -5,13 +5,13 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 
 public class MyListener implements IInvokedMethodListener {
-  private int m_beforeCount = 0;
-  private int m_afterCount = 0;
+  private int m_beforeCount;
+  private int m_afterCount;
 
   private Throwable suiteThrowable;
-  private int suiteStatus = 0;
+  private int suiteStatus;
   private Throwable methodThrowable;
-  private int methodStatus = 0;
+  private int methodStatus;
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

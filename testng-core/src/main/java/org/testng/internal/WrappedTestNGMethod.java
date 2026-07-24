@@ -26,7 +26,7 @@ public class WrappedTestNGMethod implements ITestNGMethod, IInstanceIdentity {
   public WrappedTestNGMethod(ITestNGMethod testNGMethod) {
     this.testNGMethod = testNGMethod;
     uuid =
-        (testNGMethod instanceof BaseTestMethod)
+        testNGMethod instanceof BaseTestMethod
             ? ((BaseTestMethod) testNGMethod).getInstanceId()
             : UUID.randomUUID();
   }

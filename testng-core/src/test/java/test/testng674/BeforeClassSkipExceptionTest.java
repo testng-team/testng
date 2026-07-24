@@ -69,7 +69,7 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     assertThat(reporter.getErrors().size()).isEqualTo(2);
     for (Throwable error : reporter.getErrors()) {
       assertThat(error.getMessage()).isEqualTo(TestClassSampleContainer.ERROR_MSG);
-      assertThat((error instanceof RuntimeException)).isTrue();
+      assertThat(error instanceof RuntimeException).isTrue();
     }
   }
 
@@ -101,7 +101,7 @@ public class BeforeClassSkipExceptionTest extends SimpleBaseTest {
     assertThat(reporter.getErrors().size()).isEqualTo(expectedCount);
     for (Throwable error : reporter.getErrors()) {
       assertThat(error.getMessage()).isEqualTo(TestClassSampleContainer.ERROR_MSG);
-      assertThat((error instanceof RuntimeException)).isTrue();
+      assertThat(error instanceof RuntimeException).isTrue();
     }
   }
 }

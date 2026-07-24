@@ -45,7 +45,7 @@ public class DataProviderParametersMismatchTest extends SimpleBaseTest {
       tng.addListener(listener);
       tng.run();
       for (ITestResult each : listener.getFailedTests()) {
-        assertThat((each.getThrowable() instanceof MethodMatcherException)).isTrue();
+        assertThat(each.getThrowable() instanceof MethodMatcherException).isTrue();
       }
       assertThat(listener.getFailedTests().size()).isEqualTo(2);
     } finally {

@@ -151,7 +151,7 @@ public class CommandLineArgs {
       names = IGNORE_MISSED_TEST_NAMES,
       description =
           "Ignore missed test names given by '-testnames' and continue to run existing tests, if any.")
-  public boolean ignoreMissedTestNames = false;
+  public boolean ignoreMissedTestNames;
 
   public static final String TEST_JAR = "-testjar";
 

@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 public class YetAnotherTestClassSample {
   private static YetAnotherTestClassSample instance;
 
-  private List<String> browsers = Lists.newArrayList();
+  private final List<String> browsers = Lists.newArrayList();
 
   public YetAnotherTestClassSample() {
     setInstance(this);

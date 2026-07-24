@@ -20,7 +20,7 @@ public class NestedStaticFactorySample {
     }
   }
 
-  private static int m_instanceCount = 0;
+  private static int m_instanceCount;
 
   public NestedStaticFactorySample() {
     this(2, 0.4f);

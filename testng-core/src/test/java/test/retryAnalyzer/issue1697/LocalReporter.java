@@ -14,8 +14,8 @@ import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
 
 public class LocalReporter implements IReporter {
-  private Set<ITestResult> skipped = Collections.newSetFromMap(Maps.newConcurrentMap());
-  private Set<ITestResult> retried = Collections.newSetFromMap(Maps.newConcurrentMap());
+  private final Set<ITestResult> skipped = Collections.newSetFromMap(Maps.newConcurrentMap());
+  private final Set<ITestResult> retried = Collections.newSetFromMap(Maps.newConcurrentMap());
 
   @Override
   public void generateReport(

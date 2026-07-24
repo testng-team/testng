@@ -28,8 +28,12 @@ public class MutationSample {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
       Custom custom = (Custom) o;
       return Objects.equals(id, custom.id);
     }
@@ -41,7 +45,7 @@ public class MutationSample {
   }
 
   public static class MyRetry implements IRetryAnalyzer {
-    private int retryCount = 0;
+    private int retryCount;
     private int maxRetryCount = 3;
 
     @Override

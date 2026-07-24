@@ -137,7 +137,7 @@ public class FailedReporterTest extends SimpleBaseTest {
             .ignoreWhitespace()
             .build();
 
-    assertThat(myDiff).matches((it) -> !it.hasDifferences(), "!it.hasDifferences()");
+    assertThat(myDiff).matches(it -> !it.hasDifferences(), "!it.hasDifferences()");
   }
 
   @Test(dataProvider = "getTestData")
@@ -234,7 +234,7 @@ public class FailedReporterTest extends SimpleBaseTest {
     assertThat(includedMethods)
         .withFailMessage(
             String.format(
-                "Included methods:\n%s\n in class\n%s\n should match\n%s",
+                "Included methods:%n%s%n in class%n%s%n should match%n%s",
                 String.join("\n", includedMethods), cls.getName(), String.join("\n", methods)))
         .containsExactlyInAnyOrder(methods);
   }

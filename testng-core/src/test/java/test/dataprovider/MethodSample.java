@@ -19,8 +19,8 @@ public class MethodSample {
   @Test(dataProvider = "dp1")
   public void test1(String s) {}
 
-  public static int m_test2 = 0;
-  public static int m_test3 = 0;
+  public static int m_test2;
+  public static int m_test3;
 
   @DataProvider(name = "dp2")
   public Object[][] createData2(Method m) {

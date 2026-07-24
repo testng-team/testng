@@ -24,14 +24,14 @@ import org.testng.xml.XmlTest;
 public class ClassImpl implements IClass, IObject {
 
   private final Class<?> m_class;
-  private IObject.IdentifiableObject m_defaultInstance = null;
+  private IObject.IdentifiableObject m_defaultInstance;
   private final IAnnotationFinder m_annotationFinder;
   private final List<IObject.IdentifiableObject> identifiableObjects = Lists.newArrayList();
   private final Map<Class<?>, IClass> m_classes;
   private long[] m_instanceHashCodes;
   private final IObject.IdentifiableObject m_instance;
   private final ITestObjectFactory m_objectFactory;
-  private String m_testName = null;
+  private String m_testName;
   private final XmlClass m_xmlClass;
   private final ITestContext m_testContext;
 

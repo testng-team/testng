@@ -7,7 +7,7 @@ import org.testng.xml.XmlSuite;
 
 public class ExceptionAwareEmailableReporter extends EmailableReporter2 {
 
-  public boolean hasError = false;
+  public boolean hasError;
 
   @Override
   public void generateReport(

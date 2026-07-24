@@ -12,8 +12,8 @@ import test.SimpleBaseTest;
 public class ExecutionListenerTest extends SimpleBaseTest {
 
   public static class ExecutionListener implements IExecutionListener {
-    public static boolean m_start = false;
-    public static boolean m_finish = false;
+    public static boolean m_start;
+    public static boolean m_finish;
 
     @Override
     public void onExecutionStart() {

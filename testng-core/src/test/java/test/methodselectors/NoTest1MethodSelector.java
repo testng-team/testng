@@ -11,7 +11,7 @@ public class NoTest1MethodSelector implements IMethodSelector {
   public boolean includeMethod(
       IMethodSelectorContext context, ITestNGMethod method, boolean isTestMethod) {
     for (String group : method.getGroups()) {
-      if (group.equals("test1")) {
+      if ("test1".equals(group)) {
         context.setStopped(true);
         return false;
       }

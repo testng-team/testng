@@ -7,7 +7,7 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 import org.testng.internal.InstanceInfo;
 
-public class InstanceInfoFactorySample {
+public final class InstanceInfoFactorySample {
 
   public static final List<String> parameters = new ArrayList<>();
 

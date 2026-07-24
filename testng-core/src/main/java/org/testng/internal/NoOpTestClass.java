@@ -9,7 +9,7 @@ import org.testng.xml.XmlTest;
 
 public class NoOpTestClass implements ITestClass, IObject {
 
-  protected Class<?> m_testClass = null;
+  protected Class<?> m_testClass;
 
   // Test methods
   protected List<ITestNGMethod> m_beforeClassMethods = new ArrayList<>();

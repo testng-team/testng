@@ -7,11 +7,11 @@ import org.testng.annotations.Test;
 public abstract class BaseTestCase {
   protected static final String TEST_PASSWORD = "testPassword";
 
-  public BaseTestCase() {
+  protected BaseTestCase() {
     init();
   }
 
-  public BaseTestCase(String name) {
+  protected BaseTestCase(String name) {
     this();
   }
 

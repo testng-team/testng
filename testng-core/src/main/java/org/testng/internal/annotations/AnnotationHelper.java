@@ -29,7 +29,7 @@ import org.testng.xml.XmlTest;
  * Helper methods to find @Test and @Configuration tags. They minimize the amount of casting we need
  * to do.
  */
-public class AnnotationHelper {
+public final class AnnotationHelper {
   private static final Logger LOGGER = Logger.getLogger(AnnotationHelper.class);
   private static final String SUFFIX =
       "Please check if all classes being referred to, in the annotation are available in the classpath.";
@@ -285,7 +285,7 @@ public class AnnotationHelper {
             }
 
             if (Arrays.stream(m.getAnnotations())
-                .anyMatch(a -> a.annotationType().getName().equals("groovy.transform.Internal"))) {
+                .anyMatch(a -> "groovy.transform.Internal".equals(a.annotationType().getName()))) {
               Utils.log(
                   "", 2, "Method " + m + " is being skipped since it a Groovy internal method.");
               continue;

@@ -21,8 +21,8 @@ import test.listeners.SuiteAndInvokedMethodListenerTest.MyListener;
 public class SuiteAndInvokedMethodListenerTest {
   public static class MyListener implements IInvokedMethodListener, ISuiteListener {
 
-    private static boolean m_before = false;
-    private static boolean m_start = false;
+    private static boolean m_before;
+    private static boolean m_start;
 
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult result) {

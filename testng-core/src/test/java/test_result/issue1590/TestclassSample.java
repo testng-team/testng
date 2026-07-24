@@ -35,7 +35,7 @@ public class TestclassSample {
   private static IInvokedMethod findConfigurationMethod(ITestContext context) {
     return context.getSuite().getAllInvokedMethods().stream()
         .filter(
-            iInvokedMethod -> iInvokedMethod.getTestMethod().getMethodName().equals("beforeClass"))
+            iInvokedMethod -> "beforeClass".equals(iInvokedMethod.getTestMethod().getMethodName()))
         .findFirst()
         .orElseThrow(IllegalStateException::new);
   }

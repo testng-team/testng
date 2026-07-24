@@ -7,8 +7,8 @@ import org.testng.annotations.Test;
 
 /** This class/interface */
 public class DependsOnProtectedMethodTest {
-  private boolean m_before1 = false;
-  private boolean m_before2 = false;
+  private boolean m_before1;
+  private boolean m_before2;
 
   @BeforeMethod(dependsOnMethods = {"before2"})
   protected void before() {

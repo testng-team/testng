@@ -18,11 +18,11 @@ import org.testng.xml.XmlTest;
  */
 class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInfo, IObject {
 
-  private IAnnotationFinder annotationFinder = null;
+  private IAnnotationFinder annotationFinder;
   // The Strategy used to locate test methods (TestNG, JUnit, etc...)
-  private ITestMethodFinder testMethodFinder = null;
+  private ITestMethodFinder testMethodFinder;
 
-  private IClass iClass = null;
+  private IClass iClass;
   private String testName;
   private XmlTest xmlTest;
   private XmlClass xmlClass;
@@ -127,7 +127,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     Arrays.stream(instances)
         .map(IdentifiableObject::getInstance)
         .map(IParameterInfo::embeddedInstance)
-        .filter(it -> it instanceof ITest)
+        .filter(ITest.class::isInstance)
         .findFirst()
         .ifPresent(it -> testName = ((ITest) it).getTestName());
     if (testName == null) {

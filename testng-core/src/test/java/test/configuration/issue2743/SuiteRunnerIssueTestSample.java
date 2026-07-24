@@ -48,7 +48,7 @@ public class SuiteRunnerIssueTestSample {
     suiteRunner.run();
   }
 
-  private static class LocalFactory implements ITestRunnerFactory {
+  private static final class LocalFactory implements ITestRunnerFactory {
     private final IConfiguration configuration;
     private final boolean useDefaultListeners;
     private SuiteRunner suiteRunner;

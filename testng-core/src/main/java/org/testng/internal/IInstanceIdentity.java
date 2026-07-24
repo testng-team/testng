@@ -25,6 +25,6 @@ public interface IInstanceIdentity {
    */
   static boolean isIdentityAware(Object... objects) {
     return Arrays.stream(Objects.requireNonNull(objects))
-        .allMatch(it -> it instanceof IInstanceIdentity);
+        .allMatch(IInstanceIdentity.class::isInstance);
   }
 }

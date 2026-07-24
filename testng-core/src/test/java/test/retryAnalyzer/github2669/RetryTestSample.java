@@ -7,7 +7,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class RetryTestSample {
-  public static int count = 0;
+  public static int count;
 
   @Parameters({"id", "name", "age"})
   @Test(retryAnalyzer = FailedRetry.class)

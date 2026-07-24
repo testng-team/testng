@@ -21,7 +21,7 @@ class ParameterHandler {
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder finder;
   private final DataProviderHolder holder;
-  private int verbose;
+  private final int verbose;
 
   ParameterHandler(
       ITestObjectFactory objectFactory,
@@ -106,7 +106,7 @@ class ParameterHandler {
   static class ParameterBag {
     final ParameterHolder parameterHolder;
     final ITestResult errorResult;
-    boolean bubbleUpFailures = false;
+    boolean bubbleUpFailures;
 
     ParameterBag(ParameterHolder parameterHolder) {
       this.parameterHolder = parameterHolder;
@@ -124,9 +124,9 @@ class ParameterHandler {
     }
 
     boolean runInParallel() {
-      return ((parameterHolder != null)
+      return (parameterHolder != null)
           && (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
-              && parameterHolder.dataProviderHolder.isParallel()));
+              && parameterHolder.dataProviderHolder.isParallel());
     }
 
     boolean isBubbleUpFailures() {

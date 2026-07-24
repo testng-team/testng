@@ -204,7 +204,7 @@ public class FailedReporterTest extends SimpleBaseTest {
       grep(failed, format(expectedLine, s), resultLines);
 
       assertThat(resultLines.size())
-          .withFailMessage(format("Matched lines:\n %s", join(",\n", resultLines)))
+          .withFailMessage(format("Matched lines:%n %s", join(",\n", resultLines)))
           .isEqualTo(expected);
     }
   }

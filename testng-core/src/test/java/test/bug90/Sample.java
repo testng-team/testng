@@ -4,7 +4,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 public class Sample {
-  static boolean m_afterClassWasRun = false;
+  static boolean m_afterClassWasRun;
 
   @Test
   public void test1() {}

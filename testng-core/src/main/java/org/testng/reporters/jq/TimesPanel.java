@@ -14,7 +14,7 @@ import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
 
 public class TimesPanel extends BaseMultiSuitePanel {
-  private Map<String, Long> m_totalTime = Maps.newHashMap();
+  private final Map<String, Long> m_totalTime = Maps.newHashMap();
 
   public TimesPanel(Model model) {
     super(model);

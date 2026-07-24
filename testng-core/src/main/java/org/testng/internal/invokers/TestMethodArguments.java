@@ -5,7 +5,7 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 
-public class TestMethodArguments extends MethodArguments {
+public final class TestMethodArguments extends MethodArguments {
 
   private final ITestClass testClass;
   private final int parametersIndex;

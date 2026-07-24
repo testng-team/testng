@@ -5,7 +5,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class AlwaysRunAfter1 {
-  private static boolean m_success = false;
+  private static boolean m_success;
 
   @BeforeClass
   public void setUpShouldFail() {

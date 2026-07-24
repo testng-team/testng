@@ -10,10 +10,10 @@ import org.testng.annotations.Test;
 
 /** Tests alwaysRun on a before Configuration method. Invoke this test by running group "A" */
 public class AlwaysRunBefore1 {
-  private static boolean m_beforeSuiteSuccess = false;
-  private static boolean m_beforeTestSuccess = false;
-  private static boolean m_beforeTestClassSuccess = false;
-  private static boolean m_beforeTestMethodSuccess = false;
+  private static boolean m_beforeSuiteSuccess;
+  private static boolean m_beforeTestSuccess;
+  private static boolean m_beforeTestClassSuccess;
+  private static boolean m_beforeTestMethodSuccess;
 
   @BeforeSuite(alwaysRun = true)
   public void initSuite() {

@@ -8,8 +8,8 @@ import org.testng.annotations.Test;
 
 public class ClassConfigurations {
 
-  static int beforeCount = 0;
-  static int afterCount = 0;
+  static int beforeCount;
+  static int afterCount;
 
   @BeforeClass
   public void beforeTestClass() {

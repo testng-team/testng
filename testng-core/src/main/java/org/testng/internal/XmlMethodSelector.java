@@ -43,11 +43,11 @@ public class XmlMethodSelector implements IMethodSelector {
   private Map<String, String> m_excludedGroups = Maps.newHashMap();
   private List<XmlClass> m_classes = Collections.emptyList();
   private ScriptMethodSelector scriptSelector;
-  private boolean m_isInitialized = false;
+  private boolean m_isInitialized;
   private List<ITestNGMethod> m_testMethods = Collections.emptyList();
 
   // Group inclusions override
-  private boolean m_overrideIncludedMethods = false;
+  private boolean m_overrideIncludedMethods;
 
   @Override
   public boolean includeMethod(
@@ -121,7 +121,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
         // Check if groups was involved or not. If groups was not involved then we should not be
         // involving the size of the list for evaluation of "isIncluded"
-        noGroupsSpecified = (m_includedGroups.isEmpty() && m_excludedGroups.isEmpty());
+        noGroupsSpecified = m_includedGroups.isEmpty() && m_excludedGroups.isEmpty();
 
         // Iterate through all the classes so we can gather all the included and
         // excluded methods
@@ -316,7 +316,7 @@ public class XmlMethodSelector implements IMethodSelector {
   }
 
   public void setScript(XmlScript script) {
-    scriptSelector = (script == null) ? null : ScriptSelectorFactory.getScriptSelector(script);
+    scriptSelector = script == null ? null : ScriptSelectorFactory.getScriptSelector(script);
   }
 
   @Override

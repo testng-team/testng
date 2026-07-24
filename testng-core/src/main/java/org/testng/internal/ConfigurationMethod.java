@@ -49,7 +49,7 @@ public class ConfigurationMethod extends BaseTestMethod {
   private boolean m_isAfterGroupsConfiguration;
 
   private final boolean m_isIgnoreFailure;
-  private boolean m_inheritGroupsFromTestClass = false;
+  private boolean m_inheritGroupsFromTestClass;
   private final IParameterInfo factoryMethodInfo;
 
   private ConfigurationMethod(
@@ -78,7 +78,7 @@ public class ConfigurationMethod extends BaseTestMethod {
         (IParameterInfo)
             Optional.ofNullable(instance)
                 .map(IObject.IdentifiableObject::getInstance)
-                .filter(it -> it instanceof IParameterInfo)
+                .filter(IParameterInfo.class::isInstance)
                 .orElse(null);
 
     m_isBeforeSuiteConfiguration = isBeforeSuite;

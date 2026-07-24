@@ -6,7 +6,7 @@ import org.testng.internal.objects.InstanceCreator;
 
 public class LoggingObjectFactorySample implements ITestObjectFactory {
 
-  public static boolean wasInvoked = false;
+  public static boolean wasInvoked;
 
   @Override
   public <T> T newInstance(Constructor<T> constructor, Object... parameters) {

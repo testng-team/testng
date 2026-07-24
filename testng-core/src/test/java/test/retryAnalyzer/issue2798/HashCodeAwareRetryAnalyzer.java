@@ -15,7 +15,7 @@ public class HashCodeAwareRetryAnalyzer implements IRetryAnalyzer {
 
   private final UUID id = UUID.randomUUID();
 
-  int cnt = 0;
+  int cnt;
   static final int threshold = 2;
 
   @Override

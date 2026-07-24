@@ -12,9 +12,9 @@ import org.testng.TestNGException;
 import org.testng.xml.XmlSuite;
 
 public class ExitCodeListener implements ITestListener, IReporter, IExecutionListener {
-  private volatile boolean hasTests = false;
+  private volatile boolean hasTests;
   private final ExitCode status = new ExitCode();
-  private boolean failIfAllTestsSkipped = false;
+  private boolean failIfAllTestsSkipped;
 
   public void failIfAllTestsSkipped() {
     this.failIfAllTestsSkipped = true;

@@ -33,7 +33,7 @@ public class TestClassSample implements IHookable {
 
   @Override
   public void run(IHookCallBack callBack, ITestResult testResult) {
-    if (!("dontChangeName".equals(testResult.getMethod().getMethodName()))) {
+    if (!"dontChangeName".equals(testResult.getMethod().getMethodName())) {
       Object param = "999";
       Object[] parameters = callBack.getParameters();
       if (parameters.length != 0) {

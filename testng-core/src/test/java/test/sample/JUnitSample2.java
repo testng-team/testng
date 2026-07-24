@@ -9,7 +9,7 @@ import junit.framework.TestCase;
  */
 public class JUnitSample2 extends TestCase {
   public static final String EXPECTED = "testSample2ThatSetUpWasRun";
-  private String m_field = null;
+  private String m_field;
 
   public JUnitSample2() {
     super();

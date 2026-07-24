@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 /** @author Cedric Beust, May 5, 2004 */
 public class Test2 extends BaseTest {
-  private boolean m_initializedCorrectly = false;
+  private boolean m_initializedCorrectly;
 
   @BeforeMethod
   public void correctSetup() {

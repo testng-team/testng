@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.Test;
 
 public class TestClassSampleWithTestMethodDependencies {
-  private int i = 0;
+  private int i;
 
   @Test(retryAnalyzer = RetryForIssue1538.class)
   public void a() {

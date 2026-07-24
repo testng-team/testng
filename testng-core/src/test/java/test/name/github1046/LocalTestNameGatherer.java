@@ -11,7 +11,7 @@ import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
 
 public class LocalTestNameGatherer implements IReporter {
-  private Set<String> testnames = Sets.newHashSet();
+  private final Set<String> testnames = Sets.newHashSet();
 
   @Override
   public void generateReport(

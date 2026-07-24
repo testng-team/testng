@@ -14,9 +14,9 @@ import org.testng.thread.IWorker;
  * @author nullin
  */
 public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite> {
-  private Integer m_verbose;
-  private String m_defaultSuiteName;
-  private SuiteRunnerMap m_suiteRunnerMap;
+  private final Integer m_verbose;
+  private final String m_defaultSuiteName;
+  private final SuiteRunnerMap m_suiteRunnerMap;
 
   public SuiteWorkerFactory(
       SuiteRunnerMap suiteRunnerMap, Integer verbose, String defaultSuiteName) {

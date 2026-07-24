@@ -8,7 +8,7 @@ public class Github1600Analyzer implements IRetryAnalyzer {
   static final String RETRY = "RETRY";
   public static final String NO = "NO";
   static final String YES = "YES";
-  private static int retryCount = 0;
+  private static int retryCount;
   private static final int MAX_RETRY_COUNT = 10;
 
   @Override

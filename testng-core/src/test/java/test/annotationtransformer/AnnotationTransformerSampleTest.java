@@ -6,10 +6,10 @@ import org.testng.annotations.Test;
 
 public class AnnotationTransformerSampleTest {
 
-  private int m_two = 0;
-  private int m_five = 0;
-  private int m_three = 0;
-  private int m_four = 0;
+  private int m_two;
+  private int m_five;
+  private int m_three;
+  private int m_four;
 
   @Test(invocationCount = 2)
   public void two() {

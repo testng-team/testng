@@ -8,7 +8,7 @@ import org.testng.annotations.Parameters;
 
 public class FactoryTest {
 
-  static boolean isInvoked = false;
+  static boolean isInvoked;
 
   @Parameters({"factory-param"})
   @Factory

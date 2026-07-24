@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 /** @author Filippo Diotalevi */
 public class NoPackageTest {
-  private boolean m_run = false;
+  private boolean m_run;
 
   @Test(groups = {"nopackage"})
   public void test() {

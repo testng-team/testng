@@ -11,10 +11,10 @@ import org.testng.annotations.Test;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class SampleDependentMethods {
-  private boolean m_oneA = false;
-  private boolean m_oneB = false;
-  private boolean m_secondA = false;
-  private boolean m_thirdA = false;
+  private boolean m_oneA;
+  private boolean m_oneB;
+  private boolean m_secondA;
+  private boolean m_thirdA;
 
   @Test
   public void oneA() {

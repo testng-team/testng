@@ -15,7 +15,7 @@ public class RemoveAMethodInterceptor implements IMethodInterceptor {
 
     for (IMethodInstance method : methods) {
       String name = method.getMethod().getMethodName();
-      if (!name.equals("two")) {
+      if (!"two".equals(name)) {
         result.add(method);
       }
     }

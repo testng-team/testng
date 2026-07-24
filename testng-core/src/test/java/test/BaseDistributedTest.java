@@ -9,7 +9,7 @@ import org.testng.collections.Maps;
 import org.testng.log4testng.Logger;
 
 public class BaseDistributedTest {
-  private boolean m_verbose = false;
+  private boolean m_verbose;
 
   protected void verifyTests(String title, String[] exp, Map<String, List<ITestResult>> found) {
     Map<String, String> expected = Maps.newHashMap();

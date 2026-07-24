@@ -15,7 +15,7 @@ public final class TestMethodContainer implements IContainer<ITestNGMethod> {
 
   private ITestNGMethod[] methods;
   private final Supplier<ITestNGMethod[]> supplier;
-  private boolean isCleared = false;
+  private boolean isCleared;
 
   public TestMethodContainer(Supplier<ITestNGMethod[]> supplier) {
     this.supplier = supplier;

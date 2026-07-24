@@ -111,9 +111,7 @@ public class TestMethodMatcher {
             new MethodMatcherContext(method, params, iTestContext, iTestResult));
     assertThat(matcher.conforms()).isFalse();
     assertThatThrownBy(
-            () -> {
-              method.invoke(new TestMethodMatcher(), matcher.getConformingArguments());
-            })
+            () -> method.invoke(new TestMethodMatcher(), matcher.getConformingArguments()))
         .isInstanceOf(MethodMatcherException.class)
         // separate lines are used here to avoid \n vs \r\n if running tests in Windows
         .hasMessageContaining(
@@ -178,11 +176,11 @@ public class TestMethodMatcher {
       log.debug("An item is \"" + item + "\"");
     }
     assertThat(myTestContext).isNotNull();
-    assertThat((myTestContext instanceof TestContextJustForTesting)).isTrue();
+    assertThat(myTestContext instanceof TestContextJustForTesting).isTrue();
     assertThat(myTestResult).isNotNull();
-    assertThat((myTestResult instanceof TestResultJustForTesting)).isTrue();
+    assertThat(myTestResult instanceof TestResultJustForTesting).isTrue();
     assertThat(myXmlTest).isNotNull();
-    assertThat((myXmlTest instanceof XmlTestJustForTesting)).isTrue();
+    assertThat(myXmlTest instanceof XmlTestJustForTesting).isTrue();
     assertThat(currentTestMethod).isNotNull();
     assertThat("potpourri0").isEqualTo(currentTestMethod.getName());
     assertThat(myMethod1).isNotNull();
@@ -227,11 +225,11 @@ public class TestMethodMatcher {
       log.debug("An item is \"" + item + "\"");
     }
     assertThat(myTestContext).isNotNull();
-    assertThat((myTestContext instanceof TestContextJustForTesting)).isTrue();
+    assertThat(myTestContext instanceof TestContextJustForTesting).isTrue();
     assertThat(myTestResult).isNotNull();
-    assertThat((myTestResult instanceof TestResultJustForTesting)).isTrue();
+    assertThat(myTestResult instanceof TestResultJustForTesting).isTrue();
     assertThat(myXmlTest).isNotNull();
-    assertThat((myXmlTest instanceof XmlTestJustForTesting)).isTrue();
+    assertThat(myXmlTest instanceof XmlTestJustForTesting).isTrue();
     assertThat(currentTestMethod).isNotNull();
     assertThat("potpourri1").isEqualTo(currentTestMethod.getName());
     assertThat(myMethod1).isNotNull();

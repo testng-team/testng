@@ -4,7 +4,7 @@ import org.testng.annotations.BeforeTest;
 
 public class TestFixture {
 
-  public static int globalCallSequence = 0;
+  public static int globalCallSequence;
 
   public static int printGlobalCallSequence(String methodName) {
     globalCallSequence++;

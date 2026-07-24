@@ -9,7 +9,7 @@ public abstract class BaseMultiSuitePanel extends BasePanel implements INavigato
 
   abstract String getContent(ISuite suite, XMLStringBuffer xsb);
 
-  public BaseMultiSuitePanel(Model model) {
+  protected BaseMultiSuitePanel(Model model) {
     super(model);
   }
 

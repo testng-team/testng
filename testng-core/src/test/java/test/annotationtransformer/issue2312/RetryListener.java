@@ -7,7 +7,7 @@ import org.testng.annotations.ITestAnnotation;
 
 public class RetryListener implements IAnnotationTransformer {
 
-  private static int executedNrOfTimes = 0;
+  private static int executedNrOfTimes;
 
   public void transform(
       ITestAnnotation annotation, Class testClass, Constructor testConstructor, Method testMethod) {

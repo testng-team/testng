@@ -4,8 +4,8 @@ import org.testng.annotations.BeforeTest;
 
 public class TestBase {
 
-  static int beforeTestCount = 0;
-  static int beforeTestAlwaysCount = 0;
+  static int beforeTestCount;
+  static int beforeTestAlwaysCount;
 
   @BeforeTest
   public void baseTestBeforeTest() {

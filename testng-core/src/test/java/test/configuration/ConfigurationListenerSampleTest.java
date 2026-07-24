@@ -9,7 +9,7 @@ import test.configuration.ConfigurationListenerSampleTest.MyTLA;
 
 @Listeners(MyTLA.class)
 public class ConfigurationListenerSampleTest {
-  static boolean m_passed = false;
+  static boolean m_passed;
 
   public static class MyTLA extends TestListenerAdapter {
     @Override

@@ -28,7 +28,7 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
 
   public static class CL implements IConfigurationListener {
 
-    private static int m_status = 0;
+    private static int m_status;
     private Throwable throwable;
 
     @Override
@@ -49,7 +49,7 @@ public class ConfigurationListenerTest extends SimpleBaseTest {
     @Override
     public void onConfigurationSkip(ITestResult itr) {
       m_status += 7;
-      if (itr.getMethod().getMethodName().equals("secondBeforeClass")) {
+      if ("secondBeforeClass".equals(itr.getMethod().getMethodName())) {
         throwable = itr.getThrowable();
       }
     }

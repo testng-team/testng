@@ -48,7 +48,7 @@ public class ObjectFactoryImpl implements ITestObjectFactory {
       String error =
           "Could not create an instance of class "
               + declaringClass
-              + ((message != null) ? (": " + message) : "")
+              + (message != null ? (": " + message) : "")
               + ".\nPlease make sure it has a constructor that accepts either a String or no parameter.";
       throw new TestNGException(error);
     }

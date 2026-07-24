@@ -13,8 +13,8 @@ import org.testng.annotations.Test;
  */
 @Test(groups = {"classGroup"})
 public class PartialGroupTest {
-  public static boolean m_successMethod = false;
-  public static boolean m_successClass = false;
+  public static boolean m_successMethod;
+  public static boolean m_successClass;
 
   @BeforeClass
   public void init() {

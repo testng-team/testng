@@ -28,7 +28,7 @@ import org.testng.internal.protocols.UnhandledIOException;
  *
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
-public class PackageUtils {
+public final class PackageUtils {
   private static String[] testClassPaths;
 
   /** The additional class loaders to find classes in. */

@@ -12,10 +12,10 @@ import org.testng.annotations.Test;
 /** Make sure that all before methods except beforeTestMethod are invoked before DataProvider. */
 public class ConfigurationAndDataProvidersSample {
 
-  private boolean m_beforeSuite = false;
-  private boolean m_beforeTest = false;
-  private boolean m_beforeClass = false;
-  private boolean m_beforeTestMethod = false;
+  private boolean m_beforeSuite;
+  private boolean m_beforeTest;
+  private boolean m_beforeClass;
+  private boolean m_beforeTestMethod;
 
   @DataProvider(name = "test1")
   public Object[][] createData() {

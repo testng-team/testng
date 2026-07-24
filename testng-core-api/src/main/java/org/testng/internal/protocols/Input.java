@@ -3,7 +3,7 @@ package org.testng.internal.protocols;
 import java.util.Collections;
 import java.util.List;
 
-public class Input {
+public final class Input {
 
   private final List<String> included;
   private final List<String> excluded;

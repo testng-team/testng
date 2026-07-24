@@ -92,7 +92,7 @@ public class TestRunnerTest {
     return factory.newTestRunner(suite, xmlTest, emptyList(), emptyList());
   }
 
-  private static class LocalFactory implements ITestRunnerFactory {
+  private static final class LocalFactory implements ITestRunnerFactory {
     private final IConfiguration configuration;
     private SuiteRunner suiteRunner;
 

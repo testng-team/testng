@@ -5,7 +5,7 @@ import org.testng.IExecutionVisualiser;
 import org.testng.collections.Lists;
 
 public class LocalVisualiser implements IExecutionVisualiser {
-  private List<String> definitions = Lists.newArrayList();
+  private final List<String> definitions = Lists.newArrayList();
   private static LocalVisualiser instance;
 
   public LocalVisualiser() {

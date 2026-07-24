@@ -6,7 +6,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class DataProviderArrayFactorySample {
+public final class DataProviderArrayFactorySample {
 
   public static final List<String> parameters = new ArrayList<>();
 

@@ -36,7 +36,7 @@ public class Reporter {
 
   private static final Map<String, List<Integer>> m_methodOutputMap = Maps.newConcurrentMap();
 
-  private static boolean m_escapeHtml = false;
+  private static boolean m_escapeHtml;
   // This variable is responsible for persisting all output that is yet to be associated with any
   // valid TestResult objects.
   private static final ThreadLocal<List<String>> m_orphanedOutput = new InheritableThreadLocal<>();

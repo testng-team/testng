@@ -6,9 +6,9 @@ import java.util.Set;
 
 public abstract class AbstractNodeMethodMatcher extends AbstractMethodMatcher {
 
-  private Parameter[] conformingParameters = null;
+  private Parameter[] conformingParameters;
 
-  public AbstractNodeMethodMatcher(final MethodMatcherContext context) {
+  protected AbstractNodeMethodMatcher(final MethodMatcherContext context) {
     super(context);
   }
 

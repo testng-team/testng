@@ -12,8 +12,8 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class ConfigurationGroups3SampleTest extends Base3 {
-  private boolean m_before = false;
-  private static boolean m_f1 = false;
+  private boolean m_before;
+  private static boolean m_f1;
 
   @BeforeGroups("cg34-1")
   public void before1() {

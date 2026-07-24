@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
  */
 public class DependentOnMethod1AlwaysRunSampleTest {
 
-  private boolean m_ok = false;
+  private boolean m_ok;
 
   @Test
   public void a() {

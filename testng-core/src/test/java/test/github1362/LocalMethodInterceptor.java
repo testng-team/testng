@@ -11,7 +11,7 @@ public class LocalMethodInterceptor implements IMethodInterceptor {
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
     List<IMethodInstance> methodsToReturn = Lists.newArrayList();
     for (IMethodInstance method : methods) {
-      if (!method.getMethod().getMethodName().equals("test2")) {
+      if (!"test2".equals(method.getMethod().getMethodName())) {
         methodsToReturn.add(method);
       }
     }

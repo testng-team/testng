@@ -9,7 +9,7 @@ import org.testng.annotations.Parameters;
 import org.testng.internal.InstanceInfo;
 
 public class FactoryWithInstanceInfoTest {
-  static boolean isInvoked = false;
+  static boolean isInvoked;
 
   @Parameters({"factory-param"})
   @Factory

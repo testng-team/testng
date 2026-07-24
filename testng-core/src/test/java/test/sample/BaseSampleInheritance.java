@@ -16,14 +16,14 @@ public class BaseSampleInheritance {
     m_configurations.add(c);
   }
 
-  protected boolean m_invokedBaseMethod = false;
+  protected boolean m_invokedBaseMethod;
 
   @Test(groups = {"inheritedTestMethod"})
   public void baseMethod() {
     m_invokedBaseMethod = true;
   }
 
-  protected boolean m_invokedBaseConfiguration = false;
+  protected boolean m_invokedBaseConfiguration;
 
   @BeforeClass(alwaysRun = true)
   public void baseConfiguration() {

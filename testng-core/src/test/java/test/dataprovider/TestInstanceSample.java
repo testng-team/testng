@@ -9,7 +9,7 @@ import org.testng.annotations.TestInstance;
 
 public class TestInstanceSample {
 
-  public static int m_instanceCount = 0;
+  public static int m_instanceCount;
 
   private final int m_n;
 

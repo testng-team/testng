@@ -37,7 +37,7 @@ public class PlainOsgiTest {
 
     assertThat(version)
         .matches(
-            (v) -> !v.isEmpty() && Character.isDigit(v.charAt(0)),
+            v -> !v.isEmpty() && Character.isDigit(v.charAt(0)),
             "Version.getVersionString() should start with a digit but was " + version);
   }
 

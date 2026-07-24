@@ -10,7 +10,7 @@ import org.testng.collections.Maps;
  * href='https://www.slf4j.org/api/org/slf4j/impl/SimpleLogger.html'>SimpleLogger</a> for logging
  * purposes.
  */
-public class Logger {
+public final class Logger {
 
   /** Map of all known loggers. */
   private static final Map<Class<?>, Logger> loggers = Maps.newConcurrentMap();

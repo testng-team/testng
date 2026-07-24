@@ -8,7 +8,7 @@ import org.testng.reporters.XMLStringBuffer;
 
 public class XmlDependencies {
 
-  private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+  private final Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
 
   public void onGroup(String name, String dependsOn) {
     m_xmlDependencyGroups.put(name, dependsOn);

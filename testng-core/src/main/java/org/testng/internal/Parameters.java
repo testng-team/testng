@@ -576,19 +576,18 @@ public class Parameters {
     }
 
     String dataProvider =
-        (Strings.isNullOrEmpty(methodLevel.getDataProvider())
-                && Strings.isNotNullAndNotEmpty(classLevel.getDataProvider()))
+        Strings.isNullOrEmpty(methodLevel.getDataProvider())
+                && Strings.isNotNullAndNotEmpty(classLevel.getDataProvider())
             ? classLevel.getDataProvider()
             : methodLevel.getDataProvider();
 
     Class<?> dataProviderClass =
-        (isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel))
+        isDataProviderClassEmpty(methodLevel) && !isDataProviderClassEmpty(classLevel)
             ? classLevel.getDataProviderClass()
             : methodLevel.getDataProviderClass();
 
     String dataProviderDynamicClass =
-        (isDynamicDataProviderClassEmpty(methodLevel)
-                && !isDynamicDataProviderClassEmpty(classLevel))
+        isDynamicDataProviderClassEmpty(methodLevel) && !isDynamicDataProviderClassEmpty(classLevel)
             ? classLevel.getDataProviderDynamicClass()
             : methodLevel.getDataProviderDynamicClass();
 

@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.Test;
 
 public class Exclude {
-  private boolean m_included1 = false;
-  private boolean m_included2 = false;
+  private boolean m_included1;
+  private boolean m_included2;
   private boolean m_excluded1 = true;
   private boolean m_excluded2 = true;
 

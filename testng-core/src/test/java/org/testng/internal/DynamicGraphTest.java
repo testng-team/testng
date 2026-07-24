@@ -23,7 +23,7 @@ import test.TestClassContainerForGitHubIssue1360;
 
 public class DynamicGraphTest extends SimpleBaseTest {
 
-  private static class Node {
+  private static final class Node {
     private final String name;
 
     private Node(String name) {
@@ -232,7 +232,7 @@ public class DynamicGraphTest extends SimpleBaseTest {
     }
     List<Integer> availablePriorities = Lists.newArrayList(methodsByPriority.keySet());
     Collections.sort(availablePriorities);
-    Integer previousPriority = !methods.isEmpty() ? availablePriorities.get(0) : 0;
+    Integer previousPriority = methods.isEmpty() ? 0 : availablePriorities.get(0);
     for (int i = 1; i < availablePriorities.size(); i++) {
       Integer currentPriority = availablePriorities.get(i);
       for (ITestNGMethod p0Method : methodsByPriority.get(previousPriority)) {

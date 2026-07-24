@@ -12,7 +12,7 @@ import org.testng.ITestListener;
  */
 public class InterceptorInvokeTwiceSimulateListener implements ITestListener, IMethodInterceptor {
 
-  private int count = 0;
+  private int count;
 
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {

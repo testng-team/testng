@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
  * methods we have, showing that TestNG semantics is quite different from JUnit
  */
 public class CtorCalledOnce {
-  public static int instantiated = 0;
+  public static int instantiated;
 
   public CtorCalledOnce() {
     instantiated++;

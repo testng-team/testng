@@ -8,7 +8,7 @@ import junit.framework.TestCase;
  * @author Cedric Beust, May 5, 2004
  */
 public class JUnitSample1 extends TestCase {
-  private String m_field = null;
+  private String m_field;
   public static final String EXPECTED2 = "testSample1_2";
   public static final String EXPECTED1 = "testSample1_1";
 

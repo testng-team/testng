@@ -25,7 +25,7 @@ public abstract class AbstractParallelWorker {
 
   public abstract List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments);
 
-  public static class Arguments {
+  public static final class Arguments {
     private List<ITestNGMethod> methods;
     private IInvoker invoker;
     private ConfigurationGroupMethods configMethods;

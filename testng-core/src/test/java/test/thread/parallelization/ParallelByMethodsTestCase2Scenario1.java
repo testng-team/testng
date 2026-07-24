@@ -66,7 +66,7 @@ public class ParallelByMethodsTestCase2Scenario1 extends BaseParallelizationTest
 
   private static final int THREAD_POOL_SIZE = 2;
 
-  private Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
+  private final Map<String, List<EventLog>> testEventLogsMap = new HashMap<>();
 
   private List<EventLog> suiteLevelEventLogs;
   private List<EventLog> testLevelEventLogs;

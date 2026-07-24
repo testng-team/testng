@@ -8,7 +8,7 @@ import org.testng.collections.Lists;
 public class TestclassSample {
   public static List<String> logs = Lists.newArrayList();
 
-  private int i;
+  private final int i;
 
   public TestclassSample(int i) {
     this.i = i;

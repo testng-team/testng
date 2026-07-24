@@ -27,13 +27,13 @@ public class TestClassWithMultipleRetryImplSample {
     return new Object[][] {{200}};
   }
 
-  private int moreTestDataCounter = 0;
+  private int moreTestDataCounter;
 
   private boolean shouldSimulateFailureForMoreTestData() {
     return moreTestDataCounter++ < 2;
   }
 
-  private int testDataCounter = 0;
+  private int testDataCounter;
 
   private boolean shouldSimulateFailureForGetTestData() {
     return testDataCounter++ < 2;

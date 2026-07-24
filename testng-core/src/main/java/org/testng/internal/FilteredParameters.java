@@ -7,8 +7,8 @@ import org.testng.TestNGException;
 
 class FilteredParameters implements Iterator<Object[]> {
 
-  private int index = 0;
-  private boolean hasWarn = false;
+  private int index;
+  private boolean hasWarn;
   private final Iterator<Object[]> parameters;
   private final ITestNGMethod testMethod;
   private final String dataProviderName;

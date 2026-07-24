@@ -71,10 +71,10 @@ public class IssueTest extends SimpleBaseTest {
   }
 
   public static class Expected {
-    private int failures = 0;
-    private int success = 0;
-    private int skip = 0;
-    private int failedWithinSuccessPercentage = 0;
+    private int failures;
+    private int success;
+    private int skip;
+    private int failedWithinSuccessPercentage;
 
     public int failures() {
       return failures;

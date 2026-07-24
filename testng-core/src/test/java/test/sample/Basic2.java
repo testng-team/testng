@@ -7,8 +7,8 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 
 public class Basic2 {
-  private boolean m_basic2WasRun = false;
-  private static int m_afterClass = 0;
+  private boolean m_basic2WasRun;
+  private static int m_afterClass;
 
   @Test(dependsOnGroups = {"basic1"})
   public void basic2() {

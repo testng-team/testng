@@ -7,7 +7,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class ImplicitGroupInclusion4SampleTest {
-  private boolean m_m1, m_m2, m_m3, m_m4;
+  private boolean m_m1;
+  private boolean m_m2;
+  private boolean m_m3;
+  private boolean m_m4;
 
   @BeforeClass(groups = {"g2"})
   public void init() {

@@ -29,7 +29,7 @@ public class Configuration implements IConfiguration {
 
   private ITestNGListenerFactory m_listenerFactory;
 
-  private boolean shareThreadPoolForDataProviders = false;
+  private boolean shareThreadPoolForDataProviders;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
       Maps.newLinkedHashMap();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
@@ -40,13 +40,13 @@ public class Configuration implements IConfiguration {
   private IInjectorFactory injectorFactory = new GuiceBackedInjectorFactory();
 
   private ListenerComparator listenerComparator;
-  private boolean overrideIncludedMethods = false;
+  private boolean overrideIncludedMethods;
 
   private boolean includeAllDataDrivenTestsWhenSkipping;
 
   private boolean propagateDataProviderFailureAsTestFailure;
 
-  private boolean useGlobalThreadPool = false;
+  private boolean useGlobalThreadPool;
 
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));

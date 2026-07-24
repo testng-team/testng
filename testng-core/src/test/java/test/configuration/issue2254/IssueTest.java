@@ -48,8 +48,8 @@ public class IssueTest extends SimpleBaseTest {
 
   public static class MyInvokedMethodListener implements IInvokedMethodListener {
 
-    int beforeCount = 0;
-    int afterCount = 0;
+    int beforeCount;
+    int afterCount;
 
     @Override
     public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {

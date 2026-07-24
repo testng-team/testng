@@ -12,7 +12,7 @@ public abstract class BasePanel implements IPanel {
 
   private final Model m_model;
 
-  public BasePanel(Model model) {
+  protected BasePanel(Model model) {
     m_model = model;
   }
 

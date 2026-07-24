@@ -61,7 +61,7 @@ public class ParallelByMethodsTestCase3Scenario1 extends BaseParallelizationTest
 
   private Long testListenerOnStartThreadId;
 
-  private Map<String, Integer> expectedInvocationCounts = new HashMap<>();
+  private final Map<String, Integer> expectedInvocationCounts = new HashMap<>();
 
   @BeforeClass
   public void setUp() {

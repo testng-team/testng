@@ -5,7 +5,7 @@ import org.testng.ISuiteListener;
 
 public class MySuiteListener2 implements ISuiteListener {
 
-  public static boolean triggered = false;
+  public static boolean triggered;
 
   @Override
   public void onStart(ISuite suite) {

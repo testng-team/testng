@@ -851,7 +851,7 @@ public class ListenersTest extends SimpleBaseTest {
     };
   }
 
-  private static class Ensure {
+  private static final class Ensure {
 
     private Ensure() {}
 

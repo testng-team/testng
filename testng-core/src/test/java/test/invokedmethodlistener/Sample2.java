@@ -14,7 +14,7 @@ public class Sample2 {
 
   public class Sample2InvokedMethodListener implements IInvokedMethodListener {
 
-    boolean isSuccess = false;
+    boolean isSuccess;
 
     /** {@inheritDoc} */
     @Override

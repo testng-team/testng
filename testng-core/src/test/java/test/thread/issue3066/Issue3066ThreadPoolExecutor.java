@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Issue3066ThreadPoolExecutor extends ThreadPoolExecutor {
 
-  private static boolean invoked = false;
+  private static boolean invoked;
 
   public Issue3066ThreadPoolExecutor(
       int corePoolSize,

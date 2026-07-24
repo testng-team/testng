@@ -15,7 +15,7 @@ import org.testng.internal.thread.ThreadUtil;
  * @author <a href="mailto:the.mindstorm@gmail.com">Alex Popescu</a>
  */
 public class TestThreadCountTest {
-  private Set<String> m_threads = Collections.synchronizedSet(new HashSet<String>());
+  private final Set<String> m_threads = Collections.synchronizedSet(new HashSet<String>());
 
   @Test
   public void test1() {

@@ -226,7 +226,7 @@ public final class Yaml {
   private static void toYaml(StringBuilder result, String sp2, XmlClass xc) {
     List<XmlInclude> im = xc.getIncludedMethods();
     List<String> em = xc.getExcludedMethods();
-    String name = (im.isEmpty() && em.isEmpty()) ? "" : "name: ";
+    String name = im.isEmpty() && em.isEmpty() ? "" : "name: ";
 
     result.append(sp2).append("- ").append(name).append(xc.getName()).append("\n");
     if (!im.isEmpty()) {
@@ -320,7 +320,7 @@ public final class Yaml {
         if (node.getType().equals(org.testng.xml.XmlMethodSelector.class)) {
           final XmlScript xmlScript = new XmlScript();
           org.testng.xml.XmlMethodSelector selector = new org.testng.xml.XmlMethodSelector();
-          MappingNode mappingNode = ((MappingNode) node);
+          MappingNode mappingNode = (MappingNode) node;
           List<NodeTuple> tuples = mappingNode.getValue();
           for (NodeTuple tuple : tuples) {
             setValue(tuple, "expression", xmlScript::setExpression);
@@ -384,7 +384,7 @@ public final class Yaml {
                   .getValue().stream()
                       .filter(
                           nodeTuple ->
-                              ((ScalarNode) nodeTuple.getKeyNode()).getValue().equals("name"))
+                              "name".equals(((ScalarNode) nodeTuple.getKeyNode()).getValue()))
                       .findFirst()
                       .orElseThrow(() -> new TestNGException("Node 'name' not found"))
                       .getValueNode();

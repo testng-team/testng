@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
  * @author cbeust
  */
 public class IndividualMethodsTest {
-  private boolean m_setUpCalled = false;
+  private boolean m_setUpCalled;
 
   @BeforeMethod
   public void setUp() {

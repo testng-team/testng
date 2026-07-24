@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 public class ClassScopeTest extends BaseClassScope {
 
-  private boolean m_verify = false;
+  private boolean m_verify;
 
   public void setVerify() {
     m_verify = true;

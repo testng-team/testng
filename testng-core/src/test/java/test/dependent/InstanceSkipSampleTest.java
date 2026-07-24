@@ -31,7 +31,9 @@ public class InstanceSkipSampleTest {
 
   @Test
   public void f() {
-    if (m_n == 2) throw new RuntimeException();
+    if (m_n == 2) {
+      throw new RuntimeException();
+    }
     log("f");
   }
 
@@ -46,6 +48,6 @@ public class InstanceSkipSampleTest {
 
   @Override
   public String toString() {
-    return "" + m_n;
+    return String.valueOf(m_n);
   }
 }

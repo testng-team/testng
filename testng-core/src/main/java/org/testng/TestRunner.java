@@ -82,10 +82,10 @@ public class TestRunner
   private IInjectorFactory m_injectorFactory;
   private ITestObjectFactory m_objectFactory;
 
-  private List<XmlClass> m_testClassesFromXml = null;
+  private List<XmlClass> m_testClassesFromXml;
 
-  private IInvoker m_invoker = null;
-  private IAnnotationFinder m_annotationFinder = null;
+  private IInvoker m_invoker;
+  private IAnnotationFinder m_annotationFinder;
 
   /** ITestListeners support. */
   private final List<ITestListener> m_testListeners = Lists.newArrayList();
@@ -100,7 +100,7 @@ public class TestRunner
   private final DataProviderHolder holder;
 
   private Date m_startDate = new Date();
-  private Date m_endDate = null;
+  private Date m_endDate;
   private final IContainer<ITestNGMethod> testMethodsContainer =
       new TestMethodContainer(this::computeAndGetAllTestMethods);
 
@@ -129,7 +129,7 @@ public class TestRunner
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
   private final List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
-  private ConfigurationGroupMethods m_groupMethods = null;
+  private ConfigurationGroupMethods m_groupMethods;
 
   // Meta groups
   private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();

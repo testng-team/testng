@@ -27,7 +27,7 @@ public class XmlRun {
     return xsb.toXML();
   }
 
-  private List<String> m_excludes = Lists.newArrayList();
+  private final List<String> m_excludes = Lists.newArrayList();
 
   public List<String> getExcludes() {
     return m_excludes;
@@ -37,7 +37,7 @@ public class XmlRun {
     m_excludes.add(name);
   }
 
-  private List<String> m_includes = Lists.newArrayList();
+  private final List<String> m_includes = Lists.newArrayList();
 
   public List<String> getIncludes() {
     return m_includes;

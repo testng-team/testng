@@ -5,7 +5,7 @@ import org.testng.annotations.BeforeGroups;
 
 public class BaseGitHub1338Sample {
 
-  private String someObject = null;
+  private String someObject;
 
   @BeforeClass(alwaysRun = true)
   public void classSetUp() {

@@ -8,7 +8,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class ParameterInjectionSample {
-  private AtomicInteger counter = new AtomicInteger(0);
+  private final AtomicInteger counter = new AtomicInteger(0);
 
   @Test(retryAnalyzer = LocalRetry.class)
   @Parameters({"counter"})

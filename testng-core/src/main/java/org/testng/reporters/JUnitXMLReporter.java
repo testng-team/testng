@@ -40,11 +40,11 @@ public class JUnitXMLReporter implements IResultListener2 {
     ATTR_ESCAPES.put("&quot;", QUOTE);
   }
 
-  private int m_numFailed = 0;
+  private int m_numFailed;
   private Queue<ITestResult> m_allTests = new ConcurrentLinkedDeque<>();
   private Queue<ITestResult> m_configIssues = new ConcurrentLinkedDeque<>();
   private final Map<String, String> m_fileNameMap = Maps.newHashMap();
-  private int m_fileNameIncrementer = 0;
+  private int m_fileNameIncrementer;
 
   /** Invoked each time a test succeeds. */
   @Override

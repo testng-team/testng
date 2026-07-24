@@ -154,10 +154,10 @@ public class BeforeGroupsTest extends SimpleBaseTest {
     List<String> beforeGroups = Lists.newArrayList();
     List<String> afterGroups = Lists.newArrayList();
     for (String name : listener.getInvokedMethodNames()) {
-      if (name.equalsIgnoreCase(BaseClassWithBeforeGroups.BEFORE_GROUPS)) {
+      if (BaseClassWithBeforeGroups.BEFORE_GROUPS.equalsIgnoreCase(name)) {
         beforeGroups.add(name);
       }
-      if (name.equalsIgnoreCase(BaseClassWithBeforeGroups.AFTER_GROUPS)) {
+      if (BaseClassWithBeforeGroups.AFTER_GROUPS.equalsIgnoreCase(name)) {
         afterGroups.add(name);
       }
     }

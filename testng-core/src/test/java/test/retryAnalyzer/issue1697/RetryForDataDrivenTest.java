@@ -4,13 +4,10 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 public class RetryForDataDrivenTest implements IRetryAnalyzer {
-  private int counter = 0;
+  private int counter;
 
   @Override
   public boolean retry(ITestResult result) {
-    if (counter++ < 2) {
-      return true;
-    }
-    return false;
+    return counter++ < 2;
   }
 }

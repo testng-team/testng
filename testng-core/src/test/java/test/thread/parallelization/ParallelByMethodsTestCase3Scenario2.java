@@ -64,8 +64,9 @@ public class ParallelByMethodsTestCase3Scenario2 extends BaseParallelizationTest
   private static final String SUITE_B_TEST_A = "TestSuiteB-SingleTestClassTest";
   private static final String SUITE_B_TEST_B = "TestSuiteB-ThreeTestClassTest";
 
-  private Map<String, List<TestNgRunStateTracker.EventLog>> suiteEventLogsMap = new HashMap<>();
-  private Map<String, Integer> expectedInvocationCounts = new HashMap<>();
+  private final Map<String, List<TestNgRunStateTracker.EventLog>> suiteEventLogsMap =
+      new HashMap<>();
+  private final Map<String, Integer> expectedInvocationCounts = new HashMap<>();
 
   private List<TestNgRunStateTracker.EventLog> suiteLevelEventLogs;
   private List<TestNgRunStateTracker.EventLog> testLevelEventLogs;

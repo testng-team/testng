@@ -8,7 +8,7 @@ import org.testng.log4testng.Logger;
 
 public class FactoryTest implements ITest {
   private static final Logger log = Logger.getLogger(FactoryTest.class);
-  public static int m_count = 0;
+  public static int m_count;
 
   private final String name;
 

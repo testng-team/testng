@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.testng.annotations.AfterClass;
 
 public class BaseAfterClassCalledAtEnd {
-  protected boolean m_afterClass = false;
+  protected boolean m_afterClass;
 
   @AfterClass(dependsOnGroups = {".*"})
   public void baseAfterClass() {

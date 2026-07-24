@@ -12,8 +12,8 @@ import org.testng.annotations.Test;
 
 /** This class/interface */
 public class ReflectMethodParametrizedConfigurationMethodTest {
-  private Map<String, String> m_before = new HashMap<>();
-  private Map<String, String> m_after = new HashMap<>();
+  private final Map<String, String> m_before = new HashMap<>();
+  private final Map<String, String> m_after = new HashMap<>();
 
   @BeforeMethod
   public void beforeMethod(Method tobeInvokedTestMethod) {

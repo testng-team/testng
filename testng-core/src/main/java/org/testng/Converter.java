@@ -47,7 +47,9 @@ public class Converter {
     try {
       jc.parse(args);
       File f = new File(m_outputDirectory);
-      if (!f.exists()) f.mkdir();
+      if (!f.exists()) {
+        f.mkdir();
+      }
 
       for (String file : m_files) {
         Set<XmlSuite> allSuites = Sets.newHashSet();

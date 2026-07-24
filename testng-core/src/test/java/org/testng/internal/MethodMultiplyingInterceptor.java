@@ -10,7 +10,7 @@ import org.testng.collections.Lists;
 public class MethodMultiplyingInterceptor extends TestListenerAdapter
     implements IMethodInterceptor {
   private int originalMethodCount;
-  private int multiplyCount = 0;
+  private int multiplyCount;
 
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {

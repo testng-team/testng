@@ -25,7 +25,8 @@ import test.SimpleBaseTest;
 
 public class TestListenerHelperTest {
 
-  private IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
+  private final IAnnotationFinder finder =
+      new JDK15AnnotationFinder(new DefaultAnnotationTransformer());
 
   @Test(dataProvider = "getTestData")
   public void testfindAllListeners(Class<?> clazz, int expectedSize, boolean testFactoryClass) {

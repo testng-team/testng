@@ -16,25 +16,25 @@ public class ConfigurationAnnotation extends TestOrConfiguration
         IBeforeMethod,
         IAfterMethod {
 
-  private boolean m_beforeTestClass = false;
-  private boolean m_afterTestClass = false;
-  private boolean m_beforeTestMethod = false;
-  private boolean m_afterTestMethod = false;
-  private boolean m_beforeTest = false;
-  private boolean m_afterTest = false;
-  private boolean m_beforeSuite = false;
-  private boolean m_afterSuite = false;
-  private boolean m_alwaysRun = false;
+  private boolean m_beforeTestClass;
+  private boolean m_afterTestClass;
+  private boolean m_beforeTestMethod;
+  private boolean m_afterTestMethod;
+  private boolean m_beforeTest;
+  private boolean m_afterTest;
+  private boolean m_beforeSuite;
+  private boolean m_afterSuite;
+  private boolean m_alwaysRun;
   private boolean m_inheritGroups = true;
-  private boolean m_isBeforeGroups = false;
-  private boolean m_isAfterGroups = false;
+  private boolean m_isBeforeGroups;
+  private boolean m_isAfterGroups;
   private String[] m_beforeGroups = {};
   private String[] m_afterGroups = {};
   private String[] m_groupFilters = {};
   private boolean m_isFakeConfiguration;
-  private boolean m_firstTimeOnly = false;
-  private boolean m_lastTimeOnly = false;
-  private boolean m_ignoreFailure = false;
+  private boolean m_firstTimeOnly;
+  private boolean m_lastTimeOnly;
+  private boolean m_ignoreFailure;
 
   public ConfigurationAnnotation() {}
 

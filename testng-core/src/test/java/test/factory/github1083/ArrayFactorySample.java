@@ -5,7 +5,7 @@ import java.util.List;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-public class ArrayFactorySample {
+public final class ArrayFactorySample {
 
   public static final List<String> parameters = new ArrayList<>();
 

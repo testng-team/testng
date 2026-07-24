@@ -7,7 +7,7 @@ import org.testng.internal.objects.InstanceCreator;
 
 /** A Utility class that helps represent a {@link XmlSuite} and {@link XmlTest} as String. */
 final class XmlWeaver {
-  private static IWeaveXml instance = null;
+  private static IWeaveXml instance;
   private static final boolean testMode = RuntimeBehavior.isTestMode();
 
   private XmlWeaver() {}

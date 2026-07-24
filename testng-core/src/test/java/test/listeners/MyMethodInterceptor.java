@@ -7,7 +7,7 @@ import org.testng.ITestContext;
 
 public class MyMethodInterceptor implements IMethodInterceptor {
 
-  private int count = 0;
+  private int count;
 
   @Override
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {

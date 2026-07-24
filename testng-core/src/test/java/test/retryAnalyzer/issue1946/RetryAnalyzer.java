@@ -10,7 +10,7 @@ public class RetryAnalyzer implements IRetryAnalyzer {
 
   public static List<String> logs = Lists.newArrayList();
 
-  private int retryCount = 0;
+  private int retryCount;
   private static final int MAX_RETRY_COUNT = 1;
 
   public boolean retry(ITestResult result) {

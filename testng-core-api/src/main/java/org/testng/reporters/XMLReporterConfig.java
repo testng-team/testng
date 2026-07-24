@@ -111,14 +111,14 @@ public class XMLReporterConfig implements IReporterConfig {
    * </code> element. Defaults to false due to the fact that this might be considered redundant
    * because of the group generation in the suite file.
    */
-  private boolean generateGroupsAttribute = false;
+  private boolean generateGroupsAttribute;
 
   /**
    * When <code>true</code> it will generate the &lt;class&lt; element with a <code>name</code> and
    * a <code>package</code> attribute. Otherwise, the fully qualified name will be used for the
    * <code>name</code> attribute.
    */
-  private boolean splitClassAndPackageNames = false;
+  private boolean splitClassAndPackageNames;
 
   /**
    * Indicates whether the <code>depends-on-methods</code> attribute should be generated for a
@@ -136,7 +136,7 @@ public class XMLReporterConfig implements IReporterConfig {
    * Indicates whether {@link ITestResult} attributes should be generated for each <code>test-method
    * </code> element
    */
-  private boolean generateTestResultAttributes = false;
+  private boolean generateTestResultAttributes;
 
   /** The output format for timestamps */
   private String timestampFormat = FMT_DEFAULT;

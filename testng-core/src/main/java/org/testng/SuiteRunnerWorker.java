@@ -135,13 +135,13 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
  */
 class SuiteResultCounts {
 
-  int m_total = 0;
-  int m_passes = 0;
-  int m_skipped = 0;
-  int m_failed = 0;
-  int m_confFailures = 0;
-  int m_confSkips = 0;
-  int m_retries = 0;
+  int m_total;
+  int m_passes;
+  int m_skipped;
+  int m_failed;
+  int m_confFailures;
+  int m_confSkips;
+  int m_retries;
   private static final String SKIPPED = "skipped";
   private static final String RETRIED = "retried";
 

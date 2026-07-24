@@ -43,7 +43,7 @@ public class ConfigurationGroupMethods {
   private final ITestNGMethod[] m_allMethods;
 
   /** A map that returns the last method belonging to the given group */
-  private volatile Map<String, List<ITestNGMethod>> m_afterGroupsMap = null;
+  private volatile Map<String, List<ITestNGMethod>> m_afterGroupsMap;
 
   public ConfigurationGroupMethods(
       IContainer<ITestNGMethod> container,

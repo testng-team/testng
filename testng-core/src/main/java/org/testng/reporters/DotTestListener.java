@@ -4,7 +4,7 @@ import org.testng.ITestListener;
 import org.testng.ITestResult;
 
 public class DotTestListener implements ITestListener {
-  private int m_count = 0;
+  private int m_count;
 
   @Override
   public void onTestFailure(ITestResult tr) {

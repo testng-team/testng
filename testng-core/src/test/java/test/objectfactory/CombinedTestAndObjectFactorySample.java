@@ -10,7 +10,7 @@ import org.testng.internal.objects.InstanceCreator;
 
 public class CombinedTestAndObjectFactorySample implements ITestObjectFactory {
 
-  private boolean configured = false;
+  private boolean configured;
 
   @ObjectFactory
   public ITestObjectFactory create() {

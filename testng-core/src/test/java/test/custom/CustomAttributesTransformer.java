@@ -46,8 +46,12 @@ public class CustomAttributesTransformer implements IAnnotationTransformer {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
       MoreAttribute that = (MoreAttribute) o;
       return Objects.equals(key, that.key) && Arrays.equals(values, that.values);
     }
@@ -55,8 +59,7 @@ public class CustomAttributesTransformer implements IAnnotationTransformer {
     @Override
     public int hashCode() {
       int result = Objects.hash(key);
-      result = 31 * result + Arrays.hashCode(values);
-      return result;
+      return 31 * result + Arrays.hashCode(values);
     }
   }
 }

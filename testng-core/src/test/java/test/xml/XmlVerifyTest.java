@@ -70,7 +70,7 @@ public class XmlVerifyTest extends SimpleBaseTest {
 
   @AfterMethod
   public void reset(Method method) {
-    if (method.getName().equals("testToXmlWithoutComments")) {
+    if ("testToXmlWithoutComments".equals(method.getName())) {
       System.setProperty("testng.xml.weaver", "org.testng.xml.DefaultXmlWeaver");
     }
   }

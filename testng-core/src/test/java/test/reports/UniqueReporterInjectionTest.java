@@ -30,7 +30,7 @@ public class UniqueReporterInjectionTest extends SimpleBaseTest {
   }
 
   public static class ReporterListenerForIssue1227 implements IReporter {
-    static int counter = 0;
+    static int counter;
 
     @Override
     public void generateReport(

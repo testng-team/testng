@@ -6,8 +6,8 @@ import org.testng.annotations.Test;
 
 public class ClassWithFailedBeforeTestClassVerification {
 
-  private static boolean m_success1 = false;
-  private static boolean m_success2 = false;
+  private static boolean m_success1;
+  private static boolean m_success2;
 
   // Should be run even though ClassWithFailedBeforeTestClass failed in its configuration
   @BeforeClass

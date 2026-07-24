@@ -5,7 +5,7 @@ package test.triangle;
  * called
  */
 public class CountCalls {
-  static int numCalls = 0;
+  static int numCalls;
 
   public static void incr() {
     numCalls++;

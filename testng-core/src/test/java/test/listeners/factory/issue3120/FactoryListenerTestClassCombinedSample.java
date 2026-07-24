@@ -11,8 +11,8 @@ import org.testng.annotations.Test;
 public class FactoryListenerTestClassCombinedSample
     implements IExecutionListener, ITestNGListenerFactory {
 
-  private static boolean factoryInvoked = false;
-  private static boolean listenerInvoked = false;
+  private static boolean factoryInvoked;
+  private static boolean listenerInvoked;
 
   @Override
   public ITestNGListener createListener(Class<? extends ITestNGListener> listenerClass) {

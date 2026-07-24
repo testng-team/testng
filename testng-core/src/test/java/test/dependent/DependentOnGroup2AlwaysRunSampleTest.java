@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
  */
 public class DependentOnGroup2AlwaysRunSampleTest {
 
-  private boolean m_ok = false;
+  private boolean m_ok;
 
   @Test(groups = {"group-a"})
   public void a() {

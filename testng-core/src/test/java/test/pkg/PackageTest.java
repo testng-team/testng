@@ -14,7 +14,7 @@ import test.pkg2.Test2;
  * @author cbeust
  */
 public class PackageTest extends BaseTest {
-  public static boolean NON_TEST_CONSTRUCTOR = false;
+  public static boolean NON_TEST_CONSTRUCTOR;
 
   @Test
   public void stringSingle() {

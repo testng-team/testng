@@ -13,8 +13,8 @@ import org.testng.annotations.Test;
  */
 public class ConfigurationGroups4SampleTest {
 
-  private boolean m_after = false;
-  private boolean m_run = false;
+  private boolean m_after;
+  private boolean m_run;
 
   @Test
   public void f() {}

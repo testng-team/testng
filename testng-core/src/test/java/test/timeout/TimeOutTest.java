@@ -77,7 +77,7 @@ public class TimeOutTest extends BaseTest {
     Collection<List<ITestResult>> failed = getFailedTests().values();
     assertThat(failed.size()).isEqualTo(1);
     ITestResult failedResult = failed.iterator().next().get(0);
-    assertThat((failedResult.getThrowable() instanceof ThreadTimeoutException)).isTrue();
+    assertThat(failedResult.getThrowable() instanceof ThreadTimeoutException).isTrue();
     assertThat(failedResult.getThrowable().getMessage())
         .isEqualTo(
             format(

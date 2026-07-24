@@ -31,7 +31,7 @@ public class SampleCacheTestCase {
   }
 
   public static class MyRetry implements IRetryAnalyzer {
-    private int count = 0;
+    private int count;
 
     @Override
     public boolean retry(ITestResult result) {

@@ -11,7 +11,7 @@ public class Test2MethodSelector implements IMethodSelector {
   public boolean includeMethod(
       IMethodSelectorContext context, ITestNGMethod method, boolean isTestMethod) {
     for (String group : method.getGroups()) {
-      if (group.equals("test2")) {
+      if ("test2".equals(group)) {
         context.setStopped(true);
         return true;
       }

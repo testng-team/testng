@@ -17,8 +17,12 @@ public class ClassInstanceMethodKey {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     ClassInstanceMethodKey that = (ClassInstanceMethodKey) o;
     return Objects.equals(className, that.className)
         && Objects.equals(methodName, that.methodName)

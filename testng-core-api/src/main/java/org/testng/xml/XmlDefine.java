@@ -34,7 +34,7 @@ public class XmlDefine {
     return xsb.toXML();
   }
 
-  private List<String> m_includes = Lists.newArrayList();
+  private final List<String> m_includes = Lists.newArrayList();
 
   public void onElement(String name) {
     m_includes.add(name);
@@ -63,7 +63,6 @@ public class XmlDefine {
   @Override
   public int hashCode() {
     int result = m_name != null ? m_name.hashCode() : 0;
-    result = 31 * result + (m_includes != null ? m_includes.hashCode() : 0);
-    return result;
+    return 31 * result + (m_includes != null ? m_includes.hashCode() : 0);
   }
 }

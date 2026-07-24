@@ -11,7 +11,7 @@ import org.testng.internal.TestResult;
 
 public class ParameterIndexTestListener implements ITestListener {
 
-  private List<Integer> indexes = new ArrayList<>();
+  private final List<Integer> indexes = new ArrayList<>();
 
   @Override
   public void onTestSuccess(ITestResult testResult) {

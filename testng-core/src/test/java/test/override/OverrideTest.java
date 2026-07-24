@@ -50,8 +50,12 @@ public class OverrideTest extends SimpleBaseTest {
     TestNG tng = create();
     TestListenerAdapter tla = new TestListenerAdapter();
     tng.addListener(tla);
-    if (include != null) tng.setGroups(include);
-    if (exclude != null) tng.setExcludedGroups(exclude);
+    if (include != null) {
+      tng.setGroups(include);
+    }
+    if (exclude != null) {
+      tng.setExcludedGroups(exclude);
+    }
     tng.setTestSuites(Collections.singletonList(f.getAbsolutePath()));
     tng.run();
 

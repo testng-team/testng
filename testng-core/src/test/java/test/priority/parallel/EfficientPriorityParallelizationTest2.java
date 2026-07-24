@@ -274,9 +274,7 @@ public class EfficientPriorityParallelizationTest2 extends BaseParallelizationTe
             .filter(
                 e -> {
                   String classData = (String) e.getData(EventInfo.CLASS_NAME);
-                  boolean rightClass =
-                      classData.contains(LowPriorityTestSample.class.getSimpleName());
-                  return rightClass;
+                  return classData.contains(LowPriorityTestSample.class.getSimpleName());
                 })
             .collect(Collectors.toList());
 

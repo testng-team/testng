@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 public abstract class AbstractTest {
 
-  public static int R = 0;
+  public static int R;
 
   @Test
   public void testAbstract() {}

@@ -52,7 +52,7 @@ public class ClassA {
     String className = sTrace[0].getClassName();
     String methodName = sTrace[1].getMethodName();
 
-    System.out.printf("*********** executing --- %s %s\n", className, methodName);
+    System.out.printf("*********** executing --- %s %s%n", className, methodName);
 
     VerifyTest.m_methods.add(className + "." + methodName);
   }

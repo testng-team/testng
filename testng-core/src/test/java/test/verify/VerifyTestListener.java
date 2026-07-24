@@ -4,7 +4,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 
 public class VerifyTestListener implements ITestListener {
-  public static int m_count = 0;
+  public static int m_count;
 
   @Override
   public void onStart(ITestContext context) {

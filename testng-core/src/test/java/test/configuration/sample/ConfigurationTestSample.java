@@ -11,12 +11,12 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 public class ConfigurationTestSample {
-  private boolean m_beforeSuite = false;
-  private boolean m_afterSuite = false;
-  private boolean m_beforeClass = false;
-  private boolean m_afterClass = false;
-  private boolean m_beforeMethod = false;
-  private boolean m_afterMethod = false;
+  private boolean m_beforeSuite;
+  private boolean m_afterSuite;
+  private boolean m_beforeClass;
+  private boolean m_afterClass;
+  private boolean m_beforeMethod;
+  private boolean m_afterMethod;
 
   @BeforeSuite
   public void beforeSuite() {

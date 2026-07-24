@@ -2,7 +2,7 @@ package org.testng.internal.annotations;
 
 public class BaseBeforeAfter extends TestOrConfiguration implements IBaseBeforeAfter {
 
-  private boolean m_alwaysRun = false;
+  private boolean m_alwaysRun;
   private boolean m_inheritGroups = true;
   private String[] m_beforeGroups = {};
   private String[] m_afterGroups = {};

@@ -53,9 +53,9 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       Maps.newConcurrentMap();
 
   private final boolean m_continueOnFailedConfiguration;
-  private boolean m_hasTestTagLevelFailures = false;
-  private boolean m_hasClassLevelFailures = false;
-  private boolean m_hasTestMethodLevelFailures = false;
+  private boolean m_hasTestTagLevelFailures;
+  private boolean m_hasClassLevelFailures;
+  private boolean m_hasTestMethodLevelFailures;
 
   private final Set<ITestNGMethod> m_executedConfigMethods = ConcurrentHashMap.newKeySet();
 
@@ -544,7 +544,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
       return;
     }
     Arrays.stream(source)
-        .filter(each -> each instanceof ITestResult)
+        .filter(ITestResult.class::isInstance)
         .findFirst()
         .ifPresent(eachSource -> TestResult.copyAttributes((ITestResult) eachSource, target));
   }
@@ -680,7 +680,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (!instanceMatch) {
       return false;
     }
-    ITestClass tc = ((ITestClass) testClass);
+    ITestClass tc = (ITestClass) testClass;
     ITestNGMethod[] methods = new ITestNGMethod[] {};
     if (configMethod == null) { // We are dealing with a test method that is doing the checking
       // First check if there were any @BeforeMethods that had the isIgnoreFailure flag.

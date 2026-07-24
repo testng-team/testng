@@ -25,13 +25,13 @@ import org.testng.log4testng.Logger;
  */
 public class Graph<T> {
   private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
-  private List<T> m_strictlySortedNodes = null;
+  private List<T> m_strictlySortedNodes;
   private final Comparator<Node<T>> comparator;
 
   //  A map of nodes that are not the predecessors of any node
   // (not needed for the algorithm but convenient to calculate
   // the parallel/sequential lists in TestNG).
-  private Map<T, Node<T>> m_independentNodes = null;
+  private Map<T, Node<T>> m_independentNodes;
 
   public Graph(Comparator<Node<T>> comparator) {
     this.comparator = comparator;

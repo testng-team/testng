@@ -9,7 +9,7 @@ import java.util.List;
  * @version $Id: Captor.java,v 1.3 2004/08/26 22:25:22 cedric Exp $
  */
 public class Captor {
-  private static Captor instance = null;
+  private static Captor instance;
   private List<String> captives;
 
   public static Captor instance() {

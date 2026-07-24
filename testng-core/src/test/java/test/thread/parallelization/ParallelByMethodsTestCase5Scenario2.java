@@ -72,8 +72,10 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
   private static final String SUITE_B_TEST_A = "TestSuiteB-SingleTestClassTest";
   private static final String SUITE_B_TEST_B = "TestSuiteB-ThreeTestClassTest";
 
-  private Map<String, List<TestNgRunStateTracker.EventLog>> suiteEventLogsMap = new HashMap<>();
-  private Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap = new HashMap<>();
+  private final Map<String, List<TestNgRunStateTracker.EventLog>> suiteEventLogsMap =
+      new HashMap<>();
+  private final Map<String, List<TestNgRunStateTracker.EventLog>> testEventLogsMap =
+      new HashMap<>();
 
   private List<TestNgRunStateTracker.EventLog> suiteLevelEventLogs;
   private List<TestNgRunStateTracker.EventLog> testLevelEventLogs;
@@ -134,7 +136,7 @@ public class ParallelByMethodsTestCase5Scenario2 extends BaseParallelizationTest
     suiteTwo.setParallel(XmlSuite.ParallelMode.METHODS);
 
     for (XmlTest test : suiteTwo.getTests()) {
-      if (test.getName().equals(SUITE_B_TEST_A)) {
+      if (SUITE_B_TEST_A.equals(test.getName())) {
         test.setThreadCount(3);
       } else {
         test.setThreadCount(20);

@@ -10,8 +10,8 @@ public class SuiteListener2
         ISuiteListener,
         IExecutionListener,
         IMethodInterceptor {
-  public static int start = 0;
-  public static int finish = 0;
+  public static int start;
+  public static int finish;
 
   @Override
   public void onFinish(ISuite suite) {

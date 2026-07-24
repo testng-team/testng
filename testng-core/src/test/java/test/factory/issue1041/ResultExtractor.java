@@ -14,7 +14,7 @@ import org.testng.xml.XmlSuite;
 
 public class ResultExtractor implements IReporter {
 
-  private Map<Object, Object[]> data = Maps.newHashMap();
+  private final Map<Object, Object[]> data = Maps.newHashMap();
 
   @Override
   public void generateReport(

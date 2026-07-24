@@ -12,7 +12,7 @@ import org.testng.reporters.XMLStringBuffer;
 
 public class NavigatorPanel extends BasePanel {
 
-  private List<INavigatorPanel> m_panels;
+  private final List<INavigatorPanel> m_panels;
 
   public NavigatorPanel(Model model, List<INavigatorPanel> panels) {
     super(model);
@@ -187,7 +187,7 @@ public class NavigatorPanel extends BasePanel {
     protected ISuite m_suite;
     protected String m_type;
 
-    public BaseResultProvider(ISuite suite, String type) {
+    protected BaseResultProvider(ISuite suite, String type) {
       m_suite = suite;
       m_type = type;
     }
@@ -203,7 +203,7 @@ public class NavigatorPanel extends BasePanel {
     private final Predicate<ITestResult> condition;
 
     public ResultsByStatus(ISuite suite, String type, int status) {
-      this(suite, type, status, (result) -> true);
+      this(suite, type, status, result -> true);
     }
 
     public ResultsByStatus(

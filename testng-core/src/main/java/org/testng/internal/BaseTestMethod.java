@@ -62,7 +62,7 @@ public abstract class BaseTestMethod
   private final String m_methodName;
   // If a depends on group is not found
   private String m_missingGroup;
-  private String m_description = null;
+  private String m_description;
   protected AtomicInteger m_currentInvocationCount = new AtomicInteger(0);
   private int m_parameterInvocationCount = 1;
   // Set on the per-invocation clones created for a parallel (threadPoolSize > 1)
@@ -71,16 +71,16 @@ public abstract class BaseTestMethod
   // instead of inside each parallel invocation, so the clones must not run them.
   private boolean m_skipFirstAndLastTimeOnlyConfigs;
   private Callable<Boolean> m_moreInvocationChecker;
-  private IRetryAnalyzer m_retryAnalyzer = null;
-  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass = null;
+  private IRetryAnalyzer m_retryAnalyzer;
+  private Class<? extends IRetryAnalyzer> m_retryAnalyzerClass;
   private boolean m_skipFailedInvocations = true;
-  private long m_invocationTimeOut = 0L;
+  private long m_invocationTimeOut;
 
   private List<Integer> m_invocationNumbers = Lists.newArrayList();
   private final Set<ITestNGMethod> downstreamDependencies = Sets.newHashSet();
   private final Set<ITestNGMethod> upstreamDependencies = Sets.newHashSet();
   private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
-  private long m_timeOut = 0;
+  private long m_timeOut;
 
   private boolean m_ignoreMissingDependencies;
   private int m_priority;
@@ -92,7 +92,7 @@ public abstract class BaseTestMethod
   private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
   protected final ITestObjectFactory m_objectFactory;
 
-  public BaseTestMethod(
+  protected BaseTestMethod(
       ITestObjectFactory objectFactory,
       String methodName,
       ConstructorOrMethod com,

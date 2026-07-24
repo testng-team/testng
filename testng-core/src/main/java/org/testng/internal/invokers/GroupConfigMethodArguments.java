@@ -5,7 +5,7 @@ import org.testng.ITestNGMethod;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.xml.XmlSuite;
 
-public class GroupConfigMethodArguments extends Arguments {
+public final class GroupConfigMethodArguments extends Arguments {
 
   private final ConfigurationGroupMethods groupMethods;
 

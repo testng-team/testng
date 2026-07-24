@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class Basic1 {
-  private static int m_count = 0;
+  private static int m_count;
 
   public static void incrementCount() {
     m_count++;

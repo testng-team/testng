@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.annotations.Test;
 
 public class NativeInjectionSample {
-  private AtomicInteger counter = new AtomicInteger(0);
+  private final AtomicInteger counter = new AtomicInteger(0);
 
   @Test(retryAnalyzer = LocalRetry.class)
   public void testMethod(Method method) {

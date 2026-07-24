@@ -7,7 +7,7 @@ import org.testng.annotations.BeforeGroups;
 
 public class Base3 {
 
-  private static boolean m_before = false;
+  private static boolean m_before;
 
   /** @return the m_before */
   public static boolean getBefore() {

@@ -33,8 +33,8 @@ public final class Objects {
   public static class ToStringHelper {
     private final String m_className;
     private final List<ValueHolder> values = Lists.newArrayList();
-    private boolean m_omitNulls = false;
-    private boolean m_omitEmptyStrings = false;
+    private boolean m_omitNulls;
+    private boolean m_omitEmptyStrings;
 
     public ToStringHelper(String className) {
       m_className = className;
@@ -69,8 +69,12 @@ public final class Objects {
       StringBuilder result = new StringBuilder("[" + m_className + " ");
       for (int i = 0; i < values.size(); i++) {
         ValueHolder vh = values.get(i);
-        if (m_omitNulls && vh.isNull()) continue;
-        if (m_omitEmptyStrings && vh.isEmptyString()) continue;
+        if (m_omitNulls && vh.isNull()) {
+          continue;
+        }
+        if (m_omitEmptyStrings && vh.isEmptyString()) {
+          continue;
+        }
 
         if (i > 0) {
           result.append(" ");

@@ -8,7 +8,7 @@ public class SampleTestFactory implements ITestNGListenerFactory {
 
   public static ITestNGListenerFactory instance;
 
-  private boolean invoked = false;
+  private boolean invoked;
 
   public boolean isInvoked() {
     return invoked;

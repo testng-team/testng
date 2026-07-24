@@ -9,7 +9,7 @@ public class FailingIterableDataProvider {
   @DataProvider(name = "dp")
   public Iterator<Object[]> createData() {
     return new Iterator<>() {
-      int count = 0;
+      int count;
 
       @Override
       public boolean hasNext() {

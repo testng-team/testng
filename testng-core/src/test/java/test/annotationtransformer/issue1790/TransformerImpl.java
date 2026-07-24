@@ -8,9 +8,9 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.collections.Sets;
 
 public class TransformerImpl implements IAnnotationTransformer {
-  private Set<Class<?>> classes = Sets.newHashSet();
-  private Set<Constructor<?>> constructors = Sets.newHashSet();
-  private Set<Method> methods = Sets.newHashSet();
+  private final Set<Class<?>> classes = Sets.newHashSet();
+  private final Set<Constructor<?>> constructors = Sets.newHashSet();
+  private final Set<Method> methods = Sets.newHashSet();
 
   @Override
   public void transform(

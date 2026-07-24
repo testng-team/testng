@@ -5,7 +5,7 @@ import org.testng.internal.IResultListener2;
 
 public class ResultListener implements IResultListener2 {
 
-  public static long m_end = 0;
+  public static long m_end;
 
   @Override
   public void onTestSuccess(ITestResult result) {

@@ -43,7 +43,9 @@ public final class XMLUtils {
   }
 
   public static String extractComment(String tag, Properties properties) {
-    if (properties == null || "span".equals(tag)) return null;
+    if (properties == null || "span".equals(tag)) {
+      return null;
+    }
 
     String[] attributes = new String[] {"id", "name", "class"};
     for (String a : attributes) {

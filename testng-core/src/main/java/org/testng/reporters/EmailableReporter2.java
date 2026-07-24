@@ -176,9 +176,9 @@ public class EmailableReporter2 implements IReporter {
                 .append("</a>")
                 .toString());
         writeTableData(integerFormat.format(passedTests), "num");
-        writeTableData(integerFormat.format(skippedTests), (skippedTests > 0 ? "num attn" : "num"));
-        writeTableData(integerFormat.format(retriedTests), (retriedTests > 0 ? "num attn" : "num"));
-        writeTableData(integerFormat.format(failedTests), (failedTests > 0 ? "num attn" : "num"));
+        writeTableData(integerFormat.format(skippedTests), skippedTests > 0 ? "num attn" : "num");
+        writeTableData(integerFormat.format(retriedTests), retriedTests > 0 ? "num attn" : "num");
+        writeTableData(integerFormat.format(failedTests), failedTests > 0 ? "num attn" : "num");
         writeTableData(decimalFormat.format(duration), "num");
         writeTableData(testResult.getIncludedGroups());
         writeTableData(testResult.getExcludedGroups());
@@ -209,11 +209,11 @@ public class EmailableReporter2 implements IReporter {
       writer.print("<th>Total</th>");
       writeTableHeader(integerFormat.format(totalPassedTests), "num");
       writeTableHeader(
-          integerFormat.format(totalSkippedTests), (totalSkippedTests > 0 ? "num attn" : "num"));
+          integerFormat.format(totalSkippedTests), totalSkippedTests > 0 ? "num attn" : "num");
       writeTableHeader(
-          integerFormat.format(totalRetriedTests), (totalRetriedTests > 0 ? "num attn" : "num"));
+          integerFormat.format(totalRetriedTests), totalRetriedTests > 0 ? "num attn" : "num");
       writeTableHeader(
-          integerFormat.format(totalFailedTests), (totalFailedTests > 0 ? "num attn" : "num"));
+          integerFormat.format(totalFailedTests), totalFailedTests > 0 ? "num attn" : "num");
       writeTableHeader(decimalFormat.format(totalDuration), "num");
       writer.print("<th colspan=\"2\"></th>");
       writer.println("</tr>");
@@ -454,7 +454,7 @@ public class EmailableReporter2 implements IReporter {
     // Write test parameters (if any)
     Object[] parameters = result.getParameters();
     boolean hasRows = dumpParametersInfo("Factory Parameter", result.getFactoryParameters());
-    int parameterCount = (parameters == null ? 0 : parameters.length);
+    int parameterCount = parameters == null ? 0 : parameters.length;
     hasRows = dumpParametersInfo("Parameter", result.getParameters());
     dumpAttributesInfo(result.getMethod().getAttributes());
 
@@ -485,8 +485,7 @@ public class EmailableReporter2 implements IReporter {
         writer.printf(" colspan=\"%d\"", parameterCount);
       }
       writer.print(">");
-      writer.print(
-          (result.getStatus() == ITestResult.SUCCESS ? "Expected Exception" : "Exception"));
+      writer.print(result.getStatus() == ITestResult.SUCCESS ? "Expected Exception" : "Exception");
       writer.print("</th></tr>");
 
       writer.print("<tr><td");
@@ -512,7 +511,7 @@ public class EmailableReporter2 implements IReporter {
   }
 
   private boolean dumpParametersInfo(String prefix, Object[] parameters) {
-    int parameterCount = (parameters == null ? 0 : parameters.length);
+    int parameterCount = parameters == null ? 0 : parameters.length;
     if (parameterCount == 0) {
       return false;
     }
@@ -533,7 +532,7 @@ public class EmailableReporter2 implements IReporter {
   }
 
   private void dumpAttributesInfo(CustomAttribute[] attributes) {
-    int parameterCount = (attributes == null ? 0 : attributes.length);
+    int parameterCount = attributes == null ? 0 : attributes.length;
     if (parameterCount == 0) {
       return;
     }
@@ -546,7 +545,7 @@ public class EmailableReporter2 implements IReporter {
     int i = 1;
     for (CustomAttribute attribute : attributes) {
       writer.print("<tr>");
-      writer.print("<td>" + String.format("%02d.", (i++)) + "</td>");
+      writer.print("<td>" + String.format("%02d.", i++) + "</td>");
       writer.print("<td>" + attribute.name() + "</td>");
       writer.print("<td>" + Utils.escapeHtml(Arrays.toString(attribute.values())) + "</td>");
       writer.print("</tr>");
