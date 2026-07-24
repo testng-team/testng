@@ -22,7 +22,8 @@ matrix.addAxis({
   ]
 });
 
-const eaJava = '26';
+// Early-access JDKs (not yet released). Verify they are downloadable before adding.
+const eaJava = ['27', '28'];
 matrix.addAxis({
   name: 'java_version',
   // Strings allow versions like 18-ea
@@ -30,7 +31,8 @@ matrix.addAxis({
     '17',
     '21',
     '25',
-    eaJava,
+    '26',
+    ...eaJava,
   ]
 });
 
@@ -71,9 +73,10 @@ matrix.addAxis({
 
 matrix.setNamePattern(['java_version', 'java_distribution', 'hash', 'os', 'tz', 'locale']);
 
-matrix.imply({java_version: eaJava}, {java_distribution: {value: 'oracle'}})
+// EA JDKs are only published on jdk.java.net (the "oracle" distribution here)
+eaJava.forEach(ea => matrix.imply({java_version: ea}, {java_distribution: {value: 'oracle'}}));
 // Oracle JDK is only supported for JDK 21 and later
-matrix.imply({java_distribution: {value: 'oracle'}}, {java_version: v => v === eaJava || v >= 21});
+matrix.imply({java_distribution: {value: 'oracle'}}, {java_version: v => eaJava.includes(v) || v >= 21});
 // Semeru uses OpenJ9 jit which has no option for making hash codes the same
 // See https://github.com/eclipse-openj9/openj9/issues/17309
 matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
@@ -118,9 +121,9 @@ include.forEach(v => {
   v.java_vendor = v.java_distribution.vendor;
   v.java_distribution = v.java_distribution.value;
   if (v.java_distribution === 'oracle') {
-    v.oracle_java_website = v.java_version === eaJava ? 'jdk.java.net' : 'oracle.com';
+    v.oracle_java_website = eaJava.includes(v.java_version) ? 'jdk.java.net' : 'oracle.com';
   }
-  v.non_ea_java_version = v.java_version === eaJava ? '' : v.java_version;
+  v.non_ea_java_version = eaJava.includes(v.java_version) ? '' : v.java_version;
   if (v.java_distribution !== 'semeru' && random() > 0.5) {
     // The following options randomize instruction selection in JIT compiler
     // so it might reveal missing synchronization in TestNG code
