@@ -57,14 +57,13 @@ jobs:
       - name: Set up Java ${{ matrix.non_ea_java_version }} (test) and 25 (Gradle + build), ${{ matrix.java_distribution }}
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
-          # Install multiple Java versions:
-          # - Test version (17, 21, 25, or 26): used to run TestNG tests
-          # - Java 25: runs Gradle and builds TestNG (jdkBuildVersion=25); Gradle 9 runs on JDK 25
-          #   (the last version in the list becomes JAVA_HOME)
+          # Install multiple Java versions, in ascending order:
+          # - Test version (17, 21, 25, 26, 27, or 28): used to run TestNG tests
+          # - Java 25: runs Gradle and builds TestNG (jdkBuildVersion=25). Kept last so it becomes
+          #   JAVA_HOME (Gradle 9 runs on JDK 25; it may not run on the EA test versions).
           java-version: |
             ${{ matrix.non_ea_java_version }}
             25
-            21
           distribution: ${{ matrix.java_distribution }}
           architecture: x64
       - name: Steps to reproduce
