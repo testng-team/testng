@@ -13,7 +13,8 @@ buildParameters {
         description.set("Add mavenLocal() to repositories")
     }
     integer("targetJavaVersion") {
-        defaultValue.set(11)
+        // Overridable via the root gradle.properties (single source of truth).
+        defaultValue.set(17)
         mandatory.set(true)
         description.set("Java version for source and target compatibility")
     }
