@@ -16,7 +16,7 @@ val rootGradleProperties = Properties().apply {
     val f = rootDir.resolveSibling("gradle.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
-val buildJdkVersion = (rootGradleProperties.getProperty("jdkBuildVersion") ?: "21").toInt()
+val buildJdkVersion = (rootGradleProperties.getProperty("jdkBuildVersion") ?: "25").toInt()
 val targetJavaVersion = (rootGradleProperties.getProperty("targetJavaVersion") ?: "17").toInt()
 
 // We need a version supported by the current JVM and by the Kotlin Gradle plugin:
