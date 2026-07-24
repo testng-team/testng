@@ -54,14 +54,13 @@ jobs:
         with:
           website: ${{ matrix.oracle_java_website }}
           release: ${{ matrix.java_version }}
-      - name: Set up Java ${{ matrix.non_ea_java_version }} (test), 25 (build) and 21 (Gradle launcher), ${{ matrix.java_distribution }}
+      - name: Set up Java ${{ matrix.non_ea_java_version }} (test) and 25 (Gradle + build), ${{ matrix.java_distribution }}
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           # Install multiple Java versions:
           # - Test version (11, 17, 21, 25, or 26): used to run TestNG tests
-          # - Java 25: build toolchain (jdkBuildVersion=25)
-          # - Java 21: runs Gradle and compiles build-logic; Gradle 8.11 cannot run on JDK 25 yet
-          #   (the last version in the list becomes JAVA_HOME, i.e. the Gradle launcher)
+          # - Java 25: runs Gradle and builds TestNG (jdkBuildVersion=25); Gradle 9 runs on JDK 25
+          #   (the last version in the list becomes JAVA_HOME)
           java-version: |
             ${{ matrix.non_ea_java_version }}
             25

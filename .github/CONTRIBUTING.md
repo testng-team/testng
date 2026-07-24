@@ -38,14 +38,14 @@ This pull request will be a perfect start to find the fix :)
 
 ### JDK Requirements
 
-**Important:** TestNG builds with a **JDK 25** toolchain, while Gradle itself runs on **JDK 21**; the compiled artifacts target **Java 17**.
+**Important:** TestNG builds with **JDK 25**, but the compiled artifacts target **Java 17**.
 
 - **For users**: TestNG can run on Java 17 or higher
-- **For contributors**: install **JDK 21** to run Gradle. The **JDK 25** build toolchain is provisioned automatically by Gradle (or you can install JDK 25 yourself).
+- **For contributors**: You need JDK 25 installed to build TestNG
 
 This is because:
-1. The Gradle build toolchain uses JDK 25 (`jdkBuildVersion=25`)
-2. Gradle 8.11 cannot run on JDK 25 yet, so Gradle itself runs on JDK 21
+1. Gradle 9 runs on JDK 25 and uses it as the build toolchain (`jdkBuildVersion=25`)
+2. The publishing plugins (nmcp) require Java 17+
 3. The compiled bytecode targets Java 17 (`targetJavaVersion=17`)
 
 To check your Java version, run:
@@ -53,7 +53,7 @@ To check your Java version, run:
 java -version
 ```
 
-If you need to install JDK 21 (or JDK 25), we recommend using a version manager such as [mise](https://mise.jdx.dev/) or [SDKMAN!](https://sdkman.io/), or downloading from [Adoptium](https://adoptium.net/).
+If you need to install JDK 25, we recommend using a version manager such as [mise](https://mise.jdx.dev/) or [SDKMAN!](https://sdkman.io/), or downloading from [Adoptium](https://adoptium.net/).
 
 ### List all tasks
 
