@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("java-library")
     id("org.gradle.kotlin.kotlin-dsl") // this is 'kotlin-dsl' without version
@@ -8,9 +10,18 @@ tasks.validatePlugins {
     enableStricterValidation.set(true)
 }
 
-// We need to figure out a version that is supported by the current JVM, and by the Kotlin Gradle plugin
-// We use Java 21 (our build JDK) or fall back to 11 (our target compatibility) if running on an older JVM
-listOf(21, 11)
+// Java versions are defined once in the repository-root gradle.properties (single source of truth).
+// Included builds do not inherit the root gradle.properties, so we read it from disk here.
+val rootGradleProperties = Properties().apply {
+    val f = rootDir.resolveSibling("gradle.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val buildJdkVersion = (rootGradleProperties.getProperty("jdkBuildVersion") ?: "21").toInt()
+val targetJavaVersion = (rootGradleProperties.getProperty("targetJavaVersion") ?: "17").toInt()
+
+// We need a version supported by the current JVM and by the Kotlin Gradle plugin:
+// use our build JDK, or fall back to the target version when running on an older JVM.
+listOf(buildJdkVersion, targetJavaVersion)
     .firstOrNull { JavaVersion.toVersion(it) <= JavaVersion.current() }
     ?.let { buildScriptJvmTarget ->
         java {
