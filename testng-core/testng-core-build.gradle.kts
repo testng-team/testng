@@ -61,8 +61,6 @@ tasks.compileTestGroovy {
     dependsOn(tasks.compileTestKotlin)
     classpath += files(tasks.compileTestKotlin)
 }
-// Note: In Kotlin 2.3.0+, the classpath property on KotlinCompile task has been removed.
-// The classpath is now automatically managed through source sets, so no manual configuration is needed.
 
 tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
