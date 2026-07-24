@@ -1,6 +1,5 @@
 package org.testng.reporters;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newBufferedWriter;
 
 import java.io.File;
@@ -75,7 +74,7 @@ public class EmailableReporter2 implements IReporter {
     if (jvmArg != null && !jvmArg.trim().isEmpty()) {
       fileName = jvmArg;
     }
-    return new PrintWriter(newBufferedWriter(new File(outdir, fileName).toPath(), UTF_8));
+    return new PrintWriter(newBufferedWriter(new File(outdir, fileName).toPath()));
   }
 
   protected void writeDocumentStart() {

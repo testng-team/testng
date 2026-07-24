@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import org.testng.*;
 import org.testng.annotations.DataProvider;
@@ -93,7 +92,7 @@ public class ReportTest extends SimpleBaseTest {
 
   private static Path getHtmlReportFile(Path outputDir, String suiteName, String testName)
       throws IOException {
-    Path f = outputDir.resolve(Paths.get(suiteName, testName + ".html"));
+    Path f = outputDir.resolve(Path.of(suiteName, testName + ".html"));
     Files.deleteIfExists(f);
     return f;
   }

@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -79,7 +79,7 @@ public class YamlTest extends SimpleBaseTest {
     String expectedYamlFile = "src/test/resources/yaml/2078.yaml";
     String expectedYaml =
         new String(
-            java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
+            java.nio.file.Files.readAllBytes(Path.of(expectedYamlFile)), StandardCharsets.UTF_8);
     assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualToNormalizingNewlines(expectedYaml);
   }
 

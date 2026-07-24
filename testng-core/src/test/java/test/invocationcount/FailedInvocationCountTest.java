@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
@@ -149,11 +148,11 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
   public void ensureInvocationCountHonoursRetriesWhenUsingDataProviders(
       Class<?> cls, boolean isXmlGenerated, String[] invocationCountValue) throws Exception {
     String reportsDir = createDirInTempDir("3180").getAbsolutePath();
-    TestNG testng = create(Paths.get(reportsDir), cls);
+    TestNG testng = create(Path.of(reportsDir), cls);
     testng.setUseDefaultListeners(false);
     testng.addListener(new FailedReporter());
     testng.run();
-    Path xml = Paths.get(reportsDir, "testng-failed.xml");
+    Path xml = Path.of(reportsDir, "testng-failed.xml");
     assertThat(xml.toFile().exists()).isEqualTo(isXmlGenerated);
     if (!isXmlGenerated) {
       // Do not validate anything if the xml is NOT generated
@@ -220,11 +219,11 @@ public class FailedInvocationCountTest extends SimpleBaseTest {
     XmlSuite xmlSuite = createXmlSuite("sample_suite");
     createXmlTest(xmlSuite, "sample_test1", cls);
     createXmlTest(xmlSuite, "sample_test2", cls);
-    TestNG testng = create(Paths.get(reportsDir), xmlSuite);
+    TestNG testng = create(Path.of(reportsDir), xmlSuite);
     testng.setUseDefaultListeners(false);
     testng.addListener(new FailedReporter());
     testng.run();
-    Path xml = Paths.get(reportsDir, "testng-failed.xml");
+    Path xml = Path.of(reportsDir, "testng-failed.xml");
     assertThat(xml.toFile().exists()).isEqualTo(isXmlGenerated);
     if (!isXmlGenerated) {
       // Do not validate anything if the xml is NOT generated

@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +69,7 @@ public class CustomExecutorServiceFactoryTest extends SimpleBaseTest {
         .map(XmlSuite::toXml)
         .forEach(
             it -> {
-              Path s1 = Paths.get(dir.getAbsolutePath(), UUID.randomUUID() + "-suite.xml");
+              Path s1 = Path.of(dir.getAbsolutePath(), UUID.randomUUID() + "-suite.xml");
               try {
                 Files.writeString(s1, it);
                 suites.add(s1.toFile().getAbsolutePath());
