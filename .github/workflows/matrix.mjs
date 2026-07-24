@@ -27,7 +27,6 @@ matrix.addAxis({
   name: 'java_version',
   // Strings allow versions like 18-ea
   values: [
-    '11',
     '17',
     '21',
     '25',

@@ -15,8 +15,7 @@ jobs:
     - name: Gradle wrapper validation
       uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
 
-    # Gradle 9 runs on JDK 25 and uses it as the build toolchain (jdkBuildVersion=25).
-    # TestNG artifacts target Java 17 (targetJavaVersion=17).
+    # Gradle 9 runs on JDK 25; the compiled artifacts still target Java 17.
     - name: Set up JDK 25
       uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
       with:

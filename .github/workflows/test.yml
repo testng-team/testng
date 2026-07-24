@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           # Install multiple Java versions:
-          # - Test version (11, 17, 21, 25, or 26): used to run TestNG tests
+          # - Test version (17, 21, 25, or 26): used to run TestNG tests
           # - Java 25: runs Gradle and builds TestNG (jdkBuildVersion=25); Gradle 9 runs on JDK 25
           #   (the last version in the list becomes JAVA_HOME)
           java-version: |
