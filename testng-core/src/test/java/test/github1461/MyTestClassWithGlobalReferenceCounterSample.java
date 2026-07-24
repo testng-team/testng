@@ -26,4 +26,13 @@ public class MyTestClassWithGlobalReferenceCounterSample {
   public void aTestMethod2() {
     log.debug("test method 2");
   }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  protected void finalize() {
+    log.debug("finalize");
+    // this will be called when this object is removed from the heap,
+    // which is exactly what this leak-reproduction fixture needs to observe
+    --currentNumberOfMyTestObjects;
+  }
 }
