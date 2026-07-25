@@ -55,6 +55,10 @@ class BaseInvoker {
     return m_configuration.getAnnotationFinder();
   }
 
+  public IConfiguration getConfiguration() {
+    return m_configuration;
+  }
+
   protected void runInvokedMethodListeners(
       InvokedMethodListenerMethod listenerMethod,
       IInvokedMethod invokedMethod,

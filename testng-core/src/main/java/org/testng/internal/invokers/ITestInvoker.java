@@ -11,6 +11,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
 import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.xml.XmlSuite;
 
@@ -52,6 +53,8 @@ public interface ITestInvoker {
   void invokeListenersForSkippedTestResult(ITestResult r, IInvokedMethod invokedMethod);
 
   ITestResultNotifier getNotifier();
+
+  IConfiguration getConfiguration();
 
   default IMethodRunner getRunner() {
     return new MethodRunner();

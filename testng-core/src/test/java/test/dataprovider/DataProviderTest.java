@@ -60,6 +60,11 @@ import test.dataprovider.issue3045.DataProviderTestClassSample;
 import test.dataprovider.issue3045.DataProviderWithoutListenerTestClassSample;
 import test.dataprovider.issue3081.NoOpMethodInterceptor;
 import test.dataprovider.issue3081.TestClassWithPrioritiesSample;
+import test.dataprovider.issue3242.ConcurrencyProbe;
+import test.dataprovider.issue3242.MixedThreadPoolSample;
+import test.dataprovider.issue3242.ParallelDataDrivenSample;
+import test.dataprovider.issue3242.RecordingExecutorServiceFactory;
+import test.dataprovider.issue3242.SkippedDataDrivenSample;
 import test.dataprovider.issue3263.FirstSubclassTestSample;
 import test.dataprovider.issue3263.SecondSubclassTestSample;
 
@@ -701,6 +706,145 @@ public class DataProviderTest extends SimpleBaseTest {
             "There should have been 9 threads ONLY used by the data driven test "
                 + "because one thread would be the main thread on which TestNG would be running")
         .hasSize(9);
+  }
+
+  @Test(description = "GITHUB-3242")
+  public void dataDrivenTestsDoNotDeadlockWhenCountMatchesThreadCount() {
+    // 5 data-driven test methods and thread-count == 5, run on a shared global thread-pool. This
+    // configuration used to be rejected up front with a TestNGDeadLockException ("Please increase
+    // the number of threads to at-least 6").
+    int threadCount = 5;
+    ConcurrencyProbe probe = new ConcurrencyProbe();
+    TestNG testng = create(ParallelDataDrivenSample.class);
+    testng.addListener(probe);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.setThreadCount(threadCount);
+    testng.shouldUseGlobalThreadPool(true);
+
+    testng.run();
+
+    assertThat(testng.getStatus())
+        .withFailMessage("The suite should run to completion without a dead-lock")
+        .isZero();
+    assertThat(probe.invocations())
+        .withFailMessage("Every data-row of every data-driven test should have been executed")
+        .isEqualTo(40);
+    assertSharedPoolIsBoundedTo(probe, threadCount);
+  }
+
+  @Test(description = "GITHUB-3242")
+  public void globalThreadPoolParallelismDoesNotDegradeWithTheNumberOfDataDrivenTests() {
+    // 5 data-driven test methods and thread-count == 6. Before the fix the data-rows ran with only
+    // (thread-count - numberOfDataDrivenTests) == 1 thread, so adding a data-driven test made the
+    // suite slower. Now the whole pool (bar the single thread ForkJoinPool keeps in reserve while
+    // its workers are joining) stays busy, independently of how many data-driven tests there are.
+    int threadCount = 6;
+    ConcurrencyProbe probe = new ConcurrencyProbe();
+    TestNG testng = create(ParallelDataDrivenSample.class);
+    testng.addListener(probe);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.setThreadCount(threadCount);
+    testng.shouldUseGlobalThreadPool(true);
+
+    testng.run();
+
+    assertThat(testng.getStatus())
+        .withFailMessage("The suite should run to completion without a dead-lock")
+        .isZero();
+    assertThat(probe.maxConcurrency())
+        .withFailMessage(
+            "Expected the data-rows to keep the global thread-pool busy (about %d threads), but "
+                + "only %d ran concurrently",
+            threadCount, probe.maxConcurrency())
+        .isGreaterThanOrEqualTo(threadCount - 1);
+    assertSharedPoolIsBoundedTo(probe, threadCount);
+  }
+
+  @Test(description = "GITHUB-3242")
+  public void regularAndDataDrivenTestsCompleteOnTheSharedGlobalThreadPool() {
+    // A class that mixes regular test methods with data-driven ones must run to completion on the
+    // single shared pool, still bounded by thread-count.
+    int threadCount = 4;
+    ConcurrencyProbe probe = new ConcurrencyProbe();
+    TestNG testng = create(MixedThreadPoolSample.class);
+    testng.addListener(probe);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.setThreadCount(threadCount);
+    testng.shouldUseGlobalThreadPool(true);
+
+    testng.run();
+
+    assertThat(testng.getStatus())
+        .withFailMessage("A mix of regular and data-driven tests should run to completion")
+        .isZero();
+    assertThat(probe.invocations())
+        .withFailMessage("Both regular tests and every data-row should have been executed")
+        .isEqualTo(2 + 2 * 4);
+    assertSharedPoolIsBoundedTo(probe, threadCount);
+  }
+
+  @Test(description = "GITHUB-3242")
+  public void customExecutorServiceFactoryIsUsedForTheGlobalThreadPool() {
+    // A user-supplied IExecutorServiceFactory (-threadpoolfactoryclass) must still get to build the
+    // shared global thread-pool, via IExecutorServiceFactory#createGlobalThreadPool.
+    int threadCount = 6;
+    ConcurrencyProbe probe = new ConcurrencyProbe();
+    RecordingExecutorServiceFactory factory = new RecordingExecutorServiceFactory();
+    TestNG testng = create(ParallelDataDrivenSample.class);
+    testng.addListener(probe);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.setThreadCount(threadCount);
+    testng.shouldUseGlobalThreadPool(true);
+    testng.setExecutorServiceFactory(factory);
+
+    testng.run();
+
+    assertThat(testng.getStatus())
+        .withFailMessage("The suite should run to completion without a dead-lock")
+        .isZero();
+    assertThat(factory.wasGlobalPoolCreated())
+        .withFailMessage(
+            "The custom IExecutorServiceFactory should have been asked to create the shared "
+                + "global thread-pool")
+        .isTrue();
+    assertSharedPoolIsBoundedTo(probe, threadCount);
+  }
+
+  @Test(description = "GITHUB-3242")
+  public void dataDrivenTestsSkippedFromExecutionDoNotBlockTheSuite() {
+    // The codebase declares 5 data-driven tests (== thread-count), so they are present in the run
+    // and used to trip the "[Deadlock condition detected]" guard up front - the whole suite refused
+    // to start. Even when those tests are filtered from execution at runtime (here by throwing a
+    // SkipException, as the reporter did with a listener), the shared-thread-pool suite must still
+    // start and run its remaining tests instead of being refused. See GITHUB-3242.
+    TestListenerAdapter tla = new TestListenerAdapter();
+    TestNG testng = create(SkippedDataDrivenSample.class);
+    testng.addListener(tla);
+    testng.setParallel(XmlSuite.ParallelMode.METHODS);
+    testng.setThreadCount(5);
+    testng.shouldUseGlobalThreadPool(true);
+
+    // On the old behaviour this threw TestNGDeadLockException before any method ran.
+    testng.run();
+
+    assertThat(tla.getFailedTests()).withFailMessage("No test should have failed").isEmpty();
+    assertThat(tla.getPassedTests())
+        .withFailMessage("The regular (non data-driven) test should still have run")
+        .hasSize(1);
+    assertThat(tla.getSkippedTests())
+        .withFailMessage(
+            "Every data-row of the 5 data-driven tests should have been skipped, not blocked by a "
+                + "dead-lock guard")
+        .hasSize(40);
+  }
+
+  private static void assertSharedPoolIsBoundedTo(ConcurrencyProbe probe, int threadCount) {
+    assertThat(probe.distinctThreadsUsed())
+        .withFailMessage(
+            "The shared global thread-pool must not use more than thread-count (%d) threads, but "
+                + "%d distinct threads ran the tests",
+            threadCount, probe.distinctThreadsUsed())
+        .isLessThanOrEqualTo(threadCount);
   }
 
   @DataProvider
