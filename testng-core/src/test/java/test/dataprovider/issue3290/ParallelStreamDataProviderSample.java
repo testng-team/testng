@@ -15,11 +15,12 @@ import org.testng.annotations.Test;
  */
 public class ParallelStreamDataProviderSample {
 
+  public static final int ROWS = 50;
   public static final AtomicInteger CLOSE_COUNT = new AtomicInteger(0);
 
   @DataProvider(parallel = true)
   public Stream<Object[]> provide() {
-    return IntStream.range(0, 50)
+    return IntStream.rangeClosed(1, ROWS)
         .mapToObj(i -> new Object[] {i})
         .onClose(CLOSE_COUNT::incrementAndGet);
   }

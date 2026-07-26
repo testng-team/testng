@@ -1,5 +1,8 @@
 package org.testng.internal.collections;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import org.testng.internal.Utils;
 
@@ -26,6 +29,51 @@ public class ResourceAwareIterator<T> implements CloseableIterator<T> {
   public ResourceAwareIterator(Iterator<T> delegate, AutoCloseable resource) {
     this.delegate = delegate;
     this.resource = resource;
+  }
+
+  /**
+   * Builds a {@link CloseableIterator} of {@code Object[]} rows from the iterator produced by a
+   * lazily-loaded data provider (either an {@code Iterator} or a {@code Stream}). The declared
+   * generic return type is inspected to decide whether each element is already an {@code Object[]}
+   * row or a single value that needs to be wrapped into one.
+   *
+   * @param iterator the iterator produced by the data provider.
+   * @param returnType the declared generic return type of the data provider method.
+   * @param resource the resource to release on {@link #close()} (typically the {@code Stream} the
+   *     iterator was derived from), or {@code null} if there is nothing to release.
+   */
+  public static CloseableIterator<Object[]> forDataProvider(
+      Iterator<Object> iterator, Type returnType, AutoCloseable resource) {
+    return new ResourceAwareIterator<>(toObjectArrayIterator(iterator, returnType), resource);
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Iterator<Object[]> toObjectArrayIterator(
+      Iterator<Object> iterator, Type returnType) {
+    if (!(returnType instanceof ParameterizedType)) {
+      // Raw Iterator/Stream, we expect the user to provide rows of the expected shape.
+      return (Iterator<Object[]>) (Iterator<?>) iterator;
+    }
+
+    // Inspect only the direct element type of the Iterator/Stream. Each element is treated as an
+    // already-formed Object[] row only when that element type is itself a reference (non-primitive)
+    // array; otherwise every element is wrapped into a single-element row. This keeps, for example,
+    // Stream<List<Object[]>> being delivered as one List<Object[]> parameter rather than being
+    // mistaken for a row of Object[].
+    Type elementType = ((ParameterizedType) returnType).getActualTypeArguments()[0];
+    if (isObjectArrayRow(elementType)) {
+      return (Iterator<Object[]>) (Iterator<?>) iterator;
+    }
+    return new OneToTwoDimIterator(iterator);
+  }
+
+  private static boolean isObjectArrayRow(Type elementType) {
+    if (elementType instanceof Class) {
+      Class<?> clazz = (Class<?>) elementType;
+      return clazz.isArray() && !clazz.getComponentType().isPrimitive();
+    }
+    // A generic array type such as T[] is also a reference-array row.
+    return elementType instanceof GenericArrayType;
   }
 
   @Override

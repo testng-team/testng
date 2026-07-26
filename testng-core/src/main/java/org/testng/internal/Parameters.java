@@ -847,42 +847,52 @@ public class Parameters {
         throw thrownException;
       }
 
-      for (IDataProviderListener dataProviderListener : holder.getListeners()) {
-        dataProviderListener.afterDataProviderExecution(
-            dataProviderMethod, testMethod, methodParams.context);
-      }
-
-      // If the data provider is restricting the indices to return, filter them out
-      final List<Integer> allIndices = new ArrayList<>();
-      allIndices.addAll(testMethod.getInvocationNumbers());
-      allIndices.addAll(dataProviderMethod.getIndices());
-
-      Iterator<Object[]> filteredParameters =
-          new FilteredParameters(initParams, testMethod, dataProviderMethod.getName(), allIndices);
       // Preserve a handle on the original closeable source before it is wrapped by
-      // FilteredParameters and any interceptors, so the resource can be released later.
+      // FilteredParameters and any interceptors, so the resource can be released later - including
+      // if the setup below (listeners / filtering / interceptors) throws before a ParameterHolder
+      // takes ownership of it.
       CloseableIterator<Object[]> closeableSource = initParams;
-
-      testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
-      for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
-        filteredParameters =
-            interceptor.intercept(
-                filteredParameters, dataProviderMethod, testMethod, methodParams.context);
-      }
-
-      if (dataProviderMethod instanceof DataProviderMethodRemovable) {
-        ((DataProviderMethodRemovable) dataProviderMethod).setMethod(null);
-        ((DataProviderMethodRemovable) dataProviderMethod).setInstance(null);
-        if (testMethod instanceof TestNGMethod) {
-          ((TestNGMethod) testMethod).setDataProviderMethod(null);
+      try {
+        for (IDataProviderListener dataProviderListener : holder.getListeners()) {
+          dataProviderListener.afterDataProviderExecution(
+              dataProviderMethod, testMethod, methodParams.context);
         }
-      }
 
-      return new ParameterHolder(
-          filteredParameters,
-          ParameterOrigin.ORIGIN_DATA_PROVIDER,
-          dataProviderMethod,
-          closeableSource);
+        // If the data provider is restricting the indices to return, filter them out
+        final List<Integer> allIndices = new ArrayList<>();
+        allIndices.addAll(testMethod.getInvocationNumbers());
+        allIndices.addAll(dataProviderMethod.getIndices());
+
+        Iterator<Object[]> filteredParameters =
+            new FilteredParameters(
+                initParams, testMethod, dataProviderMethod.getName(), allIndices);
+
+        testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
+        for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
+          filteredParameters =
+              interceptor.intercept(
+                  filteredParameters, dataProviderMethod, testMethod, methodParams.context);
+        }
+
+        if (dataProviderMethod instanceof DataProviderMethodRemovable) {
+          ((DataProviderMethodRemovable) dataProviderMethod).setMethod(null);
+          ((DataProviderMethodRemovable) dataProviderMethod).setInstance(null);
+          if (testMethod instanceof TestNGMethod) {
+            ((TestNGMethod) testMethod).setDataProviderMethod(null);
+          }
+        }
+
+        return new ParameterHolder(
+            filteredParameters,
+            ParameterOrigin.ORIGIN_DATA_PROVIDER,
+            dataProviderMethod,
+            closeableSource);
+      } catch (RuntimeException | Error e) {
+        // Setup failed before the ParameterHolder could take ownership of the source, so no one
+        // else will close it; release it here so a Stream-backed data provider does not leak.
+        closeableSource.close();
+        throw e;
+      }
     } else if (methodParams.xmlParameters.isEmpty()) {
       origin = ParameterOrigin.NATIVE;
     } else {
