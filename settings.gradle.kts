@@ -5,7 +5,7 @@ pluginManagement {
 rootProject.name = "testng-root"
 
 plugins {
-    id("com.gradle.develocity") version("3.19.1")
+    id("com.gradle.develocity") version("4.5.0")
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
