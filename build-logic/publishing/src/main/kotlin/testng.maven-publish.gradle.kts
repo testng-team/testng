@@ -1,5 +1,7 @@
 plugins {
     `maven-publish`
+    // Feeds this project's publications into the root project's nmcpAggregation configuration
+    id("com.gradleup.nmcp")
     id("testng.local-maven-repo")
     id("testng.signing")
     id("build-logic.build-params")
