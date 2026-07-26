@@ -64,6 +64,8 @@ import test.dataprovider.issue3242.ConcurrencyProbe;
 import test.dataprovider.issue3242.MixedThreadPoolSample;
 import test.dataprovider.issue3242.ParallelDataDrivenSample;
 import test.dataprovider.issue3242.RecordingExecutorServiceFactory;
+import test.dataprovider.issue3242.SharedPoolFirstTestSample;
+import test.dataprovider.issue3242.SharedPoolSecondTestSample;
 import test.dataprovider.issue3242.SkippedDataDrivenSample;
 import test.dataprovider.issue3263.FirstSubclassTestSample;
 import test.dataprovider.issue3263.SecondSubclassTestSample;
@@ -836,6 +838,40 @@ public class DataProviderTest extends SimpleBaseTest {
             "Every data-row of the 5 data-driven tests should have been skipped, not blocked by a "
                 + "dead-lock guard")
         .hasSize(40);
+  }
+
+  @Test(description = "GITHUB-3242")
+  public void sharedGlobalPoolIsNotShutdownByAnEarlierTest() {
+    // Two <test> blocks in one suite share the global thread-pool (ObjectBag is suite-scoped). The
+    // first <test> to finish must not shut the pool down, otherwise the second <test>'s workers are
+    // silently rejected and its methods never run. The pool is disposed once, at the end of the run
+    // (TestNG#runSuites -> ObjectBag::cleanup). See GITHUB-3242.
+    XmlSuite xmlSuite = createXmlSuite("global-pool-across-tests");
+    xmlSuite.setParallel(XmlSuite.ParallelMode.NONE);
+    xmlSuite.shouldUseGlobalThreadPool(true);
+    xmlSuite.setThreadCount(2);
+    XmlTest first = createXmlTest(xmlSuite, "first");
+    first.setParallel(XmlSuite.ParallelMode.METHODS);
+    createXmlClass(first, SharedPoolFirstTestSample.class);
+    XmlTest second = createXmlTest(xmlSuite, "second");
+    second.setParallel(XmlSuite.ParallelMode.METHODS);
+    createXmlClass(second, SharedPoolSecondTestSample.class);
+
+    TestListenerAdapter listener = new TestListenerAdapter();
+    TestNG testng = create(xmlSuite);
+    testng.addListener(listener);
+
+    testng.run();
+
+    assertThat(testng.getStatus())
+        .withFailMessage("Both <test> blocks should run to completion")
+        .isZero();
+    assertThat(listener.getPassedTests())
+        .extracting(result -> result.getMethod().getMethodName())
+        .withFailMessage(
+            "Both tests' methods must run on the shared pool; the second was dropped when the "
+                + "first shut the pool down")
+        .containsExactlyInAnyOrder("first", "second");
   }
 
   private static void assertSharedPoolIsBoundedTo(ConcurrencyProbe probe, int threadCount) {

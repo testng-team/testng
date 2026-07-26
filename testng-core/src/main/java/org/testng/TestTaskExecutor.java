@@ -25,6 +25,8 @@ class TestTaskExecutor {
   private final long timeOut;
 
   private ExecutorService service;
+  private GraphOrchestrator<ITestNGMethod> orchestrator;
+  private boolean reUse;
 
   private static final Logger LOGGER = Logger.getLogger(TestTaskExecutor.class);
 
@@ -47,8 +49,8 @@ class TestTaskExecutor {
   public void execute() {
     String name = "test-" + xmlTest.getName();
     int threadCount = Math.max(xmlTest.getThreadCount(), 1);
-    boolean reUse = xmlTest.getSuite().useGlobalThreadPool();
-    if (reUse) {
+    this.reUse = xmlTest.getSuite().useGlobalThreadPool();
+    if (this.reUse) {
       // A single, common pool is shared between regular test methods and their (parallel)
       // data-driven invocations. It is created via IExecutorServiceFactory#createGlobalThreadPool,
       // which by default returns a ForkJoinPool so that a data-driven method worker waiting for its
@@ -74,9 +76,10 @@ class TestTaskExecutor {
                   queue,
                   new TestNGThreadFactory(name));
     }
-    GraphOrchestrator<ITestNGMethod> executor =
-        new GraphOrchestrator<>(service, factory, graph, comparator);
-    executor.run();
+    // A shared global pool (reUse) must not be shut down when this test's graph finishes - other
+    // <test> graphs may still be using it. See GITHUB-3242.
+    orchestrator = new GraphOrchestrator<>(service, factory, graph, comparator, !reUse);
+    orchestrator.run();
   }
 
   public void awaitCompletion() {
@@ -85,8 +88,14 @@ class TestTaskExecutor {
             "Starting executor test %d with time out: %d milliseconds.", timeOut, timeOut);
     Utils.log("TestTaskExecutor", 2, msg);
     try {
-      boolean ignored = service.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
-      service.shutdownNow();
+      if (reUse) {
+        // Shared global pool: wait for this test's graph to finish, but leave the pool running for
+        // the other <test>s. It is disposed once, at the end of the run, via ObjectBag cleanup.
+        boolean ignored = orchestrator.awaitCompletion(timeOut, TimeUnit.MILLISECONDS);
+      } else {
+        boolean ignored = service.awaitTermination(timeOut, TimeUnit.MILLISECONDS);
+        service.shutdownNow();
+      }
     } catch (InterruptedException handled) {
       LOGGER.error(handled.getMessage(), handled);
       Thread.currentThread().interrupt();
