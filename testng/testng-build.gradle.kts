@@ -11,7 +11,7 @@ java {
     // third-party dependencies would be left as regular dependencies
     optionalFeatures {
         shadedDependenciesFilter.set {
-            it.owner.let { id -> id is ProjectComponentIdentifier && id.build.isCurrentBuild }
+            it.owner.let { id -> id is ProjectComponentIdentifier && id.build.buildPath == ":" }
         }
 
         create("guice") {
@@ -35,8 +35,8 @@ tasks.mergedJar {
     manifest {
         // providers.gradleProperty does not work
         // see https://github.com/gradle/gradle/issues/14972
-        val name = rootProject.findProperty("project.name")
-        val vendor = rootProject.findProperty("project.vendor.name")
+        val name = rootProject.property("project.name").toString()
+        val vendor = rootProject.property("project.vendor.name").toString()
         attributes(
             // Java 9 module name
             "Automatic-Module-Name" to project.group,
@@ -48,7 +48,7 @@ tasks.mergedJar {
             "Bundle-Vendor" to vendor,
             // See http://docs.osgi.org/specification/osgi.core/7.0.0/framework.module.html#i2654895
             "Bundle-License" to "Apache-2.0",
-            "Bundle-Description" to project.description,
+            "Bundle-Description" to project.description.orEmpty(),
             "Bundle-Version" to project.version.toString().removeSuffix("-SNAPSHOT"),
             //TestNG loads classes "by name" from configuration files, this allows to load such classes without need to know the exact package name
             "DynamicImport-Package" to "*",
