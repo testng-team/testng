@@ -10,7 +10,6 @@ import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.internal.TestNGDeadLockException;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.thread.issue2019.TestClassSample;
@@ -75,14 +74,23 @@ public class SharedThreadPoolTest extends SimpleBaseTest {
         .hasSizeBetween(4, 10);
   }
 
-  @Test(expectedExceptions = TestNGDeadLockException.class, dataProvider = "modes")
-  public void ensureDeadLocksAreDetectedForDataDrivenTestsRunningInParallel(
+  @Test(dataProvider = "modes", description = "GITHUB-3242")
+  public void ensureDataDrivenTestsInParallelDoNotDeadlockOnSharedPool(
       XmlSuite.ParallelMode mode, Class<?>... classes) {
+    // With a shared (global) thread-pool, data-driven test methods running in parallel used to be
+    // rejected up front with a TestNGDeadLockException whenever their count reached thread-count.
+    // Those workers now help run their own data-rows (work-stealing), so the suite simply runs to
+    // completion.
     TestNG testng = create(classes);
     testng.shouldUseGlobalThreadPool(true);
     testng.setParallel(mode);
     testng.setThreadCount(2);
     testng.run();
+    assertThat(testng.getStatus())
+        .withFailMessage(
+            "A shared thread-pool suite with data-driven tests running in parallel should "
+                + "complete instead of dead-locking")
+        .isZero();
   }
 
   @Test(description = "GITHUB-3179")

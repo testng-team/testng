@@ -23,6 +23,8 @@ public class GraphOrchestrator<T> {
   private final Map<T, T> upstream = Maps.newConcurrentMap();
   private final Comparator<T> comparator;
   private final IThreadWorkerFactory<T> factory;
+  private final boolean shutdownExecutorOnFinish;
+  private final CountDownLatch completed = new CountDownLatch(1);
 
   private final AutoCloseableLock internalLock = new AutoCloseableLock();
 
@@ -31,10 +33,26 @@ public class GraphOrchestrator<T> {
       IThreadWorkerFactory<T> factory,
       IDynamicGraph<T> graph,
       Comparator<T> comparator) {
+    this(service, factory, graph, comparator, true);
+  }
+
+  /**
+   * @param shutdownExecutorOnFinish whether the executor service should be shut down once the graph
+   *     has finished. This must be {@code false} when the executor is a shared pool owned elsewhere
+   *     (for example the suite-wide global thread-pool), so that finishing one graph does not tear
+   *     the pool down under other graphs still using it. See GITHUB-3242.
+   */
+  public GraphOrchestrator(
+      ExecutorService service,
+      IThreadWorkerFactory<T> factory,
+      IDynamicGraph<T> graph,
+      Comparator<T> comparator,
+      boolean shutdownExecutorOnFinish) {
     this.service = service;
     this.graph = graph;
     this.comparator = comparator;
     this.factory = factory;
+    this.shutdownExecutorOnFinish = shutdownExecutorOnFinish;
   }
 
   public void run() {
@@ -45,6 +63,11 @@ public class GraphOrchestrator<T> {
       }
       runNodes(freeNodes);
     }
+  }
+
+  /** Blocks until the graph has finished executing, or the timeout elapses. */
+  public boolean awaitCompletion(long timeout, TimeUnit unit) throws InterruptedException {
+    return completed.await(timeout, unit);
   }
 
   private void runNodes(List<T> freeNodes) {
@@ -77,7 +100,10 @@ public class GraphOrchestrator<T> {
     try (AutoCloseableLock ignore = internalLock.lock()) {
       setStatus(r, computeStatus(r));
       if (graph.getNodeCount() == graph.getNodeCountWithStatus(IDynamicGraph.Status.FINISHED)) {
-        service.shutdown();
+        if (shutdownExecutorOnFinish) {
+          service.shutdown();
+        }
+        completed.countDown();
       } else {
         List<T> freeNodes = graph.getFreeNodes();
         if (comparator != null) {
