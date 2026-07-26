@@ -11,8 +11,10 @@ dependencies {
 
 tasks.withType<JavaCompile>().configureEach {
     options.errorprone.disableWarningsInGeneratedCode.set(true)
-    // SelfAssertion (new in Error Prone 2.x) only flags intentional trivial assertions in
-    // TestNG's sample/fixture test classes (e.g. assertThat("abc").isEqualTo("abc")), which exist
-    // solely to give the runner a passing method. Keep it off to avoid false positives on fixtures.
-    options.errorprone.disable("SelfAssertion")
+    // SelfAssertion only fires on TestNG's own sample/fixture classes, where trivial assertions
+    // such as assertThat("abc").isEqualTo("abc") exist solely to give the runner a passing method.
+    // Production code keeps the check enabled.
+    if (name.contains("Test")) {
+        options.errorprone.disable("SelfAssertion")
+    }
 }
