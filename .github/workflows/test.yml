@@ -54,15 +54,16 @@ jobs:
         with:
           website: ${{ matrix.oracle_java_website }}
           release: ${{ matrix.java_version }}
-      - name: Set up Java 21 and ${{ matrix.non_ea_java_version }}, ${{ matrix.java_distribution }}
+      - name: Set up Java ${{ matrix.non_ea_java_version }} (test) and 25 (Gradle + build), ${{ matrix.java_distribution }}
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           # Install multiple Java versions:
-          # - Test version (11, 17, 21, 25, or 26): Used to run TestNG tests
-          # - Java 21: Default for running Gradle, building TestNG, and compiling build-logic (the last one in the list becomes default)
+          # - Test version (11, 17, 21, 25, or 26): used to run TestNG tests
+          # - Java 25: runs Gradle and builds TestNG (jdkBuildVersion=25); Gradle 9 runs on JDK 25.
+          #   Kept last so it becomes JAVA_HOME. TestNG artifacts still target Java 11.
           java-version: |
             ${{ matrix.non_ea_java_version }}
-            21
+            25
           distribution: ${{ matrix.java_distribution }}
           architecture: x64
       - name: Steps to reproduce
@@ -86,7 +87,7 @@ jobs:
           properties: |
             testng.test.extra.jvmargs=${{ matrix.testExtraJvmArgs }}
             testDisableCaching=${{ matrix.testDisableCaching }}
-            jdkBuildVersion=21
+            jdkBuildVersion=25
             jdkTestVersion=${{ matrix.java_version }}
             jdkTestVendor=${{ matrix.java_vendor }}
             # We provision JDKs with GitHub Actions for caching purposes, so Gradle should rather fail in case JDK is not found
