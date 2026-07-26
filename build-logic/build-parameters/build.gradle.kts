@@ -20,7 +20,7 @@ buildParameters {
     }
     integer("jdkBuildVersion") {
         // Overridable via the root gradle.properties (single source of truth).
-        defaultValue.set(21)
+        defaultValue.set(25)
         mandatory.set(true)
         description.set("JDK version to use for building JMeter. If the value is 0, then the current Java is used. (see https://docs.gradle.org/8.0/userguide/toolchains.html#sec:consuming)")
     }
