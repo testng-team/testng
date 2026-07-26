@@ -42,7 +42,7 @@ This ensures TestNG works correctly across different environments and configurat
 │ Job 1: matrix_prep                                          │
 │                                                             │
 │  Runs: matrix.mjs                                            │
-│  Produces: JSON matrix with 7 job configurations            │
+│  Produces: JSON matrix with 8 job configurations            │
 │                                                             │
 │  Example output:                                            │
 │  {                                                          │
@@ -241,7 +241,7 @@ matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
 
 ### Output
 
-The matrix builder generates approximately 7 jobs (configurable via `MATRIX_JOBS` env var):
+The matrix builder generates approximately 8 jobs (configurable via `MATRIX_JOBS` env var):
 
 ```json
 {
@@ -276,7 +276,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      MATRIX_JOBS: 7  # Generate 7 test jobs
+      MATRIX_JOBS: 8  # Generate 8 test jobs
     steps:
       - uses: actions/checkout@v4
       - id: set-matrix
@@ -287,7 +287,7 @@ jobs:
 
 1. Checks out the repository
 2. Runs `matrix.mjs` with Node.js
-3. `matrix.mjs` generates a JSON matrix with 7 random (but guaranteed) configurations
+3. `matrix.mjs` generates a JSON matrix with 8 random (but guaranteed) configurations
 4. Outputs the matrix for the next job
 
 ### Step 2: Build Job (Runs for Each Matrix Entry)
@@ -546,7 +546,7 @@ Edit the workflow file:
 
 ```yaml
 env:
-  MATRIX_JOBS: 7  # Change this number
+  MATRIX_JOBS: 8  # Change this number
 ```
 
 Or set it in the workflow dispatch:
@@ -758,7 +758,7 @@ To see what matrix will be generated:
 
 ```bash
 cd .github/workflows
-MATRIX_JOBS=7 node matrix.mjs
+MATRIX_JOBS=8 node matrix.mjs
 ```
 
 This outputs the JSON matrix that GitHub Actions will use.
@@ -789,7 +789,7 @@ The test workflow is a sophisticated system that:
 5. **Ensures critical combinations** are always tested
 6. **Randomizes other combinations** to maximize coverage
 
-This ensures TestNG works correctly across a wide variety of environments while keeping CI time reasonable (7 jobs instead of thousands).
+This ensures TestNG works correctly across a wide variety of environments while keeping CI time reasonable (8 jobs instead of thousands).
 
 ## Complete Flow Diagram
 
@@ -814,7 +814,7 @@ Here's the complete flow from workflow trigger to test execution:
 │    │ • Applies constraints (implications, exclusions)                    │  │
 │    │ • Generates guaranteed rows for each Java version being tested      │  │
 │    │ • Fills remaining slots with random combinations                    │  │
-│    │ • Total: 7 jobs (configurable via MATRIX_JOBS)                      │  │
+│    │ • Total: 8 jobs (configurable via MATRIX_JOBS)                      │  │
 │    └─────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
 │    Output: JSON matrix                                                      │
@@ -829,7 +829,7 @@ Here's the complete flow from workflow trigger to test execution:
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 3. Build Jobs (7 jobs run in parallel)                                      │
+│ 3. Build Jobs (8 jobs run in parallel)                                      │
 │                                                                             │
 │    For each matrix entry:                                                   │
 │                                                                             │
@@ -941,7 +941,7 @@ Here's the complete flow from workflow trigger to test execution:
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ 4. Results                                                                  │
 │                                                                             │
-│    ✅ All 7 jobs passed → Workflow succeeds                                 │
+│    ✅ All 8 jobs passed → Workflow succeeds                                 │
 │    ❌ Any job failed → Workflow fails, test reports uploaded                │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
