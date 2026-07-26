@@ -16,25 +16,25 @@ This guide explains how to test publishing snapshots, releases, and artifact sig
 
 ### Required Java Version
 
-You need **Java 21** installed to run any Gradle command:
+You need **Java 25** installed to run any Gradle command:
 
 ```bash
 # Check your Java version
 java -version
-# Should show Java 21
+# Should show Java 25
 
-# If using SDKMAN (recommended - there's a .sdkmanrc file in the project)
-sdk env install  # Install the Java version specified in .sdkmanrc
-sdk env          # Use the Java version from .sdkmanrc
+# If using mise (recommended)
+mise use java@temurin-25
 
-# Or manually
-sdk use java 21.0.5-amzn
+# If using SDKMAN
+sdk install java 25.0.3-tem
+sdk use java 25.0.3-tem
 
 # If using jenv
-jenv local 21
+jenv local 25
 ```
 
-**Note:** The TestNG project includes a `.sdkmanrc` file that specifies `java=21.0.5-amzn`. If you have SDKMAN installed with `sdkman_auto_env=true` in `~/.sdkman/etc/config`, it will automatically switch to the correct Java version when you `cd` into the project directory.
+**Note:** The build reads `jdkBuildVersion` from the repository-root `gradle.properties`, which is the single source of truth for the JDK used to build TestNG.
 
 ### Optional: PGP Key for Signing Tests
 
@@ -314,11 +314,12 @@ gpg --verify \
 
 **Problem:** You're running Gradle with Java 11 or earlier.
 
-**Solution:** Use Java 21:
+**Solution:** Use Java 25:
 
 ```bash
-java -version  # Should show Java 21
-sdk use java 21.0.5-tem  # If using SDKMAN
+java -version              # Should show Java 25
+mise use java@temurin-25   # If using mise
+sdk use java 25.0.3-tem    # If using SDKMAN
 ```
 
 ### "Cannot perform signing task ... signing.secretKeyRingFile"
@@ -390,12 +391,15 @@ cat test-private-key.asc | head -5
 **Solution:** Install the required Java version:
 
 ```bash
+# Using mise
+mise use java@temurin-25
+
 # Using SDKMAN
-sdk install java 21.0.5-tem
-sdk use java 21.0.5-tem
+sdk install java 25.0.3-tem
+sdk use java 25.0.3-tem
 
 # Or set JAVA_HOME
-export JAVA_HOME=/path/to/java-21
+export JAVA_HOME=/path/to/java-25
 ```
 
 ## Quick Reference

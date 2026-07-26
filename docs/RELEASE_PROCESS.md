@@ -123,7 +123,7 @@ This is the simplest approach - artifacts are automatically published to Maven C
 The workflow will:
 
 1. ✅ **Validate Gradle wrapper** (security check)
-2. ✅ **Set up JDK 21** (required for building and nmcp plugin)
+2. ✅ **Set up JDK 25** (required for building and nmcp plugin)
 3. ✅ **Build all artifacts** (testng.jar, sources, javadoc)
 4. ✅ **Sign artifacts** with PGP key
 5. ✅ **Upload to Central Portal**
@@ -183,7 +183,7 @@ This approach uploads artifacts to Central Portal but waits for you to manually 
 The workflow will:
 
 1. ✅ **Validate Gradle wrapper** (security check)
-2. ✅ **Set up JDK 21** (required for building and nmcp plugin)
+2. ✅ **Set up JDK 25** (required for building and nmcp plugin)
 3. ✅ **Build all artifacts** (testng.jar, sources, javadoc)
 4. ✅ **Sign artifacts** with PGP key
 5. ✅ **Upload to Central Portal**
@@ -415,9 +415,9 @@ If there are documentation changes:
 
 **Problem**: The nmcp plugin requires Java 17 or higher.
 
-**Solution**: The workflow already uses JDK 21. If you see this error, check:
+**Solution**: The workflow already uses JDK 25. If you see this error, check:
 
-- The workflow file uses `java-version: 21`
+- The workflow file uses `java-version: 25`
 - The setup-java step completed successfully
 
 ### Workflow Fails: "Authentication failed"
