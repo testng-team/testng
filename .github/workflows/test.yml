@@ -27,7 +27,7 @@ jobs:
       # Ask matrix.mjs to produce 7 jobs
       MATRIX_JOBS: 7
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 1
       - id: set-matrix
@@ -45,7 +45,7 @@ jobs:
     env:
       TZ: ${{ matrix.tz }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 10
       - name: Set up Java ${{ matrix.java_version }}, oracle
@@ -55,7 +55,7 @@ jobs:
           website: ${{ matrix.oracle_java_website }}
           release: ${{ matrix.java_version }}
       - name: Set up Java 21 and ${{ matrix.non_ea_java_version }}, ${{ matrix.java_distribution }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           # Install multiple Java versions:
           # - Test version (11, 17, 21, 25, or 26): Used to run TestNG tests
@@ -66,7 +66,7 @@ jobs:
           distribution: ${{ matrix.java_distribution }}
           architecture: x64
       - name: Steps to reproduce
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             console.log('The following command might help reproducing CI results, use Java ${{ matrix.java_version }}')
@@ -76,7 +76,7 @@ jobs:
         run: echo "unique_id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Test
         id: run_test_cases
-        uses: burrunan/gradle-cache-action@v3
+        uses: burrunan/gradle-cache-action@4b67497abd37a511d6c1dc6299bdd84ff39f7bf5 # v3
         with:
           job-id: jdk${{ matrix.jdk.version }}
           arguments: |
@@ -93,7 +93,7 @@ jobs:
             org.gradle.java.installations.auto-download=false
       - name: Upload build reports
         if: ${{ failure() && steps.run_test_cases.outcome == 'failure' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.unique_id }}
           path: testng-core/build/reports/tests/test/**
