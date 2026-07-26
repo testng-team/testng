@@ -9,9 +9,9 @@ plugins {
 
 plugins.withId("signing") {
     configure<SigningExtension> {
-        val signingKeyId: String? by project
-        val signingKey: String? by project
-        val signingPassword: String? by project
+        val signingKeyId = project.findProperty("signingKeyId") as String?
+        val signingKey = project.findProperty("signingKey") as String?
+        val signingPassword = project.findProperty("signingPassword") as String?
 
         // Support both project properties and environment variables for CI/CD
         val pgpKey = signingKey ?: System.getenv("SIGNING_PGP_PRIVATE_KEY")

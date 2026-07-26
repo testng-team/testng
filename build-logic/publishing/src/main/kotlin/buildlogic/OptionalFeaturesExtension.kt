@@ -48,8 +48,7 @@ abstract class OptionalFeaturesExtension(private val project: Project) {
 
     fun create(name: String, builder: OptionalFeatureBuilder.() -> Unit) {
         project.the<JavaPluginExtension>().registerFeature(name) {
-            val sourceSets: SourceSetContainer by project
-            usingSourceSet(sourceSets["main"])
+            usingSourceSet(project.the<SourceSetContainer>()["main"])
         }
 
         val declaredApi = project.configurations.create("${name}DeclaredApi") {
