@@ -24,8 +24,9 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      # Ask matrix.mjs to produce 7 jobs
-      MATRIX_JOBS: 7
+      # Ask matrix.mjs to produce 8 jobs. The java_version axis has 7 values (11, 17, 21, 25, 26
+      # and the EA 27/28), so this leaves one row of slack for the other axes to pair against.
+      MATRIX_JOBS: 8
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
