@@ -138,20 +138,25 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         ParameterBag bag =
             handler.createParameters(
                 testMethod, Maps.newHashMap(), Maps.newHashMap(), context, instance);
-        Iterator<Object[]> allParamValues = Objects.requireNonNull(bag.parameterHolder).parameters;
-        Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
-        for (Object[] next : allParameterValues) {
-          if (next == null) {
-            continue;
+        ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
+        try {
+          Iterator<Object[]> allParamValues = parameterHolder.parameters;
+          Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
+          for (Object[] next : allParameterValues) {
+            if (next == null) {
+              continue;
+            }
+            Method m = testMethod.getConstructorOrMethod().getMethod();
+            Object[] parameterValues = Parameters.injectParameters(next, m, context);
+            ITestResult result =
+                registerSkippedTestResult(
+                    testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
+            result.setParameters(parameterValues);
+            resultProcessor.accept(result);
+            results.add(result);
           }
-          Method m = testMethod.getConstructorOrMethod().getMethod();
-          Object[] parameterValues = Parameters.injectParameters(next, m, context);
-          ITestResult result =
-              registerSkippedTestResult(
-                  testMethod, System.currentTimeMillis(), new Throwable(okToProceed));
-          result.setParameters(parameterValues);
-          resultProcessor.accept(result);
-          results.add(result);
+        } finally {
+          parameterHolder.close();
         }
       } else {
         ITestResult result =
@@ -259,14 +264,18 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
           continue;
         }
         if (bag.parameterHolder != null) {
-          Iterator<Object[]> it = bag.parameterHolder.parameters;
-          int targetIndex = arguments.getParametersIndex();
-          for (int i = 0; it.hasNext(); i++) {
-            Object[] current = it.next();
-            if (i == targetIndex) {
-              parameterValues = current;
-              break;
+          try {
+            Iterator<Object[]> it = bag.parameterHolder.parameters;
+            int targetIndex = arguments.getParametersIndex();
+            for (int i = 0; it.hasNext(); i++) {
+              Object[] current = it.next();
+              if (i == targetIndex) {
+                parameterValues = current;
+                break;
+              }
             }
+          } finally {
+            bag.parameterHolder.close();
           }
         }
       }
@@ -1036,8 +1045,8 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         return invocationCount.get();
       }
 
-      Iterator<Object[]> allParameterValues =
-          Objects.requireNonNull(bag.parameterHolder).parameters;
+      ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
+      Iterator<Object[]> allParameterValues = parameterHolder.parameters;
 
       try {
 
@@ -1075,7 +1084,12 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
         result.add(r);
         runTestResultListener(r);
         m_notifier.addFailedTest(arguments.getTestMethod(), r);
-      } // catch
+      } finally {
+        // The runners above consume the iterator synchronously (runInParallel blocks until every
+        // invocation has completed), so by this point the data provider has been fully drained or
+        // abandoned and it is safe to release any resource backing it.
+        parameterHolder.close();
+      }
       return invocationCount.get();
     }
   }

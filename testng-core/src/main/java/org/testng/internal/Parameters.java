@@ -24,6 +24,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.collections.CloseableIterator;
 import org.testng.internal.invokers.MethodInvocationHelper;
 import org.testng.internal.invokers.ParameterHolder;
 import org.testng.internal.invokers.ParameterHolder.ParameterOrigin;
@@ -801,7 +802,7 @@ public class Parameters {
         retry = (IRetryDataProvider) dispenser.dispense(attributes);
       }
 
-      Iterator<Object[]> initParams = null;
+      CloseableIterator<Object[]> initParams = null;
       RuntimeException thrownException;
       do {
 
@@ -858,6 +859,9 @@ public class Parameters {
 
       Iterator<Object[]> filteredParameters =
           new FilteredParameters(initParams, testMethod, dataProviderMethod.getName(), allIndices);
+      // Preserve a handle on the original closeable source before it is wrapped by
+      // FilteredParameters and any interceptors, so the resource can be released later.
+      CloseableIterator<Object[]> closeableSource = initParams;
 
       testMethod.setMoreInvocationChecker(filteredParameters::hasNext);
       for (IDataProviderInterceptor interceptor : holder.getInterceptors()) {
@@ -875,7 +879,10 @@ public class Parameters {
       }
 
       return new ParameterHolder(
-          filteredParameters, ParameterOrigin.ORIGIN_DATA_PROVIDER, dataProviderMethod);
+          filteredParameters,
+          ParameterOrigin.ORIGIN_DATA_PROVIDER,
+          dataProviderMethod,
+          closeableSource);
     } else if (methodParams.xmlParameters.isEmpty()) {
       origin = ParameterOrigin.NATIVE;
     } else {

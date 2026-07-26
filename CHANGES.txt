@@ -1,5 +1,6 @@
 Current (7.13.0)
 Fixed: GITHUB-3242: use-global-thread-pool no longer refuses to start a suite when the number of data-driven tests reaches thread-count (Krishnan Mahadevan)
+New: GITHUB-3290: Support data providers that return Stream<Object[]> or Stream<Object>; the stream is consumed lazily and closed once its rows have been consumed (Krishnan Mahadevan)
 Fixed: GITHUB-426: firstTimeOnly @BeforeMethod / lastTimeOnly @AfterMethod were not run as a barrier around a parallel invocationCount thread pool (firstTimeOnly could run concurrently with test invocations, lastTimeOnly ran once per invocation instead of once)
 Fixed: Time-out now measures a method's own execution time instead of the wall-clock time since dispatch, so thread-pool start-up and scheduling overhead under load no longer cause spurious time-outs; a method that never starts now reports an actionable infrastructure-starvation message
 Fixed: GITHUB-3166: Skipped configuration methods not receiving the causal throwable before configuration listeners are invoked (Anmol Jain)
