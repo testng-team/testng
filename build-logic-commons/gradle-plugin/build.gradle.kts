@@ -21,7 +21,9 @@ val rootGradleProperties = Properties().apply {
     val f = rootDir.resolveSibling("gradle.properties")
     if (f.exists()) f.inputStream().use { load(it) }
 }
+// jdkBuildVersion=0 is the documented way to say "use whatever JVM is running Gradle".
 val buildJdkVersion = (rootGradleProperties.getProperty("jdkBuildVersion") ?: "25").toInt()
+    .takeIf { it != 0 } ?: JavaVersion.current().majorVersion.toInt()
 
 // We need a version supported by the current JVM and by the Kotlin Gradle plugin: use our build JDK,
 // or fall back to 17 when running on an older JVM. Note this is the JVM target of the build scripts
