@@ -30,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          persist-credentials: false
           fetch-depth: 1
       - id: set-matrix
         run: |
@@ -48,6 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          persist-credentials: false
           fetch-depth: 10
       - name: Set up Java ${{ matrix.java_version }}, oracle
         if: ${{ matrix.oracle_java_website != '' }}
