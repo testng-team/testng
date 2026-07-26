@@ -13,11 +13,13 @@ buildParameters {
         description.set("Add mavenLocal() to repositories")
     }
     integer("targetJavaVersion") {
+        // Overridable via the root gradle.properties (single source of truth).
         defaultValue.set(11)
         mandatory.set(true)
         description.set("Java version for source and target compatibility")
     }
     integer("jdkBuildVersion") {
+        // Overridable via the root gradle.properties (single source of truth).
         defaultValue.set(21)
         mandatory.set(true)
         description.set("JDK version to use for building JMeter. If the value is 0, then the current Java is used. (see https://docs.gradle.org/8.0/userguide/toolchains.html#sec:consuming)")

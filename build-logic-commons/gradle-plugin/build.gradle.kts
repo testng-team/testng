@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.gradle.kotlin.dsl.support.expectedKotlinDslPluginsVersion
 
 plugins {
@@ -14,9 +15,18 @@ dependencies {
     implementation("org.gradle.kotlin.kotlin-dsl:org.gradle.kotlin.kotlin-dsl.gradle.plugin:$expectedKotlinDslPluginsVersion")
 }
 
-// We need to figure out a version that is supported by the current JVM, and by the Kotlin Gradle plugin
-// We use Java 21 (our build JDK) or fall back to 11 (our target compatibility) if running on an older JVM
-listOf(21, 11)
+// The build JDK is defined once in the repository-root gradle.properties (single source of truth).
+// Included builds do not inherit the root gradle.properties, so we read it from disk here.
+val rootGradleProperties = Properties().apply {
+    val f = rootDir.resolveSibling("gradle.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val buildJdkVersion = (rootGradleProperties.getProperty("jdkBuildVersion") ?: "21").toInt()
+
+// We need a version supported by the current JVM and by the Kotlin Gradle plugin: use our build JDK,
+// or fall back to 17 when running on an older JVM. Note this is the JVM target of the build scripts
+// themselves, which is unrelated to TestNG's own targetJavaVersion.
+listOf(buildJdkVersion, 17)
     .firstOrNull { JavaVersion.toVersion(it) <= JavaVersion.current() }
     ?.let { buildScriptJvmTarget ->
         java {
