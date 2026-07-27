@@ -557,7 +557,7 @@ on:
     inputs:
       matrix_jobs:
         description: 'Number of matrix jobs to generate'
-        default: '7'
+        default: '8'
 ```
 
 ### Adding a New Java Version

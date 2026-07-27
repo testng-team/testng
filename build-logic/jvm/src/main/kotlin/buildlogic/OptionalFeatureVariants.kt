@@ -3,6 +3,7 @@ package buildlogic
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ConsumableConfiguration
 import org.gradle.api.attributes.Bundling
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
@@ -17,7 +18,8 @@ import org.gradle.kotlin.dsl.named
  * Declares one consumable variant of an optional feature, replacing what
  * `registerFeature(name) { usingSourceSet(sourceSets["main"]) }` used to emit.
  *
- * Gradle 10 removes that form, and the prescribed replacement -- a source set of its own -- does
+ * That form is deprecated since Gradle 8 and becomes an error in Gradle 10, and the prescribed
+ * replacement -- a source set of its own -- does
  * not fit what these features are for: they carry no code, only extra dependencies attached to the
  * *main* artifact. A dedicated source set would publish an empty jar under the feature capability
  * and take the dependencies off main's compile classpath.
@@ -31,7 +33,7 @@ fun Project.optionalFeatureElements(
     targetJvmVersion: Int,
     artifact: TaskProvider<out Jar>? = null,
     extendsFrom: List<Configuration> = emptyList(),
-): NamedDomainObjectProvider<out Configuration> {
+): NamedDomainObjectProvider<ConsumableConfiguration> {
     // Captured here on purpose: inside the configuration block, 'name' is the configuration's.
     val featureCapability = "$group:$name-$featureName:$version"
     val usageAttribute = if (usage == "Api") Usage.JAVA_API else Usage.JAVA_RUNTIME
@@ -59,16 +61,16 @@ fun Project.optionalFeatureElements(
  * the feature's dependencies land in the pom marked `<optional>true</optional>`.
  */
 fun Project.publishOptionalFeature(
-    apiElements: NamedDomainObjectProvider<out Configuration>,
-    runtimeElements: NamedDomainObjectProvider<out Configuration>,
+    apiElements: NamedDomainObjectProvider<ConsumableConfiguration>,
+    runtimeElements: NamedDomainObjectProvider<ConsumableConfiguration>,
 ) {
     plugins.withId("maven-publish") {
         components.named<AdhocComponentWithVariants>("java") {
-            addVariantsFromConfiguration(apiElements.get()) {
+            addVariantsFromConfiguration(apiElements) {
                 mapToMavenScope("compile")
                 mapToOptional()
             }
-            addVariantsFromConfiguration(runtimeElements.get()) {
+            addVariantsFromConfiguration(runtimeElements) {
                 mapToMavenScope("runtime")
                 mapToOptional()
             }

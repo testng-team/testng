@@ -73,7 +73,8 @@ abstract class OptionalFeaturesExtension(private val project: Project) {
 
         // The variants carry no file of their own: the feature contributes dependencies only, and
         // the merged jar is attached later as the main artifact. They are declared by hand because
-        // Gradle 10 removes registerFeature(name) { usingSourceSet(main) }.
+        // registerFeature(name) { usingSourceSet(main) } is deprecated since Gradle 8 and becomes
+        // an error in Gradle 10.
         // Not JavaPluginExtension.targetCompatibility: the build sets --release instead, so that
         // reports the toolchain version (25) rather than the bytecode target.
         val targetJvmVersion = project.the<BuildParametersExtension>().targetJavaVersion
