@@ -4,8 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.testng.IConfigurable;
 import org.testng.IConfigureCallBack;
 import org.testng.IHookCallBack;
@@ -35,9 +34,10 @@ import org.testng.internal.MethodHelper;
 import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.ArrayIterator;
+import org.testng.internal.collections.CloseableIterator;
 import org.testng.internal.collections.OneToTwoDimArrayIterator;
-import org.testng.internal.collections.OneToTwoDimIterator;
 import org.testng.internal.collections.Pair;
+import org.testng.internal.collections.ResourceAwareIterator;
 import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.TestNGThreadFactory;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -163,7 +163,7 @@ public class MethodInvocationHelper {
   }
 
   @SuppressWarnings("unchecked")
-  public static Iterator<Object[]> invokeDataProvider(
+  public static CloseableIterator<Object[]> invokeDataProvider(
       Object instance,
       Method dataProvider,
       ITestNGMethod method,
@@ -178,35 +178,26 @@ public class MethodInvocationHelper {
     }
     // If it returns an Object[][] or Object[], convert it to an Iterator<Object[]>
     if (result instanceof Object[][]) {
-      return new ArrayIterator((Object[][]) result);
+      return new ResourceAwareIterator<>(new ArrayIterator((Object[][]) result), null);
     } else if (result instanceof Object[]) {
-      return new OneToTwoDimArrayIterator((Object[]) result);
+      return new ResourceAwareIterator<>(new OneToTwoDimArrayIterator((Object[]) result), null);
     } else if (result instanceof Iterator) {
-      Type returnType = dataProvider.getGenericReturnType();
-      if (returnType instanceof ParameterizedType) {
-        ParameterizedType contentType = (ParameterizedType) returnType;
-        Type actualType = contentType.getActualTypeArguments()[0];
-        Class<?> type;
-        if (actualType instanceof ParameterizedType) {
-          type = (Class<?>) ((ParameterizedType) actualType).getActualTypeArguments()[0];
-        } else {
-          type = (Class<?>) actualType;
-        }
-        if (type.isArray()) {
-          return (Iterator<Object[]>) result;
-        } else {
-          return new OneToTwoDimIterator((Iterator<Object>) result);
-        }
-      } else {
-        // Raw Iterator, we expect user provides the expected type
-        return (Iterator<Object[]>) result;
-      }
+      return ResourceAwareIterator.forDataProvider(
+          (Iterator<Object>) result, dataProvider.getGenericReturnType(), null);
+    } else if (result instanceof Stream) {
+      // A Stream is AutoCloseable and must be released once the rows have been consumed, so keep a
+      // handle on it and hand it to the iterator as the resource to close. Iteration stays lazy: we
+      // drive the Stream through its own iterator() rather than collecting it eagerly.
+      Stream<Object> stream = (Stream<Object>) result;
+      return ResourceAwareIterator.forDataProvider(
+          stream.iterator(), dataProvider.getGenericReturnType(), stream);
     }
     throw new TestNGException(
         "Data Provider "
             + dataProvider
             + " must return"
-            + " either Object[][] or Object[] or Iterator<Object[]> or Iterator<Object>, not "
+            + " either Object[][] or Object[] or Iterator<Object[]> or Iterator<Object>"
+            + " or Stream<Object[]> or Stream<Object>, not "
             + dataProvider.getReturnType());
   }
 

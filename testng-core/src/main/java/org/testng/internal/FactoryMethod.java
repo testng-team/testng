@@ -23,6 +23,7 @@ import org.testng.annotations.IListenersAnnotation;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
+import org.testng.internal.invokers.ParameterHolder;
 import org.testng.xml.XmlTest;
 
 /** This class represents a method annotated with @Factory */
@@ -157,19 +158,19 @@ public class FactoryMethod extends BaseTestMethod {
             m_testContext,
             null /* testResult */);
 
-    Iterator<Object[]> parameterIterator =
+    ParameterHolder parameterHolder =
         Parameters.handleParameters(
-                m_objectFactory,
-                this,
-                allParameterNames,
-                m_instance,
-                methodParameters,
-                m_testContext.getCurrentXmlTest().getSuite(),
-                m_annotationFinder,
-                null /* fedInstance */,
-                this.holder,
-                "@Factory")
-            .parameters;
+            m_objectFactory,
+            this,
+            allParameterNames,
+            m_instance,
+            methodParameters,
+            m_testContext.getCurrentXmlTest().getSuite(),
+            m_annotationFinder,
+            null /* fedInstance */,
+            this.holder,
+            "@Factory");
+    Iterator<Object[]> parameterIterator = parameterHolder.parameters;
 
     try {
       List<Integer> indices = factoryAnnotation.getIndices();
@@ -224,6 +225,10 @@ public class FactoryMethod extends BaseTestMethod {
               + com.getName()
               + "() threw an exception",
           t);
+    } finally {
+      // Release any resource backing a lazily-loaded data provider (for example a Stream) once the
+      // factory has consumed the rows it needs.
+      parameterHolder.close();
     }
 
     return result.toArray(new IParameterInfo[0]);

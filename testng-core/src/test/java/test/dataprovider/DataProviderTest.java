@@ -69,6 +69,22 @@ import test.dataprovider.issue3242.SharedPoolSecondTestSample;
 import test.dataprovider.issue3242.SkippedDataDrivenSample;
 import test.dataprovider.issue3263.FirstSubclassTestSample;
 import test.dataprovider.issue3263.SecondSubclassTestSample;
+import test.dataprovider.issue3290.DrainingDataProviderInterceptor;
+import test.dataprovider.issue3290.EmptyStreamDataProviderSample;
+import test.dataprovider.issue3290.FileBackedStreamDataProviderSample;
+import test.dataprovider.issue3290.ParallelConsumerOfParallelStreamSample;
+import test.dataprovider.issue3290.ParallelStreamDataProviderSample;
+import test.dataprovider.issue3290.RawStreamDataProviderSample;
+import test.dataprovider.issue3290.SequentialConsumerOfParallelStreamSample;
+import test.dataprovider.issue3290.StreamClosingDataProviderSample;
+import test.dataprovider.issue3290.StreamDataProviderSample;
+import test.dataprovider.issue3290.StreamFactoryDataProviderSample;
+import test.dataprovider.issue3290.StreamIndicesSample;
+import test.dataprovider.issue3290.StreamLazyLoadingDataProviderSample;
+import test.dataprovider.issue3290.StreamOfListRowsDataProviderSample;
+import test.dataprovider.issue3290.StreamRetryDataProviderSample;
+import test.dataprovider.issue3290.ThrowingAfterExecutionListener;
+import test.dataprovider.issue3290.UnsupportedReturnTypeDataProviderSample;
 
 public class DataProviderTest extends SimpleBaseTest {
 
@@ -192,6 +208,209 @@ public class DataProviderTest extends SimpleBaseTest {
             "testIterator(foo)", "testIterator(bar)",
             "testStaticArray(foo)", "testStaticArray(bar)",
             "testStaticIterator(foo)", "testStaticIterator(bar)");
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldWork() {
+    InvokedMethodNameListener listener = run(StreamDataProviderSample.class);
+
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "testOneDimStream(foo)", "testOneDimStream(bar)",
+            "testStaticOneDimStream(foo)", "testStaticOneDimStream(bar)",
+            "testStaticStream(Jack,5)", "testStaticStream(Joe,10)",
+            "testStream(Jack,5)", "testStream(Joe,10)");
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldBeClosedAfterConsumption() {
+    StreamClosingDataProviderSample.CLOSE_COUNT.set(0);
+
+    InvokedMethodNameListener listener = run(StreamClosingDataProviderSample.class);
+
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("testMethod(Jack,5)", "testMethod(Joe,10)");
+    assertThat(StreamClosingDataProviderSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void resourceBackedStreamDataProviderShouldWorkAndBeClosed() {
+    FileBackedStreamDataProviderSample.CLOSE_COUNT.set(0);
+
+    InvokedMethodNameListener listener = run(FileBackedStreamDataProviderSample.class);
+
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly("testMethod(Jack,5)", "testMethod(Joe,10)");
+    assertThat(FileBackedStreamDataProviderSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldBeClosedEvenWhenInterceptorReplacesIterator() {
+    StreamClosingDataProviderSample.CLOSE_COUNT.set(0);
+
+    TestNG tng = create(StreamClosingDataProviderSample.class);
+    tng.addListener(new DrainingDataProviderInterceptor());
+    InvokedMethodNameListener listener = run(false, tng);
+
+    // The interceptor drains the stream-backed iterator, drops the first row and hands back a
+    // brand-new iterator; the stream must still be closed exactly once.
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testMethod(Joe,10)");
+    assertThat(StreamClosingDataProviderSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldBeClosedWhenUsedByFactory() {
+    StreamFactoryDataProviderSample.CLOSE_COUNT.set(0);
+    StreamFactoryDataProviderSample.RECEIVED.clear();
+
+    InvokedMethodNameListener listener = run(StreamFactoryDataProviderSample.class);
+
+    // The factory produces one instance per stream row; each instance runs testMethod once.
+    assertThat(listener.getSucceedMethodNames()).containsExactly("testMethod", "testMethod");
+    // Both rows created an instance, and each row's argument was forwarded to its instance.
+    assertThat(StreamFactoryDataProviderSample.RECEIVED).containsExactlyInAnyOrder(1, 2);
+    assertThat(StreamFactoryDataProviderSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamShouldBeClosedWhenParameterSetupFailsAfterDataProviderExecution() {
+    StreamClosingDataProviderSample.CLOSE_COUNT.set(0);
+
+    TestNG tng = create(StreamClosingDataProviderSample.class);
+    tng.addListener(new ThrowingAfterExecutionListener());
+    run(false, tng);
+
+    // The listener throws after the data provider was invoked but before a ParameterHolder takes
+    // ownership of the source; the stream must still be closed rather than leaked.
+    assertThat(StreamClosingDataProviderSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldBeClosedOnEveryRetryReInvocation() {
+    StreamRetryDataProviderSample.OPEN_COUNT.set(0);
+    StreamRetryDataProviderSample.CLOSE_COUNT.set(0);
+
+    run(StreamRetryDataProviderSample.class);
+
+    // cacheDataForTestRetries=false re-invokes the data provider on retry, and that path only
+    // consumes the stream up to the failing index before breaking. Every stream handed out - the
+    // initial one and each re-invocation - must still be closed.
+    assertThat(StreamRetryDataProviderSample.OPEN_COUNT.get()).isGreaterThan(1);
+    assertThat(StreamRetryDataProviderSample.CLOSE_COUNT)
+        .hasValue(StreamRetryDataProviderSample.OPEN_COUNT.get());
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldBeConsumedLazily() {
+    StreamLazyLoadingDataProviderSample.EVENTS.clear();
+
+    run(StreamLazyLoadingDataProviderSample.class);
+
+    // If the stream were drained up front the events would be all "produced:" then all "consumed:".
+    // Lazy consumption interleaves them, one row produced right before it is consumed.
+    assertThat(StreamLazyLoadingDataProviderSample.EVENTS)
+        .containsExactly(
+            "produced:a", "consumed:a",
+            "produced:b", "consumed:b",
+            "produced:c", "consumed:c");
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamDataProviderShouldHonourIndices() {
+    InvokedMethodNameListener listener = run(StreamIndicesSample.class);
+
+    assertThat(listener.getSucceedMethodNames()).containsExactly("indicesShouldWork(3)");
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void emptyStreamDataProviderShouldResultInNoInvocations() {
+    InvokedMethodNameListener listener = run(EmptyStreamDataProviderSample.class);
+
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSkippedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).isEmpty();
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void streamOfListRowsShouldDeliverEachListAsASingleParameter() {
+    InvokedMethodNameListener listener = run(StreamOfListRowsDataProviderSample.class);
+
+    // Stream<List<Object[]>>: each List is one parameter, so there are exactly two invocations and
+    // neither List is flattened into an Object[] row.
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).hasSize(2);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void rawStreamDataProviderShouldWork() {
+    InvokedMethodNameListener listener = run(RawStreamDataProviderSample.class);
+
+    assertThat(listener.getSucceedMethodNames())
+        .containsExactly(
+            "testStaticStream(foo)", "testStaticStream(bar)",
+            "testStream(foo)", "testStream(bar)");
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void parallelStreamDataProviderShouldWorkAndBeClosed() {
+    ParallelStreamDataProviderSample.CLOSE_COUNT.set(0);
+    List<String> expected = new ArrayList<>();
+    for (int i = 1; i <= ParallelStreamDataProviderSample.ROWS; i++) {
+      expected.add("checkParallel(" + i + ")");
+    }
+
+    InvokedMethodNameListener listener = run(ParallelStreamDataProviderSample.class);
+
+    // Every row must be delivered exactly once (no loss, no duplicates) and the stream closed once.
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrderElementsOf(expected);
+    assertThat(ParallelStreamDataProviderSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void sequentialTestShouldConsumeParallelStreamFullyAndCloseIt() {
+    SequentialConsumerOfParallelStreamSample.CLOSE_COUNT.set(0);
+    List<String> expected = new ArrayList<>();
+    for (int i = 1; i <= SequentialConsumerOfParallelStreamSample.ROWS; i++) {
+      expected.add("test(" + i + ")");
+    }
+
+    InvokedMethodNameListener listener = run(SequentialConsumerOfParallelStreamSample.class);
+
+    // A parallel stream is driven through its iterator, so every row is delivered exactly once (no
+    // loss, no duplicates) and the stream is closed once.
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrderElementsOf(expected);
+    assertThat(SequentialConsumerOfParallelStreamSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void parallelTestShouldConsumeParallelStreamFullyAndCloseIt() {
+    ParallelConsumerOfParallelStreamSample.CLOSE_COUNT.set(0);
+    List<String> expected = new ArrayList<>();
+    for (int i = 1; i <= ParallelConsumerOfParallelStreamSample.ROWS; i++) {
+      expected.add("test(" + i + ")");
+    }
+
+    InvokedMethodNameListener listener = run(ParallelConsumerOfParallelStreamSample.class);
+
+    // A parallel data provider consuming a parallel stream: rows are pulled under TestNG's own
+    // synchronization, so every row is still delivered exactly once and the stream closed once.
+    assertThat(listener.getFailedMethodNames()).isEmpty();
+    assertThat(listener.getSucceedMethodNames()).containsExactlyInAnyOrderElementsOf(expected);
+    assertThat(ParallelConsumerOfParallelStreamSample.CLOSE_COUNT).hasValue(1);
+  }
+
+  @Test(description = "GITHUB-3290")
+  public void unsupportedReturnTypeErrorMessageShouldMentionStream() {
+    InvokedMethodNameListener listener = run(UnsupportedReturnTypeDataProviderSample.class);
+
+    Throwable throwable = listener.getResult("testMethod").getThrowable();
+    assertThat(throwable).isInstanceOf(TestNGException.class);
+    assertThat(throwable)
+        .hasMessageContaining("Stream<Object[]>")
+        .hasMessageContaining("Stream<Object>");
   }
 
   @Test
