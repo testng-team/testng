@@ -123,7 +123,7 @@ val mergedJavadoc = tasks.register<Javadoc>("mergedJavadoc") {
     group = LifecycleBasePlugin.BUILD_GROUP
     setSource(sourcesToMerge.incoming.artifactView { lenient(true) }.files)
     include("**/*.java")
-    setDestinationDir(reporting.file("mergedJavadoc"))
+    setDestinationDir(reporting.baseDirectory.dir("mergedJavadoc").get().asFile)
     classpath = shadedDependencyJavadocClasspath
 }
 
