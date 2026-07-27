@@ -87,3 +87,55 @@ tasks.mergedJar {
         )
     }
 }
+
+// The published pom is assembled from feature variants and a shaded jar, so a wiring mistake
+// silently changes what consumers resolve. Pin the expected set rather than re-checking by hand.
+// Versions are ignored on purpose: dependency bumps should not require touching this list.
+val verifyPublishedPomDependencies = tasks.register("verifyPublishedPomDependencies") {
+    description = "Verifies the published pom declares exactly the expected dependencies"
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    val pomFile = tasks.named<GenerateMavenPom>("generatePomFileForMavenPublication")
+        .map { it.destination }
+    inputs.file(pomFile)
+
+    val expected = listOf(
+        "com.google.inject:guice scope=compile optional=true",
+        "org.jcommander:jcommander scope=compile optional=false",
+        "org.slf4j:slf4j-api scope=compile optional=false",
+        "org.testng:testng-asserts scope=compile optional=false",
+        "org.webjars:jquery scope=runtime optional=false",
+        "org.yaml:snakeyaml scope=runtime optional=true",
+    ).sorted()
+
+    doLast {
+        val pom = groovy.xml.XmlParser().parse(pomFile.get())
+        // Only the project-level <dependencies>, not the ones under <dependencyManagement>
+        val dependencies = (pom.get("dependencies") as groovy.util.NodeList)
+            .filterIsInstance<groovy.util.Node>()
+            .flatMap { (it.get("dependency") as groovy.util.NodeList).filterIsInstance<groovy.util.Node>() }
+
+        fun groovy.util.Node.childText(tag: String): String? =
+            (get(tag) as groovy.util.NodeList).filterIsInstance<groovy.util.Node>()
+                .firstOrNull()?.text()?.trim()
+
+        val actual = dependencies.map {
+            "${it.childText("groupId")}:${it.childText("artifactId")}" +
+                " scope=${it.childText("scope") ?: "compile"}" +
+                " optional=${it.childText("optional") ?: "false"}"
+        }.sorted()
+
+        if (actual != expected) {
+            throw GradleException(
+                "Published pom dependencies changed.\n" +
+                    "Expected:\n  ${expected.joinToString("\n  ")}\n" +
+                    "Actual:\n  ${actual.joinToString("\n  ")}\n" +
+                    "Update the expected list in testng-build.gradle.kts if this is intended."
+            )
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(verifyPublishedPomDependencies)
+}
