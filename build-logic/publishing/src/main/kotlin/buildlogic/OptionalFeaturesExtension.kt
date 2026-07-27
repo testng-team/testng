@@ -1,17 +1,14 @@
 package buildlogic
 
+import buildparameters.BuildParametersExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.artifacts.result.ResolvedVariantResult
 import org.gradle.api.attributes.Usage
-import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.the
 
 /**
@@ -47,10 +44,6 @@ abstract class OptionalFeaturesExtension(private val project: Project) {
     }
 
     fun create(name: String, builder: OptionalFeatureBuilder.() -> Unit) {
-        project.the<JavaPluginExtension>().registerFeature(name) {
-            usingSourceSet(project.the<SourceSetContainer>()["main"])
-        }
-
         val declaredApi = project.configurations.create("${name}DeclaredApi") {
             description = "Api dependencies for feature $name"
             isCanBeResolved = false
@@ -78,23 +71,22 @@ abstract class OptionalFeaturesExtension(private val project: Project) {
         project.configurations["shadedDependencyFullRuntimeClasspath"]
             .extendsFrom(declaredRuntime)
 
-        // By default Gradle adds the jar as artifact, however, we won't need it
-        // We'll put merged jar later as a main artifact
-        project.configurations {
-            get("${name}ApiElements").apply {
-                // This effectively adds "optional" pom dependencies for scope=compile
-                extendsFrom(project.firstLayerDependencies(Usage.JAVA_API, declaredApi))
-                artifacts.clear()
-                // The feature do not provide their own classes or resources
-                // All the feature resources would come from the dependencies
-                outgoing.variants.removeIf { it.name == "classes" || it.name == "resources" }
-            }
-            get("${name}RuntimeElements").apply {
-                // This effectively adds "optional" pom dependencies for scope=runtime
-                extendsFrom(project.firstLayerDependencies(Usage.JAVA_RUNTIME, declaredRuntime))
-                artifacts.clear()
-                outgoing.variants.removeIf { it.name == "classes" || it.name == "resources" }
-            }
-        }
+        // The variants carry no file of their own: the feature contributes dependencies only, and
+        // the merged jar is attached later as the main artifact. They are declared by hand because
+        // Gradle 10 removes registerFeature(name) { usingSourceSet(main) }.
+        // Not JavaPluginExtension.targetCompatibility: the build sets --release instead, so that
+        // reports the toolchain version (25) rather than the bytecode target.
+        val targetJvmVersion = project.the<BuildParametersExtension>().targetJavaVersion
+        val apiElements = project.optionalFeatureElements(
+            name, "Api", targetJvmVersion,
+            // This effectively adds "optional" pom dependencies for scope=compile
+            extendsFrom = listOf(project.firstLayerDependencies(Usage.JAVA_API, declaredApi)),
+        )
+        val runtimeElements = project.optionalFeatureElements(
+            name, "Runtime", targetJvmVersion,
+            // This effectively adds "optional" pom dependencies for scope=runtime
+            extendsFrom = listOf(project.firstLayerDependencies(Usage.JAVA_RUNTIME, declaredRuntime)),
+        )
+        project.publishOptionalFeature(apiElements, runtimeElements)
     }
 }
