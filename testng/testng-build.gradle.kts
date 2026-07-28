@@ -11,7 +11,7 @@ java {
     // third-party dependencies would be left as regular dependencies
     optionalFeatures {
         shadedDependenciesFilter.set {
-            it.owner.let { id -> id is ProjectComponentIdentifier && id.build.isCurrentBuild }
+            it.owner.let { id -> id is ProjectComponentIdentifier && id.build.buildPath == ":" }
         }
 
         create("guice") {
@@ -35,8 +35,8 @@ tasks.mergedJar {
     manifest {
         // providers.gradleProperty does not work
         // see https://github.com/gradle/gradle/issues/14972
-        val name = rootProject.findProperty("project.name")
-        val vendor = rootProject.findProperty("project.vendor.name")
+        val name = rootProject.property("project.name").toString()
+        val vendor = rootProject.property("project.vendor.name").toString()
         attributes(
             // Java 9 module name
             "Automatic-Module-Name" to project.group,
@@ -48,7 +48,7 @@ tasks.mergedJar {
             "Bundle-Vendor" to vendor,
             // See http://docs.osgi.org/specification/osgi.core/7.0.0/framework.module.html#i2654895
             "Bundle-License" to "Apache-2.0",
-            "Bundle-Description" to project.description,
+            "Bundle-Description" to project.description.orEmpty(),
             "Bundle-Version" to project.version.toString().removeSuffix("-SNAPSHOT"),
             //TestNG loads classes "by name" from configuration files, this allows to load such classes without need to know the exact package name
             "DynamicImport-Package" to "*",
@@ -86,4 +86,56 @@ tasks.mergedJar {
             """.trimIndent().replace("\n", ",")
         )
     }
+}
+
+// The published pom is assembled from feature variants and a shaded jar, so a wiring mistake
+// silently changes what consumers resolve. Pin the expected set rather than re-checking by hand.
+// Versions are ignored on purpose: dependency bumps should not require touching this list.
+val verifyPublishedPomDependencies = tasks.register("verifyPublishedPomDependencies") {
+    description = "Verifies the published pom declares exactly the expected dependencies"
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    val pomFile = tasks.named<GenerateMavenPom>("generatePomFileForMavenPublication")
+        .map { it.destination }
+    inputs.file(pomFile)
+
+    val expected = listOf(
+        "com.google.inject:guice scope=compile optional=true",
+        "org.jcommander:jcommander scope=compile optional=false",
+        "org.slf4j:slf4j-api scope=compile optional=false",
+        "org.testng:testng-asserts scope=compile optional=false",
+        "org.webjars:jquery scope=runtime optional=false",
+        "org.yaml:snakeyaml scope=runtime optional=true",
+    ).sorted()
+
+    doLast {
+        val pom = groovy.xml.XmlParser().parse(pomFile.get())
+        // Only the project-level <dependencies>, not the ones under <dependencyManagement>
+        val dependencies = (pom.get("dependencies") as groovy.util.NodeList)
+            .filterIsInstance<groovy.util.Node>()
+            .flatMap { (it.get("dependency") as groovy.util.NodeList).filterIsInstance<groovy.util.Node>() }
+
+        fun groovy.util.Node.childText(tag: String): String? =
+            (get(tag) as groovy.util.NodeList).filterIsInstance<groovy.util.Node>()
+                .firstOrNull()?.text()?.trim()
+
+        val actual = dependencies.map {
+            "${it.childText("groupId")}:${it.childText("artifactId")}" +
+                " scope=${it.childText("scope") ?: "compile"}" +
+                " optional=${it.childText("optional") ?: "false"}"
+        }.sorted()
+
+        if (actual != expected) {
+            throw GradleException(
+                "Published pom dependencies changed.\n" +
+                    "Expected:\n  ${expected.joinToString("\n  ")}\n" +
+                    "Actual:\n  ${actual.joinToString("\n  ")}\n" +
+                    "Update the expected list in testng-build.gradle.kts if this is intended."
+            )
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(verifyPublishedPomDependencies)
 }

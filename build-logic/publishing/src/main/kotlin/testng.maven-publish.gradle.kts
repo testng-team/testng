@@ -1,5 +1,7 @@
 plugins {
     `maven-publish`
+    // Feeds this project's publications into the root project's nmcpAggregation configuration
+    id("com.gradleup.nmcp")
     id("testng.local-maven-repo")
     id("testng.signing")
     id("build-logic.build-params")
@@ -56,8 +58,6 @@ publishing {
 // The nmcp plugin is applied in the root build.gradle.kts and configured there
 // Individual projects just need to have publications configured via maven-publish plugin
 // For snapshot versions, configure Central Snapshots repository
-// Note: As of June 30, 2025, OSSRH (s01.oss.sonatype.org) was shut down.
-// The new Central Portal snapshot URL is: https://central.sonatype.com/repository/maven-snapshots/
 val isRelease = providers.gradleProperty("release").map { it.toBoolean() }.orElse(false)
 if (!isRelease.get()) {
     publishing {

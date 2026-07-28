@@ -21,7 +21,8 @@ fun DependencyHandler.reconstruct(variant: ResolvedVariantResult): Dependency {
     val id = variant.owner
     return when (id) {
         is ProjectComponentIdentifier -> project(id.projectPath)
-        is ModuleComponentIdentifier -> create(id.group, id.module, id.version)
+        // Single-string notation: Gradle 10 removes the group/name/version overload
+        is ModuleComponentIdentifier -> create("${id.group}:${id.module}:${id.version}")
         else -> throw IllegalArgumentException("Can't convert $id to dependency")
     }.let {
         when (category) {

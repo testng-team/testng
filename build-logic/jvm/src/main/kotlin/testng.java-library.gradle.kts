@@ -52,7 +52,7 @@ tasks.withType<Jar>().configureEach {
 }
 
 @Suppress("unused")
-val transitiveSourcesElements by configurations.creating {
+val transitiveSourcesElements = configurations.create("transitiveSourcesElements") {
     description = "Share sources folder with other projects for aggregation (e.g. sources, javadocs, etc)"
     isVisible = false
     isCanBeResolved = false

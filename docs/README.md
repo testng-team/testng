@@ -52,14 +52,14 @@ Read this documentation when you need to:
   - Common build commands and troubleshooting
 
 - **[JAVA_VERSIONS_QUICK_REFERENCE.md](JAVA_VERSIONS_QUICK_REFERENCE.md)** - Quick reference for Java version usage
-  - Why TestNG requires Java 21+ to build
+  - Why TestNG requires Java 25 to build
   - How toolchains enable multi-version testing
   - Common scenarios and FAQ
   - Visual diagrams and examples
 
 - **[CI_TEST_WORKFLOW.md](CI_TEST_WORKFLOW.md)** - CI test workflow and matrix builder
   - How the GitHub Actions test workflow works
-  - Matrix builder (matrix.js) explained
+  - Matrix builder (matrix.mjs) explained
   - Multi-version testing architecture
   - Integration with build logic
   - Customizing the test matrix
@@ -69,7 +69,7 @@ Read this documentation when you need to:
 
 ### Prerequisites
 
-- **Java 21+** installed (required to run Gradle)
+- **Java 25** installed (required to run Gradle)
 - **Git** for version control
 
 ### Building TestNG
@@ -111,12 +111,12 @@ cd testng
 
 TestNG's build uses **three different Java versions**:
 
-1. **Gradle Runtime**: Java 21+ (required by nmcp plugin)
-2. **Build Toolchain**: Java 21 (for compilation)
+1. **Gradle Runtime**: Java 25 (required by Gradle 9 and the nmcp plugin)
+2. **Build Toolchain**: Java 25 (for compilation)
 3. **Target Bytecode**: Java 11 (for compatibility)
-4. **Test Runtime**: Configurable (11, 17, 21, 24)
+4. **Test Runtime**: Configurable (11, 17, 21, 25, 26, plus 27 and 28 EA)
 
-**Result:** TestNG artifacts work on Java 11+, but you need Java 21+ to build.
+**Result:** TestNG artifacts work on Java 11+, but you need Java 25 to build.
 
 See [JAVA_VERSIONS_QUICK_REFERENCE.md](JAVA_VERSIONS_QUICK_REFERENCE.md) for details.
 
@@ -126,7 +126,7 @@ TestNG uses the `org.gradlex.build-parameters` plugin for flexible configuration
 
 ```bash
 # Java versions
--PjdkBuildVersion=21          # JDK for building (default: 21)
+-PjdkBuildVersion=25          # JDK for building (default: 25)
 -PtargetJavaVersion=11        # Target bytecode (default: 11)
 -PjdkTestVersion=11           # JDK for tests (default: buildJdk)
 
@@ -159,11 +159,14 @@ testng/
 
 ### Setting Up Development Environment
 
-1. **Install Java 21+**
+1. **Install Java 25**
    ```bash
+   # Using mise (recommended)
+   mise use java@temurin-25
+
    # Using SDKMAN
-   sdk install java 21.0.5-tem
-   sdk use java 21.0.5-tem
+   sdk install java 25.0.3-tem
+   sdk use java 25.0.3-tem
 
    # Verify
    java -version
@@ -268,8 +271,8 @@ Snapshots are automatically published on every push to master via GitHub Actions
 
 ### Common Issues
 
-1. **"Nmcp requires Java 21+"**
-   - Solution: Use Java 21+ to run Gradle
+1. **"Nmcp requires Java 17+"**
+   - Solution: Use Java 25 to run Gradle
    - Check: `java -version`
 
 2. **"Could not find matching toolchain"**

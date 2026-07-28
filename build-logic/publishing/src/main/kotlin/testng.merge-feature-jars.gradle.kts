@@ -16,7 +16,7 @@ val optionalFeatures = (the<JavaPluginExtension>() as ExtensionAware).extensions
 inline fun <reified T : Named> AttributeContainer.attribute(attr: Attribute<T>, value: String) =
     attribute(attr, objects.named(value))
 
-val shadedDependencyElements by configurations.creating {
+val shadedDependencyElements = configurations.create("shadedDependencyElements") {
     description = "Declares which modules to aggregate into ...-all.jar"
     isCanBeConsumed = false
     isCanBeResolved = false
@@ -38,7 +38,7 @@ configurations["implementation"].extendsFrom(
     )
 )
 
-val shadedDependencyFullRuntimeClasspath by configurations.creating {
+val shadedDependencyFullRuntimeClasspath = configurations.create("shadedDependencyFullRuntimeClasspath") {
     description = "Resolves the list of shadedDependencyElements to testng and external dependencies"
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -47,7 +47,7 @@ val shadedDependencyFullRuntimeClasspath by configurations.creating {
     javaLibraryRuntime()
 }
 
-val mergedJars by configurations.creating {
+val mergedJars = configurations.create("mergedJars") {
     description = "Resolves the list of testng modules to include into -all jar"
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -71,7 +71,7 @@ val mergedJars by configurations.creating {
     }
 }
 
-val shadedDependencyJavadocClasspath by configurations.creating {
+val shadedDependencyJavadocClasspath = configurations.create("shadedDependencyJavadocClasspath") {
     description = "Resolves a runtime classpath of the aggregated -all dependenices"
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -86,7 +86,7 @@ val shadedDependencyJavadocClasspath by configurations.creating {
     }
 }
 
-val mergedJar by tasks.registering(ShadowJar::class) {
+val mergedJar = tasks.register<ShadowJar>("mergedJar") {
     group = LifecycleBasePlugin.BUILD_GROUP
     description = "Builds all-project jar (third-party dependencies are left as is)"
     configurations = listOf(mergedJars)
@@ -100,7 +100,7 @@ dependencies {
     "implementation"(files(mergedJar))
 }
 
-val sourcesToMerge by configurations.creating {
+val sourcesToMerge = configurations.create("sourcesToMerge") {
     description = "Resolves the list of source directories to include into sources-all jar"
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -113,21 +113,21 @@ val sourcesToMerge by configurations.creating {
     }
 }
 
-val mergedSourcesJar by tasks.registering(Jar::class) {
+val mergedSourcesJar = tasks.register<Jar>("mergedSourcesJar") {
     from(sourcesToMerge.incoming.artifactView { lenient(true) }.files)
     archiveClassifier.set("sources-all")
 }
 
-val mergedJavadoc by tasks.registering(Javadoc::class) {
+val mergedJavadoc = tasks.register<Javadoc>("mergedJavadoc") {
     description = "Generates an aggregate javadoc"
     group = LifecycleBasePlugin.BUILD_GROUP
     setSource(sourcesToMerge.incoming.artifactView { lenient(true) }.files)
     include("**/*.java")
-    setDestinationDir(reporting.file("mergedJavadoc"))
+    setDestinationDir(reporting.baseDirectory.dir("mergedJavadoc").get().asFile)
     classpath = shadedDependencyJavadocClasspath
 }
 
-val mergedJavadocJar by tasks.registering(Jar::class) {
+val mergedJavadocJar = tasks.register<Jar>("mergedJavadocJar") {
     description = "Generates an aggregate javadoc jar"
     group = LifecycleBasePlugin.BUILD_GROUP
     from(mergedJavadoc)

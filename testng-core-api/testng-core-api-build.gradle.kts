@@ -1,12 +1,10 @@
+import buildlogic.registerOptionalFeatureVariants
+
 plugins {
     id("testng.java-library")
 }
 
-java {
-    registerFeature("guice") {
-        usingSourceSet(sourceSets["main"])
-    }
-}
+registerOptionalFeatureVariants("guice", buildParameters.targetJavaVersion, tasks.jar)
 
 dependencies {
     api(projects.testngCollections)

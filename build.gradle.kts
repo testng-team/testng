@@ -1,7 +1,7 @@
 plugins {
     id("testng.repositories")
     id("idea")
-    id("com.gradleup.nmcp.aggregation") version "1.4.1"
+    id("com.gradleup.nmcp.aggregation") version "1.6.1"
 }
 
 val String.v: String get() = rootProject.extra["$this.version"] as String
@@ -25,8 +25,31 @@ nmcpAggregation {
         password.set(providers.environmentVariable("CENTRAL_PORTAL_PASSWORD"))
         publishingType.set(providers.gradleProperty("centralPortal.publishingType").orElse("AUTOMATIC"))
     }
-    // Publish all projects that apply the 'maven-publish' plugin
-    publishAllProjectsProbablyBreakingProjectIsolation()
+}
+
+// Projects to publish, listed explicitly. nmcp's
+// publishAllProjectsProbablyBreakingProjectIsolation() would discover them, but it feeds Project
+// objects to the dependency handler, and that notation is removed in Gradle 10.
+dependencies {
+    nmcpAggregation(project(":testng"))
+}
+
+// Guard against the list above drifting: a project that starts publishing without being aggregated
+// would silently be missing from the Central Portal deployment.
+gradle.projectsEvaluated {
+    val aggregated = configurations.getByName("nmcpAggregation")
+        .dependencies
+        .filterIsInstance<ProjectDependency>()
+        .map { it.path }
+        .toSet()
+    val missing = subprojects
+        .filter { it.plugins.hasPlugin("maven-publish") }
+        .map { it.path }
+        .filterNot { it in aggregated }
+    require(missing.isEmpty()) {
+        "These projects apply 'maven-publish' but are not aggregated for Maven Central: $missing. " +
+            "Add nmcpAggregation(project(\"<path>\")) to the dependencies block in build.gradle.kts."
+    }
 }
 
 /**

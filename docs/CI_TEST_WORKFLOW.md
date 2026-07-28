@@ -3,7 +3,7 @@
 This document explains how TestNG's GitHub Actions test workflow (`.github/workflows/test.yml`) works, including the matrix builder and how it integrates with the build system.
 
 > **Note on Java Versions:** This document uses placeholders like `<BUILD_VERSION>`, `<TEST_VERSION>`, `<MIN_SUPPORTED>`, etc. instead of specific version numbers. The actual Java versions used in the CI workflow change over time as new LTS versions are released. Always check the following files for current values:
-> - `.github/workflows/matrix.js` - Defines which Java versions are tested
+> - `.github/workflows/matrix.mjs` - Defines which Java versions are tested
 > - `build-logic/build-parameters/build.gradle.kts` - Defines default build parameters
 > - `.github/workflows/test.yml` - The actual workflow configuration
 
@@ -11,7 +11,7 @@ This document explains how TestNG's GitHub Actions test workflow (`.github/workf
 
 1. [Overview](#overview)
 2. [Workflow Architecture](#workflow-architecture)
-3. [Matrix Builder (matrix.js)](#matrix-builder-matrixjs)
+3. [Matrix Builder (matrix.mjs)](#matrix-builder-matrixmjs)
 4. [Test Workflow Steps](#test-workflow-steps)
 5. [How Multi-Version Testing Works](#how-multi-version-testing-works)
 6. [Integration with Build Logic](#integration-with-build-logic)
@@ -41,8 +41,8 @@ This ensures TestNG works correctly across different environments and configurat
 ┌─────────────────────────────────────────────────────────────┐
 │ Job 1: matrix_prep                                          │
 │                                                             │
-│  Runs: matrix.js                                            │
-│  Produces: JSON matrix with 7 job configurations            │
+│  Runs: matrix.mjs                                            │
+│  Produces: JSON matrix with 8 job configurations            │
 │                                                             │
 │  Example output:                                            │
 │  {                                                          │
@@ -71,9 +71,9 @@ This ensures TestNG works correctly across different environments and configurat
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Matrix Builder (matrix.js)
+## Matrix Builder (matrix.mjs)
 
-The matrix builder is a JavaScript file (`.github/workflows/matrix.js`) that generates a random subset of valid test configurations.
+The matrix builder is a JavaScript file (`.github/workflows/matrix.mjs`) that generates a random subset of valid test configurations.
 
 ### Purpose
 
@@ -86,7 +86,7 @@ Instead of testing **every possible combination** (which would be thousands of j
 
 ### Matrix Axes
 
-Let's look at each axis defined in `matrix.js`:
+Let's look at each axis defined in `matrix.mjs`:
 
 #### 1. Java Distribution
 
@@ -127,7 +127,7 @@ matrix.addAxis({
 
 **Why it matters:** TestNG must work on all supported Java versions
 
-**Note:** Check `matrix.js` for the current list of Java versions being tested.
+**Note:** Check `matrix.mjs` for the current list of Java versions being tested.
 
 #### 3. Timezone
 
@@ -218,7 +218,7 @@ matrix.generateRow({java_version: eaJava});
 
 **Why:** These are critical configurations that must always be tested.
 
-**Note:** The actual Java versions are defined in `matrix.js` and may change over time as new LTS versions are released.
+**Note:** The actual Java versions are defined in `matrix.mjs` and may change over time as new LTS versions are released.
 
 ### Constraints and Implications
 
@@ -241,7 +241,7 @@ matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
 
 ### Output
 
-The matrix builder generates approximately 7 jobs (configurable via `MATRIX_JOBS` env var):
+The matrix builder generates approximately 8 jobs (configurable via `MATRIX_JOBS` env var):
 
 ```json
 {
@@ -276,18 +276,18 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      MATRIX_JOBS: 7  # Generate 7 test jobs
+      MATRIX_JOBS: 8  # Generate 8 test jobs
     steps:
       - uses: actions/checkout@v4
       - id: set-matrix
-        run: node .github/workflows/matrix.js
+        run: node .github/workflows/matrix.mjs
 ```
 
 **What happens:**
 
 1. Checks out the repository
-2. Runs `matrix.js` with Node.js
-3. `matrix.js` generates a JSON matrix with 7 random (but guaranteed) configurations
+2. Runs `matrix.mjs` with Node.js
+3. `matrix.mjs` generates a JSON matrix with 8 random (but guaranteed) configurations
 4. Outputs the matrix for the next job
 
 ### Step 2: Build Job (Runs for Each Matrix Entry)
@@ -321,7 +321,7 @@ The build job runs in parallel for each configuration in the matrix.
 - The build version is needed to run Gradle (nmcp plugin requirement)
 - Matrix Java version is needed to run tests (via toolchains)
 
-**Note:** The build version is defined in `matrix.js` and may change over time.
+**Note:** The build version is defined in `matrix.mjs` and may change over time.
 
 #### Step 2b: Run Tests
 
@@ -441,7 +441,7 @@ Let's trace through a complete example: **Testing an older Java version on Ubunt
 5. **Locale is Turkish** (via `-Duser.country=TR -Duser.language=tr`)
 6. **Timezone is EST/EDT** (via `TZ=America/New_York`)
 
-**Note:** The specific Java versions used for building and testing are defined in `matrix.js` and build parameters.
+**Note:** The specific Java versions used for building and testing are defined in `matrix.mjs` and build parameters.
 
 ## Integration with Build Logic
 
@@ -546,7 +546,7 @@ Edit the workflow file:
 
 ```yaml
 env:
-  MATRIX_JOBS: 7  # Change this number
+  MATRIX_JOBS: 8  # Change this number
 ```
 
 Or set it in the workflow dispatch:
@@ -557,12 +557,12 @@ on:
     inputs:
       matrix_jobs:
         description: 'Number of matrix jobs to generate'
-        default: '7'
+        default: '8'
 ```
 
 ### Adding a New Java Version
 
-Edit `.github/workflows/matrix.js`:
+Edit `.github/workflows/matrix.mjs`:
 
 ```javascript
 matrix.addAxis({
@@ -582,7 +582,7 @@ matrix.generateRow({java_version: "<NEW_VERSION>"});
 
 ### Adding a New Operating System
 
-Edit `.github/workflows/matrix.js`:
+Edit `.github/workflows/matrix.mjs`:
 
 ```javascript
 matrix.addAxis({
@@ -758,7 +758,7 @@ To see what matrix will be generated:
 
 ```bash
 cd .github/workflows
-MATRIX_JOBS=7 node matrix.js
+MATRIX_JOBS=8 node matrix.mjs
 ```
 
 This outputs the JSON matrix that GitHub Actions will use.
@@ -768,7 +768,7 @@ This outputs the JSON matrix that GitHub Actions will use.
 The matrix builder uses:
 
 - `matrix_builder.js` - Core matrix generation logic
-- `matrix.js` - TestNG-specific configuration
+- `matrix.mjs` - TestNG-specific configuration
 
 The `MatrixBuilder` class is defined in `matrix_builder.js` and provides:
 
@@ -782,14 +782,14 @@ The `MatrixBuilder` class is defined in `matrix_builder.js` and provides:
 
 The test workflow is a sophisticated system that:
 
-1. **Generates a matrix** of test configurations using `matrix.js`
+1. **Generates a matrix** of test configurations using `matrix.mjs`
 2. **Runs tests in parallel** across different Java versions, OSes, and locales
 3. **Uses Gradle toolchains** to test with different Java versions
 4. **Integrates with build logic** through build parameters
 5. **Ensures critical combinations** are always tested
 6. **Randomizes other combinations** to maximize coverage
 
-This ensures TestNG works correctly across a wide variety of environments while keeping CI time reasonable (7 jobs instead of thousands).
+This ensures TestNG works correctly across a wide variety of environments while keeping CI time reasonable (8 jobs instead of thousands).
 
 ## Complete Flow Diagram
 
@@ -804,7 +804,7 @@ Here's the complete flow from workflow trigger to test execution:
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ 2. Matrix Preparation Job                                                   │
 │                                                                             │
-│    $ node .github/workflows/matrix.js                                       │
+│    $ node .github/workflows/matrix.mjs                                       │
 │                                                                             │
 │    ┌─────────────────────────────────────────────────────────────────────┐  │
 │    │ MatrixBuilder (matrix_builder.js)                                   │  │
@@ -814,7 +814,7 @@ Here's the complete flow from workflow trigger to test execution:
 │    │ • Applies constraints (implications, exclusions)                    │  │
 │    │ • Generates guaranteed rows for each Java version being tested      │  │
 │    │ • Fills remaining slots with random combinations                    │  │
-│    │ • Total: 7 jobs (configurable via MATRIX_JOBS)                      │  │
+│    │ • Total: 8 jobs (configurable via MATRIX_JOBS)                      │  │
 │    └─────────────────────────────────────────────────────────────────────┘  │
 │                                                                             │
 │    Output: JSON matrix                                                      │
@@ -829,7 +829,7 @@ Here's the complete flow from workflow trigger to test execution:
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ 3. Build Jobs (7 jobs run in parallel)                                      │
+│ 3. Build Jobs (8 jobs run in parallel)                                      │
 │                                                                             │
 │    For each matrix entry:                                                   │
 │                                                                             │
@@ -941,7 +941,7 @@ Here's the complete flow from workflow trigger to test execution:
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ 4. Results                                                                  │
 │                                                                             │
-│    ✅ All 7 jobs passed → Workflow succeeds                                 │
+│    ✅ All 8 jobs passed → Workflow succeeds                                 │
 │    ❌ Any job failed → Workflow fails, test reports uploaded                │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```

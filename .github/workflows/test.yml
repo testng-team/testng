@@ -24,11 +24,13 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      # Ask matrix.mjs to produce 7 jobs
-      MATRIX_JOBS: 7
+      # Ask matrix.mjs to produce 8 jobs. The java_version axis has 7 values (11, 17, 21, 25, 26
+      # and the EA 27/28), so this leaves one row of slack for the other axes to pair against.
+      MATRIX_JOBS: 8
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          persist-credentials: false
           fetch-depth: 1
       - id: set-matrix
         run: |
@@ -45,8 +47,9 @@ jobs:
     env:
       TZ: ${{ matrix.tz }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          persist-credentials: false
           fetch-depth: 10
       - name: Set up Java ${{ matrix.java_version }}, oracle
         if: ${{ matrix.oracle_java_website != '' }}
@@ -54,19 +57,20 @@ jobs:
         with:
           website: ${{ matrix.oracle_java_website }}
           release: ${{ matrix.java_version }}
-      - name: Set up Java 21 and ${{ matrix.non_ea_java_version }}, ${{ matrix.java_distribution }}
-        uses: actions/setup-java@v5
+      - name: Set up Java ${{ matrix.non_ea_java_version }} (test) and 25 (Gradle + build), ${{ matrix.java_distribution }}
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           # Install multiple Java versions:
-          # - Test version (11, 17, 21, 25, or 26): Used to run TestNG tests
-          # - Java 21: Default for running Gradle, building TestNG, and compiling build-logic (the last one in the list becomes default)
+          # - Test version (11, 17, 21, 25, or 26): used to run TestNG tests
+          # - Java 25: runs Gradle and builds TestNG (jdkBuildVersion=25); Gradle 9 runs on JDK 25.
+          #   Kept last so it becomes JAVA_HOME. TestNG artifacts still target Java 11.
           java-version: |
             ${{ matrix.non_ea_java_version }}
-            21
+            25
           distribution: ${{ matrix.java_distribution }}
           architecture: x64
       - name: Steps to reproduce
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             console.log('The following command might help reproducing CI results, use Java ${{ matrix.java_version }}')
@@ -76,7 +80,7 @@ jobs:
         run: echo "unique_id=$(date +%s)" >> $GITHUB_OUTPUT
       - name: Test
         id: run_test_cases
-        uses: burrunan/gradle-cache-action@v3
+        uses: burrunan/gradle-cache-action@4b67497abd37a511d6c1dc6299bdd84ff39f7bf5 # v3
         with:
           job-id: jdk${{ matrix.jdk.version }}
           arguments: |
@@ -86,14 +90,14 @@ jobs:
           properties: |
             testng.test.extra.jvmargs=${{ matrix.testExtraJvmArgs }}
             testDisableCaching=${{ matrix.testDisableCaching }}
-            jdkBuildVersion=21
+            jdkBuildVersion=25
             jdkTestVersion=${{ matrix.java_version }}
             jdkTestVendor=${{ matrix.java_vendor }}
             # We provision JDKs with GitHub Actions for caching purposes, so Gradle should rather fail in case JDK is not found
             org.gradle.java.installations.auto-download=false
       - name: Upload build reports
         if: ${{ failure() && steps.run_test_cases.outcome == 'failure' }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.unique_id }}
           path: testng-core/build/reports/tests/test/**

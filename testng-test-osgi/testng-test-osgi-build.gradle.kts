@@ -2,7 +2,7 @@ plugins {
     id("testng.java-library")
 }
 
-val testngRepository by configurations.creating {
+val testngRepository = configurations.create("testngRepository") {
     isCanBeConsumed = false
     isCanBeResolved = true
     description =
@@ -59,7 +59,7 @@ dependencies {
 // <editor-fold defaultstate="collapsed" desc="Pass dependency versions to pax-exam container">
 val depDir = layout.buildDirectory.dir("pax-dependencies")
 
-val generateDependenciesProperties by tasks.registering(WriteProperties::class) {
+val generateDependenciesProperties = tasks.register<WriteProperties>("generateDependenciesProperties") {
     description = "Generates dependencies.properties so pax-exam can use .versionAsInProject()"
     destinationFile.set(depDir.map { it.file("META-INF/maven/dependencies.properties") })
     property("groupId", project.group)
@@ -86,7 +86,7 @@ sourceSets.test {
 // This repository is used instead of ~/.m2/... to avoid clash with /.m2/ contents
 val paxLocalCacheRepository = layout.buildDirectory.dir("pax-repo")
 
-val cleanCachedTestng by tasks.registering(Delete::class) {
+val cleanCachedTestng = tasks.register<Delete>("cleanCachedTestng") {
     description =
         "Removes cached testng.jar from pax-repo folder so pax-exam always resolves the recent one"
     delete(paxLocalCacheRepository.map { it.dir("org/testng") })

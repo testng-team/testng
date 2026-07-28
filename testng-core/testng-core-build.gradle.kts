@@ -1,3 +1,5 @@
+import buildlogic.registerOptionalFeatureVariants
+
 plugins {
     id("testng.java-library")
     id("testng.kotlin-library")
@@ -5,18 +7,10 @@ plugins {
     id("testng.sonarqube")
 }
 
-java {
-    // use gradle feature
-    // in order to optionally exposed transitive dependency
-
-    registerFeature("guice") {
-        usingSourceSet(sourceSets["main"])
-    }
-
-    registerFeature("yaml") {
-        usingSourceSet(sourceSets["main"])
-    }
-}
+// Optional features: the transitive dependency is exposed only to consumers that ask for the
+// matching capability.
+registerOptionalFeatureVariants("guice", buildParameters.targetJavaVersion, tasks.jar)
+registerOptionalFeatureVariants("yaml", buildParameters.targetJavaVersion, tasks.jar)
 
 tasks.withType<GroovyCompile>().configureEach {
     // Groovy does not support targeting Java release yet
@@ -61,8 +55,6 @@ tasks.compileTestGroovy {
     dependsOn(tasks.compileTestKotlin)
     classpath += files(tasks.compileTestKotlin)
 }
-// Note: In Kotlin 2.3.0+, the classpath property on KotlinCompile task has been removed.
-// The classpath is now automatically managed through source sets, so no manual configuration is needed.
 
 tasks.test {
     maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
