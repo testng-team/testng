@@ -38,7 +38,6 @@ dependencies {
     testImplementation("org.ops4j.pax.exam:pax-exam-link-mvn:4.14.0")
     testImplementation("org.ops4j.pax.url:pax-url-aether:2.6.12")
     testImplementation("org.apache.felix:org.apache.felix.framework:7.0.5")
-    testRuntimeOnly("org.assertj:assertj-core:3.23.1")
     testRuntimeOnly("org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:1.0_6") {
         because("Guice requires org.aopalliance.intercept package in osgi, however, aopalliance:aopalliance has no osgi headers")
     }
