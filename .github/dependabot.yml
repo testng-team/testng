@@ -12,3 +12,10 @@ updates:
       interval: "daily"
       # Check for updates at 00:00 UTC
       time: "00:00"
+    ignore:
+      # Autostyle 4.0.1 bundles a google-java-format that reaches into javac internals without
+      # the --add-exports JPMS flags, so every module fails on JDK 25 with:
+      #   RemoveUnusedImports (unnamed module) cannot access com.sun.tools.javac.file.JavacFileManager
+      # Drop this entry once a release fixes it. See testng-team/testng#3292.
+      - dependency-name: "com.github.autostyle:autostyle-plugin-gradle"
+        versions: ["4.0.1"]
