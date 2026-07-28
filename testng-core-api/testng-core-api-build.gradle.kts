@@ -8,7 +8,7 @@ registerOptionalFeatureVariants("guice", buildParameters.targetJavaVersion, task
 
 dependencies {
     api(projects.testngCollections)
-    compileOnly("com.github.spotbugs:spotbugs:4.8.1")
+    compileOnly("com.github.spotbugs:spotbugs:4.10.3")
     "guiceApi"(platform("com.google.inject:guice-bom:5.1.0"))
     "guiceApi"("com.google.inject:guice")
 
