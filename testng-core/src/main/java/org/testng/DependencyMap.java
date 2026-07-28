@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
+import org.testng.internal.BaseTestMethod;
+import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.MethodHelper;
 import org.testng.internal.RuntimeBehavior;
 
@@ -103,9 +105,11 @@ public class DependencyMap {
 
   private static boolean hasInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Object baseInstance = baseClassMethod.getInstance();
-    Object derivedInstance = derivedClassMethod.getInstance();
-    boolean result = derivedInstance != null || baseInstance != null;
+    // Check for the presence of an instance via the per-instance id so a lazy @Factory instance is
+    // not created just to resolve dependencies during collection.
+    boolean result =
+        IInstanceIdentity.getInstanceId(derivedClassMethod) != null
+            || IInstanceIdentity.getInstanceId(baseClassMethod) != null;
     boolean params =
         null != baseClassMethod.getFactoryMethodParamsInfo()
             && null != derivedClassMethod.getFactoryMethodParamsInfo().getParameters();
@@ -126,18 +130,32 @@ public class DependencyMap {
 
   private static boolean isSameInstance(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Object baseInstance = baseClassMethod.getInstance();
-    Object derivedInstance = derivedClassMethod.getInstance();
-    boolean nonNullInstances = derivedInstance != null && baseInstance != null;
+    boolean nonNullInstances =
+        IInstanceIdentity.getInstanceId(derivedClassMethod) != null
+            && IInstanceIdentity.getInstanceId(baseClassMethod) != null;
     if (!nonNullInstances) {
       return false;
     }
+    Class<?> baseClass = instanceClassOf(baseClassMethod);
+    Class<?> derivedClass = instanceClassOf(derivedClassMethod);
     if (null != baseClassMethod.getFactoryMethodParamsInfo()
         && RuntimeBehavior.enforceThreadAffinity()) {
-      return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass())
+      return baseClass.isAssignableFrom(derivedClass)
           && hasSameParameters(baseClassMethod, derivedClassMethod);
     }
-    return baseInstance.getClass().isAssignableFrom(derivedInstance.getClass());
+    return baseClass.isAssignableFrom(derivedClass);
+  }
+
+  /**
+   * @return - The class of the method's instance, resolved without materializing a lazy @Factory
+   *     instance (a constructor factory produces exactly the method's real class).
+   */
+  private static Class<?> instanceClassOf(ITestNGMethod method) {
+    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceMaterialized()) {
+      return method.getRealClass();
+    }
+    Object instance = method.getInstance();
+    return instance == null ? method.getRealClass() : instance.getClass();
   }
 
   private static String constructMethodNameUsingTestClass(

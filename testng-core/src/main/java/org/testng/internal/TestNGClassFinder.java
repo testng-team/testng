@@ -134,7 +134,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     if (!factoryMethod.getEnabled()) {
       return;
     }
-    ClassInfoMap moreClasses = processFactory(ic, factoryMethod);
+    ClassInfoMap moreClasses = processFactory(configuration, ic, factoryMethod);
 
     if (moreClasses.isEmpty()) {
       return;
@@ -162,13 +162,20 @@ public class TestNGClassFinder extends BaseClassFinder {
             .containsAll(Arrays.asList(fm.getGroups()));
   }
 
-  private ClassInfoMap processFactory(IClass ic, ConstructorOrMethod factoryMethod) {
+  private ClassInfoMap processFactory(
+      IConfiguration configuration, IClass ic, ConstructorOrMethod factoryMethod) {
     IObject.IdentifiableObject[] theseInstances = IObject.objects(ic, false);
 
     IObject.IdentifiableObject instance = theseInstances.length != 0 ? theseInstances[0] : null;
     FactoryMethod fm =
         new FactoryMethod(
-            factoryMethod, instance, annotationFinder, m_testContext, objectFactory, holder);
+            factoryMethod,
+            instance,
+            annotationFinder,
+            m_testContext,
+            objectFactory,
+            holder,
+            configuration);
     ClassInfoMap moreClasses = new ClassInfoMap();
 
     if (excludeFactory(fm, m_testContext)) {
@@ -184,14 +191,21 @@ public class TestNGClassFinder extends BaseClassFinder {
             "The factory " + fm + " returned a null instance" + "at index " + i);
       }
       Class<?> oneMoreClass;
-      Object objToInspect = o.getInstance();
-      if (IInstanceInfo.class.isAssignableFrom(objToInspect.getClass())) {
-        IInstanceInfo<?> ii = (IInstanceInfo<?>) objToInspect;
-        addInstance(ii);
-        oneMoreClass = ii.getInstanceClass();
-      } else {
+      if (o.isLazilyInitialized()) {
+        // Lazy (constructor) factory: the produced class is the declaring class, known without
+        // materializing the instance. Never an IInstanceInfo (those keep the eager path below).
         addInstance(new IObject.IdentifiableObject(o));
-        oneMoreClass = objToInspect.getClass();
+        oneMoreClass = o.getTargetClass();
+      } else {
+        Object objToInspect = o.getInstance();
+        if (IInstanceInfo.class.isAssignableFrom(objToInspect.getClass())) {
+          IInstanceInfo<?> ii = (IInstanceInfo<?>) objToInspect;
+          addInstance(ii);
+          oneMoreClass = ii.getInstanceClass();
+        } else {
+          addInstance(new IObject.IdentifiableObject(o));
+          oneMoreClass = objToInspect.getClass();
+        }
       }
       if (!classExists(oneMoreClass)) {
         moreClasses.addClass(oneMoreClass);
@@ -328,9 +342,12 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   private void addInstance(IObject.IdentifiableObject o) {
-    Class<?> key = o.getInstance().getClass();
-    if (o.getInstance() instanceof IParameterInfo) {
-      key = ((IParameterInfo) o.getInstance()).getInstance().getClass();
+    Object wrapped = o.getInstance();
+    Class<?> key = wrapped.getClass();
+    if (wrapped instanceof IParameterInfo) {
+      // Use the target class, which a lazy IParameterInfo can answer without materializing its
+      // (not-yet-created) instance.
+      key = ((IParameterInfo) wrapped).getTargetClass();
     }
     addInstance(key, o);
   }

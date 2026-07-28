@@ -210,6 +210,12 @@
       <class name="test.factory.issue1924.IssueTest"/>
       <class name="test.factory.github328.GitHub328Test" />
       <class name="test.factory.issue1745.Github1745Test"/>
+      <class name="test.factory.lazy.LazyFactoryConstructionTest"/>
+      <class name="test.factory.lazy.LazyFactoryResolutionMatrixTest"/>
+      <class name="test.factory.lazy.LazyFactoryConfigMethodTest"/>
+      <class name="test.factory.lazy.LazyFactoryConstructorFailureTest"/>
+      <class name="test.factory.lazy.LazyFactoryMethodInterceptorTest"/>
+      <class name="test.factory.lazy.LazyFactoryParallelTest"/>
       <class name="test.objectfactory.ObjectFactoryTest"/>
       <class name="test.github1490.VerifyDataProviderListener"/>
       <class name="test.listeners.issue2456.IssueTest"/>

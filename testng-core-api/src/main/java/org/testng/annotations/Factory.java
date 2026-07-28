@@ -37,4 +37,22 @@ public @interface Factory {
   boolean enabled() default true;
 
   int[] indices() default {};
+
+  /**
+   * Whether the instances produced by this factory should be created lazily (just-in-time, right
+   * before the first configuration/test method of each instance runs) instead of eagerly (all
+   * up-front, during test collection).
+   *
+   * <p>Lazy instantiation is currently honored only for constructor based factories (a
+   * {@code @Factory} annotated constructor), which is the common data-provider driven case. Method
+   * and {@link org.testng.IInstanceInfo} based factories always stay eager.
+   *
+   * <p>The value participates in a resolution hierarchy: an explicit {@link Lazy#TRUE}/{@link
+   * Lazy#FALSE} here overrides the suite level {@code lazy-factory} XML attribute, which overrides
+   * the programmatic {@link org.testng.TestNG} configuration. Leaving it as {@link Lazy#UNSET}
+   * defers to those broader levels (which default to eager).
+   *
+   * @return the lazy instantiation preference (default {@link Lazy#UNSET})
+   */
+  Lazy lazy() default Lazy.UNSET;
 }

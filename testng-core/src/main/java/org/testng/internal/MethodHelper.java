@@ -340,9 +340,10 @@ public class MethodHelper {
       if (methodsDependedUpon.length > 0) {
         ITestNGMethod[] methodsNamed;
         // Method has instance
-        if (m.getInstance() != null) {
+        if (IInstanceIdentity.getInstanceId(m) != null) {
           // Get other methods with the same instance
-          List<ITestNGMethod> instanceMethods = testInstances.get(m.getInstance());
+          List<ITestNGMethod> instanceMethods =
+              testInstances.get(IInstanceIdentity.getInstanceId(m));
           try {
             // Search for other methods that depends upon with the same instance
             methodsNamed = MethodHelper.findDependedUponMethods(m, instanceMethods);
@@ -415,10 +416,12 @@ public class MethodHelper {
    * @return Map of Instances as the keys and the methods associated with the instance as the values
    */
   private static Map<Object, List<ITestNGMethod>> sortMethodsByInstance(ITestNGMethod[] methods) {
+    // Group by the per-instance id rather than the materialized instance so that building the
+    // dependency graph never forces a lazy @Factory instance to be created during collection.
     return Arrays.stream(methods)
         .parallel()
-        .filter(m -> Objects.nonNull(m.getInstance()))
-        .collect(Collectors.groupingBy(ITestNGMethod::getInstance, Collectors.toList()));
+        .filter(m -> Objects.nonNull(IInstanceIdentity.getInstanceId(m)))
+        .collect(Collectors.groupingBy(IInstanceIdentity::getInstanceId, Collectors.toList()));
   }
 
   protected static String calculateMethodCanonicalName(ITestNGMethod m) {

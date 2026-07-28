@@ -159,6 +159,17 @@
         </xsd:annotation>
       </xsd:attribute>
       <xsd:attribute name="group-by-instances" type="trueOrFalse" default="false"/>
+      <xsd:attribute name="lazy-factory" type="trueOrFalse">
+        <xsd:annotation>
+          <xsd:documentation>
+            If true, @Factory produced test class instances are created lazily (just-in-time,
+            right before the first configuration/test method of each instance runs) instead of
+            eagerly up-front. Honored only for constructor based factories. When unset, the TestNG
+            configuration decides (default eager). A @Factory(lazy=...) annotation value overrides
+            this suite level attribute.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
       <xsd:attribute name="preserve-order" type="trueOrFalse" default="true"/>
       <xsd:attribute name="allow-return-values" type="trueOrFalse" default="false">
         <xsd:annotation>

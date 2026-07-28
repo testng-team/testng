@@ -9,4 +9,9 @@ public interface IFactoryAnnotation extends IParameterizable, IDataProvidable {
   List<Integer> getIndices();
 
   void setIndices(List<Integer> indices);
+
+  /** @return - The lazy instantiation preference declared on the {@code @Factory}. */
+  Lazy getLazy();
+
+  void setLazy(Lazy lazy);
 }

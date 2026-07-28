@@ -2,6 +2,7 @@ package org.testng.internal.annotations;
 
 import java.util.List;
 import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.Lazy;
 
 /** An implementation of IFactory */
 public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotation {
@@ -11,6 +12,7 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
   private String m_dataProviderDynamicClass;
   private boolean m_enabled = true;
   private List<Integer> m_indices;
+  private Lazy m_lazy = Lazy.UNSET;
 
   @Override
   public String getDataProvider() {
@@ -59,5 +61,15 @@ public class FactoryAnnotation extends BaseAnnotation implements IFactoryAnnotat
   @Override
   public void setIndices(List<Integer> indices) {
     m_indices = indices;
+  }
+
+  @Override
+  public Lazy getLazy() {
+    return m_lazy;
+  }
+
+  @Override
+  public void setLazy(Lazy lazy) {
+    m_lazy = lazy == null ? Lazy.UNSET : lazy;
   }
 }

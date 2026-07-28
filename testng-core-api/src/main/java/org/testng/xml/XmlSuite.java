@@ -158,6 +158,12 @@ public class XmlSuite implements Cloneable {
 
   private Boolean m_groupByInstances = DEFAULT_GROUP_BY_INSTANCES;
 
+  /**
+   * Whether {@code @Factory} produced instances are created lazily. {@code null} means "unset at
+   * the suite level" so the {@link org.testng.TestNG} configuration decides (default eager).
+   */
+  private Boolean m_lazyFactory = null;
+
   public static final Boolean DEFAULT_ALLOW_RETURN_VALUES = Boolean.FALSE;
   private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
 
@@ -575,6 +581,7 @@ public class XmlSuite implements Cloneable {
     result.setObjectFactoryClass(getObjectFactoryClass());
     result.setAllowReturnValues(getAllowReturnValues());
     result.setTimeOut(getTimeOut());
+    result.setLazyFactory(getLazyFactory());
     return result;
   }
 
@@ -890,6 +897,20 @@ public class XmlSuite implements Cloneable {
 
   public void setGroupByInstances(boolean f) {
     m_groupByInstances = f;
+  }
+
+  /**
+   * @return - Whether {@code @Factory} produced test class instances should be created lazily
+   *     (just-in-time) for this suite. A {@code null} value means the attribute was not specified
+   *     at the suite level, in which case the {@link org.testng.TestNG} configuration decides
+   *     (default eager).
+   */
+  public Boolean getLazyFactory() {
+    return m_lazyFactory;
+  }
+
+  public void setLazyFactory(Boolean lazyFactory) {
+    m_lazyFactory = lazyFactory;
   }
 
   public void addListener(String listener) {

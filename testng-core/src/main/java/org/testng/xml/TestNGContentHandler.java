@@ -329,6 +329,10 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       if (groupByInstances != null) {
         m_currentSuite.setGroupByInstances(Boolean.parseBoolean(groupByInstances));
       }
+      String lazyFactory = attributes.getValue("lazy-factory");
+      if (lazyFactory != null) {
+        m_currentSuite.setLazyFactory(Boolean.parseBoolean(lazyFactory));
+      }
       String skip = attributes.getValue("skipfailedinvocationcounts");
       if (skip != null) {
         m_currentSuite.setSkipFailedInvocationCounts(Boolean.parseBoolean(skip));

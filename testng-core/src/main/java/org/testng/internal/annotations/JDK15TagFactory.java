@@ -497,6 +497,7 @@ public class JDK15TagFactory {
     result.setDataProviderClass(dpc == null || dpc == Object.class ? cls : dpc);
     result.setEnabled(c.enabled());
     result.setIndices(Ints.asList(c.indices()));
+    result.setLazy(c.lazy());
 
     return result;
   }

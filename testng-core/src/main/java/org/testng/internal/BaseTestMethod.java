@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -158,6 +159,21 @@ public abstract class BaseTestMethod
         .map(IObject.IdentifiableObject::getInstance)
         .map(IParameterInfo::embeddedInstance)
         .orElse(null);
+  }
+
+  /**
+   * @return - {@code true} unless this method is bound to a lazy {@code @Factory} instance that has
+   *     not been created yet. Callers use this to avoid materializing a lazy instance (e.g. to
+   *     build a diagnostic message) before its test is due to run. Reading this never triggers
+   *     creation.
+   */
+  public boolean isInstanceMaterialized() {
+    Object wrapped =
+        Optional.ofNullable(m_instance).map(IObject.IdentifiableObject::getInstance).orElse(null);
+    if (wrapped instanceof IParameterInfo) {
+      return ((IParameterInfo) wrapped).isInstanceMaterialized();
+    }
+    return true;
   }
 
   @Override
@@ -382,7 +398,10 @@ public abstract class BaseTestMethod
             ? other.m_testClass == null
             : other.m_testClass != null
                 && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                && getInstance() == other.getInstance();
+                // Compare by per-instance id rather than the materialized instance, so equality
+                // checks (heavily used while building the method graph) never force a lazy
+                // @Factory instance to be created.
+                && Objects.equals(getInstanceId(), other.getInstanceId());
 
     return isEqual && getConstructorOrMethod().equals(other.getConstructorOrMethod());
   }
@@ -395,8 +414,12 @@ public abstract class BaseTestMethod
   @Override
   public int hashCode() {
     int hash = m_method.hashCode();
-    if (getInstance() != null) {
-      hash = hash * 31 + System.identityHashCode(getInstance());
+    // Fold in the per-instance id rather than the materialized instance's identity hash. This keeps
+    // hashCode consistent with equals (which compares instance ids) and, crucially, never forces a
+    // lazy @Factory instance to be created while methods sit in hash-based collections.
+    UUID instanceId = getInstanceId();
+    if (instanceId != null) {
+      hash = hash * 31 + instanceId.hashCode();
     }
     return hash;
   }
@@ -404,11 +427,15 @@ public abstract class BaseTestMethod
   protected void initGroups(Class<? extends ITestOrConfiguration> annotationClass) {
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
-    Object object = getInstance();
     Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
-    if (object != null) {
-      clazz = object.getClass();
+    if (isInstanceMaterialized()) {
+      Object object = getInstance();
+      if (object != null) {
+        clazz = object.getClass();
+      }
     }
+    // else: a lazy @Factory instance is not created yet; a constructor factory produces exactly its
+    // declaring class, which is already the default above — so don't materialize to read the class.
     ITestOrConfiguration classAnnotation =
         getAnnotationFinder().findAnnotation(clazz, annotationClass);
 
@@ -511,7 +538,9 @@ public abstract class BaseTestMethod
         .append("[pri:")
         .append(getPriority())
         .append(", instance:")
-        .append(getInstance())
+        // Don't materialize a lazy @Factory instance just to render a signature; the factory
+        // parameters appended below already identify the instance.
+        .append(isInstanceMaterialized() ? String.valueOf(getInstance()) : "<uninstantiated>")
         .append(instanceParameters())
         .append(customAttributes())
         .append("]");
@@ -550,7 +579,13 @@ public abstract class BaseTestMethod
 
   protected String getSignature() {
     if (m_signature == null) {
-      m_signature = computeSignature();
+      String signature = computeSignature();
+      // Only memoize once the instance is stable; a signature computed while a lazy @Factory
+      // instance is still uninstantiated would otherwise be cached and become stale after creation.
+      if (isInstanceMaterialized()) {
+        m_signature = signature;
+      }
+      return signature;
     }
     return m_signature;
   }

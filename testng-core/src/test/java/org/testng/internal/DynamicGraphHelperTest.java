@@ -227,6 +227,10 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
       // So lets not try to associate the instance. We will use the method as is.
       fixedMethods.addAll(Arrays.asList(rawMethods));
     } else {
+      // All methods of a single instance must share the same IdentifiableObject (hence the same
+      // per-instance id), exactly as they do in production. Creating a fresh IdentifiableObject per
+      // method would give each method a distinct instance id and break instance-based grouping.
+      IObject.IdentifiableObject identifiable = new IObject.IdentifiableObject(object);
       for (ITestNGMethod each : rawMethods) {
         ITestNGMethod m =
             new TestNGMethod(
@@ -234,7 +238,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
                 each.getConstructorOrMethod().getMethod(),
                 finder,
                 xmlTest,
-                new IObject.IdentifiableObject(object));
+                identifiable);
         fixedMethods.add(m);
       }
     }

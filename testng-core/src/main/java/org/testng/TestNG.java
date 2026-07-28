@@ -627,6 +627,22 @@ public class TestNG {
   }
 
   /**
+   * Enables (or disables) lazy, just-in-time instantiation of {@code @Factory} produced test class
+   * instances at the runner level. This is the broadest opt-in; it is overridden by the suite level
+   * {@code lazy-factory} attribute and by the {@code @Factory(lazy=...)} annotation. Honored only
+   * for constructor based factories.
+   *
+   * @param flag - {@code true} to instantiate factory instances lazily by default.
+   */
+  public void setLazyFactoryInstantiation(boolean flag) {
+    this.m_configuration.setLazyFactoryInstantiation(flag);
+  }
+
+  public boolean isLazyFactoryInstantiation() {
+    return this.m_configuration.isLazyFactoryInstantiation();
+  }
+
+  /**
    * Set the suites file names to be run by this TestNG object. This method tries to load and parse
    * the specified TestNG suite xml files. If a file is missing, it is ignored.
    *
