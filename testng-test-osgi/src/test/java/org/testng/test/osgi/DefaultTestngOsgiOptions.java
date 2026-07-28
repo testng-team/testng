@@ -25,6 +25,10 @@ public class DefaultTestngOsgiOptions {
         mavenBundle("org.assertj", "assertj-core").versionAsInProject(),
         mavenBundle("net.bytebuddy", "byte-buddy").versionAsInProject(),
         mavenBundle("com.google.inject", "guice").versionAsInProject(),
+        // Guice 6 imports both jakarta.inject and javax.inject
+        mavenBundle("jakarta.inject", "jakarta.inject-api").versionAsInProject(),
+        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject")
+            .versionAsInProject(),
         mavenBundle("org.yaml", "snakeyaml").versionAsInProject(),
         mavenBundle("com.google.guava", "guava").versionAsInProject(),
         mavenBundle("com.google.guava", "failureaccess").versionAsInProject(),

@@ -41,6 +41,9 @@ dependencies {
     testRuntimeOnly("org.apache.servicemix.bundles:org.apache.servicemix.bundles.aopalliance:1.0_6") {
         because("Guice requires org.aopalliance.intercept package in osgi, however, aopalliance:aopalliance has no osgi headers")
     }
+    testRuntimeOnly("org.apache.servicemix.bundles:org.apache.servicemix.bundles.javax-inject:1_3") {
+        because("Guice 6 imports javax.inject in osgi, however, javax.inject:javax.inject:1 has no osgi headers")
+    }
     testRuntimeOnly("com.google.errorprone:error_prone_annotations:2.50.0") {
         because("It is needed for Guava, only recent version of error_prone_annotations have osgi headers")
     }

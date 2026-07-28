@@ -15,7 +15,7 @@ java {
         }
 
         create("guice") {
-            api(platform("com.google.inject:guice-bom:5.1.0"))
+            api(platform("com.google.inject:guice-bom:6.0.0"))
             api("com.google.inject:guice")
         }
         create("yaml") {

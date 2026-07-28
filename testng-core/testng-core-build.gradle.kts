@@ -26,7 +26,7 @@ dependencies {
     compileOnly("com.github.spotbugs:spotbugs:4.10.3")
     api("org.jcommander:jcommander:2.0")
 
-    "guiceApi"(platform("com.google.inject:guice-bom:5.1.0"))
+    "guiceApi"(platform("com.google.inject:guice-bom:6.0.0"))
     "guiceApi"("com.google.inject:guice")
     "yamlImplementation"("org.yaml:snakeyaml:2.6")
 
