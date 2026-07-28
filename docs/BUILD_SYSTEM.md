@@ -350,7 +350,8 @@ Automatically publishes snapshots on every push to master:
 # Build everything
 ./gradlew build
 
-# Build without tests
+# Build without tests. Note this also skips compiling them, so it is a smoke
+# check, not a substitute for `./gradlew build`.
 ./gradlew build -x test
 
 # Build with specific Java version for tests
