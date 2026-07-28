@@ -23,32 +23,29 @@ tasks.withType<GroovyCompile>().configureEach {
 dependencies {
     api(projects.testngCoreApi)
     // Annotations have to be available on the compile classpath for the proper compilation
-    compileOnly("com.github.spotbugs:spotbugs:4.8.1")
-    api("org.jcommander:jcommander:1.83")
+    compileOnly("com.github.spotbugs:spotbugs:4.10.3")
+    api("org.jcommander:jcommander:2.0")
 
-    "guiceApi"(platform("com.google.inject:guice-bom:5.1.0"))
+    "guiceApi"(platform("com.google.inject:guice-bom:6.0.0"))
     "guiceApi"("com.google.inject:guice")
-    "yamlImplementation"("org.yaml:snakeyaml:2.2")
+    "yamlImplementation"("org.yaml:snakeyaml:2.6")
 
     implementation(projects.testngCollections)
     implementation(projects.testngReflectionUtils)
     implementation(projects.testngRunnerApi)
-    implementation("org.webjars:jquery:3.7.1")
     testImplementation("org.testng:testng-asserts:1.0.0")
-    // Groovy 4.x is required to support Java 21 bytecode (class file major version 65)
-    // Groovy 3.x doesn't support reading Java 21 bytecode
-    testImplementation("org.apache.groovy:groovy-all:4.0.29") {
+    testImplementation("org.apache.groovy:groovy-all:5.0.7") {
         exclude("org.testng", "testng")
     }
     testImplementation("org.apache-extras.beanshell:bsh:2.0b6")
-    testImplementation("org.mockito:mockito-core:4.5.1")
+    testImplementation("org.mockito:mockito-core:5.23.0")
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-api:1.2.6")
     testImplementation("org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6")
-    testImplementation("org.xmlunit:xmlunit-assertj:2.9.1")
+    testImplementation("org.xmlunit:xmlunit-assertj:2.12.0")
     testImplementation("in.jlibs:jlibs-core:3.0.1")
     testImplementation("org.gridkit.jvmtool:heaplib:0.2")
     testImplementation("org.gridkit.lab:jvm-attach-api:1.5")
-    testImplementation("commons-io:commons-io:2.15.0")
+    testImplementation("commons-io:commons-io:2.22.0")
 }
 
 tasks.compileTestGroovy {
@@ -63,3 +60,35 @@ tasks.test {
         maxHeapSize = "1500m"
     }
 }
+
+// <editor-fold defaultstate="collapsed" desc="Bundle jQuery from the webjar">
+// The HTML reporter serves jQuery from its own resources so reports work offline. Extract it from
+// the webjar at build time rather than checking the minified file in: the version then lives in a
+// single place, and the file cannot drift from the declared dependency.
+// The configuration is resolvable only, so jQuery stays out of the published pom -- TestNG has no
+// runtime dependency on it.
+val jquery = configurations.dependencyScope("jquery") {
+    description = "The jQuery webjar the HTML reporter bundles"
+}
+val jqueryClasspath = configurations.resolvable("jqueryClasspath") {
+    extendsFrom(jquery.get())
+}
+
+dependencies {
+    add(jquery.name, "org.webjars:jquery:4.0.0")
+}
+
+val extractJquery = tasks.register<Sync>("extractJquery") {
+    description = "Extracts jquery.min.js from the webjar into the reporter's resources"
+    from(jqueryClasspath.map { zipTree(it.singleFile) }) {
+        include("META-INF/resources/webjars/jquery/*/jquery.min.js")
+        eachFile { path = "org/testng/jquery.min.js" }
+        includeEmptyDirs = false
+    }
+    into(layout.buildDirectory.dir("generated/jquery"))
+}
+
+sourceSets.main {
+    output.dir(mapOf("builtBy" to extractJquery), layout.buildDirectory.dir("generated/jquery"))
+}
+// </editor-fold>

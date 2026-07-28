@@ -20,7 +20,7 @@ public class Main implements IReporter {
   private static final String TESTNG_RESOURCE_PREFIX = "/org/testng/";
   private static final String[] RESOURCES =
       new String[] {
-        "jquery-3.6.0.min.js",
+        "jquery.min.js",
         "testng-reports.css",
         "testng-reports.js",
         "testng-reports1.css",

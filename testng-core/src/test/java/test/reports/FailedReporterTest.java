@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -133,11 +135,30 @@ public class FailedReporterTest extends SimpleBaseTest {
             .withTest(
                 Input.fromFile(
                     temp.resolve(FailedReporter.TESTNG_FAILED_XML).toAbsolutePath().toString()))
+            .withDocumentBuilderFactory(doctypeAwareDocumentBuilderFactory())
             .checkForSimilar()
             .ignoreWhitespace()
             .build();
 
     assertThat(myDiff).matches((it) -> !it.hasDifferences(), "!it.hasDifferences()");
+  }
+
+  /**
+   * Suite files carry a DOCTYPE, which XMLUnit rejects by default since 2.12.0. These are local
+   * fixtures, so allow the declaration while keeping external entity resolution off: the DTD is
+   * only declared, never fetched.
+   */
+  private static DocumentBuilderFactory doctypeAwareDocumentBuilderFactory() {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    try {
+      factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    } catch (ParserConfigurationException e) {
+      throw new IllegalStateException(e);
+    }
+    return factory;
   }
 
   @Test(dataProvider = "getTestData")

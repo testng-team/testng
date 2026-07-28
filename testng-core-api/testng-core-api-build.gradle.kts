@@ -8,11 +8,11 @@ registerOptionalFeatureVariants("guice", buildParameters.targetJavaVersion, task
 
 dependencies {
     api(projects.testngCollections)
-    compileOnly("com.github.spotbugs:spotbugs:4.8.1")
-    "guiceApi"(platform("com.google.inject:guice-bom:5.1.0"))
+    compileOnly("com.github.spotbugs:spotbugs:4.10.3")
+    "guiceApi"(platform("com.google.inject:guice-bom:6.0.0"))
     "guiceApi"("com.google.inject:guice")
 
     implementation(projects.testngReflectionUtils)
-    api("org.slf4j:slf4j-api:2.0.16")
-    testImplementation("org.slf4j:slf4j-simple:2.0.16")
+    api("org.slf4j:slf4j-api:2.0.18")
+    testImplementation("org.slf4j:slf4j-simple:2.0.18")
 }
