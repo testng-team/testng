@@ -19,7 +19,7 @@ java {
             api("com.google.inject:guice")
         }
         create("yaml") {
-            implementation("org.yaml:snakeyaml:2.2")
+            implementation("org.yaml:snakeyaml:2.6")
         }
     }
 }
