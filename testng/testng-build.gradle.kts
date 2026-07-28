@@ -104,7 +104,6 @@ val verifyPublishedPomDependencies = tasks.register("verifyPublishedPomDependenc
         "org.jcommander:jcommander scope=compile optional=false",
         "org.slf4j:slf4j-api scope=compile optional=false",
         "org.testng:testng-asserts scope=compile optional=false",
-        "org.webjars:jquery scope=runtime optional=false",
         "org.yaml:snakeyaml scope=runtime optional=true",
     ).sorted()
 

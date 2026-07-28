@@ -33,7 +33,6 @@ dependencies {
     implementation(projects.testngCollections)
     implementation(projects.testngReflectionUtils)
     implementation(projects.testngRunnerApi)
-    implementation("org.webjars:jquery:4.0.0")
     testImplementation("org.testng:testng-asserts:1.0.0")
     testImplementation("org.apache.groovy:groovy-all:5.0.7") {
         exclude("org.testng", "testng")
@@ -61,3 +60,35 @@ tasks.test {
         maxHeapSize = "1500m"
     }
 }
+
+// <editor-fold defaultstate="collapsed" desc="Bundle jQuery from the webjar">
+// The HTML reporter serves jQuery from its own resources so reports work offline. Extract it from
+// the webjar at build time rather than checking the minified file in: the version then lives in a
+// single place, and the file cannot drift from the declared dependency.
+// The configuration is resolvable only, so jQuery stays out of the published pom -- TestNG has no
+// runtime dependency on it.
+val jquery = configurations.dependencyScope("jquery") {
+    description = "The jQuery webjar the HTML reporter bundles"
+}
+val jqueryClasspath = configurations.resolvable("jqueryClasspath") {
+    extendsFrom(jquery.get())
+}
+
+dependencies {
+    add(jquery.name, "org.webjars:jquery:4.0.0")
+}
+
+val extractJquery = tasks.register<Sync>("extractJquery") {
+    description = "Extracts jquery.min.js from the webjar into the reporter's resources"
+    from(jqueryClasspath.map { zipTree(it.singleFile) }) {
+        include("META-INF/resources/webjars/jquery/*/jquery.min.js")
+        eachFile { path = "org/testng/jquery.min.js" }
+        includeEmptyDirs = false
+    }
+    into(layout.buildDirectory.dir("generated/jquery"))
+}
+
+sourceSets.main {
+    output.dir(mapOf("builtBy" to extractJquery), layout.buildDirectory.dir("generated/jquery"))
+}
+// </editor-fold>
