@@ -33,7 +33,7 @@ dependencies {
     implementation(projects.testngCollections)
     implementation(projects.testngReflectionUtils)
     implementation(projects.testngRunnerApi)
-    implementation("org.webjars:jquery:3.7.1")
+    implementation("org.webjars:jquery:4.0.0")
     testImplementation("org.testng:testng-asserts:1.0.0")
     testImplementation("org.apache.groovy:groovy-all:5.0.7") {
         exclude("org.testng", "testng")
