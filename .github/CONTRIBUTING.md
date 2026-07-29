@@ -114,7 +114,7 @@ be dropped from our list because it silently broke a `NaN` comparison.
 To apply the recipes run `./gradlew rewriteRun`, and then **always** run `./gradlew autostyleApply`
 afterwards, as two separate commands:
 
-```
+```bash
 ./gradlew rewriteRun
 ./gradlew autostyleApply
 ```
