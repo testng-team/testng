@@ -20,8 +20,12 @@ public final class ClassBasedWrapper<T> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     ClassBasedWrapper<?> wrapper = (ClassBasedWrapper<?>) o;
     return object.getClass().equals(wrapper.object.getClass());
   }

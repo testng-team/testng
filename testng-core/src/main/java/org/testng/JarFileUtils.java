@@ -139,7 +139,9 @@ class JarFileUtils {
 
   private void delete(File f) throws IOException {
     if (f.isDirectory()) {
-      for (File c : Objects.requireNonNull(f.listFiles())) delete(c);
+      for (File c : Objects.requireNonNull(f.listFiles())) {
+        delete(c);
+      }
     }
     Files.deleteIfExists(f.toPath());
   }

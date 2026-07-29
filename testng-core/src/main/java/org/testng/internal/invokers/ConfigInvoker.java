@@ -680,7 +680,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (!instanceMatch) {
       return false;
     }
-    ITestClass tc = ((ITestClass) testClass);
+    ITestClass tc = (ITestClass) testClass;
     ITestNGMethod[] methods = new ITestNGMethod[] {};
     if (configMethod == null) { // We are dealing with a test method that is doing the checking
       // First check if there were any @BeforeMethods that had the isIgnoreFailure flag.

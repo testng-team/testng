@@ -146,7 +146,9 @@ public class Model {
       result.append("(");
       StringBuilder p = new StringBuilder();
       for (int i = 0; i < parameters.length; i++) {
-        if (i > 0) p.append(", ");
+        if (i > 0) {
+          p.append(", ");
+        }
         p.append(Utils.toString(parameters[i]));
       }
       if (p.length() > 100) {

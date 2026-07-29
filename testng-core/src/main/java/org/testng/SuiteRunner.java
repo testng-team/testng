@@ -256,7 +256,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
       outputdir = DEFAULT_OUTPUT_DIR;
     }
 
-    outputDir = (null != outputdir) ? new File(outputdir).getAbsolutePath() : null;
+    outputDir = null != outputdir ? new File(outputdir).getAbsolutePath() : null;
   }
 
   private ITestRunnerFactory buildRunnerFactory(Comparator<ITestNGMethod> comparator) {

@@ -96,24 +96,37 @@ public class XmlInclude {
     final int prime = 31;
     int result = 1;
     result = prime * result + m_index;
-    result = prime * result + ((m_invocationNumbers == null) ? 0 : m_invocationNumbers.hashCode());
+    result = prime * result + (m_invocationNumbers == null ? 0 : m_invocationNumbers.hashCode());
     result = prime * result + m_parameters.hashCode();
-    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    return result;
+    return prime * result + (m_name == null ? 0 : m_name.hashCode());
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlInclude other = (XmlInclude) obj;
     if (m_invocationNumbers == null) {
-      if (other.m_invocationNumbers != null) return XmlSuite.f();
-    } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) return XmlSuite.f();
+      if (other.m_invocationNumbers != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) {
+      return XmlSuite.f();
+    }
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_name.equals(other.m_name)) {
+      return XmlSuite.f();
+    }
     if (!m_parameters.equals(other.m_parameters)) {
       return XmlSuite.f();
     }

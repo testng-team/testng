@@ -1,0 +1,134 @@
+#
+# OpenRewrite recipe list for TestNG.
+#
+# The upstream composites (org.openrewrite.staticanalysis.CommonStaticAnalysis,
+# org.openrewrite.staticanalysis.CodeCleanup and org.openrewrite.java.migrate.Java8toJava11)
+# are deliberately NOT activated. OpenRewrite has no mechanism to exclude a single sub-recipe
+# from a composite -- exclusion() filters file paths only, and the upstream request to support
+# recipe exclusion (openrewrite/rewrite#1714) is closed as won't-fix.
+#
+# Measured on src/main with the import layout below active, CommonStaticAnalysis touches 101
+# files. Roughly half of that overlaps with the list below and is wanted; the rest comes from
+# recipes we must not run:
+#
+#   ExplicitInitialization          46   field-declaration churn, no benefit
+#   FinalClass                      12   adds final to OSGi-exported classes
+#   FinalizePrivateFields           10   adds final to fields TestNG writes reflectively
+#   AbstractClassPublicConstructor   6   narrows constructors on OSGi-exported classes
+#   ReplaceLambdaWithMethodReference 4   changes synthetic class shape
+#   SimplifyBooleanExpression        2   unsound on float comparisons, see the note further down
+#   OrderImports                     1   fights google-java-format; see the style block below
+#
+# There is no binary-compatibility gate (no japicmp/revapi) protecting the exported
+# org.testng.* packages, and TestNG resolves members reflectively, so the API- and
+# reflection-affecting recipes are disqualifying on their own. Java8toJava11 is rejected
+# separately: it would add JAXB, JAX-WS, javax.inject and javax.annotation runtime
+# dependencies and rewrite the Java version in .github/workflows/*.yml.
+#
+# So the sub-recipes we want are copied out by hand below.
+#
+# Scope: src/main only. See the exclusion() block in build.gradle.kts.
+#
+---
+# Import layout, declared so OpenRewrite agrees with the google-java-format output that
+# Autostyle enforces: static imports first, one blank line, then everything else in a single
+# ASCII-sorted block, never folded into star imports. This matches .editorconfig's
+# ij_java_imports_layout = $*,|,* and its two import-on-demand thresholds (lines 34-35).
+#
+# This is not cosmetic. OpenRewrite otherwise auto-detects a layout from the sources and infers
+# one that groups java.*/javax.* separately, which disagrees with google-java-format: measured
+# over src/main, OrderImports rewrites 34 files under auto-detection and 1 with this style active.
+# Declaring it keeps rewrite output already-formatted, so autostyleApply only has to tidy up, and
+# it keeps rewriteDryRun honest as an idempotency check.
+type: specs.openrewrite.org/v1beta/style
+name: org.testng.build.ImportLayout
+styleConfigs:
+  - org.openrewrite.java.style.ImportLayoutStyle:
+      classCountToUseStarImport: 999
+      nameCountToUseStarImport: 999
+      layout:
+        - 'import static all other imports'
+        - '<blank line>'
+        - 'import all other imports'
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: org.testng.build.ModernizeMainSources
+displayName: TestNG main-source modernization
+description: >-
+  Hand-picked sub-recipes, grouped below from least to most intrusive. Recipes that matched
+  nothing are kept so a future contribution is covered by the same list.
+recipeList:
+  # --- Syntactic normalization. No intended behaviour change. ---
+  - org.openrewrite.staticanalysis.NeedBraces
+  - org.openrewrite.staticanalysis.UnnecessaryParentheses
+  - org.openrewrite.staticanalysis.MultipleVariableDeclarations
+  - org.openrewrite.staticanalysis.ModifierOrder
+  - org.openrewrite.staticanalysis.RemoveExtraSemicolons
+  - org.openrewrite.staticanalysis.UseDiamondOperator
+  - org.openrewrite.staticanalysis.UnnecessaryExplicitTypeArguments
+  - org.openrewrite.staticanalysis.UseJavaStyleArrayDeclarations
+  - org.openrewrite.staticanalysis.UpperCaseLiteralSuffixes
+  - org.openrewrite.staticanalysis.WriteOctalValuesAsDecimal
+
+  # --- Semantics-preserving library-call modernization. Includes the source-only leaves of
+  #     Java8toJava11; its build-file and dependency-adding halves are omitted. ---
+  # String handling
+  - org.openrewrite.staticanalysis.EqualsAvoidsNull
+  - org.openrewrite.staticanalysis.StringLiteralEquality
+  - org.openrewrite.staticanalysis.NoToStringOnStringType
+  - org.openrewrite.staticanalysis.NoValueOfOnStringType
+  - org.openrewrite.staticanalysis.ReplaceStringConcatenationWithStringValueOf
+  - org.openrewrite.staticanalysis.CaseInsensitiveComparisonsDoNotChangeCase
+  - org.openrewrite.staticanalysis.IndexOfReplaceableByContains
+  - org.openrewrite.staticanalysis.IndexOfChecksShouldUseAStartPosition
+  - org.openrewrite.staticanalysis.IndexOfShouldNotCompareGreaterThanZero
+  # StringBuilder
+  - org.openrewrite.staticanalysis.ChainStringBuilderAppendCalls
+  - org.openrewrite.staticanalysis.NewStringBuilderBufferWithCharArgument
+  - org.openrewrite.staticanalysis.ReplaceStringBuilderWithString
+  # Collections
+  - org.openrewrite.staticanalysis.IsEmptyCallOnCollections
+  - org.openrewrite.staticanalysis.CollectionToArrayShouldHaveProperType
+  - org.openrewrite.staticanalysis.NoDoubleBraceInitialization
+  - org.openrewrite.staticanalysis.NoEmptyCollectionWithRawType
+  - org.openrewrite.staticanalysis.SimplifyArraysAsList
+  - org.openrewrite.staticanalysis.UseMapContainsKey
+  # Boxing / numerics
+  - org.openrewrite.staticanalysis.NoPrimitiveWrappersForToStringOrCompareTo
+  - org.openrewrite.staticanalysis.PrimitiveWrapperClassConstructorToValueOf
+  - org.openrewrite.staticanalysis.BigDecimalDoubleConstructorRecipe
+  - org.openrewrite.staticanalysis.AtomicPrimitiveEqualsUsesGet
+  # Misc
+  - org.openrewrite.staticanalysis.RedundantFileCreation
+  - org.openrewrite.staticanalysis.RemoveRedundantNullCheckBeforeInstanceof
+  - org.openrewrite.staticanalysis.RemoveRedundantNullCheckBeforeLiteralEquals
+  # Java 8 -> Java 11 API equivalents
+  - org.openrewrite.java.migrate.nio.file.PathsGetToPathOf
+  - org.openrewrite.java.migrate.nio.file.RedundantUtf8Charset
+  - org.openrewrite.java.migrate.lang.JavaLangAPIs
+  - org.openrewrite.java.migrate.net.JavaNetAPIs
+  - org.openrewrite.java.migrate.concurrent.JavaConcurrentAPIs
+  - org.openrewrite.java.migrate.util.OptionalNotPresentToIsEmpty
+  - org.openrewrite.java.migrate.util.OptionalNotEmptyToIsPresent
+  - org.openrewrite.java.migrate.util.UsePredicateNot
+  - org.openrewrite.java.migrate.UseJavaUtilBase64
+  - org.openrewrite.java.migrate.CastArraysAsListToList
+
+  # --- Boolean and control-flow simplification. Read these hunks, do not skim them. ---
+  #
+  # SimplifyBooleanExpression and BooleanChecksNotInverted are deliberately NOT enabled: both
+  # rewrite `!(a <= b)` to `a > b`, which is not equivalent for NaN, where every comparison is
+  # false, so the negated form fails an assertion as intended while the `>` form silently passes.
+  #
+  # The assertion code that made this concrete -- AssertJUnit.assertEquals(double, double, double)
+  # and Assert.areEqual -- has since moved to the separate org.testng:testng-asserts artifact, and
+  # a dry-run today shows SimplifyBooleanExpression touching only two benign isEmpty() ternaries.
+  # They stay excluded anyway: the gain is cosmetic, while enabling them would put a rewrite that
+  # is unsound on floating-point comparisons behind a CI gate that rewrites new code automatically.
+  - org.openrewrite.staticanalysis.SimplifyBooleanReturn
+  - org.openrewrite.staticanalysis.NoRedundantJumpStatements
+  - org.openrewrite.staticanalysis.UnnecessaryReturnAsLastStatement
+  - org.openrewrite.staticanalysis.InlineVariable
+  - org.openrewrite.staticanalysis.NoEqualityInForCondition
+  - org.openrewrite.staticanalysis.ForLoopIncrementInUpdate

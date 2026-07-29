@@ -230,7 +230,8 @@ public class MethodHelper {
     }
     regExp = regExp.replace("\\$", "$");
     int lastDot = regExp.lastIndexOf('.');
-    String className, methodName;
+    String className;
+    String methodName;
     if (lastDot == -1) {
       className = testngMethod.getConstructorOrMethod().getDeclaringClass().getCanonicalName();
       methodName = regExp;
@@ -543,7 +544,7 @@ public class MethodHelper {
               } else {
                 return;
               }
-              System.out.println("" + im);
+              System.out.println(String.valueOf(im));
             });
     System.out.println("=====");
   }

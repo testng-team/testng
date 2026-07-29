@@ -79,46 +79,58 @@ public class XmlMethodSelector {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((m_className == null) ? 0 : m_className.hashCode());
+    result = prime * result + (m_className == null ? 0 : m_className.hashCode());
     if (getScript() != null) {
       result =
           prime * result
-              + ((getScript().getExpression() == null)
-                  ? 0
-                  : getScript().getExpression().hashCode());
+              + (getScript().getExpression() == null ? 0 : getScript().getExpression().hashCode());
       result =
           prime * result
-              + ((getScript().getLanguage() == null) ? 0 : getScript().getLanguage().hashCode());
+              + (getScript().getLanguage() == null ? 0 : getScript().getLanguage().hashCode());
     }
-    result = prime * result + m_priority;
-    return result;
+    return prime * result + m_priority;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlMethodSelector other = (XmlMethodSelector) obj;
     if (m_className == null) {
-      if (other.m_className != null) return XmlSuite.f();
-    } else if (!m_className.equals(other.m_className)) return XmlSuite.f();
-    if (getScript() == null || getScript().getExpression() == null) {
-      if (other.getScript() != null && other.getScript().getExpression() != null)
+      if (other.m_className != null) {
         return XmlSuite.f();
+      }
+    } else if (!m_className.equals(other.m_className)) {
+      return XmlSuite.f();
+    }
+    if (getScript() == null || getScript().getExpression() == null) {
+      if (other.getScript() != null && other.getScript().getExpression() != null) {
+        return XmlSuite.f();
+      }
     } else if (!getScript()
         .getExpression()
         .equals(other.getScript() == null ? null : other.getScript().getExpression())) {
       return XmlSuite.f();
     }
     if (getScript() == null || getScript().getLanguage() == null) {
-      if (other.getScript() != null && other.getScript().getLanguage() != null) return XmlSuite.f();
+      if (other.getScript() != null && other.getScript().getLanguage() != null) {
+        return XmlSuite.f();
+      }
     } else if (!getScript()
         .getLanguage()
         .equals(other.getScript() == null ? null : other.getScript().getLanguage())) {
       return XmlSuite.f();
     }
-    if (m_priority != other.m_priority) return XmlSuite.f();
+    if (m_priority != other.m_priority) {
+      return XmlSuite.f();
+    }
     return true;
   }
 }

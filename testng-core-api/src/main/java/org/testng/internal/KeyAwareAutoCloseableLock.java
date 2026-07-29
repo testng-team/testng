@@ -37,8 +37,12 @@ public final class KeyAwareAutoCloseableLock {
 
     @Override
     public boolean equals(Object object) {
-      if (this == object) return true;
-      if (object == null || getClass() != object.getClass()) return false;
+      if (this == object) {
+        return true;
+      }
+      if (object == null || getClass() != object.getClass()) {
+        return false;
+      }
       AutoReleasable that = (AutoReleasable) object;
       return Objects.equals(lock, that.lock);
     }

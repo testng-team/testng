@@ -28,8 +28,12 @@ public final class AutoCloseableLock implements Closeable {
 
   @Override
   public boolean equals(Object object) {
-    if (this == object) return true;
-    if (object == null || getClass() != object.getClass()) return false;
+    if (this == object) {
+      return true;
+    }
+    if (object == null || getClass() != object.getClass()) {
+      return false;
+    }
     AutoCloseableLock that = (AutoCloseableLock) object;
     return Objects.equals(internalLock, that.internalLock);
   }

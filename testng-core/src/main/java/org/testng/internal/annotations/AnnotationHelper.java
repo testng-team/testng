@@ -285,7 +285,7 @@ public class AnnotationHelper {
             }
 
             if (Arrays.stream(m.getAnnotations())
-                .anyMatch(a -> a.annotationType().getName().equals("groovy.transform.Internal"))) {
+                .anyMatch(a -> "groovy.transform.Internal".equals(a.annotationType().getName()))) {
               Utils.log(
                   "", 2, "Method " + m + " is being skipped since it a Groovy internal method.");
               continue;

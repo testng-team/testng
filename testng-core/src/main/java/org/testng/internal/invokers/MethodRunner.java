@@ -70,7 +70,7 @@ public class MethodRunner implements IMethodRunner {
       } finally {
         boolean lastSuccess = false;
         if (tmpResultsIndex >= 0) {
-          lastSuccess = (tmpResults.get(tmpResultsIndex).getStatus() == ITestResult.SUCCESS);
+          lastSuccess = tmpResults.get(tmpResultsIndex).getStatus() == ITestResult.SUCCESS;
         }
         if (failure.instances.isEmpty() || lastSuccess) {
           result.addAll(tmpResults);

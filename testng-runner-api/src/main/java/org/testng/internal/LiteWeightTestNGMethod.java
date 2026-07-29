@@ -521,17 +521,17 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
     }
 
     ITestNGMethod that = (ITestNGMethod) o;
-    boolean value =
-        realClass.equals(that.getRealClass())
-            && qualifiedName.equals(that.getQualifiedName())
-            && equalParamTypes(parameterTypes, that.getParameterTypes());
-    return value;
+    return realClass.equals(that.getRealClass())
+        && qualifiedName.equals(that.getQualifiedName())
+        && equalParamTypes(parameterTypes, that.getParameterTypes());
   }
 
   boolean equalParamTypes(Class<?>[] params1, Class<?>[] params2) {
     if (params1.length == params2.length) {
       for (int i = 0; i < params1.length; i++) {
-        if (params1[i] != params2[i]) return false;
+        if (params1[i] != params2[i]) {
+          return false;
+        }
       }
       return true;
     }

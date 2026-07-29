@@ -96,7 +96,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     }
     List<IObject.IdentifiableObject> allInstances = instanceMap.get(cls);
     IObject.IdentifiableObject thisInstance =
-        (allInstances != null && !allInstances.isEmpty()) ? allInstances.get(0) : null;
+        allInstances != null && !allInstances.isEmpty() ? allInstances.get(0) : null;
 
     // If annotation class and instances are abstract, skip them
     if ((null == thisInstance) && Modifier.isAbstract(cls.getModifiers())) {
@@ -264,7 +264,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   }
 
   private static boolean isNotTestNGClass(Class<?> c, IAnnotationFinder annotationFinder) {
-    return (!isTestNGClass(c, annotationFinder));
+    return !isTestNGClass(c, annotationFinder);
   }
 
   /**

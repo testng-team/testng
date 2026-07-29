@@ -69,8 +69,7 @@ public final class Utils {
   public static void writeUtf8File(
       @Nullable String outputDir, String fileName, XMLStringBuffer xsb, String prefix) {
     try {
-      final File outDir =
-          (outputDir != null) ? new File(outputDir) : new File("").getAbsoluteFile();
+      final File outDir = outputDir != null ? new File(outputDir) : new File("").getAbsoluteFile();
       if (!outDir.exists()) {
         boolean ignored = outDir.mkdirs();
       }

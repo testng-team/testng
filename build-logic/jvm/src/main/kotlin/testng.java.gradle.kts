@@ -4,7 +4,6 @@ plugins {
     `java-base`
     id("build-logic.build-params")
     id("testng.versioning")
-    id("testng.style")
     id("testng.repositories")
     // Improves Gradle Test logging
     // See https://github.com/vlsi/vlsi-release-plugins/tree/master/plugins/gradle-extensions-plugin
@@ -41,6 +40,10 @@ tasks.configureEach<Test> {
     inputs.property("java.vendor", System.getProperty("java.vendor"))
     inputs.property("java.vm.version", System.getProperty("java.vm.version"))
     inputs.property("java.vm.vendor", System.getProperty("java.vm.vendor"))
+}
+
+if (!buildParameters.skipAutostyle) {
+    apply(plugin = "testng.style")
 }
 
 if (!buildParameters.skipErrorProne) {

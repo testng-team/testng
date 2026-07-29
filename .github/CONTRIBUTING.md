@@ -99,3 +99,37 @@ exit $RESULT
 This will cause git to trigger the code styling automatically right before commiting your changes locally.
 
 After that you can quickly check if there were any formatting that was applied using `git status`
+
+### Automated refactoring with OpenRewrite
+
+The codebase makes use of [OpenRewrite](https://docs.openrewrite.org/) for automated refactoring.
+It is a maintenance tool you run on purpose; it is never part of `check` or `build`, so a normal
+build never invokes it.
+
+To see what the recipes would change without touching your working tree, run
+`./gradlew rewriteDryRun`. It writes a patch to `build/reports/rewrite/rewrite.patch`. **Read that
+patch before applying it** -- recipes are not always semantics-preserving, and at least one had to
+be dropped from our list because it silently broke a `NaN` comparison.
+
+To apply the recipes run `./gradlew rewriteRun`, and then **always** run `./gradlew autostyleApply`
+afterwards, as two separate commands:
+
+```bash
+./gradlew rewriteRun
+./gradlew autostyleApply
+```
+
+OpenRewrite does not emit google-java-format output, so Autostyle has to have the last word or
+`autostyleCheck` will fail. Do not combine the two into a single Gradle invocation: task ordering
+between them is not constrained and Gradle may interleave them.
+
+CI runs `./gradlew rewriteDryRun -PfailOnRewriteDryRun=true`, which fails when the recipes still
+have work to do. That exact command reproduces the check locally.
+
+The active recipes are listed in [`rewrite.yml`](../rewrite.yml) at the root of the repository. It
+is a hand-picked list rather than one of OpenRewrite's bundled composite recipes; the file explains
+why. If you want to add a recipe, add it there and include the dry-run patch in your pull request.
+
+**Note:** the OpenRewrite tasks are not compatible with Gradle's configuration cache
+([rewrite-gradle-plugin#366](https://github.com/openrewrite/rewrite-gradle-plugin/issues/366)). If
+you have it enabled, add `--no-configuration-cache` to the commands above.
