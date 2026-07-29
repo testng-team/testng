@@ -28,6 +28,10 @@ wrong or the expected list needs updating — decide which, do not just update t
 Modules are listed in `settings.gradle.kts`; only `:testng` is published, as a shaded jar merging
 the others. `docs/BUILD_SYSTEM.md` describes the structure.
 
+Before writing documentation, read what is already in `docs/` and `.github/`. Most build topics are
+covered there; a second copy drifts from the first, and this file was itself written as a fifth copy
+before being cut back to links.
+
 Two things that are not documented elsewhere and cost tool calls to discover:
 
 - Per-project build files are named `<module>/<module>-build.gradle.kts`, not `build.gradle.kts`.
@@ -101,10 +105,14 @@ version heading.
 
 ## Working style
 
-- **Verify claims before acting on them.** A statement inherited from a pull request description, an
-  issue or a comment is not evidence. Checking a release date or a changelog costs a minute; acting
-  on a wrong premise costs hours. This has already caused one full migration to be written and
-  reverted.
+- **Verify claims before acting on them** — including your own. A pull request description, an issue
+  comment, a memory or a conclusion from an earlier session are all hearsay until re-checked against
+  whatever settles them: the build for anything about this repository, the registry or upstream
+  release notes for anything about a dependency. A release date costs a minute to check; acting on a
+  wrong premise costs hours. This has already caused one full migration to be written and reverted,
+  and one obsolete memory to be copied into a committed file.
+- Running a documented command proves it executes, not that it does what the text claims. If the
+  text promises an effect — filtering, failing, producing a value — measure that effect.
 - Report what you actually observed. If a run was flaky, say so and show both runs.
 - When an upgrade is refused, record the error that refused it, so the next person does not retry it
   blind.
