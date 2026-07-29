@@ -156,7 +156,7 @@ public class JUnitReportReporter implements IReporter {
 
       // Add the full reporter output once as a child system-out element of testsuite.
       List<String> output = Reporter.getOutput();
-      if ((!output.isEmpty())) {
+      if (!output.isEmpty()) {
         putElement(xsb, XMLConstants.SYSTEM_OUT, new Properties(), true);
         xsb.addCDATA(String.join("\n", output));
         xsb.pop(XMLConstants.SYSTEM_OUT);

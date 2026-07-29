@@ -34,7 +34,7 @@ public class VerboseReporter implements IConfigurationListener, ITestListener {
     FAILURE,
     SKIP,
     SUCCESS_PERCENTAGE_FAILURE,
-    STARTED;
+    STARTED
   }
 
   /**

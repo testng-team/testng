@@ -69,8 +69,12 @@ public final class Objects {
       StringBuilder result = new StringBuilder("[" + m_className + " ");
       for (int i = 0; i < values.size(); i++) {
         ValueHolder vh = values.get(i);
-        if (m_omitNulls && vh.isNull()) continue;
-        if (m_omitEmptyStrings && vh.isEmptyString()) continue;
+        if (m_omitNulls && vh.isNull()) {
+          continue;
+        }
+        if (m_omitEmptyStrings && vh.isEmptyString()) {
+          continue;
+        }
 
         if (i > 0) {
           result.append(" ");

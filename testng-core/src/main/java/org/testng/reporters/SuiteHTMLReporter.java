@@ -469,7 +469,7 @@ public class SuiteHTMLReporter implements IReporter {
       prefix = AFTER;
     }
 
-    if (!s.equals(SP)) {
+    if (!SP.equals(s)) {
       result.append("<td title=\"").append(s).append("\">");
       int open = s.lastIndexOf("(");
       int start = s.substring(0, open).lastIndexOf(".");

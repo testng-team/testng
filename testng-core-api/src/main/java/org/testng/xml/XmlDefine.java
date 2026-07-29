@@ -63,7 +63,6 @@ public class XmlDefine {
   @Override
   public int hashCode() {
     int result = m_name != null ? m_name.hashCode() : 0;
-    result = 31 * result + (m_includes != null ? m_includes.hashCode() : 0);
-    return result;
+    return 31 * result + (m_includes != null ? m_includes.hashCode() : 0);
   }
 }

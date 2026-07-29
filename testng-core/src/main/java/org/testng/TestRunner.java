@@ -810,10 +810,9 @@ public class TestRunner
             .testContext(this)
             .listeners(this.m_classListeners.values())
             .build();
-    List<IWorker<ITestNGMethod>> result =
-        AbstractParallelWorker.newWorker(m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances())
-            .createWorkers(args);
-    return result;
+    return AbstractParallelWorker.newWorker(
+            m_xmlTest.getParallel(), m_xmlTest.getGroupByInstances())
+        .createWorkers(args);
   }
 
   private void afterRun() {

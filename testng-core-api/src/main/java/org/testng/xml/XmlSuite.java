@@ -263,7 +263,7 @@ public class XmlSuite implements Cloneable {
    * @param parallel The parallel mode.
    */
   public void setParallel(ParallelMode parallel) {
-    m_parallel = (parallel == null) ? DEFAULT_PARALLEL : parallel;
+    m_parallel = parallel == null ? DEFAULT_PARALLEL : parallel;
   }
 
   public void setParentModule(String parentModule) {
@@ -673,29 +673,25 @@ public class XmlSuite implements Cloneable {
     final int prime = 31;
     int result = 1;
     result =
-        prime * result + ((m_configFailurePolicy == null) ? 0 : m_configFailurePolicy.hashCode());
+        prime * result + (m_configFailurePolicy == null ? 0 : m_configFailurePolicy.hashCode());
     result = prime * result + m_dataProviderThreadCount;
-    result = prime * result + ((m_fileName == null) ? 0 : m_fileName.hashCode());
-    result = prime * result + ((m_listeners == null) ? 0 : m_listeners.hashCode());
+    result = prime * result + (m_fileName == null ? 0 : m_fileName.hashCode());
+    result = prime * result + (m_listeners == null ? 0 : m_listeners.hashCode());
 
-    result = prime * result + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
-    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    result =
-        prime * result + ((m_objectFactoryClass == null) ? 0 : m_objectFactoryClass.hashCode());
-    result = prime * result + ((m_parallel == null) ? 0 : m_parallel.hashCode());
+    result = prime * result + (m_methodSelectors == null ? 0 : m_methodSelectors.hashCode());
+    result = prime * result + (m_name == null ? 0 : m_name.hashCode());
+    result = prime * result + (m_objectFactoryClass == null ? 0 : m_objectFactoryClass.hashCode());
+    result = prime * result + (m_parallel == null ? 0 : m_parallel.hashCode());
     result =
         prime * result
-            + ((m_skipFailedInvocationCounts == null)
-                ? 0
-                : m_skipFailedInvocationCounts.hashCode());
-    result = prime * result + ((m_suiteFiles == null) ? 0 : m_suiteFiles.hashCode());
-    result = prime * result + ((m_test == null) ? 0 : m_test.hashCode());
-    result = prime * result + ((m_tests == null) ? 0 : m_tests.hashCode());
+            + (m_skipFailedInvocationCounts == null ? 0 : m_skipFailedInvocationCounts.hashCode());
+    result = prime * result + (m_suiteFiles == null ? 0 : m_suiteFiles.hashCode());
+    result = prime * result + (m_test == null ? 0 : m_test.hashCode());
+    result = prime * result + (m_tests == null ? 0 : m_tests.hashCode());
     result = prime * result + m_threadCount;
-    result = prime * result + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
-    result = prime * result + ((m_verbose == null) ? 0 : m_verbose.hashCode());
-    result = prime * result + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
-    return result;
+    result = prime * result + (m_timeOut == null ? 0 : m_timeOut.hashCode());
+    result = prime * result + (m_verbose == null ? 0 : m_verbose.hashCode());
+    return prime * result + (m_xmlPackages == null ? 0 : m_xmlPackages.hashCode());
   }
 
   /** Used to debug equals() bugs. */
@@ -762,27 +758,57 @@ public class XmlSuite implements Cloneable {
     }
 
     if (m_skipFailedInvocationCounts == null) {
-      if (other.m_skipFailedInvocationCounts != null) return f();
-    } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts)) return f();
+      if (other.m_skipFailedInvocationCounts != null) {
+        return f();
+      }
+    } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts)) {
+      return f();
+    }
     if (m_suiteFiles == null) {
-      if (other.m_suiteFiles != null) return f();
-    } else if (!m_suiteFiles.equals(other.m_suiteFiles)) return f();
+      if (other.m_suiteFiles != null) {
+        return f();
+      }
+    } else if (!m_suiteFiles.equals(other.m_suiteFiles)) {
+      return f();
+    }
     if (m_test == null) {
-      if (other.m_test != null) return f();
-    } else if (!m_test.equals(other.m_test)) return f();
+      if (other.m_test != null) {
+        return f();
+      }
+    } else if (!m_test.equals(other.m_test)) {
+      return f();
+    }
     if (m_tests == null) {
-      if (other.m_tests != null) return f();
-    } else if (!m_tests.equals(other.m_tests)) return f();
-    if (m_threadCount != other.m_threadCount) return f();
+      if (other.m_tests != null) {
+        return f();
+      }
+    } else if (!m_tests.equals(other.m_tests)) {
+      return f();
+    }
+    if (m_threadCount != other.m_threadCount) {
+      return f();
+    }
     if (m_timeOut == null) {
-      if (other.m_timeOut != null) return f();
-    } else if (!m_timeOut.equals(other.m_timeOut)) return f();
+      if (other.m_timeOut != null) {
+        return f();
+      }
+    } else if (!m_timeOut.equals(other.m_timeOut)) {
+      return f();
+    }
     if (m_verbose == null) {
-      if (other.m_verbose != null) return f();
-    } else if (!m_verbose.equals(other.m_verbose)) return f();
+      if (other.m_verbose != null) {
+        return f();
+      }
+    } else if (!m_verbose.equals(other.m_verbose)) {
+      return f();
+    }
     if (m_xmlPackages == null) {
-      if (other.m_xmlPackages != null) return f();
-    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return f();
+      if (other.m_xmlPackages != null) {
+        return f();
+      }
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) {
+      return f();
+    }
     return true;
   }
 

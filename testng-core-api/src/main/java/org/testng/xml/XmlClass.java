@@ -77,7 +77,9 @@ public class XmlClass implements Cloneable {
 
   /** @return Returns the className. */
   public Class<?> getSupportClass() {
-    if (m_class == null) loadClass();
+    if (m_class == null) {
+      loadClass();
+    }
     return m_class;
   }
 
@@ -202,11 +204,10 @@ public class XmlClass implements Cloneable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((m_class == null) ? 0 : m_class.hashCode());
+    result = prime * result + (m_class == null ? 0 : m_class.hashCode());
     result = prime * result + (m_loadClasses ? 1 : 0);
     result = prime * result + m_index;
-    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    return result;
+    return prime * result + (m_name == null ? 0 : m_name.hashCode());
   }
 
   @Override
@@ -214,15 +215,23 @@ public class XmlClass implements Cloneable {
     if (this == obj) {
       return true;
     }
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlClass other = (XmlClass) obj;
     if (other.m_loadClasses != m_loadClasses) {
       return XmlSuite.f();
     }
     if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
+      if (other.m_name != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_name.equals(other.m_name)) {
+      return XmlSuite.f();
+    }
 
     return true;
   }

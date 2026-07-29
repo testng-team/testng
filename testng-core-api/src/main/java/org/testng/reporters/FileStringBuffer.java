@@ -92,13 +92,17 @@ public class FileStringBuffer implements IBuffer {
     char[] buf = new char[MAX];
     while (true) {
       int length = input.read(buf);
-      if (length < 0) break;
+      if (length < 0) {
+        break;
+      }
       output.write(buf, 0, length);
     }
   }
 
   private void flushToFile() {
-    if (m_sb.length() == 0) return;
+    if (m_sb.length() == 0) {
+      return;
+    }
 
     if (m_file == null) {
       try {

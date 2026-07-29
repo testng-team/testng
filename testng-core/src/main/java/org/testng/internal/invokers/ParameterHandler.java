@@ -124,9 +124,9 @@ class ParameterHandler {
     }
 
     boolean runInParallel() {
-      return ((parameterHolder != null)
+      return (parameterHolder != null)
           && (parameterHolder.origin == ParameterHolder.ParameterOrigin.ORIGIN_DATA_PROVIDER
-              && parameterHolder.dataProviderHolder.isParallel()));
+              && parameterHolder.dataProviderHolder.isParallel());
     }
 
     boolean isBubbleUpFailures() {

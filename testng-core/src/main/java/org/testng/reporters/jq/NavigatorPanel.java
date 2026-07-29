@@ -203,7 +203,7 @@ public class NavigatorPanel extends BasePanel {
     private final Predicate<ITestResult> condition;
 
     public ResultsByStatus(ISuite suite, String type, int status) {
-      this(suite, type, status, (result) -> true);
+      this(suite, type, status, result -> true);
     }
 
     public ResultsByStatus(

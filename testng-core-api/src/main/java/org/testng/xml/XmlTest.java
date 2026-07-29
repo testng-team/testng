@@ -451,8 +451,11 @@ public class XmlTest implements Cloneable {
   }
 
   public Boolean getAllowReturnValues() {
-    if (m_allowReturnValues != null) return m_allowReturnValues;
-    else return getSuite().getAllowReturnValues();
+    if (m_allowReturnValues != null) {
+      return m_allowReturnValues;
+    } else {
+      return getSuite().getAllowReturnValues();
+    }
   }
 
   public void setAllowReturnValues(Boolean allowReturnValues) {
@@ -480,34 +483,31 @@ public class XmlTest implements Cloneable {
     int result = 1;
     result =
         prime * result
-            + ((m_xmlGroups == null || m_xmlGroups.getRun() == null)
+            + (m_xmlGroups == null || m_xmlGroups.getRun() == null
                 ? 0
                 : m_xmlGroups.getRun().getExcludes().hashCode());
     result =
         prime * result
-            + ((m_failedInvocationNumbers == null) ? 0 : m_failedInvocationNumbers.hashCode());
+            + (m_failedInvocationNumbers == null ? 0 : m_failedInvocationNumbers.hashCode());
     result =
         prime * result
-            + ((m_xmlGroups == null || m_xmlGroups.getRun() == null)
+            + (m_xmlGroups == null || m_xmlGroups.getRun() == null
                 ? 0
                 : m_xmlGroups.getRun().getIncludes().hashCode());
-    result = prime * result + ((m_xmlGroups == null) ? 0 : m_xmlGroups.getDefines().hashCode());
-    result = prime * result + ((m_methodSelectors == null) ? 0 : m_methodSelectors.hashCode());
-    result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-    result = prime * result + ((m_parallel == null) ? 0 : m_parallel.hashCode());
-    result = prime * result + ((m_parameters == null) ? 0 : m_parameters.hashCode());
-    result = prime * result + ((m_preserveOrder == null) ? 0 : m_preserveOrder.hashCode());
+    result = prime * result + (m_xmlGroups == null ? 0 : m_xmlGroups.getDefines().hashCode());
+    result = prime * result + (m_methodSelectors == null ? 0 : m_methodSelectors.hashCode());
+    result = prime * result + (m_name == null ? 0 : m_name.hashCode());
+    result = prime * result + (m_parallel == null ? 0 : m_parallel.hashCode());
+    result = prime * result + (m_parameters == null ? 0 : m_parameters.hashCode());
+    result = prime * result + (m_preserveOrder == null ? 0 : m_preserveOrder.hashCode());
     result =
         prime * result
-            + ((m_skipFailedInvocationCounts == null)
-                ? 0
-                : m_skipFailedInvocationCounts.hashCode());
+            + (m_skipFailedInvocationCounts == null ? 0 : m_skipFailedInvocationCounts.hashCode());
     result = prime * result + m_threadCount;
-    result = prime * result + ((m_timeOut == null) ? 0 : m_timeOut.hashCode());
-    result = prime * result + ((m_verbose == null) ? 0 : m_verbose.hashCode());
-    result = prime * result + ((m_xmlClasses == null) ? 0 : m_xmlClasses.hashCode());
-    result = prime * result + ((m_xmlPackages == null) ? 0 : m_xmlPackages.hashCode());
-    return result;
+    result = prime * result + (m_timeOut == null ? 0 : m_timeOut.hashCode());
+    result = prime * result + (m_verbose == null ? 0 : m_verbose.hashCode());
+    result = prime * result + (m_xmlClasses == null ? 0 : m_xmlClasses.hashCode());
+    return prime * result + (m_xmlPackages == null ? 0 : m_xmlPackages.hashCode());
   }
 
   @Override
@@ -515,11 +515,17 @@ public class XmlTest implements Cloneable {
     if (this == obj) {
       return true;
     }
-    if (obj == null) return XmlSuite.f();
-    if (getClass() != obj.getClass()) return XmlSuite.f();
+    if (obj == null) {
+      return XmlSuite.f();
+    }
+    if (getClass() != obj.getClass()) {
+      return XmlSuite.f();
+    }
     XmlTest other = (XmlTest) obj;
     if (m_xmlGroups == null) {
-      if (other.m_xmlGroups != null) return XmlSuite.f();
+      if (other.m_xmlGroups != null) {
+        return XmlSuite.f();
+      }
     } else {
       if (other.m_xmlGroups == null) {
         return false;
@@ -539,41 +545,85 @@ public class XmlTest implements Cloneable {
       }
     }
     if (m_failedInvocationNumbers == null) {
-      if (other.m_failedInvocationNumbers != null) return XmlSuite.f();
-    } else if (!m_failedInvocationNumbers.equals(other.m_failedInvocationNumbers))
+      if (other.m_failedInvocationNumbers != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_failedInvocationNumbers.equals(other.m_failedInvocationNumbers)) {
       return XmlSuite.f();
+    }
     if (m_methodSelectors == null) {
-      if (other.m_methodSelectors != null) return XmlSuite.f();
-    } else if (!m_methodSelectors.equals(other.m_methodSelectors)) return XmlSuite.f();
-    if (m_name == null) {
-      if (other.m_name != null) return XmlSuite.f();
-    } else if (!m_name.equals(other.m_name)) return XmlSuite.f();
-    if (m_parallel == null) {
-      if (other.m_parallel != null) return XmlSuite.f();
-    } else if (!m_parallel.equals(other.m_parallel)) return XmlSuite.f();
-    if (m_parameters == null) {
-      if (other.m_parameters != null) return XmlSuite.f();
-    } else if (!m_parameters.equals(other.m_parameters)) return XmlSuite.f();
-    if (m_preserveOrder == null) {
-      if (other.m_preserveOrder != null) return XmlSuite.f();
-    } else if (!m_preserveOrder.equals(other.m_preserveOrder)) return XmlSuite.f();
-    if (m_skipFailedInvocationCounts == null) {
-      if (other.m_skipFailedInvocationCounts != null) return XmlSuite.f();
-    } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts))
+      if (other.m_methodSelectors != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_methodSelectors.equals(other.m_methodSelectors)) {
       return XmlSuite.f();
-    if (m_threadCount != other.m_threadCount) return XmlSuite.f();
+    }
+    if (m_name == null) {
+      if (other.m_name != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_name.equals(other.m_name)) {
+      return XmlSuite.f();
+    }
+    if (m_parallel == null) {
+      if (other.m_parallel != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_parallel.equals(other.m_parallel)) {
+      return XmlSuite.f();
+    }
+    if (m_parameters == null) {
+      if (other.m_parameters != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_parameters.equals(other.m_parameters)) {
+      return XmlSuite.f();
+    }
+    if (m_preserveOrder == null) {
+      if (other.m_preserveOrder != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_preserveOrder.equals(other.m_preserveOrder)) {
+      return XmlSuite.f();
+    }
+    if (m_skipFailedInvocationCounts == null) {
+      if (other.m_skipFailedInvocationCounts != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_skipFailedInvocationCounts.equals(other.m_skipFailedInvocationCounts)) {
+      return XmlSuite.f();
+    }
+    if (m_threadCount != other.m_threadCount) {
+      return XmlSuite.f();
+    }
     if (m_timeOut == null) {
-      if (other.m_timeOut != null) return XmlSuite.f();
-    } else if (!m_timeOut.equals(other.m_timeOut)) return XmlSuite.f();
+      if (other.m_timeOut != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_timeOut.equals(other.m_timeOut)) {
+      return XmlSuite.f();
+    }
     if (m_verbose == null) {
-      if (other.m_verbose != null) return XmlSuite.f();
-    } else if (!m_verbose.equals(other.m_verbose)) return XmlSuite.f();
+      if (other.m_verbose != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_verbose.equals(other.m_verbose)) {
+      return XmlSuite.f();
+    }
     if (m_xmlClasses == null) {
-      if (other.m_xmlClasses != null) return XmlSuite.f();
-    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) return XmlSuite.f();
+      if (other.m_xmlClasses != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_xmlClasses.equals(other.m_xmlClasses)) {
+      return XmlSuite.f();
+    }
     if (m_xmlPackages == null) {
-      if (other.m_xmlPackages != null) return XmlSuite.f();
-    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) return XmlSuite.f();
+      if (other.m_xmlPackages != null) {
+        return XmlSuite.f();
+      }
+    } else if (!m_xmlPackages.equals(other.m_xmlPackages)) {
+      return XmlSuite.f();
+    }
 
     return true;
   }

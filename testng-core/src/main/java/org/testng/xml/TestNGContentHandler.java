@@ -76,9 +76,9 @@ public class TestNGContentHandler extends DefaultHandler {
             HttpURLConnection conn = (HttpURLConnection) urlConnection;
 
             int status = conn.getResponseCode();
-            if ((status == HttpURLConnection.HTTP_MOVED_TEMP
+            if (status == HttpURLConnection.HTTP_MOVED_TEMP
                 || status == HttpURLConnection.HTTP_MOVED_PERM
-                || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+                || status == HttpURLConnection.HTTP_SEE_OTHER) {
 
               String newUrl = conn.getHeaderField("Location");
               conn = (HttpURLConnection) new URL(newUrl).openConnection();
@@ -160,7 +160,7 @@ public class TestNGContentHandler extends DefaultHandler {
     try {
 
       URL url = new URL(URLDecoder.decode(systemId, StandardCharsets.UTF_8).trim());
-      if (url.getProtocol().equals("file")) {
+      if ("file".equals(url.getProtocol())) {
         File file = new File(url.getFile());
         boolean isDirectory = file.isDirectory();
         boolean fileExists = file.exists();
@@ -180,7 +180,7 @@ public class TestNGContentHandler extends DefaultHandler {
       throw new RuntimeException(e);
     }
     // scheme is null for local uri
-    return uri.getScheme() != null && uri.getScheme().equals("http");
+    return "http".equals(uri.getScheme());
   }
 
   private InputStream loadDtdUsingClassLoader() {
@@ -850,6 +850,5 @@ public class TestNGContentHandler extends DefaultHandler {
             + " https://github.com/junit-team/testng-engine which is now maintained by the JUnit team";
     // Intentionally logging this to the error console so that it's visible to the user.
     System.err.println(msg);
-    ;
   }
 }
