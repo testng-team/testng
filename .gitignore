@@ -29,3 +29,7 @@ outputDir/
 **/bin/
 node_modules
 .kotlin
+
+# Agent tooling state
+.serena/
+.context/

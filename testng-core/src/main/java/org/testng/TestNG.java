@@ -542,7 +542,6 @@ public class TestNG {
       ITestAnnotation test = finder.findAnnotation(c, ITestAnnotation.class);
       String suiteName = getDefaultSuiteName();
       String testName = getDefaultTestName();
-      boolean isJUnit = false;
       if (test != null) {
         suiteName = defaultIfStringEmpty(test.getSuiteName(), suiteName);
         testName = defaultIfStringEmpty(test.getTestName(), testName);
