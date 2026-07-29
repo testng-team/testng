@@ -82,7 +82,7 @@ jobs:
         id: run_test_cases
         uses: burrunan/gradle-cache-action@4b67497abd37a511d6c1dc6299bdd84ff39f7bf5 # v3
         with:
-          job-id: jdk${{ matrix.jdk.version }}
+          job-id: jdk${{ matrix.java_version }}
           arguments: |
             --no-parallel --no-daemon --scan
             build
@@ -99,5 +99,5 @@ jobs:
         if: ${{ failure() && steps.run_test_cases.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: build-reports-${{ matrix.jdk.group }}-${{ matrix.jdk.version }}-${{ steps.build_id.outputs.unique_id }}
+          name: build-reports-${{ matrix.java_distribution }}-${{ matrix.java_version }}-${{ steps.build_id.outputs.unique_id }}
           path: testng-core/build/reports/tests/test/**
