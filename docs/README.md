@@ -82,7 +82,8 @@ cd testng
 # Build everything
 ./gradlew build
 
-# Build without tests
+# Build without tests. Note this also skips compiling them, so it is a smoke
+# check, not a substitute for `./gradlew build`.
 ./gradlew build -x test
 
 # Run tests with specific Java version
