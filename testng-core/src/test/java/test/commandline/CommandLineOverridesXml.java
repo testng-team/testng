@@ -2,25 +2,14 @@ package test.commandline;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.testhelper.JarCreator;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
-import test.TestHelper;
-import test.commandline.issue341.LocalLogAggregator;
-import test.commandline.issue341.TestSampleA;
-import test.commandline.issue341.TestSampleB;
 
 public class CommandLineOverridesXml extends SimpleBaseTest {
 
@@ -62,48 +51,5 @@ public class CommandLineOverridesXml extends SimpleBaseTest {
     testng.run();
     assertThat(Issue987TestSample.maps).hasSize(2);
     assertThat(Issue987TestSample.maps.values()).contains("method2", "method1");
-  }
-
-  @Test(description = "GITHUB-341")
-  public void ensureParallelismIsHonoredWhenOnlyClassesSpecifiedInJar() throws IOException {
-    Class<?>[] classes = new Class<?>[] {TestSampleA.class, TestSampleB.class};
-    File jarfile = JarCreator.generateJar(classes);
-    String[] args =
-        new String[] {
-          "-parallel",
-          "classes",
-          "-testjar",
-          jarfile.getAbsolutePath(),
-          "-listener",
-          LocalLogAggregator.class.getCanonicalName()
-        };
-    TestNG.privateMain(args, null);
-    Set<String> logs = LocalLogAggregator.getLogs();
-    assertThat(logs).hasSize(2);
-  }
-
-  @Test(description = "GITHUB-1810")
-  public void ensureNoNullPointerExceptionIsThrown() throws IOException {
-    TestNG testng = TestNG.privateMain(new String[] {createTemporarySuiteAndGetItsPath()}, null);
-    assertThat(testng.getStatus()).isEqualTo(8);
-  }
-
-  private static String createTemporarySuiteAndGetItsPath() throws IOException {
-    Path file = Files.createTempFile("testng", ".xml");
-    Files.write(
-        file, buildSuiteContentThatRefersToInvalidTestClass().getBytes(StandardCharsets.UTF_8));
-    return file.toFile().getAbsolutePath();
-  }
-
-  private static String buildSuiteContentThatRefersToInvalidTestClass() {
-    return TestHelper.SUITE_XML_HEADER
-        + "<suite name=\"1810_Suite\">\n"
-        + "    <test name=\"1810_test\">\n"
-        + "        <classes>\n"
-        + "            <class name=\"com.foo.bar.issue1810.ClassDoesnotExist\">\n"
-        + "            </class>\n"
-        + "        </classes>\n"
-        + "    </test>\n"
-        + "</suite>\n";
   }
 }

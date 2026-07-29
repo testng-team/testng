@@ -1,11 +1,11 @@
 package test;
 
-import com.google.common.base.Joiner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -141,11 +141,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
       name = testName + "#" + methodName;
     }
     if (result.getParameters().length != 0) {
-      name =
-          name
-              + "("
-              + Joiner.on(",").useForNull("null").join(getParameterNames(result.getParameters()))
-              + ")";
+      name = name + "(" + String.join(",", getParameterNames(result.getParameters())) + ")";
     }
     return name;
   }
@@ -157,7 +153,11 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
         result.add("null");
       } else {
         if (parameter instanceof Object[]) {
-          result.add("[" + Joiner.on(",").useForNull("null").join((Object[]) parameter) + "]");
+          StringJoiner joined = new StringJoiner(",");
+          for (Object item : (Object[]) parameter) {
+            joined.add(String.valueOf(item));
+          }
+          result.add("[" + joined + "]");
         } else {
           result.add(parameter.toString());
         }

@@ -6,12 +6,14 @@ import static org.testng.test.osgi.DefaultTestngOsgiOptions.defaultTestngOsgiOpt
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ServiceLoader;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.ops4j.pax.exam.testng.listener.PaxExam;
 import org.testng.IModuleFactory;
+import org.testng.ITestNGCliRunner;
 import org.testng.TestNG;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
@@ -46,8 +48,20 @@ public class PlainOsgiTest {
     assertThat(IModuleFactory.class.getMethods()).isNotEmpty();
   }
 
+  /**
+   * The command line front end is discovered through {@link java.util.ServiceLoader}. Inside the
+   * merged bundle the provider sits next to the SPI, so looking it up with the classloader that
+   * owns the interface has to work without any SPI-Fly weaving.
+   */
   @Test
-  public void jcommanderLoads() {
+  public void cliRunnerServiceLoads() {
+    ServiceLoader<ITestNGCliRunner> loader =
+        ServiceLoader.load(ITestNGCliRunner.class, ITestNGCliRunner.class.getClassLoader());
+    // next(), not just hasNext(): hasNext only resolves the class, while instantiating the provider
+    // is what proves the bundle's mandatory com.beust.jcommander import is actually wired.
+    ITestNGCliRunner runner = loader.iterator().next();
+    assertThat(runner).isNotNull();
+    // TestNG has the widest transitive linkage in the bundle; keep forcing it to load.
     assertThat(TestNG.class.getFields()).isNotEmpty();
   }
 
