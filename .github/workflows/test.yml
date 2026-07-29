@@ -37,6 +37,58 @@ jobs:
           npm ci --prefix .github/workflows
           node .github/workflows/matrix.mjs
 
+  rewrite:
+    name: 'OpenRewrite'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Set up Java 25
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          java-version: 25
+          distribution: temurin
+          architecture: x64
+      # The gate is the Gradle task itself, so this is reproducible locally with
+      # ./gradlew rewriteDryRun -PfailOnRewriteDryRun=true
+      - name: Check the OpenRewrite recipes leave nothing to do
+        uses: burrunan/gradle-cache-action@4b67497abd37a511d6c1dc6299bdd84ff39f7bf5 # v3
+        with:
+          job-id: rewrite
+          # Test sources are excluded from rewriting, so compiling them feeds nothing into the
+          # LST -- skipping them is most of this job's runtime. Error Prone is a javac plugin
+          # that OpenRewrite never sees, and the build matrix already runs it.
+          arguments: |
+            --no-daemon
+            rewriteDryRun
+            -x compileTestJava
+            -x compileTestKotlin
+          properties: |
+            jdkBuildVersion=25
+            failOnRewriteDryRun=true
+            skipErrorProne=true
+            # rewriteDryRun builds a type-attributed LST of every main source file, which needs
+            # noticeably more heap than Gradle's default.
+            org.gradle.jvmargs=-Xmx3g
+            org.gradle.java.installations.auto-download=false
+      - name: Summarise the patch
+        if: ${{ failure() }}
+        run: |
+          patch=build/reports/rewrite/rewrite.patch
+          [ -s "$patch" ] || exit 0
+          echo "::error::OpenRewrite would still change these files. Run './gradlew rewriteRun', then './gradlew autostyleApply', review the diff and commit it."
+          git apply --stat "$patch"
+          echo "The full patch is attached as the 'rewrite-patch' artifact."
+      - name: Upload the patch
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: rewrite-patch
+          path: build/reports/rewrite/rewrite.patch
+          if-no-files-found: ignore
+
   build:
     needs: matrix_prep
     runs-on: ${{ matrix.os }}
