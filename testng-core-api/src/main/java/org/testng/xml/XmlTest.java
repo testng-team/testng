@@ -243,7 +243,7 @@ public class XmlTest implements Cloneable {
     m_skipFailedInvocationCounts = skip;
   }
 
-  /** @return Returns the isJUnit. */
+  /** @return Returns whether failed invocation counts should be skipped. */
   public boolean skipFailedInvocationCounts() {
     Boolean result = m_skipFailedInvocationCounts;
     if (null == result) {

@@ -41,8 +41,8 @@ public class CommandLineArgs {
   @Parameter(
       names = MIXED,
       description =
-          "Mixed mode - autodetect the type of current test"
-              + " and run it with appropriate runner")
+          "No-op since JUnit execution support was removed in 7.10.0."
+              + " Kept for command line backward compatibility.")
   public Boolean mixed = Boolean.FALSE;
 
   public static final String LISTENER = "-listener";
