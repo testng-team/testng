@@ -51,6 +51,10 @@ buildParameters {
         defaultValue.set(true)
         description.set("Fail build on javadoc warnings")
     }
+    bool("failOnRewriteDryRun") {
+        defaultValue.set(false)
+        description.set("Fail rewriteDryRun when OpenRewrite still has changes to make")
+    }
     bool("skipErrorProne") {
         defaultValue.set(false)
         description.set("Skip Error Prone verifications")

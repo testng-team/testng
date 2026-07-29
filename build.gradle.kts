@@ -1,7 +1,44 @@
 plugins {
     id("testng.repositories")
+    id("build-logic.build-params")
     id("idea")
     id("com.gradleup.nmcp.aggregation") version "1.6.1"
+    id("org.openrewrite.rewrite") version "7.37.0"
+}
+
+dependencies {
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.35.0"))
+    rewrite("org.openrewrite.recipe:rewrite-static-analysis")
+    rewrite("org.openrewrite.recipe:rewrite-migrate-java")
+}
+
+rewrite {
+    // The recipe list lives in rewrite.yml, which documents why the upstream composites
+    // (CommonStaticAnalysis, CodeCleanup, Java8toJava11) are not used directly.
+    activeRecipe("org.testng.build.ModernizeMainSources")
+
+    // Makes OpenRewrite lay imports out the way google-java-format does, so its output does not
+    // have to be corrected by autostyleApply. rewrite.yml explains the measurement behind this.
+    activeStyle("org.testng.build.ImportLayout")
+
+    // exclusion() matches file paths, not recipe names.
+    exclusion(
+        // Test sources are out of scope: test/** mixes real tests with fixture classes whose
+        // method names, declaration order and finalize() presence are what the surrounding
+        // tests assert on, and testng.xml references test classes by FQN.
+        "**/src/test/**",
+        // Nothing here rewrites build scripts, and .gradle.kts would be routed to the
+        // experimental Kotlin parser for no benefit. This also covers build-logic/ and
+        // build-logic-commons/, whose tracked files are all .kt or .gradle.kts.
+        "**/*.gradle.kts",
+        "**/*.kt",
+        "**/*.groovy",
+    )
+
+    // rewriteDryRun is a manual maintenance task by default. CI turns this on so the gate is
+    // the Gradle task itself, which means ./gradlew rewriteDryRun -PfailOnRewriteDryRun=true
+    // reproduces the CI check exactly.
+    failOnDryRunResults = buildParameters.failOnRewriteDryRun
 }
 
 val String.v: String get() = rootProject.extra["$this.version"] as String
