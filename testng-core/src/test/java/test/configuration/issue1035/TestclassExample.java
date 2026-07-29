@@ -8,8 +8,7 @@ public class TestclassExample {
 
   @BeforeClass
   public void beforeClass() throws InterruptedException {
-    printer();
-    Thread.sleep(2000);
+    MyFactory.recordAndAwaitPeers();
   }
 
   @Test
@@ -17,11 +16,4 @@ public class TestclassExample {
 
   @AfterClass
   public void afterClass() {}
-
-  private void printer() {
-    long threadId = Thread.currentThread().getId();
-    long time = System.currentTimeMillis();
-    InvocationTracker tracker = new InvocationTracker(time, threadId, this);
-    MyFactory.TRACKER.add(tracker);
-  }
 }
