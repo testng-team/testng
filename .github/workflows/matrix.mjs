@@ -12,7 +12,9 @@ matrix.addAxis({
   values: [
     {value: 'corretto', vendor: 'amazon', weight: 1},
     {value: 'liberica', vendor: 'bellsoft', weight: 1},
-    {value: 'microsoft', vendor: 'microsoft', weight: 1},
+    // Microsoft Build of OpenJDK publishes LTS releases only
+    // See https://learn.microsoft.com/java/openjdk/download
+    {value: 'microsoft', vendor: 'microsoft', ltsOnly: true, weight: 1},
     {value: 'oracle', vendor: 'oracle', weight: 1},
     // There are issues running Semeru JDK with Gradle 8.5
     // See https://github.com/gradle/gradle/issues/27273
@@ -22,17 +24,18 @@ matrix.addAxis({
   ]
 });
 
+// LTS releases: the only versions an ltsOnly distribution publishes
+const ltsJava = ['11', '17', '21', '25'];
+// GA feature releases that are not LTS
+const nonLtsJava = ['26'];
 // Early-access JDKs (not yet released). Verify they are downloadable before adding.
 const eaJava = ['27', '28'];
 matrix.addAxis({
   name: 'java_version',
   // Strings allow versions like 18-ea
   values: [
-    '11',
-    '17',
-    '21',
-    '25',
-    '26',
+    ...ltsJava,
+    ...nonLtsJava,
     ...eaJava,
   ]
 });
@@ -75,9 +78,11 @@ matrix.addAxis({
 matrix.setNamePattern(['java_version', 'java_distribution', 'hash', 'os', 'tz', 'locale']);
 
 // EA JDKs are only published on jdk.java.net (the "oracle" distribution here)
-eaJava.forEach(ea => matrix.imply({java_version: ea}, {java_distribution: {value: 'oracle'}}));
+matrix.imply({java_version: eaJava}, {java_distribution: {value: 'oracle'}});
 // Oracle JDK is only supported for JDK 21 and later
 matrix.imply({java_distribution: {value: 'oracle'}}, {java_version: v => eaJava.includes(v) || v >= 21});
+// Some vendors publish LTS releases only, so they must never be paired with a non-LTS version
+matrix.imply({java_distribution: {ltsOnly: true}}, {java_version: ltsJava});
 // Semeru uses OpenJ9 jit which has no option for making hash codes the same
 // See https://github.com/eclipse-openj9/openj9/issues/17309
 matrix.exclude({java_distribution: {value: 'semeru'}, hash: {value: 'same'}});
