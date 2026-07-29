@@ -78,7 +78,7 @@ matrix.addAxis({
 matrix.setNamePattern(['java_version', 'java_distribution', 'hash', 'os', 'tz', 'locale']);
 
 // EA JDKs are only published on jdk.java.net (the "oracle" distribution here)
-eaJava.forEach(ea => matrix.imply({java_version: ea}, {java_distribution: {value: 'oracle'}}));
+matrix.imply({java_version: eaJava}, {java_distribution: {value: 'oracle'}});
 // Oracle JDK is only supported for JDK 21 and later
 matrix.imply({java_distribution: {value: 'oracle'}}, {java_version: v => eaJava.includes(v) || v >= 21});
 // Some vendors publish LTS releases only, so they must never be paired with a non-LTS version
