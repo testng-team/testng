@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="SingleSuite">
+  <method-selectors>
+    <method-selector>
+      <selector-class name="test.methodselectors.Test2MethodSelector" priority="-1" />
+    </method-selector>
+  </method-selectors>
+  
+  <test name="Regression2" preserve-order="true">
+    <classes>
+      <class name="test.methodselectors.SampleTest" />
+    </classes>
+  </test>
+</suite>

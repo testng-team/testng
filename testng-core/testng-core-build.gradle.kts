@@ -24,7 +24,6 @@ dependencies {
     api(projects.testngCoreApi)
     // Annotations have to be available on the compile classpath for the proper compilation
     compileOnly("com.github.spotbugs:spotbugs:4.10.3")
-    api("org.jcommander:jcommander:2.0")
 
     "guiceApi"(platform("com.google.inject:guice-bom:6.0.0"))
     "guiceApi"("com.google.inject:guice")
@@ -34,13 +33,12 @@ dependencies {
     implementation(projects.testngReflectionUtils)
     implementation(projects.testngRunnerApi)
     testImplementation("org.testng:testng-asserts:1.0.0")
+    testImplementation(projects.testngTestKit)
     testImplementation("org.apache.groovy:groovy-all:5.0.7") {
         exclude("org.testng", "testng")
     }
     testImplementation("org.apache-extras.beanshell:bsh:2.0b6")
     testImplementation("org.mockito:mockito-core:5.23.0")
-    testImplementation("org.jboss.shrinkwrap:shrinkwrap-api:1.2.6")
-    testImplementation("org.jboss.shrinkwrap:shrinkwrap-impl-base:1.2.6")
     testImplementation("org.xmlunit:xmlunit-assertj:2.12.0")
     testImplementation("in.jlibs:jlibs-core:3.0.1")
     testImplementation("org.gridkit.jvmtool:heaplib:0.2")

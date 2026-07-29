@@ -28,6 +28,9 @@ public class JarCreator {
       Class<?>[] classes, String[] resources, String prefix, String archiveName)
       throws IOException {
     File jarFile = File.createTempFile(prefix, ".jar");
+    // Every generated jar goes through here, so scheduling the deletion once covers all callers,
+    // including any added later that would forget to clean up in a teardown.
+    jarFile.deleteOnExit();
     JavaArchive archive = ShrinkWrap.create(JavaArchive.class, archiveName).addClasses(classes);
     for (String resource : resources) {
       archive = archive.addAsResource(resource);

@@ -1,15 +1,12 @@
 package test.methodselectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.testhelper.OutputDirectoryPatch;
 import test.SimpleBaseTest;
+import test.TestHelper;
 
 public class CommandLineTest extends SimpleBaseTest {
 
@@ -48,8 +45,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {"test1", "test2", "test3"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -58,8 +55,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {"test2"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -69,8 +66,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -80,8 +77,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {"test2"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -91,8 +88,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2", "test3"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -103,8 +100,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITH_GROUPS, tla);
     String[] passed = {"test1", "test2"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -113,8 +110,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITHOUT_GROUPS, tla);
     String[] passed = {"test2", "test3"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test
@@ -124,8 +121,8 @@ public class CommandLineTest extends SimpleBaseTest {
     TestNG.privateMain(ARG_WITHOUT_CLASSES, tla);
     String[] passed = {"test2", "test3"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test(description = "GITHUB-2407")
@@ -147,8 +144,8 @@ public class CommandLineTest extends SimpleBaseTest {
     // test1 is excluded, so only test2 is left in the passed list
     String[] passed = {"test2"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test(description = "GITHUB-2407")
@@ -167,8 +164,8 @@ public class CommandLineTest extends SimpleBaseTest {
 
     String[] passed = {};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 
   @Test(description = "GITHUB-2407")
@@ -188,14 +185,7 @@ public class CommandLineTest extends SimpleBaseTest {
 
     String[] passed = {"sampleOutputTest1"};
     String[] failed = {};
-    verifyTests("Passed", passed, tla.getPassedTests());
-    verifyTests("Failed", failed, tla.getFailedTests());
-  }
-
-  private void verifyTests(String title, String[] expected, List<ITestResult> found) {
-
-    assertThat(found.stream().map(ITestResult::getName).toArray(String[]::new))
-        .describedAs(title)
-        .isEqualTo(expected);
+    TestHelper.assertPassedTestNames(tla.getPassedTests(), passed);
+    TestHelper.assertFailedTestNames(tla.getFailedTests(), failed);
   }
 }

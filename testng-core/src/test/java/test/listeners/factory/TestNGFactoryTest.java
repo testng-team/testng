@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.CommandLineArgs;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestNG;
@@ -15,23 +14,6 @@ import test.listeners.factory.issue3120.FactoryListenerTestClassCombinedSample;
 import test.listeners.factory.issue3120.TestClassSample;
 
 public class TestNGFactoryTest extends SimpleBaseTest {
-
-  @Test(description = "GITHUB-3059")
-  public void testListenerFactoryViaConfigurationArg() {
-    String[] args =
-        new String[] {
-          CommandLineArgs.LISTENER_FACTORY,
-          SampleTestFactory.class.getName(),
-          CommandLineArgs.TEST_CLASS,
-          SampleTestCase.class.getName(),
-          CommandLineArgs.LISTENER,
-          ExampleListener.class.getName()
-        };
-    TestNG testng = TestNG.privateMain(args, null);
-    assertThat(SampleTestFactory.instance).isNotNull();
-    assertThat(ExampleListener.getInstance()).isNotNull();
-    assertThat(testng.getStatus()).isZero();
-  }
 
   @Test(description = "GITHUB-3059")
   public void testListenerFactoryViaTestNGApi() {

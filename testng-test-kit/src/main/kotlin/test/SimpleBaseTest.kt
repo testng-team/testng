@@ -342,7 +342,7 @@ open class SimpleBaseTest {
             fileName: File,
             regexp: String,
             resultLines: MutableList<String>
-        ) = grep(FileReader(fileName), regexp, resultLines)
+        ) = FileReader(fileName).use { grep(it, regexp, resultLines) }
 
         @JvmStatic
         protected fun grep(

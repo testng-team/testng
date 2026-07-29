@@ -1,4 +1,4 @@
-package org.testng;
+package org.testng.cli.jcommander;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.testng.TestNGException;
 import org.testng.collections.Sets;
 import org.testng.internal.Yaml;
 import org.testng.xml.XmlSuite;
@@ -17,6 +18,9 @@ import org.testng.xml.internal.Parser;
 
 /**
  * Convert XML files to YAML and vice versa.
+ *
+ * <p>Moved out of the {@code org.testng} package in 7.13, when the command line front end was
+ * extracted from {@code testng-core}.
  *
  * @author cbeust
  */
