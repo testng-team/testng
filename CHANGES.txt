@@ -1,4 +1,5 @@
 Current (7.13.0)
+Fixed: Remove leftover dead JUnit code: the deprecated unused ConversionUtils and orphaned JUnit test samples, following the removal of JUnit execution support in 7.10.0 (Julien Herr)
 Update: Dependency refresh: Guice 6.0.0, JCommander 2.0, snakeyaml 2.6, slf4j-api 2.0.18. Guice 7 and JCommander 3 were skipped: they require jakarta.inject and Java 17 respectively
 Fixed: GITHUB-3242: use-global-thread-pool no longer refuses to start a suite when the number of data-driven tests reaches thread-count (Krishnan Mahadevan)
 New: GITHUB-3290: Support data providers that return Stream<Object[]> or Stream<Object>; the stream is consumed lazily and closed once its rows have been consumed (Krishnan Mahadevan)
