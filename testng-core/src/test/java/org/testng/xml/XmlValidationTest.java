@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static test.SimpleBaseTest.getPathToResource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -130,7 +131,9 @@ public class XmlValidationTest {
     Path directory = Files.createTempDirectory("testng-local-dtd");
     Path dtd = directory.resolve(Parser.TESTNG_DTD);
     Path suite = directory.resolve("local-dtd-wrong-order.xml");
-    try {
+    // The cleanup is a resource so that a failure to delete is reported as suppressed on a test
+    // failure instead of replacing it, and only propagates on its own when the test passed.
+    try (AutoCloseable cleanup = () -> deleteAll(suite, dtd, directory)) {
       try (InputStream shipped =
           getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD)) {
         Files.copy(Objects.requireNonNull(shipped, "the DTD must be on the classpath"), dtd);
@@ -149,12 +152,30 @@ public class XmlValidationTest {
               .getBytes(StandardCharsets.UTF_8));
 
       assertThatThrownBy(() -> parseValidating(suite)).isInstanceOf(SAXParseException.class);
-    } finally {
-      // The suite runs in one fork per two cores, so leaking a directory holding a copy of the
-      // DTD on every build adds up.
-      Files.deleteIfExists(suite);
-      Files.deleteIfExists(dtd);
-      Files.deleteIfExists(directory);
+    }
+  }
+
+  /**
+   * Deletes every path, so that one failure does not leave the rest behind. The suite runs in one
+   * fork per two cores, so leaking a directory holding a copy of the DTD on every build adds up.
+   *
+   * <p>Deletion can genuinely fail on Windows: the entity resolver hands the DTD stream to {@code
+   * InputSource} without closing it, and a lingering handle blocks the delete.
+   */
+  private static void deleteAll(Path... paths) throws IOException {
+    IOException failures = null;
+    for (Path path : paths) {
+      try {
+        Files.deleteIfExists(path);
+      } catch (IOException e) {
+        if (failures == null) {
+          failures = new IOException("Failed to clean up the temporary DTD fixture");
+        }
+        failures.addSuppressed(e);
+      }
+    }
+    if (failures != null) {
+      throw failures;
     }
   }
 
