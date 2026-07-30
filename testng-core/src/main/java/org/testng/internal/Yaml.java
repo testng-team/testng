@@ -90,10 +90,11 @@ public final class Yaml {
    * different treatment in each context, and the emitter already knows all of them.
    *
    * <p>Only the keys the YAML reader can bind are written, so that {@code parse -> toYaml -> parse}
-   * is lossless. Six values a suite file can carry are therefore left out, because no key would
-   * read them back: a test {@code time-out}, an include's invocation numbers, the suite level
-   * {@code group-by-instances} (the test level one is written), the object factory, {@code
-   * use-global-thread-pool}, and a test {@code script} -- which is already covered by the method
+   * is lossless. What a suite file can carry and YAML cannot express is therefore left out, because
+   * no key would read it back: a test {@code time-out}, an include's invocation numbers, the suite
+   * level {@code group-by-instances} (the test level one is written), the object factory, {@code
+   * use-global-thread-pool}, a suite level {@code <define>} or {@code <dependencies>} block (both
+   * are written for a test), and a test {@code script} -- which is already covered by the method
    * selectors it is stored in.
    *
    * @param suite the suite to serialize
@@ -162,7 +163,7 @@ public final class Yaml {
     putIfPresent(result, "guiceStage", suite.getGuiceStage());
     putIfPresent(result, "parameters", parameters(suite.getParameters()));
     putIfPresent(result, "listeners", copyOf(suite.getListeners()));
-    putGroups(result, suite.getGroups());
+    putRunGroups(result, suite.getGroups());
     putIfPresent(result, "packages", packagesToNodes(suite.getXmlPackages()));
     putIfPresent(result, "methodSelectors", selectorsToNodes(suite.getMethodSelectors()));
     putIfPresent(result, "suiteFiles", copyOf(suite.getSuiteFiles()));
@@ -198,7 +199,8 @@ public final class Yaml {
         test.skipFailedInvocationCounts(),
         suite.skipFailedInvocationCounts());
     putIfPresent(result, "parameters", parameters(test.getLocalParameters()));
-    putGroups(result, test.getXmlGroups());
+    putRunGroups(result, test.getXmlGroups());
+    putMetaGroups(result, test.getXmlGroups());
     putIfPresent(result, "xmlDependencyGroups", sorted(test.getXmlDependencyGroups()));
     putIfPresent(result, "methodSelectors", selectorsToNodes(test.getMethodSelectors()));
     putIfPresent(result, "packages", packagesToNodes(test.getXmlPackages()));
@@ -207,17 +209,26 @@ public final class Yaml {
   }
 
   /**
-   * The {@code <groups>} block is read from the model it was parsed into, never from {@code
+   * The {@code <run>} block is read from the model it was parsed into, never from {@code
    * getIncludedGroups()}: on a test that getter returns the union with the suite's groups, and on a
    * suite it delegates to the parent suite. Either one would duplicate groups on the way out.
    */
-  private static void putGroups(Map<String, Object> result, XmlGroups groups) {
-    if (groups == null) {
+  private static void putRunGroups(Map<String, Object> result, XmlGroups groups) {
+    if (groups == null || groups.getRun() == null) {
       return;
     }
-    if (groups.getRun() != null) {
-      putIfPresent(result, "includedGroups", copyOf(groups.getRun().getIncludes()));
-      putIfPresent(result, "excludedGroups", copyOf(groups.getRun().getExcludes()));
+    putIfPresent(result, "includedGroups", copyOf(groups.getRun().getIncludes()));
+    putIfPresent(result, "excludedGroups", copyOf(groups.getRun().getExcludes()));
+  }
+
+  /**
+   * Meta groups are written for a test only. {@code XmlSuite} has no {@code metaGroups} property,
+   * so a suite level {@code <define>} has no key to be read back through and writing one would make
+   * the file unloadable.
+   */
+  private static void putMetaGroups(Map<String, Object> result, XmlGroups groups) {
+    if (groups == null) {
+      return;
     }
     Map<String, Object> metaGroups = new TreeMap<>();
     for (XmlDefine define : groups.getDefines()) {

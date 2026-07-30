@@ -86,6 +86,21 @@ public class YamlTest extends SimpleBaseTest {
         .containsEntry("c", "a  b");
   }
 
+  /**
+   * A suite level {@code <define>} has no YAML key: {@code XmlSuite} exposes no {@code metaGroups}
+   * property, unlike {@code XmlTest}. Writing one anyway produced a file the reader rejects
+   * outright, and no YAML fixture can cover it because no YAML fixture can declare one.
+   */
+  @Test
+  public void suiteLevelMetaGroupsAreNotWritten() throws IOException {
+    String file = "src/test/resources/xml/issue174.xml";
+    XmlSuite xmlSuite = new SuiteXmlParser().parse(file, new FileInputStream(file), false);
+
+    XmlSuite reparsed = parseYaml(file, Yaml.toYaml(xmlSuite).toString());
+
+    assertThat(reparsed.getIncludedGroups()).containsExactly("PlatformTests");
+  }
+
   @Test(description = "GITHUB-2689")
   public void testLoadClassesFlag() throws IOException {
     YamlParser yamlParser = new YamlParser();
