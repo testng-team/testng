@@ -129,24 +129,33 @@ public class XmlValidationTest {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
     Path directory = Files.createTempDirectory("testng-local-dtd");
     Path dtd = directory.resolve(Parser.TESTNG_DTD);
-    try (InputStream shipped = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD)) {
-      Files.copy(Objects.requireNonNull(shipped, "the DTD must be on the classpath"), dtd);
-    }
     Path suite = directory.resolve("local-dtd-wrong-order.xml");
-    Files.write(
-        suite,
-        ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<!DOCTYPE suite SYSTEM \""
-                + Parser.TESTNG_DTD
-                + "\">\n"
-                // <groups> may only be the first child of <suite>.
-                + "<suite name=\"LocalDtdWrongOrder\">\n"
-                + "  <parameter name=\"before\" value=\"groups\"/>\n"
-                + "  <groups><run><include name=\"included\"/></run></groups>\n"
-                + "</suite>\n")
-            .getBytes(StandardCharsets.UTF_8));
+    try {
+      try (InputStream shipped =
+          getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD)) {
+        Files.copy(Objects.requireNonNull(shipped, "the DTD must be on the classpath"), dtd);
+      }
+      Files.write(
+          suite,
+          ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                  + "<!DOCTYPE suite SYSTEM \""
+                  + Parser.TESTNG_DTD
+                  + "\">\n"
+                  // <groups> may only be the first child of <suite>.
+                  + "<suite name=\"LocalDtdWrongOrder\">\n"
+                  + "  <parameter name=\"before\" value=\"groups\"/>\n"
+                  + "  <groups><run><include name=\"included\"/></run></groups>\n"
+                  + "</suite>\n")
+              .getBytes(StandardCharsets.UTF_8));
 
-    assertThatThrownBy(() -> parseValidating(suite)).isInstanceOf(SAXParseException.class);
+      assertThatThrownBy(() -> parseValidating(suite)).isInstanceOf(SAXParseException.class);
+    } finally {
+      // The suite runs in one fork per two cores, so leaking a directory holding a copy of the
+      // DTD on every build adds up.
+      Files.deleteIfExists(suite);
+      Files.deleteIfExists(dtd);
+      Files.deleteIfExists(directory);
+    }
   }
 
   @Test
