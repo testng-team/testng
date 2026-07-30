@@ -2,16 +2,16 @@ package test.yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
@@ -54,21 +54,17 @@ public class YamlTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1787")
   public void testParameterInclusion() throws IOException {
-    SuiteXmlParser parser = new SuiteXmlParser();
     String file = "src/test/resources/yaml/1787.xml";
-    XmlSuite xmlSuite = parser.parse(file, new FileInputStream(file), false);
-    StringBuilder yaml = org.testng.internal.Yaml.toYaml(xmlSuite);
-    Matcher m = Pattern.compile("parameters:").matcher(yaml.toString());
-    int count = 0;
-    while (m.find()) {
-      count++;
-    }
-    assertThat(count).isEqualTo(5);
-    File newSuite = File.createTempFile("suite", ".xml");
-    newSuite.deleteOnExit();
-    Files.write(newSuite.toPath(), yaml.toString().getBytes(StandardCharsets.UTF_8));
-    assertThat(parser.parse(newSuite.getAbsolutePath(), new FileInputStream(file), false))
-        .isEqualTo(xmlSuite);
+    XmlSuite xmlSuite = new SuiteXmlParser().parse(file, new FileInputStream(file), false);
+
+    XmlSuite reparsed = parseYaml(file, Yaml.toYaml(xmlSuite).toString());
+
+    assertThat(reparsed.getParameters()).containsEntry("suiteLevel", "suiteValue");
+    XmlTest test = reparsed.getTests().get(0);
+    assertThat(test.getLocalParameters()).containsEntry("testLevel", "testValue");
+    assertThat(test.getClasses().get(0).getIncludedMethods())
+        .extracting(include -> include.getLocalParameters().get("teqUid"))
+        .containsExactly("Teq1", "Teq2", "Teq3");
   }
 
   @Test(description = "GITHUB-2078")
@@ -78,9 +74,16 @@ public class YamlTest extends SimpleBaseTest {
         new SuiteXmlParser().parse(actualXmlFile, new FileInputStream(actualXmlFile), false);
     String expectedYamlFile = "src/test/resources/yaml/2078.yaml";
     String expectedYaml =
-        new String(
-            java.nio.file.Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
-    assertThat(Yaml.toYaml(actualXmlSuite).toString()).isEqualToNormalizingNewlines(expectedYaml);
+        new String(Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
+
+    String actualYaml = Yaml.toYaml(actualXmlSuite).toString();
+
+    assertThat(actualYaml).isEqualToNormalizingNewlines(expectedYaml);
+    // The golden file cannot make this distinction on its own: folding the line at the first of
+    // the two spaces would collapse them, and the result would still read as a plausible list of
+    // dependencies.
+    assertThat(parseYaml(actualXmlFile, actualYaml).getTests().get(0).getXmlDependencyGroups())
+        .containsEntry("c", "a  b");
   }
 
   @Test(description = "GITHUB-2689")
@@ -111,6 +114,11 @@ public class YamlTest extends SimpleBaseTest {
     for (int i = 0; i < tests.size(); i++) {
       assertThat(tests.get(i).getIndex()).isEqualTo(i);
     }
+  }
+
+  private static XmlSuite parseYaml(String fileName, String yaml) throws FileNotFoundException {
+    byte[] bytes = yaml.getBytes(StandardCharsets.UTF_8);
+    return Yaml.parse(fileName, new ByteArrayInputStream(bytes), false);
   }
 
   private Throwable getRootCause(Throwable throwable) {
