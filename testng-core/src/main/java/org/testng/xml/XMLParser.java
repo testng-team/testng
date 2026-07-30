@@ -7,22 +7,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.testng.TestNGException;
-import org.testng.internal.AutoCloseableLock;
 import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class XMLParser<T> implements IFileParser<T> {
-
-  private static final AutoCloseableLock lock = new AutoCloseableLock();
-
-  private static SAXParser m_saxParser;
-
-  /** The mode {@link #m_saxParser} was configured for, so a change of mode can be noticed. */
-  private static XmlValidationMode configuredFor;
-
-  /** Whether {@link #m_saxParser} was built with DTD validation enabled. */
-  private static boolean validating;
 
   /**
    * Whether the next parse will validate against the TestNG DTD. Exposed so that tests can tell
@@ -30,50 +19,50 @@ public abstract class XMLParser<T> implements IFileParser<T> {
    * parse that does not fail -- an inference that cannot be made.
    */
   static boolean isValidating() {
-    try (AutoCloseableLock ignore = lock.lock()) {
-      parser();
-      return validating;
-    }
-  }
-
-  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
-    try (AutoCloseableLock ignore = lock.lock()) {
-      SAXParser parser = parser();
-      if (parser == null) {
-        throw new TestNGException("No SAXParser could be configured to read suite files.");
-      }
-      parser.parse(is, dh);
-    }
+    return configureValidation(loadSAXParserFactory());
   }
 
   /**
-   * The shared parser, rebuilt when the validation mode has changed since it was created. The
-   * parser is a singleton because it is expensive, but pinning it to the mode that happened to be
-   * set when this class was first loaded made {@code testng.xml.validation} silently ineffective
-   * for anything that sets it later -- the very failure mode this setting exists to fix.
+   * Each parse gets its own parser.
    *
-   * <p>Must be called while holding {@link #lock}.
+   * <p>A single shared {@link SAXParser} was kept behind a class wide lock, which made every parse
+   * in the JVM wait for every other one. That is not a matter of contention only: entity resolution
+   * happens inside {@code parse}, and {@link TestNGContentHandler} resolves an unknown system id
+   * over HTTP with no connect or read timeout, so one suite pointing at an unreachable DTD mirror
+   * would block suite parsing everywhere until the socket gave up.
+   *
+   * <p>The parser was shared because building one was assumed to be expensive. Measured, {@code
+   * SAXParserFactory.newInstance()} and {@code newSAXParser()} cost about 20 microseconds each --
+   * nothing against reading a suite file, let alone against fetching a DTD. Building per parse also
+   * removes the mutable static state that had to be invalidated whenever the validation mode
+   * changed, so the mode in effect is now simply read at each parse.
    */
-  private static SAXParser parser() {
-    XmlValidationMode mode = XmlValidationMode.current();
-    if (m_saxParser != null && mode == configuredFor) {
-      return m_saxParser;
-    }
+  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
     SAXParserFactory spf = loadSAXParserFactory();
+    configureValidation(spf);
+    SAXParser parser;
+    try {
+      parser = spf.newSAXParser();
+    } catch (ParserConfigurationException | SAXException e) {
+      Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
+      throw new TestNGException("No SAXParser could be configured to read suite files.", e);
+    }
+    parser.parse(is, dh);
+  }
 
+  /**
+   * Configures the factory for the validation mode currently in effect, and reports whether the
+   * parsers it builds will validate. Pinning the mode to whatever was set when this class was first
+   * loaded made {@code testng.xml.validation} silently ineffective for anything that sets it later
+   * -- the very failure mode this setting exists to fix.
+   */
+  private static boolean configureValidation(SAXParserFactory spf) {
     // Namespace awareness is deliberately left off: DTD validation does not need it, suite files
     // are not namespaced, and turning it on would make an unbound prefix fatal and an xmlns
     // attribute a validity error -- neither of which has anything to do with validating a suite.
-    validating = mode.isValidating() && supportsValidation(spf);
+    boolean validating = XmlValidationMode.current().isValidating() && supportsValidation(spf);
     spf.setValidating(validating);
-    try {
-      m_saxParser = spf.newSAXParser();
-    } catch (ParserConfigurationException | SAXException e) {
-      Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
-      m_saxParser = null;
-    }
-    configuredFor = mode;
-    return m_saxParser;
+    return validating;
   }
 
   /**

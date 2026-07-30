@@ -68,7 +68,7 @@ public class XmlValidationTest {
    * cannot validate says so rather than looking like a suite file that happens to be valid.
    */
   @Test
-  public void theSharedParserValidatesSuiteFilesByDefault() {
+  public void theParserValidatesSuiteFilesByDefault() {
     if (XmlValidationMode.current() == XmlValidationMode.OFF) {
       throw new SkipException(
           "the JVM is configured with -D"
@@ -78,14 +78,14 @@ public class XmlValidationTest {
 
     assertThat(XMLParser.isValidating())
         .as(
-            "the shared SAXParser must validate; if this fails, the JAXP implementation on the"
+            "the SAXParser must validate; if this fails, the JAXP implementation on the"
                 + " classpath does not support DTD validation")
         .isTrue();
   }
 
   /** Turning validation off must actually reach the parser, not only the reporting. */
   @Test
-  public void offModeStopsTheSharedParserFromValidating() {
+  public void offModeStopsTheParserFromValidating() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "off");
 
     assertThat(XMLParser.isValidating()).isFalse();
