@@ -16,13 +16,21 @@ public abstract class XMLParser<T> implements IFileParser<T> {
 
   private static final SAXParser m_saxParser;
 
+  /**
+   * Whether the shared parser was built with DTD validation enabled. Decided once, because the
+   * parser itself is a singleton, and exposed so that tests can tell "validation is off in this
+   * JVM" apart from "this file is valid" instead of inferring it from a parse that does not fail.
+   */
+  private static final boolean validating;
+
   static {
     SAXParserFactory spf = loadSAXParserFactory();
 
-    if (XmlValidationMode.current().isValidating() && supportsValidation(spf)) {
-      spf.setNamespaceAware(true);
-      spf.setValidating(true);
-    }
+    // Namespace awareness is deliberately left off: DTD validation does not need it, suite files
+    // are not namespaced, and turning it on would make an unbound prefix fatal and an xmlns
+    // attribute a validity error -- neither of which has anything to do with validating a suite.
+    validating = XmlValidationMode.current().isValidating() && supportsValidation(spf);
+    spf.setValidating(validating);
 
     SAXParser parser = null;
     try {
@@ -34,6 +42,11 @@ public abstract class XMLParser<T> implements IFileParser<T> {
   }
 
   private static final AutoCloseableLock lock = new AutoCloseableLock();
+
+  /** Whether the shared parser validates suite files against the TestNG DTD. */
+  static boolean isValidating() {
+    return validating;
+  }
 
   public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
     try (AutoCloseableLock ignore = lock.lock()) {

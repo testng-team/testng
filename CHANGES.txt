@@ -3,6 +3,8 @@ Fixed: DTD validation of suite files was silently disabled: the SAX validation f
 Fixed: XmlSuite.toXml() dropped the "description" attribute of <include>, so regenerating a suite (testng-failed.xml, for instance) lost method descriptions (Julien Herr)
 Fixed: XmlSuite.toXml() dropped a <selector-class> priority of -1 while the parser reads a missing priority as 0. Since a negative method-selector priority changes selector evaluation, serializing a suite and reading it back altered its behaviour (Julien Herr)
 Fixed: The doctype written by XmlSuite.toXml() advertised testng-1.0.dtd although the parser always resolves testng-1.1.dtd (Julien Herr)
+Fixed: XmlSuite.toXml() emitted two sibling <groups> elements for a suite that has suite-level groups, which the DTD allows only once, so TestNG's own output did not validate (Julien Herr)
+Fixed: DTD violations were discarded for suite files pointing at their own copy or a mirror of the DTD rather than at testng.org, so those suites were never validated (Julien Herr)
 New: Added round trip characterization tests covering every suite file of the test corpus, so that XML serialization can be refactored safely (Julien Herr)
 New: Added OpenRewrite to the build with a hand-picked recipe list (see rewrite.yml), and applied it to the main sources (Julien Herr)
 Fixed: Remove leftover dead JUnit code: the deprecated unused ConversionUtils and orphaned JUnit test samples, following the removal of JUnit execution support in 7.10.0 (Julien Herr)

@@ -17,8 +17,9 @@ class DefaultXmlWeaver implements IWeaveXml {
   // TODO: move constants to XmlSuite?
   /**
    * The name of the TestNG DTD. Must stay in sync with {@code Parser.TESTNG_DTD}, which is the
-   * version the reader actually resolves from the classpath; the two disagreed until 7.12, so the
-   * emitted doctype advertised a schema that was never the one used to read the file back.
+   * version the reader resolves from the classpath. The two had drifted apart, so the emitted
+   * doctype advertised a schema that was never the one used to read the file back. They cannot
+   * share a constant: {@code Parser} lives in testng-core, which depends on this module.
    */
   private static final String TESTNG_DTD = "testng-1.1.dtd";
 
@@ -103,23 +104,28 @@ class DefaultXmlWeaver implements IWeaveXml {
         DEFAULT_ALLOW_RETURN_VALUES.toString());
     xsb.push("suite", p);
 
-    List<String> included = xmlSuite.getIncludedGroups();
-    List<String> excluded = xmlSuite.getExcludedGroups();
-    if (hasElements(included) || hasElements(excluded)) {
-      xsb.push("groups");
-      xsb.push("run");
-      for (String g : included) {
-        xsb.addEmptyElement("include", "name", g);
-      }
-      for (String g : excluded) {
-        xsb.addEmptyElement("exclude", "name", g);
-      }
-      xsb.pop("run");
-      xsb.pop("groups");
-    }
-
     if (xmlSuite.getGroups() != null) {
       xsb.getStringBuffer().append(xmlSuite.getGroups().toXml("  "));
+    } else {
+      // Only synthesize a <groups> block when the suite has no XmlGroups of its own to write.
+      // getIncludedGroups()/getExcludedGroups() read through to that same XmlGroups, so emitting
+      // both produced two sibling <groups> elements -- which the DTD allows only once, making
+      // TestNG's own output invalid. When the groups come from a parent suite there is nothing
+      // else to write, and flattening them here is what keeps a generated suite self-contained.
+      List<String> included = xmlSuite.getIncludedGroups();
+      List<String> excluded = xmlSuite.getExcludedGroups();
+      if (hasElements(included) || hasElements(excluded)) {
+        xsb.push("groups");
+        xsb.push("run");
+        for (String g : included) {
+          xsb.addEmptyElement("include", "name", g);
+        }
+        for (String g : excluded) {
+          xsb.addEmptyElement("exclude", "name", g);
+        }
+        xsb.pop("run");
+        xsb.pop("groups");
+      }
     }
 
     XmlUtils.dumpParameters(xsb, xmlSuite.getParameters());

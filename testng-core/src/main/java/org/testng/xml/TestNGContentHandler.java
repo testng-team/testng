@@ -117,7 +117,14 @@ public class TestNGContentHandler extends DefaultHandler {
   private final String m_fileName;
   private final boolean m_loadClasses;
   private boolean m_validate = false;
+  private boolean m_doctypeDeclared = false;
   private boolean m_hasWarn = false;
+
+  /**
+   * Resolved once per parse rather than per violation, so a malformed suite cannot re-read the
+   * system property -- and re-log the "unknown value" warning -- for every error it produces.
+   */
+  private final XmlValidationMode m_validationMode = XmlValidationMode.current();
 
   public TestNGContentHandler(String fileName, boolean loadClasses) {
     m_fileName = fileName;
@@ -127,6 +134,12 @@ public class TestNGContentHandler extends DefaultHandler {
   @Override
   public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException, IOException {
+
+    // The document declares a doctype, whoever ends up providing it. Tracked separately from
+    // m_validate, which means "TestNG substituted its own copy of the DTD": gating error reporting
+    // on m_validate silently discarded every violation for suites pointing at their own DTD copy
+    // or at a corporate mirror.
+    m_doctypeDeclared = true;
 
     if (skipConsideringSystemId(systemId)) {
       m_validate = true;
@@ -779,12 +792,12 @@ public class TestNGContentHandler extends DefaultHandler {
 
   @Override
   public void error(SAXParseException e) throws SAXException {
-    if (!m_validate) {
-      // No DTD was resolved, so there is nothing to validate against. The missing <!DOCTYPE> is
-      // already reported by startElement().
+    if (!m_doctypeDeclared) {
+      // Without a doctype a validating parser only ever complains that no grammar was found, which
+      // would turn the existing "you should add a <!DOCTYPE>" hint into a hard failure.
       return;
     }
-    switch (XmlValidationMode.current()) {
+    switch (m_validationMode) {
       case STRICT:
         throw e;
       case WARN:

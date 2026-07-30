@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static test.SimpleBaseTest.getPathToResource;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -11,9 +12,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
+import javax.xml.parsers.SAXParserFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.xml.internal.Parser;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Characterization tests over every suite file of the test corpus, pinning the behaviour of the XML
@@ -52,6 +60,65 @@ public class XmlRoundTripTest {
   }
 
   /**
+   * What we write must satisfy the DTD we advertise. Without this, {@code
+   * testng.xml.validation=strict} would reject TestNG's own output -- {@code testng-failed.xml} is
+   * produced by {@code toXml()} -- and the corpus round trip above would happily re-parse invalid
+   * XML because the default mode only warns.
+   */
+  @Test(dataProvider = "suiteFiles")
+  public void serializedSuiteIsValidAgainstTheDtd(String suiteFile) throws Exception {
+    String xml = parseFile(suiteFile).toXml();
+
+    List<String> violations = validateAgainstDtd(xml);
+
+    assertThat(violations)
+        .as("the XML written for %s must satisfy %s:%n%s", suiteFile, Parser.TESTNG_DTD, xml)
+        .isEmpty();
+  }
+
+  /**
+   * Validates against the bundled DTD, resolving it locally so the test never touches the network.
+   */
+  private static List<String> validateAgainstDtd(String xml) throws Exception {
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setValidating(true);
+    List<String> violations = new ArrayList<>();
+    factory
+        .newSAXParser()
+        .parse(
+            new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
+            new DefaultHandler() {
+              @Override
+              public InputSource resolveEntity(String publicId, String systemId) {
+                return new InputSource(
+                    XmlRoundTripTest.class.getClassLoader().getResourceAsStream(Parser.TESTNG_DTD));
+              }
+
+              @Override
+              public void error(SAXParseException e) {
+                violations.add(e.getMessage());
+              }
+            });
+    return violations;
+  }
+
+  /**
+   * The doctype we write must name the DTD the reader resolves. The writer lives in testng-core-api
+   * and the reader in testng-core, so they cannot share a constant and had silently drifted apart
+   * (1.0 written, 1.1 resolved). A comment would not have caught that; this does.
+   */
+  @Test
+  public void theEmittedDoctypeNamesTheDtdTheParserResolves() {
+    assertThat(new XmlSuite().toXml()).contains(Parser.TESTNG_DTD);
+  }
+
+  /**
+   * Fixtures that exist precisely because they are not valid, so they cannot be round tripped: with
+   * {@code testng.xml.validation=strict} the very first parse throws, which is what they are for.
+   */
+  private static final String INVALID_ON_PURPOSE = "xml" + File.separator + "validation";
+
+  /**
    * Every {@code .xml} file of the test corpus whose content contains a {@code <suite} start tag.
    *
    * <p>The filter is deliberately content based rather than name based, so that suite files added
@@ -67,7 +134,9 @@ public class XmlRoundTripTest {
           .filter(path -> path.getFileName().toString().endsWith(".xml"))
           .filter(XmlRoundTripTest::declaresASuite)
           .sorted()
-          .map(path -> new Object[] {root.relativize(path).toString()})
+          .map(path -> root.relativize(path).toString())
+          .filter(relativePath -> !relativePath.startsWith(INVALID_ON_PURPOSE))
+          .map(relativePath -> new Object[] {relativePath})
           .toArray(Object[][]::new);
     }
   }

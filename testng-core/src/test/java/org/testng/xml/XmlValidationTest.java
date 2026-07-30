@@ -5,13 +5,21 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static test.SimpleBaseTest.getPathToResource;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
+import java.util.Objects;
+import javax.xml.parsers.SAXParserFactory;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
+import org.testng.xml.internal.Parser;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXParseException;
 
 /**
  * Proves that DTD validation is actually wired into the parser.
@@ -20,40 +28,112 @@ import org.testng.internal.RuntimeBehavior;
  * {@code https} identifier, no parser recognized it, and {@code setValidating(true)} was never
  * reached. A test asserting only that valid files parse would have passed throughout, so the check
  * that matters is that an <em>invalid</em> file is rejected.
+ *
+ * <p>The two halves of the wiring are asserted separately on purpose. {@code XMLParser} decides
+ * <em>whether</em> to validate once, when it builds its singleton parser, so that decision is read
+ * back directly rather than inferred from a parse; inferring it made this test fail intermittently
+ * across the CI matrix, because "no error was reported" and "validation is not enabled" look
+ * identical from the outside. How a violation is <em>reported</em> is exercised through a parser
+ * built here, which no other test can have initialised first.
  */
 public class XmlValidationTest {
 
   private static final String INVALID_SUITE = "xml/validation/wrong-element-order.xml";
   private static final String VALID_SUITE = "xml/goodWithDoctype.xml";
 
+  private String previousMode;
+
+  @BeforeMethod
+  public void rememberValidationMode() {
+    previousMode = System.getProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+  }
+
+  /**
+   * Restores rather than clears: the property is global, so clearing it unconditionally would
+   * discard a value the JVM was started with -- the build forwards every {@code testng.*} property
+   * into the test JVM -- and leak into the rest of the suite.
+   */
   @AfterMethod(alwaysRun = true)
-  public void clearValidationMode() {
-    System.clearProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+  public void restoreValidationMode() {
+    if (previousMode == null) {
+      System.clearProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+    } else {
+      System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, previousMode);
+    }
+  }
+
+  /**
+   * The wiring that was broken. Asserted directly instead of through a parse, so that a JVM which
+   * cannot validate says so rather than looking like a suite file that happens to be valid.
+   */
+  @Test
+  public void theSharedParserValidatesSuiteFilesByDefault() {
+    assertThat(XMLParser.isValidating())
+        .as(
+            "the shared SAXParser must be built with DTD validation enabled; if this fails, either"
+                + " the JVM was started with -D%s=off or the JAXP implementation on the classpath"
+                + " does not support DTD validation",
+            RuntimeBehavior.XML_VALIDATION_MODE)
+        .isTrue();
   }
 
   @Test
   public void strictModeRejectsASuiteThatViolatesTheDtd() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
 
-    assertThatThrownBy(() -> parse(INVALID_SUITE))
-        .hasMessageContaining("must match")
-        .hasMessageContaining("suite");
-  }
-
-  @Test
-  public void warnModeAcceptsASuiteThatViolatesTheDtd() {
-    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "warn");
-
-    assertThatCode(() -> assertThat(parse(INVALID_SUITE).getName()).isEqualTo("WrongElementOrder"))
-        .doesNotThrowAnyException();
+    assertThatThrownBy(() -> parseValidating(INVALID_SUITE)).isInstanceOf(SAXParseException.class);
   }
 
   @Test
   public void strictModeAcceptsAValidSuite() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
 
-    assertThatCode(() -> assertThat(parse(VALID_SUITE).getName()).isEqualTo("GitHub809"))
+    assertThatCode(() -> assertThat(parseValidating(VALID_SUITE).getName()).isEqualTo("GitHub809"))
         .doesNotThrowAnyException();
+  }
+
+  @Test
+  public void warnModeAcceptsASuiteThatViolatesTheDtd() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "warn");
+
+    assertThatCode(
+            () ->
+                assertThat(parseValidating(INVALID_SUITE).getName()).isEqualTo("WrongElementOrder"))
+        .doesNotThrowAnyException();
+  }
+
+  /**
+   * A violation must be reported even when the DTD is not the copy TestNG substitutes for its own
+   * doctype URLs -- an air-gapped or mirrored setup ships the DTD next to the suite. Reporting used
+   * to be gated on "TestNG provided the DTD", so those users got no validation at all, even under
+   * strict.
+   *
+   * <p>Written to a temporary directory rather than checked in, so that the DTD used here cannot
+   * drift from the one TestNG ships.
+   */
+  @Test
+  public void strictModeAlsoRejectsWhenTheSuitePointsAtItsOwnDtd() throws Exception {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+    Path directory = Files.createTempDirectory("testng-local-dtd");
+    Path dtd = directory.resolve(Parser.TESTNG_DTD);
+    try (InputStream shipped = getClass().getClassLoader().getResourceAsStream(Parser.TESTNG_DTD)) {
+      Files.copy(Objects.requireNonNull(shipped, "the DTD must be on the classpath"), dtd);
+    }
+    Path suite = directory.resolve("local-dtd-wrong-order.xml");
+    Files.write(
+        suite,
+        ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE suite SYSTEM \""
+                + Parser.TESTNG_DTD
+                + "\">\n"
+                // <groups> may only be the first child of <suite>.
+                + "<suite name=\"LocalDtdWrongOrder\">\n"
+                + "  <parameter name=\"before\" value=\"groups\"/>\n"
+                + "  <groups><run><include name=\"included\"/></run></groups>\n"
+                + "</suite>\n")
+            .getBytes(StandardCharsets.UTF_8));
+
+    assertThatThrownBy(() -> parseValidating(suite)).isInstanceOf(SAXParseException.class);
   }
 
   @Test
@@ -72,9 +152,56 @@ public class XmlValidationTest {
     assertThat(XmlValidationMode.OFF.isValidating()).isFalse();
   }
 
-  private static XmlSuite parse(String suiteFile) throws IOException {
-    try (InputStream stream = Files.newInputStream(Paths.get(getPathToResource(suiteFile)))) {
-      return new SuiteXmlParser().parse(suiteFile, stream, false);
+  /**
+   * {@code toUpperCase()} without a locale maps 'i' to 'İ' in Turkish, which turned {@code strict}
+   * into an unknown value and silently degraded it to the default. The CI matrix has a {@code
+   * tr_TR} axis, so this was a live failure rather than a theoretical one.
+   *
+   * <p>Mutating the default locale is process wide; it is restored in a {@code finally} and the
+   * enclosing {@code <test>} of testng.xml runs single threaded.
+   */
+  @Test
+  public void theModeIsParsedIndependentlyOfTheDefaultLocale() {
+    Locale previousLocale = Locale.getDefault();
+    Locale.setDefault(new Locale("tr", "TR"));
+    try {
+      assertThat(modeOf("strict")).isEqualTo(XmlValidationMode.STRICT);
+      assertThat(modeOf("STRICT")).isEqualTo(XmlValidationMode.STRICT);
+      assertThat(modeOf("  Strict  ")).isEqualTo(XmlValidationMode.STRICT);
+      assertThat(modeOf("off")).isEqualTo(XmlValidationMode.OFF);
+      assertThat(modeOf("warn")).isEqualTo(XmlValidationMode.WARN);
+    } finally {
+      Locale.setDefault(previousLocale);
     }
+  }
+
+  private static XmlValidationMode modeOf(String spelling) {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, spelling);
+    return XmlValidationMode.current();
+  }
+
+  /**
+   * Parses with a validating parser created here rather than with {@link SuiteXmlParser}, whose
+   * parser is a JVM-wide singleton configured once at class-initialisation time. Only the reporting
+   * path is under test; {@link #theSharedParserValidatesSuiteFilesByDefault()} covers the
+   * singleton.
+   */
+  private static XmlSuite parseValidating(String suiteFile) throws Exception {
+    return parseValidating(Paths.get(getPathToResource(suiteFile)));
+  }
+
+  private static XmlSuite parseValidating(Path path) throws Exception {
+    SAXParserFactory factory = SAXParserFactory.newInstance();
+    factory.setValidating(true);
+    TestNGContentHandler handler = new TestNGContentHandler(path.toString(), false);
+    try (InputStream stream = Files.newInputStream(path)) {
+      InputSource source = new InputSource(stream);
+      // The system id matters: without it a relative doctype cannot be resolved, so TestNG falls
+      // back to substituting its own DTD and the "suite points at its own DTD" case would silently
+      // exercise the substituted path instead.
+      source.setSystemId(path.toUri().toString());
+      factory.newSAXParser().parse(source, handler);
+    }
+    return handler.getSuite();
   }
 }
