@@ -817,6 +817,8 @@
       <class name="org.testng.xml.XmlRoundTripTest"/>
       <class name="org.testng.xml.XMLParserTest"/>
       <class name="org.testng.xml.XmlValidationTest"/>
+      <class name="org.testng.xml.XsdValidationTest"/>
+      <class name="org.testng.xml.SchemaConsistencyTest"/>
     </classes>
   </test>
 

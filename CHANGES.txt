@@ -5,6 +5,7 @@ Fixed: XmlSuite.toXml() dropped a <selector-class> priority of -1 while the pars
 Fixed: The doctype written by XmlSuite.toXml() advertised testng-1.0.dtd although the parser always resolves testng-1.1.dtd (Julien Herr)
 Fixed: XmlSuite.toXml() emitted two sibling <groups> elements for a suite that has suite-level groups, which the DTD allows only once, so TestNG's own output did not validate (Julien Herr)
 Fixed: DTD violations were discarded for suite files pointing at their own copy or a mirror of the DTD rather than at testng.org, so those suites were never validated (Julien Herr)
+New: GITHUB-3319: testng.xml now has an XSD, testng-1.1.xsd, shipped next to testng-1.1.dtd and mirroring it declaration for declaration, for the tools that cannot consume a DTD. The DTD stays authoritative for files carrying a doctype; a test validates the whole suite corpus under both schemas and fails when the two stop agreeing (Julien Herr)
 New: Added round trip characterization tests covering every suite file of the test corpus, so that XML serialization can be refactored safely (Julien Herr)
 Fixed: GITHUB-3138: Clarified that class-level @Ignore applies to subclasses, not nested classes (ShinyHero666)
 New: Added OpenRewrite to the build with a hand-picked recipe list (see rewrite.yml), and applied it to the main sources (Julien Herr)
