@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.35.0"))
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.36.0"))
     rewrite("org.openrewrite.recipe:rewrite-static-analysis")
     rewrite("org.openrewrite.recipe:rewrite-migrate-java")
 }
