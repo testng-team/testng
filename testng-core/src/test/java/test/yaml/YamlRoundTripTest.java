@@ -1,6 +1,7 @@
 package test.yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static test.SimpleBaseTest.getPathToResource;
 
 import java.io.ByteArrayInputStream;
@@ -16,6 +17,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
 import org.testng.xml.SuiteDigest;
+import org.testng.xml.SuiteXmlParser;
+import org.testng.xml.XmlRoundTripTest;
 import org.testng.xml.XmlSuite;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -25,12 +28,15 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
  * Yaml#parse}) and the YAML writer ({@link Yaml#toYaml}) as a pair -- the counterpart of {@code
  * XmlRoundTripTest} for the other suite format.
  *
- * <p>Four invariants are checked, because none of them is sufficient on its own: the output must
- * load under a plain YAML parser, which is the property the writer used to violate outright; it
- * must be a fixed point, which pins key selection and layout; the parsed model must survive
- * unchanged, which pins the data (see {@link SuiteDigest}); and it must contain no anchor, since an
- * accidentally shared collection produces an alias that loads perfectly well and would slip past
- * the other three.
+ * <p>Four invariants are checked over the YAML corpus, because none of them is sufficient on its
+ * own: the output must load under a plain YAML parser, which is the property the writer used to
+ * violate outright; it must be a fixed point, which pins key selection and layout; the parsed model
+ * must survive unchanged, which pins the data (see {@link SuiteDigest}); and it must contain no
+ * anchor, since an accidentally shared collection produces an alias that loads perfectly well and
+ * would slip past the other three.
+ *
+ * <p>A fifth one runs over the XML corpus, since that is what the {@code Converter} CLI converts
+ * and it reaches constructs no YAML fixture can declare.
  */
 public class YamlRoundTripTest {
 
@@ -89,6 +95,31 @@ public class YamlRoundTripTest {
     assertThat(emitted)
         .as("the YAML written for %s must not reference shared nodes through aliases", suiteFile)
         .doesNotContainPattern("&id\\d+");
+  }
+
+  /**
+   * The other direction, which is what the {@code Converter} CLI does: an XML suite must convert to
+   * YAML the reader accepts.
+   *
+   * <p>Only loadability is asserted, not the round trip. XML expresses more than the YAML schema
+   * does -- a suite level {@code <define>} has no key, and the reader numbers includes from zero
+   * whereas the XML parser numbers them across the whole class -- so comparing digests would fail
+   * for reasons that have nothing to do with the writer. Loadability alone is enough to catch a key
+   * being written that nothing can read back, which the YAML corpus cannot: it can only contain
+   * what YAML can already express.
+   */
+  @Test(dataProvider = "suiteFiles", dataProviderClass = XmlRoundTripTest.class)
+  public void xmlSuitesConvertToLoadableYaml(String suiteFile) throws IOException {
+    Path path = Paths.get(getPathToResource(suiteFile));
+    XmlSuite xmlSuite;
+    try (InputStream stream = Files.newInputStream(path)) {
+      xmlSuite = new SuiteXmlParser().parse(suiteFile, stream, false);
+    }
+    String emitted = Yaml.toYaml(xmlSuite).toString();
+
+    assertThatCode(() -> parseString(suiteFile, emitted))
+        .as("the YAML written for %s must be readable back:%n%s", suiteFile, emitted)
+        .doesNotThrowAnyException();
   }
 
   /**
