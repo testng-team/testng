@@ -13,11 +13,18 @@ Checks that only fail once tests are compiled, or after a `clean`, slip straight
 Prone rules that fire on test fixtures, formatter tasks that were up to date, dependency upgrades
 that break test code but not main.
 
-The gate is a full build, which is also what CI runs on every push and pull request:
+The gate is `./gradlew build`, the same task CI runs. Let Gradle decide how much of it to re-run:
+a change that reaches nothing finishes in seconds, so there is no need to judge by hand what a diff
+can affect. Add `clean` only to rule out stale output.
 
 ```bash
-./gradlew clean build     # several minutes, must be 0 failures
+./gradlew build     # minutes when it has work to do, seconds when it does not; 0 failures
 ```
+
+A green local build is not a green CI. Pull requests against `master` also run an OpenRewrite check
+that `.github/CONTRIBUTING.md` documents, and a wrapper validation. Pushes are weaker than they
+look: the `branches: ['*']` filter in `test.yml` does not match `/`, so pushing a branch named
+`docs/foo` triggers no build until a pull request exists.
 
 `verifyPublishedPomDependencies` (in `testng/testng-build.gradle.kts`, wired into `check`) pins the
 exact dependency set of the published pom, versions ignored. When it fails, either the change is
