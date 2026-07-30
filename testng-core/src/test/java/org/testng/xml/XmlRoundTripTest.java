@@ -1,25 +1,19 @@
 package org.testng.xml;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static test.SimpleBaseTest.getPathToResource;
+import static org.testng.xml.SuiteCorpus.parseFile;
+import static org.testng.xml.SuiteCorpus.parseString;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.xml.parsers.SAXParserFactory;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.xml.internal.Parser;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -37,7 +31,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XmlRoundTripTest {
 
-  @Test(dataProvider = "suiteFiles")
+  @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
   public void serializedSuiteIsAFixedPoint(String suiteFile) throws IOException {
     String firstPass = parseFile(suiteFile).toXml();
     String secondPass = parseString(suiteFile, firstPass).toXml();
@@ -47,7 +41,7 @@ public class XmlRoundTripTest {
         .isEqualTo(firstPass);
   }
 
-  @Test(dataProvider = "suiteFiles")
+  @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
   public void suiteContentSurvivesTheRoundTrip(String suiteFile) throws IOException {
     XmlSuite parsedFromFile = parseFile(suiteFile);
     XmlSuite reparsed = parseString(suiteFile, parsedFromFile.toXml());
@@ -65,7 +59,7 @@ public class XmlRoundTripTest {
    * produced by {@code toXml()} -- and the corpus round trip above would happily re-parse invalid
    * XML because the default mode only warns.
    */
-  @Test(dataProvider = "suiteFiles")
+  @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
   public void serializedSuiteIsValidAgainstTheDtd(String suiteFile) throws Exception {
     String xml = parseFile(suiteFile).toXml();
 
@@ -89,9 +83,9 @@ public class XmlRoundTripTest {
             new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
             new DefaultHandler() {
               @Override
-              public InputSource resolveEntity(String publicId, String systemId) {
-                return new InputSource(
-                    XmlRoundTripTest.class.getClassLoader().getResourceAsStream(Parser.TESTNG_DTD));
+              public InputSource resolveEntity(String publicId, String systemId)
+                  throws IOException, SAXException {
+                return SuiteCorpus.bundledDtdResolver().resolveEntity(publicId, systemId);
               }
 
               @Override
@@ -110,56 +104,5 @@ public class XmlRoundTripTest {
   @Test
   public void theEmittedDoctypeNamesTheDtdTheParserResolves() {
     assertThat(new XmlSuite().toXml()).contains(Parser.TESTNG_DTD);
-  }
-
-  /**
-   * Fixtures that exist precisely because they are not valid, so they cannot be round tripped: with
-   * {@code testng.xml.validation=strict} the very first parse throws, which is what they are for.
-   */
-  private static final String INVALID_ON_PURPOSE = "xml" + File.separator + "validation";
-
-  /**
-   * Every {@code .xml} file of the test corpus whose content contains a {@code <suite} start tag.
-   *
-   * <p>The filter is deliberately content based rather than name based, so that suite files added
-   * later are picked up without touching this class. It also excludes, without needing an explicit
-   * list, the fixtures whose root element is {@code <Suite>} on purpose ({@code xml/badWith*.xml}).
-   */
-  @DataProvider(name = "suiteFiles")
-  public static Object[][] suiteFiles() throws IOException {
-    Path root = Paths.get(getPathToResource(""));
-    try (Stream<Path> paths = Files.walk(root)) {
-      return paths
-          .filter(Files::isRegularFile)
-          .filter(path -> path.getFileName().toString().endsWith(".xml"))
-          .filter(XmlRoundTripTest::declaresASuite)
-          .sorted()
-          .map(path -> root.relativize(path).toString())
-          .filter(relativePath -> !relativePath.startsWith(INVALID_ON_PURPOSE))
-          .map(relativePath -> new Object[] {relativePath})
-          .toArray(Object[][]::new);
-    }
-  }
-
-  private static boolean declaresASuite(Path path) {
-    try {
-      return new String(Files.readAllBytes(path), StandardCharsets.UTF_8).contains("<suite");
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-  }
-
-  private static XmlSuite parseFile(String suiteFile) throws IOException {
-    Path path = Paths.get(getPathToResource(suiteFile));
-    try (InputStream stream = Files.newInputStream(path)) {
-      // Parsed as a stream, like org.testng.xml.internal.Parser does, so that suite files relying
-      // on an external entity resolve it against the working directory rather than their own.
-      return new SuiteXmlParser().parse(suiteFile, stream, false);
-    }
-  }
-
-  private static XmlSuite parseString(String suiteFile, String xml) {
-    byte[] bytes = xml.getBytes(StandardCharsets.UTF_8);
-    return new SuiteXmlParser().parse(suiteFile, new ByteArrayInputStream(bytes), false);
   }
 }
