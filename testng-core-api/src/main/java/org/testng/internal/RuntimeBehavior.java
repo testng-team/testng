@@ -13,6 +13,7 @@ public final class RuntimeBehavior {
   private static final String TEST_CLASSPATH = "testng.test.classpath";
   private static final String SKIP_CALLER_CLS_LOADER = "skip.caller.clsLoader";
   public static final String TESTNG_USE_UNSECURED_URL = "testng.dtd.http";
+  public static final String XML_VALIDATION_MODE = "testng.xml.validation";
   public static final String SHOW_TESTNG_STACK_FRAMES = "testng.show.stack.frames";
   private static final String MEMORY_FRIENDLY_MODE = "testng.memory.friendly";
   public static final String STRICTLY_HONOUR_PARALLEL_MODE = "testng.strict.parallel";
@@ -50,6 +51,14 @@ public final class RuntimeBehavior {
 
   public static boolean useSecuredUrlForDtd() {
     return !Boolean.getBoolean(TESTNG_USE_UNSECURED_URL);
+  }
+
+  /**
+   * @return the raw value of {@value #XML_VALIDATION_MODE}, or {@code null} when unset. Interpreted
+   *     by {@code org.testng.xml.XmlValidationMode}.
+   */
+  public static String getXmlValidationMode() {
+    return System.getProperty(XML_VALIDATION_MODE);
   }
 
   public static boolean isMemoryFriendlyMode() {

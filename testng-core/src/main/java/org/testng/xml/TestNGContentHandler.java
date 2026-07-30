@@ -495,10 +495,8 @@ public class TestNGContentHandler extends DefaultHandler {
     if (start) {
       m_currentSelector.setName(attributes.getValue("name"));
       String priority = attributes.getValue("priority");
-      if (priority == null) {
-        priority = "0";
-      }
-      m_currentSelector.setPriority(Integer.parseInt(priority));
+      m_currentSelector.setPriority(
+          priority == null ? XmlMethodSelector.DEFAULT_PRIORITY : Integer.parseInt(priority));
     }
   }
 
@@ -781,8 +779,29 @@ public class TestNGContentHandler extends DefaultHandler {
 
   @Override
   public void error(SAXParseException e) throws SAXException {
-    if (m_validate) {
-      throw e;
+    if (!m_validate) {
+      // No DTD was resolved, so there is nothing to validate against. The missing <!DOCTYPE> is
+      // already reported by startElement().
+      return;
+    }
+    switch (XmlValidationMode.current()) {
+      case STRICT:
+        throw e;
+      case WARN:
+        Logger.getLogger(TestNGContentHandler.class)
+            .warn(
+                "The suite file ["
+                    + m_fileName
+                    + "] does not conform to "
+                    + Parser.TESTNG_DTD
+                    + ": "
+                    + e.getMessage()
+                    + ". Run with [-D"
+                    + RuntimeBehavior.XML_VALIDATION_MODE
+                    + "=strict] to turn this into a failure.");
+        break;
+      case OFF:
+        break;
     }
   }
 

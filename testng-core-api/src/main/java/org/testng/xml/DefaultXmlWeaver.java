@@ -15,8 +15,12 @@ import org.testng.reporters.XMLStringBuffer;
  */
 class DefaultXmlWeaver implements IWeaveXml {
   // TODO: move constants to XmlSuite?
-  /** The name of the TestNG DTD. */
-  private static final String TESTNG_DTD = "testng-1.0.dtd";
+  /**
+   * The name of the TestNG DTD. Must stay in sync with {@code Parser.TESTNG_DTD}, which is the
+   * version the reader actually resolves from the classpath; the two disagreed until 7.12, so the
+   * emitted doctype advertised a schema that was never the one used to read the file back.
+   */
+  private static final String TESTNG_DTD = "testng-1.1.dtd";
 
   private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 

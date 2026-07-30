@@ -19,7 +19,7 @@ public abstract class XMLParser<T> implements IFileParser<T> {
   static {
     SAXParserFactory spf = loadSAXParserFactory();
 
-    if (supportsValidation(spf)) {
+    if (XmlValidationMode.current().isValidating() && supportsValidation(spf)) {
       spf.setNamespaceAware(true);
       spf.setValidating(true);
     }
@@ -57,12 +57,20 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     }
   }
 
-  /** Tests if the current <code>SAXParserFactory</code> supports DTD validation. */
+  /**
+   * Tests if the current <code>SAXParserFactory</code> supports DTD validation.
+   *
+   * <p>The feature name is a plain identifier, not a URL to dereference, so it keeps its historical
+   * <code>http</code> scheme. Probing it under <code>https</code> makes every conforming parser
+   * raise <code>SAXNotRecognizedException</code>, which silently disabled validation altogether.
+   */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
-      spf.getFeature("https://xml.org/sax/features/validation");
+      spf.getFeature("http://xml.org/sax/features/validation");
       return true;
     } catch (Exception ex) {
+      Logger.getLogger(XMLParser.class)
+          .warn("The XML parser in use does not support DTD validation: " + ex);
       return false;
     }
   }
