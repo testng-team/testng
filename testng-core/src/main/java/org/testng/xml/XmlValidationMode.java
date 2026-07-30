@@ -16,12 +16,12 @@ import org.testng.log4testng.Logger;
  * of {@code <suite>}, for instance -- so {@link #WARN} is the default for now and reports
  * violations without failing the run.
  *
- * <p>The property is read at two different moments, which constrains when it can be changed. {@code
- * XMLParser} decides <em>whether to validate</em> once, when it builds its single static {@code
- * SAXParser}; {@code TestNGContentHandler.error} decides <em>how to report</em> a violation on
- * every occurrence. Moving between {@link #WARN} and {@link #STRICT} at run time therefore takes
- * effect, but moving away from {@link #OFF} does not, because no violation is ever raised to
- * report. Set the property on the command line to be safe.
+ * <p>The property is read once per parse, never in the middle of one. {@code XMLParser} rebuilds
+ * its shared parser when the mode has changed since the last parse, which decides <em>whether</em>
+ * violations are raised at all, and {@code TestNGContentHandler} captures the mode when it is
+ * constructed, which decides <em>how</em> they are reported. Changing the property therefore takes
+ * effect from the next parse onwards, including when moving away from {@link #OFF}; changing it
+ * while a parse is in flight has no effect on that parse.
  */
 public enum XmlValidationMode {
 

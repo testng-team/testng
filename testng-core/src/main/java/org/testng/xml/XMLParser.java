@@ -14,44 +14,66 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class XMLParser<T> implements IFileParser<T> {
 
-  private static final SAXParser m_saxParser;
+  private static final AutoCloseableLock lock = new AutoCloseableLock();
+
+  private static SAXParser m_saxParser;
+
+  /** The mode {@link #m_saxParser} was configured for, so a change of mode can be noticed. */
+  private static XmlValidationMode configuredFor;
+
+  /** Whether {@link #m_saxParser} was built with DTD validation enabled. */
+  private static boolean validating;
 
   /**
-   * Whether the shared parser was built with DTD validation enabled. Decided once, because the
-   * parser itself is a singleton, and exposed so that tests can tell "validation is off in this
-   * JVM" apart from "this file is valid" instead of inferring it from a parse that does not fail.
+   * Whether the next parse will validate against the TestNG DTD. Exposed so that tests can tell
+   * "validation is off in this JVM" apart from "this file is valid", instead of inferring it from a
+   * parse that does not fail -- an inference that cannot be made.
    */
-  private static final boolean validating;
+  static boolean isValidating() {
+    try (AutoCloseableLock ignore = lock.lock()) {
+      parser();
+      return validating;
+    }
+  }
 
-  static {
+  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
+    try (AutoCloseableLock ignore = lock.lock()) {
+      SAXParser parser = parser();
+      if (parser == null) {
+        throw new TestNGException("No SAXParser could be configured to read suite files.");
+      }
+      parser.parse(is, dh);
+    }
+  }
+
+  /**
+   * The shared parser, rebuilt when the validation mode has changed since it was created. The
+   * parser is a singleton because it is expensive, but pinning it to the mode that happened to be
+   * set when this class was first loaded made {@code testng.xml.validation} silently ineffective
+   * for anything that sets it later -- the very failure mode this setting exists to fix.
+   *
+   * <p>Must be called while holding {@link #lock}.
+   */
+  private static SAXParser parser() {
+    XmlValidationMode mode = XmlValidationMode.current();
+    if (m_saxParser != null && mode == configuredFor) {
+      return m_saxParser;
+    }
     SAXParserFactory spf = loadSAXParserFactory();
 
     // Namespace awareness is deliberately left off: DTD validation does not need it, suite files
     // are not namespaced, and turning it on would make an unbound prefix fatal and an xmlns
     // attribute a validity error -- neither of which has anything to do with validating a suite.
-    validating = XmlValidationMode.current().isValidating() && supportsValidation(spf);
+    validating = mode.isValidating() && supportsValidation(spf);
     spf.setValidating(validating);
-
-    SAXParser parser = null;
     try {
-      parser = spf.newSAXParser();
+      m_saxParser = spf.newSAXParser();
     } catch (ParserConfigurationException | SAXException e) {
       Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
+      m_saxParser = null;
     }
-    m_saxParser = parser;
-  }
-
-  private static final AutoCloseableLock lock = new AutoCloseableLock();
-
-  /** Whether the shared parser validates suite files against the TestNG DTD. */
-  static boolean isValidating() {
-    return validating;
-  }
-
-  public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
-    try (AutoCloseableLock ignore = lock.lock()) {
-      m_saxParser.parse(is, dh);
-    }
+    configuredFor = mode;
+    return m_saxParser;
   }
 
   /**

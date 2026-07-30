@@ -43,6 +43,9 @@ public final class SuiteDigest {
     append(sb, "suite.parameters", sorted(suite.getParameters()));
     append(sb, "suite.includedGroups", suite.getIncludedGroups());
     append(sb, "suite.excludedGroups", suite.getExcludedGroups());
+    // Included/excluded groups only reflect <run>. Without the defines and dependencies a round
+    // trip could drop a suite-level <define> or <dependencies> block and still look identical.
+    appendGroups(sb, "suite", suite.getGroups());
     appendPackages(sb, "suite", suite.getPackages());
     appendMethodSelectors(sb, "suite", suite.getMethodSelectors());
 
@@ -86,6 +89,27 @@ public final class SuiteDigest {
         append(sb, includePrefix + ".invocationNumbers", include.getInvocationNumbers());
         append(sb, includePrefix + ".parameters", sorted(include.getLocalParameters()));
       }
+    }
+  }
+
+  private static void appendGroups(StringBuilder sb, String prefix, XmlGroups groups) {
+    if (groups == null) {
+      append(sb, prefix + ".groups", null);
+      return;
+    }
+    List<XmlDefine> defines = groups.getDefines();
+    append(sb, prefix + ".groups.defines.count", defines.size());
+    for (int i = 0; i < defines.size(); i++) {
+      append(sb, prefix + ".groups.define[" + i + "].name", defines.get(i).getName());
+      append(sb, prefix + ".groups.define[" + i + "].includes", defines.get(i).getIncludes());
+    }
+    List<XmlDependencies> dependencies = groups.getDependencies();
+    append(sb, prefix + ".groups.dependencies.count", dependencies.size());
+    for (int i = 0; i < dependencies.size(); i++) {
+      append(
+          sb,
+          prefix + ".groups.dependencies[" + i + ']',
+          sorted(dependencies.get(i).getDependencies()));
     }
   }
 

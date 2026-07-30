@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Objects;
 import javax.xml.parsers.SAXParserFactory;
+import org.testng.SkipException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -29,12 +30,11 @@ import org.xml.sax.SAXParseException;
  * reached. A test asserting only that valid files parse would have passed throughout, so the check
  * that matters is that an <em>invalid</em> file is rejected.
  *
- * <p>The two halves of the wiring are asserted separately on purpose. {@code XMLParser} decides
- * <em>whether</em> to validate once, when it builds its singleton parser, so that decision is read
- * back directly rather than inferred from a parse; inferring it made this test fail intermittently
- * across the CI matrix, because "no error was reported" and "validation is not enabled" look
- * identical from the outside. How a violation is <em>reported</em> is exercised through a parser
- * built here, which no other test can have initialised first.
+ * <p>The two halves of the wiring are asserted separately on purpose. Whether {@code XMLParser}
+ * validates is read back directly rather than inferred from a parse: inferring it made this test
+ * fail intermittently across the CI matrix, because "no error was reported" and "validation is not
+ * enabled" look identical from the outside. How a violation is <em>reported</em> is exercised
+ * through a parser built here, so it cannot depend on the state of the shared one.
  */
 public class XmlValidationTest {
 
@@ -68,13 +68,26 @@ public class XmlValidationTest {
    */
   @Test
   public void theSharedParserValidatesSuiteFilesByDefault() {
+    if (XmlValidationMode.current() == XmlValidationMode.OFF) {
+      throw new SkipException(
+          "the JVM is configured with -D"
+              + RuntimeBehavior.XML_VALIDATION_MODE
+              + "=off, which is a supported way to run the suite");
+    }
+
     assertThat(XMLParser.isValidating())
         .as(
-            "the shared SAXParser must be built with DTD validation enabled; if this fails, either"
-                + " the JVM was started with -D%s=off or the JAXP implementation on the classpath"
-                + " does not support DTD validation",
-            RuntimeBehavior.XML_VALIDATION_MODE)
+            "the shared SAXParser must validate; if this fails, the JAXP implementation on the"
+                + " classpath does not support DTD validation")
         .isTrue();
+  }
+
+  /** Turning validation off must actually reach the parser, not only the reporting. */
+  @Test
+  public void offModeStopsTheSharedParserFromValidating() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "off");
+
+    assertThat(XMLParser.isValidating()).isFalse();
   }
 
   @Test
