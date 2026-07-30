@@ -598,7 +598,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
-    if (!m_validate && !m_hasWarn) {
+    if (!m_doctypeDeclared && !m_hasWarn) {
       String msg =
           String.format(
               "It is strongly recommended to add "
