@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Objects;
 import javax.xml.parsers.SAXParserFactory;
 import org.testng.SkipException;
+import org.testng.TestNGException;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -31,11 +32,12 @@ import org.xml.sax.SAXParseException;
  * reached. A test asserting only that valid files parse would have passed throughout, so the check
  * that matters is that an <em>invalid</em> file is rejected.
  *
- * <p>The two halves of the wiring are asserted separately on purpose. Whether {@code XMLParser}
+ * <p>The halves of the wiring are asserted separately on purpose. Whether {@code XMLParser}
  * validates is read back directly rather than inferred from a parse: inferring it made this test
  * fail intermittently across the CI matrix, because "no error was reported" and "validation is not
- * enabled" look identical from the outside. How a violation is <em>reported</em> is exercised
- * through a parser built here, so it cannot depend on the state of the shared one.
+ * enabled" look identical from the outside. How a violation is <em>reported</em> is then exercised
+ * through a parser this test configures, which isolates the reporting from the configuration. Since
+ * neither of those goes through {@link SuiteXmlParser}, one test walks the whole path users take.
  */
 public class XmlValidationTest {
 
@@ -96,6 +98,27 @@ public class XmlValidationTest {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
 
     assertThatThrownBy(() -> parseValidating(INVALID_SUITE)).isInstanceOf(SAXParseException.class);
+  }
+
+  /**
+   * The same rejection, but through {@link SuiteXmlParser} rather than through a parser this test
+   * configures.
+   *
+   * <p>{@link #strictModeRejectsASuiteThatViolatesTheDtd()} calls {@code setValidating(true)}
+   * itself, so it proves that a violation is reported but says nothing about whether the mode ever
+   * reaches a parser. Only {@link XMLParser#parse} reads {@link XmlValidationMode} and configures
+   * the factory from it, and that is the path users take. Without this test, breaking that wiring
+   * would leave the whole class green.
+   */
+  @Test
+  public void theSuiteParserReportsAViolationInStrictMode() throws Exception {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+
+    try (InputStream stream = Files.newInputStream(Paths.get(getPathToResource(INVALID_SUITE)))) {
+      assertThatThrownBy(() -> new SuiteXmlParser().parse(INVALID_SUITE, stream, false))
+          .isInstanceOf(TestNGException.class)
+          .hasRootCauseInstanceOf(SAXParseException.class);
+    }
   }
 
   @Test
