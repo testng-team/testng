@@ -16,7 +16,7 @@ on:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     permissions:
       # required for all workflows
       security-events: write
@@ -40,15 +40,17 @@ jobs:
         # Use `javascript-typescript` to analyze code written in JavaScript, TypeScript or both
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      with:
+        persist-credentials: false
 
-    # The autobuild action was unable to build this repository's Gradle/Kotlin
-    # project (see the failed CI run), so java-kotlin now uses "manual" build
-    # mode. We build the project ourselves using the same JDK and Gradle task
-    # that the repository's own Test workflow (test.yml) relies on.
+          # The autobuild action was unable to build this repository's Gradle/Kotlin
+          # project (see the failed CI run), so java-kotlin now uses "manual" build
+      # mode. We build the project ourselves using the same JDK and Gradle task
+      # that the repository's own Test workflow (test.yml) relies on.
     - name: Set up JDK 25 (Temurin)
       if: matrix.build-mode == 'manual'
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
       with:
         java-version: 25
         distribution: temurin
@@ -69,6 +71,6 @@ jobs:
         ./gradlew --no-daemon -PjdkBuildVersion=25 -Dorg.gradle.java.installations.auto-download=false testClasses
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@f205ea1c3313d32999d8d6a48b4f6530d4437b38 # v4.37.4
       with:
         category: "/language:${{matrix.language}}"
