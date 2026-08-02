@@ -6,9 +6,13 @@ import org.testng.reporters.XMLStringBuffer;
 
 /** This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml. */
 public class XmlMethodSelector {
+
+  /** The priority assumed when the {@code priority} attribute is absent from the suite file. */
+  public static final int DEFAULT_PRIORITY = 0;
+
   // Either this:
   private String m_className;
-  private int m_priority;
+  private int m_priority = DEFAULT_PRIORITY;
 
   // Or that:
   private XmlScript m_script;
@@ -56,7 +60,10 @@ public class XmlMethodSelector {
     if (null != m_className) {
       Properties clsProp = new Properties();
       clsProp.setProperty("name", getClassName());
-      if (getPriority() != -1) {
+      // Omit the value the parser falls back to when the attribute is absent, so that a
+      // round trip is lossless. A negative priority is meaningful (see RunInfo#includeMethod)
+      // and must therefore be written out.
+      if (getPriority() != DEFAULT_PRIORITY) {
         clsProp.setProperty("priority", String.valueOf(getPriority()));
       }
       xsb.addEmptyElement("selector-class", clsProp);
