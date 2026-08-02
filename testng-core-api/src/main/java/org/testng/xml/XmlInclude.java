@@ -75,6 +75,9 @@ public class XmlInclude {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
     Properties p = new Properties();
     p.setProperty("name", getName());
+    if (m_description != null) {
+      p.setProperty("description", m_description);
+    }
     List<Integer> invocationNumbers = getInvocationNumbers();
     if (invocationNumbers != null && !invocationNumbers.isEmpty()) {
       p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers));

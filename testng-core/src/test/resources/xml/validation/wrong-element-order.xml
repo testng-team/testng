@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.1.dtd">
+<!--
+  Well formed, but not valid: the DTD content model of <suite> is
+  (groups?,(listeners|packages|test|parameter|method-selectors|suite-files)*)
+  so <groups> may only appear as the first child. Used to prove that DTD
+  validation is actually wired in.
+-->
+<suite name="WrongElementOrder">
+  <parameter name="before" value="groups"/>
+  <groups>
+    <run>
+      <include name="included"/>
+    </run>
+  </groups>
+</suite>
