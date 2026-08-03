@@ -12,7 +12,8 @@ import java.lang.annotation.Target;
  *
  * <p>Notice that @Ignore on a class will disable all test methods of the class.
  *
- * <p>Ignoring a class will ignore tests from child classes too.
+ * <p>Ignoring a class will ignore tests from subclasses too. An {@code @Ignore} annotation on an
+ * enclosing class does not apply to its nested classes.
  *
  * <p>Ignoring a package will ignore all tests in the package and its sub-packages
  *
