@@ -28,6 +28,13 @@ public class IgnoreTest extends SimpleBaseTest {
     assertThat(listener.getInvokedMethods()).isEmpty();
   }
 
+  @Test(description = "GITHUB-3138")
+  public void ignore_class_should_not_ignore_nested_class() {
+    InvokedMethodListener listener =
+        runTest(IgnoreClassWithNestedSample.class, IgnoreClassWithNestedSample.Nested.class);
+    assertThat(listener.getInvokedMethods()).containsExactly("nestedTest");
+  }
+
   @Test
   public void ignore_test_should_not_run_test() {
     InvokedMethodListener listener = runTest(IgnoreTestSample.class);
