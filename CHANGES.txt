@@ -1,4 +1,5 @@
 Current (7.13.0)
+Fixed: GITHUB-3316: close DTD resolver resources and bound connection waits (w3lld1)
 Fixed: GITHUB-3138: Clarified that class-level @Ignore applies to subclasses, not nested classes (ShinyHero666)
 New: Added OpenRewrite to the build with a hand-picked recipe list (see rewrite.yml), and applied it to the main sources (Julien Herr)
 Fixed: Remove leftover dead JUnit code: the deprecated unused ConversionUtils and orphaned JUnit test samples, following the removal of JUnit execution support in 7.10.0 (Julien Herr)

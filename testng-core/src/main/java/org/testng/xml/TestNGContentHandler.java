@@ -2,6 +2,7 @@ package org.testng.xml;
 
 import static org.testng.internal.Utils.isStringBlank;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Stack;
 import org.testng.ITestObjectFactory;
@@ -43,6 +43,8 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 // TODO move to internal
 public class TestNGContentHandler extends DefaultHandler {
+  private static final int DTD_CONNECTION_TIMEOUT_MILLIS = 10_000;
+
   private XmlSuite m_currentSuite = null;
   private XmlTest m_currentTest = null;
   private XmlDefine m_currentDefine = null;
@@ -71,26 +73,43 @@ public class TestNGContentHandler extends DefaultHandler {
                   "Failed to read [%s] from CLASSPATH. " + "Attempting to read from [%s].",
                   url.getPath(), systemId);
           Logger.getLogger(getClass()).warn(msg);
-          URLConnection urlConnection = url.openConnection();
-          if (urlConnection instanceof HttpURLConnection) {
-            HttpURLConnection conn = (HttpURLConnection) urlConnection;
-
-            int status = conn.getResponseCode();
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP
-                || status == HttpURLConnection.HTTP_MOVED_PERM
-                || status == HttpURLConnection.HTTP_SEE_OTHER) {
-
-              String newUrl = conn.getHeaderField("Location");
-              conn = (HttpURLConnection) new URL(newUrl).openConnection();
-            }
-            stream = conn.getInputStream();
-          } else {
-            stream = urlConnection.getInputStream();
-          }
+          return new InputSource(new ByteArrayInputStream(readUrl(url, true)));
         }
-        return new InputSource(
-            Objects.requireNonNull(stream, "Failed to load DTD from " + systemId));
+        try (InputStream input = stream) {
+          return new InputSource(new ByteArrayInputStream(input.readAllBytes()));
+        }
       };
+
+  private static byte[] readUrl(URL url, boolean followRedirect) throws IOException {
+    URLConnection connection = url.openConnection();
+    configureConnection(connection);
+    if (!(connection instanceof HttpURLConnection)) {
+      try (InputStream input = connection.getInputStream()) {
+        return input.readAllBytes();
+      }
+    }
+
+    HttpURLConnection httpConnection = (HttpURLConnection) connection;
+    try {
+      int status = httpConnection.getResponseCode();
+      if (followRedirect
+          && (status == HttpURLConnection.HTTP_MOVED_TEMP
+              || status == HttpURLConnection.HTTP_MOVED_PERM
+              || status == HttpURLConnection.HTTP_SEE_OTHER)) {
+        return readUrl(new URL(url, httpConnection.getHeaderField("Location")), false);
+      }
+      try (InputStream input = httpConnection.getInputStream()) {
+        return input.readAllBytes();
+      }
+    } finally {
+      httpConnection.disconnect();
+    }
+  }
+
+  static void configureConnection(URLConnection connection) {
+    connection.setConnectTimeout(DTD_CONNECTION_TIMEOUT_MILLIS);
+    connection.setReadTimeout(DTD_CONNECTION_TIMEOUT_MILLIS);
+  }
 
   enum Location {
     SUITE,
