@@ -73,7 +73,7 @@ public class TestNGContentHandler extends DefaultHandler {
                   "Failed to read [%s] from CLASSPATH. " + "Attempting to read from [%s].",
                   url.getPath(), systemId);
           Logger.getLogger(getClass()).warn(msg);
-          return new InputSource(new ByteArrayInputStream(readUrl(url, true)));
+          return readUrlAsInputSource(url);
         }
         try (InputStream input = stream) {
           return new InputSource(new ByteArrayInputStream(input.readAllBytes()));
@@ -105,6 +105,10 @@ public class TestNGContentHandler extends DefaultHandler {
     } finally {
       httpConnection.disconnect();
     }
+  }
+
+  static InputSource readUrlAsInputSource(URL url) throws IOException {
+    return new InputSource(new ByteArrayInputStream(readUrl(url, true)));
   }
 
   static void configureConnection(URLConnection connection) {

@@ -3,16 +3,17 @@ package test.xml;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sun.net.httpserver.HttpServer;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.annotations.Test;
 import org.testng.xml.SuiteXmlParser;
@@ -62,18 +63,37 @@ public class TestNGContentHandlerTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-3316")
   public void resolverBuffersAndClosesExternalDtd() throws Exception {
-    Path dtd = Files.createTempFile("testng", ".dtd");
-    try {
-      Files.writeString(dtd, "<!ELEMENT suite EMPTY>", StandardCharsets.UTF_8);
+    byte[] content = "<!ELEMENT suite EMPTY>".getBytes(StandardCharsets.UTF_8);
+    AtomicBoolean sourceClosed = new AtomicBoolean();
+    URL dtd =
+        new URL(
+            null,
+            "memory://testng.dtd",
+            new URLStreamHandler() {
+              @Override
+              protected URLConnection openConnection(URL url) {
+                return new URLConnection(url) {
+                  @Override
+                  public void connect() throws IOException {}
 
-      TestNGContentHandler handler = new TestNGContentHandler("test.xml", false);
-      try (var input = handler.resolveEntity(null, dtd.toUri().toString()).getByteStream()) {
-        Files.delete(dtd);
-        assertThat(new String(input.readAllBytes(), StandardCharsets.UTF_8))
-            .isEqualTo("<!ELEMENT suite EMPTY>");
-      }
-    } finally {
-      Files.deleteIfExists(dtd);
+                  @Override
+                  public ByteArrayInputStream getInputStream() {
+                    return new ByteArrayInputStream(content) {
+                      @Override
+                      public void close() throws IOException {
+                        sourceClosed.set(true);
+                        super.close();
+                      }
+                    };
+                  }
+                };
+              }
+            });
+
+    var resolved = TestNGContentHandlerTestSupport.readUrlAsInputSource(dtd);
+    assertThat(sourceClosed).isTrue();
+    try (var input = resolved.getByteStream()) {
+      assertThat(input.readAllBytes()).isEqualTo(content);
     }
   }
 
