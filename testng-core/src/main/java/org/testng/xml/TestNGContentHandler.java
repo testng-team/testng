@@ -80,7 +80,7 @@ public class TestNGContentHandler extends DefaultHandler {
         }
       };
 
-  private static byte[] readUrl(URL url, boolean followRedirect) throws IOException {
+  static byte[] readUrl(URL url, boolean followRedirect) throws IOException {
     URLConnection connection = url.openConnection();
     configureConnection(connection);
     if (!(connection instanceof HttpURLConnection)) {
@@ -90,6 +90,7 @@ public class TestNGContentHandler extends DefaultHandler {
     }
 
     HttpURLConnection httpConnection = (HttpURLConnection) connection;
+    httpConnection.setInstanceFollowRedirects(false);
     try {
       int status = httpConnection.getResponseCode();
       if (followRedirect
@@ -149,9 +150,11 @@ public class TestNGContentHandler extends DefaultHandler {
 
     if (skipConsideringSystemId(systemId)) {
       m_validate = true;
-      InputStream is = loadDtdUsingClassLoader();
-      if (is != null) {
-        return new InputSource(is);
+      InputStream stream = loadDtdUsingClassLoader();
+      if (stream != null) {
+        try (InputStream input = stream) {
+          return new InputSource(new ByteArrayInputStream(input.readAllBytes()));
+        }
       }
       // If the classpath loading of DTD fails, then we try to load it from "https" TestNG site.
       System.out.println(
