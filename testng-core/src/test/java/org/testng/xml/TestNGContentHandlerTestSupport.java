@@ -1,5 +1,6 @@
 package org.testng.xml;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -17,6 +18,6 @@ public final class TestNGContentHandlerTestSupport {
   }
 
   public static InputSource readUrlAsInputSource(URL url) throws IOException {
-    return TestNGContentHandler.readUrlAsInputSource(url);
+    return new InputSource(new ByteArrayInputStream(TestNGContentHandler.readUrl(url, true)));
   }
 }
