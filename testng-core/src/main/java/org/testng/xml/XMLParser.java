@@ -90,6 +90,14 @@ public abstract class XMLParser<T> implements IFileParser<T> {
    */
   private static boolean supportsValidation(SAXParserFactory spf) {
     try {
+      // The value is deliberately discarded: this feature reports whether validation is currently
+      // ON, not whether it is available. The JDK's Xerces answers false here and only turns true
+      // after setValidating(true) -- and this runs before that call, so the answer is always the
+      // default. Returning it would leave validation permanently off on a parser that supports it
+      // perfectly well.
+      //
+      // Availability is signalled by the exception instead: SAXNotRecognizedException when the
+      // feature name is unknown, SAXNotSupportedException when it is known but unavailable here.
       spf.getFeature("http://xml.org/sax/features/validation");
       return true;
     } catch (Exception ex) {
