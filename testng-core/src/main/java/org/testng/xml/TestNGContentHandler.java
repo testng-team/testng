@@ -154,6 +154,7 @@ public class TestNGContentHandler extends DefaultHandler {
       m_validate = true;
       InputStream stream = loadDtdUsingClassLoader();
       if (stream != null) {
+        // Buffer the classpath DTD so this resolver, rather than SAX, owns and closes the stream.
         try (InputStream input = stream) {
           return new InputSource(new ByteArrayInputStream(input.readAllBytes()));
         }
