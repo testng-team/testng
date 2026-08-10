@@ -25,7 +25,7 @@ import org.xml.sax.InputSource;
  * was paid for: how a suite file is opened decides whether an external entity resolves, and how a
  * doctype is resolved decides whether the test touches the network.
  */
-final class SuiteCorpus {
+public final class SuiteCorpus {
 
   private SuiteCorpus() {}
 
