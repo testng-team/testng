@@ -1,22 +1,19 @@
 package test.methodselectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Collections;
 import java.util.List;
 import org.testng.ITestNGListener;
-import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-import org.testng.testhelper.OutputDirectoryPatch;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlMethodSelector;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
+import test.TestHelper;
 
 public class MethodSelectorInSuiteTest extends SimpleBaseTest {
 
@@ -44,7 +41,7 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
-    validate(new String[] {"test2"});
+    TestHelper.assertPassedTestNames(m_tla.getPassedTests(), "test2");
   }
 
   @Test
@@ -54,28 +51,6 @@ public class MethodSelectorInSuiteTest extends SimpleBaseTest {
     tng.addListener((ITestNGListener) m_tla);
     tng.run();
 
-    validate(new String[] {"test2"});
-  }
-
-  @Test
-  public void fileOnCommandLine() {
-    String[] args =
-        new String[] {
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          getPathToResource("methodselector-in-xml.xml")
-        };
-    TestNG.privateMain(args, m_tla);
-
-    validate(new String[] {"test2"});
-  }
-
-  private void validate(String[] expectPassed) {
-    List<ITestResult> passed = m_tla.getPassedTests();
-    assertThat(passed.size()).isEqualTo(expectPassed.length);
-    // doing this index based is probably not the best
-    for (int i = 0; i < expectPassed.length; i++) {
-      assertThat(passed.get(i).getName()).isEqualTo(expectPassed[i]);
-    }
+    TestHelper.assertPassedTestNames(m_tla.getPassedTests(), "test2");
   }
 }

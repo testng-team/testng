@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static test.junitreports.TestClassContainerForGithubIssue1265.*;
 
-import com.beust.jcommander.internal.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -25,6 +24,7 @@ import org.testng.ITestNGListener;
 import org.testng.Reporter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.reporters.XMLConstants;
 import org.testng.xml.XmlSuite;

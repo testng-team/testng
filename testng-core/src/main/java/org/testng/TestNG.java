@@ -5,8 +5,6 @@ import static org.testng.internal.Utils.defaultIfStringEmpty;
 import static org.testng.internal.Utils.isStringEmpty;
 import static org.testng.internal.Utils.isStringNotEmpty;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.ParameterException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLClassLoader;
@@ -123,8 +121,6 @@ public class TestNG {
   public static final String DEFAULT_OUTPUTDIR = "test-output";
 
   private static TestNG m_instance;
-
-  private static JCommander m_jCommander;
 
   private List<String> m_commandLineMethods;
   protected List<XmlSuite> m_suites = Lists.newArrayList();
@@ -274,6 +270,15 @@ public class TestNG {
 
   public void setListenerComparator(ListenerComparator listenerComparator) {
     this.m_configuration.setListenerComparator(listenerComparator);
+  }
+
+  /**
+   * @param listenerComparatorClass a {@link ListenerComparator} implementation, instantiated with
+   *     the object factory currently in use.
+   */
+  public void setListenerComparatorClass(
+      Class<? extends ListenerComparator> listenerComparatorClass) {
+    setListenerComparator(m_objectFactory.newInstance(listenerComparatorClass));
   }
 
   public ListenerComparator getListenerComparator() {
@@ -428,7 +433,10 @@ public class TestNG {
   /** @param threadCount Define the number of threads in the thread pool. */
   public void setThreadCount(int threadCount) {
     if (threadCount < 1) {
-      exitWithError("Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
+      // Reported rather than fatal: killing the JVM from a setter breaks every embedder, and
+      // TestNG#main is the one place allowed to turn a bad value into an exit code.
+      throw new TestNGException(
+          "Cannot use a threadCount parameter less than 1; 1 > " + threadCount);
     }
 
     m_threadCount = threadCount;
@@ -663,7 +671,7 @@ public class TestNG {
     m_includedGroups = Utils.split(groups, ",");
   }
 
-  private void setTestRunnerFactoryClass(
+  public void setTestRunnerFactoryClass(
       Class<? extends ITestRunnerFactory> testRunnerFactoryClass) {
     setTestRunnerFactory(m_objectFactory.newInstance(testRunnerFactoryClass));
   }
@@ -846,8 +854,25 @@ public class TestNG {
         Objects.requireNonNull(factory, "ExecutorServiceFactory cannot be null"));
   }
 
+  /**
+   * @param factoryClass an {@link IExecutorServiceFactory} implementation, instantiated with the
+   *     object factory currently in use.
+   */
+  public void setExecutorServiceFactoryClass(
+      Class<? extends IExecutorServiceFactory> factoryClass) {
+    setExecutorServiceFactory(m_objectFactory.newInstance(factoryClass));
+  }
+
   public void setListenerFactory(ITestNGListenerFactory factory) {
     this.m_configuration.setListenerFactory(factory);
+  }
+
+  /**
+   * @param factoryClass an {@link ITestNGListenerFactory} implementation, instantiated with the
+   *     object factory currently in use.
+   */
+  public void setListenerFactoryClass(Class<? extends ITestNGListenerFactory> factoryClass) {
+    setListenerFactory(m_objectFactory.newInstance(factoryClass));
   }
 
   public void setGenerateResultsPerSuite(boolean generateResultsPerSuite) {
@@ -1093,7 +1118,6 @@ public class TestNG {
     }
 
     m_instance = null;
-    m_jCommander = null;
   }
 
   /**
@@ -1140,10 +1164,25 @@ public class TestNG {
   }
 
   private static void usage() {
-    if (m_jCommander == null) {
-      m_jCommander = new JCommander(new CommandLineArgs());
+    // find() rather than required(): printing usage must never be the thing that fails.
+    ITestNGCliRunner runner = CliRunners.find();
+    if (runner != null) {
+      try {
+        runner.usage();
+        return;
+      } catch (RuntimeException ignored) {
+        // A third party runner must not break the callers of usage(), which include plain Java API
+        // paths such as runSuitesLocally(). Fall through to the built-in banner.
+      }
     }
-    m_jCommander.usage();
+    // Written to stdout, like the banner a command line runner produces.
+    System.out.println(
+        "Usage: java "
+            + TestNG.class.getName()
+            + " [options] <testng.xml> ...\n"
+            + "Detailed command line help requires an "
+            + ITestNGCliRunner.class.getName()
+            + " implementation on the classpath; the org.testng:testng jar bundles one.");
   }
 
   private void generateReports(List<ISuite> suiteRunners) {
@@ -1385,10 +1424,25 @@ public class TestNG {
   /**
    * The TestNG entry point for command line execution.
    *
+   * <p>Kept working so that {@code java -cp testng.jar org.testng.TestNG suite.xml} keeps behaving
+   * as before: it hands {@code argv} over to the {@link ITestNGCliRunner} found on the classpath.
+   *
    * @param argv the TestNG command line parameters.
+   * @deprecated since 7.13. The command line front end now lives in its own modules; invoke {@code
+   *     org.testng.cli.jcommander.JCommanderCliRunner} (or any other {@link ITestNGCliRunner})
+   *     directly, or drive TestNG through its Java API. Scheduled for removal in 8.0.
    */
+  @Deprecated
   public static void main(String[] argv) {
-    TestNG testng = privateMain(argv, null);
+    TestNG testng;
+    try {
+      testng = privateMain(argv, null);
+    } catch (TestNGException ex) {
+      // Typically no ITestNGCliRunner on the classpath. Report it the way any other command line
+      // error is reported rather than as an uncaught stack trace.
+      exitWithError(ex.getMessage());
+      return;
+    }
     System.exit(testng.getStatus());
   }
 
@@ -1398,50 +1452,27 @@ public class TestNG {
    * @param argv The param arguments
    * @param listener The listener
    * @return The TestNG instance
+   * @throws TestNGException when no {@link ITestNGCliRunner} implementation is on the classpath, or
+   *     when {@code argv} cannot be honoured. Unlike before 7.13, an unusable command line no
+   *     longer terminates the JVM here; only {@link #main(String[])} does that.
+   * @deprecated since 7.13. Use {@link ITestNGCliRunner#run(String[], ITestListener)} on the runner
+   *     of your choice. Scheduled for removal in 8.0.
    */
+  @Deprecated
   public static TestNG privateMain(String[] argv, ITestListener listener) {
-    TestNG result = new TestNG();
-
-    if (null != listener) {
-      result.addListener(listener);
-    }
-
-    //
-    // Parse the arguments
-    //
-    try {
-      CommandLineArgs cla = new CommandLineArgs();
-
-      m_jCommander = new JCommander(cla);
-      m_jCommander.parse(argv);
-      validateCommandLineParameters(cla);
-      result.configure(cla);
-    } catch (ParameterException ex) {
-      exitWithError(ex.getMessage());
-    }
-
-    //
-    // Run
-    //
-    try {
-      result.run();
-    } catch (TestNGException ex) {
-      if (TestRunner.getVerbose() > 1) {
-        ex.printStackTrace(System.out);
-      } else {
-        error(ex.getMessage());
-      }
-      result.exitCode = ExitCode.newExitCodeRepresentingFailure();
-    }
-
-    return result;
+    return CliRunners.required().run(argv, listener);
   }
 
   /**
    * Configure the TestNG instance based on the command line parameters.
    *
    * @param cla The command line parameters
+   * @deprecated since 7.13. The command line front end lives in the {@code testng-cli} module; use
+   *     {@code org.testng.cli.CliConfigurer#configure(TestNG, org.testng.cli.CliOptions)}. This
+   *     method is frozen for the benefit of subclasses such as {@code RemoteTestNG} and will be
+   *     removed in 8.0.
    */
+  @Deprecated
   protected void configure(CommandLineArgs cla) {
     Optional.ofNullable(cla.useGlobalThreadPool).ifPresent(this::shouldUseGlobalThreadPool);
     Optional.ofNullable(cla.shareThreadPoolForDataProviders)
@@ -1598,8 +1629,46 @@ public class TestNG {
     alwaysRunListeners(cla.alwaysRunListeners);
   }
 
-  private void setIgnoreMissedTestNames(boolean ignoreMissedTestNames) {
+  public void setIgnoreMissedTestNames(boolean ignoreMissedTestNames) {
     m_ignoreMissedTestNames = ignoreMissedTestNames;
+  }
+
+  /**
+   * Restricts this run to the given fully qualified method names.
+   *
+   * <p>A {@code null} or empty list clears the restriction. An empty list must not be stored as is:
+   * {@code initializeCommandLineSuites} branches on the field being non-null, so an empty one would
+   * build a suite with no class and silently suppress {@link #setTestClasses(Class[])}.
+   *
+   * @param methods a list of fully qualified method names, as accepted by the {@code -methods}
+   *     command line option.
+   */
+  public void setCommandLineMethods(List<String> methods) {
+    m_commandLineMethods =
+        methods == null || methods.isEmpty() ? null : Lists.newArrayList(methods);
+  }
+
+  public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
+    m_configuration.setOverrideIncludedMethods(overrideIncludedMethods);
+  }
+
+  /**
+   * Reports a failure raised by {@link #run()} itself and records it, so that {@link #getStatus()}
+   * says the run failed even though no test result does.
+   *
+   * <p>A front end that would rather report a broken run as an exit status than let the exception
+   * propagate catches it and calls this. How much of the failure is printed depends on the current
+   * verbosity, which is why this lives here rather than in the caller.
+   *
+   * @param cause the failure raised by the run.
+   */
+  public void reportRunFailure(TestNGException cause) {
+    if (TestRunner.getVerbose() > 1) {
+      cause.printStackTrace(System.out);
+    } else {
+      error(cause.getMessage());
+    }
+    this.exitCode = ExitCode.newExitCodeRepresentingFailure();
   }
 
   public void setSuiteThreadPoolSize(Integer suiteThreadPoolSize) {
@@ -1786,6 +1855,24 @@ public class TestNG {
     m_skipFailedInvocationCounts = skip;
   }
 
+  /**
+   * Adds a reporter described the way the {@code -reporter} command line option does, for instance
+   * {@code com.acme.MyReporter:fileName=out.html}.
+   *
+   * <p>The class is resolved and instantiated synchronously. A {@code null} or empty value is
+   * silently ignored; a class that cannot be found is reported as a warning and skipped; a class
+   * that is found but does not implement {@link IReporter} raises a {@link TestNGException}.
+   *
+   * @param reporterConfigString the serialized reporter configuration.
+   * @throws TestNGException if the named class is not an {@link IReporter}.
+   */
+  public void addReporter(String reporterConfigString) {
+    ReporterConfig reporterConfig = ReporterConfig.deserialize(reporterConfigString);
+    if (reporterConfig != null) {
+      addReporter(reporterConfig);
+    }
+  }
+
   private void addReporter(ReporterConfig reporterConfig) {
     IReporter instance = newReporterInstance(reporterConfig);
     if (instance != null) {
@@ -1817,7 +1904,11 @@ public class TestNG {
    * Double check that the command line parameters are valid.
    *
    * @param args The command line to check
+   * @deprecated since 7.13. Use {@code org.testng.cli.CliConfigurer#validate} from the {@code
+   *     testng-cli} module. Note that failures are now reported as {@link TestNGException} instead
+   *     of JCommander's {@code ParameterException}.
    */
+  @Deprecated
   protected static void validateCommandLineParameters(CommandLineArgs args) {
     String testClasses = args.testClass;
     List<String> testNgXml = args.suiteFiles;
@@ -1828,7 +1919,7 @@ public class TestNG {
         && testJar == null
         && (testNgXml == null || testNgXml.isEmpty())
         && (methods == null || methods.isEmpty())) {
-      throw new ParameterException(
+      throw new TestNGException(
           "You need to specify at least one testng.xml, one class" + " or one method");
     }
 
@@ -1839,7 +1930,7 @@ public class TestNG {
         && (null != groups || null != excludedGroups)
         && testClasses == null
         && (testNgXml == null || testNgXml.isEmpty())) {
-      throw new ParameterException("Groups option should be used with testclass option");
+      throw new TestNGException("Groups option should be used with testclass option");
     }
   }
 
@@ -1859,7 +1950,9 @@ public class TestNG {
   }
 
   static void exitWithError(String msg) {
-    System.err.println(msg);
+    // Trimmed because TestNGException prefixes every message with a newline, which would show up
+    // as a stray blank line ahead of the error.
+    System.err.println(msg == null ? "" : msg.trim());
     usage();
     System.exit(1);
   }
@@ -2014,5 +2107,13 @@ public class TestNG {
 
   public void setInjectorFactory(IInjectorFactory factory) {
     this.m_configuration.setInjectorFactory(factory);
+  }
+
+  /**
+   * @param factoryClass an {@link IInjectorFactory} implementation, instantiated with the object
+   *     factory currently in use.
+   */
+  public void setInjectorFactoryClass(Class<? extends IInjectorFactory> factoryClass) {
+    setInjectorFactory(m_objectFactory.newInstance(factoryClass));
   }
 }

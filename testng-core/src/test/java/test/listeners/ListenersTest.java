@@ -336,96 +336,6 @@ public class ListenersTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-2916")
-  public void ensureOrderingForExecutionListenersViaCli() {
-    Ensure.orderingViaCli(
-        ExecutionListenerHolder.LOGS,
-        ExecutionListenerHolder.ALL_STRING,
-        ExecutionListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForAlterSuiteListenersViaCli() {
-    Ensure.orderingViaCli(
-        AlterSuiteListenerHolder.LOGS,
-        AlterSuiteListenerHolder.ALL_STRING,
-        AlterSuiteListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForSuiteListenersViaCli() {
-    Ensure.orderingViaCli(
-        SuiteListenerHolder.LOGS,
-        SuiteListenerHolder.ALL_STRING,
-        SuiteListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForTestListenersViaCli() {
-    Ensure.orderingViaCli(
-        ElaborateSampleTestCase.class, TestListenerHolder.LOGS,
-        TestListenerHolder.ALL_STRING, TestListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForInvokedMethodListenersViaCli() {
-    Ensure.orderingViaCli(
-        InvokedMethodListenerHolder.LOGS,
-        InvokedMethodListenerHolder.ALL_STRING,
-        InvokedMethodListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForConfigurationListenersViaCli() {
-    Ensure.orderingViaCli(
-        SimpleConfigTestCase.class,
-        ConfigurationListenerHolder.LOGS,
-        ConfigurationListenerHolder.ALL_STRING,
-        ConfigurationListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForClassListenersViaCli() {
-    Ensure.orderingViaCli(
-        ClassListenerHolder.LOGS,
-        ClassListenerHolder.ALL_STRING,
-        ClassListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForDataProviderListenersViaCli() {
-    Ensure.orderingViaCli(
-        DataProviderSampleTestCase.class,
-        DataProviderListenerHolder.LOGS,
-        DataProviderListenerHolder.ALL_STRING,
-        DataProviderListenerHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForDataProviderInterceptorsViaCli() {
-    Ensure.orderingViaCli(
-        DataProviderSampleTestCase.class,
-        DataProviderInterceptorHolder.LOGS,
-        DataProviderInterceptorHolder.ALL_STRING,
-        DataProviderInterceptorHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForExecutionVisualisersViaCli() {
-    Ensure.orderingViaCli(
-        ExecutionVisualiserHolder.LOGS,
-        ExecutionVisualiserHolder.ALL_STRING,
-        ExecutionVisualiserHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
-  public void ensureOrderingForMethodInterceptorsViaCli() {
-    Ensure.orderingViaCli(
-        MethodInterceptorHolder.LOGS,
-        MethodInterceptorHolder.ALL_STRING,
-        MethodInterceptorHolder.EXPECTED_LOGS);
-  }
-
-  @Test(description = "GITHUB-2916")
   public void ensureOrderingForExecutionListenersViaAnnotation() {
     // This is a special case scenario and so the expected value order is different from the
     // other two test cases from above.
@@ -631,23 +541,6 @@ public class ListenersTest extends SimpleBaseTest {
     testng.addListener(listener);
     testng.addListener(transformer);
     testng.run();
-    assertThat(SampleGlobalListener.getLogs()).isEmpty();
-    assertThat(SampleTransformer.getLogs()).isEmpty();
-  }
-
-  @Test(description = "GITHUB-2381")
-  public void ensureListenersCanBeDisabledViaCLI() {
-    SampleGlobalListener.clearLogs();
-    SampleTransformer.clearLogs();
-    String listeners =
-        String.join(",", SampleGlobalListener.class.getName(), SampleTransformer.class.getName());
-    String testClasses =
-        String.join(
-            ",",
-            test.listeners.issue2381.TestClassSample.class.getName(),
-            FactoryTestClassSample.class.getName());
-    List<String> args = List.of("-listener", listeners, "-testclass", testClasses);
-    TestNG.privateMain(args.toArray(String[]::new), null);
     assertThat(SampleGlobalListener.getLogs()).isEmpty();
     assertThat(SampleTransformer.getLogs()).isEmpty();
   }
@@ -863,24 +756,6 @@ public class ListenersTest extends SimpleBaseTest {
       testng.setUseDefaultListeners(false);
       testng.setListenerComparator(new AnnotationBackedListenerComparator());
       testng.run();
-      assertThat(logs).containsExactly(expected);
-    }
-
-    static void orderingViaCli(List<String> logs, List<String> listeners, String[] expected) {
-      orderingViaCli(NormalSampleTestCase.class, logs, listeners, expected);
-    }
-
-    static void orderingViaCli(
-        Class<?> clazz, List<String> logs, List<String> listeners, String[] expected) {
-      logs.clear();
-      String[] args =
-          new String[] {
-            "-listener", String.join(",", listeners),
-            "-usedefaultlisteners", "false",
-            "-testclass", clazz.getName(),
-            "-listenercomparator", AnnotationBackedListenerComparator.class.getName()
-          };
-      TestNG.privateMain(args, null);
       assertThat(logs).containsExactly(expected);
     }
 

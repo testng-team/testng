@@ -29,9 +29,13 @@ dependencies {
     // would be selected automatically
     shadedDependencyElements("org.testng:testng-asserts:1.0.0")
     shadedDependencyElements(projects.testngCore)
+    // Brings testng-cli as well, so that `java -cp testng.jar org.testng.TestNG` keeps working
+    shadedDependencyElements(projects.testngJcommander)
 }
 
 tasks.mergedJar {
+    // No two modules declare the same service today; this future-proofs the merge if they ever do
+    mergeServiceFiles()
     manifest {
         // providers.gradleProperty does not work
         // see https://github.com/gradle/gradle/issues/14972
@@ -63,6 +67,8 @@ tasks.mergedJar {
             "Export-Package" to """
                 org.testng
                 org.testng.annotations
+                org.testng.cli
+                org.testng.cli.jcommander
                 org.testng.collections
                 org.testng.internal
                 org.testng.internal.annotations

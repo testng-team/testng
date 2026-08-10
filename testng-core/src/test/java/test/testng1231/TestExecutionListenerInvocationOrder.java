@@ -2,12 +2,11 @@ package test.testng1231;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.beust.jcommander.internal.Lists;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import org.testng.*;
 import org.testng.annotations.Test;
+import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
@@ -28,7 +27,7 @@ public class TestExecutionListenerInvocationOrder extends SimpleBaseTest {
 
   public static class TestListenerFor1231
       implements IExecutionListener, IAlterSuiteListener, IReporter, ISuiteListener {
-    public static LinkedList<Integer> order = Lists.newLinkedList();
+    public static List<Integer> order = Lists.newLinkedList();
 
     @Override
     public void onExecutionStart() {

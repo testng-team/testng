@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 import org.testng.testhelper.OutputDirectoryPatch;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
+import test.TestHelper;
 import test.configurationfailurepolicy.issue2862.AnnotationAtParentClassLevelForMethodConfigSample;
 import test.configurationfailurepolicy.issue2862.AnnotationAtParentClassLevelForMethodConfigSample2;
 import test.configurationfailurepolicy.issue2862.AnnotationAtParentClassLevelForMethodConfigSample3;
@@ -83,7 +84,7 @@ public class FailurePolicyTest extends SimpleBaseTest {
     testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.run();
 
-    verify(tla, configurationFailures, configurationSkips, skippedTests);
+    TestHelper.assertCounts(tla, configurationFailures, configurationSkips, skippedTests);
   }
 
   @Test
@@ -99,97 +100,7 @@ public class FailurePolicyTest extends SimpleBaseTest {
     testng.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
     testng.setGroups("group1");
     testng.run();
-    verify(tla, 1, 3, 1);
-  }
-
-  @Test
-  public void commandLineTest_policyAsSkip() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "skip",
-          "-testclass",
-          ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
-        };
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
-
-    verify(tla, 1, 1, 2);
-  }
-
-  @Test
-  public void commandLineTest_policyAsContinue() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "continue",
-          "-testclass",
-          ClassWithFailedBeforeMethodAndMultipleTests.class.getCanonicalName()
-        };
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
-
-    verify(tla, 2, 0, 2);
-  }
-
-  @Test
-  public void commandLineTestWithXMLFile_policyAsSkip() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "skip",
-          getPathToResource("testng-configfailure.xml")
-        };
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
-
-    verify(tla, 1, 1, 2);
-  }
-
-  @Test
-  public void commandLineTestWithXMLFile_policyAsContinue() {
-    String[] argv =
-        new String[] {
-          "-log",
-          "0",
-          "-d",
-          OutputDirectoryPatch.getOutputDirectory(),
-          "-configfailurepolicy",
-          "continue",
-          getPathToResource("testng-configfailure.xml")
-        };
-    TestListenerAdapter tla = new TestListenerAdapter();
-    TestNG.privateMain(argv, tla);
-
-    verify(tla, 2, 0, 2);
-  }
-
-  private void verify(
-      TestListenerAdapter tla,
-      int configurationFailures,
-      int configurationSkips,
-      int skippedTests) {
-    assertThat(tla.getConfigurationFailures().size())
-        .withFailMessage("wrong number of configuration failures")
-        .isEqualTo(configurationFailures);
-    assertThat(tla.getConfigurationSkips().size())
-        .withFailMessage("wrong number of configuration skips")
-        .isEqualTo(configurationSkips);
-    assertThat(tla.getSkippedTests().size())
-        .withFailMessage("wrong number of skipped tests")
-        .isEqualTo(skippedTests);
+    TestHelper.assertCounts(tla, 1, 3, 1);
   }
 
   @Test(description = "GITHUB-2862")
