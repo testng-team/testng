@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
+import org.testng.xml.SuiteCorpus;
 import org.testng.xml.SuiteDigest;
 import org.testng.xml.SuiteXmlParser;
-import org.testng.xml.XmlRoundTripTest;
 import org.testng.xml.XmlSuite;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -108,7 +108,7 @@ public class YamlRoundTripTest {
    * being written that nothing can read back, which the YAML corpus cannot: it can only contain
    * what YAML can already express.
    */
-  @Test(dataProvider = "suiteFiles", dataProviderClass = XmlRoundTripTest.class)
+  @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
   public void xmlSuitesConvertToLoadableYaml(String suiteFile) throws IOException {
     Path path = Paths.get(getPathToResource(suiteFile));
     XmlSuite xmlSuite;
