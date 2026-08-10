@@ -805,6 +805,7 @@
   <test name="YAML">
     <classes>
       <class name="test.yaml.YamlTest" />
+      <class name="test.yaml.YamlRoundTripTest" />
     </classes>
   </test>
   <test name="XML">
