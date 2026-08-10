@@ -1,0 +1,69 @@
+package org.testng.xml;
+
+import java.util.Arrays;
+import java.util.Locale;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.log4testng.Logger;
+
+/**
+ * How strictly a suite file is checked against the TestNG DTD, selected with the {@code
+ * testng.xml.validation} system property.
+ *
+ * <p>Validation used to be silently disabled: {@code XMLParser} probed the SAX validation feature
+ * under an {@code https} identifier, which no parser recognizes, so {@code setValidating(true)} was
+ * never reached and DTD violations went unreported. Turning it back on means suite files that have
+ * been accepted for years can suddenly be rejected -- the DTD constrains the order of the children
+ * of {@code <suite>}, for instance -- so {@link #WARN} is the default for now and reports
+ * violations without failing the run.
+ *
+ * <p>The property is read once per parse, never in the middle of one. {@code XMLParser} rebuilds
+ * its shared parser when the mode has changed since the last parse, which decides <em>whether</em>
+ * violations are raised at all, and {@code TestNGContentHandler} captures the mode when it is
+ * constructed, which decides <em>how</em> they are reported. Changing the property therefore takes
+ * effect from the next parse onwards, including when moving away from {@link #OFF}; changing it
+ * while a parse is in flight has no effect on that parse.
+ */
+public enum XmlValidationMode {
+
+  /** Do not validate at all. */
+  OFF,
+
+  /** Validate and report violations as warnings. The default. */
+  WARN,
+
+  /** Validate and fail on the first violation. */
+  STRICT;
+
+  private static final XmlValidationMode DEFAULT = WARN;
+
+  public boolean isValidating() {
+    return this != OFF;
+  }
+
+  /**
+   * The mode requested by the {@code testng.xml.validation} system property, falling back to {@link
+   * #WARN} when the property is absent or holds an unknown value.
+   */
+  public static XmlValidationMode current() {
+    String requested = RuntimeBehavior.getXmlValidationMode();
+    if (requested == null || requested.trim().isEmpty()) {
+      return DEFAULT;
+    }
+    try {
+      return valueOf(requested.trim().toUpperCase(Locale.ROOT));
+    } catch (IllegalArgumentException e) {
+      Logger.getLogger(XmlValidationMode.class)
+          .warn(
+              "Unknown value ["
+                  + requested
+                  + "] for the system property ["
+                  + RuntimeBehavior.XML_VALIDATION_MODE
+                  + "]. Expected one of "
+                  + Arrays.toString(values())
+                  + ". Falling back to ["
+                  + DEFAULT
+                  + "].");
+      return DEFAULT;
+    }
+  }
+}
