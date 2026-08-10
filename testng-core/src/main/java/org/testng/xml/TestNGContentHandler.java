@@ -33,6 +33,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -42,7 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 // TODO move to internal
-public class TestNGContentHandler extends DefaultHandler {
+public class TestNGContentHandler extends DefaultHandler implements LexicalHandler {
   private static final int DTD_CONNECTION_TIMEOUT_MILLIS = 10_000;
 
   private XmlSuite m_currentSuite = null;
@@ -153,15 +154,43 @@ public class TestNGContentHandler extends DefaultHandler {
     m_loadClasses = loadClasses;
   }
 
+  /**
+   * Records that the document declares a doctype, whoever ends up providing the grammar.
+   *
+   * <p>Tracked here rather than in {@link #resolveEntity}, which only fires for an
+   * <em>external</em> subset: a suite declaring {@code <!DOCTYPE suite [ <!ENTITY ...> ]>} never
+   * reaches it, so it used to be treated as having no doctype at all -- advised to add the one it
+   * had just written, and with its validity errors discarded. {@code startDTD} fires for an
+   * internal subset as well, and always before any content, so it is the exact signal. A document
+   * with no doctype does not trigger it, which is what keeps "no grammar found" errors suppressed
+   * for those files.
+   */
+  @Override
+  public void startDTD(String name, String publicId, String systemId) {
+    m_doctypeDeclared = true;
+  }
+
+  @Override
+  public void endDTD() {}
+
+  @Override
+  public void startEntity(String name) {}
+
+  @Override
+  public void endEntity(String name) {}
+
+  @Override
+  public void startCDATA() {}
+
+  @Override
+  public void endCDATA() {}
+
+  @Override
+  public void comment(char[] ch, int start, int length) {}
+
   @Override
   public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException, IOException {
-
-    // The document declares a doctype, whoever ends up providing it. Tracked separately from
-    // m_validate, which means "TestNG substituted its own copy of the DTD": gating error reporting
-    // on m_validate silently discarded every violation for suites pointing at their own DTD copy
-    // or at a corporate mirror.
-    m_doctypeDeclared = true;
 
     if (skipConsideringSystemId(systemId)) {
       m_validate = true;

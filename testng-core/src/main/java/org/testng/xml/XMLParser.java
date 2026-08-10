@@ -9,6 +9,9 @@ import javax.xml.parsers.SAXParserFactory;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class XMLParser<T> implements IFileParser<T> {
@@ -47,7 +50,29 @@ public abstract class XMLParser<T> implements IFileParser<T> {
       Logger.getLogger(XMLParser.class).error(e.getMessage(), e);
       throw new TestNGException("No SAXParser could be configured to read suite files.", e);
     }
+    registerLexicalHandler(parser, dh);
     parser.parse(is, dh);
+  }
+
+  /**
+   * Lets the handler observe the doctype declaration itself.
+   *
+   * <p>{@code SAXParser.parse(InputStream, DefaultHandler)} wires the content, error, DTD and
+   * entity handlers, but not the lexical one, which has to be set as a property. Without it {@code
+   * startDTD} is never delivered and an internal-subset doctype goes unnoticed.
+   */
+  private static void registerLexicalHandler(SAXParser parser, DefaultHandler dh) {
+    if (!(dh instanceof LexicalHandler)) {
+      return;
+    }
+    try {
+      parser.setProperty("http://xml.org/sax/properties/lexical-handler", dh);
+    } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+      // Optional in SAX. Losing it only means falling back to the previous behaviour for a
+      // doctype with no external subset, so it is not worth failing the parse over.
+      Logger.getLogger(XMLParser.class)
+          .warn("The XML parser in use does not report doctype declarations: " + e);
+    }
   }
 
   /**

@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Objects;
+import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.testng.SkipException;
 import org.testng.TestNGException;
@@ -202,6 +203,23 @@ public class XmlValidationTest {
     }
   }
 
+  /**
+   * A doctype with only an internal subset counts as a declared doctype.
+   *
+   * <p>{@code resolveEntity} never fires for one, so tracking the declaration there treated such a
+   * suite as having none: it was advised to add the doctype it had just written, and its violations
+   * were dropped even under strict. The internal subset is a grammar that does not declare {@code
+   * <suite>}, so a validating parser rightly rejects the document -- and that rejection now reaches
+   * the user.
+   */
+  @Test
+  public void strictModeRejectsASuiteWhoseDoctypeHasOnlyAnInternalSubset() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+
+    assertThatThrownBy(() -> parseValidating("xml/validation/internal-subset-only.xml"))
+        .isInstanceOf(SAXParseException.class);
+  }
+
   @Test
   public void anUnknownModeFallsBackToWarn() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "not-a-mode");
@@ -247,10 +265,9 @@ public class XmlValidationTest {
   }
 
   /**
-   * Parses with a validating parser created here rather than with {@link SuiteXmlParser}, whose
-   * parser is a JVM-wide singleton configured once at class-initialisation time. Only the reporting
-   * path is under test; {@link #theSharedParserValidatesSuiteFilesByDefault()} covers the
-   * singleton.
+   * Parses with a validating parser created here rather than with {@link SuiteXmlParser}, so that
+   * only the reporting path is under test. It must mirror how {@code XMLParser} configures its own
+   * parser, or the two would drift apart and these tests would stop describing production.
    */
   private static XmlSuite parseValidating(String suiteFile) throws Exception {
     return parseValidating(Paths.get(getPathToResource(suiteFile)));
@@ -260,13 +277,18 @@ public class XmlValidationTest {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setValidating(true);
     TestNGContentHandler handler = new TestNGContentHandler(path.toString(), false);
+    SAXParser parser = factory.newSAXParser();
+    // Same wiring as XMLParser.parse. Without it startDTD is never delivered, the handler believes
+    // no doctype was declared, and every violation is discarded -- so the parser built here has to
+    // be configured like the real one or these tests would prove nothing.
+    parser.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
     try (InputStream stream = Files.newInputStream(path)) {
       InputSource source = new InputSource(stream);
       // The system id matters: without it a relative doctype cannot be resolved, so TestNG falls
       // back to substituting its own DTD and the "suite points at its own DTD" case would silently
       // exercise the substituted path instead.
       source.setSystemId(path.toUri().toString());
-      factory.newSAXParser().parse(source, handler);
+      parser.parse(source, handler);
     }
     return handler.getSuite();
   }
