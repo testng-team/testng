@@ -90,6 +90,26 @@ public class XmlWeaverExtensionTest {
     assertThat(withoutComments).doesNotContain("<!-- command_line_test -->");
   }
 
+  /**
+   * The comment was only suppressed on {@code </suite>} and {@code </test>}, because those are the
+   * two buffers the weaver configured. Every leaf element built its own, so {@code </class>} still
+   * carried the class name.
+   */
+  @Test
+  public void theCommentDisabledWeaverAlsoSilencesLeafElements() {
+    XmlSuite suite = createSuite();
+    XmlClass xmlClass = suite.getTests().get(0).getXmlClasses().get(0);
+    xmlClass.setIncludedMethods(Collections.singletonList(new XmlInclude("shouldRun")));
+
+    String withComments = new DefaultXmlWeaver().asXml(suite);
+    String withoutComments = new CommentDisabledXmlWeaver().asXml(suite);
+
+    String classComment = "<!-- " + XmlWeaverExtensionTest.class.getName() + " -->";
+    assertThat(withComments).contains(classComment);
+    assertThat(withoutComments).doesNotContain(classComment);
+    assertThat(withoutComments).doesNotContain("<!--");
+  }
+
   private static XmlSuite createSuite() {
     XmlSuite suite = new XmlSuite();
     XmlTest test = new XmlTest(suite);

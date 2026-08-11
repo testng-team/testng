@@ -56,10 +56,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
-  /**
-   * Stateless as far as the leaf elements are concerned -- none of them reads {@link
-   * #defaultComment} -- so a single instance can serve every {@code asXmlFragment} call.
-   */
+  /** Immutable, so a single instance can serve every {@code asXmlFragment} call. */
   private static final DefaultXmlWeaver LEGACY_FRAGMENT_WEAVER = new DefaultXmlWeaver();
 
   private final String defaultComment;
@@ -365,6 +362,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlGroups xmlGroups, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     String indent2 = indent + "  ";
 
     List<XmlDefine> defines = xmlGroups.getDefines();
@@ -398,6 +396,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlDefine xmlDefine, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     List<String> includes = xmlDefine.getIncludes();
     boolean hasElements = hasElements(includes);
     if (hasElements) {
@@ -415,6 +414,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlRun xmlRun, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     List<String> includes = xmlRun.getIncludes();
     List<String> excludes = xmlRun.getExcludes();
     boolean hasElements = hasElements(excludes) || hasElements(includes);
@@ -436,6 +436,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlDependencies xmlDependencies, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     Map<String, String> groups = xmlDependencies.getDependencies();
     boolean hasElements = hasElements(groups);
     if (hasElements) {
@@ -456,6 +457,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlPackage xmlPackage, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     Properties p = new Properties();
     p.setProperty("name", xmlPackage.getName());
 
@@ -483,6 +485,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlMethodSelectors xmlMethodSelectors, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     List<XmlMethodSelector> selectors = xmlMethodSelectors.getMethodSelectors();
     if (hasElements(selectors)) {
       xsb.push("method-selectors");
@@ -497,6 +500,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlMethodSelector xmlMethodSelector, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
 
     xsb.push("method-selector");
 
@@ -528,6 +532,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlClass xmlClass, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     Properties prop = new Properties();
     prop.setProperty("name", xmlClass.getName());
 
@@ -567,6 +572,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   protected String asXml(XmlInclude xmlInclude, String indent) {
     XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(defaultComment);
     Properties p = new Properties();
     p.setProperty("name", xmlInclude.getName());
     if (xmlInclude.getDescription() != null) {
