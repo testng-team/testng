@@ -68,8 +68,9 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     try {
       parser.setProperty("http://xml.org/sax/properties/lexical-handler", dh);
     } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
-      // Optional in SAX. Losing it only means falling back to the previous behaviour for a
-      // doctype with no external subset, so it is not worth failing the parse over.
+      // Optional in SAX. Losing it costs detection of a doctype that has no external subset;
+      // TestNGContentHandler.resolveEntity still catches the external case, so this degrades
+      // rather than breaks and is not worth failing the parse over.
       Logger.getLogger(XMLParser.class)
           .warn("The XML parser in use does not report doctype declarations: " + e);
     }

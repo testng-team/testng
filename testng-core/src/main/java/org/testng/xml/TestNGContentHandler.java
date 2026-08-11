@@ -157,13 +157,16 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   /**
    * Records that the document declares a doctype, whoever ends up providing the grammar.
    *
-   * <p>Tracked here rather than in {@link #resolveEntity}, which only fires for an
-   * <em>external</em> subset: a suite declaring {@code <!DOCTYPE suite [ <!ENTITY ...> ]>} never
-   * reaches it, so it used to be treated as having no doctype at all -- advised to add the one it
-   * had just written, and with its validity errors discarded. {@code startDTD} fires for an
-   * internal subset as well, and always before any content, so it is the exact signal. A document
-   * with no doctype does not trigger it, which is what keeps "no grammar found" errors suppressed
-   * for those files.
+   * <p>{@link #resolveEntity} cannot be the only signal: it fires solely for an <em>external</em>
+   * subset, so a suite declaring {@code <!DOCTYPE suite [ <!ENTITY ...> ]>} never reaches it and
+   * used to be treated as having no doctype at all -- advised to add the one it had just written,
+   * and with its validity errors discarded. {@code startDTD} covers both kinds, and always fires
+   * before any content, so it is the exact signal. A document with no doctype does not trigger it,
+   * which is what keeps "no grammar found" errors suppressed for those files.
+   *
+   * <p>The two overlap deliberately. The lexical handler is optional in SAX, so on a parser that
+   * refuses it {@code resolveEntity} still catches the external case rather than losing detection
+   * altogether.
    */
   @Override
   public void startDTD(String name, String publicId, String systemId) {
@@ -191,6 +194,11 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   @Override
   public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException, IOException {
+
+    // Being asked to resolve the external subset is itself proof that a doctype was declared.
+    // Redundant with startDTD when the lexical handler could be registered, and the only signal
+    // left when it could not -- see XMLParser#registerLexicalHandler.
+    m_doctypeDeclared = true;
 
     if (skipConsideringSystemId(systemId)) {
       m_validate = true;
