@@ -23,24 +23,27 @@ import org.testng.reporters.XMLStringBuffer;
  * <pre>{@code
  * public class MyWeaver extends DefaultXmlWeaver {
  *   @Override
- *   protected String asXml(XmlClass xmlClass, String indent) {
- *     return indent + "<class name=\"" + xmlClass.getName() + "\"/>" + XMLStringBuffer.EOL;
+ *   protected void asXml(XMLStringBuffer xsb, XmlClass xmlClass) {
+ *     xsb.addEmptyElement("class", "name", xmlClass.getName());
  *   }
  * }
  * }</pre>
+ *
+ * <p>Each hook writes into the buffer it is handed, so indentation follows the buffer's own
+ * push/pop depth and a subclass never has to compute it.
  *
  * <p>Select it at runtime with {@code -Dtestng.xml.weaver=fully.qualified.MyWeaver}. The class
  * needs a public no-argument constructor, which is how {@code XmlWeaver} instantiates it.
  *
  * <p><b>One gap to be aware of:</b> the {@code <groups>} block of a {@code <test>} is still written
- * inline by {@link #asXml(XmlTest, String)}, so overriding {@link #asXml(XmlGroups, String)},
- * {@link #asXml(XmlDefine, String)}, {@link #asXml(XmlRun, String)} or {@link
- * #asXml(XmlDependencies, String)} affects a suite-level {@code <groups>} but not a test-level one.
- * Routing it through those hooks is not a pure refactoring: group dependencies parsed from a suite
- * file are stored on {@link XmlTest} itself, not on its {@link XmlGroups} -- {@code
- * XmlGroups.setXmlDependencies} is never called by the reader -- so delegating would read them from
- * the empty side and drop them. Unifying the two is model surgery, tracked by #3317 rather than
- * done here.
+ * inline by {@link #asXml(XmlTest, String)}, so overriding {@link #asXml(XMLStringBuffer,
+ * XmlGroups)}, {@link #asXml(XMLStringBuffer, XmlDefine)}, {@link #asXml(XMLStringBuffer, XmlRun)}
+ * or {@link #asXml(XMLStringBuffer, XmlDependencies)} affects a suite-level {@code <groups>} but
+ * not a test-level one. Routing it through those hooks is not a pure refactoring: group
+ * dependencies parsed from a suite file are stored on {@link XmlTest} itself, not on its {@link
+ * XmlGroups} -- {@code XmlGroups.setXmlDependencies} is never called by the reader -- so delegating
+ * would read them from the empty side and drop them. Unifying the two is model surgery, tracked by
+ * #3317 rather than done here.
  *
  * @see IWeaveXml
  */
@@ -145,7 +148,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
     xsb.push("suite", p);
 
     if (xmlSuite.getGroups() != null) {
-      xsb.getStringBuffer().append(asXml(xmlSuite.getGroups(), "  "));
+      asXml(xsb, xmlSuite.getGroups());
     } else {
       // Only synthesize a <groups> block when the suite has no XmlGroups of its own to write.
       // getIncludedGroups()/getExcludedGroups() read through to that same XmlGroups, so emitting
@@ -184,21 +187,19 @@ public class DefaultXmlWeaver implements IWeaveXml {
       xsb.push("packages");
 
       for (XmlPackage pack : xmlSuite.getXmlPackages()) {
-        xsb.getStringBuffer().append(asXml(pack, "    "));
+        asXml(xsb, pack);
       }
 
       xsb.pop("packages");
     }
 
     if (xmlSuite.getXmlMethodSelectors() != null) {
-      xsb.getStringBuffer().append(asXml(xmlSuite.getXmlMethodSelectors(), "  "));
+      asXml(xsb, xmlSuite.getXmlMethodSelectors());
     } else {
       if (hasElements(xmlSuite.getMethodSelectors())) {
         xsb.push("method-selectors");
         for (XmlMethodSelector selector : xmlSuite.getMethodSelectors()) {
-          // Same child indentation as the structured path above, which reaches the selectors
-          // through asXml(XmlMethodSelectors, "  ") and so indents them by a further two.
-          xsb.getStringBuffer().append(asXml(selector, "    "));
+          asXml(xsb, selector);
         }
 
         xsb.pop("method-selectors");
@@ -217,6 +218,10 @@ public class DefaultXmlWeaver implements IWeaveXml {
     }
 
     for (XmlTest test : xmlSuite.getTests()) {
+      // The last fragment still spliced in rather than woven straight into the buffer:
+      // asXml(XmlTest,
+      // String) is an IWeaveXml method and has to return a String, so its indent stays explicit.
+      //
       // Not test.toXml("  "): that re-resolves the weaver from testng.xml.weaver, so a subclass
       // serializing a suite through its own instance would have every override below <test>
       // silently bypassed -- including the one CommentDisabledXmlWeaver relies on.
@@ -263,7 +268,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
     if (null != xmlTest.getMethodSelectors() && !xmlTest.getMethodSelectors().isEmpty()) {
       xsb.push("method-selectors");
       for (XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
-        xsb.getStringBuffer().append(asXml(selector, indent + "    "));
+        asXml(xsb, selector);
       }
 
       xsb.pop("method-selectors");
@@ -340,7 +345,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
       xsb.push("packages");
 
       for (XmlPackage pack : xmlTest.getXmlPackages()) {
-        xsb.getStringBuffer().append(asXml(pack, "      "));
+        asXml(xsb, pack);
       }
 
       xsb.pop("packages");
@@ -350,7 +355,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
     if (null != xmlTest.getXmlClasses() && !xmlTest.getXmlClasses().isEmpty()) {
       xsb.push("classes");
       for (XmlClass cls : xmlTest.getXmlClasses()) {
-        xsb.getStringBuffer().append(asXml(cls, indent + "    "));
+        asXml(xsb, cls);
       }
       xsb.pop("classes");
     }
@@ -360,11 +365,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
     return xsb.toXML();
   }
 
-  protected String asXml(XmlGroups xmlGroups, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
-    String indent2 = indent + "  ";
-
+  protected void asXml(XMLStringBuffer xsb, XmlGroups xmlGroups) {
     List<XmlDefine> defines = xmlGroups.getDefines();
     XmlRun run = xmlGroups.getRun();
     List<XmlDependencies> dependencies = xmlGroups.getDependencies();
@@ -375,28 +376,24 @@ public class DefaultXmlWeaver implements IWeaveXml {
     }
 
     for (XmlDefine d : defines) {
-      xsb.getStringBuffer().append(asXml(d, indent2));
+      asXml(xsb, d);
     }
 
     if (null != run) {
       // XmlRun is optional and is not always available, so check before serializing it.
-      xsb.getStringBuffer().append(asXml(run, indent2));
+      asXml(xsb, run);
     }
 
     for (XmlDependencies d : dependencies) {
-      xsb.getStringBuffer().append(asXml(d, indent2));
+      asXml(xsb, d);
     }
 
     if (hasGroups) {
       xsb.pop("groups");
     }
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlDefine xmlDefine, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlDefine xmlDefine) {
     List<String> includes = xmlDefine.getIncludes();
     boolean hasElements = hasElements(includes);
     if (hasElements) {
@@ -408,13 +405,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
     if (hasElements) {
       xsb.pop("define");
     }
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlRun xmlRun, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlRun xmlRun) {
     List<String> includes = xmlRun.getIncludes();
     List<String> excludes = xmlRun.getExcludes();
     boolean hasElements = hasElements(excludes) || hasElements(includes);
@@ -430,13 +423,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
     if (hasElements) {
       xsb.pop("run");
     }
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlDependencies xmlDependencies, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlDependencies xmlDependencies) {
     Map<String, String> groups = xmlDependencies.getDependencies();
     boolean hasElements = hasElements(groups);
     if (hasElements) {
@@ -451,13 +440,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
     if (hasElements) {
       xsb.pop("dependencies");
     }
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlPackage xmlPackage, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlPackage xmlPackage) {
     Properties p = new Properties();
     p.setProperty("name", xmlPackage.getName());
 
@@ -479,28 +464,21 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
       xsb.pop("package");
     }
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlMethodSelectors xmlMethodSelectors, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlMethodSelectors xmlMethodSelectors) {
     List<XmlMethodSelector> selectors = xmlMethodSelectors.getMethodSelectors();
     if (hasElements(selectors)) {
       xsb.push("method-selectors");
       for (XmlMethodSelector selector : selectors) {
-        xsb.getStringBuffer().append(asXml(selector, indent + "  "));
+        asXml(xsb, selector);
       }
 
       xsb.pop("method-selectors");
     }
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlMethodSelector xmlMethodSelector, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlMethodSelector xmlMethodSelector) {
 
     xsb.push("method-selector");
 
@@ -526,13 +504,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
     }
 
     xsb.pop("method-selector");
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlClass xmlClass, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlClass xmlClass) {
     Properties prop = new Properties();
     prop.setProperty("name", xmlClass.getName());
 
@@ -550,7 +524,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
         xsb.push("methods");
 
         for (XmlInclude m : includedMethods) {
-          xsb.getStringBuffer().append(asXml(m, indent + "    "));
+          asXml(xsb, m);
         }
 
         for (String m : excludedMethods) {
@@ -566,13 +540,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
     } else {
       xsb.addEmptyElement("class", prop);
     }
-
-    return xsb.toXML();
   }
 
-  protected String asXml(XmlInclude xmlInclude, String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    xsb.setDefaultComment(defaultComment);
+  protected void asXml(XMLStringBuffer xsb, XmlInclude xmlInclude) {
     Properties p = new Properties();
     p.setProperty("name", xmlInclude.getName());
     if (xmlInclude.getDescription() != null) {
@@ -591,8 +561,6 @@ public class DefaultXmlWeaver implements IWeaveXml {
     } else {
       xsb.addEmptyElement("include", p);
     }
-
-    return xsb.toXML();
   }
 
   /**
@@ -625,6 +593,12 @@ public class DefaultXmlWeaver implements IWeaveXml {
     }
   }
 
+  private static XMLStringBuffer newFragmentBuffer(String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    xsb.setDefaultComment(LEGACY_FRAGMENT_WEAVER.defaultComment);
+    return xsb;
+  }
+
   /**
    * The serializer behind the deprecated {@code toXml(String)} methods that the model classes still
    * expose. Those methods never consulted {@code -Dtestng.xml.weaver}: they built their XML inline,
@@ -632,38 +606,56 @@ public class DefaultXmlWeaver implements IWeaveXml {
    * gets back. They keep using the default serializer.
    */
   static String asXmlFragment(XmlGroups groups, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(groups, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, groups);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlDefine define, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(define, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, define);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlRun run, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(run, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, run);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlDependencies dependencies, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(dependencies, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, dependencies);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlPackage xmlPackage, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(xmlPackage, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, xmlPackage);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlMethodSelectors selectors, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(selectors, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, selectors);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlMethodSelector selector, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(selector, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, selector);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlClass xmlClass, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(xmlClass, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, xmlClass);
+    return xsb.toXML();
   }
 
   static String asXmlFragment(XmlInclude include, String indent) {
-    return LEGACY_FRAGMENT_WEAVER.asXml(include, indent);
+    XMLStringBuffer xsb = newFragmentBuffer(indent);
+    LEGACY_FRAGMENT_WEAVER.asXml(xsb, include);
+    return xsb.toXML();
   }
 }

@@ -33,20 +33,19 @@ public class XmlWeaverExtensionTest {
   /** Overrides one element and inherits every other. */
   private static final class ClassOnlyWeaver extends DefaultXmlWeaver {
     @Override
-    protected String asXml(XmlClass xmlClass, String indent) {
-      return indent + "<class name=\"" + xmlClass.getName() + "\"/> " + MARKER + EOL;
+    protected void asXml(XMLStringBuffer xsb, XmlClass xmlClass) {
+      xsb.addString(xsb.getCurrentIndent() + "<class name=\"" + xmlClass.getName() + "\"/> ");
+      xsb.addString(MARKER + EOL);
     }
   }
 
   /** Uses the helper the base class exposes to subclasses. */
   private static final class IncludeParametersWeaver extends DefaultXmlWeaver {
     @Override
-    protected String asXml(XmlInclude xmlInclude, String indent) {
-      XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    protected void asXml(XMLStringBuffer xsb, XmlInclude xmlInclude) {
       xsb.push("include", "name", xmlInclude.getName());
       dumpParameters(xsb, xmlInclude.getLocalParameters());
       xsb.pop("include");
-      return xsb.toXML();
     }
   }
 
