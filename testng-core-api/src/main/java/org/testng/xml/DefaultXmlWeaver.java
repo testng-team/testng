@@ -443,27 +443,22 @@ public class DefaultXmlWeaver implements IWeaveXml {
   }
 
   protected void asXml(XMLStringBuffer xsb, XmlPackage xmlPackage) {
-    Properties p = new Properties();
-    p.setProperty("name", xmlPackage.getName());
+    List<String> includes = xmlPackage.getInclude();
+    List<String> excludes = xmlPackage.getExclude();
 
-    if (xmlPackage.getInclude().isEmpty() && xmlPackage.getExclude().isEmpty()) {
-      xsb.addEmptyElement("package", p);
-    } else {
-      xsb.push("package", p);
-
-      for (String m : xmlPackage.getInclude()) {
-        Properties includeProp = new Properties();
-        includeProp.setProperty("name", m);
-        xsb.addEmptyElement("include", includeProp);
-      }
-      for (String m : xmlPackage.getExclude()) {
-        Properties excludeProp = new Properties();
-        excludeProp.setProperty("name", m);
-        xsb.addEmptyElement("exclude", excludeProp);
-      }
-
-      xsb.pop("package");
+    if (includes.isEmpty() && excludes.isEmpty()) {
+      xsb.addEmptyElement("package", "name", xmlPackage.getName());
+      return;
     }
+
+    xsb.push("package", "name", xmlPackage.getName());
+    for (String m : includes) {
+      xsb.addEmptyElement("include", "name", m);
+    }
+    for (String m : excludes) {
+      xsb.addEmptyElement("exclude", "name", m);
+    }
+    xsb.pop("package");
   }
 
   protected void asXml(XMLStringBuffer xsb, XmlMethodSelectors xmlMethodSelectors) {
@@ -479,7 +474,6 @@ public class DefaultXmlWeaver implements IWeaveXml {
   }
 
   protected void asXml(XMLStringBuffer xsb, XmlMethodSelector xmlMethodSelector) {
-
     xsb.push("method-selector");
 
     XmlScript script = xmlMethodSelector.getScript();
@@ -494,9 +488,7 @@ public class DefaultXmlWeaver implements IWeaveXml {
       }
       xsb.addEmptyElement("selector-class", clsProp);
     } else if (script != null && script.getLanguage() != null) {
-      Properties scriptProp = new Properties();
-      scriptProp.setProperty("language", script.getLanguage());
-      xsb.push("script", scriptProp);
+      xsb.push("script", "language", script.getLanguage());
       xsb.addCDATA(script.getExpression());
       xsb.pop("script");
     } else {
@@ -507,39 +499,31 @@ public class DefaultXmlWeaver implements IWeaveXml {
   }
 
   protected void asXml(XMLStringBuffer xsb, XmlClass xmlClass) {
-    Properties prop = new Properties();
-    prop.setProperty("name", xmlClass.getName());
-
     List<XmlInclude> includedMethods = xmlClass.getIncludedMethods();
     List<String> excludedMethods = xmlClass.getExcludedMethods();
     Map<String, String> parameters = xmlClass.getLocalParameters();
 
     boolean hasMethods = !includedMethods.isEmpty() || !excludedMethods.isEmpty();
-    boolean hasParameters = !parameters.isEmpty();
-    if (hasParameters || hasMethods) {
-      xsb.push("class", prop);
-      dumpParameters(xsb, parameters);
-
-      if (hasMethods) {
-        xsb.push("methods");
-
-        for (XmlInclude m : includedMethods) {
-          asXml(xsb, m);
-        }
-
-        for (String m : excludedMethods) {
-          Properties p = new Properties();
-          p.setProperty("name", m);
-          xsb.addEmptyElement("exclude", p);
-        }
-
-        xsb.pop("methods");
-      }
-
-      xsb.pop("class");
-    } else {
-      xsb.addEmptyElement("class", prop);
+    if (parameters.isEmpty() && !hasMethods) {
+      xsb.addEmptyElement("class", "name", xmlClass.getName());
+      return;
     }
+
+    xsb.push("class", "name", xmlClass.getName());
+    dumpParameters(xsb, parameters);
+
+    if (hasMethods) {
+      xsb.push("methods");
+      for (XmlInclude m : includedMethods) {
+        asXml(xsb, m);
+      }
+      for (String m : excludedMethods) {
+        xsb.addEmptyElement("exclude", "name", m);
+      }
+      xsb.pop("methods");
+    }
+
+    xsb.pop("class");
   }
 
   protected void asXml(XMLStringBuffer xsb, XmlInclude xmlInclude) {
@@ -571,25 +555,18 @@ public class DefaultXmlWeaver implements IWeaveXml {
    * @param parameters the parameters of the element being written
    */
   protected static void dumpParameters(XMLStringBuffer xsb, Map<String, String> parameters) {
-    // parameters
-    if (parameters.isEmpty()) {
-      return;
-    }
     for (Map.Entry<String, String> para : parameters.entrySet()) {
-      Properties paramProps = new Properties();
       if (para.getKey() == null) {
         Utils.log("Skipping a null parameter.");
         continue;
       }
       if (para.getValue() == null) {
-        String msg =
-            String.format("Skipping parameter [%s] since it has a null value", para.getKey());
-        Utils.log(msg);
+        Utils.log(
+            String.format("Skipping parameter [%s] since it has a null value", para.getKey()));
         continue;
       }
-      paramProps.setProperty("name", para.getKey());
-      paramProps.setProperty("value", para.getValue());
-      xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
+      // BUGFIX: TESTNG-27
+      xsb.addEmptyElement("parameter", "name", para.getKey(), "value", para.getValue());
     }
   }
 
