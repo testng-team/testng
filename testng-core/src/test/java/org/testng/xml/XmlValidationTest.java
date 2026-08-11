@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static test.SimpleBaseTest.getPathToResource;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -218,6 +219,40 @@ public class XmlValidationTest {
 
     assertThatThrownBy(() -> parseValidating("xml/validation/internal-subset-only.xml"))
         .isInstanceOf(SAXParseException.class);
+  }
+
+  /**
+   * A suite with no doctype at all must keep parsing, even under strict.
+   *
+   * <p>A validating parser reports "no grammar found" for such a document. Those errors are
+   * suppressed because neither {@code startDTD} nor {@code resolveEntity} fires, so {@code
+   * m_doctypeDeclared} stays false -- and that suppression is what keeps strict mode usable for the
+   * many suites that never declared a doctype. Tightening the gate would silently start rejecting
+   * all of them, which is the regression this pins.
+   *
+   * <p>Written inline because the fixtures named {@code xml/*WithoutDoctype.xml} all declare one:
+   * they are byte-identical to their {@code WithDoctype} counterparts apart from the root element's
+   * case.
+   *
+   * <p>The hint asking for a doctype is not asserted. It goes through {@code Logger}, and the test
+   * runtime classpath carries slf4j-api with no provider, so the NOP logger swallows it.
+   */
+  @Test
+  public void strictModeStillAcceptsASuiteWithNoDoctype() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+    String xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<suite name=\"NoDoctype\">\n"
+            + "  <test name=\"t\"><classes><class name=\"test.sample.C\"/></classes></test>\n"
+            + "</suite>\n";
+
+    assertThatCode(
+            () -> {
+              InputStream stream = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
+              assertThat(new SuiteXmlParser().parse("no-doctype.xml", stream, false).getName())
+                  .isEqualTo("NoDoctype");
+            })
+        .doesNotThrowAnyException();
   }
 
   @Test
