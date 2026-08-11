@@ -32,6 +32,16 @@ import org.testng.reporters.XMLStringBuffer;
  * <p>Select it at runtime with {@code -Dtestng.xml.weaver=fully.qualified.MyWeaver}. The class
  * needs a public no-argument constructor, which is how {@code XmlWeaver} instantiates it.
  *
+ * <p><b>One gap to be aware of:</b> the {@code <groups>} block of a {@code <test>} is still written
+ * inline by {@link #asXml(XmlTest, String)}, so overriding {@link #asXml(XmlGroups, String)},
+ * {@link #asXml(XmlDefine, String)}, {@link #asXml(XmlRun, String)} or {@link
+ * #asXml(XmlDependencies, String)} affects a suite-level {@code <groups>} but not a test-level one.
+ * Routing it through those hooks is not a pure refactoring: group dependencies parsed from a suite
+ * file are stored on {@link XmlTest} itself, not on its {@link XmlGroups} -- {@code
+ * XmlGroups.setXmlDependencies} is never called by the reader -- so delegating would read them from
+ * the empty side and drop them. Unifying the two is model surgery, tracked by #3317 rather than
+ * done here.
+ *
  * @see IWeaveXml
  */
 public class DefaultXmlWeaver implements IWeaveXml {
@@ -189,7 +199,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
       if (hasElements(xmlSuite.getMethodSelectors())) {
         xsb.push("method-selectors");
         for (XmlMethodSelector selector : xmlSuite.getMethodSelectors()) {
-          xsb.getStringBuffer().append(asXml(selector, "  "));
+          // Same child indentation as the structured path above, which reaches the selectors
+          // through asXml(XmlMethodSelectors, "  ") and so indents them by a further two.
+          xsb.getStringBuffer().append(asXml(selector, "    "));
         }
 
         xsb.pop("method-selectors");
@@ -430,7 +442,10 @@ public class DefaultXmlWeaver implements IWeaveXml {
       xsb.push("dependencies");
     }
     for (Map.Entry<String, String> entry : groups.entrySet()) {
-      xsb.addEmptyElement("include", "name", entry.getKey(), "depends-on", entry.getValue());
+      // <!ELEMENT dependencies (group*)>: an <include> here is rejected by the DTD, and the
+      // reader only maps <group> (TestNGContentHandler#xmlGroup), so writing one lost the
+      // dependency on the way back in.
+      xsb.addEmptyElement("group", "name", entry.getKey(), "depends-on", entry.getValue());
     }
     if (hasElements) {
       xsb.pop("dependencies");

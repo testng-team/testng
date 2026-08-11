@@ -141,7 +141,7 @@ public class DeprecatedToXmlShimTest {
                 + EOL
                 + "    <dependencies>"
                 + EOL
-                + "      <include depends-on=\"slow\" name=\"fast\"/>"
+                + "      <group depends-on=\"slow\" name=\"fast\"/>"
                 + EOL
                 + "    </dependencies>"
                 + EOL
@@ -214,7 +214,7 @@ public class DeprecatedToXmlShimTest {
         .isEqualTo(
             "  <dependencies>" //
                 + EOL
-                + "    <include depends-on=\"slow\" name=\"fast\"/>"
+                + "    <group depends-on=\"slow\" name=\"fast\"/>"
                 + EOL
                 + "  </dependencies>"
                 + EOL);
