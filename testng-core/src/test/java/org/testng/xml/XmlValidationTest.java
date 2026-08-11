@@ -45,6 +45,7 @@ public class XmlValidationTest {
 
   private static final String INVALID_SUITE = "xml/validation/wrong-element-order.xml";
   private static final String VALID_SUITE = "xml/goodWithDoctype.xml";
+  private static final String INTERNAL_SUBSET_SUITE = "xml/validation/internal-subset-only.xml";
 
   private String previousMode;
 
@@ -212,13 +213,27 @@ public class XmlValidationTest {
    * were dropped even under strict. The internal subset is a grammar that does not declare {@code
    * <suite>}, so a validating parser rightly rejects the document -- and that rejection now reaches
    * the user.
+   *
+   * <p>Asserted through both parsers, because they fail differently. The one built here registers
+   * the lexical handler itself, so it only proves that {@code startDTD} is honoured once delivered.
+   * {@link SuiteXmlParser} is the only path that goes through {@link XMLParser#parse}, which is
+   * where the handler is registered -- and this is the one case where that registration matters,
+   * since {@code resolveEntity} cannot stand in for it. Breaking the registration used to leave
+   * every XML test green.
    */
   @Test
-  public void strictModeRejectsASuiteWhoseDoctypeHasOnlyAnInternalSubset() {
+  public void strictModeRejectsASuiteWhoseDoctypeHasOnlyAnInternalSubset() throws Exception {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
 
-    assertThatThrownBy(() -> parseValidating("xml/validation/internal-subset-only.xml"))
+    assertThatThrownBy(() -> parseValidating(INTERNAL_SUBSET_SUITE))
         .isInstanceOf(SAXParseException.class);
+
+    try (InputStream stream =
+        Files.newInputStream(Paths.get(getPathToResource(INTERNAL_SUBSET_SUITE)))) {
+      assertThatThrownBy(() -> new SuiteXmlParser().parse(INTERNAL_SUBSET_SUITE, stream, false))
+          .isInstanceOf(TestNGException.class)
+          .hasRootCauseInstanceOf(SAXParseException.class);
+    }
   }
 
   /**
