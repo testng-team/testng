@@ -7,6 +7,8 @@ import static org.testng.xml.XmlSuite.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import org.testng.TestNGException;
+import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
 /**
@@ -24,6 +26,12 @@ class DefaultXmlWeaver implements IWeaveXml {
   private static final String TESTNG_DTD = "testng-1.1.dtd";
 
   private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
+
+  /**
+   * Stateless as far as the leaf elements are concerned -- none of them reads {@link
+   * #defaultComment} -- so a single instance can serve every {@code asXmlFragment} call.
+   */
+  private static final DefaultXmlWeaver LEGACY_FRAGMENT_WEAVER = new DefaultXmlWeaver();
 
   private final String defaultComment;
 
@@ -105,7 +113,7 @@ class DefaultXmlWeaver implements IWeaveXml {
     xsb.push("suite", p);
 
     if (xmlSuite.getGroups() != null) {
-      xsb.getStringBuffer().append(xmlSuite.getGroups().toXml("  "));
+      xsb.getStringBuffer().append(asXml(xmlSuite.getGroups(), "  "));
     } else {
       // Only synthesize a <groups> block when the suite has no XmlGroups of its own to write.
       // getIncludedGroups()/getExcludedGroups() read through to that same XmlGroups, so emitting
@@ -128,7 +136,7 @@ class DefaultXmlWeaver implements IWeaveXml {
       }
     }
 
-    XmlUtils.dumpParameters(xsb, xmlSuite.getParameters());
+    dumpParameters(xsb, xmlSuite.getParameters());
 
     if (hasElements(xmlSuite.getListeners())) {
       xsb.push("listeners");
@@ -144,19 +152,19 @@ class DefaultXmlWeaver implements IWeaveXml {
       xsb.push("packages");
 
       for (XmlPackage pack : xmlSuite.getXmlPackages()) {
-        xsb.getStringBuffer().append(pack.toXml("    "));
+        xsb.getStringBuffer().append(asXml(pack, "    "));
       }
 
       xsb.pop("packages");
     }
 
     if (xmlSuite.getXmlMethodSelectors() != null) {
-      xsb.getStringBuffer().append(xmlSuite.getXmlMethodSelectors().toXml("  "));
+      xsb.getStringBuffer().append(asXml(xmlSuite.getXmlMethodSelectors(), "  "));
     } else {
       if (hasElements(xmlSuite.getMethodSelectors())) {
         xsb.push("method-selectors");
         for (XmlMethodSelector selector : xmlSuite.getMethodSelectors()) {
-          xsb.getStringBuffer().append(selector.toXml("  "));
+          xsb.getStringBuffer().append(asXml(selector, "  "));
         }
 
         xsb.pop("method-selectors");
@@ -218,13 +226,13 @@ class DefaultXmlWeaver implements IWeaveXml {
     if (null != xmlTest.getMethodSelectors() && !xmlTest.getMethodSelectors().isEmpty()) {
       xsb.push("method-selectors");
       for (XmlMethodSelector selector : xmlTest.getMethodSelectors()) {
-        xsb.getStringBuffer().append(selector.toXml(indent + "    "));
+        xsb.getStringBuffer().append(asXml(selector, indent + "    "));
       }
 
       xsb.pop("method-selectors");
     }
 
-    XmlUtils.dumpParameters(xsb, xmlTest.getLocalParameters());
+    dumpParameters(xsb, xmlTest.getLocalParameters());
 
     // groups
 
@@ -295,7 +303,7 @@ class DefaultXmlWeaver implements IWeaveXml {
       xsb.push("packages");
 
       for (XmlPackage pack : xmlTest.getXmlPackages()) {
-        xsb.getStringBuffer().append(pack.toXml("      "));
+        xsb.getStringBuffer().append(asXml(pack, "      "));
       }
 
       xsb.pop("packages");
@@ -305,7 +313,7 @@ class DefaultXmlWeaver implements IWeaveXml {
     if (null != xmlTest.getXmlClasses() && !xmlTest.getXmlClasses().isEmpty()) {
       xsb.push("classes");
       for (XmlClass cls : xmlTest.getXmlClasses()) {
-        xsb.getStringBuffer().append(cls.toXml(indent + "    "));
+        xsb.getStringBuffer().append(asXml(cls, indent + "    "));
       }
       xsb.pop("classes");
     }
@@ -313,5 +321,293 @@ class DefaultXmlWeaver implements IWeaveXml {
     xsb.pop("test");
 
     return xsb.toXML();
+  }
+
+  protected String asXml(XmlGroups xmlGroups, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    String indent2 = indent + "  ";
+
+    List<XmlDefine> defines = xmlGroups.getDefines();
+    XmlRun run = xmlGroups.getRun();
+    List<XmlDependencies> dependencies = xmlGroups.getDependencies();
+    boolean hasGroups = hasElements(defines) || run != null || hasElements(dependencies);
+
+    if (hasGroups) {
+      xsb.push("groups");
+    }
+
+    for (XmlDefine d : defines) {
+      xsb.getStringBuffer().append(asXml(d, indent2));
+    }
+
+    if (null != run) {
+      // XmlRun is optional and is not always available, so check before serializing it.
+      xsb.getStringBuffer().append(asXml(run, indent2));
+    }
+
+    for (XmlDependencies d : dependencies) {
+      xsb.getStringBuffer().append(asXml(d, indent2));
+    }
+
+    if (hasGroups) {
+      xsb.pop("groups");
+    }
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlDefine xmlDefine, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    List<String> includes = xmlDefine.getIncludes();
+    boolean hasElements = hasElements(includes);
+    if (hasElements) {
+      xsb.push("define", "name", xmlDefine.getName());
+    }
+    for (String s : includes) {
+      xsb.addEmptyElement("include", "name", s);
+    }
+    if (hasElements) {
+      xsb.pop("define");
+    }
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlRun xmlRun, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    List<String> includes = xmlRun.getIncludes();
+    List<String> excludes = xmlRun.getExcludes();
+    boolean hasElements = hasElements(excludes) || hasElements(includes);
+    if (hasElements) {
+      xsb.push("run");
+    }
+    for (String s : includes) {
+      xsb.addEmptyElement("include", "name", s);
+    }
+    for (String s : excludes) {
+      xsb.addEmptyElement("exclude", "name", s);
+    }
+    if (hasElements) {
+      xsb.pop("run");
+    }
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlDependencies xmlDependencies, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    Map<String, String> groups = xmlDependencies.getDependencies();
+    boolean hasElements = hasElements(groups);
+    if (hasElements) {
+      xsb.push("dependencies");
+    }
+    for (Map.Entry<String, String> entry : groups.entrySet()) {
+      xsb.addEmptyElement("include", "name", entry.getKey(), "depends-on", entry.getValue());
+    }
+    if (hasElements) {
+      xsb.pop("dependencies");
+    }
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlPackage xmlPackage, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    Properties p = new Properties();
+    p.setProperty("name", xmlPackage.getName());
+
+    if (xmlPackage.getInclude().isEmpty() && xmlPackage.getExclude().isEmpty()) {
+      xsb.addEmptyElement("package", p);
+    } else {
+      xsb.push("package", p);
+
+      for (String m : xmlPackage.getInclude()) {
+        Properties includeProp = new Properties();
+        includeProp.setProperty("name", m);
+        xsb.addEmptyElement("include", includeProp);
+      }
+      for (String m : xmlPackage.getExclude()) {
+        Properties excludeProp = new Properties();
+        excludeProp.setProperty("name", m);
+        xsb.addEmptyElement("exclude", excludeProp);
+      }
+
+      xsb.pop("package");
+    }
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlMethodSelectors xmlMethodSelectors, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    List<XmlMethodSelector> selectors = xmlMethodSelectors.getMethodSelectors();
+    if (hasElements(selectors)) {
+      xsb.push("method-selectors");
+      for (XmlMethodSelector selector : selectors) {
+        xsb.getStringBuffer().append(asXml(selector, indent + "  "));
+      }
+
+      xsb.pop("method-selectors");
+    }
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlMethodSelector xmlMethodSelector, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+
+    xsb.push("method-selector");
+
+    XmlScript script = xmlMethodSelector.getScript();
+    if (null != xmlMethodSelector.getClassName()) {
+      Properties clsProp = new Properties();
+      clsProp.setProperty("name", xmlMethodSelector.getClassName());
+      // Omit the value the parser falls back to when the attribute is absent, so that a
+      // round trip is lossless. A negative priority is meaningful (see RunInfo#includeMethod)
+      // and must therefore be written out.
+      if (xmlMethodSelector.getPriority() != XmlMethodSelector.DEFAULT_PRIORITY) {
+        clsProp.setProperty("priority", String.valueOf(xmlMethodSelector.getPriority()));
+      }
+      xsb.addEmptyElement("selector-class", clsProp);
+    } else if (script != null && script.getLanguage() != null) {
+      Properties scriptProp = new Properties();
+      scriptProp.setProperty("language", script.getLanguage());
+      xsb.push("script", scriptProp);
+      xsb.addCDATA(script.getExpression());
+      xsb.pop("script");
+    } else {
+      throw new TestNGException("Invalid Method Selector:  found neither class name nor language");
+    }
+
+    xsb.pop("method-selector");
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlClass xmlClass, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    Properties prop = new Properties();
+    prop.setProperty("name", xmlClass.getName());
+
+    List<XmlInclude> includedMethods = xmlClass.getIncludedMethods();
+    List<String> excludedMethods = xmlClass.getExcludedMethods();
+    Map<String, String> parameters = xmlClass.getLocalParameters();
+
+    boolean hasMethods = !includedMethods.isEmpty() || !excludedMethods.isEmpty();
+    boolean hasParameters = !parameters.isEmpty();
+    if (hasParameters || hasMethods) {
+      xsb.push("class", prop);
+      dumpParameters(xsb, parameters);
+
+      if (hasMethods) {
+        xsb.push("methods");
+
+        for (XmlInclude m : includedMethods) {
+          xsb.getStringBuffer().append(asXml(m, indent + "    "));
+        }
+
+        for (String m : excludedMethods) {
+          Properties p = new Properties();
+          p.setProperty("name", m);
+          xsb.addEmptyElement("exclude", p);
+        }
+
+        xsb.pop("methods");
+      }
+
+      xsb.pop("class");
+    } else {
+      xsb.addEmptyElement("class", prop);
+    }
+
+    return xsb.toXML();
+  }
+
+  protected String asXml(XmlInclude xmlInclude, String indent) {
+    XMLStringBuffer xsb = new XMLStringBuffer(indent);
+    Properties p = new Properties();
+    p.setProperty("name", xmlInclude.getName());
+    if (xmlInclude.getDescription() != null) {
+      p.setProperty("description", xmlInclude.getDescription());
+    }
+    List<Integer> invocationNumbers = xmlInclude.getInvocationNumbers();
+    if (invocationNumbers != null && !invocationNumbers.isEmpty()) {
+      p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers));
+    }
+
+    Map<String, String> parameters = xmlInclude.getLocalParameters();
+    if (!parameters.isEmpty()) {
+      xsb.push("include", p);
+      dumpParameters(xsb, parameters);
+      xsb.pop("include");
+    } else {
+      xsb.addEmptyElement("include", p);
+    }
+
+    return xsb.toXML();
+  }
+
+  static void dumpParameters(XMLStringBuffer xsb, Map<String, String> parameters) {
+    // parameters
+    if (parameters.isEmpty()) {
+      return;
+    }
+    for (Map.Entry<String, String> para : parameters.entrySet()) {
+      Properties paramProps = new Properties();
+      if (para.getKey() == null) {
+        Utils.log("Skipping a null parameter.");
+        continue;
+      }
+      if (para.getValue() == null) {
+        String msg =
+            String.format("Skipping parameter [%s] since it has a null value", para.getKey());
+        Utils.log(msg);
+        continue;
+      }
+      paramProps.setProperty("name", para.getKey());
+      paramProps.setProperty("value", para.getValue());
+      xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
+    }
+  }
+
+  /**
+   * The serializer behind the deprecated {@code toXml(String)} methods that the model classes still
+   * expose. Those methods never consulted {@code -Dtestng.xml.weaver}: they built their XML inline,
+   * so routing them through {@link XmlWeaver} now would change what a user with a custom weaver
+   * gets back. They keep using the default serializer.
+   */
+  static String asXmlFragment(XmlGroups groups, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(groups, indent);
+  }
+
+  static String asXmlFragment(XmlDefine define, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(define, indent);
+  }
+
+  static String asXmlFragment(XmlRun run, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(run, indent);
+  }
+
+  static String asXmlFragment(XmlDependencies dependencies, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(dependencies, indent);
+  }
+
+  static String asXmlFragment(XmlPackage xmlPackage, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(xmlPackage, indent);
+  }
+
+  static String asXmlFragment(XmlMethodSelectors selectors, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(selectors, indent);
+  }
+
+  static String asXmlFragment(XmlMethodSelector selector, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(selector, indent);
+  }
+
+  static String asXmlFragment(XmlClass xmlClass, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(xmlClass, indent);
+  }
+
+  static String asXmlFragment(XmlInclude include, String indent) {
+    return LEGACY_FRAGMENT_WEAVER.asXml(include, indent);
   }
 }

@@ -1,10 +1,7 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-
 import java.util.List;
 import org.testng.collections.Lists;
-import org.testng.reporters.XMLStringBuffer;
 
 public class XmlMethodSelectors {
 
@@ -20,16 +17,12 @@ public class XmlMethodSelectors {
     m_methodSelectors.add(xms);
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    if (hasElements(m_methodSelectors)) {
-      xsb.push("method-selectors");
-      for (XmlMethodSelector selector : m_methodSelectors) {
-        xsb.getStringBuffer().append(selector.toXml(indent + "  "));
-      }
-
-      xsb.pop("method-selectors");
-    }
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 }

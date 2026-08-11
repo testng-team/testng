@@ -2,12 +2,10 @@ package org.testng.xml;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 import org.testng.collections.Lists;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
 import org.testng.internal.protocols.UnhandledIOException;
-import org.testng.reporters.XMLStringBuffer;
 
 /** This class describes the tag <code>&lt;package&gt;</code> in testng.xml. */
 public class XmlPackage {
@@ -78,31 +76,13 @@ public class XmlPackage {
     return result;
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    Properties p = new Properties();
-    p.setProperty("name", getName());
-
-    if (getInclude().isEmpty() && getExclude().isEmpty()) {
-      xsb.addEmptyElement("package", p);
-    } else {
-      xsb.push("package", p);
-
-      for (String m : getInclude()) {
-        Properties includeProp = new Properties();
-        includeProp.setProperty("name", m);
-        xsb.addEmptyElement("include", includeProp);
-      }
-      for (String m : getExclude()) {
-        Properties excludeProp = new Properties();
-        excludeProp.setProperty("name", m);
-        xsb.addEmptyElement("exclude", excludeProp);
-      }
-
-      xsb.pop("package");
-    }
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
   @Override

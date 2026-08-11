@@ -1,10 +1,7 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-
 import java.util.List;
 import org.testng.collections.Lists;
-import org.testng.reporters.XMLStringBuffer;
 
 public class XmlGroups {
 
@@ -40,34 +37,12 @@ public class XmlGroups {
     m_dependencies.add(dependencies);
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    String indent2 = indent + "  ";
-
-    boolean hasGroups = hasElements(m_defines) || m_run != null || hasElements(m_dependencies);
-
-    if (hasGroups) {
-      xsb.push("groups");
-    }
-
-    for (XmlDefine d : m_defines) {
-      xsb.getStringBuffer().append(d.toXml(indent2));
-    }
-
-    if (null != m_run) {
-      // XmlRun is optional and is not always available. So check if its available before running
-      // toXml()
-      xsb.getStringBuffer().append(m_run.toXml(indent2));
-    }
-
-    for (XmlDependencies d : m_dependencies) {
-      xsb.getStringBuffer().append(d.toXml(indent2));
-    }
-
-    if (hasGroups) {
-      xsb.pop("groups");
-    }
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 }

@@ -2,13 +2,11 @@ package org.testng.xml;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import org.testng.TestNGException;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
-import org.testng.reporters.XMLStringBuffer;
 
 /** This class describes the tag <code>&lt;class&gt;</code> in testng.xml. */
 public class XmlClass implements Cloneable {
@@ -128,39 +126,13 @@ public class XmlClass implements Cloneable {
     return Objects.toStringHelper(getClass()).add("class", m_name).toString();
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    Properties prop = new Properties();
-    prop.setProperty("name", getName());
-
-    boolean hasMethods = !m_includedMethods.isEmpty() || !m_excludedMethods.isEmpty();
-    boolean hasParameters = !m_parameters.isEmpty();
-    if (hasParameters || hasMethods) {
-      xsb.push("class", prop);
-      XmlUtils.dumpParameters(xsb, m_parameters);
-
-      if (hasMethods) {
-        xsb.push("methods");
-
-        for (XmlInclude m : getIncludedMethods()) {
-          xsb.getStringBuffer().append(m.toXml(indent + "    "));
-        }
-
-        for (String m : getExcludedMethods()) {
-          Properties p = new Properties();
-          p.setProperty("name", m);
-          xsb.addEmptyElement("exclude", p);
-        }
-
-        xsb.pop("methods");
-      }
-
-      xsb.pop("class");
-    } else {
-      xsb.addEmptyElement("class", prop);
-    }
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
   public static String listToString(List<Integer> invocationNumbers) {
