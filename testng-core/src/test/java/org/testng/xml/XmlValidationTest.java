@@ -185,8 +185,10 @@ public class XmlValidationTest {
    * Deletes every path, so that one failure does not leave the rest behind. The suite runs in one
    * fork per two cores, so leaking a directory holding a copy of the DTD on every build adds up.
    *
-   * <p>Deletion can genuinely fail on Windows: the entity resolver hands the DTD stream to {@code
-   * InputSource} without closing it, and a lingering handle blocks the delete.
+   * <p>Deletion is not assumed to succeed. It used to fail on Windows, where the entity resolver
+   * handed the DTD stream to {@code InputSource} without closing it and the lingering handle
+   * blocked the delete; #3334 now buffers and closes it, but a cleanup that hides the assertion it
+   * was cleaning up after is worth avoiding whatever the cause.
    */
   private static void deleteAll(Path... paths) throws IOException {
     IOException failures = null;
