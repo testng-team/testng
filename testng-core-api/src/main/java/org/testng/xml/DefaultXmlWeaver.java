@@ -14,8 +14,27 @@ import org.testng.reporters.XMLStringBuffer;
 /**
  * This class provides String representation of both {@link XmlSuite} and {@link XmlTest} but adds
  * an XML comment as the test name and suite name at the end of the corresponding tags.
+ *
+ * <p>It is also the base class to extend when you want to change how a suite is written without
+ * rewriting the whole serializer. There is one {@code asXml} method per element of {@code
+ * testng.xml}, each {@code protected}, so a subclass overrides only the element it cares about and
+ * inherits the rest:
+ *
+ * <pre>{@code
+ * public class MyWeaver extends DefaultXmlWeaver {
+ *   @Override
+ *   protected String asXml(XmlClass xmlClass, String indent) {
+ *     return indent + "<class name=\"" + xmlClass.getName() + "\"/>" + XMLStringBuffer.EOL;
+ *   }
+ * }
+ * }</pre>
+ *
+ * <p>Select it at runtime with {@code -Dtestng.xml.weaver=fully.qualified.MyWeaver}. The class
+ * needs a public no-argument constructor, which is how {@code XmlWeaver} instantiates it.
+ *
+ * @see IWeaveXml
  */
-class DefaultXmlWeaver implements IWeaveXml {
+public class DefaultXmlWeaver implements IWeaveXml {
   // TODO: move constants to XmlSuite?
   /**
    * The name of the TestNG DTD. Must stay in sync with {@code Parser.TESTNG_DTD}, which is the
@@ -35,11 +54,17 @@ class DefaultXmlWeaver implements IWeaveXml {
 
   private final String defaultComment;
 
-  DefaultXmlWeaver() {
+  /** Writes the name of each named tag as a trailing XML comment, as TestNG always has. */
+  public DefaultXmlWeaver() {
     this(null);
   }
 
-  DefaultXmlWeaver(String defaultComment) {
+  /**
+   * @param defaultComment the comment to close every tag with, or {@code null} to fall back to the
+   *     tag's own {@code name} attribute. Pass the empty string to write no comment at all, which
+   *     is what {@link CommentDisabledXmlWeaver} does.
+   */
+  protected DefaultXmlWeaver(String defaultComment) {
     this.defaultComment = defaultComment;
   }
 
@@ -183,7 +208,10 @@ class DefaultXmlWeaver implements IWeaveXml {
     }
 
     for (XmlTest test : xmlSuite.getTests()) {
-      xsb.getStringBuffer().append(test.toXml("  "));
+      // Not test.toXml("  "): that re-resolves the weaver from testng.xml.weaver, so a subclass
+      // serializing a suite through its own instance would have every override below <test>
+      // silently bypassed -- including the one CommentDisabledXmlWeaver relies on.
+      xsb.getStringBuffer().append(asXml(test, "  "));
     }
 
     xsb.pop("suite");
@@ -546,7 +574,14 @@ class DefaultXmlWeaver implements IWeaveXml {
     return xsb.toXML();
   }
 
-  static void dumpParameters(XMLStringBuffer xsb, Map<String, String> parameters) {
+  /**
+   * Writes a {@code <parameter>} element per entry, skipping the ones with a null key or value.
+   * Exposed to subclasses because every element that carries parameters needs it.
+   *
+   * @param xsb the buffer to write into
+   * @param parameters the parameters of the element being written
+   */
+  protected static void dumpParameters(XMLStringBuffer xsb, Map<String, String> parameters) {
     // parameters
     if (parameters.isEmpty()) {
       return;
