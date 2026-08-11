@@ -3,18 +3,7 @@
 <suite name="TestNG" parallel="false" thread-count="2"
     data-provider-thread-count="3">
 
-  <method-selectors>
-    <method-selector>
-      <script language="javascript">foo()</script>
-    </method-selector>
-    <method-selector>
-      <selector-class name="SelectorClass" priority="3" />
-    </method-selector>
-  </method-selectors>
-
-  <parameter name="first-name" value="Cedric" />
-  <parameter name="suiteParameter" value="suiteParameterValue" />
-
+  <!-- The DTD requires <groups> to be the first child of <suite>. -->
   <groups>
     <define name="bigSuite">
       <include name="suite1" />
@@ -31,6 +20,18 @@
     </dependencies>
  -->
    </groups>
+
+  <method-selectors>
+    <method-selector>
+      <script language="javascript">foo()</script>
+    </method-selector>
+    <method-selector>
+      <selector-class name="SelectorClass" priority="3" />
+    </method-selector>
+  </method-selectors>
+
+  <parameter name="first-name" value="Cedric" />
+  <parameter name="suiteParameter" value="suiteParameterValue" />
 
   <listeners>
     <listener class-name="com.beust.Listener1" />

@@ -1,12 +1,9 @@
 name: My_Suite
-verbose: 0
-configFailurePolicy: skip
+guiceStage: DEVELOPMENT
 tests:
   - name: My_test
-  verbose: 0
     xmlDependencyGroups:
       c: a  b
       z: c
-    xmlPackages:
-    - name: test.yaml
-
+    packages:
+      - test.yaml
