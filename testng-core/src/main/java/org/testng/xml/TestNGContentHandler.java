@@ -33,6 +33,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -42,7 +43,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author <a href='mailto:the_mindstorm@evolva.ro'>Alexandru Popescu</a>
  */
 // TODO move to internal
-public class TestNGContentHandler extends DefaultHandler {
+public class TestNGContentHandler extends DefaultHandler implements LexicalHandler {
   private static final int DTD_CONNECTION_TIMEOUT_MILLIS = 10_000;
 
   private XmlSuite m_currentSuite = null;
@@ -153,14 +154,50 @@ public class TestNGContentHandler extends DefaultHandler {
     m_loadClasses = loadClasses;
   }
 
+  /**
+   * Records that the document declares a doctype, whoever ends up providing the grammar.
+   *
+   * <p>{@link #resolveEntity} cannot be the only signal: it fires solely for an <em>external</em>
+   * subset, so a suite declaring {@code <!DOCTYPE suite [ <!ENTITY ...> ]>} never reaches it and
+   * used to be treated as having no doctype at all -- advised to add the one it had just written,
+   * and with its validity errors discarded. {@code startDTD} covers both kinds, and always fires
+   * before any content, so it is the exact signal. A document with no doctype does not trigger it,
+   * which is what keeps "no grammar found" errors suppressed for those files.
+   *
+   * <p>The two overlap deliberately. The lexical handler is optional in SAX, so on a parser that
+   * refuses it {@code resolveEntity} still catches the external case rather than losing detection
+   * altogether.
+   */
+  @Override
+  public void startDTD(String name, String publicId, String systemId) {
+    m_doctypeDeclared = true;
+  }
+
+  @Override
+  public void endDTD() {}
+
+  @Override
+  public void startEntity(String name) {}
+
+  @Override
+  public void endEntity(String name) {}
+
+  @Override
+  public void startCDATA() {}
+
+  @Override
+  public void endCDATA() {}
+
+  @Override
+  public void comment(char[] ch, int start, int length) {}
+
   @Override
   public InputSource resolveEntity(String publicId, String systemId)
       throws SAXException, IOException {
 
-    // The document declares a doctype, whoever ends up providing it. Tracked separately from
-    // m_validate, which means "TestNG substituted its own copy of the DTD": gating error reporting
-    // on m_validate silently discarded every violation for suites pointing at their own DTD copy
-    // or at a corporate mirror.
+    // Being asked to resolve the external subset is itself proof that a doctype was declared.
+    // Redundant with startDTD when the lexical handler could be registered, and the only signal
+    // left when it could not -- see XMLParser#registerLexicalHandler.
     m_doctypeDeclared = true;
 
     if (skipConsideringSystemId(systemId)) {
@@ -598,7 +635,7 @@ public class TestNGContentHandler extends DefaultHandler {
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
-    if (!m_validate && !m_hasWarn) {
+    if (!m_doctypeDeclared && !m_hasWarn) {
       String msg =
           String.format(
               "It is strongly recommended to add "

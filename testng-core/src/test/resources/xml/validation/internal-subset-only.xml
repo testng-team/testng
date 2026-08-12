@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Declares a doctype with an internal subset and no external one, which is a way to
+  define entities without pulling the TestNG DTD. The internal subset is a grammar, and
+  it does not declare <suite>, so a validating parser rejects the document.
+
+  resolveEntity() never fires for such a file, so before startDTD was observed it was
+  treated as having no doctype at all: advised to add the one it had just written, and
+  with its validity errors discarded even under strict.
+-->
+<!DOCTYPE suite [
+  <!ENTITY suiteName "InternalSubsetOnly">
+]>
+<suite name="&suiteName;">
+  <test name="t">
+    <classes>
+      <class name="test.sample.C"/>
+    </classes>
+  </test>
+</suite>
