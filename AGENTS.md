@@ -29,7 +29,8 @@ minutes once, before committing:
 ```bash
 ./gradlew :testng-core:test \
   --tests "org.testng.xml.XmlRoundTripTest" \
-  --tests "test.xml.XmlVerifyTest" > /tmp/t.log 2>&1; echo "EXIT=$?"
+  --tests "test.xml.XmlVerifyTest" > /tmp/t.log 2>&1
+rc=$?; echo "EXIT=$rc"; (exit $rc)
 ```
 
 Naming that set before editing is the point: it is the question the change has to answer. A run like
@@ -44,7 +45,8 @@ typo in the filter. Register it in the same edit that creates it, next to its ne
 confirm it ran, rather than trusting the exit code:
 
 ```bash
-grep -o 'tests="[0-9]*"' testng-core/build/test-results/test/TEST-<class>.xml
+CLASS=org.testng.xml.XmlRoundTripTest
+grep -o 'tests="[1-9][0-9]*"' "testng-core/build/test-results/test/TEST-$CLASS.xml"
 ```
 
 A green local build is not a green CI. Pull requests against `master` also run an OpenRewrite check
