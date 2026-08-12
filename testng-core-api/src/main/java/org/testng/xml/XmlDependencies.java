@@ -1,10 +1,7 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-
 import java.util.Map;
 import org.testng.collections.Maps;
-import org.testng.reporters.XMLStringBuffer;
 
 public class XmlDependencies {
 
@@ -18,19 +15,12 @@ public class XmlDependencies {
     return m_xmlDependencyGroups;
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    boolean hasElements = hasElements(m_xmlDependencyGroups);
-    if (hasElements) {
-      xsb.push("dependencies");
-    }
-    for (Map.Entry<String, String> entry : m_xmlDependencyGroups.entrySet()) {
-      xsb.addEmptyElement("include", "name", entry.getKey(), "depends-on", entry.getValue());
-    }
-    if (hasElements) {
-      xsb.pop("dependencies");
-    }
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 }

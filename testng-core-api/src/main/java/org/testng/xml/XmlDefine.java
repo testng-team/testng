@@ -1,10 +1,7 @@
 package org.testng.xml;
 
-import static org.testng.collections.CollectionUtils.hasElements;
-
 import java.util.List;
 import org.testng.collections.Lists;
-import org.testng.reporters.XMLStringBuffer;
 
 public class XmlDefine {
 
@@ -18,20 +15,13 @@ public class XmlDefine {
     return m_name;
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    boolean hasElements = hasElements(m_includes);
-    if (hasElements) {
-      xsb.push("define", "name", m_name);
-    }
-    for (String s : m_includes) {
-      xsb.addEmptyElement("include", "name", s);
-    }
-    if (hasElements) {
-      xsb.pop("define");
-    }
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
   private List<String> m_includes = Lists.newArrayList();

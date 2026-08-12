@@ -2,7 +2,6 @@ package org.testng.xml;
 
 import java.util.Map;
 import java.util.Properties;
-import org.testng.internal.Utils;
 import org.testng.reporters.XMLStringBuffer;
 
 public class XmlUtils {
@@ -21,26 +20,14 @@ public class XmlUtils {
     }
   }
 
+  /**
+   * @deprecated Moved to {@code DefaultXmlWeaver}. This class is the one place in {@code
+   *     org.testng.xml} that still mentions {@link XMLStringBuffer}, because the buffer is the
+   *     parameter type: dropping the method would be a hard break of a public signature, and this
+   *     module has no binary compatibility check in CI to measure the fallout.
+   */
+  @Deprecated
   public static void dumpParameters(XMLStringBuffer xsb, Map<String, String> parameters) {
-    // parameters
-    if (parameters.isEmpty()) {
-      return;
-    }
-    for (Map.Entry<String, String> para : parameters.entrySet()) {
-      Properties paramProps = new Properties();
-      if (para.getKey() == null) {
-        Utils.log("Skipping a null parameter.");
-        continue;
-      }
-      if (para.getValue() == null) {
-        String msg =
-            String.format("Skipping parameter [%s] since it has a null value", para.getKey());
-        Utils.log(msg);
-        continue;
-      }
-      paramProps.setProperty("name", para.getKey());
-      paramProps.setProperty("value", para.getValue());
-      xsb.addEmptyElement("parameter", paramProps); // BUGFIX: TESTNG-27
-    }
+    DefaultXmlWeaver.dumpParameters(xsb, parameters);
   }
 }

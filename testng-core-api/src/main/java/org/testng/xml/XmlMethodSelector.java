@@ -1,9 +1,5 @@
 package org.testng.xml;
 
-import java.util.Properties;
-import org.testng.TestNGException;
-import org.testng.reporters.XMLStringBuffer;
-
 /** This class describes the tag <code>&lt;method-selector&gt;</code> in testng.xml. */
 public class XmlMethodSelector {
 
@@ -52,34 +48,13 @@ public class XmlMethodSelector {
     m_priority = priority;
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-
-    xsb.push("method-selector");
-
-    if (null != m_className) {
-      Properties clsProp = new Properties();
-      clsProp.setProperty("name", getClassName());
-      // Omit the value the parser falls back to when the attribute is absent, so that a
-      // round trip is lossless. A negative priority is meaningful (see RunInfo#includeMethod)
-      // and must therefore be written out.
-      if (getPriority() != DEFAULT_PRIORITY) {
-        clsProp.setProperty("priority", String.valueOf(getPriority()));
-      }
-      xsb.addEmptyElement("selector-class", clsProp);
-    } else if (getScript() != null && getScript().getLanguage() != null) {
-      Properties scriptProp = new Properties();
-      scriptProp.setProperty("language", getScript().getLanguage());
-      xsb.push("script", scriptProp);
-      xsb.addCDATA(getScript().getExpression());
-      xsb.pop("script");
-    } else {
-      throw new TestNGException("Invalid Method Selector:  found neither class name nor language");
-    }
-
-    xsb.pop("method-selector");
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
   @Override

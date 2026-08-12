@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import org.testng.collections.Lists;
 import org.testng.collections.Maps;
-import org.testng.reporters.XMLStringBuffer;
 
 public class XmlInclude {
 
@@ -71,27 +69,13 @@ public class XmlInclude {
     return m_index;
   }
 
+  /**
+   * @deprecated Serialization has moved to {@code DefaultXmlWeaver}. This method always uses the
+   *     default serializer; it never honoured {@code -Dtestng.xml.weaver} and still does not.
+   */
+  @Deprecated
   public String toXml(String indent) {
-    XMLStringBuffer xsb = new XMLStringBuffer(indent);
-    Properties p = new Properties();
-    p.setProperty("name", getName());
-    if (m_description != null) {
-      p.setProperty("description", m_description);
-    }
-    List<Integer> invocationNumbers = getInvocationNumbers();
-    if (invocationNumbers != null && !invocationNumbers.isEmpty()) {
-      p.setProperty("invocation-numbers", XmlClass.listToString(invocationNumbers));
-    }
-
-    if (!m_parameters.isEmpty()) {
-      xsb.push("include", p);
-      XmlUtils.dumpParameters(xsb, m_parameters);
-      xsb.pop("include");
-    } else {
-      xsb.addEmptyElement("include", p);
-    }
-
-    return xsb.toXML();
+    return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
   @Override

@@ -121,6 +121,7 @@
       <class name="test.jar.JarTest" />
  -->
       <class name="test.xml.XmlVerifyTest" />
+      <class name="test.xml.XmlWeaverExtensionTest"/>
       <class name="test.xml.issue2231.IssueTest"/>
       <class name="test.xml.XMLStringBufferTest"/>
       <class name="test.invokedmethodlistener.InvokedMethodListenerTest" />
@@ -816,6 +817,7 @@
       <class name="org.testng.xml.XmlTestTest"/>
       <class name="org.testng.xml.ParserTest"/>
       <class name="org.testng.xml.XmlRoundTripTest"/>
+      <class name="org.testng.xml.DeprecatedToXmlShimTest"/>
       <class name="org.testng.xml.XMLParserTest"/>
       <class name="org.testng.xml.XmlValidationTest"/>
       <class name="org.testng.xml.XsdValidationTest"/>
