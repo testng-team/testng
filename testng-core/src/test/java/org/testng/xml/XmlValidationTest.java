@@ -272,6 +272,44 @@ public class XmlValidationTest {
         .doesNotThrowAnyException();
   }
 
+  /**
+   * The lexical handler property is optional in SAX, so a parser may reject it and {@code
+   * XMLParser.registerLexicalHandler} carries on without it. What the two tests below pin is what
+   * that costs and what it does not.
+   *
+   * <p>An external doctype is still detected, because {@code resolveEntity} sets the flag too. That
+   * redundancy is the whole point of the fallback, and until now nothing held it in place: removing
+   * it left all 3456 XML tests green.
+   */
+  @Test
+  public void anExternalDoctypeIsStillDetectedWithoutLexicalEvents() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+
+    assertThatThrownBy(() -> parseValidating(pathOf(INVALID_SUITE), false))
+        .isInstanceOf(SAXParseException.class);
+  }
+
+  /**
+   * The documented cost of the same situation: a doctype with only an internal subset goes
+   * unnoticed, since {@code resolveEntity} is never called for one. Asserted so the trade-off is
+   * recorded rather than merely described in a comment -- and so that a future parser change which
+   * happens to fix it does not do so silently.
+   */
+  @Test
+  public void anInternalSubsetIsMissedWithoutLexicalEvents() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+
+    assertThatCode(
+            () ->
+                assertThat(parseValidating(pathOf(INTERNAL_SUBSET_SUITE), false).getName())
+                    .isEqualTo("InternalSubsetOnly"))
+        .doesNotThrowAnyException();
+  }
+
+  private static Path pathOf(String suiteFile) {
+    return Paths.get(getPathToResource(suiteFile));
+  }
+
   @Test
   public void anUnknownModeFallsBackToWarn() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "not-a-mode");
@@ -326,14 +364,26 @@ public class XmlValidationTest {
   }
 
   private static XmlSuite parseValidating(Path path) throws Exception {
+    return parseValidating(path, true);
+  }
+
+  /**
+   * @param withLexicalHandler whether to register the lexical handler, as {@code XMLParser.parse}
+   *     does. Passing {@code false} reproduces a parser that rejects the property: the handler then
+   *     never receives {@code startDTD}, which is the situation the {@code resolveEntity} fallback
+   *     exists for.
+   */
+  private static XmlSuite parseValidating(Path path, boolean withLexicalHandler) throws Exception {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setValidating(true);
     TestNGContentHandler handler = new TestNGContentHandler(path.toString(), false);
     SAXParser parser = factory.newSAXParser();
-    // Same wiring as XMLParser.parse. Without it startDTD is never delivered, the handler believes
-    // no doctype was declared, and every violation is discarded -- so the parser built here has to
-    // be configured like the real one or these tests would prove nothing.
-    parser.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+    if (withLexicalHandler) {
+      // Same wiring as XMLParser.parse. Without it startDTD is never delivered, the handler
+      // believes no doctype was declared, and every violation is discarded -- so the parser built
+      // here has to be configured like the real one or these tests would prove nothing.
+      parser.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+    }
     try (InputStream stream = Files.newInputStream(path)) {
       InputSource source = new InputSource(stream);
       // The system id matters: without it a relative doctype cannot be resolved, so TestNG falls
