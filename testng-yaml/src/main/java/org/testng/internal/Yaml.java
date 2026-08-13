@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.testng.TestNGException;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
@@ -18,6 +19,7 @@ import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.error.YAMLException;
 
 /** YAML support for TestNG. */
 public final class Yaml {
@@ -36,6 +38,7 @@ public final class Yaml {
    * @param loadClasses whether a {@code <class>} entry should be resolved against the classpath
    * @return the parsed suite
    * @throws FileNotFoundException if {@code is} is null and {@code filePath} does not exist
+   * @throws TestNGException if the document is malformed or uses a key outside the schema
    */
   public static XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
       throws FileNotFoundException {
@@ -43,7 +46,15 @@ public final class Yaml {
     if (is == null) {
       is = new FileInputStream(filePath);
     }
-    XmlSuite result = y.load(is);
+    XmlSuite result;
+    try {
+      result = y.load(is);
+    } catch (YAMLException e) {
+      // snakeyaml is an implementation detail of this module, so a caller cannot catch its
+      // exceptions by type without depending on it. What a malformed suite throws is the same
+      // here as it is through ISuiteParser.
+      throw new TestNGException(e);
+    }
 
     result.setFileName(filePath);
 

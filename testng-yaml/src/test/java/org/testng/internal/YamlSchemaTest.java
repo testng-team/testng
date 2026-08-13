@@ -11,8 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -281,30 +279,6 @@ public class YamlSchemaTest {
         .containsOnly(entry("d", "44.0"), entry("b", "true"), entry("i", "42"), entry("q", "7"));
   }
 
-  @DataProvider
-  public static Object[][] deprecatedAliases() {
-    return new Object[][] {
-      {"suite", "xmlPackages", "packages"},
-      {"test", "xmlPackages", "packages"},
-      {"test", "xmlClasses", "classes"},
-      {"test", "xmlDependencyGroups", "dependencyGroups"},
-      {"method selector", "name", "className"},
-    };
-  }
-
-  @Test(dataProvider = "deprecatedAliases")
-  public void aDeprecatedAliasIsAnnounced(String element, String deprecated, String canonical) {
-    assertThat(YamlSchema.deprecationMessage(element, deprecated, canonical))
-        .isEqualTo(
-            "The YAML key \""
-                + deprecated
-                + "\" of a <"
-                + element
-                + "> is deprecated, use \""
-                + canonical
-                + "\" instead.");
-  }
-
   /**
    * The warning is the whole point of keeping the old spellings: they were kept rather than dropped
    * so that a suite file which uses one still runs while saying so. Asserting the text of {@link
@@ -378,12 +352,6 @@ public class YamlSchemaTest {
   }
 
   /**
-   * The keys the model used to expose by accident. {@code fileName} and {@code parsed} are parse
-   * bookkeeping, {@code index} and {@code suite} are computed, {@code groups} could never work at
-   * all because {@code XmlRun} has no setter for its includes, and {@code class} would have handed
-   * snakeyaml a {@link Class} to build from a name.
-   */
-  /**
    * A deprecated spelling and its canonical key write through the same property, so using both in
    * one mapping is a key declared twice however different the text looks. snakeyaml compares the
    * text, so {@code setAllowDuplicateKeys(false)} does not see it, and the second occurrence used
@@ -436,6 +404,34 @@ public class YamlSchemaTest {
     return entry.substring(0, entry.indexOf(':'));
   }
 
+  /**
+   * A merge key is the case a check on the raw mapping node cannot see: {@code <<: *base} brings
+   * "packages" in from the anchor, and the spelling written next to it collides with a key that is
+   * nowhere in the node's own text.
+   */
+  @Test
+  public void oneKeyMergedInUnderItsOtherSpellingIsRejected() {
+    assertThatThrownBy(
+            () ->
+                parse(
+                    "name: S",
+                    "tests:",
+                    "  - &base",
+                    "    name: T1",
+                    "    packages: [ p1 ]",
+                    "  - <<: *base",
+                    "    name: T2",
+                    "    xmlPackages: [ p2 ]"))
+        .hasMessageContaining(
+            YamlSchema.repeatedKeyMessage("test", "packages", "packages", "xmlPackages"));
+  }
+
+  /**
+   * The keys the model used to expose by accident. {@code fileName} and {@code parsed} are parse
+   * bookkeeping, {@code index} and {@code suite} are computed, {@code groups} could never work at
+   * all because {@code XmlRun} has no setter for its includes, and {@code class} would have handed
+   * snakeyaml a {@link Class} to build from a name.
+   */
   @DataProvider
   public static Object[][] keysOutsideTheSchema() {
     return new Object[][] {
@@ -558,10 +554,9 @@ public class YamlSchemaTest {
             YamlSchema.xmlPackage(),
             YamlSchema.include(),
             YamlSchema.methodSelector())) {
-      Set<String> everySpelling = new LinkedHashSet<>(type.acceptedKeys());
       assertThat(type.aliases().keySet())
           .as("a deprecated alias of %s must not also be a canonical key", type.getType())
-          .doesNotContainAnyElementsOf(everySpelling);
+          .doesNotContainAnyElementsOf(type.acceptedKeys());
     }
   }
 

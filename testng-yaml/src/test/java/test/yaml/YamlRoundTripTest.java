@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -72,7 +73,7 @@ public class YamlRoundTripTest {
 
     assertThat(plainYaml.<Object>load(emitted))
         .as("the YAML written for %s must load under a plain YAML parser:%n%s", suiteFile, emitted)
-        .isInstanceOf(java.util.Map.class);
+        .isInstanceOf(Map.class);
   }
 
   @Test(dataProvider = "yamlSuites")
@@ -138,26 +139,16 @@ public class YamlRoundTripTest {
   /** The XML suites of this module, plus one that carries every construct at once. */
   @DataProvider(name = "xmlSuites")
   public static Object[][] xmlSuites() throws IOException {
-    Path root = Paths.get(getPathToResource(""));
-    try (Stream<Path> paths = Files.walk(root)) {
-      List<Object[]> suites =
-          paths
-              .filter(Files::isRegularFile)
-              .filter(path -> path.getFileName().toString().endsWith(".xml"))
-              .sorted()
-              .map(
-                  path -> {
-                    String name = root.relativize(path).toString();
-                    return new Object[] {name, parseXml(name, path)};
-                  })
-              .collect(Collectors.toCollection(ArrayList::new));
-      suites.add(new Object[] {"every suite construct", everySuiteConstruct()});
-      return suites.toArray(new Object[0][]);
+    List<Object[]> suites = new ArrayList<>();
+    for (String name : resourceNames(".xml")) {
+      suites.add(new Object[] {name, parseXml(name)});
     }
+    suites.add(new Object[] {"every suite construct", everySuiteConstruct()});
+    return suites.toArray(new Object[0][]);
   }
 
-  private static XmlSuite parseXml(String name, Path path) {
-    try (InputStream stream = Files.newInputStream(path)) {
+  private static XmlSuite parseXml(String name) {
+    try (InputStream stream = Files.newInputStream(Paths.get(getPathToResource(name)))) {
       return new SuiteXmlParser().parse(name, stream, false);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -279,20 +270,25 @@ public class YamlRoundTripTest {
    */
   @DataProvider(name = "yamlSuites")
   public static Object[][] yamlSuites() throws IOException {
+    return resourceNames(".yaml", ".yml").stream()
+        .map(name -> new Object[] {name})
+        .toArray(Object[][]::new);
+  }
+
+  /**
+   * The suite files of this module, by extension -- which is exactly what {@code YamlParser.accept}
+   * promises for YAML, so adding a fixture extends the corpus without touching this class.
+   */
+  private static List<String> resourceNames(String... extensions) throws IOException {
     Path root = Paths.get(getPathToResource(""));
     try (Stream<Path> paths = Files.walk(root)) {
       return paths
           .filter(Files::isRegularFile)
-          .filter(YamlRoundTripTest::isYaml)
           .sorted()
-          .map(path -> new Object[] {root.relativize(path).toString()})
-          .toArray(Object[][]::new);
+          .map(path -> root.relativize(path).toString())
+          .filter(name -> Arrays.stream(extensions).anyMatch(name::endsWith))
+          .collect(Collectors.toList());
     }
-  }
-
-  private static boolean isYaml(Path path) {
-    String name = path.getFileName().toString();
-    return name.endsWith(".yaml") || name.endsWith(".yml");
   }
 
   private static XmlSuite parseFile(String suiteFile) throws IOException {

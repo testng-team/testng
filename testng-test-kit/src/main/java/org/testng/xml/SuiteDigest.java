@@ -3,6 +3,7 @@ package org.testng.xml;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 /**
@@ -167,24 +168,14 @@ public final class SuiteDigest {
    */
   private static String render(Object value) {
     if (value instanceof Map) {
-      StringBuilder result = new StringBuilder("{");
-      for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
-        if (result.length() > 1) {
-          result.append(", ");
-        }
-        result.append(render(entry.getKey())).append('=').append(render(entry.getValue()));
-      }
-      return result.append('}').toString();
+      StringJoiner rendered = new StringJoiner(", ", "{", "}");
+      ((Map<?, ?>) value).forEach((k, v) -> rendered.add(render(k) + '=' + render(v)));
+      return rendered.toString();
     }
     if (value instanceof Collection) {
-      StringBuilder result = new StringBuilder("[");
-      for (Object element : (Collection<?>) value) {
-        if (result.length() > 1) {
-          result.append(", ");
-        }
-        result.append(render(element));
-      }
-      return result.append(']').toString();
+      StringJoiner rendered = new StringJoiner(", ", "[", "]");
+      ((Collection<?>) value).forEach(element -> rendered.add(render(element)));
+      return rendered.toString();
     }
     return escape(value);
   }

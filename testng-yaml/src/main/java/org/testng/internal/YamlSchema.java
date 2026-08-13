@@ -1,14 +1,16 @@
 package org.testng.internal;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.testng.TestNGException;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
@@ -65,7 +67,7 @@ final class YamlSchema {
     Constructor constructor = new Constructor(XmlSuite.class, options);
     constructor.addTypeDescription(suite());
     constructor.addTypeDescription(test());
-    constructor.addTypeDescription(new XmlClassType(loadClasses));
+    constructor.addTypeDescription(xmlClass(loadClasses));
     constructor.addTypeDescription(xmlPackage());
     constructor.addTypeDescription(include());
     constructor.addTypeDescription(methodSelector());
@@ -102,7 +104,7 @@ final class YamlSchema {
         .key("lazyFactory", Boolean.class, XmlSuite::setLazyFactory)
         .key("parentModule", String.class, XmlSuite::setParentModule)
         .key("guiceStage", String.class, XmlSuite::setGuiceStage)
-        .stringMapKey("parameters", XmlSuite::setParameters)
+        .mapKey("parameters", YamlSchema::asText, XmlSuite::setParameters)
         .listKey("listeners", String.class, XmlSuite::setListeners)
         .listKey("includedGroups", String.class, XmlSuite::setIncludedGroups)
         .listKey("excludedGroups", String.class, XmlSuite::setExcludedGroups)
@@ -134,11 +136,11 @@ final class YamlSchema {
         .key("groupByInstances", Boolean.class, XmlTest::setGroupByInstances)
         .key("allowReturnValues", Boolean.class, XmlTest::setAllowReturnValues)
         .key("skipFailedInvocationCounts", Boolean.class, XmlTest::setSkipFailedInvocationCounts)
-        .stringMapKey("parameters", XmlTest::setParameters)
+        .mapKey("parameters", YamlSchema::asText, XmlTest::setParameters)
         .listKey("includedGroups", String.class, XmlTest::setIncludedGroups)
         .listKey("excludedGroups", String.class, XmlTest::setExcludedGroups)
-        .metaGroupsKey(XmlTest::setMetaGroups)
-        .stringMapKey("dependencyGroups", XmlTest::setXmlDependencyGroups)
+        .mapKey("metaGroups", YamlSchema::asTextLists, XmlTest::setMetaGroups)
+        .mapKey("dependencyGroups", YamlSchema::asText, XmlTest::setXmlDependencyGroups)
         .alias("xmlDependencyGroups", "dependencyGroups")
         .listKey(
             "methodSelectors",
@@ -162,7 +164,7 @@ final class YamlSchema {
     return new SchemaType<>(XmlInclude.class, "include")
         .key("name", String.class, XmlInclude::setName)
         .key("description", String.class, XmlInclude::setDescription)
-        .stringMapKey("parameters", XmlInclude::setParameters);
+        .mapKey("parameters", YamlSchema::asText, XmlInclude::setParameters);
   }
 
   /**
@@ -277,6 +279,12 @@ final class YamlSchema {
     private final String element;
     private final Map<String, SchemaProperty> keys = new LinkedHashMap<>();
     private final Map<String, String> deprecatedAliases = new LinkedHashMap<>();
+    /**
+     * Which spelling each bean was written through, so that the second one can be reported. Keyed
+     * by identity and never cleared, which costs nothing: a description is built per parse and dies
+     * with it, and every bean in it is reachable from the suite anyway.
+     */
+    private final Map<Object, Map<String, String>> spellingByBean = new IdentityHashMap<>();
 
     SchemaType(Class<T> type, String element) {
       super(type);
@@ -293,23 +301,18 @@ final class YamlSchema {
       return add(new SchemaProperty(name, List.class, cast(setter), elementType));
     }
 
-    /** A key holding a mapping of text to text. */
-    SchemaType<T> stringMapKey(String name, BiConsumer<T, Map<String, String>> setter) {
+    /**
+     * A key holding a mapping, converted before it reaches the model. YAML resolves the values of a
+     * mapping on its own, so what arrives is never the {@code Map<String, ?>} the setter wants.
+     */
+    <V> SchemaType<T> mapKey(
+        String name, Function<Map<?, ?>, V> conversion, BiConsumer<T, V> setter) {
       return add(
           new SchemaProperty(
               name,
               Map.class,
-              (target, value) -> setter.accept(uncheckedCast(target), asText((Map<?, ?>) value))));
-    }
-
-    /** The {@code metaGroups} key, a mapping of a group name to the groups it stands for. */
-    SchemaType<T> metaGroupsKey(BiConsumer<T, Map<String, List<String>>> setter) {
-      return add(
-          new SchemaProperty(
-              "metaGroups",
-              Map.class,
               (target, value) ->
-                  setter.accept(uncheckedCast(target), asTextLists((Map<?, ?>) value))));
+                  setter.accept(uncheckedCast(target), conversion.apply((Map<?, ?>) value))));
     }
 
     /** An accepted spelling of {@code canonical} that warns when it is used. */
@@ -322,47 +325,31 @@ final class YamlSchema {
     }
 
     /**
-     * Validates the mapping and leaves the instance to snakeyaml, which is what returning null asks
-     * for. This is the only hook that sees a whole mapping node: {@link #getProperty(String)} is
-     * handed one key at a time and cannot tell that another key of the same node already wrote
-     * through the same property.
-     */
-    @Override
-    public Object newInstance(Node node) {
-      rejectRepeatedSpellings(node);
-      return null;
-    }
-
-    /**
      * A deprecated spelling and its canonical key write through the same property, so a mapping
      * carrying both declares one key twice however different the text looks -- and the second
      * silently overwrote the first. {@code LoaderOptions.setAllowDuplicateKeys(false)} does not
      * catch it, because snakeyaml compares the text of the keys.
      *
+     * <p>Checked here rather than against the mapping node, because this is the first hook that
+     * runs <em>after</em> snakeyaml has flattened the merge keys: {@code <<: *base} next to the
+     * other spelling of one of the merged keys is the same collision, and a check on the raw node
+     * cannot see it. Reporting from here also lets the failure carry the line and column of the
+     * offending key rather than of the start of the document.
+     *
      * <p>The same spelling repeated is left alone on purpose: that one snakeyaml does catch, and
-     * its report names the line.
+     * its report already names the line.
+     *
+     * <p>Returning false asks snakeyaml to go on and write the value the usual way.
      */
-    void rejectRepeatedSpellings(Node node) {
-      if (!(node instanceof MappingNode)) {
-        return;
+    @Override
+    public boolean setProperty(Object bean, String spelling, Object value) {
+      String canonical = deprecatedAliases.getOrDefault(spelling, spelling);
+      String previous =
+          spellingByBean.computeIfAbsent(bean, key -> new HashMap<>()).put(canonical, spelling);
+      if (previous != null && !previous.equals(spelling)) {
+        throw new YAMLException(repeatedKeyMessage(element, canonical, previous, spelling));
       }
-      Map<String, String> spellingByKey = new LinkedHashMap<>();
-      for (NodeTuple tuple : ((MappingNode) node).getValue()) {
-        Node key = tuple.getKeyNode();
-        if (!(key instanceof ScalarNode)) {
-          continue;
-        }
-        String spelling = ((ScalarNode) key).getValue();
-        String canonical = deprecatedAliases.getOrDefault(spelling, spelling);
-        if (!keys.containsKey(canonical)) {
-          // Unknown, and getProperty reports it with the list of what is accepted.
-          continue;
-        }
-        String previous = spellingByKey.put(canonical, spelling);
-        if (previous != null && !previous.equals(spelling)) {
-          throw new YAMLException(repeatedKeyMessage(element, canonical, previous, spelling));
-        }
-      }
+      return false;
     }
 
     Set<String> acceptedKeys() {
@@ -392,14 +379,14 @@ final class YamlSchema {
       return this;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static BiConsumer<Object, Object> cast(BiConsumer<?, ?> setter) {
-      return (BiConsumer<Object, Object>) (BiConsumer) setter;
-    }
-
     @SuppressWarnings("unchecked")
     private static <V> V uncheckedCast(Object value) {
       return (V) value;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static BiConsumer<Object, Object> cast(BiConsumer<?, ?> setter) {
+      return (BiConsumer<Object, Object>) (BiConsumer) setter;
     }
   }
 
@@ -420,14 +407,13 @@ final class YamlSchema {
       super(XmlClass.class, "class");
       this.loadClasses = loadClasses;
       key("name", String.class, XmlClass::setName);
-      stringMapKey("parameters", XmlClass::setParameters);
+      mapKey("parameters", YamlSchema::asText, XmlClass::setParameters);
       listKey("includedMethods", XmlInclude.class, XmlClass::setIncludedMethods);
       listKey("excludedMethods", String.class, XmlClass::setExcludedMethods);
     }
 
     @Override
     public Object newInstance(Node node) {
-      rejectRepeatedSpellings(node);
       return new XmlClass(className(node), loadClasses);
     }
 
@@ -474,11 +460,6 @@ final class YamlSchema {
     }
 
     @Override
-    public boolean isReadable() {
-      return false;
-    }
-
-    @Override
     public void set(Object target, Object value) {
       setter.accept(target, value);
     }
@@ -486,16 +467,6 @@ final class YamlSchema {
     @Override
     public Object get(Object target) {
       throw new UnsupportedOperationException("The YAML schema only describes reading");
-    }
-
-    @Override
-    public List<Annotation> getAnnotations() {
-      return Collections.emptyList();
-    }
-
-    @Override
-    public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-      return null;
     }
   }
 }

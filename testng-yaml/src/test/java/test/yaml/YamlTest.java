@@ -65,7 +65,7 @@ public class YamlTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1787")
   public void testParameterInclusion() throws IOException {
-    String file = "src/test/resources/yaml/1787.xml";
+    String file = getPathToResource("yaml/1787.xml");
     XmlSuite xmlSuite = new SuiteXmlParser().parse(file, new FileInputStream(file), false);
 
     XmlSuite reparsed = parseYaml(file, Yaml.toYaml(xmlSuite).toString());
@@ -80,10 +80,10 @@ public class YamlTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-2078")
   public void testXmlDependencyGroups() throws IOException {
-    String actualXmlFile = "src/test/resources/yaml/2078.xml";
+    String actualXmlFile = getPathToResource("yaml/2078.xml");
     XmlSuite actualXmlSuite =
         new SuiteXmlParser().parse(actualXmlFile, new FileInputStream(actualXmlFile), false);
-    String expectedYamlFile = "src/test/resources/yaml/2078.yaml";
+    String expectedYamlFile = getPathToResource("yaml/2078.yaml");
     String expectedYaml =
         new String(Files.readAllBytes(Paths.get(expectedYamlFile)), StandardCharsets.UTF_8);
 
@@ -104,7 +104,7 @@ public class YamlTest extends SimpleBaseTest {
    */
   @Test
   public void suiteLevelMetaGroupsAreNotWritten() throws IOException {
-    String file = "src/test/resources/xml/suite-level-groups.xml";
+    String file = getPathToResource("xml/suite-level-groups.xml");
     XmlSuite xmlSuite = new SuiteXmlParser().parse(file, new FileInputStream(file), false);
 
     XmlSuite reparsed = parseYaml(file, Yaml.toYaml(xmlSuite).toString());
@@ -115,7 +115,7 @@ public class YamlTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2689")
   public void testLoadClassesFlag() throws IOException {
     YamlParser yamlParser = new YamlParser();
-    String yamlSuiteFile = "src/test/resources/yaml/suiteWithNonExistentTest.yaml";
+    String yamlSuiteFile = getPathToResource("yaml/suiteWithNonExistentTest.yaml");
 
     try {
       yamlParser.parse(yamlSuiteFile, new FileInputStream(yamlSuiteFile), false);
@@ -153,7 +153,7 @@ public class YamlTest extends SimpleBaseTest {
   @Test(description = "GITHUB-2857")
   public void testXmlTestIndex() throws IOException {
     YamlParser yamlParser = new YamlParser();
-    String yamlSuiteFile = "src/test/resources/yaml/testXmlTestIndex.yaml";
+    String yamlSuiteFile = getPathToResource("yaml/testXmlTestIndex.yaml");
     XmlSuite suite = yamlParser.parse(yamlSuiteFile, new FileInputStream(yamlSuiteFile), false);
     List<XmlTest> tests = suite.getTests();
     assertThat(tests.size()).isEqualTo(3);

@@ -6,7 +6,6 @@ import org.testng.TestNGException;
 import org.testng.xml.ISuiteParser;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
-import org.yaml.snakeyaml.error.YAMLException;
 
 public class YamlParser implements ISuiteParser {
 
@@ -15,10 +14,7 @@ public class YamlParser implements ISuiteParser {
       throws TestNGException {
     try {
       return Yaml.parse(filePath, is, loadClasses);
-    } catch (FileNotFoundException | YAMLException e) {
-      // YAMLException covers a malformed document and a key outside the schema. Wrapped so that a
-      // bad YAML suite fails the way a bad XML one does -- SuiteXmlParser wraps its SAX failures
-      // the same way, and ISuiteParser declares TestNGException.
+    } catch (FileNotFoundException e) {
       throw new TestNGException(e);
     }
   }
