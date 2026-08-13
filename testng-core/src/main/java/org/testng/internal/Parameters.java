@@ -39,7 +39,6 @@ import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
@@ -299,8 +298,8 @@ public class Parameters {
    */
   static FilterOutInjectedTypesResult filterOutInjectedTypesFromOptionalValues(
       Class<?>[] parameterTypes, String[] optionalValues) {
-    List<Class<?>> typeList = Lists.newArrayList(parameterTypes);
-    List<String> optionalValueList = Lists.newArrayList(optionalValues);
+    List<Class<?>> typeList = new ArrayList<>(Arrays.asList(parameterTypes));
+    List<String> optionalValueList = new ArrayList<>(Arrays.asList(optionalValues));
     Iterator<Class<?>> typeIterator = typeList.iterator();
     Iterator<String> optionalIterator = optionalValueList.iterator();
     while (typeIterator.hasNext()) {
