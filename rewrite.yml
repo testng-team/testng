@@ -132,3 +132,146 @@ recipeList:
   - org.openrewrite.staticanalysis.InlineVariable
   - org.openrewrite.staticanalysis.NoEqualityInForCondition
   - org.openrewrite.staticanalysis.ForLoopIncrementInUpdate
+
+---
+# One-shot migration, activated only by
+#
+#   ./gradlew rewriteRun -PmigrateCollections --no-parallel
+#
+# (see the `rewrite` block in build.gradle.kts). Deleted once the migration has landed -- it is not
+# part of the standing recipe list and CI never runs it.
+#
+# --no-parallel is NOT optional. With org.gradle.parallel=true (the default in gradle.properties),
+# rewrite-gradle-plugin 7.38.0 resolves each subproject's runtimeClasspath from the root task
+# without holding an exclusive lock, which Gradle 9 refuses:
+#
+#   Unable to resolve classpath for sourceSet :testng-core:main
+#   Resolution of the configuration ':testng-core:runtimeClasspath' was attempted without an
+#   exclusive lock. This is unsafe and not allowed.
+#
+# The message only shows under --info, and parsing then continues with JDK types only, so every
+# MethodMatcher on an org.testng.* type silently matches nothing. Measured on the pattern below:
+# 0 files in parallel, 135 files with --no-parallel.
+#
+# The standing ModernizeMainSources list is unaffected in practice -- its recipes are syntactic or
+# match JDK types -- but it does mean the CI dry-run gate runs without project type attribution.
+#
+# Why a hand-written recipe rather than an upstream one: rewrite-migrate-java ships
+# NoGuavaListsNewArrayList and friends, but each hard-codes a MethodMatcher on
+# com.google.common.collect.* and cannot be re-pointed at another package.
+#
+# Why a recipe rather than sed: Lists.newArrayList(x) covers six overloads that erase differently.
+# Lists.newArrayList(someInteger) binds the varargs overload and returns a one-element list; a
+# textual rewrite to new ArrayList<>(someInteger) compiles, unboxes to ArrayList(int), and returns
+# an empty one. Only a type-attributed MethodMatcher with explicit erased signatures tells those
+# apart. Both are live here -- SuiteRunner:437 and ReflectionHelperTest:45 use the int overload.
+#
+# Not listed on purpose, because they have no JDK equivalent and stay in use:
+# Lists.merge, Lists.intersection, Maps.new*MultiMap, Objects.toStringHelper, CollectionUtils.
+type: specs.openrewrite.org/v1beta/recipe
+name: org.testng.build.MigrateOffTestngCollections
+displayName: Replace the plain org.testng.collections factories with JDK constructors
+description: >-
+  Rewrites the org.testng.collections Lists/Maps/Sets factory calls that are one-line wrappers over
+  a JDK constructor. Members with no JDK equivalent are left alone.
+recipeList:
+  # --- Lists ---
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Lists newArrayList()'
+      replacement: 'new ArrayList<>()'
+      imports:
+        - 'java.util.ArrayList'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Lists newArrayList(java.util.Collection)'
+      replacement: 'new ArrayList<>(c)'
+      imports:
+        - 'java.util.ArrayList'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Lists newArrayList(int)'
+      replacement: 'new ArrayList<>(size)'
+      imports:
+        - 'java.util.ArrayList'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Lists newArrayList(java.lang.Object[])'
+      replacement: 'new ArrayList<>(Arrays.asList(elements))'
+      imports:
+        - 'java.util.ArrayList'
+        - 'java.util.Arrays'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Lists newLinkedList()'
+      replacement: 'new LinkedList<>()'
+      imports:
+        - 'java.util.LinkedList'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Lists newLinkedList(java.util.Collection)'
+      replacement: 'new LinkedList<>(c)'
+      imports:
+        - 'java.util.LinkedList'
+
+  # --- Maps ---
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Maps newHashMap()'
+      replacement: 'new HashMap<>()'
+      imports:
+        - 'java.util.HashMap'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Maps newHashMap(java.util.Map)'
+      replacement: 'new HashMap<>(parameters)'
+      imports:
+        - 'java.util.HashMap'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Maps newHashtable()'
+      replacement: 'new Hashtable<>()'
+      imports:
+        - 'java.util.Hashtable'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Maps newConcurrentMap()'
+      replacement: 'new ConcurrentHashMap<>()'
+      imports:
+        - 'java.util.concurrent.ConcurrentHashMap'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Maps newLinkedHashMap()'
+      replacement: 'new LinkedHashMap<>()'
+      imports:
+        - 'java.util.LinkedHashMap'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Maps synchronizedLinkedHashMap()'
+      replacement: 'Collections.synchronizedMap(new LinkedHashMap<>())'
+      imports:
+        - 'java.util.Collections'
+        - 'java.util.LinkedHashMap'
+
+  # --- Sets ---
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Sets newHashSet()'
+      replacement: 'new HashSet<>()'
+      imports:
+        - 'java.util.HashSet'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Sets newHashSet(java.util.Collection)'
+      replacement: 'new HashSet<>(c)'
+      imports:
+        - 'java.util.HashSet'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Sets newHashSet(java.lang.Object[])'
+      replacement: 'new HashSet<>(Arrays.asList(a))'
+      imports:
+        - 'java.util.Arrays'
+        - 'java.util.HashSet'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Sets newLinkedHashSet()'
+      replacement: 'new LinkedHashSet<>()'
+      imports:
+        - 'java.util.LinkedHashSet'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Sets newLinkedHashSet(java.util.Collection)'
+      replacement: 'new LinkedHashSet<>(c)'
+      imports:
+        - 'java.util.LinkedHashSet'
+  - org.openrewrite.java.InlineMethodCalls:
+      methodPattern: 'org.testng.collections.Sets newConcurrentHashSet()'
+      replacement: 'ConcurrentHashMap.newKeySet()'
+      imports:
+        - 'java.util.concurrent.ConcurrentHashMap'
+
+  - org.openrewrite.java.RemoveUnusedImports

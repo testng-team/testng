@@ -12,10 +12,20 @@ dependencies {
     rewrite("org.openrewrite.recipe:rewrite-migrate-java")
 }
 
+// One-shot profile for the org.testng.collections migration, run by hand with
+// ./gradlew rewriteRun -PmigrateCollections. It is deleted, together with the recipe it activates,
+// once the migration has landed; CI never sees it.
+val migratingCollections = providers.gradleProperty("migrateCollections").isPresent
+
 rewrite {
     // The recipe list lives in rewrite.yml, which documents why the upstream composites
     // (CommonStaticAnalysis, CodeCleanup, Java8toJava11) are not used directly.
-    activeRecipe("org.testng.build.ModernizeMainSources")
+    // The migration profile swaps the recipe rather than only widening the exclusions below:
+    // ModernizeMainSources must not be let loose on the test fixtures.
+    activeRecipe(
+        if (migratingCollections) "org.testng.build.MigrateOffTestngCollections"
+        else "org.testng.build.ModernizeMainSources"
+    )
 
     // Makes OpenRewrite lay imports out the way google-java-format does, so its output does not
     // have to be corrected by autostyleApply. rewrite.yml explains the measurement behind this.
@@ -23,16 +33,29 @@ rewrite {
 
     // exclusion() matches file paths, not recipe names.
     exclusion(
-        // Test sources are out of scope: test/** mixes real tests with fixture classes whose
-        // method names, declaration order and finalize() presence are what the surrounding
-        // tests assert on, and testng.xml references test classes by FQN.
-        "**/src/test/**",
-        // Nothing here rewrites build scripts, and .gradle.kts would be routed to the
-        // experimental Kotlin parser for no benefit. This also covers build-logic/ and
-        // build-logic-commons/, whose tracked files are all .kt or .gradle.kts.
-        "**/*.gradle.kts",
-        "**/*.kt",
-        "**/*.groovy",
+        *buildList {
+            // Test sources are out of scope: test/** mixes real tests with fixture classes whose
+            // method names, declaration order and finalize() presence are what the surrounding
+            // tests assert on, and testng.xml references test classes by FQN.
+            // The collections migration is the exception: 157 of its call sites are in
+            // testng-core/src/test, and rewriting a Lists.newArrayList() there is not the kind of
+            // change those fixtures are sensitive to.
+            // Braces are not optional here: "**/*.gradle.kts" below does not match this file, the
+            // root build script, so NeedBraces would rewrite a brace-less `if` and the CI dry-run
+            // gate would fail on it.
+            if (!migratingCollections) {
+                add("**/src/test/**")
+            }
+            // Conversely, the migration must not rewrite the factories' own bodies -- they call
+            // each other, and the whole point is to leave them intact for third parties.
+            if (migratingCollections) {
+                add("**/testng-collections/**")
+            }
+            // Nothing here rewrites build scripts, and .gradle.kts would be routed to the
+            // experimental Kotlin parser for no benefit. This also covers build-logic/ and
+            // build-logic-commons/, whose tracked files are all .kt or .gradle.kts.
+            addAll(listOf("**/*.gradle.kts", "**/*.kt", "**/*.groovy"))
+        }.toTypedArray()
     )
 
     // rewriteDryRun is a manual maintenance task by default. CI turns this on so the gate is
