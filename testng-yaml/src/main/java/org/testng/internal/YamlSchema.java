@@ -200,6 +200,18 @@ final class YamlSchema {
         + "\" instead.";
   }
 
+  static String repeatedKeyMessage(String element, String canonical, String first, String second) {
+    return "The key \""
+        + canonical
+        + "\" of a <"
+        + element
+        + "> is declared twice, as \""
+        + first
+        + "\" and as \""
+        + second
+        + "\". Keep one of the two spellings.";
+  }
+
   static String unknownKeyMessage(
       String element, String unknown, Set<String> accepted, Map<String, String> aliases) {
     return "Unknown key \""
@@ -309,6 +321,50 @@ final class YamlSchema {
       return this;
     }
 
+    /**
+     * Validates the mapping and leaves the instance to snakeyaml, which is what returning null asks
+     * for. This is the only hook that sees a whole mapping node: {@link #getProperty(String)} is
+     * handed one key at a time and cannot tell that another key of the same node already wrote
+     * through the same property.
+     */
+    @Override
+    public Object newInstance(Node node) {
+      rejectRepeatedSpellings(node);
+      return null;
+    }
+
+    /**
+     * A deprecated spelling and its canonical key write through the same property, so a mapping
+     * carrying both declares one key twice however different the text looks -- and the second
+     * silently overwrote the first. {@code LoaderOptions.setAllowDuplicateKeys(false)} does not
+     * catch it, because snakeyaml compares the text of the keys.
+     *
+     * <p>The same spelling repeated is left alone on purpose: that one snakeyaml does catch, and
+     * its report names the line.
+     */
+    void rejectRepeatedSpellings(Node node) {
+      if (!(node instanceof MappingNode)) {
+        return;
+      }
+      Map<String, String> spellingByKey = new LinkedHashMap<>();
+      for (NodeTuple tuple : ((MappingNode) node).getValue()) {
+        Node key = tuple.getKeyNode();
+        if (!(key instanceof ScalarNode)) {
+          continue;
+        }
+        String spelling = ((ScalarNode) key).getValue();
+        String canonical = deprecatedAliases.getOrDefault(spelling, spelling);
+        if (!keys.containsKey(canonical)) {
+          // Unknown, and getProperty reports it with the list of what is accepted.
+          continue;
+        }
+        String previous = spellingByKey.put(canonical, spelling);
+        if (previous != null && !previous.equals(spelling)) {
+          throw new YAMLException(repeatedKeyMessage(element, canonical, previous, spelling));
+        }
+      }
+    }
+
     Set<String> acceptedKeys() {
       return Collections.unmodifiableSet(keys.keySet());
     }
@@ -371,6 +427,7 @@ final class YamlSchema {
 
     @Override
     public Object newInstance(Node node) {
+      rejectRepeatedSpellings(node);
       return new XmlClass(className(node), loadClasses);
     }
 

@@ -337,6 +337,43 @@ public class YamlSchemaTest {
    * all because {@code XmlRun} has no setter for its includes, and {@code class} would have handed
    * snakeyaml a {@link Class} to build from a name.
    */
+  /**
+   * A deprecated spelling and its canonical key write through the same property, so using both in
+   * one mapping is a key declared twice however different the text looks. snakeyaml compares the
+   * text, so {@code setAllowDuplicateKeys(false)} does not see it, and the second occurrence used
+   * to overwrite the first without a word.
+   */
+  @DataProvider
+  public static Object[][] bothSpellingsOfOneKey() {
+    return new Object[][] {
+      {"suite", "packages", "xmlPackages", "packages: [ a ]\nxmlPackages: [ b ]"},
+      {
+        "test",
+        "packages",
+        "xmlPackages",
+        "tests: [ { name: T, packages: [ a ], xmlPackages: [ b ] } ]"
+      },
+      {
+        "test", "classes", "xmlClasses", "tests: [ { name: T, classes: [ A ], xmlClasses: [ B ] } ]"
+      },
+      {
+        "test",
+        "dependencyGroups",
+        "xmlDependencyGroups",
+        "tests: [ { name: T, dependencyGroups: { a: b }, xmlDependencyGroups: { c: d } } ]"
+      },
+      {"method selector", "className", "name", "methodSelectors: [ { className: A, name: B } ]"},
+    };
+  }
+
+  @Test(dataProvider = "bothSpellingsOfOneKey")
+  public void oneKeyUnderBothItsSpellingsIsRejected(
+      String element, String canonical, String deprecated, String document) {
+    assertThatThrownBy(() -> parse(("name: S\n" + document).split("\n")))
+        .hasMessageContaining(
+            YamlSchema.repeatedKeyMessage(element, canonical, canonical, deprecated));
+  }
+
   @DataProvider
   public static Object[][] keysOutsideTheSchema() {
     return new Object[][] {
