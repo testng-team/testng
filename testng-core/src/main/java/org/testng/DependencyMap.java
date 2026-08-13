@@ -138,20 +138,20 @@ public class DependencyMap {
     }
     Class<?> baseClass = instanceClassOf(baseClassMethod);
     Class<?> derivedClass = instanceClassOf(derivedClassMethod);
+    boolean assignable = baseClass.isAssignableFrom(derivedClass);
     if (null != baseClassMethod.getFactoryMethodParamsInfo()
         && RuntimeBehavior.enforceThreadAffinity()) {
-      return baseClass.isAssignableFrom(derivedClass)
-          && hasSameParameters(baseClassMethod, derivedClassMethod);
+      return assignable && hasSameParameters(baseClassMethod, derivedClassMethod);
     }
-    return baseClass.isAssignableFrom(derivedClass);
+    return assignable;
   }
 
   /**
-   * @return - The class of the method's instance, resolved without materializing a lazy @Factory
+   * @return - The class of the method's instance, resolved without instantiating a lazy @Factory
    *     instance (a constructor factory produces exactly the method's real class).
    */
   private static Class<?> instanceClassOf(ITestNGMethod method) {
-    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceMaterialized()) {
+    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceInstantiated()) {
       return method.getRealClass();
     }
     Object instance = method.getInstance();

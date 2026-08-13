@@ -131,9 +131,9 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass = m.getDeclaringClass();
-    if (tm instanceof BaseTestMethod && !((BaseTestMethod) tm).isInstanceMaterialized()) {
+    if (tm instanceof BaseTestMethod && !((BaseTestMethod) tm).isInstanceInstantiated()) {
       // Lazy @Factory instance not created yet: a constructor factory produces exactly its
-      // declaring/real class, so use that instead of materializing the instance to read its class.
+      // declaring/real class, so use that instead of instantiating the instance to read its class.
       testClass = tm.getRealClass();
     } else if (tm.getInstance() != null) {
       testClass = tm.getInstance().getClass();

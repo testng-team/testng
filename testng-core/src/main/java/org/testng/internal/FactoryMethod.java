@@ -247,7 +247,13 @@ public class FactoryMethod extends BaseTestMethod {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
             if (m_lazy) {
               int slot = position;
-              Object[] rowParameters = parameters;
+              // An Iterator<Object[]> is free to hand back the same array for every row (a reused
+              // buffer). Eager construction is unaffected because the constructor consumes the
+              // values
+              // right away, but a lazy instance retains this array until it instantiates later, so
+              // we
+              // snapshot the row to keep each instance bound to its own parameters.
+              Object[] rowParameters = parameters.clone();
               Constructor<?> constructor = com.getConstructor();
               result.add(
                   new LazyParameterInfo(

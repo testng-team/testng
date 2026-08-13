@@ -19,7 +19,7 @@ class InstanceOrderingMethodInterceptor implements IMethodInterceptor {
     List<Object> instanceList = new ArrayList<>();
     Map<Object, List<IMethodInstance>> map = new LinkedHashMap<>();
     for (IMethodInstance mi : methods) {
-      // Group by the per-instance id rather than the materialized instance so that ordering does
+      // Group by the per-instance id rather than the instantiated instance so that ordering does
       // not force a lazy @Factory instance to be created before its test is due to run.
       Object instance = IInstanceIdentity.getInstanceId(mi.getMethod());
       if (!instanceList.contains(instance)) {

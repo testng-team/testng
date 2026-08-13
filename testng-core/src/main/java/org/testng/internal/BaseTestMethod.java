@@ -163,15 +163,15 @@ public abstract class BaseTestMethod
 
   /**
    * @return - {@code true} unless this method is bound to a lazy {@code @Factory} instance that has
-   *     not been created yet. Callers use this to avoid materializing a lazy instance (e.g. to
+   *     not been created yet. Callers use this to avoid instantiating a lazy instance (e.g. to
    *     build a diagnostic message) before its test is due to run. Reading this never triggers
    *     creation.
    */
-  public boolean isInstanceMaterialized() {
+  public boolean isInstanceInstantiated() {
     Object wrapped =
         Optional.ofNullable(m_instance).map(IObject.IdentifiableObject::getInstance).orElse(null);
     if (wrapped instanceof IParameterInfo) {
-      return ((IParameterInfo) wrapped).isInstanceMaterialized();
+      return ((IParameterInfo) wrapped).isInstanceInstantiated();
     }
     return true;
   }
@@ -398,7 +398,7 @@ public abstract class BaseTestMethod
             ? other.m_testClass == null
             : other.m_testClass != null
                 && m_testClass.getRealClass().equals(other.m_testClass.getRealClass())
-                // Compare by per-instance id rather than the materialized instance, so equality
+                // Compare by per-instance id rather than the instantiated instance, so equality
                 // checks (heavily used while building the method graph) never force a lazy
                 // @Factory instance to be created.
                 && Objects.equals(getInstanceId(), other.getInstanceId());
@@ -414,7 +414,7 @@ public abstract class BaseTestMethod
   @Override
   public int hashCode() {
     int hash = m_method.hashCode();
-    // Fold in the per-instance id rather than the materialized instance's identity hash. This keeps
+    // Fold in the per-instance id rather than the instantiated instance's identity hash. This keeps
     // hashCode consistent with equals (which compares instance ids) and, crucially, never forces a
     // lazy @Factory instance to be created while methods sit in hash-based collections.
     UUID instanceId = getInstanceId();
@@ -428,14 +428,14 @@ public abstract class BaseTestMethod
     ITestOrConfiguration annotation =
         getAnnotationFinder().findAnnotation(getConstructorOrMethod(), annotationClass);
     Class<?> clazz = getConstructorOrMethod().getDeclaringClass();
-    if (isInstanceMaterialized()) {
+    if (isInstanceInstantiated()) {
       Object object = getInstance();
       if (object != null) {
         clazz = object.getClass();
       }
     }
     // else: a lazy @Factory instance is not created yet; a constructor factory produces exactly its
-    // declaring class, which is already the default above — so don't materialize to read the class.
+    // declaring class, which is already the default above — so don't instantiate to read the class.
     ITestOrConfiguration classAnnotation =
         getAnnotationFinder().findAnnotation(clazz, annotationClass);
 
@@ -538,9 +538,9 @@ public abstract class BaseTestMethod
         .append("[pri:")
         .append(getPriority())
         .append(", instance:")
-        // Don't materialize a lazy @Factory instance just to render a signature; the factory
+        // Don't instantiate a lazy @Factory instance just to render a signature; the factory
         // parameters appended below already identify the instance.
-        .append(isInstanceMaterialized() ? String.valueOf(getInstance()) : "<uninstantiated>")
+        .append(isInstanceInstantiated() ? String.valueOf(getInstance()) : "<uninstantiated>")
         .append(instanceParameters())
         .append(customAttributes())
         .append("]");
@@ -582,7 +582,7 @@ public abstract class BaseTestMethod
       String signature = computeSignature();
       // Only memoize once the instance is stable; a signature computed while a lazy @Factory
       // instance is still uninstantiated would otherwise be cached and become stale after creation.
-      if (isInstanceMaterialized()) {
+      if (isInstanceInstantiated()) {
         m_signature = signature;
       }
       return signature;

@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 /**
  * A lazy, memoizing {@link IParameterInfo} used by constructor based {@code @Factory} methods when
  * lazy instantiation is enabled. The backing test-class instance is not created up-front (during
- * test collection); instead it is materialized on the first call to {@link #getInstance()} — which
+ * test collection); instead it is instantiated on the first call to {@link #getInstance()} — which
  * happens on the worker thread, right before the instance's first configuration/test method runs —
  * and memoized for every subsequent access.
  *
- * <p>The target class, index and parameters are all known without materializing the instance, so
+ * <p>The target class, index and parameters are all known without instantiating the instance, so
  * setup-time code paths (class discovery, method binding, dependency resolution) can operate purely
  * on this metadata and leave construction for run time.
  */
@@ -21,7 +21,7 @@ public class LazyParameterInfo implements IParameterInfo {
   private final Supplier<Object> creator;
 
   private final Object lock = new Object();
-  private volatile boolean materialized = false;
+  private volatile boolean instantiated = false;
   private volatile Object instance;
   private volatile Throwable failure;
 
@@ -35,9 +35,9 @@ public class LazyParameterInfo implements IParameterInfo {
 
   @Override
   public Object getInstance() {
-    if (!materialized) {
+    if (!instantiated) {
       synchronized (lock) {
-        if (!materialized) {
+        if (!instantiated) {
           try {
             Object created = creator.get();
             if (created == null) {
@@ -47,12 +47,12 @@ public class LazyParameterInfo implements IParameterInfo {
           } catch (Throwable t) {
             failure = t;
           } finally {
-            materialized = true;
+            instantiated = true;
           }
         }
       }
     }
-    // A construction failure is memoized and surfaced through getMaterializationFailure() rather
+    // A construction failure is memoized and surfaced through getInstantiationFailure() rather
     // than thrown here: throwing on every access would make it impossible to build the (localized)
     // skip result for this instance without re-triggering the failure. On failure this simply
     // reports "no instance".
@@ -60,7 +60,7 @@ public class LazyParameterInfo implements IParameterInfo {
   }
 
   @Override
-  public Throwable getMaterializationFailure() {
+  public Throwable getInstantiationFailure() {
     return failure;
   }
 
@@ -85,7 +85,7 @@ public class LazyParameterInfo implements IParameterInfo {
   }
 
   @Override
-  public boolean isInstanceMaterialized() {
-    return materialized && failure == null;
+  public boolean isInstanceInstantiated() {
+    return instantiated && failure == null;
   }
 }

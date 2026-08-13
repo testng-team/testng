@@ -193,7 +193,7 @@ public class TestNGClassFinder extends BaseClassFinder {
       Class<?> oneMoreClass;
       if (o.isLazilyInitialized()) {
         // Lazy (constructor) factory: the produced class is the declaring class, known without
-        // materializing the instance. Never an IInstanceInfo (those keep the eager path below).
+        // instantiating the instance. Never an IInstanceInfo (those keep the eager path below).
         addInstance(new IObject.IdentifiableObject(o));
         oneMoreClass = o.getTargetClass();
       } else {
@@ -345,7 +345,7 @@ public class TestNGClassFinder extends BaseClassFinder {
     Object wrapped = o.getInstance();
     Class<?> key = wrapped.getClass();
     if (wrapped instanceof IParameterInfo) {
-      // Use the target class, which a lazy IParameterInfo can answer without materializing its
+      // Use the target class, which a lazy IParameterInfo can answer without instantiating its
       // (not-yet-created) instance.
       key = ((IParameterInfo) wrapped).getTargetClass();
     }

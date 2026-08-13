@@ -15,7 +15,7 @@ import test.SimpleBaseTest;
  *
  * <p>The interceptor runs after the run has started but before any test method executes. The
  * objects it receives ({@link IMethodInstance}) expose {@link IMethodInstance#getInstance()}, and
- * calling that materializes the (otherwise lazy) instance. So:
+ * calling that instantiates the (otherwise lazy) instance. So:
  *
  * <ul>
  *   <li>an interceptor that calls {@code getInstance()} forces every instance to be built up-front
@@ -62,7 +62,7 @@ public class LazyFactoryMethodInterceptorTest extends SimpleBaseTest {
         .as("nothing is constructed before the run starts, even with the interceptor")
         .isZero();
     // But because the interceptor called getInstance() on every method, all four instances were
-    // materialized before the first test ran — so each test sees all four (laziness is negated).
+    // instantiated before the first test ran — so each test sees all four (laziness is negated).
     assertThat(CountingFactorySample.INSTANCES_ALIVE_WHEN_EACH_TEST_RAN)
         .as("a getInstance()-calling interceptor forces every instance to be built up-front")
         .containsExactly(4, 4, 4, 4);

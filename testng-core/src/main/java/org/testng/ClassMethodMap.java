@@ -32,10 +32,10 @@ public class ClassMethodMap {
         continue;
       }
 
-      // Key by the per-instance id rather than the materialized instance so that constructing this
+      // Key by the per-instance id rather than the instantiated instance so that constructing this
       // map during collection never forces a lazy @Factory instance to be created.
-      Object instance = IInstanceIdentity.getInstanceId(m);
-      classMap.computeIfAbsent(instance, k -> new ConcurrentLinkedQueue<>()).add(m);
+      Object instanceId = IInstanceIdentity.getInstanceId(m);
+      classMap.computeIfAbsent(instanceId, k -> new ConcurrentLinkedQueue<>()).add(m);
     }
   }
 
@@ -48,7 +48,7 @@ public class ClassMethodMap {
    */
   public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
     // Look up by the method's own per-instance id so this matches the id-keyed map above (and never
-    // materializes anything); the passed instance is retained only for the diagnostic message.
+    // instantiates anything); the passed instance is retained only for the diagnostic message.
     Collection<ITestNGMethod> l = classMap.get(IInstanceIdentity.getInstanceId(m));
     if (l == null) {
       throw new IllegalStateException(

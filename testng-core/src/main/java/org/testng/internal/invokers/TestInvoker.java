@@ -403,11 +403,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   /**
    * Builds a label identifying the instance a method is bound to, without forcing a lazy
-   * {@code @Factory} instance to be created. For already-materialized (eager) instances this keeps
+   * {@code @Factory} instance to be created. For already-instantiated (eager) instances this keeps
    * the previous {@code instance.toString()} behavior.
    */
   private static String lazySafeInstanceLabel(ITestNGMethod method) {
-    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceMaterialized()) {
+    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceInstantiated()) {
       return method.getRealClass().getName() + "@<uninstantiated lazy factory instance>";
     }
     return String.valueOf(method.getInstance());
@@ -426,7 +426,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Invoke @BeforeGroups on the original method (reduce thread contention,
     // and also solve thread confinement)
     ITestClass testClass = testMethod.getTestClass();
-    // Only materialize the instances when there are actually @BeforeGroups/@AfterGroups methods to
+    // Only instantiate the instances when there are actually @BeforeGroups/@AfterGroups methods to
     // run; otherwise a lazy @Factory instance would be created here even though nothing needs it.
     boolean hasGroupConfigs =
         !groupMethods.getBeforeGroupsMethods().isEmpty()

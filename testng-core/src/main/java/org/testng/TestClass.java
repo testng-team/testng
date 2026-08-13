@@ -37,7 +37,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private final ITestObjectFactory objectFactory;
   private final String m_errorMsgPrefix;
 
-  // Keyed by the per-instance id (UUID) rather than the materialized instance so that binding
+  // Keyed by the per-instance id (UUID) rather than the instantiated instance so that binding
   // per-instance @BeforeClass/@AfterClass methods never forces a lazy @Factory instance to be
   // created during collection.
   private final Map<UUID, List<ITestNGMethod>> beforeClassConfig = new LinkedHashMap<>();
@@ -136,7 +136,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
         .map(IdentifiableObject::getInstance)
         // Only inspect instances that already exist; a lazy @Factory instance must not be created
         // just to look up an ITest name. Such instances fall back to the class/xml test name below.
-        .filter(TestClass::isMaterialized)
+        .filter(TestClass::isInstantiated)
         .map(IParameterInfo::embeddedInstance)
         .filter(it -> it instanceof ITest)
         .findFirst()
@@ -320,9 +320,9 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return iClass;
   }
 
-  private static boolean isMaterialized(Object instance) {
+  private static boolean isInstantiated(Object instance) {
     if (instance instanceof IParameterInfo) {
-      return ((IParameterInfo) instance).isInstanceMaterialized();
+      return ((IParameterInfo) instance).isInstanceInstantiated();
     }
     return true;
   }

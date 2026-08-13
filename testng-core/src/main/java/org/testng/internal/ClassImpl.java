@@ -164,8 +164,8 @@ public class ClassImpl implements IClass, IObject {
   private static int computeHashCode(IdentifiableObject identifiable) {
     Object instance = identifiable.getInstance();
     if (instance instanceof IParameterInfo
-        && !((IParameterInfo) instance).isInstanceMaterialized()) {
-      // Don't materialize a lazy @Factory instance just to compute a (reporting-only) hash code;
+        && !((IParameterInfo) instance).isInstanceInstantiated()) {
+      // Don't instantiate a lazy @Factory instance just to compute a (reporting-only) hash code;
       // derive a stable one from its unique instance id instead.
       return identifiable.getInstanceId().hashCode();
     }

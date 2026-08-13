@@ -73,14 +73,14 @@ public class TestNGMethod extends BaseTestMethod {
   private void init(XmlTest xmlTest) {
     setXmlTest(xmlTest);
     String className = m_method.getDeclaringClass().getName();
-    if (isInstanceMaterialized()) {
+    if (isInstanceInstantiated()) {
       Object obj = getInstance();
       if (obj != null) {
         className = obj.getClass().getName();
       }
     } else {
       // Lazy @Factory instance not created yet: a constructor factory produces exactly its
-      // declaring/real class, so use that instead of materializing the instance to read its class.
+      // declaring/real class, so use that instead of instantiating the instance to read its class.
       className = getRealClass().getName();
     }
     setInvocationNumbers(xmlTest.getInvocationNumbers(className + "." + m_method.getName()));

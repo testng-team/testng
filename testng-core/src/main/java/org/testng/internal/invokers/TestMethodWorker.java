@@ -138,11 +138,11 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
       // skip carrying the constructor exception) instead of propagating out and aborting the run;
       // the other instances of the same factory keep running.
       testMethodInstance.getInstance();
-      Throwable materializationFailure = lazyMaterializationFailure(testMethodInstance);
-      if (materializationFailure != null) {
+      Throwable instantiationFailure = lazyInstantiationFailure(testMethodInstance);
+      if (instantiationFailure != null) {
         long start = System.currentTimeMillis();
         ITestResult result =
-            m_testInvoker.registerSkippedTestResult(testMethod, start, materializationFailure);
+            m_testInvoker.registerSkippedTestResult(testMethod, start, instantiationFailure);
         m_testInvoker.getNotifier().addSkippedTest(testMethod, result);
         m_testInvoker.invokeListenersForSkippedTestResult(result, new InvokedMethod(start, result));
         m_testResults.add(result);
@@ -270,20 +270,23 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   /**
    * @return - The per-instance id (UUID) associated with the given method instance, or {@code null}
-   *     when it cannot be determined (in which case the per-instance config lookup yields none).
+   *     when the method is not identity-aware (in which case the per-instance config lookup yields
+   *     none).
    */
   private static UUID instanceIdOf(IMethodInstance mi) {
-    Object id = IInstanceIdentity.getInstanceId(mi.getMethod());
-    return id instanceof UUID ? (UUID) id : null;
+    ITestNGMethod method = mi.getMethod();
+    return method instanceof IInstanceIdentity
+        ? ((IInstanceIdentity) method).getInstanceId()
+        : null;
   }
 
   /**
    * @return - The throwable raised while lazily constructing the instance this method is bound to,
    *     or {@code null} if there is none (eager instance, successful construction, or no factory).
    */
-  private static Throwable lazyMaterializationFailure(IMethodInstance mi) {
+  private static Throwable lazyInstantiationFailure(IMethodInstance mi) {
     IParameterInfo info = mi.getMethod().getFactoryMethodParamsInfo();
-    return info == null ? null : info.getMaterializationFailure();
+    return info == null ? null : info.getInstantiationFailure();
   }
 
   private void invokeListenersOnAfterClass(ITestClass testClass, List<IClassListener> listeners) {

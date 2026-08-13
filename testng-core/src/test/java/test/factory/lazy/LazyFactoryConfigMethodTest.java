@@ -11,7 +11,7 @@ import test.SimpleBaseTest;
  * configuration method on a factory-powered class behaves correctly under lazy instantiation: the
  * configuration fires exactly once, every instance is still constructed exactly once, every test
  * runs, and laziness is preserved — only the single instance the configuration runs on is
- * materialized early, the rest are still built just-in-time.
+ * instantiated early, the rest are still built just-in-time.
  */
 public class LazyFactoryConfigMethodTest extends SimpleBaseTest {
 
@@ -28,7 +28,7 @@ public class LazyFactoryConfigMethodTest extends SimpleBaseTest {
     // Every factory instance is constructed exactly once and every test runs.
     assertThat(BeforeSuiteFactorySample.CONSTRUCTED).hasValue(4);
     assertThat(BeforeSuiteFactorySample.TESTS_RUN).containsExactlyInAnyOrder(0, 1, 2, 3);
-    // Laziness is preserved: the configuration materializes only the one instance it runs on, so
+    // Laziness is preserved: the configuration instantiates only the one instance it runs on, so
     // fewer than all four instances existed when the first test ran (eager would have all four).
     assertThat(BeforeSuiteFactorySample.INSTANCES_ALIVE_WHEN_EACH_TEST_RAN.get(0)).isLessThan(4);
   }
@@ -46,7 +46,7 @@ public class LazyFactoryConfigMethodTest extends SimpleBaseTest {
     // Every factory instance is constructed exactly once and every test runs.
     assertThat(BeforeTestFactorySample.CONSTRUCTED).hasValue(4);
     assertThat(BeforeTestFactorySample.TESTS_RUN).containsExactlyInAnyOrder(0, 1, 2, 3);
-    // Laziness is preserved: the configuration materializes only the one instance it runs on, so
+    // Laziness is preserved: the configuration instantiates only the one instance it runs on, so
     // fewer than all four instances existed when the first test ran (eager would have all four).
     assertThat(BeforeTestFactorySample.INSTANCES_ALIVE_WHEN_EACH_TEST_RAN.get(0)).isLessThan(4);
   }

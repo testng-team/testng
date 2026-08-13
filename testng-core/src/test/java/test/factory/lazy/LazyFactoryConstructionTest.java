@@ -73,4 +73,18 @@ public class LazyFactoryConstructionTest extends SimpleBaseTest {
     assertThat(CountingFactorySample.INSTANCES_ALIVE_WHEN_EACH_TEST_RAN)
         .containsExactly(1, 2, 3, 4);
   }
+
+  @Test
+  public void lazyInstancesKeepTheirOwnRowWhenTheDataProviderReusesItsBuffer() {
+    ReusedBufferFactorySample.reset();
+    TestNG tng = create(ReusedBufferFactorySample.class);
+    tng.setPreserveOrder(true);
+    tng.setLazyFactoryInstantiation(true);
+    tng.run();
+
+    // The DataProvider handed back the same array for every row, mutating it in place. Because each
+    // lazy instance snapshots its row at collection time, all four still instantiate with their own
+    // value rather than every instance collapsing onto the buffer's final contents.
+    assertThat(ReusedBufferFactorySample.VALUES_SEEN).containsExactlyInAnyOrder(0, 1, 2, 3);
+  }
 }

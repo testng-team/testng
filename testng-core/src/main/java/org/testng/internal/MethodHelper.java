@@ -416,7 +416,7 @@ public class MethodHelper {
    * @return Map of Instances as the keys and the methods associated with the instance as the values
    */
   private static Map<Object, List<ITestNGMethod>> sortMethodsByInstance(ITestNGMethod[] methods) {
-    // Group by the per-instance id rather than the materialized instance so that building the
+    // Group by the per-instance id rather than the instantiated instance so that building the
     // dependency graph never forces a lazy @Factory instance to be created during collection.
     return Arrays.stream(methods)
         .parallel()
