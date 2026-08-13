@@ -58,7 +58,11 @@ final class YamlSchema {
    * @return a snakeyaml constructor that accepts the keys declared here and nothing else.
    */
   static Constructor constructor(boolean loadClasses) {
-    Constructor constructor = new Constructor(XmlSuite.class, new LoaderOptions());
+    LoaderOptions options = new LoaderOptions();
+    // snakeyaml keeps the last occurrence by default, so a suite file declaring "tests" twice
+    // silently loses one of them. A key that cannot be repeated is part of the contract too.
+    options.setAllowDuplicateKeys(false);
+    Constructor constructor = new Constructor(XmlSuite.class, options);
     constructor.addTypeDescription(suite());
     constructor.addTypeDescription(test());
     constructor.addTypeDescription(new XmlClassType(loadClasses));
@@ -234,9 +238,16 @@ final class YamlSchema {
   private static Map<String, List<String>> asTextLists(Map<?, ?> values) {
     Map<String, List<String>> result = new LinkedHashMap<>();
     for (Map.Entry<?, ?> entry : values.entrySet()) {
+      Object value = entry.getValue();
+      if (!(value instanceof Collection)) {
+        // Named, because the class cast that would happen otherwise reports the types and not the
+        // entry, and a suite file can hold a lot of meta groups.
+        throw new TestNGException(
+            "The meta group \"" + entry.getKey() + "\" must list the groups it stands for");
+      }
       List<String> group = new ArrayList<>();
-      for (Object value : (Collection<?>) entry.getValue()) {
-        group.add(String.valueOf(value));
+      for (Object element : (Collection<?>) value) {
+        group.add(String.valueOf(element));
       }
       result.put(String.valueOf(entry.getKey()), group);
     }
@@ -369,8 +380,11 @@ final class YamlSchema {
       if (node instanceof MappingNode) {
         for (NodeTuple tuple : ((MappingNode) node).getValue()) {
           Node key = tuple.getKeyNode();
-          if (key instanceof ScalarNode && "name".equals(((ScalarNode) key).getValue())) {
-            return ((ScalarNode) tuple.getValueNode()).getValue();
+          Node value = tuple.getValueNode();
+          if (key instanceof ScalarNode
+              && "name".equals(((ScalarNode) key).getValue())
+              && value instanceof ScalarNode) {
+            return ((ScalarNode) value).getValue();
           }
         }
       }

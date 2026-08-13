@@ -399,6 +399,36 @@ public class YamlSchemaTest {
         .hasMessageContaining("must be a name or carry a \"name\" key");
   }
 
+  /** A name that is not a scalar reaches the same report rather than a class cast. */
+  @Test
+  public void aClassEntryWhoseNameIsNotAScalarIsReported() {
+    assertThatThrownBy(
+            () ->
+                parse("name: S", "tests:", "  - name: T", "    classes:", "      - name: { a: b }"))
+        .hasRootCauseInstanceOf(TestNGException.class)
+        .hasMessageContaining("must be a name or carry a \"name\" key");
+  }
+
+  /** Likewise for a meta group that is not a list: the entry is named, not the types. */
+  @Test
+  public void aMetaGroupThatIsNotAListIsReported() {
+    assertThatThrownBy(
+            () -> parse("name: S", "tests:", "  - name: T", "    metaGroups: { all: nope }"))
+        .hasRootCauseInstanceOf(TestNGException.class)
+        .hasMessageContaining("The meta group \"all\" must list the groups it stands for");
+  }
+
+  /**
+   * A repeated key is rejected rather than resolved to its last occurrence, which is what snakeyaml
+   * does by default: a suite file that declares {@code tests} twice would silently run half of what
+   * it says.
+   */
+  @Test
+  public void aKeyDeclaredTwiceIsRejected() {
+    assertThatThrownBy(() -> parse("name: S", "verbose: 1", "verbose: 2"))
+        .hasMessageContaining("found duplicate key verbose");
+  }
+
   /** Guards the sets above against a copy-paste that declares the same key twice. */
   @Test
   public void noElementDeclaresAKeyTwice() {

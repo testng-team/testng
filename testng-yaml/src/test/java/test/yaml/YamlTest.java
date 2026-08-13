@@ -1,6 +1,7 @@
 package test.yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
@@ -126,6 +128,26 @@ public class YamlTest extends SimpleBaseTest {
 
       throw new AssertionError("Yaml parser failed to parse suite", throwable);
     }
+  }
+
+  /**
+   * A YAML suite must fail the way an XML one does. {@code ISuiteParser} declares {@code
+   * TestNGException} and {@code SuiteXmlParser} wraps its SAX failures, so a snakeyaml error
+   * escaping raw would leave callers with two contracts to handle.
+   */
+  @Test
+  public void aSuiteOutsideTheSchemaIsReportedAsATestNGException() {
+    String document = "name: S\nfileName: elsewhere.yaml\n";
+
+    assertThatThrownBy(
+            () ->
+                new YamlParser()
+                    .parse(
+                        "schema.yaml",
+                        new ByteArrayInputStream(document.getBytes(StandardCharsets.UTF_8)),
+                        false))
+        .isInstanceOf(TestNGException.class)
+        .hasMessageContaining("Unknown key \"fileName\" in a <suite>");
   }
 
   @Test(description = "GITHUB-2857")

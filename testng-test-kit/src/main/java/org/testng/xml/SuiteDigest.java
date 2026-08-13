@@ -1,5 +1,6 @@
 package org.testng.xml;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -153,6 +154,53 @@ public final class SuiteDigest {
   }
 
   private static void append(StringBuilder sb, String key, Object value) {
-    sb.append(key).append('=').append(value).append('\n');
+    sb.append(key).append('=').append(render(value)).append('\n');
+  }
+
+  /**
+   * Rendered rather than handed to {@code toString()}. A map printed as {@code {a=1, b=2}} cannot
+   * be told apart from a single entry valued {@code 1, b=2}, and a list printed as {@code [a, b]}
+   * cannot be told apart from a single element valued {@code a, b} -- and a1.yaml already carries a
+   * parameter valued {@code a,b}. Two different suites sharing a digest is a round trip test that
+   * passes for the wrong reason, which is the one thing this class must not do.
+   */
+  private static String render(Object value) {
+    if (value instanceof Map) {
+      StringBuilder result = new StringBuilder("{");
+      for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
+        if (result.length() > 1) {
+          result.append(", ");
+        }
+        result.append(render(entry.getKey())).append('=').append(render(entry.getValue()));
+      }
+      return result.append('}').toString();
+    }
+    if (value instanceof Collection) {
+      StringBuilder result = new StringBuilder("[");
+      for (Object element : (Collection<?>) value) {
+        if (result.length() > 1) {
+          result.append(", ");
+        }
+        result.append(render(element));
+      }
+      return result.append(']').toString();
+    }
+    return escape(value);
+  }
+
+  /**
+   * Escapes every character the renderer uses as structure, so that an unescaped one is always
+   * structure and never data. That is what makes the output unambiguous while keeping it readable
+   * -- the point of the digest is that a difference shows up as a diff on a single line.
+   */
+  private static String escape(Object value) {
+    StringBuilder result = new StringBuilder();
+    for (char c : String.valueOf(value).toCharArray()) {
+      if (c == '\\' || c == ',' || c == '=' || c == '[' || c == ']' || c == '{' || c == '}') {
+        result.append('\\');
+      }
+      result.append(c);
+    }
+    return result.toString();
   }
 }
