@@ -6,7 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -303,6 +305,50 @@ public class YamlSchemaTest {
                 + "\" instead.");
   }
 
+  /**
+   * The warning is the whole point of keeping the old spellings: they were kept rather than dropped
+   * so that a suite file which uses one still runs while saying so. Asserting the text of {@link
+   * YamlSchema#deprecationMessage} alone would pass just as well if nothing ever logged it, so the
+   * document is parsed and what reaches the logger is read back.
+   */
+  @Test(dataProvider = "documentsUsingADeprecatedAlias")
+  public void readingADeprecatedAliasWarns(
+      String element, String deprecated, String canonical, String document)
+      throws FileNotFoundException {
+    PrintStream err = System.err;
+    ByteArrayOutputStream logged = new ByteArrayOutputStream();
+    System.setErr(new PrintStream(logged, true, StandardCharsets.UTF_8));
+    try {
+      parse(document.split("\n"));
+    } finally {
+      System.setErr(err);
+    }
+
+    assertThat(logged.toString(StandardCharsets.UTF_8))
+        .contains(YamlSchema.deprecationMessage(element, deprecated, canonical));
+  }
+
+  @DataProvider
+  public static Object[][] documentsUsingADeprecatedAlias() {
+    return new Object[][] {
+      {"suite", "xmlPackages", "packages", "name: S\nxmlPackages: [ a ]"},
+      {"test", "xmlPackages", "packages", "name: S\ntests: [ { name: T, xmlPackages: [ a ] } ]"},
+      {"test", "xmlClasses", "classes", "name: S\ntests: [ { name: T, xmlClasses: [ A ] } ]"},
+      {
+        "test",
+        "xmlDependencyGroups",
+        "dependencyGroups",
+        "name: S\ntests: [ { name: T, xmlDependencyGroups: { a: b } } ]"
+      },
+      {
+        "method selector",
+        "name",
+        "className",
+        "name: S\nmethodSelectors: [ { name: com.example.Selector } ]"
+      },
+    };
+  }
+
   @Test
   public void aDeprecatedAliasReadsLikeItsCanonicalKey() throws FileNotFoundException {
     XmlSuite deprecated =
@@ -345,33 +391,49 @@ public class YamlSchemaTest {
    */
   @DataProvider
   public static Object[][] bothSpellingsOfOneKey() {
+    String inATest = "tests: [ { name: T, %s, %s } ]";
     return new Object[][] {
-      {"suite", "packages", "xmlPackages", "packages: [ a ]\nxmlPackages: [ b ]"},
-      {
-        "test",
-        "packages",
-        "xmlPackages",
-        "tests: [ { name: T, packages: [ a ], xmlPackages: [ b ] } ]"
-      },
-      {
-        "test", "classes", "xmlClasses", "tests: [ { name: T, classes: [ A ], xmlClasses: [ B ] } ]"
-      },
+      {"suite", "packages", "packages: [ a ]", "xmlPackages: [ b ]", "%s\n%s"},
+      {"test", "packages", "packages: [ a ]", "xmlPackages: [ b ]", inATest},
+      {"test", "classes", "classes: [ A ]", "xmlClasses: [ B ]", inATest},
       {
         "test",
         "dependencyGroups",
-        "xmlDependencyGroups",
-        "tests: [ { name: T, dependencyGroups: { a: b }, xmlDependencyGroups: { c: d } } ]"
+        "dependencyGroups: { a: b }",
+        "xmlDependencyGroups: { c: d }",
+        inATest
       },
-      {"method selector", "className", "name", "methodSelectors: [ { className: A, name: B } ]"},
+      {
+        "method selector", "className", "className: A", "name: B", "methodSelectors: [ { %s, %s } ]"
+      },
     };
   }
 
   @Test(dataProvider = "bothSpellingsOfOneKey")
   public void oneKeyUnderBothItsSpellingsIsRejected(
-      String element, String canonical, String deprecated, String document) {
-    assertThatThrownBy(() -> parse(("name: S\n" + document).split("\n")))
+      String element,
+      String canonical,
+      String canonicalEntry,
+      String deprecatedEntry,
+      String template) {
+    assertRepeatedKeyIsRejected(element, canonical, template, canonicalEntry, deprecatedEntry);
+    // Both orders. Detection must not depend on which spelling the file happens to put first, and
+    // the report names the two as they appear rather than always canonical first.
+    assertRepeatedKeyIsRejected(element, canonical, template, deprecatedEntry, canonicalEntry);
+  }
+
+  private static void assertRepeatedKeyIsRejected(
+      String element, String canonical, String template, String first, String second) {
+    String document = "name: S\n" + String.format(template, first, second);
+
+    assertThatThrownBy(() -> parse(document.split("\n")))
+        .as("%s", document)
         .hasMessageContaining(
-            YamlSchema.repeatedKeyMessage(element, canonical, canonical, deprecated));
+            YamlSchema.repeatedKeyMessage(element, canonical, keyOf(first), keyOf(second)));
+  }
+
+  private static String keyOf(String entry) {
+    return entry.substring(0, entry.indexOf(':'));
   }
 
   @DataProvider

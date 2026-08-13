@@ -11,6 +11,9 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.6")
 
     testImplementation(projects.testngTestKit)
+    // A binding, so that the deprecation warning the reader emits for an old key spelling is
+    // observable at all: without one slf4j discards it and the assertion would pass on silence.
+    testImplementation("org.slf4j:slf4j-simple:2.0.18")
 }
 
 tasks.test {
