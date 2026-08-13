@@ -7,6 +7,7 @@ import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
 import org.testng.collections.ListMultiMap;
 import org.testng.collections.Maps;
+import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.MethodHelper;
 import org.testng.thread.IWorker;
 
@@ -15,7 +16,9 @@ class InstanceBasedParallelParallelWorker extends AbstractParallelWorker {
   public List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments) {
     ListMultiMap<Object, ITestNGMethod> lmm = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : arguments.getMethods()) {
-      lmm.put(m.getInstance(), m);
+      // Group by the per-instance id rather than the instantiated instance so that a lazy @Factory
+      // instance is not created up-front merely to partition the methods into per-instance workers.
+      lmm.put(IInstanceIdentity.getInstanceId(m), m);
     }
     List<IWorker<ITestNGMethod>> result = new ArrayList<>();
     IInvoker invoker = arguments.getInvoker();

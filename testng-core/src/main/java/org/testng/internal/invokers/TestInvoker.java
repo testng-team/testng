@@ -390,15 +390,27 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       if (failuresPresentInUpstreamDependency(testMethod, methods)) {
         String methodsInfo =
             Arrays.stream(methods)
-                .map(tm -> tm.getQualifiedName() + "() on instance " + tm.getInstance().toString())
+                .map(tm -> tm.getQualifiedName() + "() on instance " + lazySafeInstanceLabel(tm))
                 .collect(Collectors.joining("\n"));
         return String.format(
             "Method %s() on instance %s depends on not successfully finished methods \n[%s]",
-            testMethod.getQualifiedName(), testMethod.getInstance().toString(), methodsInfo);
+            testMethod.getQualifiedName(), lazySafeInstanceLabel(testMethod), methodsInfo);
       }
     }
 
     return null;
+  }
+
+  /**
+   * Builds a label identifying the instance a method is bound to, without forcing a lazy
+   * {@code @Factory} instance to be created. For already-instantiated (eager) instances this keeps
+   * the previous {@code instance.toString()} behavior.
+   */
+  private static String lazySafeInstanceLabel(ITestNGMethod method) {
+    if (method instanceof BaseTestMethod && !((BaseTestMethod) method).isInstanceInstantiated()) {
+      return method.getRealClass().getName() + "@<uninstantiated lazy factory instance>";
+    }
+    return String.valueOf(method.getInstance());
   }
 
   /**
@@ -414,16 +426,23 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Invoke @BeforeGroups on the original method (reduce thread contention,
     // and also solve thread confinement)
     ITestClass testClass = testMethod.getTestClass();
-    IObject.IdentifiableObject[] instances = IObject.objects(testClass, true);
-    for (IObject.IdentifiableObject instance : instances) {
-      GroupConfigMethodArguments arguments =
-          new GroupConfigMethodArguments.Builder()
-              .forTestMethod(testMethod)
-              .withGroupConfigMethods(groupMethods)
-              .withParameters(parameters)
-              .forInstance(instance.getInstance())
-              .build();
-      invoker.invokeBeforeGroupsConfigurations(arguments);
+    // Only instantiate the instances when there are actually @BeforeGroups/@AfterGroups methods to
+    // run; otherwise a lazy @Factory instance would be created here even though nothing needs it.
+    boolean hasGroupConfigs =
+        !groupMethods.getBeforeGroupsMethods().isEmpty()
+            || !groupMethods.getAfterGroupsMethods().isEmpty();
+    IObject.IdentifiableObject[] instances = IObject.objects(testClass, hasGroupConfigs);
+    if (hasGroupConfigs) {
+      for (IObject.IdentifiableObject instance : instances) {
+        GroupConfigMethodArguments arguments =
+            new GroupConfigMethodArguments.Builder()
+                .forTestMethod(testMethod)
+                .withGroupConfigMethods(groupMethods)
+                .withParameters(parameters)
+                .forInstance(instance.getInstance())
+                .build();
+        invoker.invokeBeforeGroupsConfigurations(arguments);
+      }
     }
 
     long maxTimeOut =
@@ -441,15 +460,17 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .flatMap(tmw -> ((TestMethodWorker) tmw).getTestResults().stream())
             .collect(Collectors.toList());
 
-    for (Object instance : instances) {
-      GroupConfigMethodArguments arguments =
-          new GroupConfigMethodArguments.Builder()
-              .forTestMethod(testMethod)
-              .withGroupConfigMethods(groupMethods)
-              .withParameters(parameters)
-              .forInstance(instance)
-              .build();
-      invoker.invokeAfterGroupsConfigurations(arguments);
+    if (hasGroupConfigs) {
+      for (IObject.IdentifiableObject instance : instances) {
+        GroupConfigMethodArguments arguments =
+            new GroupConfigMethodArguments.Builder()
+                .forTestMethod(testMethod)
+                .withGroupConfigMethods(groupMethods)
+                .withParameters(parameters)
+                .forInstance(instance.getInstance())
+                .build();
+        invoker.invokeAfterGroupsConfigurations(arguments);
+      }
     }
 
     return result;

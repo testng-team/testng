@@ -183,7 +183,9 @@ public final class DynamicGraphHelper {
       ITestNGMethod[] methods) {
     ListMultiMap<Object, ITestNGMethod> instanceMap = Maps.newSortedListMultiMap();
     for (ITestNGMethod m : methods) {
-      instanceMap.put(m.getInstance(), m);
+      // Key by the per-instance id rather than the instantiated instance so that building instance
+      // level dependencies never forces a lazy @Factory instance to be created during collection.
+      instanceMap.put(IInstanceIdentity.getInstanceId(m), m);
     }
 
     ListMultiMap<ITestNGMethod, ITestNGMethod> result = Maps.newListMultiMap();

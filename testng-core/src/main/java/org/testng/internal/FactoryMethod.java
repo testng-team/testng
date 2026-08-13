@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
+import org.testng.annotations.Lazy;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ParameterHolder;
 import org.testng.xml.XmlTest;
@@ -34,6 +36,7 @@ public class FactoryMethod extends BaseTestMethod {
   private final ITestContext m_testContext;
   private String m_factoryCreationFailedMessage = null;
   private final DataProviderHolder holder;
+  private final boolean m_lazy;
 
   public String getFactoryCreationFailedMessage() {
     return m_factoryCreationFailedMessage;
@@ -76,7 +79,8 @@ public class FactoryMethod extends BaseTestMethod {
       IAnnotationFinder annotationFinder,
       ITestContext testContext,
       ITestObjectFactory objectFactory,
-      DataProviderHolder holder) {
+      DataProviderHolder holder,
+      IConfiguration configuration) {
     super(objectFactory, com.getName(), com, annotationFinder, identifiable);
     this.holder = holder;
     Object instance = IObject.IdentifiableObject.unwrap(identifiable);
@@ -121,12 +125,43 @@ public class FactoryMethod extends BaseTestMethod {
 
     m_instance = getInstance();
     m_testContext = testContext;
+    m_lazy = resolveLazy(com, configuration);
     NoOpTestClass tc = new NoOpTestClass();
     tc.setTestClass(declaringClass);
     m_testClass = tc;
     m_groups =
         getAllGroups(
             objectFactory, declaringClass, testContext.getCurrentXmlTest(), annotationFinder);
+  }
+
+  /**
+   * Resolves whether this factory should instantiate lazily, following the precedence hierarchy: an
+   * explicit {@code @Factory(lazy=...)} annotation value wins; failing that the suite level {@code
+   * lazy-factory} attribute; failing that the {@link IConfiguration} (runner) toggle; defaulting to
+   * eager. Lazy is only ever honored for constructor based factories.
+   */
+  private boolean resolveLazy(ConstructorOrMethod com, IConfiguration configuration) {
+    // Method / IInstanceInfo factories always stay eager.
+    if (com.getConstructor() == null) {
+      return false;
+    }
+    Lazy annotationLazy = factoryAnnotation == null ? Lazy.UNSET : factoryAnnotation.getLazy();
+    if (annotationLazy == null) {
+      annotationLazy = Lazy.UNSET;
+    }
+    switch (annotationLazy) {
+      case TRUE:
+        return true;
+      case FALSE:
+        return false;
+      case UNSET:
+      default:
+        Boolean suiteLazy = m_testContext.getCurrentXmlTest().getSuite().getLazyFactory();
+        if (suiteLazy != null) {
+          return suiteLazy;
+        }
+        return configuration != null && configuration.isLazyFactoryInstantiation();
+    }
   }
 
   private static String[] getAllGroups(
@@ -210,8 +245,26 @@ public class FactoryMethod extends BaseTestMethod {
           position += testInstances.length;
         } else {
           if (indices == null || indices.isEmpty() || indices.contains(position)) {
-            Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
-            result.add(new ParameterInfo(instance, position, parameters));
+            if (m_lazy) {
+              int slot = position;
+              // An Iterator<Object[]> is free to hand back the same array for every row (a reused
+              // buffer). Eager construction is unaffected because the constructor consumes the
+              // values
+              // right away, but a lazy instance retains this array until it instantiates later, so
+              // we
+              // snapshot the row to keep each instance bound to its own parameters.
+              Object[] rowParameters = parameters.clone();
+              Constructor<?> constructor = com.getConstructor();
+              result.add(
+                  new LazyParameterInfo(
+                      slot,
+                      rowParameters,
+                      com.getDeclaringClass(),
+                      () -> m_objectFactory.newInstance(constructor, rowParameters)));
+            } else {
+              Object instance = m_objectFactory.newInstance(com.getConstructor(), parameters);
+              result.add(new ParameterInfo(instance, position, parameters));
+            }
           }
           position++;
         }

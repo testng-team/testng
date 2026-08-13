@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.testng.internal.IInstanceIdentity;
 import org.testng.internal.XmlMethodSelector;
 
 /**
@@ -31,8 +32,10 @@ public class ClassMethodMap {
         continue;
       }
 
-      Object instance = m.getInstance();
-      classMap.computeIfAbsent(instance, k -> new ConcurrentLinkedQueue<>()).add(m);
+      // Key by the per-instance id rather than the instantiated instance so that constructing this
+      // map during collection never forces a lazy @Factory instance to be created.
+      Object instanceId = IInstanceIdentity.getInstanceId(m);
+      classMap.computeIfAbsent(instanceId, k -> new ConcurrentLinkedQueue<>()).add(m);
     }
   }
 
@@ -44,7 +47,9 @@ public class ClassMethodMap {
    * @return true if it is the last of its class
    */
   public boolean removeAndCheckIfLast(ITestNGMethod m, Object instance) {
-    Collection<ITestNGMethod> l = classMap.get(instance);
+    // Look up by the method's own per-instance id so this matches the id-keyed map above (and never
+    // instantiates anything); the passed instance is retained only for the diagnostic message.
+    Collection<ITestNGMethod> l = classMap.get(IInstanceIdentity.getInstanceId(m));
     if (l == null) {
       throw new IllegalStateException(
           "Could not find any methods associated with test class instance " + instance);

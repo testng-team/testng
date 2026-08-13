@@ -82,4 +82,16 @@ public interface IConfiguration {
   boolean useGlobalThreadPool();
 
   void shouldUseGlobalThreadPool(boolean flag);
+
+  /**
+   * @return - Whether {@code @Factory} produced test class instances should be created lazily
+   *     (just-in-time) by default. This is the broadest (runner level) toggle; it is overridden by
+   *     the suite level {@code lazy-factory} attribute and by the {@code @Factory(lazy=...)}
+   *     annotation. Defaults to {@code false} (eager).
+   */
+  default boolean isLazyFactoryInstantiation() {
+    return false;
+  }
+
+  default void setLazyFactoryInstantiation(boolean lazyFactoryInstantiation) {}
 }

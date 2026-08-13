@@ -48,6 +48,8 @@ public class Configuration implements IConfiguration {
 
   private boolean useGlobalThreadPool = false;
 
+  private boolean lazyFactoryInstantiation = false;
+
   public Configuration() {
     init(new JDK15AnnotationFinder(new DefaultAnnotationTransformer()));
   }
@@ -218,5 +220,15 @@ public class Configuration implements IConfiguration {
   @Override
   public void shouldUseGlobalThreadPool(boolean flag) {
     this.useGlobalThreadPool = flag;
+  }
+
+  @Override
+  public boolean isLazyFactoryInstantiation() {
+    return this.lazyFactoryInstantiation;
+  }
+
+  @Override
+  public void setLazyFactoryInstantiation(boolean lazyFactoryInstantiation) {
+    this.lazyFactoryInstantiation = lazyFactoryInstantiation;
   }
 }

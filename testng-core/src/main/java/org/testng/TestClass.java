@@ -2,8 +2,10 @@ package org.testng;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.testng.collections.Objects;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.ConstructorOrMethod;
@@ -35,11 +37,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   private final ITestObjectFactory objectFactory;
   private final String m_errorMsgPrefix;
 
-  private final IdentityHashMap<Object, List<ITestNGMethod>> beforeClassConfig =
-      new IdentityHashMap<>();
+  // Keyed by the per-instance id (UUID) rather than the instantiated instance so that binding
+  // per-instance @BeforeClass/@AfterClass methods never forces a lazy @Factory instance to be
+  // created during collection.
+  private final Map<UUID, List<ITestNGMethod>> beforeClassConfig = new LinkedHashMap<>();
 
-  private final IdentityHashMap<Object, List<ITestNGMethod>> afterClassConfig =
-      new IdentityHashMap<>();
+  private final Map<UUID, List<ITestNGMethod>> afterClassConfig = new LinkedHashMap<>();
 
   @Override
   public List<ITestNGMethod> getAllBeforeClassMethods() {
@@ -51,8 +54,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     return getAllClassLevelConfigs(afterClassConfig);
   }
 
-  private static List<ITestNGMethod> getAllClassLevelConfigs(
-      IdentityHashMap<Object, List<ITestNGMethod>> map) {
+  private static List<ITestNGMethod> getAllClassLevelConfigs(Map<UUID, List<ITestNGMethod>> map) {
     return map.values()
         .parallelStream()
         .reduce(
@@ -65,13 +67,13 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceBeforeClassMethods(Object instance) {
-    return beforeClassConfig.get(instance);
+  public List<ITestNGMethod> getInstanceBeforeClassMethods(UUID instanceId) {
+    return beforeClassConfig.get(instanceId);
   }
 
   @Override
-  public List<ITestNGMethod> getInstanceAfterClassMethods(Object instance) {
-    return afterClassConfig.get(instance);
+  public List<ITestNGMethod> getInstanceAfterClassMethods(UUID instanceId) {
+    return afterClassConfig.get(instanceId);
   }
 
   private static final Logger LOG = Logger.getLogger(TestClass.class);
@@ -132,6 +134,9 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
     IObject.IdentifiableObject[] instances = getObjects(true, this.m_errorMsgPrefix);
     Arrays.stream(instances)
         .map(IdentifiableObject::getInstance)
+        // Only inspect instances that already exist; a lazy @Factory instance must not be created
+        // just to look up an ITest name. Such instances fall back to the class/xml test name below.
+        .filter(TestClass::isInstantiated)
         .map(IParameterInfo::embeddedInstance)
         .filter(it -> it instanceof ITest)
         .findFirst()
@@ -214,8 +219,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               true,
               xmlTest,
               eachInstance);
-      Object instance = IParameterInfo.embeddedInstance(eachInstance.getInstance());
-      beforeClassConfig.put(instance, m_beforeClassMethods);
+      beforeClassConfig.put(eachInstance.getInstanceId(), m_beforeClassMethods);
       m_afterClassMethods =
           ConfigurationMethod.createClassConfigurationMethods(
               objectFactory,
@@ -224,7 +228,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               false,
               xmlTest,
               eachInstance);
-      afterClassConfig.put(instance, m_afterClassMethods);
+      afterClassConfig.put(eachInstance.getInstanceId(), m_afterClassMethods);
       m_beforeGroupsMethods =
           ConfigurationMethod.createBeforeConfigurationMethods(
               objectFactory,
@@ -314,5 +318,12 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
 
   public IClass getIClass() {
     return iClass;
+  }
+
+  private static boolean isInstantiated(Object instance) {
+    if (instance instanceof IParameterInfo) {
+      return ((IParameterInfo) instance).isInstanceInstantiated();
+    }
+    return true;
   }
 }

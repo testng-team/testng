@@ -146,7 +146,7 @@ public class ClassImpl implements IClass, IObject {
     int m_instanceCount = identifiableObjects.size();
     m_instanceHashCodes = new long[m_instanceCount];
     for (int i = 0; i < m_instanceCount; i++) {
-      m_instanceHashCodes[i] = computeHashCode(identifiableObjects.get(i).getInstance());
+      m_instanceHashCodes[i] = computeHashCode(identifiableObjects.get(i));
     }
     return result;
   }
@@ -161,7 +161,14 @@ public class ClassImpl implements IClass, IObject {
     addObject(new IdentifiableObject(instance));
   }
 
-  private static int computeHashCode(Object instance) {
+  private static int computeHashCode(IdentifiableObject identifiable) {
+    Object instance = identifiable.getInstance();
+    if (instance instanceof IParameterInfo
+        && !((IParameterInfo) instance).isInstanceInstantiated()) {
+      // Don't instantiate a lazy @Factory instance just to compute a (reporting-only) hash code;
+      // derive a stable one from its unique instance id instead.
+      return identifiable.getInstanceId().hashCode();
+    }
     return IParameterInfo.embeddedInstance(instance).hashCode();
   }
 

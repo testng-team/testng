@@ -39,8 +39,10 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
     }
 
     private int objectEquality(ITestNGMethod a, ITestNGMethod b) {
-      Object one = IInstanceIdentity.getInstanceId(a.getInstance());
-      Object two = IInstanceIdentity.getInstanceId(b.getInstance());
+      // Use the method's own per-instance id rather than its (possibly lazy) instance, so that
+      // sorting never forces a lazy @Factory instance to be created during collection.
+      Object one = IInstanceIdentity.getInstanceId(a);
+      Object two = IInstanceIdentity.getInstanceId(b);
       if (IInstanceIdentity.isIdentityAware(one, two)) {
         return ((UUID) one).compareTo((UUID) two);
       }

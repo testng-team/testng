@@ -179,7 +179,7 @@ public final class Yaml {
   /**
    * Values a test inherits from its suite are compared against the suite rather than against the
    * defaults, and dropped when they match. The getters of {@link XmlTest} fall back to the suite,
-   * so writing them unconditionally would materialize the suite's values into every test.
+   * so writing them unconditionally would instantiate the suite's values into every test.
    */
   private static Map<String, Object> testToMap(XmlTest test) {
     XmlSuite suite = test.getSuite();

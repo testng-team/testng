@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
@@ -21,6 +22,7 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.IInstanceIdentity;
+import org.testng.internal.IParameterInfo;
 import org.testng.internal.ITestClassConfigInfo;
 import org.testng.internal.KeyAwareAutoCloseableLock;
 import org.testng.internal.RuntimeBehavior;
@@ -130,6 +132,23 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     for (IMethodInstance testMethodInstance : m_methodInstances) {
       ITestNGMethod testMethod = testMethodInstance.getMethod();
       Object key = Objects.requireNonNull(IInstanceIdentity.getInstanceId(testMethod));
+
+      // For a lazy @Factory instance this is the just-in-time construction point. Trigger creation
+      // here so that a constructor failure is localized to this instance's method (reported as a
+      // skip carrying the constructor exception) instead of propagating out and aborting the run;
+      // the other instances of the same factory keep running.
+      testMethodInstance.getInstance();
+      Throwable instantiationFailure = lazyInstantiationFailure(testMethodInstance);
+      if (instantiationFailure != null) {
+        long start = System.currentTimeMillis();
+        ITestResult result =
+            m_testInvoker.registerSkippedTestResult(testMethod, start, instantiationFailure);
+        m_testInvoker.getNotifier().addSkippedTest(testMethod, result);
+        m_testInvoker.invokeListenersForSkippedTestResult(result, new InvokedMethod(start, result));
+        m_testResults.add(result);
+        continue;
+      }
+
       if (canInvokeBeforeClassMethods()) {
         try (KeyAwareAutoCloseableLock.AutoReleasable ignored = lock.lockForObject(key)) {
           invokeBeforeClassMethods(testMethod.getTestClass(), testMethodInstance);
@@ -187,7 +206,8 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
           new Builder()
               .forTestClass(testClass)
               .usingConfigMethodsAs(
-                  ((ITestClassConfigInfo) testClass).getInstanceBeforeClassMethods(instance))
+                  ((ITestClassConfigInfo) testClass)
+                      .getInstanceBeforeClassMethods(instanceIdOf(mi)))
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
               .usingInstance(instance)
@@ -207,7 +227,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     // Invoke after class methods if this test method is the last one
     //
-    List<Object> invokeInstances = new ArrayList<>();
+    List<IMethodInstance> invokeInstances = new ArrayList<>();
     ITestNGMethod tm = mi.getMethod();
     boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance());
     if (!removalSuccessful) {
@@ -219,7 +239,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
         invokedAfterClassMethods.computeIfAbsent(testClass, key -> new HashSet<>());
     Object inst = mi.getInstance();
     if (!instances.contains(inst)) {
-      invokeInstances.add(inst);
+      invokeInstances.add(mi);
     }
 
     if (RuntimeBehavior.useSymmetricListenerExecution()) {
@@ -231,19 +251,42 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     }
   }
 
-  private void invokeAfterClassConfigurations(ITestClass testClass, List<Object> invokeInstances) {
-    for (Object invokeInstance : invokeInstances) {
+  private void invokeAfterClassConfigurations(
+      ITestClass testClass, List<IMethodInstance> invokeInstances) {
+    for (IMethodInstance invokeInstance : invokeInstances) {
       ConfigMethodArguments attributes =
           new Builder()
               .forTestClass(testClass)
               .forSuite(m_testContext.getSuite().getXmlSuite())
               .usingParameters(m_parameters)
-              .usingInstance(invokeInstance)
+              .usingInstance(invokeInstance.getInstance())
               .usingConfigMethodsAs(
-                  ((ITestClassConfigInfo) testClass).getInstanceAfterClassMethods(invokeInstance))
+                  ((ITestClassConfigInfo) testClass)
+                      .getInstanceAfterClassMethods(instanceIdOf(invokeInstance)))
               .build();
       m_configInvoker.invokeConfigurations(attributes);
     }
+  }
+
+  /**
+   * @return - The per-instance id (UUID) associated with the given method instance, or {@code null}
+   *     when the method is not identity-aware (in which case the per-instance config lookup yields
+   *     none).
+   */
+  private static UUID instanceIdOf(IMethodInstance mi) {
+    ITestNGMethod method = mi.getMethod();
+    return method instanceof IInstanceIdentity
+        ? ((IInstanceIdentity) method).getInstanceId()
+        : null;
+  }
+
+  /**
+   * @return - The throwable raised while lazily constructing the instance this method is bound to,
+   *     or {@code null} if there is none (eager instance, successful construction, or no factory).
+   */
+  private static Throwable lazyInstantiationFailure(IMethodInstance mi) {
+    IParameterInfo info = mi.getMethod().getFactoryMethodParamsInfo();
+    return info == null ? null : info.getInstantiationFailure();
   }
 
   private void invokeListenersOnAfterClass(ITestClass testClass, List<IClassListener> listeners) {

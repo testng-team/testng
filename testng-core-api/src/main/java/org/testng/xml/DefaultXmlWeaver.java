@@ -116,6 +116,9 @@ public class DefaultXmlWeaver implements IWeaveXml {
         "group-by-instances",
         String.valueOf(xmlSuite.getGroupByInstances()),
         DEFAULT_GROUP_BY_INSTANCES.toString());
+    if (xmlSuite.getLazyFactory() != null) {
+      p.setProperty("lazy-factory", xmlSuite.getLazyFactory().toString());
+    }
     XmlUtils.setProperty(
         p,
         "configfailurepolicy",

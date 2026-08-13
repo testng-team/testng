@@ -39,6 +39,7 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.annotations.TestInstance;
+import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.collections.Pair;
 
@@ -130,7 +131,11 @@ public class JDK15AnnotationFinder implements IAnnotationFinder {
     }
     Method m = tm.getConstructorOrMethod().getMethod();
     Class<?> testClass = m.getDeclaringClass();
-    if (tm.getInstance() != null) {
+    if (tm instanceof BaseTestMethod && !((BaseTestMethod) tm).isInstanceInstantiated()) {
+      // Lazy @Factory instance not created yet: a constructor factory produces exactly its
+      // declaring/real class, so use that instead of instantiating the instance to read its class.
+      testClass = tm.getRealClass();
+    } else if (tm.getInstance() != null) {
       testClass = tm.getInstance().getClass();
     }
     Annotation annotation = AnnotationHelper.getAnnotationFromMethod(m, a);
