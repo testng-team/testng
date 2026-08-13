@@ -21,6 +21,34 @@ can affect. Add `clean` only to rule out stale output.
 ./gradlew build     # minutes when it has work to do, seconds when it does not; 0 failures
 ```
 
+**The gate is not the edit loop.** Letting Gradle skip work only helps when the change reaches
+little; anything in `testng-core-api` reaches everything, so every run costs the full five minutes.
+While iterating, run the tests that would actually fail if the change is wrong, and spend the five
+minutes once, before committing:
+
+```bash
+./gradlew :testng-core:test \
+  --tests "org.testng.xml.XmlRoundTripTest" \
+  --tests "test.xml.XmlVerifyTest" > /tmp/t.log 2>&1
+rc=$?; echo "EXIT=$rc"; (exit $rc)
+```
+
+Naming that set before editing is the point: it is the question the change has to answer. A run like
+the one above returns in seconds rather than minutes.
+
+**A new `testng-core` test class does not run until it is listed in
+`testng-core/src/test/resources/testng.xml`.** The task is suite-driven, not classpath-scanned, so
+an unregistered class is skipped by `build` without a word — the file can be committed and never
+execute — and `--tests` rejects it with `No tests found for given includes`, which reads like a
+typo in the filter. Register it in the same edit that creates it, next to its neighbours:
+`org.testng.xml.*` goes in `<test name="XML">`, `test.xml.*` in `<test name="Regression2">`. Then
+confirm it ran, rather than trusting the exit code:
+
+```bash
+CLASS=org.testng.xml.XmlRoundTripTest
+grep -o 'tests="[1-9][0-9]*"' "testng-core/build/test-results/test/TEST-$CLASS.xml"
+```
+
 A green local build is not a green CI. Pull requests against `master` also run an OpenRewrite check
 that `.github/CONTRIBUTING.md` documents, and a wrapper validation. Pushes are weaker than they
 look: the `branches: ['*']` filter in `test.yml` does not match `/`, so pushing a branch named
