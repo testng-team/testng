@@ -6,6 +6,13 @@ updates:
     schedule:
       interval: "weekly"
 
+  # The workflow matrix generator (.github/workflows/matrix.mjs) is a real npm project with its
+  # own package.json and lock file. The github-actions ecosystem above does not look at it.
+  - package-ecosystem: "npm"
+    directory: "/.github/workflows"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:

@@ -39,7 +39,7 @@ dependencies {
     }
     testImplementation("org.apache-extras.beanshell:bsh:2.0b6")
     testImplementation("org.mockito:mockito-core:5.23.0")
-    testImplementation("org.xmlunit:xmlunit-assertj:2.12.0")
+    testImplementation("org.xmlunit:xmlunit-assertj:2.13.0")
     testImplementation("in.jlibs:jlibs-core:3.0.1")
     testImplementation("org.gridkit.jvmtool:heaplib:0.2")
     testImplementation("org.gridkit.lab:jvm-attach-api:1.5")
