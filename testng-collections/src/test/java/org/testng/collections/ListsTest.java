@@ -2,6 +2,7 @@ package org.testng.collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,8 +29,8 @@ public class ListsTest {
 
   @Test
   public void mergeReturnsAMutableCopyAndLeavesTheInputsAlone() {
-    List<String> first = Lists.newArrayList("a");
-    List<String> second = Lists.newArrayList("b");
+    List<String> first = new ArrayList<>(List.of("a"));
+    List<String> second = new ArrayList<>(List.of("b"));
 
     List<String> merged = Lists.merge(first, second);
     merged.add("c");
@@ -43,7 +44,9 @@ public class ListsTest {
   public void conditionalMergeAppendsOnlyTheItemsNoExistingItemMatches() {
     List<String> merged =
         Lists.merge(
-            Lists.newArrayList("ab"), EXISTING_STARTS_WITH_CANDIDATE, Arrays.asList("a", "xy"));
+            new ArrayList<>(List.of("ab")),
+            EXISTING_STARTS_WITH_CANDIDATE,
+            Arrays.asList("a", "xy"));
 
     // "a" is dropped because the existing "ab" starts with it; "xy" is appended.
     assertThat(merged).containsExactly("ab", "xy");
@@ -55,7 +58,7 @@ public class ListsTest {
     // existing item is the first argument.
     List<String> merged =
         Lists.merge(
-            Lists.newArrayList("ab"),
+            new ArrayList<>(List.of("ab")),
             (existing, candidate) -> candidate.startsWith(existing),
             Arrays.asList("a", "xy"));
 
@@ -67,10 +70,7 @@ public class ListsTest {
     // "xy" is appended by the first vararg list, then filtered out of the second one.
     List<String> merged =
         Lists.merge(
-            Lists.<String>newArrayList(),
-            String::equals,
-            Arrays.asList("xy"),
-            Arrays.asList("xy", "z"));
+            new ArrayList<String>(), String::equals, Arrays.asList("xy"), Arrays.asList("xy", "z"));
 
     assertThat(merged).containsExactly("xy", "z");
   }
