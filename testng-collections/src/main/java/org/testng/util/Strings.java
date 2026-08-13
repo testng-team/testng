@@ -1,10 +1,10 @@
 package org.testng.util;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.testng.collections.Maps;
 
 public final class Strings {
   private Strings() {
@@ -36,7 +36,7 @@ public final class Strings {
     return list.stream().allMatch(t -> t == null || t.isBlank());
   }
 
-  private static final Map<String, String> ESCAPE_HTML_MAP = Maps.newLinkedHashMap();
+  private static final Map<String, String> ESCAPE_HTML_MAP = new LinkedHashMap<>();
 
   static {
     ESCAPE_HTML_MAP.put("&", "&amp;");

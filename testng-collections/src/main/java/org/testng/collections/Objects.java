@@ -1,5 +1,6 @@
 package org.testng.collections;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.util.Strings;
 
@@ -32,7 +33,7 @@ public final class Objects {
 
   public static class ToStringHelper {
     private final String m_className;
-    private final List<ValueHolder> values = Lists.newArrayList();
+    private final List<ValueHolder> values = new ArrayList<>();
     private boolean m_omitNulls = false;
     private boolean m_omitEmptyStrings = false;
 

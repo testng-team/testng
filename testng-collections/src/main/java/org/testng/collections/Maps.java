@@ -9,14 +9,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Maps {
 
+  /** @deprecated Use {@code new HashMap<>()} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K, V> Map<K, V> newHashMap() {
     return new HashMap<>();
   }
 
+  /**
+   * @deprecated Use {@code new Hashtable<>()} instead, or preferably a {@link ConcurrentHashMap}.
+   */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K, V> Map<K, V> newHashtable() {
     return new Hashtable<>();
   }
 
+  /** @deprecated Use {@code new ConcurrentHashMap<>()} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K, V> Map<K, V> newConcurrentMap() {
     return new ConcurrentHashMap<>();
   }
@@ -33,14 +41,20 @@ public class Maps {
     return new SetMultiMap<>(false);
   }
 
+  /** @deprecated Use {@code new LinkedHashMap<>()} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K, V> Map<K, V> newLinkedHashMap() {
     return new LinkedHashMap<>();
   }
 
+  /** @deprecated Use {@code Collections.synchronizedMap(new LinkedHashMap<>())} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K, V> Map<K, V> synchronizedLinkedHashMap() {
-    return Collections.synchronizedMap(newLinkedHashMap());
+    return Collections.synchronizedMap(new LinkedHashMap<>());
   }
 
+  /** @deprecated Use {@code new HashMap<>(parameters)} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K, V> Map<K, V> newHashMap(Map<K, V> parameters) {
     return new HashMap<>(parameters);
   }

@@ -1,7 +1,9 @@
 package org.testng.collections;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,9 +13,9 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
 
   protected MultiMap(boolean isSorted) {
     if (isSorted) {
-      m_objects = Maps.newLinkedHashMap();
+      m_objects = new LinkedHashMap<>();
     } else {
-      m_objects = Maps.newHashMap();
+      m_objects = new HashMap<>();
     }
   }
 

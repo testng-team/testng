@@ -8,22 +8,35 @@ public final class Lists {
 
   private Lists() {}
 
+  /** @deprecated Use {@code new ArrayList<>()} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K> List<K> newArrayList() {
     return new ArrayList<>();
   }
 
+  /** @deprecated Use {@code new LinkedList<>()} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K> List<K> newLinkedList() {
     return new LinkedList<>();
   }
 
+  /** @deprecated Use {@code new LinkedList<>(c)} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K> List<K> newLinkedList(Collection<K> c) {
     return new LinkedList<>(c);
   }
 
+  /** @deprecated Use {@code new ArrayList<>(c)} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K> List<K> newArrayList(Collection<K> c) {
     return new ArrayList<>(c);
   }
 
+  /**
+   * @deprecated Drain the iterator into a list of your own, or wrap it: {@code Iterable<K> it = ()
+   *     -> c;}
+   */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K> List<K> newArrayList(Iterator<K> c) {
     List<K> result = new ArrayList<>();
     while (c.hasNext()) {
@@ -32,6 +45,8 @@ public final class Lists {
     return result;
   }
 
+  /** @deprecated Use {@code new ArrayList<>(Arrays.asList(elements))} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   @SafeVarargs
   public static <K> List<K> newArrayList(K... elements) {
     List<K> result = new ArrayList<>();
@@ -39,6 +54,11 @@ public final class Lists {
     return result;
   }
 
+  /**
+   * @deprecated Use {@code Arrays.stream(elements).flatMap(Arrays::stream)} and collect it
+   *     yourself.
+   */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   @SafeVarargs
   public static <K> List<K> newArrayList(K[]... elements) {
     return Arrays.stream(elements)
@@ -47,6 +67,8 @@ public final class Lists {
         .collect(Collectors.toList());
   }
 
+  /** @deprecated Use {@code new ArrayList<>(size)} instead. */
+  @Deprecated(forRemoval = true, since = "7.13.0")
   public static <K> List<K> newArrayList(int size) {
     return new ArrayList<>(size);
   }
@@ -56,7 +78,7 @@ public final class Lists {
   }
 
   public static <K> List<K> merge(Collection<K> l1, Collection<K> l2) {
-    List<K> result = newArrayList(l1);
+    List<K> result = new ArrayList<>(l1);
     result.addAll(l2);
     return result;
   }
@@ -72,7 +94,7 @@ public final class Lists {
    */
   @SafeVarargs
   public static <T> List<T> merge(List<T> l1, BiPredicate<T, T> condition, List<T>... lists) {
-    List<T> result = newArrayList(l1);
+    List<T> result = new ArrayList<>(l1);
     Arrays.stream(lists)
         .flatMap(Collection::stream)
         .forEach(
