@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Suite" parallel="false">
+    <groups>
+        <define name="PlatformTests">
+            <include name="InitializePlatform"/>
+            <include name="RequiresPlatform"/>
+            <include name="ShutdownPlatform"/>
+        </define>
+        <run>
+            <include name="PlatformTests"/>
+        </run>
+    </groups>
+    <test name="Test" preserve-order="true">
+        <packages>
+            <package name="com.example.library.*">
+                <include name="PlatformTests"/>
+            </package>
+        </packages>
+    </test>
+</suite>

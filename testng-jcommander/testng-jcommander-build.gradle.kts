@@ -7,7 +7,8 @@ description = "JCommander based command line front end for TestNG"
 dependencies {
     api(projects.testngCli)
     api("org.jcommander:jcommander:2.0")
-    // org.testng.internal.Yaml, used by Converter, exposes snakeyaml on its API
-    compileOnly("org.yaml:snakeyaml:2.2")
+    // Converter reads and writes YAML suites, but a command line front end must keep working
+    // without the optional feature on the classpath, so the dependency stays compile only.
+    compileOnly(projects.testngYaml)
     testImplementation(projects.testngTestKit)
 }

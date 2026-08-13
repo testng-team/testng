@@ -44,12 +44,21 @@ public class YamlTest extends SimpleBaseTest {
 
   @Test(dataProvider = "dp")
   public void compareFiles(String name) throws IOException {
-    Collection<XmlSuite> s1 =
-        new Parser(getPathToResource("yaml" + File.separator + name + ".yaml")).parse();
-    Collection<XmlSuite> s2 =
-        new Parser(getPathToResource("yaml" + File.separator + name + ".xml")).parse();
+    Collection<XmlSuite> s1 = parseSuiteFile(name + ".yaml");
+    Collection<XmlSuite> s2 = parseSuiteFile(name + ".xml");
 
     assertThat(s1).isEqualTo(s2);
+  }
+
+  /**
+   * Classes are not resolved, because the fixtures name classes of TestNG's own test suite and this
+   * module does not carry them. Nothing is lost: {@code XmlClass.equals} compares the name, never
+   * the resolved {@link Class}, so what {@code compareFiles} asserts is unchanged.
+   */
+  private static Collection<XmlSuite> parseSuiteFile(String fileName) throws IOException {
+    Parser parser = new Parser(getPathToResource("yaml" + File.separator + fileName));
+    parser.setLoadClasses(false);
+    return parser.parse();
   }
 
   @Test(description = "GITHUB-1787")
@@ -93,7 +102,7 @@ public class YamlTest extends SimpleBaseTest {
    */
   @Test
   public void suiteLevelMetaGroupsAreNotWritten() throws IOException {
-    String file = "src/test/resources/xml/issue174.xml";
+    String file = "src/test/resources/xml/suite-level-groups.xml";
     XmlSuite xmlSuite = new SuiteXmlParser().parse(file, new FileInputStream(file), false);
 
     XmlSuite reparsed = parseYaml(file, Yaml.toYaml(xmlSuite).toString());

@@ -140,7 +140,7 @@ public class ParallelSuiteTest extends SimpleBaseTest {
         2,
         EXPECTED_SUITE_COUNT,
         null,
-        List.of(getPathToParallelResource("inherit-thread-count-parent.yaml")));
+        List.of(getPathToParallelResource("inherit-thread-count-parent.xml")));
   }
 
   private void runTest(

@@ -10,7 +10,6 @@ plugins {
 // Optional features: the transitive dependency is exposed only to consumers that ask for the
 // matching capability.
 registerOptionalFeatureVariants("guice", buildParameters.targetJavaVersion, tasks.jar)
-registerOptionalFeatureVariants("yaml", buildParameters.targetJavaVersion, tasks.jar)
 
 tasks.withType<GroovyCompile>().configureEach {
     // Groovy does not support targeting Java release yet
@@ -27,7 +26,6 @@ dependencies {
 
     "guiceApi"(platform("com.google.inject:guice-bom:6.0.0"))
     "guiceApi"("com.google.inject:guice")
-    "yamlImplementation"("org.yaml:snakeyaml:2.6")
 
     implementation(projects.testngCollections)
     implementation(projects.testngReflectionUtils)

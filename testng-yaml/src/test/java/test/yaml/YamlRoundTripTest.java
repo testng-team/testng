@@ -8,18 +8,32 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.Yaml;
-import org.testng.xml.SuiteCorpus;
 import org.testng.xml.SuiteDigest;
 import org.testng.xml.SuiteXmlParser;
+import org.testng.xml.XmlClass;
+import org.testng.xml.XmlDefine;
+import org.testng.xml.XmlDependencies;
+import org.testng.xml.XmlInclude;
+import org.testng.xml.XmlMethodSelector;
+import org.testng.xml.XmlPackage;
+import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlTest;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
@@ -107,19 +121,152 @@ public class YamlRoundTripTest {
    * for reasons that have nothing to do with the writer. Loadability alone is enough to catch a key
    * being written that nothing can read back, which the YAML corpus cannot: it can only contain
    * what YAML can already express.
+   *
+   * <p>The input is {@link #everySuiteConstruct()} rather than a corpus of real files. A corpus
+   * samples what people happen to write and covers the writer's branches by accident; the suite
+   * built there sets every construct the writer looks at, on purpose.
    */
-  @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
-  public void xmlSuitesConvertToLoadableYaml(String suiteFile) throws IOException {
-    Path path = Paths.get(getPathToResource(suiteFile));
-    XmlSuite xmlSuite;
-    try (InputStream stream = Files.newInputStream(path)) {
-      xmlSuite = new SuiteXmlParser().parse(suiteFile, stream, false);
-    }
+  @Test(dataProvider = "xmlSuites")
+  public void xmlSuitesConvertToLoadableYaml(String name, XmlSuite xmlSuite) {
     String emitted = Yaml.toYaml(xmlSuite).toString();
 
-    assertThatCode(() -> parseString(suiteFile, emitted))
-        .as("the YAML written for %s must be readable back:%n%s", suiteFile, emitted)
+    assertThatCode(() -> parseString(name, emitted))
+        .as("the YAML written for %s must be readable back:%n%s", name, emitted)
         .doesNotThrowAnyException();
+  }
+
+  /** The XML suites of this module, plus one that carries every construct at once. */
+  @DataProvider(name = "xmlSuites")
+  public static Object[][] xmlSuites() throws IOException {
+    Path root = Paths.get(getPathToResource(""));
+    try (Stream<Path> paths = Files.walk(root)) {
+      List<Object[]> suites =
+          paths
+              .filter(Files::isRegularFile)
+              .filter(path -> path.getFileName().toString().endsWith(".xml"))
+              .sorted()
+              .map(
+                  path -> {
+                    String name = root.relativize(path).toString();
+                    return new Object[] {name, parseXml(name, path)};
+                  })
+              .collect(Collectors.toCollection(ArrayList::new));
+      suites.add(new Object[] {"every suite construct", everySuiteConstruct()});
+      return suites.toArray(new Object[0][]);
+    }
+  }
+
+  private static XmlSuite parseXml(String name, Path path) {
+    try (InputStream stream = Files.newInputStream(path)) {
+      return new SuiteXmlParser().parse(name, stream, false);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  /**
+   * A suite that sets everything a suite file can carry, including what no fixture declares: the
+   * constructs the YAML schema has no key for. Writing one of those would produce a document the
+   * reader rejects, which is exactly what this is here to catch.
+   */
+  private static XmlSuite everySuiteConstruct() {
+    XmlSuite suite = new XmlSuite();
+    suite.setName("Every construct");
+    suite.setVerbose(3);
+    suite.setParallel(XmlSuite.ParallelMode.METHODS);
+    suite.setThreadCount(7);
+    suite.setDataProviderThreadCount(5);
+    suite.setTimeOut("4000");
+    suite.setConfigFailurePolicy(XmlSuite.FailurePolicy.CONTINUE);
+    suite.setSkipFailedInvocationCounts(true);
+    suite.setPreserveOrder(false);
+    suite.setGroupByInstances(true);
+    suite.setAllowReturnValues(true);
+    suite.setShareThreadPoolForDataProviders(true);
+    suite.shouldUseGlobalThreadPool(true);
+    suite.setParentModule("com.example.Module");
+    suite.setGuiceStage("PRODUCTION");
+    suite.setListeners(new ArrayList<>(Collections.singletonList("com.example.Listener")));
+    suite.setSuiteFiles(new ArrayList<>(Collections.singletonList("child.xml")));
+    suite.setParameters(parameters("suite"));
+    suite.setIncludedGroups(Collections.singletonList("in"));
+    suite.setExcludedGroups(Collections.singletonList("out"));
+    // A suite level <define> and <dependencies>: neither has a YAML key, so both must be dropped.
+    XmlDefine define = new XmlDefine();
+    define.setName("meta");
+    define.getIncludes().add("in");
+    suite.getGroups().addDefine(define);
+    XmlDependencies dependencies = new XmlDependencies();
+    dependencies.onGroup("in", "out");
+    suite.getGroups().setXmlDependencies(dependencies);
+    suite.getXmlPackages().add(filteredPackage("com.example.suite"));
+    suite.getMethodSelectors().add(selectorClass());
+    suite.getMethodSelectors().add(selectorScript());
+
+    XmlTest test = new XmlTest(suite);
+    test.setName("Every construct");
+    test.setVerbose(4);
+    test.setParallel(XmlSuite.ParallelMode.CLASSES);
+    test.setThreadCount(9);
+    test.setTimeOut(1234);
+    test.setPreserveOrder(true);
+    test.setGroupByInstances(false);
+    test.setAllowReturnValues(false);
+    test.setSkipFailedInvocationCounts(false);
+    test.setParameters(parameters("test"));
+    test.setIncludedGroups(Collections.singletonList("ti"));
+    test.setExcludedGroups(Collections.singletonList("te"));
+    test.addMetaGroup("all", "ti", "te");
+    test.setXmlDependencyGroups(Collections.singletonMap("ti", "te"));
+    test.getMethodSelectors().add(selectorScript());
+    test.getXmlPackages().add(filteredPackage("com.example.test"));
+    test.getXmlClasses().add(everyClassConstruct());
+    return suite;
+  }
+
+  private static XmlClass everyClassConstruct() {
+    XmlClass xmlClass = new XmlClass("com.example.Klass", 0, false);
+    xmlClass.setParameters(parameters("class"));
+    xmlClass.getExcludedMethods().add("excluded");
+    XmlInclude include = new XmlInclude("included", Collections.singletonList(2), 0);
+    include.setDescription("what it does");
+    include.setParameters(parameters("include"));
+    xmlClass.getIncludedMethods().add(include);
+    return xmlClass;
+  }
+
+  private static XmlPackage filteredPackage(String name) {
+    XmlPackage xmlPackage = new XmlPackage(name);
+    xmlPackage.getInclude().add("Foo");
+    xmlPackage.getExclude().add("Bar");
+    return xmlPackage;
+  }
+
+  private static XmlMethodSelector selectorClass() {
+    XmlMethodSelector selector = new XmlMethodSelector();
+    selector.setClassName("com.example.Selector");
+    selector.setPriority(3);
+    return selector;
+  }
+
+  private static XmlMethodSelector selectorScript() {
+    XmlMethodSelector selector = new XmlMethodSelector();
+    XmlScript script = new XmlScript();
+    script.setExpression("groups.containsKey(\"x\")");
+    script.setLanguage("beanshell");
+    selector.setScript(script);
+    return selector;
+  }
+
+  /** Values that need quoting on the way out, one per trap the emitter has to handle. */
+  private static Map<String, String> parameters(String level) {
+    Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put(level, "plain");
+    parameters.put(level + ".comma", "a,b");
+    parameters.put(level + ".spaces", "a  b");
+    parameters.put(level + ".number", "44.0");
+    parameters.put(level + ".boolean", "off");
+    return parameters;
   }
 
   /**

@@ -809,12 +809,6 @@
     </packages>
   </test>
 
-  <test name="YAML">
-    <classes>
-      <class name="test.yaml.YamlTest" />
-      <class name="test.yaml.YamlRoundTripTest" />
-    </classes>
-  </test>
   <test name="XML">
     <classes>
       <class name="org.testng.xml.SuiteXmlParserTest" />
