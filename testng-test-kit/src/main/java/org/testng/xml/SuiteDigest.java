@@ -1,7 +1,9 @@
 package org.testng.xml;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 /**
@@ -35,6 +37,7 @@ public final class SuiteDigest {
     append(sb, "suite.preserveOrder", suite.getPreserveOrder());
     append(sb, "suite.groupByInstances", suite.getGroupByInstances());
     append(sb, "suite.allowReturnValues", suite.getAllowReturnValues());
+    append(sb, "suite.lazyFactory", suite.getLazyFactory());
     append(sb, "suite.parentModule", suite.getParentModule());
     append(sb, "suite.guiceStage", suite.getGuiceStage());
     append(sb, "suite.objectFactory", suite.getObjectFactoryClass());
@@ -153,6 +156,43 @@ public final class SuiteDigest {
   }
 
   private static void append(StringBuilder sb, String key, Object value) {
-    sb.append(key).append('=').append(value).append('\n');
+    sb.append(key).append('=').append(render(value)).append('\n');
+  }
+
+  /**
+   * Rendered rather than handed to {@code toString()}. A map printed as {@code {a=1, b=2}} cannot
+   * be told apart from a single entry valued {@code 1, b=2}, and a list printed as {@code [a, b]}
+   * cannot be told apart from a single element valued {@code a, b} -- and a1.yaml already carries a
+   * parameter valued {@code a,b}. Two different suites sharing a digest is a round trip test that
+   * passes for the wrong reason, which is the one thing this class must not do.
+   */
+  private static String render(Object value) {
+    if (value instanceof Map) {
+      StringJoiner rendered = new StringJoiner(", ", "{", "}");
+      ((Map<?, ?>) value).forEach((k, v) -> rendered.add(render(k) + '=' + render(v)));
+      return rendered.toString();
+    }
+    if (value instanceof Collection) {
+      StringJoiner rendered = new StringJoiner(", ", "[", "]");
+      ((Collection<?>) value).forEach(element -> rendered.add(render(element)));
+      return rendered.toString();
+    }
+    return escape(value);
+  }
+
+  /**
+   * Escapes every character the renderer uses as structure, so that an unescaped one is always
+   * structure and never data. That is what makes the output unambiguous while keeping it readable
+   * -- the point of the digest is that a difference shows up as a diff on a single line.
+   */
+  private static String escape(Object value) {
+    StringBuilder result = new StringBuilder();
+    for (char c : String.valueOf(value).toCharArray()) {
+      if (c == '\\' || c == ',' || c == '=' || c == '[' || c == ']' || c == '{' || c == '}') {
+        result.append('\\');
+      }
+      result.append(c);
+    }
+    return result.toString();
   }
 }

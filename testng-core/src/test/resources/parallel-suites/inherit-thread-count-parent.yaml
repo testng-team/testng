@@ -1,5 +1,0 @@
-name: Parent suite
-
-suiteFiles:
-  - ./inherit-thread-count-child.yaml
-

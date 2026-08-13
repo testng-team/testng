@@ -9,9 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 import org.testng.TestNGException;
-import org.testng.internal.objects.InstanceCreator;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlDefine;
 import org.testng.xml.XmlGroups;
@@ -21,48 +19,42 @@ import org.testng.xml.XmlScript;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.TypeDescription;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.NodeId;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.error.YAMLException;
 
 /** YAML support for TestNG. */
 public final class Yaml {
 
   private Yaml() {}
 
+  /**
+   * Reads a YAML suite file.
+   *
+   * <p>The keys it accepts are declared by {@link YamlSchema} rather than discovered from the bean
+   * shape of {@link XmlSuite}.
+   *
+   * @param filePath the path of the file, used to open it when {@code is} is null and recorded on
+   *     the suite either way
+   * @param is the content to read, or null to read {@code filePath}
+   * @param loadClasses whether a {@code <class>} entry should be resolved against the classpath
+   * @return the parsed suite
+   * @throws FileNotFoundException if {@code is} is null and {@code filePath} does not exist
+   * @throws TestNGException if the document is malformed or uses a key outside the schema
+   */
   public static XmlSuite parse(String filePath, InputStream is, boolean loadClasses)
       throws FileNotFoundException {
-    Constructor constructor = new TestNGConstructor(XmlSuite.class, new LoaderOptions());
-    {
-      TypeDescription suiteDescription = new TypeDescription(XmlSuite.class);
-      suiteDescription.addPropertyParameters("packages", XmlPackage.class);
-      suiteDescription.addPropertyParameters("listeners", String.class);
-      suiteDescription.addPropertyParameters("tests", XmlTest.class);
-      suiteDescription.addPropertyParameters("method-selectors", XmlMethodSelector.class);
-      constructor.addTypeDescription(suiteDescription);
-    }
-
-    {
-      TypeDescription testDescription = new TypeDescription(XmlTest.class);
-      testDescription.addPropertyParameters("classes", XmlClass.class);
-      testDescription.addPropertyParameters("metaGroups", String.class, List.class);
-      testDescription.addPropertyParameters("method-selectors", XmlMethodSelector.class);
-      constructor.addTypeDescription(testDescription);
-    }
-
-    TypeDescription xmlClassDescription = new XmlClassTypeDescriptor(loadClasses);
-    constructor.addTypeDescription(xmlClassDescription);
-
-    org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(constructor);
+    org.yaml.snakeyaml.Yaml y = new org.yaml.snakeyaml.Yaml(YamlSchema.constructor(loadClasses));
     if (is == null) {
       is = new FileInputStream(filePath);
     }
-    XmlSuite result = y.load(is);
+    XmlSuite result;
+    try {
+      result = y.load(is);
+    } catch (YAMLException e) {
+      // snakeyaml is an implementation detail of this module, so a caller cannot catch its
+      // exceptions by type without depending on it. What a malformed suite throws is the same
+      // here as it is through ISuiteParser.
+      throw new TestNGException(e);
+    }
 
     result.setFileName(filePath);
 
@@ -89,13 +81,12 @@ public final class Yaml {
    * method unreadable for years: a parameter valued {@code a,b}, {@code off} or {@code 2.0} needs a
    * different treatment in each context, and the emitter already knows all of them.
    *
-   * <p>Only the keys the YAML reader can bind are written, so that {@code parse -> toYaml -> parse}
-   * is lossless. What a suite file can carry and YAML cannot express is therefore left out, because
-   * no key would read it back: a test {@code time-out}, an include's invocation numbers, the suite
-   * level {@code group-by-instances} (the test level one is written), the object factory, {@code
-   * use-global-thread-pool}, a suite level {@code <define>} or {@code <dependencies>} block (both
-   * are written for a test), and a test {@code script} -- which is already covered by the method
-   * selectors it is stored in.
+   * <p>Only the keys {@link YamlSchema} declares are written, so that {@code parse -> toYaml ->
+   * parse} is lossless. What a suite file can carry and the schema does not accept is therefore
+   * left out, because no key would read it back: an include's invocation numbers, the object
+   * factory, {@code use-global-thread-pool}, a suite level {@code <define>} or {@code
+   * <dependencies>} block (both are written for a test), and a test {@code script} -- which is
+   * already covered by the method selectors it is stored in.
    *
    * @param suite the suite to serialize
    * @return the YAML representation of the suite
@@ -151,6 +142,11 @@ public final class Yaml {
         result, "preserveOrder", suite.getPreserveOrder(), XmlSuite.DEFAULT_PRESERVE_ORDER);
     putIfDifferent(
         result,
+        "groupByInstances",
+        suite.getGroupByInstances(),
+        XmlSuite.DEFAULT_GROUP_BY_INSTANCES);
+    putIfDifferent(
+        result,
         "allowReturnValues",
         suite.getAllowReturnValues(),
         XmlSuite.DEFAULT_ALLOW_RETURN_VALUES);
@@ -159,6 +155,9 @@ public final class Yaml {
         "shareThreadPoolForDataProviders",
         suite.isShareThreadPoolForDataProviders(),
         XmlSuite.DEFAULT_SHARE_THREAD_POOL_FOR_DATA_PROVIDERS);
+    // No default constant to compare against: null means the suite did not say, and the TestNG
+    // configuration decides.
+    putIfPresent(result, "lazyFactory", suite.getLazyFactory());
     putIfPresent(result, "parentModule", suite.getParentModule());
     putIfPresent(result, "guiceStage", suite.getGuiceStage());
     putIfPresent(result, "parameters", parameters(suite.getParameters()));
@@ -188,6 +187,7 @@ public final class Yaml {
     putIfDifferent(result, "verbose", test.getVerbose(), suite.getVerbose());
     putIfDifferent(result, "parallel", test.getParallel(), suite.getParallel());
     putIfDifferent(result, "threadCount", test.getThreadCount(), suite.getThreadCount());
+    putIfDifferent(result, "timeOut", test.getTimeOut(), suite.getTimeOut());
     putIfDifferent(result, "preserveOrder", test.getPreserveOrder(), suite.getPreserveOrder());
     putIfDifferent(
         result, "groupByInstances", test.getGroupByInstances(), suite.getGroupByInstances());
@@ -201,7 +201,7 @@ public final class Yaml {
     putIfPresent(result, "parameters", parameters(test.getLocalParameters()));
     putRunGroups(result, test.getXmlGroups());
     putMetaGroups(result, test.getXmlGroups());
-    putIfPresent(result, "xmlDependencyGroups", sorted(test.getXmlDependencyGroups()));
+    putIfPresent(result, "dependencyGroups", sorted(test.getXmlDependencyGroups()));
     putIfPresent(result, "methodSelectors", selectorsToNodes(test.getMethodSelectors()));
     putIfPresent(result, "packages", packagesToNodes(test.getXmlPackages()));
     putIfPresent(result, "classes", classesToNodes(test.getXmlClasses()));
@@ -396,99 +396,5 @@ public final class Yaml {
       return;
     }
     result.put(key, value);
-  }
-
-  private static class TestNGConstructor extends Constructor {
-
-    public TestNGConstructor(Class<?> theRoot, LoaderOptions loadingConfig) {
-      super(theRoot, loadingConfig);
-      yamlClassConstructors.put(NodeId.scalar, new ConstructParallelMode());
-      yamlClassConstructors.put(NodeId.mapping, new ConstructXmlScript());
-    }
-
-    private class ConstructXmlScript extends ConstructMapping {
-
-      @Override
-      public Object construct(Node node) {
-        if (node.getType().equals(org.testng.xml.XmlMethodSelector.class)) {
-          final XmlScript xmlScript = new XmlScript();
-          org.testng.xml.XmlMethodSelector selector = new org.testng.xml.XmlMethodSelector();
-          MappingNode mappingNode = (MappingNode) node;
-          List<NodeTuple> tuples = mappingNode.getValue();
-          for (NodeTuple tuple : tuples) {
-            setValue(tuple, "expression", xmlScript::setExpression);
-            setValue(tuple, "language", xmlScript::setLanguage);
-            setValue(tuple, "className", selector::setClassName);
-            setValue(tuple, "priority", text -> selector.setPriority(Integer.parseInt(text)));
-          }
-          selector.setScript(xmlScript);
-          return selector;
-        }
-        return super.construct(node);
-      }
-
-      private void setValue(NodeTuple tuple, String key, Consumer<String> cons) {
-        ScalarNode keyNode = (ScalarNode) tuple.getKeyNode();
-        ScalarNode valueNode = (ScalarNode) tuple.getValueNode();
-        if (keyNode.getValue().equals(key)) {
-          String value = constructScalar(valueNode);
-          cons.accept(value);
-        }
-      }
-    }
-
-    private class ConstructParallelMode extends ConstructScalar {
-
-      @Override
-      public Object construct(Node node) {
-        if (node.getType().equals(XmlSuite.ParallelMode.class)) {
-          String parallel = constructScalar((ScalarNode) node);
-          return XmlSuite.ParallelMode.getValidParallel(parallel);
-        }
-        if (node.getType().equals(XmlSuite.FailurePolicy.class)) {
-          String failurePolicy = constructScalar((ScalarNode) node);
-          return XmlSuite.FailurePolicy.getValidPolicy(failurePolicy);
-        }
-        return super.construct(node);
-      }
-    }
-  }
-
-  private static class XmlClassTypeDescriptor extends TypeDescription {
-
-    private final boolean loadClasses;
-
-    public XmlClassTypeDescriptor(boolean loadClasses) {
-      super(XmlClass.class);
-      this.loadClasses = loadClasses;
-    }
-
-    @Override
-    public Object newInstance(Node node) {
-      String className;
-
-      try {
-        java.lang.reflect.Constructor<?> c =
-            XmlClass.class.getDeclaredConstructor(String.class, boolean.class);
-        c.setAccessible(true);
-        if (node instanceof MappingNode) {
-          Node valueNode =
-              ((MappingNode) node)
-                  .getValue().stream()
-                      .filter(
-                          nodeTuple ->
-                              ((ScalarNode) nodeTuple.getKeyNode()).getValue().equals("name"))
-                      .findFirst()
-                      .orElseThrow(() -> new TestNGException("Node 'name' not found"))
-                      .getValueNode();
-          className = ((ScalarNode) valueNode).getValue();
-        } else {
-          className = ((ScalarNode) node).getValue();
-        }
-        return InstanceCreator.newInstance(c, className, loadClasses);
-      } catch (Exception e) {
-        throw new TestNGException("Failed to instantiate class", e);
-      }
-    }
   }
 }

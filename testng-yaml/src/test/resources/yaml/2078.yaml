@@ -2,7 +2,7 @@ name: My_Suite
 guiceStage: DEVELOPMENT
 tests:
   - name: My_test
-    xmlDependencyGroups:
+    dependencyGroups:
       c: a  b
       z: c
     packages:

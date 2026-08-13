@@ -18,8 +18,11 @@ java {
             api(platform("com.google.inject:guice-bom:6.0.0"))
             api("com.google.inject:guice")
         }
+        // The module is part of the feature, not just its dependency: its classes are shaded into
+        // testng.jar like any other TestNG module, while snakeyaml stays an optional dependency of
+        // the published pom.
         create("yaml") {
-            implementation("org.yaml:snakeyaml:2.6")
+            implementation(projects.testngYaml)
         }
     }
 }
