@@ -1,16 +1,19 @@
 package test.configuration.issue1753;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.testng.*;
-import org.testng.collections.Maps;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 
 public class LocalReporter implements IReporter {
 
-  private final Map<String, String> attributes = Maps.newHashMap();
+  private final Map<String, String> attributes = new HashMap<>();
 
   @Override
   public void generateReport(

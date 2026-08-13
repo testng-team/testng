@@ -1,9 +1,9 @@
 package org.testng.cli.jcommander;
 
 import com.beust.jcommander.Parameter;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.cli.CliOptions;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -15,7 +15,7 @@ import org.testng.xml.XmlSuite;
 public class JCommanderOptions {
 
   @Parameter(description = "The XML suite files to run")
-  public List<String> suiteFiles = Lists.newArrayList();
+  public List<String> suiteFiles = new ArrayList<>();
 
   @Parameter(
       names = {CliOptions.LOG, CliOptions.VERBOSE},
@@ -143,7 +143,7 @@ public class JCommanderOptions {
   public String listenerFactory;
 
   @Parameter(names = CliOptions.METHODS, description = "Comma separated of test methods")
-  public List<String> commandLineMethods = Lists.newArrayList();
+  public List<String> commandLineMethods = new ArrayList<>();
 
   @Parameter(
       names = CliOptions.SUITE_THREAD_POOL_SIZE,
@@ -226,7 +226,7 @@ public class JCommanderOptions {
     CliOptions cli = new CliOptions();
     // Copied rather than aliased: the returned options outlive this parser, and TestNG stores the
     // lists by reference, so sharing them would let a later mutation change a running suite.
-    cli.suiteFiles = Lists.newArrayList(suiteFiles);
+    cli.suiteFiles = new ArrayList<>(suiteFiles);
     cli.verbose = verbose;
     cli.groups = groups;
     cli.excludedGroups = excludedGroups;
@@ -251,7 +251,7 @@ public class JCommanderOptions {
     cli.xmlPathInJar = xmlPathInJar;
     cli.testRunnerFactory = testRunnerFactory;
     cli.listenerFactory = listenerFactory;
-    cli.commandLineMethods = Lists.newArrayList(commandLineMethods);
+    cli.commandLineMethods = new ArrayList<>(commandLineMethods);
     cli.suiteThreadPoolSize = suiteThreadPoolSize;
     cli.randomizeSuites = randomizeSuites;
     cli.alwaysRunListeners = alwaysRunListeners;

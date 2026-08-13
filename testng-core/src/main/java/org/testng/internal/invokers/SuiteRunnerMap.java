@@ -1,15 +1,15 @@
 package org.testng.internal.invokers;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.ISuite;
 import org.testng.TestNGException;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 
 public class SuiteRunnerMap {
 
-  private final Map<String, ISuite> m_map = Maps.newHashMap();
+  private final Map<String, ISuite> m_map = new HashMap<>();
 
   public void put(XmlSuite xmlSuite, ISuite suite) {
     final String name = xmlSuite.getName();

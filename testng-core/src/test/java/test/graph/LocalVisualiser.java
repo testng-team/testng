@@ -1,11 +1,11 @@
 package test.graph;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IExecutionVisualiser;
-import org.testng.collections.Lists;
 
 public class LocalVisualiser implements IExecutionVisualiser {
-  private List<String> definitions = Lists.newArrayList();
+  private List<String> definitions = new ArrayList<>();
   private static LocalVisualiser instance;
 
   public LocalVisualiser() {

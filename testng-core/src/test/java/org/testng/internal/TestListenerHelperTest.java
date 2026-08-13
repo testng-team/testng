@@ -3,6 +3,7 @@ package org.testng.internal;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.HashMap;
 import org.testng.DataProviderHolder;
 import org.testng.ITestContext;
 import org.testng.ITestNGListenerFactory;
@@ -10,7 +11,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -76,7 +76,7 @@ public class TestListenerHelperTest {
     configuration.setObjectFactory(objectFactory);
     TestNGClassFinder finder =
         new TestNGClassFinder(
-            classMap, Maps.newHashMap(), configuration, ctx, new DataProviderHolder(configuration));
+            classMap, new HashMap<>(), configuration, ctx, new DataProviderHolder(configuration));
     ITestNGListenerFactory factory =
         TestListenerHelper.createListenerFactory(objectFactory, finder, listenerClazz, ctx);
     assertThat(factory).isNotNull();

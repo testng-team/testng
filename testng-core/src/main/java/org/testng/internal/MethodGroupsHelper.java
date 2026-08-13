@@ -1,8 +1,10 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +17,6 @@ import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
@@ -124,7 +124,7 @@ public class MethodGroupsHelper {
    */
   public static Map<String, List<ITestNGMethod>> findGroupsMethods(
       Collection<ITestClass> classes, boolean before) {
-    Map<String, List<ITestNGMethod>> result = Maps.newHashMap();
+    Map<String, List<ITestNGMethod>> result = new HashMap<>();
     for (ITestClass cls : classes) {
       ITestNGMethod[] methods = before ? cls.getBeforeGroupsMethods() : cls.getAfterGroupsMethods();
       for (ITestNGMethod method : methods) {
@@ -133,7 +133,7 @@ public class MethodGroupsHelper {
             Stream.concat(Arrays.stream(grp), Arrays.stream(method.getGroups()))
                 .collect(Collectors.toList());
         for (String group : groups) {
-          List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> Lists.newArrayList());
+          List<ITestNGMethod> methodList = result.computeIfAbsent(group, k -> new ArrayList<>());
           // NOTE(cbeust, 2007/01/23)
           // BeforeGroups/AfterGroups methods should only be invoked once.
           // I should probably use a map instead of a list for a contains(), but
@@ -162,7 +162,7 @@ public class MethodGroupsHelper {
 
     boolean keepGoing = true;
 
-    Map<ITestNGMethod, ITestNGMethod> newMethods = Maps.newHashMap();
+    Map<ITestNGMethod, ITestNGMethod> newMethods = new HashMap<>();
     while (keepGoing) {
       for (ITestNGMethod m : includedMethods) {
 
@@ -206,9 +206,9 @@ public class MethodGroupsHelper {
       // Only keep going if new methods have been added
       //
       keepGoing = !newMethods.isEmpty();
-      includedMethods = Lists.newArrayList();
+      includedMethods = new ArrayList<>();
       includedMethods.addAll(newMethods.keySet());
-      newMethods = Maps.newHashMap();
+      newMethods = new HashMap<>();
     } // while keepGoing
 
     outMethods.addAll(runningMethods.keySet());

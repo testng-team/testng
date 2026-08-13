@@ -1,15 +1,15 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 public class MethodInheritance {
 
@@ -87,7 +87,7 @@ public class MethodInheritance {
    */
   public static void fixMethodInheritance(ITestNGMethod[] methods, boolean before) {
     // Map of classes -> List of methods that belong to this class or same hierarchy
-    Map<Class<?>, List<ITestNGMethod>> map = Maps.newHashMap();
+    Map<Class<?>, List<ITestNGMethod>> map = new HashMap<>();
 
     //
     // Put the list of methods in their hierarchy buckets
@@ -105,7 +105,7 @@ public class MethodInheritance {
           map.remove(subClass);
           map.put(methodClass, l);
         } else {
-          l = Lists.newArrayList();
+          l = new ArrayList<>();
           l.add(method);
           map.put(methodClass, l);
         }

@@ -1,5 +1,6 @@
 package org.testng.internal.invokers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +9,6 @@ import java.util.function.Predicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 import org.testng.collections.Sets;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationMethod;
@@ -87,7 +87,7 @@ class TestNgMethodUtils {
       IClass testClass,
       ITestNGMethod[] methods,
       BiPredicate<ITestNGMethod, IClass> predicate) {
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
     for (ITestNGMethod tm : methods) {
       String msg;
       if ((predicate.test(tm, testClass) && isSameInstance(tm, instance))
@@ -113,7 +113,7 @@ class TestNgMethodUtils {
 
   static ITestNGMethod[] filterSetupConfigurationMethods(
       ITestNGMethod tm, ITestNGMethod[] methods) {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (ITestNGMethod m : methods) {
       ConfigurationMethod cm = (ConfigurationMethod) m;
       if (doesSetupMethodPassFirstTimeFilter(cm, tm) && doesConfigMethodPassGroupFilters(cm, tm)) {
@@ -125,7 +125,7 @@ class TestNgMethodUtils {
 
   static ITestNGMethod[] filterTeardownConfigurationMethods(
       ITestNGMethod tm, ITestNGMethod[] methods) {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (ITestNGMethod m : methods) {
       ConfigurationMethod cm = (ConfigurationMethod) m;
       if (doesTeardownMethodPassLastTimeFilter(cm, tm)
@@ -202,7 +202,7 @@ class TestNgMethodUtils {
 
   private static ITestNGMethod[] filterTimeOnlyConfigMethods(
       ITestNGMethod tm, ITestNGMethod[] methods, Predicate<ConfigurationMethod> timeScope) {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (ITestNGMethod m : methods) {
       ConfigurationMethod cm = (ConfigurationMethod) m;
       if (timeScope.test(cm) && doesConfigMethodPassGroupFilters(cm, tm)) {

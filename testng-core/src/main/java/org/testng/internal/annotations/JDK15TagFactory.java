@@ -2,6 +2,7 @@ package org.testng.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -627,7 +628,7 @@ public class JDK15TagFactory {
       return new String[0];
     }
 
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     while (cls != null && cls != Object.class) {
       Annotation annotation = AnnotationHelper.getAnnotationFromClass(cls, Test.class);

@@ -1,11 +1,11 @@
 package org.testng.internal;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 /**
  * Implementation of the Tarjan algorithm to find and display a cycle in a graph.
@@ -15,8 +15,8 @@ import org.testng.collections.Maps;
 public class Tarjan<T> {
   int m_index = 0;
   private final ArrayDeque<T> stack;
-  Map<T, Integer> visitedNodes = Maps.newHashMap();
-  Map<T, Integer> m_lowlinks = Maps.newHashMap();
+  Map<T, Integer> visitedNodes = new HashMap<>();
+  Map<T, Integer> m_lowlinks = new HashMap<>();
   private List<T> m_cycle;
 
   public Tarjan(Graph<T> graph, T start) {
@@ -42,7 +42,7 @@ public class Tarjan<T> {
     }
 
     if (Objects.equals(m_lowlinks.get(start), visitedNodes.get(start))) {
-      m_cycle = Lists.newArrayList();
+      m_cycle = new ArrayList<>();
       T n;
       do {
         n = stack.pop();

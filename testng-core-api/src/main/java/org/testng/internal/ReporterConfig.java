@@ -1,7 +1,7 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 /** Stores the information regarding the configuration of a pluggable report listener. */
 public class ReporterConfig {
@@ -50,7 +50,7 @@ public class ReporterConfig {
     }
 
     String className;
-    List<Property> properties = Lists.newArrayList();
+    List<Property> properties = new ArrayList<>();
     int clsNameEndIndex = inputString.indexOf(':');
     if (clsNameEndIndex == -1) {
       className = inputString;

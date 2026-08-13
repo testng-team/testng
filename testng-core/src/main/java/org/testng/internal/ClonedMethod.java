@@ -1,6 +1,7 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlTest;
 
 public class ClonedMethod implements ITestNGMethod {
@@ -20,8 +20,8 @@ public class ClonedMethod implements ITestNGMethod {
   private String m_id;
   private int m_currentInvocationCount;
 
-  private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private final List<Integer> m_failedInvocationNumbers = Lists.newArrayList();
+  private List<Integer> m_invocationNumbers = new ArrayList<>();
+  private final List<Integer> m_failedInvocationNumbers = new ArrayList<>();
 
   public ClonedMethod(ITestNGMethod method, Method javaMethod) {
     m_method = method;

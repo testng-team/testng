@@ -1,15 +1,15 @@
 package org.testng.internal;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 
 public class ClassInfoMap {
 
-  private final Map<Class<?>, XmlClass> m_map = Maps.newLinkedHashMap();
+  private final Map<Class<?>, XmlClass> m_map = new LinkedHashMap<>();
   private final boolean includeNestedClasses;
 
   public ClassInfoMap() {

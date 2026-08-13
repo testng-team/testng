@@ -1,9 +1,11 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,8 +24,6 @@ import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
-import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.collections.Pair;
@@ -58,7 +58,7 @@ public class MethodHelper {
       List<ITestNGMethod> outExcludedMethods,
       Comparator<ITestNGMethod> comparator) {
     AtomicReference<ITestNGMethod[]> results = new AtomicReference<>();
-    List<ITestNGMethod> includedMethods = Lists.newArrayList();
+    List<ITestNGMethod> includedMethods = new ArrayList<>();
     TimeUtils.computeAndShowTime(
         "MethodGroupsHelper.collectMethodsByGroup()",
         () ->
@@ -160,7 +160,7 @@ public class MethodHelper {
       }
     }
 
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
     String regexp = null;
     for (String fullyQualifiedRegexp : m.getMethodsDependedUpon()) {
       boolean foundAtLeastAMethod = false;
@@ -299,13 +299,13 @@ public class MethodHelper {
 
   /** Extracts the unique list of <code>ITestNGMethod</code>s. */
   public static List<ITestNGMethod> uniqueMethodList(Collection<List<ITestNGMethod>> methods) {
-    Set<ITestNGMethod> resultSet = Sets.newHashSet();
+    Set<ITestNGMethod> resultSet = new HashSet<>();
 
     for (List<ITestNGMethod> l : methods) {
       resultSet.addAll(l);
     }
 
-    return Lists.newArrayList(resultSet);
+    return new ArrayList<>(resultSet);
   }
 
   private static Graph<ITestNGMethod> topologicalSort(
@@ -334,7 +334,7 @@ public class MethodHelper {
       }
       result.addNode(m);
 
-      List<ITestNGMethod> predecessors = Lists.newArrayList();
+      List<ITestNGMethod> predecessors = new ArrayList<>();
 
       String[] methodsDependedUpon = m.getMethodsDependedUpon();
       if (methodsDependedUpon.length > 0) {
@@ -454,8 +454,8 @@ public class MethodHelper {
 
   private static List<ITestNGMethod> sortMethods(
       boolean forTests, List<ITestNGMethod> allMethods, Comparator<ITestNGMethod> comparator) {
-    List<ITestNGMethod> sl = Lists.newArrayList();
-    List<ITestNGMethod> pl = Lists.newArrayList();
+    List<ITestNGMethod> sl = new ArrayList<>();
+    List<ITestNGMethod> pl = new ArrayList<>();
     ITestNGMethod[] allMethodsArray = allMethods.toArray(new ITestNGMethod[0]);
 
     // Fix the method inheritance if these are @Configuration methods to make
@@ -485,7 +485,7 @@ public class MethodHelper {
 
     topologicalSort(allMethodsArray, sl, pl, comparator);
 
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     result.addAll(sl);
     result.addAll(pl);
     return result;
@@ -496,8 +496,8 @@ public class MethodHelper {
       ITestNGMethod method, ITestNGMethod[] methods, Comparator<ITestNGMethod> comparator) {
     Graph<ITestNGMethod> g = GRAPH_CACHE.get(methods);
     if (g == null) {
-      List<ITestNGMethod> parallelList = Lists.newArrayList();
-      List<ITestNGMethod> sequentialList = Lists.newArrayList();
+      List<ITestNGMethod> parallelList = new ArrayList<>();
+      List<ITestNGMethod> sequentialList = new ArrayList<>();
       g = topologicalSort(methods, sequentialList, parallelList, comparator);
       GRAPH_CACHE.put(methods, g);
     }
@@ -599,7 +599,7 @@ public class MethodHelper {
   }
 
   private static class MatchResults {
-    private final List<ITestNGMethod> matchedMethods = Lists.newArrayList();
+    private final List<ITestNGMethod> matchedMethods = new ArrayList<>();
     private boolean foundAtLeastAMethod = false;
   }
 }

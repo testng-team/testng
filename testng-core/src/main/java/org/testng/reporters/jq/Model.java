@@ -1,7 +1,9 @@
 package org.testng.reporters.jq;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.IResultMap;
@@ -10,7 +12,6 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
 import org.testng.internal.Utils;
@@ -18,14 +19,14 @@ import org.testng.internal.Utils;
 public class Model {
   private final ListMultiMap<ISuite, ITestResult> m_model = Maps.newListMultiMap();
   private final List<ISuite> m_suites;
-  private final Map<String, String> m_testTags = Maps.newHashMap();
-  private final Map<ITestResult, String> m_testResultMap = Maps.newHashMap();
-  private final Map<ISuite, ResultsByClass> m_failedResultsByClass = Maps.newHashMap();
-  private final Map<ISuite, ResultsByClass> m_skippedResultsByClass = Maps.newHashMap();
-  private final Map<ISuite, ResultsByClass> m_passedResultsByClass = Maps.newHashMap();
-  private final List<ITestResult> m_allFailedResults = Lists.newArrayList();
+  private final Map<String, String> m_testTags = new HashMap<>();
+  private final Map<ITestResult, String> m_testResultMap = new HashMap<>();
+  private final Map<ISuite, ResultsByClass> m_failedResultsByClass = new HashMap<>();
+  private final Map<ISuite, ResultsByClass> m_skippedResultsByClass = new HashMap<>();
+  private final Map<ISuite, ResultsByClass> m_passedResultsByClass = new HashMap<>();
+  private final List<ITestResult> m_allFailedResults = new ArrayList<>();
   // Each suite is mapped to failed.png, skipped.png or nothing (which means passed.png)
-  private final Map<String, String> m_statusBySuiteName = Maps.newHashMap();
+  private final Map<String, String> m_statusBySuiteName = new HashMap<>();
   private final SetMultiMap<String, String> m_groupsBySuiteName = Maps.newSetMultiMap();
   private final SetMultiMap<String, String> m_methodsByGroup = Maps.newSetMultiMap();
 
@@ -41,9 +42,9 @@ public class Model {
   private void init() {
     int testCounter = 0;
     for (ISuite suite : m_suites) {
-      List<ITestResult> passed = Lists.newArrayList();
-      List<ITestResult> failed = Lists.newArrayList();
-      List<ITestResult> skipped = Lists.newArrayList();
+      List<ITestResult> passed = new ArrayList<>();
+      List<ITestResult> failed = new ArrayList<>();
+      List<ITestResult> skipped = new ArrayList<>();
       Map<String, ISuiteResult> suiteResults = suite.getResults();
       for (ISuiteResult sr : suiteResults.values()) {
         ITestContext context = sr.getTestContext();
@@ -178,13 +179,13 @@ public class Model {
   }
 
   public List<String> getGroups(String name) {
-    List<String> result = Lists.newArrayList(m_groupsBySuiteName.get(name));
+    List<String> result = new ArrayList<>(m_groupsBySuiteName.get(name));
     Collections.sort(result);
     return result;
   }
 
   public List<String> getMethodsInGroup(String groupName) {
-    List<String> result = Lists.newArrayList(m_methodsByGroup.get(groupName));
+    List<String> result = new ArrayList<>(m_methodsByGroup.get(groupName));
     Collections.sort(result);
     return result;
   }
@@ -194,7 +195,7 @@ public class Model {
   }
 
   public List<ITestResult> getAllTestResults(ISuite suite, boolean testsOnly) {
-    List<ITestResult> result = Lists.newArrayList();
+    List<ITestResult> result = new ArrayList<>();
     for (ISuiteResult sr : suite.getResults().values()) {
       result.addAll(sr.getTestContext().getPassedTests().getAllResults());
       result.addAll(sr.getTestContext().getFailedTests().getAllResults());

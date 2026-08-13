@@ -1,5 +1,7 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,8 +15,6 @@ import org.testng.IInjectorFactory;
 import org.testng.ITestNGListenerFactory;
 import org.testng.ITestObjectFactory;
 import org.testng.ListenerComparator;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -31,9 +31,9 @@ public class Configuration implements IConfiguration {
 
   private boolean shareThreadPoolForDataProviders = false;
   private final Map<Class<? extends IExecutionListener>, IExecutionListener> m_executionListeners =
-      Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
   private final Map<Class<? extends IConfigurationListener>, IConfigurationListener>
-      m_configurationListeners = Maps.newLinkedHashMap();
+      m_configurationListeners = new LinkedHashMap<>();
   private boolean alwaysRunListeners = true;
   private IExecutorServiceFactory executorServiceFactory = ThreadPoolExecutor::new;
 
@@ -122,7 +122,7 @@ public class Configuration implements IConfiguration {
 
   @Override
   public List<IExecutionListener> getExecutionListeners() {
-    return Lists.newArrayList(m_executionListeners.values());
+    return new ArrayList<>(m_executionListeners.values());
   }
 
   @Override
@@ -132,7 +132,7 @@ public class Configuration implements IConfiguration {
 
   @Override
   public List<IConfigurationListener> getConfigurationListeners() {
-    return Lists.newArrayList(m_configurationListeners.values());
+    return new ArrayList<>(m_configurationListeners.values());
   }
 
   @Override

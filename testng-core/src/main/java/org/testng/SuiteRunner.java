@@ -8,9 +8,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.*;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ConfigMethodArguments;
@@ -34,18 +31,18 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   private static final String DEFAULT_OUTPUT_DIR = "test-output";
 
-  private final Map<String, ISuiteResult> suiteResults = Maps.newLinkedHashMap();
-  private final List<TestRunner> testRunners = Lists.newArrayList();
+  private final Map<String, ISuiteResult> suiteResults = new LinkedHashMap<>();
+  private final List<TestRunner> testRunners = new ArrayList<>();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> listeners =
-      Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
 
   private String outputDir;
   private final XmlSuite xmlSuite;
   private Injector parentInjector;
 
-  private final List<ITestListener> testListeners = Lists.newArrayList();
+  private final List<ITestListener> testListeners = new ArrayList<>();
   private final Map<Class<? extends IClassListener>, IClassListener> classListeners =
-      Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
   private final ITestRunnerFactory tmpRunnerFactory;
   private final DataProviderHolder holder;
 
@@ -60,14 +57,14 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
 
   private ITestObjectFactory objectFactory;
   private Boolean skipFailedInvocationCounts = Boolean.FALSE;
-  private final List<IReporter> reporters = Lists.newArrayList();
+  private final List<IReporter> reporters = new ArrayList<>();
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
       invokedMethodListeners;
 
   private final SuiteRunState suiteState = new SuiteRunState();
   private final IAttributes attributes = new Attributes();
-  private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
+  private final Set<IExecutionVisualiser> visualisers = new HashSet<>();
   private final ITestListener exitCodeListener;
 
   public SuiteRunner(
@@ -122,7 +119,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
     this.tmpRunnerFactory = runnerFactory;
     this.exitCodeListener = container.exitCodeListener;
     List<IMethodInterceptor> localMethodInterceptors =
-        Optional.ofNullable(methodInterceptors).orElse(Lists.newArrayList());
+        Optional.ofNullable(methodInterceptors).orElse(new ArrayList<>());
     setOutputDir(outputDir);
     if (configuration.getObjectFactory() == null) {
       configuration.setObjectFactory(new ObjectFactoryImpl());
@@ -174,7 +171,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
           };
     }
     // Add our own IInvokedMethodListener
-    invokedMethodListeners = Maps.synchronizedLinkedHashMap();
+    invokedMethodListeners = Collections.synchronizedMap(new LinkedHashMap<>());
     for (IInvokedMethodListener listener :
         Optional.ofNullable(invokedMethodListener).orElse(Collections.emptyList())) {
       invokedMethodListeners.put(listener.getClass(), listener);
@@ -198,7 +195,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
               this,
               test,
               invokedMethodListeners.values(),
-              Lists.newArrayList(this.classListeners.values()),
+              new ArrayList<>(this.classListeners.values()),
               this.holder);
 
       //
@@ -434,7 +431,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
    * here).
    */
   private void runInParallelTestMode() {
-    List<Runnable> tasks = Lists.newArrayList(testRunners.size());
+    List<Runnable> tasks = new ArrayList<>(testRunners.size());
     for (TestRunner tr : testRunners) {
       tasks.add(new SuiteWorker(tr));
     }
@@ -531,7 +528,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   /** @see org.testng.ISuite#getMethodsByGroups() */
   @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
-    Map<String, Collection<ITestNGMethod>> result = Maps.newHashMap();
+    Map<String, Collection<ITestNGMethod>> result = new HashMap<>();
 
     for (TestRunner tr : testRunners) {
       ITestNGMethod[] methods = tr.getAllTestMethods();
@@ -539,7 +536,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
         String[] groups = m.getGroups();
         for (String groupName : groups) {
           Collection<ITestNGMethod> testMethods =
-              result.computeIfAbsent(groupName, k -> Lists.newArrayList());
+              result.computeIfAbsent(groupName, k -> new ArrayList<>());
           testMethods.add(m);
         }
       }
@@ -809,7 +806,7 @@ public class SuiteRunner implements ISuite, ISuiteRunnerListener {
   }
 
   static class TestListenersContainer {
-    private final List<ITestListener> listeners = Lists.newArrayList();
+    private final List<ITestListener> listeners = new ArrayList<>();
     private final ITestListener exitCodeListener;
 
     TestListenersContainer() {

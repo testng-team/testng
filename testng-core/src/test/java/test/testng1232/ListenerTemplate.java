@@ -1,6 +1,12 @@
 package test.testng1232;
 
-import org.testng.*;
+import org.testng.IAlterSuiteListener;
+import org.testng.IClassListener;
+import org.testng.IExecutionListener;
+import org.testng.IInvokedMethodListener;
+import org.testng.IReporter;
+import org.testng.ISuiteListener;
+import org.testng.ITestListener;
 
 /**
  * This class provides "void" implementations for all listener invocations so that one can tweak

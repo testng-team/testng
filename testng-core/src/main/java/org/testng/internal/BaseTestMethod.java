@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -22,9 +25,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
 import org.testng.annotations.ITestOrConfiguration;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.IInvocationStatus;
@@ -76,9 +76,9 @@ public abstract class BaseTestMethod
   private boolean m_skipFailedInvocations = true;
   private long m_invocationTimeOut = 0L;
 
-  private List<Integer> m_invocationNumbers = Lists.newArrayList();
-  private final Set<ITestNGMethod> downstreamDependencies = Sets.newHashSet();
-  private final Set<ITestNGMethod> upstreamDependencies = Sets.newHashSet();
+  private List<Integer> m_invocationNumbers = new ArrayList<>();
+  private final Set<ITestNGMethod> downstreamDependencies = new HashSet<>();
+  private final Set<ITestNGMethod> upstreamDependencies = new HashSet<>();
   private final Collection<Integer> m_failedInvocationNumbers = new ConcurrentLinkedQueue<>();
   private long m_timeOut = 0;
 
@@ -89,7 +89,7 @@ public abstract class BaseTestMethod
   private XmlTest m_xmlTest;
   private final IObject.IdentifiableObject m_instance;
 
-  private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = Maps.newConcurrentMap();
+  private final Map<String, IRetryAnalyzer> m_testMethodToRetryAnalyzer = new ConcurrentHashMap<>();
   protected final ITestObjectFactory m_objectFactory;
 
   public BaseTestMethod(
@@ -450,7 +450,7 @@ public abstract class BaseTestMethod
             .findAnnotation(getConstructorOrMethod().getDeclaringClass(), annotationClass);
 
     Map<String, Set<String>> xgd = calculateXmlGroupDependencies(m_xmlTest);
-    List<String> xmlGroupDependencies = Lists.newArrayList();
+    List<String> xmlGroupDependencies = new ArrayList<>();
     for (String g : getGroups()) {
       Set<String> gdu = xgd.get(g);
       if (gdu != null) {
@@ -479,7 +479,7 @@ public abstract class BaseTestMethod
   }
 
   private static Map<String, Set<String>> calculateXmlGroupDependencies(XmlTest xmlTest) {
-    Map<String, Set<String>> result = Maps.newHashMap();
+    Map<String, Set<String>> result = new HashMap<>();
     if (xmlTest == null) {
       return result;
     }
@@ -487,7 +487,7 @@ public abstract class BaseTestMethod
     for (Map.Entry<String, String> e : xmlTest.getXmlDependencyGroups().entrySet()) {
       String name = e.getKey();
       String dependsOn = e.getValue();
-      Set<String> set = result.computeIfAbsent(name, s -> Sets.newHashSet());
+      Set<String> set = result.computeIfAbsent(name, s -> new HashSet<>());
       set.addAll(Arrays.asList(SPACE_SEPARATOR_PATTERN.split(dependsOn)));
     }
 
@@ -562,7 +562,7 @@ public abstract class BaseTestMethod
   }
 
   protected String[] getStringArray(String[] methodArray, String[] classArray) {
-    final Set<String> vResult = Sets.newHashSet();
+    final Set<String> vResult = new HashSet<>();
     if (null != methodArray) {
       Collections.addAll(vResult, methodArray);
     }
@@ -577,7 +577,7 @@ public abstract class BaseTestMethod
   }
 
   protected void setGroupsDependedUpon(String[] groups, Collection<String> xmlGroupDependencies) {
-    List<String> l = Lists.newArrayList();
+    List<String> l = new ArrayList<>();
     l.addAll(Arrays.asList(groups));
     l.addAll(xmlGroupDependencies);
     m_groupsDependedUpon = l.toArray(new String[0]);

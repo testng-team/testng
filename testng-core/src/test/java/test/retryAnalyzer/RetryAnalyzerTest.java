@@ -18,7 +18,6 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
@@ -165,8 +164,8 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
   @DataProvider(name = "1706")
   public Object[][] getData() {
     return new Object[][] {
-      {NativeInjectionSample.class, 2, Maps.newHashMap()},
-      {DataDrivenSample.class, 4, Maps.newHashMap()},
+      {NativeInjectionSample.class, 2, new HashMap<>()},
+      {DataDrivenSample.class, 4, new HashMap<>()},
       {ParameterInjectionSample.class, 2, constructParameterMap()}
     };
   }
@@ -365,7 +364,7 @@ public class RetryAnalyzerTest extends SimpleBaseTest {
   }
 
   private static Map<String, String> constructParameterMap() {
-    Map<String, String> map = Maps.newHashMap();
+    Map<String, String> map = new HashMap<>();
     map.put("counter", "3");
     return map;
   }

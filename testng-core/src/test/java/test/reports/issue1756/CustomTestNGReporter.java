@@ -2,7 +2,10 @@ package test.reports.issue1756;
 
 import java.util.LinkedList;
 import java.util.List;
-import org.testng.*;
+import org.testng.IReporter;
+import org.testng.IResultMap;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
 import org.testng.xml.XmlSuite;
 
 public class CustomTestNGReporter implements IReporter {

@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.testng.collections.Maps;
 import org.testng.internal.XmlMethodSelector;
 
 /**
@@ -16,11 +16,11 @@ import org.testng.internal.XmlMethodSelector;
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  */
 public class ClassMethodMap {
-  private final Map<Object, Collection<ITestNGMethod>> classMap = Maps.newConcurrentMap();
+  private final Map<Object, Collection<ITestNGMethod>> classMap = new ConcurrentHashMap<>();
   // These two variables are used throughout the workers to keep track
   // of what beforeClass/afterClass methods have been invoked
-  private final Map<ITestClass, Set<Object>> beforeClassMethods = Maps.newConcurrentMap();
-  private final Map<ITestClass, Set<Object>> afterClassMethods = Maps.newConcurrentMap();
+  private final Map<ITestClass, Set<Object>> beforeClassMethods = new ConcurrentHashMap<>();
+  private final Map<ITestClass, Set<Object>> afterClassMethods = new ConcurrentHashMap<>();
 
   public ClassMethodMap(List<ITestNGMethod> methods, XmlMethodSelector xmlMethodSelector) {
     for (ITestNGMethod m : methods) {

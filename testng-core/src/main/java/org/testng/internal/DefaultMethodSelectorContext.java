@@ -1,8 +1,8 @@
 package org.testng.internal;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.IMethodSelectorContext;
-import org.testng.collections.Maps;
 
 /**
  * Simple implementation of IMethodSelectorContext
@@ -12,7 +12,7 @@ import org.testng.collections.Maps;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public class DefaultMethodSelectorContext implements IMethodSelectorContext {
-  private final Map<Object, Object> m_userData = Maps.newHashMap();
+  private final Map<Object, Object> m_userData = new HashMap<>();
   private boolean m_isStopped = false;
 
   @Override

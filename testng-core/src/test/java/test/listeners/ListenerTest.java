@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.testng.TestNG;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 import test.listeners.github1029.Issue1029InvokedMethodListener;
@@ -42,7 +42,7 @@ public class ListenerTest extends SimpleBaseTest {
 
   @BeforeMethod
   public void bm() {
-    SimpleListener.m_list = Lists.newArrayList();
+    SimpleListener.m_list = new ArrayList<>();
     CallHolder.clear();
   }
 

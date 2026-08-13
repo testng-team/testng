@@ -2,6 +2,7 @@ package test.parameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
@@ -114,7 +114,7 @@ public class ParameterTest extends SimpleBaseTest {
           "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 1000",
           "Method test.parameters.Issue1061Sample.test() didn't finish within the time-out 3000"
         };
-    List<String> actualMsgs = Lists.newArrayList();
+    List<String> actualMsgs = new ArrayList<>();
     for (ITestResult result : listener.getFailedTests()) {
       actualMsgs.add(result.getThrowable().getMessage());
     }

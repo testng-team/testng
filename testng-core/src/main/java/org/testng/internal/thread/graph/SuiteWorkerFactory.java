@@ -1,9 +1,9 @@
 package org.testng.internal.thread.graph;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.ISuite;
 import org.testng.SuiteRunnerWorker;
-import org.testng.collections.Lists;
 import org.testng.internal.invokers.SuiteRunnerMap;
 import org.testng.thread.IThreadWorkerFactory;
 import org.testng.thread.IWorker;
@@ -33,7 +33,7 @@ public class SuiteWorkerFactory implements IThreadWorkerFactory<ISuite> {
    */
   @Override
   public List<IWorker<ISuite>> createWorkers(List<ISuite> suites) {
-    List<IWorker<ISuite>> suiteWorkers = Lists.newArrayList();
+    List<IWorker<ISuite>> suiteWorkers = new ArrayList<>();
     for (ISuite suiteRunner : suites) {
       SuiteRunnerWorker worker =
           new SuiteRunnerWorker(suiteRunner, m_suiteRunnerMap, m_verbose, m_defaultSuiteName);

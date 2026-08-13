@@ -13,7 +13,6 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.PackageUtils;
 import org.testng.xml.XmlClass;
@@ -151,8 +150,8 @@ public class BeforeGroupsTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     tng.addListener(listener);
     tng.run();
-    List<String> beforeGroups = Lists.newArrayList();
-    List<String> afterGroups = Lists.newArrayList();
+    List<String> beforeGroups = new ArrayList<>();
+    List<String> afterGroups = new ArrayList<>();
     for (String name : listener.getInvokedMethodNames()) {
       if (name.equalsIgnoreCase(BaseClassWithBeforeGroups.BEFORE_GROUPS)) {
         beforeGroups.add(name);

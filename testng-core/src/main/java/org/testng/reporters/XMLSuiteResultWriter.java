@@ -1,8 +1,10 @@
 package org.testng.reporters;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +18,6 @@ import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.CustomAttribute;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
 import org.testng.util.TimeUtils;
@@ -67,7 +66,7 @@ public class XMLSuiteResultWriter {
 
   private void writeAllToBuffer(XMLStringBuffer xmlBuffer, ISuiteResult suiteResult) {
     xmlBuffer.push(XMLReporterConfig.TAG_TEST, getSuiteResultAttributes(suiteResult));
-    Set<ITestResult> testResults = Sets.newLinkedHashSet();
+    Set<ITestResult> testResults = new LinkedHashSet<>();
     ITestContext testContext = suiteResult.getTestContext();
     addAllTestResults(testResults, testContext.getPassedTests());
     addAllTestResults(testResults, testContext.getFailedTests());
@@ -138,10 +137,10 @@ public class XMLSuiteResultWriter {
   }
 
   private Map<String, List<ITestResult>> buildTestClassGroups(Set<ITestResult> testResults) {
-    Map<String, List<ITestResult>> map = Maps.newHashMap();
+    Map<String, List<ITestResult>> map = new HashMap<>();
     for (ITestResult result : testResults) {
       String className = result.getTestClass().getName();
-      List<ITestResult> list = map.computeIfAbsent(className, k -> Lists.newArrayList());
+      List<ITestResult> list = map.computeIfAbsent(className, k -> new ArrayList<>());
       list.add(result);
     }
     return map;

@@ -3,6 +3,7 @@ package org.testng.internal.invokers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.testng.DataProviderHolder;
@@ -11,7 +12,6 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.internal.Configuration;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -72,7 +72,7 @@ public class ParameterHandlerTest extends SimpleBaseTest {
 
   private ParameterHandler.ParameterBag invokeParameterCreation(ITestNGMethod method) {
     ITestContext context = new FakeTestContext(method.getRealClass());
-    Map<String, String> map = Maps.newHashMap();
+    Map<String, String> map = new HashMap<>();
     return handler.createParameters(method, map, map, context);
   }
 }

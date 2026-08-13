@@ -1,14 +1,14 @@
 package test.retryAnalyzer.issue1946;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
 public class RetryAnalyzer implements IRetryAnalyzer {
 
-  public static List<String> logs = Lists.newArrayList();
+  public static List<String> logs = new ArrayList<>();
 
   private int retryCount = 0;
   private static final int MAX_RETRY_COUNT = 1;

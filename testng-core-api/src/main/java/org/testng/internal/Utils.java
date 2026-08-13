@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
 import org.testng.reporters.XMLStringBuffer;
 
@@ -254,7 +254,7 @@ public final class Utils {
     int start = 0;
     int idx = string.indexOf(sep, start);
     int len = sep.length();
-    List<String> strings = Lists.newArrayList();
+    List<String> strings = new ArrayList<>();
 
     while (idx != -1) {
       strings.add(string.substring(start, idx).trim());

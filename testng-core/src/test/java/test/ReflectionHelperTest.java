@@ -3,9 +3,9 @@ package test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.internal.reflect.ReflectionHelper;
 import test.github1405.TestClassSample;
 import test.github765.DuplicateCallsSample;
@@ -42,7 +42,7 @@ public class ReflectionHelperTest {
    *     getting injected into the test class only when the test is executed via Gradle.
    */
   private static Method[] prune(Method[] methods) {
-    List<Method> pruned = Lists.newArrayList(methods.length);
+    List<Method> pruned = new ArrayList<>(methods.length);
     for (Method method : methods) {
       if (!method.getName().contains("jacocoInit")) {
         pruned.add(method);

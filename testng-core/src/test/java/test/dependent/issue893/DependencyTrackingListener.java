@@ -1,6 +1,7 @@
 package test.dependent.issue893;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -8,7 +9,6 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Sets;
 
 public class DependencyTrackingListener implements ITestListener {
   private final Map<String, Set<String>> downstreamDependencies = new HashMap<>();
@@ -20,13 +20,13 @@ public class DependencyTrackingListener implements ITestListener {
     for (ITestNGMethod method : context.getAllTestMethods()) {
       String key = method.getQualifiedName();
       downstreamDependencies
-          .computeIfAbsent(key, k -> Sets.newHashSet())
+          .computeIfAbsent(key, k -> new HashSet<>())
           .addAll(
               method.downstreamDependencies().stream()
                   .map(ITestNGMethod::getQualifiedName)
                   .collect(Collectors.toList()));
       upstreamDependencies
-          .computeIfAbsent(key, k -> Sets.newHashSet())
+          .computeIfAbsent(key, k -> new HashSet<>())
           .addAll(
               method.upstreamDependencies().stream()
                   .map(ITestNGMethod::getQualifiedName)

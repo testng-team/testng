@@ -12,7 +12,6 @@ import org.testng.IInvokedMethodListener;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.collections.Lists;
 
 // TODO replace other test IInvokedMethodListener by this one
 public class InvokedMethodNameListener implements IInvokedMethodListener, ITestListener {
@@ -59,7 +58,7 @@ public class InvokedMethodNameListener implements IInvokedMethodListener, ITestL
     List<String> methodNames =
         mapping.computeIfAbsent(
             testResult.getMethod().getRealClass(),
-            k -> Collections.synchronizedList(Lists.newArrayList()));
+            k -> Collections.synchronizedList(new ArrayList<>()));
     methodNames.add(method.getTestMethod().getMethodName());
     String name = getName(testResult);
     switch (testResult.getStatus()) {

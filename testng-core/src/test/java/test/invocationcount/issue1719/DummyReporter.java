@@ -1,18 +1,18 @@
 package test.invocationcount.issue1719;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ITestResult;
-import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
 
 public class DummyReporter implements IReporter {
-  private final Set<ITestResult> failures = Sets.newHashSet();
-  private final Set<ITestResult> skip = Sets.newHashSet();
-  private final Set<ITestResult> success = Sets.newHashSet();
-  private final Set<ITestResult> failedWithinSuccessPercentage = Sets.newHashSet();
+  private final Set<ITestResult> failures = new HashSet<>();
+  private final Set<ITestResult> skip = new HashSet<>();
+  private final Set<ITestResult> success = new HashSet<>();
+  private final Set<ITestResult> failedWithinSuccessPercentage = new HashSet<>();
 
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String outputDirectory) {

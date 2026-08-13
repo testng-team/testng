@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.CommandLineArgs;
 import org.testng.ITestResult;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
@@ -20,14 +20,14 @@ public class ReasonForSkipTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1878")
   public void ensureSkipInfoHasFailedConfigDetails() {
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("testMethod", "beforeClass");
     runTest(expected, TestClassWithFailedConfig.class);
   }
 
   @Test(description = "GITHUB-1878")
   public void ensureSkipInfoHasFailedTestDetails() {
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("childMethod", "parentMethod");
     runTest(expected, TestClassWithFailedMethod.class);
   }
@@ -44,7 +44,7 @@ public class ReasonForSkipTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1878")
   public void ensureSkipInfoHasFailedConfigDetailsInBaseClass() {
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("testMethod", "beforeClass");
     expected.put("testMethodInChildClass", "beforeClass");
     runTest(expected, TestClassWithFailedConfigInParentClass.class);
@@ -52,7 +52,7 @@ public class ReasonForSkipTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1878")
   public void ensureSkipInfoHasFailedTestDetailsInBaseClass() {
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("childMethod", "parentMethod");
     expected.put("anotherChild", "parentMethod");
     runTest(expected, TestClassWithFailedMethodInParentClass.class);
@@ -60,7 +60,7 @@ public class ReasonForSkipTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-1878")
   public void ensureSkipInfoHasGlobalConfigFailureDetails() {
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("testMethod", "beforeTest");
     runTest(expected, TestClassWithOnlyGlobalConfig.class, TestClassWithOnlyTestMethods.class);
   }
@@ -74,7 +74,7 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     ReasonReporter reporter = new ReasonReporter();
     testng.addListener(reporter);
     testng.run();
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("integrationTests", "unitTests");
     assertThat(reporter.getSkippedInfo()).containsAllEntriesOf(expected);
   }
@@ -99,7 +99,7 @@ public class ReasonForSkipTest extends SimpleBaseTest {
     testng.addListener(reporter);
     testng.run();
     Map<String, Integer> actual = reporter.getResults();
-    Map<String, Integer> expected = Maps.newHashMap();
+    Map<String, Integer> expected = new HashMap<>();
     expected.put("test1min", ITestResult.SKIP);
     expected.put("test2min", ITestResult.SKIP);
     expected.put("setup", ITestResult.FAILURE);

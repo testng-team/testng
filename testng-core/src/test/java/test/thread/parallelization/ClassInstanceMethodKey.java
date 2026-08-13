@@ -1,6 +1,8 @@
 package test.thread.parallelization;
 
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.*;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
 
 import java.util.Objects;
 

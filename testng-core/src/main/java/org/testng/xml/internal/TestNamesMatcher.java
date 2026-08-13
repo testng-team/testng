@@ -1,9 +1,10 @@
 package org.testng.xml.internal;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.log4testng.Logger;
 import org.testng.util.Strings;
 import org.testng.xml.XmlSuite;
@@ -19,9 +20,9 @@ public final class TestNamesMatcher {
 
   private static final Logger LOGGER = Logger.getLogger(TestNamesMatcher.class);
 
-  private final List<XmlSuite> cloneSuites = Lists.newArrayList();
-  private final List<String> matchedTestNames = Lists.newArrayList();
-  private final List<XmlTest> matchedTests = Lists.newArrayList();
+  private final List<XmlSuite> cloneSuites = new ArrayList<>();
+  private final List<String> matchedTestNames = new ArrayList<>();
+  private final List<XmlTest> matchedTests = new ArrayList<>();
   private final List<String> testNames;
   private final boolean ignoreMissedTestNames;
 
@@ -88,7 +89,7 @@ public final class TestNamesMatcher {
   }
 
   public List<String> getMissedTestNames() {
-    List<String> missedTestNames = Lists.newArrayList();
+    List<String> missedTestNames = new ArrayList<>();
     missedTestNames.addAll(testNames);
     missedTestNames.removeIf(
         regex ->
@@ -116,7 +117,7 @@ public final class TestNamesMatcher {
   }
 
   private XmlSuite cloneIfSuiteContainTestsWithNamesMatchingAny(XmlSuite suite) {
-    List<XmlTest> tests = Lists.newLinkedList();
+    List<XmlTest> tests = new LinkedList<>();
     for (XmlTest xt : suite.getTests()) {
       if (xt.nameMatchesAny(testNames)) {
         tests.add(xt);

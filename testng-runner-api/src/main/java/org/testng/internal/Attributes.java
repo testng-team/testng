@@ -2,13 +2,13 @@ package org.testng.internal;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IAttributes;
-import org.testng.collections.Maps;
 
 /** Simple implementation of IAttributes. */
 public class Attributes implements IAttributes {
 
-  private final Map<String, Object> m_attributes = Maps.newConcurrentMap();
+  private final Map<String, Object> m_attributes = new ConcurrentHashMap<>();
 
   @Override
   public Object getAttribute(String name) {

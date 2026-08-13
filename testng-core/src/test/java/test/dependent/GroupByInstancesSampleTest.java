@@ -1,14 +1,14 @@
 package test.dependent;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 public class GroupByInstancesSampleTest {
   private final String m_country;
-  public static List<String> m_log = Lists.newArrayList();
+  public static List<String> m_log = new ArrayList<>();
 
   private static void log(String method, String country) {
     m_log.add(method + "#" + country);

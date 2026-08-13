@@ -3,13 +3,13 @@ package org.testng.internal.reflect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.testng.collections.Lists;
 
 public class ReflectionHelper {
   /**
@@ -20,7 +20,7 @@ public class ReflectionHelper {
     Method[] declaredMethods = excludingMain(clazz);
     List<Method> defaultMethods = getDefaultMethods(clazz);
     if (defaultMethods.isEmpty()) {
-      List<Method> prunedMethods = Lists.newArrayList();
+      List<Method> prunedMethods = new ArrayList<>();
       for (Method declaredMethod : declaredMethods) {
         if (!declaredMethod.isBridge()) {
           prunedMethods.add(declaredMethod);

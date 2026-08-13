@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.testng.collections.Lists;
 import org.testng.internal.protocols.Input;
 import org.testng.internal.protocols.Processor;
 import org.testng.internal.protocols.UnhandledIOException;
@@ -69,7 +69,7 @@ public class PackageUtils {
 
     // go through additional class loaders
     List<ClassLoader> allClassLoaders =
-        ClassHelper.appendContextualClassLoaders(Lists.newArrayList(classLoaders));
+        ClassHelper.appendContextualClassLoaders(new ArrayList<>(classLoaders));
 
     return allClassLoaders.stream()
         .filter(Objects::nonNull)

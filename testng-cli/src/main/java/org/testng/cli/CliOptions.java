@@ -1,7 +1,7 @@
 package org.testng.cli;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -68,7 +68,7 @@ public class CliOptions {
   public static final String USE_GLOBAL_THREAD_POOL = "-useGlobalThreadPool";
 
   /** The XML suite files to run. */
-  public List<String> suiteFiles = Lists.newArrayList();
+  public List<String> suiteFiles = new ArrayList<>();
 
   /** Level of verbosity. */
   public Integer verbose;
@@ -148,7 +148,7 @@ public class CliOptions {
   public String listenerFactory;
 
   /** Comma separated list of test methods. */
-  public List<String> commandLineMethods = Lists.newArrayList();
+  public List<String> commandLineMethods = new ArrayList<>();
 
   /** Size of the thread pool to use to run suites. */
   public Integer suiteThreadPoolSize = SUITE_THREAD_POOL_SIZE_DEFAULT;

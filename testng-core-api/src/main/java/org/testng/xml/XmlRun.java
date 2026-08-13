@@ -1,7 +1,7 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 public class XmlRun {
 
@@ -14,7 +14,7 @@ public class XmlRun {
     return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
-  private List<String> m_excludes = Lists.newArrayList();
+  private List<String> m_excludes = new ArrayList<>();
 
   public List<String> getExcludes() {
     return m_excludes;
@@ -24,7 +24,7 @@ public class XmlRun {
     m_excludes.add(name);
   }
 
-  private List<String> m_includes = Lists.newArrayList();
+  private List<String> m_includes = new ArrayList<>();
 
   public List<String> getIncludes() {
     return m_includes;

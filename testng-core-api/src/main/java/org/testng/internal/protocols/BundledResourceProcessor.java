@@ -6,8 +6,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 class BundledResourceProcessor extends Processor {
   @Override
@@ -38,6 +38,6 @@ class BundledResourceProcessor extends Processor {
     } catch (Exception ex) {
       // ignore - probably not an Eclipse OSGi bundle
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 }

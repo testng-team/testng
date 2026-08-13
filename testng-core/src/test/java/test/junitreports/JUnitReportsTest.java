@@ -3,12 +3,16 @@ package test.junitreports;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static test.junitreports.TestClassContainerForGithubIssue1265.*;
+import static test.junitreports.TestClassContainerForGithubIssue1265.FirstTest;
+import static test.junitreports.TestClassContainerForGithubIssue1265.SecondTest;
+import static test.junitreports.TestClassContainerForGithubIssue1265.ThirdTest;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -24,8 +28,6 @@ import org.testng.ITestNGListener;
 import org.testng.Reporter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.reporters.XMLConstants;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -71,7 +73,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
   public void testJUnitReportReporterWithMultipleClasses() throws IOException {
     Path outputDir = TestHelper.createRandomDirectory();
     Class<?>[] classes = new Class<?>[] {FirstTest.class, SecondTest.class, ThirdTest.class};
-    Map<Class<?>, Map<String, Integer>> mapping = Maps.newHashMap();
+    Map<Class<?>, Map<String, Integer>> mapping = new HashMap<>();
     mapping.put(FirstTest.class, createMapFor(2, 1));
     mapping.put(SecondTest.class, createMapFor(1, 0));
     mapping.put(ThirdTest.class, createMapFor(1, 0));
@@ -114,7 +116,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
     Testsuite suite = reportReporter.getTestsuite(Issue1262TestSample.class.getName());
     List<String> expected =
         List.of("testRoles001_Post", "testRoles002_Post", "testRoles003_Post", "testRoles004_Post");
-    List<String> actual = Lists.newLinkedList();
+    List<String> actual = new LinkedList<>();
     for (Testcase testcase : suite.getTestcase()) {
       actual.add(testcase.getName().trim());
     }
@@ -324,7 +326,7 @@ public class JUnitReportsTest extends SimpleBaseTest {
   }
 
   private static Map<String, Integer> createMapFor(int testCount, int skipped) {
-    Map<String, Integer> map = Maps.newHashMap();
+    Map<String, Integer> map = new HashMap<>();
     map.put(TESTS, testCount);
     map.put(ERRORS, 0);
     map.put(IGNORED, 0);

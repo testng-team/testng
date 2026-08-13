@@ -1,18 +1,18 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.collections.Objects;
 import org.testng.internal.ClassHelper;
 
 /** This class describes the tag <code>&lt;class&gt;</code> in testng.xml. */
 public class XmlClass implements Cloneable {
 
-  private List<XmlInclude> m_includedMethods = Lists.newArrayList();
-  private List<String> m_excludedMethods = Lists.newArrayList();
+  private List<XmlInclude> m_includedMethods = new ArrayList<>();
+  private List<String> m_excludedMethods = new ArrayList<>();
   private String m_name = null;
   private Class m_class = null;
   /** The index of this class in the &lt;test&gt; tag */
@@ -20,7 +20,7 @@ public class XmlClass implements Cloneable {
   /** True if the classes need to be loaded */
   private boolean m_loadClasses = true;
 
-  private Map<String, String> m_parameters = Maps.newHashMap();
+  private Map<String, String> m_parameters = new HashMap<>();
   private XmlTest m_xmlTest;
 
   public XmlClass() {
@@ -215,7 +215,7 @@ public class XmlClass implements Cloneable {
 
   /** @return The parameters defined in this test tag and the tags above it. */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     if (m_xmlTest != null) {
       result.putAll(m_xmlTest.getLocalParameters());
     }

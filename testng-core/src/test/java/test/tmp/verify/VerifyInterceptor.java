@@ -3,6 +3,7 @@ package test.tmp.verify;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.IMethodInstance;
@@ -10,7 +11,6 @@ import org.testng.IMethodInterceptor;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGUtils;
-import org.testng.collections.Maps;
 
 public class VerifyInterceptor implements IMethodInterceptor {
 
@@ -26,7 +26,7 @@ public class VerifyInterceptor implements IMethodInterceptor {
   public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
 
     List<IMethodInstance> result = new ArrayList<>();
-    Map<Class<?>, List<IMethodInstance>> verifyMethods = Maps.newHashMap();
+    Map<Class<?>, List<IMethodInstance>> verifyMethods = new HashMap<>();
     for (IMethodInstance mi : methods) {
       ITestNGMethod tm = mi.getMethod();
       List<IMethodInstance> verify = verifyMethods.get(tm.getRealClass());

@@ -2,12 +2,12 @@ package test.mannotation.issue1976;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.testhelper.CompiledCode;
 import org.testng.testhelper.SimpleCompiler;
 import org.testng.testhelper.SourceCode;
@@ -26,7 +26,7 @@ public class IssueTest extends ClassLoader {
     TestNGSimpleClassLoader classLoader = new TestNGSimpleClassLoader();
     tng.addClassLoader(classLoader);
     List<CompiledCode> byteCodes = SimpleCompiler.compileSourceCode(sources);
-    List<Class<?>> classes = Lists.newArrayList();
+    List<Class<?>> classes = new ArrayList<>();
     for (CompiledCode byteCode : byteCodes) {
       if (byteCode.isSkipLoading()) {
         continue;

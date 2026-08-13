@@ -1,6 +1,7 @@
 package test.factory.issue1041;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.IReporter;
@@ -9,12 +10,11 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 
 public class ResultExtractor implements IReporter {
 
-  private Map<Object, Object[]> data = Maps.newHashMap();
+  private Map<Object, Object[]> data = new HashMap<>();
 
   @Override
   public void generateReport(

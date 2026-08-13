@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +22,6 @@ import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.LiteWeightTestNGMethod;
 import org.testng.internal.MethodHelper;
@@ -124,12 +123,12 @@ public class FailedReporter implements IReporter {
     if (skippedTests.isEmpty() && failedTests.isEmpty()) {
       return false;
     }
-    Set<ITestNGMethod> methodsToReRun = Sets.newHashSet();
+    Set<ITestNGMethod> methodsToReRun = new HashSet<>();
     Set<ITestResult> passedTests = context.getPassedTests().getAllResults();
 
     // Get the transitive closure of all the failed methods and the methods
     // they depend on
-    Set<ITestResult> allTests = Sets.newHashSet();
+    Set<ITestResult> allTests = new HashSet<>();
     allTests.addAll(failedTests);
     allTests.addAll(skippedTests);
     ITestNGMethod[] allTestMethods = context.getAllTestMethods();
@@ -160,8 +159,8 @@ public class FailedReporter implements IReporter {
     // in the methodToReRun map.  Since the methods are already
     // sorted, we don't need to sort them again.
     //
-    List<ITestNGMethod> result = Lists.newArrayList();
-    Set<ITestNGMethod> relevantConfigs = Sets.newHashSet();
+    List<ITestNGMethod> result = new ArrayList<>();
+    Set<ITestNGMethod> relevantConfigs = new HashSet<>();
     for (ITestNGMethod m : allTestMethods) {
       if (RuntimeBehavior.isMemoryFriendlyMode()) {
         // We are doing this because the `m` would not be of type
@@ -258,19 +257,19 @@ public class FailedReporter implements IReporter {
    *     methods
    */
   private List<XmlClass> createXmlClasses(List<ITestNGMethod> methods, XmlTest srcXmlTest) {
-    List<XmlClass> result = Lists.newArrayList();
-    Map<Class<?>, Set<ITestNGMethod>> methodsMap = Maps.newHashMap();
+    List<XmlClass> result = new ArrayList<>();
+    Map<Class<?>, Set<ITestNGMethod>> methodsMap = new HashMap<>();
 
     for (ITestNGMethod m : methods) {
       Object instances = m.getInstance();
       Class<?> clazz = instances == null ? m.getRealClass() : instances.getClass();
-      Set<ITestNGMethod> methodList = methodsMap.computeIfAbsent(clazz, k -> Sets.newHashSet());
+      Set<ITestNGMethod> methodList = methodsMap.computeIfAbsent(clazz, k -> new HashSet<>());
       methodList.add(m);
     }
 
     // Store parameters per XmlClass
 
-    Map<String, Map<String, String>> classParameters = Maps.newHashMap();
+    Map<String, Map<String, String>> classParameters = new HashMap<>();
     for (XmlClass c : srcXmlTest.getClasses()) {
       classParameters.put(c.getName(), c.getLocalParameters());
     }

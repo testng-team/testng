@@ -9,6 +9,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,9 +23,6 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.Attributes;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ClassBasedWrapper;
@@ -86,15 +87,15 @@ public class TestRunner
   private IAnnotationFinder m_annotationFinder = null;
 
   /** ITestListeners support. */
-  private final List<ITestListener> m_testListeners = Lists.newArrayList();
+  private final List<ITestListener> m_testListeners = new ArrayList<>();
 
-  private final Set<IConfigurationListener> m_configurationListeners = Sets.newLinkedHashSet();
-  private final Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
+  private final Set<IConfigurationListener> m_configurationListeners = new LinkedHashSet<>();
+  private final Set<IExecutionVisualiser> visualisers = new HashSet<>();
 
   private final IConfigurationListener m_confListener = new ConfigurationListener();
 
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
-      Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
   private final DataProviderHolder holder;
 
   private Date m_startDate = new Date();
@@ -103,7 +104,7 @@ public class TestRunner
       new TestMethodContainer(this::computeAndGetAllTestMethods);
 
   /** A map to keep track of Class <-> IClass. */
-  private final Map<Class<?>, ITestClass> m_classMap = Maps.newLinkedHashMap();
+  private final Map<Class<?>, ITestClass> m_classMap = new LinkedHashMap<>();
 
   /** Where the reports will be created. */
   private String m_outputDirectory = DEFAULT_PROP_OUTPUT_DIR;
@@ -126,11 +127,11 @@ public class TestRunner
   private ITestNGMethod[] m_afterSuiteMethods = {};
   private ITestNGMethod[] m_beforeXmlTestMethods = {};
   private ITestNGMethod[] m_afterXmlTestMethods = {};
-  private final List<ITestNGMethod> m_excludedMethods = Lists.newArrayList();
+  private final List<ITestNGMethod> m_excludedMethods = new ArrayList<>();
   private ConfigurationGroupMethods m_groupMethods = null;
 
   // Meta groups
-  private final Map<String, List<String>> m_metaGroups = Maps.newHashMap();
+  private final Map<String, List<String>> m_metaGroups = new HashMap<>();
 
   // All the tests that were run along with their result
   private final IResultMap m_passedTests = new ResultMap();
@@ -306,7 +307,7 @@ public class TestRunner
    * Never returns null.
    */
   private List<XmlPackage> getAllPackages() {
-    final List<XmlPackage> allPackages = Lists.newArrayList();
+    final List<XmlPackage> allPackages = new ArrayList<>();
     final List<XmlPackage> suitePackages = this.m_xmlTest.getSuite().getPackages();
     if (suitePackages != null) {
       allPackages.addAll(suitePackages);
@@ -356,7 +357,7 @@ public class TestRunner
     // Find all the listener factories and collect all the listeners requested in a
     // @Listeners annotation.
     //
-    Set<Class<? extends ITestNGListener>> listenerClasses = Sets.newLinkedHashSet();
+    Set<Class<? extends ITestNGListener>> listenerClasses = new LinkedHashSet<>();
     Class<? extends ITestNGListenerFactory> listenerFactoryClass = null;
 
     for (IClass cls : getTestClasses()) {
@@ -438,17 +439,17 @@ public class TestRunner
     //
     // Calculate all the methods we need to invoke
     //
-    List<ITestNGMethod> beforeClassMethods = Lists.newArrayList();
-    List<ITestNGMethod> testMethods = Lists.newArrayList();
-    List<ITestNGMethod> afterClassMethods = Lists.newArrayList();
-    List<ITestNGMethod> beforeSuiteMethods = Lists.newArrayList();
-    List<ITestNGMethod> afterSuiteMethods = Lists.newArrayList();
-    List<ITestNGMethod> beforeXmlTestMethods = Lists.newArrayList();
-    List<ITestNGMethod> afterXmlTestMethods = Lists.newArrayList();
+    List<ITestNGMethod> beforeClassMethods = new ArrayList<>();
+    List<ITestNGMethod> testMethods = new ArrayList<>();
+    List<ITestNGMethod> afterClassMethods = new ArrayList<>();
+    List<ITestNGMethod> beforeSuiteMethods = new ArrayList<>();
+    List<ITestNGMethod> afterSuiteMethods = new ArrayList<>();
+    List<ITestNGMethod> beforeXmlTestMethods = new ArrayList<>();
+    List<ITestNGMethod> afterXmlTestMethods = new ArrayList<>();
 
     ClassInfoMap classMap = new ClassInfoMap(m_testClassesFromXml);
     m_testClassFinder =
-        new TestNGClassFinder(classMap, Maps.newHashMap(), m_configuration, this, holder);
+        new TestNGClassFinder(classMap, new HashMap<>(), m_configuration, this, holder);
     ITestMethodFinder testMethodFinder =
         new TestNGMethodFinder(m_objectFactory, m_runInfo, m_annotationFinder, comparator);
 
@@ -565,7 +566,7 @@ public class TestRunner
   }
 
   private ITestNGMethod[] computeAndGetAllTestMethods() {
-    List<ITestNGMethod> testMethods = Lists.newArrayList();
+    List<ITestNGMethod> testMethods = new ArrayList<>();
     for (ITestClass tc : m_classMap.values()) {
       fixMethodsWithClass(tc.getTestMethods(), tc, testMethods);
     }
@@ -690,16 +691,16 @@ public class TestRunner
       if (each instanceof BaseTestMethod) {
         // We don't want our users to change this vital info. That is why the setter is NOT
         // being exposed via the interface, and so we resort to an "instanceof" check.
-        Set<ITestNGMethod> downstream = Sets.newHashSet(graph.getDependenciesFor(each));
+        Set<ITestNGMethod> downstream = new HashSet<>(graph.getDependenciesFor(each));
         ((BaseTestMethod) each).setDownstreamDependencies(downstream);
-        Set<ITestNGMethod> upstream = Sets.newHashSet(graph.getUpstreamDependenciesFor(each));
+        Set<ITestNGMethod> upstream = new HashSet<>(graph.getUpstreamDependenciesFor(each));
         ((BaseTestMethod) each).setUpstreamDependencies(upstream);
       }
     }
 
     Collection<IExecutionVisualiser> original =
         sort(this.visualisers, m_configuration.getListenerComparator());
-    graph.setVisualisers(Sets.newLinkedHashSet(original));
+    graph.setVisualisers(new LinkedHashSet<>(original));
     // In some cases, additional sorting is needed to make sure tests run in the appropriate order.
     // If the user specified a method interceptor, or if we have any methods that have a non-default
     // priority on them, we need to sort.
@@ -968,7 +969,7 @@ public class TestRunner
 
   @Override
   public Collection<ITestNGMethod> getExcludedMethods() {
-    Map<ITestNGMethod, ITestNGMethod> vResult = Maps.newHashMap();
+    Map<ITestNGMethod, ITestNGMethod> vResult = new HashMap<>();
 
     for (ITestNGMethod m : m_excludedMethods) {
       vResult.put(m, m);

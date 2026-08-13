@@ -1,6 +1,7 @@
 package test.listeners.issue2916;
 
-import org.testng.annotations.*;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class DataProviderSampleTestCase {
 

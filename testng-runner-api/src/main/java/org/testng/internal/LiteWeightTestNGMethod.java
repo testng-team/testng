@@ -12,7 +12,6 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlTest;
 
 public class LiteWeightTestNGMethod implements ITestNGMethod {
@@ -147,7 +146,7 @@ public class LiteWeightTestNGMethod implements ITestNGMethod {
           @Override
           public List<Integer> getIndices() {
             if (dp == null) {
-              return Lists.newArrayList();
+              return new ArrayList<>();
             }
             return dp.getIndices();
           }

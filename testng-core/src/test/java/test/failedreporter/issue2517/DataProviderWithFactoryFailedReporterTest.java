@@ -3,12 +3,12 @@ package test.failedreporter.issue2517;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import test.SimpleBaseTest;
 
 public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
@@ -47,7 +47,7 @@ public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
       File outputDir, String[] expectedMethods, String expectedLine, int expected) {
     File failed = new File(outputDir, "testng-failed.xml");
     for (String s : expectedMethods) {
-      List<String> resultLines = Lists.newArrayList();
+      List<String> resultLines = new ArrayList<>();
       grep(failed, String.format(expectedLine, s), resultLines);
       assertThat(resultLines.size()).isEqualTo(expected);
     }

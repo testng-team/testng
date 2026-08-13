@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.reporters.FailedReporter;
 import org.testng.xml.XmlSuite;
 import test.TestHelper;
@@ -97,7 +96,7 @@ public class FailuresTest extends BaseFailuresTest {
     testng.addListener(listener);
     testng.run();
 
-    Map<String, List<Integer>> expected = Maps.newHashMap();
+    Map<String, List<Integer>> expected = new HashMap<>();
     expected.put("testPrimeNumberChecker", Arrays.asList(3, 4));
     expected.put("testNumberEquality", Arrays.asList(2, 3));
     assertThat(listener.getFailedTests()).containsAllEntriesOf(expected);

@@ -1,12 +1,12 @@
 package test.aftergroups.issue1880;
 
+import java.util.LinkedList;
 import java.util.List;
 import org.testng.IConfigurationListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
 public class LocalConfigListener implements IConfigurationListener {
-  private final List<String> messages = Lists.newLinkedList();
+  private final List<String> messages = new LinkedList<>();
 
   @Override
   public void onConfigurationSuccess(ITestResult itr) {

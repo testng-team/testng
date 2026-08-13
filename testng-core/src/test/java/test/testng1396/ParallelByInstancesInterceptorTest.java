@@ -2,6 +2,7 @@ package test.testng1396;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.testng.IMethodInstance;
@@ -13,7 +14,6 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
 public class ParallelByInstancesInterceptorTest {
@@ -79,7 +79,7 @@ public class ParallelByInstancesInterceptorTest {
   public class ReverseOrderTestInterceptor implements IMethodInterceptor {
     @Override
     public List<IMethodInstance> intercept(List<IMethodInstance> methods, ITestContext context) {
-      List<IMethodInstance> sorted = Lists.newArrayList(methods);
+      List<IMethodInstance> sorted = new ArrayList<>(methods);
       sorted.sort(new PriorityComparator());
       return sorted;
     }

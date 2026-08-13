@@ -1,9 +1,9 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 
 public interface ITestClassConfigInfo {
 
@@ -30,13 +30,13 @@ public interface ITestClassConfigInfo {
     if (tc instanceof ITestClassConfigInfo) {
       return ((ITestClassConfigInfo) tc).getAllBeforeClassMethods();
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   static List<ITestNGMethod> allAfterClassMethods(ITestClass tc) {
     if (tc instanceof ITestClassConfigInfo) {
       return ((ITestClassConfigInfo) tc).getAllAfterClassMethods();
     }
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 }

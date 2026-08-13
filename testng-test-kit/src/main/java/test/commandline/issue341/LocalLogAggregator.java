@@ -3,14 +3,14 @@ package test.commandline.issue341;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.collections.Maps;
 
 public class LocalLogAggregator implements IInvokedMethodListener {
-  private static final Set<String> logs = Collections.newSetFromMap(Maps.newConcurrentMap());
+  private static final Set<String> logs = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

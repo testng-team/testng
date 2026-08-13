@@ -1,7 +1,11 @@
 package test.testng674;
 
 import org.testng.SkipException;
-import org.testng.annotations.*;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 public class TestClassSampleContainer {
   public static final String ERROR_MSG = "GITHUB-674 Exception";

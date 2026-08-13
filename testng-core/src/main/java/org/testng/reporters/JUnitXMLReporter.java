@@ -3,6 +3,8 @@ package org.testng.reporters;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Queue;
@@ -12,8 +14,6 @@ import java.util.regex.Pattern;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.IResultListener2;
 import org.testng.internal.Utils;
@@ -31,7 +31,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   private static final Pattern GREATER = Pattern.compile(">");
   private static final Pattern SINGLE_QUOTE = Pattern.compile("'");
   private static final Pattern QUOTE = Pattern.compile("\"");
-  private static final Map<String, Pattern> ATTR_ESCAPES = Maps.newHashMap();
+  private static final Map<String, Pattern> ATTR_ESCAPES = new HashMap<>();
 
   static {
     ATTR_ESCAPES.put("&lt;", LESS);
@@ -43,7 +43,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   private int m_numFailed = 0;
   private Queue<ITestResult> m_allTests = new ConcurrentLinkedDeque<>();
   private Queue<ITestResult> m_configIssues = new ConcurrentLinkedDeque<>();
-  private final Map<String, String> m_fileNameMap = Maps.newHashMap();
+  private final Map<String, String> m_fileNameMap = new HashMap<>();
   private int m_fileNameIncrementer = 0;
 
   /** Invoked each time a test succeeds. */
@@ -180,7 +180,7 @@ public class JUnitXMLReporter implements IResultListener2 {
   }
 
   private Set<String> getPackages(ITestContext context) {
-    Set<String> result = Sets.newHashSet();
+    Set<String> result = new HashSet<>();
     for (ITestNGMethod m : context.getAllTestMethods()) {
       Package pkg = m.getRealClass().getPackage();
       if (pkg != null) {

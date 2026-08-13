@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
 import org.testng.xml.IPostProcessor;
@@ -25,7 +26,7 @@ class JarFileUtils {
   private final String xmlPathInJar;
   private final boolean ignoreMissedTestNames;
   private final List<String> testNames;
-  private final List<XmlSuite> suites = Lists.newLinkedList();
+  private final List<XmlSuite> suites = new LinkedList<>();
   private final XmlSuite.ParallelMode mode;
 
   JarFileUtils(IPostProcessor processor, String xmlPathInJar, List<String> testNames) {
@@ -66,7 +67,7 @@ class JarFileUtils {
 
       Utils.log("TestNG", 2, "Trying to open jar file:" + jarFile);
 
-      List<String> classes = Lists.newArrayList();
+      List<String> classes = new ArrayList<>();
       boolean foundTestngXml = testngXmlExistsInJar(jarFile, classes);
       if (!foundTestngXml) {
         Utils.log(

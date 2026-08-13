@@ -2,7 +2,6 @@ package org.testng;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -21,7 +20,7 @@ import org.testng.xml.XmlSuite;
 public class CommandLineArgs {
 
   /** The XML suite files to run. */
-  public List<String> suiteFiles = Lists.newArrayList();
+  public List<String> suiteFiles = new ArrayList<>();
 
   public static final String LOG = "-log";
   public static final String VERBOSE = "-verbose";

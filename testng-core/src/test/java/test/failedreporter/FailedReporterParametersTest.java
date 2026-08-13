@@ -6,15 +6,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.reporters.FailedReporter;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
@@ -116,7 +116,7 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
   }
 
   private static Map<String, String> create(String prefix) {
-    Map<String, String> params = Maps.newHashMap();
+    Map<String, String> params = new HashMap<>();
     params.put(prefix + "Param", prefix + "ParamValue");
     return params;
   }
@@ -124,7 +124,7 @@ public class FailedReporterParametersTest extends SimpleBaseTest {
   private static void runAssertions(File outputDir, String expectedFormat, String[] expectedKeys) {
     File failed = new File(outputDir, "testng-failed.xml");
     for (String expectedKey : expectedKeys) {
-      List<String> resultLines = Lists.newArrayList();
+      List<String> resultLines = new ArrayList<>();
       grep(failed, String.format(expectedFormat, expectedKey, expectedKey + "Value"), resultLines);
       int expectedSize = 1;
       assertThat(resultLines.size())

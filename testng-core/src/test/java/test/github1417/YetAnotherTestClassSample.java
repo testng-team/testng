@@ -2,17 +2,17 @@ package test.github1417;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 public class YetAnotherTestClassSample {
   private static YetAnotherTestClassSample instance;
 
-  private List<String> browsers = Lists.newArrayList();
+  private List<String> browsers = new ArrayList<>();
 
   public YetAnotherTestClassSample() {
     setInstance(this);

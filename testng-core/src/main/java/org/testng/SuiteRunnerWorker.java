@@ -1,11 +1,11 @@
 package org.testng;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.collections.Objects;
 import org.testng.internal.Utils;
 import org.testng.internal.invokers.SuiteRunnerMap;
@@ -108,7 +108,7 @@ public class SuiteRunnerWorker implements IWorker<ISuite> {
 
   @Override
   public List<ISuite> getTasks() {
-    List<ISuite> suiteRunnerList = Lists.newArrayList();
+    List<ISuite> suiteRunnerList = new ArrayList<>();
     suiteRunnerList.add(m_suiteRunner);
     return suiteRunnerList;
   }
@@ -187,7 +187,7 @@ class SuiteResultCounts {
         skipped++;
       }
     }
-    Map<String, Integer> data = Maps.newHashMap();
+    Map<String, Integer> data = new HashMap<>();
     data.put(SKIPPED, skipped);
     data.put(RETRIED, retried);
     return data;

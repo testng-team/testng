@@ -2,12 +2,12 @@ package test.thread;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.AutoCloseableLock;
 import test.SimpleBaseTest;
 
@@ -21,9 +21,9 @@ public class BaseThreadTest extends SimpleBaseTest {
   private static final AutoCloseableLock suiteMapLock = new AutoCloseableLock();
 
   static void initThreadLog() {
-    m_threadIds = Sets.newHashSet();
-    m_suitesMap = Maps.newHashMap();
-    m_strings = Lists.newArrayList();
+    m_threadIds = new HashSet<>();
+    m_suitesMap = new HashMap<>();
+    m_strings = new ArrayList<>();
   }
 
   protected void logString(String s) {

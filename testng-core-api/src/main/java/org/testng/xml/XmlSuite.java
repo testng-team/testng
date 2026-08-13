@@ -1,15 +1,15 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.testng.ITestObjectFactory;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
@@ -162,16 +162,16 @@ public class XmlSuite implements Cloneable {
   private Boolean m_allowReturnValues = DEFAULT_ALLOW_RETURN_VALUES;
 
   /** The packages containing test classes. */
-  private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
+  private List<XmlPackage> m_xmlPackages = new ArrayList<>();
 
   /** Suite level method selectors. */
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
 
   /** Tests in suite. */
-  private List<XmlTest> m_tests = Lists.newArrayList();
+  private List<XmlTest> m_tests = new ArrayList<>();
 
   /** Suite level parameters. */
-  private Map<String, String> m_parameters = Maps.newHashMap();
+  private Map<String, String> m_parameters = new HashMap<>();
 
   /** Name of the XML file. */
   private String m_fileName;
@@ -180,16 +180,16 @@ public class XmlSuite implements Cloneable {
   private String m_timeOut;
 
   /** List of child XML suites specified using <suite-file> tags. */
-  private final List<XmlSuite> m_childSuites = Lists.newArrayList();
+  private final List<XmlSuite> m_childSuites = new ArrayList<>();
 
   /** Parent XML suite if this suite was specified in another suite using <suite-file> tag. */
   private XmlSuite m_parentSuite;
 
-  private List<String> m_suiteFiles = Lists.newArrayList();
+  private List<String> m_suiteFiles = new ArrayList<>();
 
   private Class<? extends ITestObjectFactory> m_objectFactoryClass;
 
-  private List<String> m_listeners = Lists.newArrayList();
+  private List<String> m_listeners = new ArrayList<>();
 
   public static final Boolean DEFAULT_PRESERVE_ORDER = Boolean.TRUE;
   private Boolean m_preserveOrder = DEFAULT_PRESERVE_ORDER;
@@ -374,7 +374,7 @@ public class XmlSuite implements Cloneable {
    * @param methodSelectors The method selectors.
    */
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = Lists.newArrayList(methodSelectors);
+    m_methodSelectors = new ArrayList<>(methodSelectors);
   }
 
   /**
@@ -420,7 +420,7 @@ public class XmlSuite implements Cloneable {
 
   /** @return The parameters defined in this suite and all its XmlTests. */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     result.putAll(m_parameters);
 
     for (XmlTest test : getTests()) {
@@ -468,7 +468,7 @@ public class XmlSuite implements Cloneable {
    * @param packages The XML packages.
    */
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = Lists.newArrayList(packages);
+    m_xmlPackages = new ArrayList<>(packages);
   }
 
   /**
@@ -831,7 +831,7 @@ public class XmlSuite implements Cloneable {
       return m_xmlGroups.getRun().getIncludes();
     } else {
       // deprecated. Use mutable list because there are unit tests which modifies it
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 
@@ -939,7 +939,7 @@ public class XmlSuite implements Cloneable {
   }
 
   public Collection<String> getPackageNames() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     for (XmlPackage p : getPackages()) {
       result.add(p.getName());
     }

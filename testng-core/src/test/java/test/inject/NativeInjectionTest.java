@@ -1,10 +1,32 @@
 package test.inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static test.inject.NativeInjectionTestSamples.*;
+import static test.inject.NativeInjectionTestSamples.BadAfterClassSample;
+import static test.inject.NativeInjectionTestSamples.BadAfterGroupsSample;
+import static test.inject.NativeInjectionTestSamples.BadAfterMethodSample;
+import static test.inject.NativeInjectionTestSamples.BadAfterSuiteSample;
+import static test.inject.NativeInjectionTestSamples.BadAfterTestSample;
+import static test.inject.NativeInjectionTestSamples.BadBeforeClassSample;
+import static test.inject.NativeInjectionTestSamples.BadBeforeGroupsSample;
+import static test.inject.NativeInjectionTestSamples.BadBeforeMethodSample;
+import static test.inject.NativeInjectionTestSamples.BadBeforeSuiteSample;
+import static test.inject.NativeInjectionTestSamples.BadBeforeTestSample;
 
-import org.testng.*;
-import org.testng.annotations.*;
+import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
+import org.testng.TestNG;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterGroups;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import test.SimpleBaseTest;
 
 public class NativeInjectionTest extends SimpleBaseTest {

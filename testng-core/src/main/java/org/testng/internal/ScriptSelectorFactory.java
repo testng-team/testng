@@ -1,15 +1,15 @@
 package org.testng.internal;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import javax.script.ScriptEngineFactory;
 import org.testng.TestNGException;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlScript;
 
 public final class ScriptSelectorFactory {
 
-  private static final Map<String, ScriptEngineFactory> ENGINE_FACTORIES = Maps.newHashMap();
+  private static final Map<String, ScriptEngineFactory> ENGINE_FACTORIES = new HashMap<>();
 
   private ScriptSelectorFactory() {}
 

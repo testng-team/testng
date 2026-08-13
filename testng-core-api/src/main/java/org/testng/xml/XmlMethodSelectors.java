@@ -1,11 +1,11 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 public class XmlMethodSelectors {
 
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
 
   public XmlMethodSelectors() {}
 

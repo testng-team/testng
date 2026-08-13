@@ -2,15 +2,15 @@ package test.factory.issue1041;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 public class FactoryAnnotatedConstructorExample {
-  static List<FactoryAnnotatedConstructorExample> objects = Lists.newArrayList();
+  static List<FactoryAnnotatedConstructorExample> objects = new ArrayList<>();
 
   private final int data;
 

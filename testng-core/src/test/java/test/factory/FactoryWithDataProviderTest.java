@@ -3,11 +3,11 @@ package test.factory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.InvokedMethodNameListener;
@@ -33,7 +33,7 @@ public class FactoryWithDataProviderTest extends SimpleBaseTest {
     InvokedMethodNameListener listener = new InvokedMethodNameListener();
     XmlSuite xmlSuite = createXmlSuite("xml_suite");
     XmlTest xmlTest = createXmlTest(xmlSuite, "xml_test", SampleTestFour.class);
-    Map<String, String> parameters = Maps.newHashMap();
+    Map<String, String> parameters = new HashMap<>();
     parameters.put("isCustom", RANDOM_VALUE);
     xmlTest.setParameters(parameters);
     TestNG testng = create(xmlSuite);

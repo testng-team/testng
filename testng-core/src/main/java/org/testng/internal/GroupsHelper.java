@@ -1,10 +1,10 @@
 package org.testng.internal;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.testng.collections.Lists;
 
 public final class GroupsHelper {
 
@@ -40,12 +40,12 @@ public final class GroupsHelper {
       return result;
     }
 
-    List<String> unfinishedGroups = Lists.newLinkedList();
+    List<String> unfinishedGroups = new LinkedList<>();
     collectGroups(groups, unfinishedGroups, metaGroups, result);
 
     while (!unfinishedGroups.isEmpty()) {
-      List<String> uGroups = Lists.newLinkedList(unfinishedGroups);
-      unfinishedGroups = Lists.newLinkedList();
+      List<String> uGroups = new LinkedList<>(unfinishedGroups);
+      unfinishedGroups = new LinkedList<>();
       collectGroups(uGroups, unfinishedGroups, metaGroups, result);
     }
 

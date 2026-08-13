@@ -1,10 +1,15 @@
 package org.testng.xml;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 /** This class describes the tag &lt;test&gt; in testng.xml. */
 public class XmlTest implements Cloneable {
@@ -16,14 +21,14 @@ public class XmlTest implements Cloneable {
   private Integer m_verbose = XmlSuite.DEFAULT_VERBOSE;
   private int m_threadCount = -1;
 
-  private List<XmlClass> m_xmlClasses = Lists.newArrayList();
+  private List<XmlClass> m_xmlClasses = new ArrayList<>();
 
-  private Map<String, String> m_parameters = Maps.newHashMap();
+  private Map<String, String> m_parameters = new HashMap<>();
   private XmlSuite.ParallelMode m_parallel;
 
-  private List<XmlMethodSelector> m_methodSelectors = Lists.newArrayList();
+  private List<XmlMethodSelector> m_methodSelectors = new ArrayList<>();
   // test level packages
-  private List<XmlPackage> m_xmlPackages = Lists.newArrayList();
+  private List<XmlPackage> m_xmlPackages = new ArrayList<>();
 
   private String m_timeOut;
   private Boolean m_skipFailedInvocationCounts = XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
@@ -37,7 +42,7 @@ public class XmlTest implements Cloneable {
 
   private Boolean m_allowReturnValues = null;
 
-  private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+  private Map<String, String> m_xmlDependencyGroups = new HashMap<>();
 
   /**
    * Constructs a <code>XmlTest</code> and adds it to suite's list of tests.
@@ -66,7 +71,7 @@ public class XmlTest implements Cloneable {
   public XmlTest() {}
 
   public void setXmlPackages(List<XmlPackage> packages) {
-    m_xmlPackages = Lists.newArrayList(packages);
+    m_xmlPackages = new ArrayList<>(packages);
   }
 
   public List<XmlPackage> getXmlPackages() {
@@ -88,7 +93,7 @@ public class XmlTest implements Cloneable {
   }
 
   public void setMethodSelectors(List<XmlMethodSelector> methodSelectors) {
-    m_methodSelectors = Lists.newArrayList(methodSelectors);
+    m_methodSelectors = new ArrayList<>(methodSelectors);
   }
 
   /**
@@ -106,7 +111,7 @@ public class XmlTest implements Cloneable {
 
   /** @return the includedGroups. */
   public List<String> getIncludedGroups() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (m_xmlGroups != null && m_xmlGroups.getRun() != null) {
       result.addAll(m_xmlGroups.getRun().getIncludes());
     }
@@ -279,7 +284,7 @@ public class XmlTest implements Cloneable {
     if (m_xmlGroups == null) {
       return Collections.emptyMap();
     }
-    Map<String, List<String>> result = Maps.newHashMap();
+    Map<String, List<String>> result = new HashMap<>();
     List<XmlDefine> defines = m_xmlGroups.getDefines();
     for (XmlDefine xd : defines) {
       result.put(xd.getName(), xd.getIncludes());
@@ -307,7 +312,7 @@ public class XmlTest implements Cloneable {
 
   /** @return the parameters defined in this test tag and the tags above it. */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     result.putAll(getSuite().getParameters());
     result.putAll(m_parameters);
     return result;
@@ -397,7 +402,7 @@ public class XmlTest implements Cloneable {
     result.setParallel(getParallel());
     result.setThreadCount(getThreadCount());
     result.setVerbose(getVerbose());
-    Map<String, String> localParameters = Maps.newHashMap(getLocalParameters());
+    Map<String, String> localParameters = new HashMap<>(getLocalParameters());
     result.setParameters(localParameters);
     result.setXmlPackages(getXmlPackages());
     result.setTimeOut(getTimeOut());
@@ -419,7 +424,7 @@ public class XmlTest implements Cloneable {
    */
   public List<Integer> getInvocationNumbers(String method) {
     if (m_failedInvocationNumbers == null) {
-      m_failedInvocationNumbers = Maps.newHashMap();
+      m_failedInvocationNumbers = new HashMap<>();
       for (XmlClass c : getXmlClasses()) {
         for (XmlInclude xi : c.getIncludedMethods()) {
           List<Integer> invocationNumbers = xi.getInvocationNumbers();
@@ -431,7 +436,7 @@ public class XmlTest implements Cloneable {
       }
     }
 
-    return Optional.ofNullable(m_failedInvocationNumbers.get(method)).orElse(Lists.newArrayList());
+    return Optional.ofNullable(m_failedInvocationNumbers.get(method)).orElse(new ArrayList<>());
   }
 
   public void setPreserveOrder(Boolean preserveOrder) {

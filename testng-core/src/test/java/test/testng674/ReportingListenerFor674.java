@@ -3,7 +3,11 @@ package test.testng674;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.testng.*;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 
 public class ReportingListenerFor674 implements IReporter {

@@ -1,5 +1,6 @@
 package org.testng.internal.invokers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,6 @@ import org.testng.IInvokedMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ITestResultNotifier;
@@ -20,7 +20,7 @@ public interface ITestInvoker {
   class FailureContext {
 
     AtomicInteger count = new AtomicInteger(0);
-    List<Object> instances = Lists.newArrayList();
+    List<Object> instances = new ArrayList<>();
     AtomicBoolean representsRetriedMethod = new AtomicBoolean(false);
     final Map<String, AtomicInteger> counter = new HashMap<>();
   }

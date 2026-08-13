@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -23,10 +25,8 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.collections.SetMultiMap;
-import org.testng.collections.Sets;
 import org.testng.internal.Utils;
 import org.testng.xml.XmlSuite;
 
@@ -36,7 +36,7 @@ public class JUnitReportReporter implements IReporter {
   public void generateReport(
       List<XmlSuite> xmlSuites, List<ISuite> suites, String defaultOutputDirectory) {
 
-    Map<Class<?>, Set<ITestResult>> results = Maps.newHashMap();
+    Map<Class<?>, Set<ITestResult>> results = new HashMap<>();
     ListMultiMap<Object, ITestResult> befores = Maps.newListMultiMap();
     ListMultiMap<Object, ITestResult> afters = Maps.newListMultiMap();
     SetMultiMap<Class<?>, ITestNGMethod> mapping = new SetMultiMap<>(false);
@@ -68,7 +68,7 @@ public class JUnitReportReporter implements IReporter {
       p1.setProperty(XMLConstants.ATTR_NAME, cls.getName());
       p1.setProperty(XMLConstants.ATTR_TIMESTAMP, JUnitXMLReporter.formattedTime());
 
-      List<TestTag> testCases = Lists.newArrayList();
+      List<TestTag> testCases = new ArrayList<>();
       int failures = 0;
       int errors = 0;
       int skipped = 0;
@@ -266,7 +266,7 @@ public class JUnitReportReporter implements IReporter {
     long result = 0;
 
     List<ITestResult> confResults = configurations.get(tr.getInstance());
-    Map<ITestNGMethod, ITestResult> seen = Maps.newHashMap();
+    Map<ITestNGMethod, ITestResult> seen = new HashMap<>();
     for (ITestResult r : confResults) {
       if (!seen.containsKey(r.getMethod())) {
         result += r.getEndMillis() - r.getStartMillis();
@@ -307,7 +307,7 @@ public class JUnitReportReporter implements IReporter {
   private void addResults(Set<ITestResult> allResults, Map<Class<?>, Set<ITestResult>> out) {
     for (ITestResult tr : allResults) {
       Class<?> cls = tr.getMethod().getTestClass().getRealClass();
-      Set<ITestResult> l = out.computeIfAbsent(cls, k -> Sets.newHashSet());
+      Set<ITestResult> l = out.computeIfAbsent(cls, k -> new HashSet<>());
       l.add(tr);
     }
   }

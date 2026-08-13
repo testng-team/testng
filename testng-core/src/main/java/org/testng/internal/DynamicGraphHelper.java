@@ -3,6 +3,7 @@ package org.testng.internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -11,7 +12,6 @@ import org.testng.DependencyMap;
 import org.testng.ITestNGMethod;
 import org.testng.TestRunner;
 import org.testng.collections.ListMultiMap;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
@@ -123,10 +123,10 @@ public final class DynamicGraphHelper {
 
   private static ListMultiMap<ITestNGMethod, ITestNGMethod> createClassDependencies(
       ITestNGMethod[] methods, XmlTest test) {
-    Map<String, List<ITestNGMethod>> classes = Maps.newHashMap();
+    Map<String, List<ITestNGMethod>> classes = new HashMap<>();
     // Note: use a List here to preserve the ordering but make sure
     // we don't add the same class twice
-    List<XmlClass> sortedClasses = Lists.newArrayList();
+    List<XmlClass> sortedClasses = new ArrayList<>();
 
     ListMultiMap<String, ITestNGMethod> methodsFromClass = Maps.newListMultiMap();
     for (ITestNGMethod m : methods) {
@@ -148,8 +148,8 @@ public final class DynamicGraphHelper {
     // Sort the classes based on their order of appearance in the XML
     sortedClasses.sort(classComparator());
 
-    Map<String, Integer> indexedClasses1 = Maps.newHashMap();
-    Map<Integer, String> indexedClasses2 = Maps.newHashMap();
+    Map<String, Integer> indexedClasses1 = new HashMap<>();
+    Map<Integer, String> indexedClasses2 = new HashMap<>();
     int i = 0;
     for (XmlClass c : sortedClasses) {
       indexedClasses1.put(c.getName(), i);

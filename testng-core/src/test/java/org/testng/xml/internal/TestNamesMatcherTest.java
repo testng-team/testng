@@ -10,7 +10,6 @@ import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.collections.CollectionUtils;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
@@ -80,7 +79,7 @@ public class TestNamesMatcherTest extends SimpleBaseTest {
     TestNamesMatcher testNamesMatcher =
         new TestNamesMatcher(
             parentSuite, new ArrayList<>(Arrays.asList("test1", "test3", "test5")));
-    List<String> matchedTestnames = Lists.newArrayList();
+    List<String> matchedTestnames = new ArrayList<>();
     for (XmlTest xmlTest : testNamesMatcher.getMatchedTests()) {
       matchedTestnames.add(xmlTest.getName());
     }

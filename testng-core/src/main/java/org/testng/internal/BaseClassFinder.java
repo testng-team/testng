@@ -1,11 +1,11 @@
 package org.testng.internal;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITestClassFinder;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
 
@@ -15,7 +15,7 @@ import org.testng.xml.XmlClass;
  * @author <a href="mailto:cedric@beust.com">Cedric Beust</a>
  */
 public abstract class BaseClassFinder implements ITestClassFinder {
-  private final Map<Class<?>, IClass> m_classes = Maps.newLinkedHashMap();
+  private final Map<Class<?>, IClass> m_classes = new LinkedHashMap<>();
 
   @Override
   public IClass getIClass(Class<?> cls) {

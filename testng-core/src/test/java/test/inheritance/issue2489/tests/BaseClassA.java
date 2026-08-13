@@ -1,15 +1,15 @@
 package test.inheritance.issue2489.tests;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
-import org.testng.collections.Lists;
 import org.testng.internal.AutoCloseableLock;
 
 public class BaseClassA {
-  public static final List<String> logs = Lists.newArrayList();
+  public static final List<String> logs = new ArrayList<>();
   private final AutoCloseableLock lock = new AutoCloseableLock();
 
   @BeforeSuite(groups = "a")

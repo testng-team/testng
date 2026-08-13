@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,8 +14,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import org.testng.ITestNGMethod;
 import org.testng.collections.CollectionUtils;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.log4testng.Logger;
 
 /**
@@ -144,11 +143,11 @@ public class ConfigurationGroupMethods {
   }
 
   private Map<String, List<ITestNGMethod>> initializeAfterGroupsMap() {
-    Map<String, List<ITestNGMethod>> result = Maps.newConcurrentMap();
+    Map<String, List<ITestNGMethod>> result = new ConcurrentHashMap<>();
     for (ITestNGMethod m : m_allMethods) {
       String[] groups = m.getGroups();
       for (String g : groups) {
-        List<ITestNGMethod> methodsInGroup = result.computeIfAbsent(g, key -> Lists.newArrayList());
+        List<ITestNGMethod> methodsInGroup = result.computeIfAbsent(g, key -> new ArrayList<>());
         methodsInGroup.add(m);
       }
     }

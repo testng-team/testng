@@ -3,10 +3,10 @@ package test.name.github1046;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Sets;
 import org.testng.xml.XmlSuite;
 import test.SimpleBaseTest;
 
@@ -18,7 +18,7 @@ public class TestCustomNamesForTests extends SimpleBaseTest {
     LocalTestNameGatherer reporter = new LocalTestNameGatherer();
     tng.addListener(reporter);
     tng.run();
-    Set<String> expectedNames = Sets.newHashSet();
+    Set<String> expectedNames = new HashSet<>();
     for (String method : Arrays.asList("testSample1", "testSample2")) {
       for (int i = 1; i <= 5; i++) {
         expectedNames.add(method + "_TestNG_TestCase_" + i);

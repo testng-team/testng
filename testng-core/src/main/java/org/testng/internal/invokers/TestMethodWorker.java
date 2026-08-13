@@ -2,12 +2,15 @@ package org.testng.internal.invokers;
 
 import static org.testng.ListenerComparator.sort;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
@@ -16,9 +19,13 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
-import org.testng.collections.Sets;
-import org.testng.internal.*;
+import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.IInstanceIdentity;
+import org.testng.internal.ITestClassConfigInfo;
+import org.testng.internal.KeyAwareAutoCloseableLock;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.TestMethodComparator;
+import org.testng.internal.TestMethodContainer;
 import org.testng.internal.invokers.ConfigMethodArguments.Builder;
 import org.testng.thread.IWorker;
 
@@ -37,7 +44,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
   // and associated to a different instance
   private final List<IMethodInstance> m_methodInstances;
   private final Map<String, String> m_parameters;
-  private final List<ITestResult> m_testResults = Lists.newArrayList();
+  private final List<ITestResult> m_testResults = new ArrayList<>();
   private final ConfigurationGroupMethods m_groupMethods;
   private final ClassMethodMap m_classMethodMap;
   private final ITestContext m_testContext;
@@ -167,7 +174,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     Map<ITestClass, Set<Object>> invokedBeforeClassMethods =
         m_classMethodMap.getInvokedBeforeClassMethods();
     Set<Object> instances =
-        invokedBeforeClassMethods.computeIfAbsent(testClass, key -> Sets.newConcurrentHashSet());
+        invokedBeforeClassMethods.computeIfAbsent(testClass, key -> ConcurrentHashMap.newKeySet());
     Object instance = mi.getInstance();
     if (!instances.contains(instance)) {
       instances.add(instance);
@@ -200,7 +207,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     //
     // Invoke after class methods if this test method is the last one
     //
-    List<Object> invokeInstances = Lists.newArrayList();
+    List<Object> invokeInstances = new ArrayList<>();
     ITestNGMethod tm = mi.getMethod();
     boolean removalSuccessful = m_classMethodMap.removeAndCheckIfLast(tm, mi.getInstance());
     if (!removalSuccessful) {
@@ -209,7 +216,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     Map<ITestClass, Set<Object>> invokedAfterClassMethods =
         m_classMethodMap.getInvokedAfterClassMethods();
     Set<Object> instances =
-        invokedAfterClassMethods.computeIfAbsent(testClass, key -> Sets.newHashSet());
+        invokedAfterClassMethods.computeIfAbsent(testClass, key -> new HashSet<>());
     Object inst = mi.getInstance();
     if (!instances.contains(inst)) {
       invokeInstances.add(inst);
@@ -262,7 +269,7 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
 
   @Override
   public List<ITestNGMethod> getTasks() {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (IMethodInstance m : m_methodInstances) {
       result.add(m.getMethod());
     }

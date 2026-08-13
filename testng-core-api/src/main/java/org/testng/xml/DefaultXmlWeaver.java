@@ -2,7 +2,15 @@ package org.testng.xml;
 
 import static org.testng.collections.CollectionUtils.hasElements;
 import static org.testng.internal.Utils.isStringNotEmpty;
-import static org.testng.xml.XmlSuite.*;
+import static org.testng.xml.XmlSuite.DEFAULT_ALLOW_RETURN_VALUES;
+import static org.testng.xml.XmlSuite.DEFAULT_CONFIG_FAILURE_POLICY;
+import static org.testng.xml.XmlSuite.DEFAULT_DATA_PROVIDER_THREAD_COUNT;
+import static org.testng.xml.XmlSuite.DEFAULT_GROUP_BY_INSTANCES;
+import static org.testng.xml.XmlSuite.DEFAULT_SHARE_THREAD_POOL;
+import static org.testng.xml.XmlSuite.DEFAULT_SHARE_THREAD_POOL_FOR_DATA_PROVIDERS;
+import static org.testng.xml.XmlSuite.DEFAULT_SKIP_FAILED_INVOCATION_COUNTS;
+import static org.testng.xml.XmlSuite.DEFAULT_THREAD_COUNT;
+import static org.testng.xml.XmlSuite.DEFAULT_VERBOSE;
 
 import java.util.List;
 import java.util.Map;

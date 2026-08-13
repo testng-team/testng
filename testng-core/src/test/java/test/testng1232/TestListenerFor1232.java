@@ -1,20 +1,24 @@
 package test.testng1232;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.*;
-import org.testng.collections.Maps;
+import org.testng.IInvokedMethod;
+import org.testng.ISuite;
+import org.testng.ITestClass;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.xml.XmlSuite;
 
 public class TestListenerFor1232 extends ListenerTemplate {
-  static Map<CounterTypes, AtomicInteger> counters = Maps.newHashMap();
+  static Map<CounterTypes, AtomicInteger> counters = new HashMap<>();
   private static final AutoCloseableLock lock = new AutoCloseableLock();
 
   static void resetCounters() {
     try (AutoCloseableLock ignore = lock.lock()) {
-      counters = Maps.newHashMap();
+      counters = new HashMap<>();
     }
   }
 

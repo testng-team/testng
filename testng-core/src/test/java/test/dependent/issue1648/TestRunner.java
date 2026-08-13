@@ -2,11 +2,11 @@ package test.dependent.issue1648;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import test.InvokedMethodNameListener;
 import test.SimpleBaseTest;
 
@@ -28,7 +28,7 @@ public class TestRunner extends SimpleBaseTest {
     tng.addListener(listener);
 
     tng.run();
-    List<String> actual = Lists.newArrayList();
+    List<String> actual = new ArrayList<>();
     for (Object instance : listener.getTestInstances()) {
       if (instance instanceof LogExtractor) {
         actual.addAll(((LogExtractor) instance).getLogs());

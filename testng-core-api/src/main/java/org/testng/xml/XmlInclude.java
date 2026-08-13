@@ -1,12 +1,11 @@
 package org.testng.xml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 public class XmlInclude {
 
@@ -14,7 +13,7 @@ public class XmlInclude {
   private final Set<Integer> m_invocationNumbers;
   private final int m_index;
   private String m_description;
-  private final Map<String, String> m_parameters = Maps.newHashMap();
+  private final Map<String, String> m_parameters = new HashMap<>();
 
   private XmlClass m_xmlClass;
 
@@ -27,7 +26,7 @@ public class XmlInclude {
   }
 
   public XmlInclude(String n, int index) {
-    this(n, Lists.newArrayList(), index);
+    this(n, new ArrayList<>(), index);
   }
 
   public XmlInclude(String n, List<Integer> list, int index) {
@@ -134,7 +133,7 @@ public class XmlInclude {
 
   /** @return the parameters defined in this tag and the tags above it. */
   public Map<String, String> getAllParameters() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     if (m_xmlClass != null) {
       result.putAll(m_xmlClass.getAllParameters());
     }
