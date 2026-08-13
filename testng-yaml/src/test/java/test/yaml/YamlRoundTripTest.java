@@ -184,6 +184,7 @@ public class YamlRoundTripTest {
     suite.setAllowReturnValues(true);
     suite.setShareThreadPoolForDataProviders(true);
     suite.shouldUseGlobalThreadPool(true);
+    suite.setLazyFactory(true);
     suite.setParentModule("com.example.Module");
     suite.setGuiceStage("PRODUCTION");
     suite.setListeners(new ArrayList<>(Collections.singletonList("com.example.Listener")));

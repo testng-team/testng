@@ -99,6 +99,7 @@ final class YamlSchema {
             "shareThreadPoolForDataProviders",
             Boolean.class,
             XmlSuite::setShareThreadPoolForDataProviders)
+        .key("lazyFactory", Boolean.class, XmlSuite::setLazyFactory)
         .key("parentModule", String.class, XmlSuite::setParentModule)
         .key("guiceStage", String.class, XmlSuite::setGuiceStage)
         .stringMapKey("parameters", XmlSuite::setParameters)

@@ -50,6 +50,7 @@ public class YamlSchemaTest {
             "groupByInstances",
             "allowReturnValues",
             "shareThreadPoolForDataProviders",
+            "lazyFactory",
             "parentModule",
             "guiceStage",
             "parameters",
@@ -131,6 +132,7 @@ public class YamlSchemaTest {
             "groupByInstances: true",
             "allowReturnValues: true",
             "shareThreadPoolForDataProviders: true",
+            "lazyFactory: true",
             "parentModule: com.example.Module",
             "guiceStage: PRODUCTION",
             "parameters: { n: 42, s: text }",
@@ -160,6 +162,7 @@ public class YamlSchemaTest {
     assertThat(suite.getGroupByInstances()).isTrue();
     assertThat(suite.getAllowReturnValues()).isTrue();
     assertThat(suite.isShareThreadPoolForDataProviders()).isTrue();
+    assertThat(suite.getLazyFactory()).isTrue();
     assertThat(suite.getParentModule()).isEqualTo("com.example.Module");
     assertThat(suite.getGuiceStage()).isEqualTo("PRODUCTION");
     assertThat(suite.getParameters()).containsOnly(entry("n", "42"), entry("s", "text"));
@@ -245,6 +248,22 @@ public class YamlSchemaTest {
     assertThat(include.getName()).isEqualTo("m1");
     assertThat(include.getDescription()).isEqualTo("the first one");
     assertThat(include.getLocalParameters()).containsOnly(entry("ip", "w"));
+  }
+
+  /**
+   * A suite attribute added to {@link XmlSuite} used to become a YAML key on its own, because
+   * snakeyaml derived the key set from the bean. It does not any more, so a new one has to be
+   * declared here and written by {@link Yaml#toYaml} -- {@code lazy-factory} is the first to have
+   * arrived since. Reading it back is what the schema alone does not prove.
+   */
+  @Test
+  public void aSuiteAttributeAddedToTheModelSurvivesTheRoundTrip() throws FileNotFoundException {
+    XmlSuite suite = parse("name: S", "lazyFactory: true");
+
+    String emitted = Yaml.toYaml(suite).toString();
+
+    assertThat(emitted).contains("lazyFactory: true");
+    assertThat(parse(emitted.split("\n")).getLazyFactory()).isTrue();
   }
 
   /**

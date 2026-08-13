@@ -144,6 +144,9 @@ public final class Yaml {
         "shareThreadPoolForDataProviders",
         suite.isShareThreadPoolForDataProviders(),
         XmlSuite.DEFAULT_SHARE_THREAD_POOL_FOR_DATA_PROVIDERS);
+    // No default constant to compare against: null means the suite did not say, and the TestNG
+    // configuration decides.
+    putIfPresent(result, "lazyFactory", suite.getLazyFactory());
     putIfPresent(result, "parentModule", suite.getParentModule());
     putIfPresent(result, "guiceStage", suite.getGuiceStage());
     putIfPresent(result, "parameters", parameters(suite.getParameters()));

@@ -36,6 +36,7 @@ public final class SuiteDigest {
     append(sb, "suite.preserveOrder", suite.getPreserveOrder());
     append(sb, "suite.groupByInstances", suite.getGroupByInstances());
     append(sb, "suite.allowReturnValues", suite.getAllowReturnValues());
+    append(sb, "suite.lazyFactory", suite.getLazyFactory());
     append(sb, "suite.parentModule", suite.getParentModule());
     append(sb, "suite.guiceStage", suite.getGuiceStage());
     append(sb, "suite.objectFactory", suite.getObjectFactoryClass());
