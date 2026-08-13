@@ -1,7 +1,9 @@
 package org.testng.internal.invokers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
@@ -9,7 +11,6 @@ import java.util.function.Predicate;
 import org.testng.IClass;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Sets;
 import org.testng.internal.BaseTestMethod;
 import org.testng.internal.ConfigurationMethod;
 import org.testng.internal.Utils;
@@ -222,6 +223,7 @@ class TestNgMethodUtils {
     if (groups.length == 0) {
       return false; // a method with no groups won't pass any filter
     }
-    return !Collections.disjoint(Sets.newHashSet(groups), Sets.newHashSet(groupFilters));
+    return !Collections.disjoint(
+        new HashSet<>(Arrays.asList(groups)), new HashSet<>(Arrays.asList(groupFilters)));
   }
 }

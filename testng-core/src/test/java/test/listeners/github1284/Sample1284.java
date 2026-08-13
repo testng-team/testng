@@ -3,9 +3,9 @@ package test.listeners.github1284;
 import static org.assertj.core.api.Assertions.assertThat;
 import static test.listeners.github1284.Listener1284.getInstance;
 
+import java.util.Arrays;
 import java.util.List;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 public class Sample1284 {
   @Test
@@ -29,8 +29,7 @@ public class Sample1284 {
 
     String beforeInvocation = Sample1284.class.getName() + " - Before Invocation";
     String afterInvocation = Sample1284.class.getName() + " - After Invocation";
-    List<String> expectedList =
-        Lists.newArrayList(beforeInvocation, afterInvocation, beforeInvocation);
+    List<String> expectedList = Arrays.asList(beforeInvocation, afterInvocation, beforeInvocation);
 
     assertThat(Listener1284.testList).isEqualTo(expectedList);
   }

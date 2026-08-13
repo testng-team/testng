@@ -31,7 +31,6 @@ import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 import org.testng.internal.collections.Ints;
 import org.testng.log4testng.Logger;
@@ -560,8 +559,8 @@ public class JDK15TagFactory {
   }
 
   private String[] join(String[] strings, String[] strings2) {
-    List<String> result = Lists.newArrayList(strings);
-    Set<String> seen = new HashSet<>(Lists.newArrayList(strings));
+    List<String> result = new ArrayList<>(Arrays.asList(strings));
+    Set<String> seen = new HashSet<>(Arrays.asList(strings));
     for (String s : strings2) {
       if (!seen.contains(s)) {
         result.add(s);

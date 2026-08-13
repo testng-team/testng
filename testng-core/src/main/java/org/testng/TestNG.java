@@ -633,7 +633,7 @@ public class TestNG {
    * @param suites A list of paths to one more XML files defining the tests. For example:
    *     <pre>
    * TestNG tng = new TestNG();
-   * List&lt;String&gt; suites = Lists.newArrayList();
+   * List&lt;String&gt; suites = new ArrayList&lt;&gt;();
    * suites.add("c:/tests/testng1.xml");
    * suites.add("c:/tests/testng2.xml");
    * tng.setTestSuites(suites);

@@ -16,7 +16,6 @@ import org.testng.TestNG;
 import org.testng.TestNGException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.internal.collections.Pair;
 import org.testng.internal.reflect.MethodMatcherException;
 import org.testng.xml.XmlClass;
@@ -1178,7 +1177,7 @@ public class DataProviderTest extends SimpleBaseTest {
   }
 
   private static final List<String> METHODS_ISSUE_2980 =
-      Lists.newArrayList(
+      Arrays.asList(
           "testMethod_[1]",
           "testMethod_[2]",
           "testMethod_[3]",
