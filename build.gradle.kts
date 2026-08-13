@@ -3,11 +3,11 @@ plugins {
     id("build-logic.build-params")
     id("idea")
     id("com.gradleup.nmcp.aggregation") version "1.6.1"
-    id("org.openrewrite.rewrite") version "7.38.0"
+    id("org.openrewrite.rewrite") version "7.39.0"
 }
 
 dependencies {
-    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.36.0"))
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.37.0"))
     rewrite("org.openrewrite.recipe:rewrite-static-analysis")
     rewrite("org.openrewrite.recipe:rewrite-migrate-java")
 }
