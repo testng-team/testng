@@ -4,13 +4,20 @@ plugins {
     id("testng.java-library")
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    // The deprecated factories are one-line wrappers over a JDK constructor, so InlineMeSuggester
-    // fires on every one of them -- twenty warnings that say the same thing. Acting on them means
-    // annotating with @InlineMe, which needs error_prone_annotations on the compile classpath, and
-    // anything reachable from :testng-core lands in the published pom, where
-    // verifyPublishedPomDependencies would reject it. The javadoc names the replacement instead.
-    options.errorprone.disable("InlineMeSuggester")
+// Error Prone is optional: testng.java only applies it when -PskipErrorProne is off, and the
+// OpenRewrite job turns it off because Error Prone is a javac plugin OpenRewrite never sees.
+// Reaching for options.errorprone unconditionally fails task configuration in those builds, so the
+// opt-out is registered only once the plugin that owns the extension is there.
+pluginManager.withPlugin("net.ltgt.errorprone") {
+    tasks.withType<JavaCompile>().configureEach {
+        // The deprecated factories are one-line wrappers over a JDK constructor, so
+        // InlineMeSuggester fires on every one of them -- twenty warnings that say the same thing.
+        // Acting on them means annotating with @InlineMe, which needs error_prone_annotations on
+        // the compile classpath, and anything reachable from :testng-core lands in the published
+        // pom, where verifyPublishedPomDependencies would reject it. The javadoc names the
+        // replacement instead.
+        options.errorprone.disable("InlineMeSuggester")
+    }
 }
 
 dependencies {
