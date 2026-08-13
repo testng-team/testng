@@ -9,7 +9,11 @@ import org.testng.IConfigurationListener;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Test;
 
 @Listeners(TestSample.Listener.class)
 public class TestSample {

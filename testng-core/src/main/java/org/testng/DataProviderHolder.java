@@ -1,12 +1,12 @@
 package org.testng;
 
-import static org.testng.ListenerComparator.*;
+import static org.testng.ListenerComparator.sort;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
+import java.util.concurrent.ConcurrentHashMap;
 import org.testng.internal.IConfiguration;
 
 /**
@@ -15,8 +15,8 @@ import org.testng.internal.IConfiguration;
  */
 public class DataProviderHolder {
 
-  private final Map<Class<?>, IDataProviderListener> listeners = Maps.newConcurrentMap();
-  private final Collection<IDataProviderInterceptor> interceptors = Sets.newHashSet();
+  private final Map<Class<?>, IDataProviderListener> listeners = new ConcurrentHashMap<>();
+  private final Collection<IDataProviderInterceptor> interceptors = new HashSet<>();
   private final ListenerComparator listenerComparator;
 
   public DataProviderHolder(IConfiguration configuration) {

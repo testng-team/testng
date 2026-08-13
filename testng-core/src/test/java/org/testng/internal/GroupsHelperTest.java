@@ -4,17 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 
 public class GroupsHelperTest {
 
   @Test
   public void testCreateGroupsWithoutMetaGroups() {
-    Map<String, String> expected = Maps.newHashMap();
+    Map<String, String> expected = new HashMap<>();
     expected.put("foo", "foo");
     Map<String, String> actual =
         GroupsHelper.createGroups(Collections.emptyMap(), Collections.singletonList("foo"));
@@ -24,7 +24,7 @@ public class GroupsHelperTest {
   @Test(dataProvider = "getTestData")
   public void testCreateGroupsWithMetaGroups(
       String metaGrpName, List<String> grpName, Map<String, String> expected) {
-    Map<String, List<String>> metaGroups = Maps.newHashMap();
+    Map<String, List<String>> metaGroups = new HashMap<>();
     metaGroups.put(metaGrpName, Collections.singletonList(metaGrpName));
     Map<String, String> actual = GroupsHelper.createGroups(metaGroups, grpName);
     assertThat(actual).containsAllEntriesOf(expected);
@@ -39,7 +39,7 @@ public class GroupsHelperTest {
   }
 
   private static Map<String, String> constructExpectedMap(String... keys) {
-    Map<String, String> map = Maps.newHashMap();
+    Map<String, String> map = new HashMap<>();
     for (String key : keys) {
       map.put(key, key);
     }

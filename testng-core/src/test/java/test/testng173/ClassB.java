@@ -1,6 +1,6 @@
 package test.testng173;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
 
 public class ClassB {
   @Test

@@ -1,8 +1,8 @@
 package org.testng.xml;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 import org.testng.internal.PackageUtils;
 import org.testng.internal.Utils;
 import org.testng.internal.protocols.UnhandledIOException;
@@ -11,8 +11,8 @@ import org.testng.internal.protocols.UnhandledIOException;
 public class XmlPackage {
 
   private String m_name;
-  private List<String> m_include = Lists.newArrayList();
-  private List<String> m_exclude = Lists.newArrayList();
+  private List<String> m_include = new ArrayList<>();
+  private List<String> m_exclude = new ArrayList<>();
   private List<XmlClass> m_xmlClasses = null;
 
   public XmlPackage() {}
@@ -61,7 +61,7 @@ public class XmlPackage {
   }
 
   private List<XmlClass> initializeXmlClasses() {
-    List<XmlClass> result = Lists.newArrayList();
+    List<XmlClass> result = new ArrayList<>();
     try {
       String[] classes = PackageUtils.findClassesInPackage(m_name, m_include, m_exclude);
 

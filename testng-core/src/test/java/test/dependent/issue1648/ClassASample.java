@@ -1,11 +1,11 @@
 package test.dependent.issue1648;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 public class ClassASample implements LogExtractor {
-  private final List<String> logs = Lists.newArrayList();
+  private final List<String> logs = new ArrayList<>();
 
   @Test
   protected void test1() {

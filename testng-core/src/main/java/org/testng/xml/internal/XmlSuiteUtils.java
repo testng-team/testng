@@ -1,10 +1,10 @@
 package org.testng.xml.internal;
 
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Sets;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -36,7 +36,7 @@ public final class XmlSuiteUtils {
    *     duplicate names found.
    */
   public static void adjustSuiteNamesToEnsureUniqueness(List<XmlSuite> suites) {
-    adjustSuiteNamesToEnsureUniqueness(suites, Sets.newHashSet());
+    adjustSuiteNamesToEnsureUniqueness(suites, new HashSet<>());
   }
 
   public static XmlSuite newXmlSuiteUsing(List<String> classes) {
@@ -55,7 +55,7 @@ public final class XmlSuiteUtils {
    * @param xmlSuite - The {@link XmlSuite} to work with.
    */
   static void ensureNoDuplicateTestsArePresent(XmlSuite xmlSuite) {
-    Set<String> testNames = Sets.newHashSet();
+    Set<String> testNames = new HashSet<>();
     for (XmlTest test : xmlSuite.getTests()) {
       if (!testNames.add(test.getName())) {
         throw new TestNGException(
@@ -69,7 +69,7 @@ public final class XmlSuiteUtils {
   }
 
   private static List<XmlClass> constructXmlClassesUsing(List<String> classes) {
-    List<XmlClass> xmlClasses = Lists.newLinkedList();
+    List<XmlClass> xmlClasses = new LinkedList<>();
     for (String cls : classes) {
       XmlClass xmlClass = new XmlClass(cls);
       xmlClasses.add(xmlClass);

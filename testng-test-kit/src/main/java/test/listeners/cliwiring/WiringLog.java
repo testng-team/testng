@@ -1,12 +1,12 @@
 package test.listeners.cliwiring;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 /** Records the order in which the sample listeners below were invoked. */
 public final class WiringLog {
 
-  private static final List<String> ENTRIES = Lists.newArrayList();
+  private static final List<String> ENTRIES = new ArrayList<>();
 
   private WiringLog() {}
 
@@ -15,7 +15,7 @@ public final class WiringLog {
   }
 
   public static List<String> entries() {
-    return Lists.newArrayList(ENTRIES);
+    return new ArrayList<>(ENTRIES);
   }
 
   public static void clear() {

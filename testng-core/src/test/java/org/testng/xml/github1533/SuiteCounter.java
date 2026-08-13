@@ -1,14 +1,14 @@
 package org.testng.xml.github1533;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.testng.ISuite;
 import org.testng.ISuiteListener;
-import org.testng.collections.Lists;
 
 public class SuiteCounter implements ISuiteListener {
   private final AtomicInteger counter = new AtomicInteger(0);
-  private final List<String> suiteNames = Lists.newArrayList();
+  private final List<String> suiteNames = new ArrayList<>();
 
   @Override
   public void onStart(ISuite suite) {

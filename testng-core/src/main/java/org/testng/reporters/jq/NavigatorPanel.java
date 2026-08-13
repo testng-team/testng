@@ -1,5 +1,6 @@
 package org.testng.reporters.jq;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -7,7 +8,6 @@ import org.testng.ISuite;
 import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.reporters.XMLStringBuffer;
 
 public class NavigatorPanel extends BasePanel {
@@ -165,7 +165,7 @@ public class NavigatorPanel extends BasePanel {
 
   private List<ITestResult> getMethodsByStatus(
       ISuite suite, int status, Predicate<ITestResult> condition) {
-    List<ITestResult> result = Lists.newArrayList();
+    List<ITestResult> result = new ArrayList<>();
     List<ITestResult> testResults = getModel().getTestResults(suite);
     for (ITestResult tr : testResults) {
       if (tr.getStatus() == status && condition.test(tr)) {

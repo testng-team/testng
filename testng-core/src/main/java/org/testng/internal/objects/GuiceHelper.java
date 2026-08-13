@@ -9,7 +9,9 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -31,7 +33,7 @@ import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.invokers.objects.GuiceContext;
 
 class GuiceHelper {
-  private final Map<List<Module>, Injector> m_injectors = Maps.newHashMap();
+  private final Map<List<Module>, Injector> m_injectors = new HashMap<>();
   private final ListMultiMap<Class<? extends Module>, Module> m_guiceModules =
       Maps.newListMultiMap();
   private final String parentModule;
@@ -184,7 +186,7 @@ class GuiceHelper {
   }
 
   private List<Module> getModules(Guice guice, Injector parentInjector, Class<?> testClass) {
-    List<Module> result = Lists.newArrayList();
+    List<Module> result = new ArrayList<>();
     for (Class<? extends Module> moduleClass : guice.modules()) {
       List<Module> modules = getGuiceModules(moduleClass);
       if (modules != null && !modules.isEmpty()) {

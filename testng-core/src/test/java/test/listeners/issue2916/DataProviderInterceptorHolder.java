@@ -3,7 +3,11 @@ package test.listeners.issue2916;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.testng.*;
+import org.testng.IDataProviderInterceptor;
+import org.testng.IDataProviderMethod;
+import org.testng.ITestContext;
+import org.testng.ITestNGListener;
+import org.testng.ITestNGMethod;
 
 public class DataProviderInterceptorHolder {
 

@@ -2,6 +2,7 @@ package test.github799;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
@@ -9,7 +10,6 @@ import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import test.SimpleBaseTest;
 
 public class EnsureInstancesAreOrderedViaFactories extends SimpleBaseTest {
@@ -51,7 +51,7 @@ public class EnsureInstancesAreOrderedViaFactories extends SimpleBaseTest {
   }
 
   public static class OrderEavesdropper implements IInvokedMethodListener {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
 
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

@@ -1,5 +1,6 @@
 package test.custom;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -7,11 +8,10 @@ import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
-import org.testng.collections.Lists;
 
 public class CustomAttributesListener implements IInvokedMethodListener {
 
-  private final List<CustomAttribute> attributes = Lists.newArrayList();
+  private final List<CustomAttribute> attributes = new ArrayList<>();
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

@@ -8,10 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.testng.TestNGException;
-import org.testng.collections.Sets;
 import org.testng.internal.Yaml;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.internal.Parser;
@@ -56,7 +56,7 @@ public class Converter {
       }
 
       for (String file : m_files) {
-        Set<XmlSuite> allSuites = Sets.newHashSet();
+        Set<XmlSuite> allSuites = new HashSet<>();
         Parser parser = new Parser(file);
         parser.setLoadClasses(false); // we might not have these classes on the classpath
         findAllSuites(parser.parse(), allSuites);

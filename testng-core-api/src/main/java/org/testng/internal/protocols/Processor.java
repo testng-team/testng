@@ -2,9 +2,9 @@ package org.testng.internal.protocols;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 public abstract class Processor {
@@ -40,7 +40,7 @@ public abstract class Processor {
     File dir = new File(packagePath);
 
     if (!dir.exists() || !dir.isDirectory()) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
 
     File[] dirfiles =
@@ -52,9 +52,9 @@ public abstract class Processor {
 
     Utils.log(CLS_NAME, 4, "Looking for test classes in the directory: " + dir);
     if (dirfiles == null) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
-    List<String> classes = Lists.newArrayList();
+    List<String> classes = new ArrayList<>();
     for (File file : dirfiles) {
       if (file.isDirectory()) {
         List<String> foundClasses =
@@ -83,7 +83,7 @@ public abstract class Processor {
 
   protected static List<String> includeOrExcludeClass(
       String packageName, String className, List<String> included, List<String> excluded) {
-    List<String> classes = Lists.newArrayList();
+    List<String> classes = new ArrayList<>();
     if (isIncluded(packageName, included, excluded)) {
       Utils.log(CLS_NAME, 4, "... Including class " + className);
       classes.add(makeFullClassName(packageName, className));

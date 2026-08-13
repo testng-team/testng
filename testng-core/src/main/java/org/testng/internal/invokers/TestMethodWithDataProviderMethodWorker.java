@@ -1,5 +1,6 @@
 package org.testng.internal.invokers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -7,7 +8,6 @@ import org.testng.ITestClass;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.ITestResultNotifier;
 import org.testng.internal.TestResult;
@@ -32,7 +32,7 @@ public class TestMethodWithDataProviderMethodWorker
   private final ITestResultNotifier m_notifier;
   private final ITestInvoker m_testInvoker;
 
-  private final List<ITestResult> m_testResults = Lists.newArrayList();
+  private final List<ITestResult> m_testResults = new ArrayList<>();
   private int m_failureCount;
 
   public TestMethodWithDataProviderMethodWorker(
@@ -70,7 +70,7 @@ public class TestMethodWithDataProviderMethodWorker
 
   @Override
   public List<ITestResult> call() {
-    List<ITestResult> tmpResults = Lists.newArrayList();
+    List<ITestResult> tmpResults = new ArrayList<>();
     long start = System.currentTimeMillis();
     XmlSuite suite = m_testContext.getSuite().getXmlSuite();
 
@@ -98,7 +98,7 @@ public class TestMethodWithDataProviderMethodWorker
         m_testResults.addAll(tmpResults);
       } else {
         for (Object instance : failure.instances) {
-          List<ITestResult> retryResults = Lists.newArrayList();
+          List<ITestResult> retryResults = new ArrayList<>();
 
           m_failureCount =
               m_testInvoker

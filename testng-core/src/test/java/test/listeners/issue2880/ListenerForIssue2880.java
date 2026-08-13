@@ -1,14 +1,14 @@
 package test.listeners.issue2880;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
 public class ListenerForIssue2880 implements IInvokedMethodListener {
-  private final List<String> logs = Collections.synchronizedList(Lists.newArrayList());
+  private final List<String> logs = Collections.synchronizedList(new ArrayList<>());
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {

@@ -5,7 +5,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.testng.DataProviderHolder;
 import org.testng.IDataProviderInterceptor;
 import org.testng.IDataProviderListener;
@@ -17,9 +23,23 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.ITestResult;
 import org.testng.TestNGException;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterGroups;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Factory;
+import org.testng.annotations.IDataProviderAnnotation;
+import org.testng.annotations.IFactoryAnnotation;
+import org.testng.annotations.IParametersAnnotation;
+import org.testng.annotations.ITestAnnotation;
+import org.testng.annotations.Test;
 import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.IDataProvidable;
@@ -58,7 +78,7 @@ public class Parameters {
           AfterMethod.class,
           Factory.class);
 
-  private static final Map<String, List<Class<?>>> mapping = Maps.newHashMap();
+  private static final Map<String, List<Class<?>>> mapping = new HashMap<>();
   /*
            +--------------+--------------+---------+--------+----------+-------------+
            |  Annotation  | ITestContext | XmlTest | Method | Object[] | ITestResult |
@@ -190,7 +210,7 @@ public class Parameters {
     }
 
     checkParameterTypes(constructor.getName(), parameterTypes, methodAnnotation, parameterNames);
-    List<Object> vResult = Lists.newArrayList();
+    List<Object> vResult = new ArrayList<>();
 
     if (canInject(methodAnnotation)) {
       Parameter[] paramsArray = ReflectionRecipes.getConstructorParameters(constructor);
@@ -230,7 +250,7 @@ public class Parameters {
       String[] parameterNames,
       MethodParameters params,
       XmlSuite xmlSuite) {
-    List<Object> vResult = Lists.newArrayList();
+    List<Object> vResult = new ArrayList<>();
     if (optionalValues.length != parameterNames.length) {
       FilterOutInjectedTypesResult filterOutResult =
           filterOutInjectedTypesFromOptionalValues(parameterTypes, optionalValues);
@@ -347,7 +367,7 @@ public class Parameters {
     if (areAllOptionalValuesNull(optionalValues)) {
       checkParameterTypes(method.getName(), parameterTypes, methodAnnotation, parameterNames);
     }
-    List<Object> vResult = Lists.newArrayList();
+    List<Object> vResult = new ArrayList<>();
 
     List<Object> consParams =
         createParams(
@@ -681,7 +701,7 @@ public class Parameters {
       IAnnotationFinder finder,
       XmlSuite xmlSuite,
       String atName) {
-    List<Object> result = Lists.newArrayList();
+    List<Object> result = new ArrayList<>();
     String[] extraOptionalValues = extractOptionalValues(finder, m);
 
     Object[] extraParameters;
@@ -972,7 +992,7 @@ public class Parameters {
         Method m,
         ITestContext ctx,
         ITestResult tr) {
-      Map<String, String> allParams = Maps.newHashMap();
+      Map<String, String> allParams = new HashMap<>();
       allParams.putAll(params);
       allParams.putAll(methodParams);
       xmlParameters = allParams;

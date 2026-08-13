@@ -1,13 +1,13 @@
 package test.listeners.issue2055;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
 
 public class DynamicTestListener implements ITestListener {
 
-  public static final List<String> MSGS = Lists.newArrayList();
+  public static final List<String> MSGS = new ArrayList<>();
 
   @Override
   public void onTestStart(ITestResult result) {

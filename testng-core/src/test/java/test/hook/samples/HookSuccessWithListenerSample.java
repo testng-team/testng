@@ -1,7 +1,7 @@
 package test.hook.samples;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static test.hook.HookableTest.*;
+import static test.hook.HookableTest.HOOK_INVOKED_ATTRIBUTE;
 
 import org.testng.IHookCallBack;
 import org.testng.IHookable;

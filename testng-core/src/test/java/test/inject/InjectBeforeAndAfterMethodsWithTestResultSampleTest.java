@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Reporter.getCurrentTestResult;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.ITestResult;
 import org.testng.SkipException;
@@ -11,7 +12,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 
 public class InjectBeforeAndAfterMethodsWithTestResultSampleTest {
   static int m_success;
@@ -57,7 +57,7 @@ public class InjectBeforeAndAfterMethodsWithTestResultSampleTest {
   }
 
   private static Map<String, Object> attributesFrom(ITestResult r) {
-    Map<String, Object> attributes = Maps.newHashMap();
+    Map<String, Object> attributes = new HashMap<>();
     for (String key : r.getAttributeNames()) {
       attributes.put(key, r.getAttribute(key));
     }

@@ -1,6 +1,7 @@
 package org.testng.reporters.jq;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,12 +10,11 @@ import org.testng.ISuiteResult;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
 import org.testng.reporters.XMLStringBuffer;
 import org.testng.xml.XmlSuite;
 
 public class TimesPanel extends BaseMultiSuitePanel {
-  private Map<String, Long> m_totalTime = Maps.newHashMap();
+  private Map<String, Long> m_totalTime = new HashMap<>();
 
   public TimesPanel(Model model) {
     super(model);

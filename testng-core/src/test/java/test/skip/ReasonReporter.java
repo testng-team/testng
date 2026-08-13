@@ -1,5 +1,6 @@
 package test.skip;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -7,18 +8,17 @@ import org.testng.IReporter;
 import org.testng.ISuite;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlSuite;
 
 public class ReasonReporter implements IReporter {
 
-  private Map<String, Integer> results = Maps.newHashMap();
+  private Map<String, Integer> results = new HashMap<>();
 
   public Map<String, Integer> getResults() {
     return results;
   }
 
-  private Map<String, String> skippedInfo = Maps.newHashMap();
+  private Map<String, String> skippedInfo = new HashMap<>();
 
   public Map<String, String> getSkippedInfo() {
     return skippedInfo;

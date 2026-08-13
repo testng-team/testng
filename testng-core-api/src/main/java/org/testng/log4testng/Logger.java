@@ -1,8 +1,8 @@
 package org.testng.log4testng;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.LoggerFactory;
-import org.testng.collections.Maps;
 
 /**
  * TestNG logging now uses slf4j logging facade to satisfy the logging needs. To control TestNG
@@ -13,7 +13,7 @@ import org.testng.collections.Maps;
 public class Logger {
 
   /** Map of all known loggers. */
-  private static final Map<Class<?>, Logger> loggers = Maps.newConcurrentMap();
+  private static final Map<Class<?>, Logger> loggers = new ConcurrentHashMap<>();
 
   private final org.slf4j.Logger logger;
 

@@ -2,7 +2,8 @@ package test.listeners.issue2916;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.testng.*;
+import org.testng.IExecutionVisualiser;
+import org.testng.ITestNGListener;
 
 public class ExecutionVisualiserHolder {
 

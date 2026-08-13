@@ -2,7 +2,8 @@ package test.thread.issue3028;
 
 import org.testng.ITestResult;
 import org.testng.Reporter;
-import org.testng.annotations.*;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class DataDrivenTestSample {
 

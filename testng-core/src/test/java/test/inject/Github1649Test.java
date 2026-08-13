@@ -3,8 +3,10 @@ package test.inject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.IInvokedMethod;
@@ -14,15 +16,13 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlTest;
 import test.SimpleBaseTest;
 
 public class Github1649Test extends SimpleBaseTest {
   @Test
   public void testHappyFlowForNativeInjectionOnTestMethods() {
-    Map<String, List<String>> mapping = Maps.newHashMap();
+    Map<String, List<String>> mapping = new HashMap<>();
     mapping.put("m1", Collections.singletonList(Method.class.getName()));
     mapping.put("m2", Collections.singletonList(ITestContext.class.getName()));
     mapping.put("m3", Collections.singletonList(XmlTest.class.getName()));
@@ -67,7 +67,7 @@ public class Github1649Test extends SimpleBaseTest {
 
   @Test
   public void testNegativeFlowForNativeInjectionOnTestMethods() {
-    Map<String, String> failures = Maps.newHashMap();
+    Map<String, String> failures = new HashMap<>();
     failures.put(
         "m1", "Cannot inject @Test annotated Method [m1] with [interface org.testng.ITestResult].");
     failures.put("m2", "Cannot inject @Test annotated Method [m2] with [int].");
@@ -80,8 +80,8 @@ public class Github1649Test extends SimpleBaseTest {
 
   public static class Github1649TestListener extends TestListenerAdapter
       implements IInvokedMethodListener {
-    Map<String, List<String>> mapping = Maps.newHashMap();
-    Map<String, String> failures = Maps.newHashMap();
+    Map<String, List<String>> mapping = new HashMap<>();
+    Map<String, String> failures = new HashMap<>();
 
     @Override
     public void onTestFailure(ITestResult testResult) {
@@ -94,7 +94,7 @@ public class Github1649Test extends SimpleBaseTest {
     @Override
     public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
       String methodName = testResult.getMethod().getMethodName();
-      List<String> paramTypes = Lists.newArrayList();
+      List<String> paramTypes = new ArrayList<>();
       for (Object parameter : testResult.getParameters()) {
         String value = parameter.getClass().getName();
         if (parameter instanceof ITestContext) {

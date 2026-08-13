@@ -3,13 +3,13 @@ package org.testng.internal.paramhandler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.testng.IResultMap;
 import org.testng.ISuite;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Maps;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -29,7 +29,7 @@ public class FakeTestContext implements ITestContext {
     for (Class<?> clazz : classes) {
       xmlTest.getXmlClasses().add(new XmlClass(clazz));
     }
-    Map<String, String> map = Maps.newHashMap();
+    Map<String, String> map = new HashMap<>();
     map.put("foo", "bar");
     xmlTest.setParameters(map);
     suite = new FakeSuite(xmlTest);

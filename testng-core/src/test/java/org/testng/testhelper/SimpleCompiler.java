@@ -3,11 +3,11 @@ package org.testng.testhelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 
 public class SimpleCompiler {
 
@@ -22,7 +22,7 @@ public class SimpleCompiler {
     if (rc != 0) {
       throw new TestNGException("Encountered errors when compiling code");
     }
-    List<CompiledCode> compiledCodes = Lists.newArrayList();
+    List<CompiledCode> compiledCodes = new ArrayList<>();
     for (SourceCode source : sources) {
       source.getLocation().delete();
       CompiledCode compiledCode;

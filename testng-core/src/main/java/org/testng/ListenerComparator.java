@@ -1,10 +1,10 @@
 package org.testng;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import org.testng.collections.Lists;
 
 /**
  * Listener interface that can be used to determine listener execution order. This interface will
@@ -25,7 +25,7 @@ public interface ListenerComparator extends Comparator<ITestNGListener> {
     if (comparator == null) {
       return Collections.unmodifiableList(list);
     }
-    List<T> original = Lists.newArrayList(list);
+    List<T> original = new ArrayList<>(list);
     original.sort(comparator);
     return Collections.unmodifiableList(original);
   }
@@ -35,7 +35,7 @@ public interface ListenerComparator extends Comparator<ITestNGListener> {
     if (comparator == null) {
       return Collections.unmodifiableCollection(list);
     }
-    List<T> original = Lists.newArrayList(list);
+    List<T> original = new ArrayList<>(list);
     original.sort(comparator);
     return Collections.unmodifiableCollection(original);
   }

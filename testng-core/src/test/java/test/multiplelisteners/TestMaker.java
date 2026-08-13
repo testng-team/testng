@@ -1,12 +1,12 @@
 package test.multiplelisteners;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
@@ -29,7 +29,7 @@ public class TestMaker {
   }
 
   private List<XmlSuite> createSuites() {
-    final List<XmlSuite> ret = Lists.newArrayList();
+    final List<XmlSuite> ret = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
       ret.add(createSuite(i));
     }

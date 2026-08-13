@@ -15,14 +15,13 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.RuntimeBehavior;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -56,7 +55,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private int m_currentIncludeIndex = 0;
   private List<XmlPackage> m_currentPackages = null;
   private XmlPackage m_currentPackage = null;
-  private final List<XmlSuite> m_suites = Lists.newArrayList();
+  private final List<XmlSuite> m_suites = new ArrayList<>();
   private XmlGroups m_currentGroups = null;
   private Map<String, String> m_currentTestParameters = null;
   private Map<String, String> m_currentSuiteParameters = null;
@@ -133,7 +132,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private XmlMethodSelector m_currentSelector = null;
   private String m_currentLanguage = null;
   private String m_currentExpression = null;
-  private final List<String> m_suiteFiles = Lists.newArrayList();
+  private final List<String> m_suiteFiles = new ArrayList<>();
   private boolean m_enabledTest;
   private List<String> m_listeners;
 
@@ -291,7 +290,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       m_currentSuite = new XmlSuite();
       m_currentSuite.setFileName(m_fileName);
       m_currentSuite.setName(name);
-      m_currentSuiteParameters = Maps.newHashMap();
+      m_currentSuiteParameters = new HashMap<>();
 
       String verbose = attributes.getValue("verbose");
       if (null != verbose) {
@@ -426,7 +425,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     if (start) {
       m_currentTest = new XmlTest(m_currentSuite, m_currentTestIndex++);
       pushLocation(Location.TEST);
-      m_currentTestParameters = Maps.newHashMap();
+      m_currentTestParameters = new HashMap<>();
       final String testName = attributes.getValue("name");
       if (isStringBlank(testName)) {
         throw new TestNGException("The <test> tag must define the name attribute");
@@ -501,7 +500,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
 
   public void xmlClasses(boolean start) {
     if (start) {
-      m_currentClasses = Lists.newArrayList();
+      m_currentClasses = new ArrayList<>();
       m_currentClassIndex = 0;
     } else {
       m_currentTest.setXmlClasses(m_currentClasses);
@@ -511,7 +510,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
 
   public void xmlListeners(boolean start) {
     if (start) {
-      m_listeners = Lists.newArrayList();
+      m_listeners = new ArrayList<>();
     } else {
       if (null != m_listeners) {
         m_currentSuite.setListeners(m_listeners);
@@ -529,7 +528,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
 
   public void xmlPackages(boolean start) {
     if (start) {
-      m_currentPackages = Lists.newArrayList();
+      m_currentPackages = new ArrayList<>();
     } else {
       if (null != m_currentPackages) {
         Location location = m_locations.peek();
@@ -587,7 +586,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private void xmlMethod(boolean start) {
     if (start) {
       m_currentIncludedMethods = new ArrayList<>();
-      m_currentExcludedMethods = Lists.newArrayList();
+      m_currentExcludedMethods = new ArrayList<>();
       m_currentIncludeIndex = 0;
     } else {
       m_currentClass.setIncludedMethods(m_currentIncludedMethods);
@@ -678,7 +677,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
       if (null != m_currentClasses) {
         m_currentClass = new XmlClass(name, m_currentClassIndex++, m_loadClasses);
         m_currentClass.setXmlTest(m_currentTest);
-        m_currentClassParameters = Maps.newHashMap();
+        m_currentClassParameters = new HashMap<>();
         m_currentClasses.add(m_currentClass);
         pushLocation(Location.CLASS);
       }
@@ -735,7 +734,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     String name;
     String invocationNumbers;
     String description;
-    Map<String, String> parameters = Maps.newHashMap();
+    Map<String, String> parameters = new HashMap<>();
 
     Include(String name, String numbers) {
       this.name = name;
@@ -804,7 +803,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
 
   private List<Integer> stringToList(String in) {
     String[] numbers = in.split(" ");
-    List<Integer> result = Lists.newArrayList();
+    List<Integer> result = new ArrayList<>();
     for (String n : numbers) {
       result.add(Integer.parseInt(n));
     }

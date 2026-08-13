@@ -3,7 +3,7 @@ package org.testng.internal.invokers;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.AFTER_INVOCATION;
 import static org.testng.internal.invokers.InvokedMethodListenerMethod.BEFORE_INVOCATION;
 import static org.testng.internal.invokers.Invoker.CAN_RUN_FROM_CLASS;
-import static org.testng.internal.invokers.ParameterHandler.*;
+import static org.testng.internal.invokers.ParameterHandler.ParameterBag;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,11 +45,21 @@ import org.testng.TestException;
 import org.testng.TestNGException;
 import org.testng.TestNotInvokedException;
 import org.testng.collections.CollectionUtils;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
-import org.testng.internal.*;
+import org.testng.internal.AutoCloseableLock;
+import org.testng.internal.BaseTestMethod;
+import org.testng.internal.ConfigurationGroupMethods;
+import org.testng.internal.IConfiguration;
 import org.testng.internal.IObject;
+import org.testng.internal.ITestResultNotifier;
+import org.testng.internal.ListenerOrderDeterminer;
+import org.testng.internal.MethodGroupsHelper;
+import org.testng.internal.MethodHelper;
+import org.testng.internal.MethodInstance;
+import org.testng.internal.Parameters;
+import org.testng.internal.RegexpExpectedExceptionsHolder;
+import org.testng.internal.RuntimeBehavior;
+import org.testng.internal.TestListenerHelper;
+import org.testng.internal.TestResult;
 import org.testng.internal.invokers.GroupConfigMethodArguments.Builder;
 import org.testng.internal.invokers.InvokeMethodRunnable.TestNGRuntimeException;
 import org.testng.internal.thread.ThreadExecutionException;
@@ -137,7 +149,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
         ParameterBag bag =
             handler.createParameters(
-                testMethod, Maps.newHashMap(), Maps.newHashMap(), context, instance);
+                testMethod, new HashMap<>(), new HashMap<>(), context, instance);
         ParameterHolder parameterHolder = Objects.requireNonNull(bag.parameterHolder);
         try {
           Iterator<Object[]> allParamValues = parameterHolder.parameters;
@@ -244,14 +256,14 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     failure.count.set(failureCount);
     failure.representsRetriedMethod.set(true);
     do {
-      failure.instances = Lists.newArrayList();
+      failure.instances = new ArrayList<>();
       boolean cacheData =
           Optional.ofNullable(arguments.getTestMethod().getDataProviderMethod())
               .map(IDataProviderMethod::cacheDataForTestRetries)
               .orElse(true);
       Object[] parameterValues = arguments.getParameterValues();
       if (!cacheData) {
-        Map<String, String> allParameters = Maps.newHashMap();
+        Map<String, String> allParameters = new HashMap<>();
         int verbose = testContext.getCurrentXmlTest().getVerbose();
         ParameterHandler handler =
             new ParameterHandler(
@@ -309,7 +321,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
 
   private Collection<IDataProviderListener> dataProviderListeners() {
     ISuite suite = this.m_testContext.getSuite();
-    Collection<IDataProviderListener> dpListeners = Sets.newHashSet(this.holder.getListeners());
+    Collection<IDataProviderListener> dpListeners = new HashSet<>(this.holder.getListeners());
     if (suite instanceof SuiteRunner) {
       Collection<IDataProviderListener> listeners =
           ((SuiteRunner) suite).getDataProviderListeners();
@@ -448,7 +460,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     // Make sure the method has been run successfully
     for (ITestNGMethod method : methods) {
       Set<ITestResult> results = keepSameInstances(testMethod, m_notifier.getPassedTests(method));
-      Set<ITestResult> failedAndSkippedMethods = Sets.newHashSet();
+      Set<ITestResult> failedAndSkippedMethods = new HashSet<>();
       Set<ITestResult> skippedAttempts = m_notifier.getSkippedTests(method);
       failedAndSkippedMethods.addAll(m_notifier.getFailedTests(method));
       failedAndSkippedMethods.addAll(skippedAttempts);
@@ -501,7 +513,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
     //
     // Create the workers
     //
-    List<IWorker<ITestNGMethod>> workers = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> workers = new ArrayList<>();
 
     // Create one worker per invocationCount
     for (int i = 0; i < testMethod.getInvocationCount(); i++) {
@@ -988,7 +1000,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
   private class MethodInvocationAgent {
 
     private final ITestContext context;
-    private final List<ITestResult> result = Lists.newArrayList();
+    private final List<ITestResult> result = new ArrayList<>();
     private final FailureContext failure = new FailureContext();
     private final ITestInvoker invoker;
     private final TestMethodArguments arguments;
@@ -1008,7 +1020,7 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
       AtomicInteger invocationCount = new AtomicInteger(invCount);
       long start = System.currentTimeMillis();
 
-      Map<String, String> allParameterNames = Maps.newHashMap();
+      Map<String, String> allParameterNames = new HashMap<>();
       int verbose = context.getCurrentXmlTest().getVerbose();
       ParameterHandler handler =
           new ParameterHandler(

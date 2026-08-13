@@ -1,7 +1,7 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 public class XmlDefine {
 
@@ -24,7 +24,7 @@ public class XmlDefine {
     return DefaultXmlWeaver.asXmlFragment(this, indent);
   }
 
-  private List<String> m_includes = Lists.newArrayList();
+  private List<String> m_includes = new ArrayList<>();
 
   public void onElement(String name) {
     m_includes.add(name);

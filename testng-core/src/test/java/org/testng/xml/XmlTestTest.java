@@ -3,10 +3,10 @@ package org.testng.xml;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import test.SimpleBaseTest;
 import test.junitreports.SimpleTestSample;
 
@@ -52,7 +52,7 @@ public class XmlTestTest extends SimpleBaseTest {
   }
 
   private static Map<String, String> newSetOfParameters(String key, String value) {
-    Map<String, String> map = Maps.newHashMap();
+    Map<String, String> map = new HashMap<>();
     map.put(key, value);
     return map;
   }

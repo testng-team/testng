@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +18,6 @@ import org.testng.annotations.IDataProviderAnnotation;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IParametersAnnotation;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Maps;
 import org.testng.internal.ConstructorOrMethod;
 import org.testng.internal.TestNGMethod;
 import org.testng.internal.Utils;
@@ -226,10 +226,10 @@ public class AnnotationHelper {
       XmlTest xmlTest) {
     // Keep a map of the methods we saw so that we ignore a method in a superclass if it's
     // already been seen in a child class
-    Map<String, ITestNGMethod> vResult = Maps.newHashMap();
+    Map<String, ITestNGMethod> vResult = new HashMap<>();
 
     try {
-      vResult = Maps.newHashMap();
+      vResult = new HashMap<>();
       //    Class[] classes = rootClass.getTestClasses();
       Class<?> cls = rootClass;
 

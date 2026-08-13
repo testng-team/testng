@@ -3,11 +3,11 @@ package org.testng.internal.protocols;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 class JarProcessor extends Processor {
@@ -36,7 +36,7 @@ class JarProcessor extends Processor {
       String packageDirName,
       String packageName)
       throws IOException {
-    List<String> vResult = Lists.newArrayList();
+    List<String> vResult = new ArrayList<>();
     JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
     Enumeration<JarEntry> entries = jar.entries();
     while (entries.hasMoreElements()) {

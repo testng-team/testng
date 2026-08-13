@@ -1,10 +1,10 @@
 package test.dependent;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 
 /**
  * Verify that only instances that fail cause dependency failures. In other words, when run, this
@@ -15,7 +15,7 @@ import org.testng.collections.Lists;
 public class InstanceSkipSampleTest {
 
   private final int m_n;
-  public static List<String> m_list = Lists.newArrayList();
+  public static List<String> m_list = new ArrayList<>();
 
   @Factory(dataProvider = "dp")
   public InstanceSkipSampleTest(int n) {

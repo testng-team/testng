@@ -1,7 +1,11 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,18 +13,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.testng.IDynamicGraph;
 import org.testng.IExecutionVisualiser;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 
 /** Representation of the graph of methods. */
 public class DynamicGraph<T> implements IDynamicGraph<T> {
 
-  private final Set<T> m_nodesReady = Sets.newLinkedHashSet();
-  private final Set<T> m_nodesRunning = Sets.newLinkedHashSet();
-  private final Set<T> m_nodesFinished = Sets.newLinkedHashSet();
+  private final Set<T> m_nodesReady = new LinkedHashSet<>();
+  private final Set<T> m_nodesRunning = new LinkedHashSet<>();
+  private final Set<T> m_nodesFinished = new LinkedHashSet<>();
   private final Edges<T> m_edges = new Edges<>();
-  private Set<IExecutionVisualiser> visualisers = Sets.newHashSet();
+  private Set<IExecutionVisualiser> visualisers = new HashSet<>();
 
   /** Add a node to the graph. */
   public boolean addNode(T node) {
@@ -51,7 +52,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
   /** @return a set of all the nodes that don't depend on any other nodes. */
   public List<T> getFreeNodes() {
     // Get a list of nodes that are ready and have no outgoing edges.
-    Set<T> free = Sets.newLinkedHashSet(m_nodesReady);
+    Set<T> free = new LinkedHashSet<>(m_nodesReady);
     free.removeAll(m_edges.fromNodes());
 
     // if all nodes have dependencies, then we can ignore the lowest one if nothing else is running
@@ -65,7 +66,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
     }
 
     // Filter result: remove node if the result contains all nodes from an edge
-    List<T> finalResult = Lists.newArrayList();
+    List<T> finalResult = new ArrayList<>();
     for (T node : free) {
       Map<T, Integer> edges = m_edges.from(node);
       // disjoint returns true if the two collections have no common items.
@@ -88,8 +89,8 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
 
   private List<T> dependencies(Map<T, Integer> dependencies) {
     return Optional.ofNullable(dependencies)
-        .map(found -> Lists.newArrayList(found.keySet()))
-        .orElse(Lists.newArrayList());
+        .map(found -> new ArrayList<>(found.keySet()))
+        .orElse(new ArrayList<>());
   }
 
   /** Set the status for a set of nodes. */
@@ -297,7 +298,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
         return 0;
       }
 
-      Set<T> intersection = Sets.newHashSet(nodes);
+      Set<T> intersection = new HashSet<>(nodes);
       intersection.retainAll(m_outgoingEdges.keySet());
       if (intersection.isEmpty()) {
         return 0;
@@ -373,7 +374,7 @@ public class DynamicGraph<T> implements IDynamicGraph<T> {
      * toString and toDot.
      */
     Map<T, Map<T, Integer>> getEdges() {
-      Map<T, Map<T, Integer>> edges = Maps.newHashMap();
+      Map<T, Map<T, Integer>> edges = new HashMap<>();
       for (Map.Entry<T, Map<T, Integer>> es : m_outgoingEdges.entrySet()) {
         edges.put(es.getKey(), Collections.unmodifiableMap(es.getValue()));
       }

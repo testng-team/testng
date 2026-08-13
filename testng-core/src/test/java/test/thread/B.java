@@ -1,14 +1,14 @@
 package test.thread;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 
 public class B {
-  public static Map<Long, Long> m_threadIds = Maps.newConcurrentMap();
+  public static Map<Long, Long> m_threadIds = new ConcurrentHashMap<>();
 
   public static void setUp() {
-    m_threadIds = Maps.newConcurrentMap();
+    m_threadIds = new ConcurrentHashMap<>();
   }
 
   @Test

@@ -2,12 +2,12 @@ package org.testng.internal.objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITest;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.Test;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -21,7 +21,7 @@ public class InstanceCreatorTest {
   @Test(description = GITHUB_1456)
   public void testCreateInstance1WithOneArgStringParamForConstructor() {
     Class<TestClassSample> declaringClass = TestClassSample.class;
-    Map<Class<?>, IClass> classes = Maps.newHashMap();
+    Map<Class<?>, IClass> classes = new HashMap<>();
     XmlTest xmlTest = new XmlTest(new XmlSuite());
     xmlTest.setName(GITHUB_1456);
     IAnnotationFinder finder = new JDK15AnnotationFinder(new DefaultAnnotationTransformer());

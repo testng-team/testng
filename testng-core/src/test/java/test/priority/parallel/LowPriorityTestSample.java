@@ -1,6 +1,13 @@
 package test.priority.parallel;
 
-import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.*;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_INSTANCE;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.CLASS_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_BELONGING_TO;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.GROUPS_DEPENDED_ON;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHODS_DEPENDED_ON;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.METHOD_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.SUITE_NAME;
+import static test.thread.parallelization.TestNgRunStateTracker.EventInfo.TEST_NAME;
 import static test.thread.parallelization.TestNgRunStateTracker.TestNgRunEvent.TEST_METHOD_EXECUTION;
 
 import java.util.concurrent.TimeUnit;

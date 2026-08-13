@@ -19,7 +19,6 @@ import org.testng.SuiteRunner;
 import org.testng.TestListenerAdapter;
 import org.testng.TestRunner;
 import org.testng.annotations.BeforeMethod;
-import org.testng.collections.Maps;
 import org.testng.internal.Configuration;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.MethodSorting;
@@ -153,13 +152,13 @@ public class BaseTest extends BaseDistributedTest {
     assertThat(getTest())
         .withFailMessage("Test wasn't set, maybe @Configuration methodSetUp() was never called")
         .isNotNull();
-    setPassedTests(Maps.newHashMap());
-    setFailedTests(Maps.newHashMap());
-    setSkippedTests(Maps.newHashMap());
-    setPassedConfigs(Maps.newHashMap());
-    setFailedConfigs(Maps.newHashMap());
-    setSkippedConfigs(Maps.newHashMap());
-    setFailedButWithinSuccessPercentageTests(Maps.newHashMap());
+    setPassedTests(new HashMap<>());
+    setFailedTests(new HashMap<>());
+    setSkippedTests(new HashMap<>());
+    setPassedConfigs(new HashMap<>());
+    setFailedConfigs(new HashMap<>());
+    setSkippedConfigs(new HashMap<>());
+    setFailedButWithinSuccessPercentageTests(new HashMap<>());
 
     m_suite.setVerbose(m_verbose != null ? m_verbose : 0);
     suiteRunner =

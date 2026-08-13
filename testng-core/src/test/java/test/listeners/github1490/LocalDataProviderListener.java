@@ -1,14 +1,14 @@
 package test.listeners.github1490;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IDataProviderListener;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 
 public class LocalDataProviderListener implements IDataProviderListener {
-  public static final List<String> messages = Lists.newArrayList();
+  public static final List<String> messages = new ArrayList<>();
 
   @Override
   public void beforeDataProviderExecution(

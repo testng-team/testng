@@ -1,15 +1,15 @@
 package org.testng.internal.invokers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.testng.IMethodInstance;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
-import org.testng.collections.Sets;
 import org.testng.internal.MethodInstance;
 import org.testng.thread.IWorker;
 import org.testng.xml.XmlSuite;
@@ -18,7 +18,7 @@ import org.testng.xml.XmlTest;
 class ClassBasedParallelWorker extends AbstractParallelWorker {
 
   private static Set<Class<?>> gatherClassesThatShouldRunSequentially(Arguments arguments) {
-    Set<Class<?>> sequentialClasses = Sets.newHashSet();
+    Set<Class<?>> sequentialClasses = new HashSet<>();
     for (ITestNGMethod m : arguments.getMethods()) {
       Class<?> cls = m.getRealClass();
       org.testng.annotations.ITestAnnotation test =
@@ -34,17 +34,17 @@ class ClassBasedParallelWorker extends AbstractParallelWorker {
 
   @Override
   public List<IWorker<ITestNGMethod>> createWorkers(Arguments arguments) {
-    List<IWorker<ITestNGMethod>> result = Lists.newArrayList();
+    List<IWorker<ITestNGMethod>> result = new ArrayList<>();
     // Methods that belong to classes with a sequential=true or parallel=classes
     // attribute must all be run in the same worker
     Set<Class<?>> sequentialClasses = gatherClassesThatShouldRunSequentially(arguments);
 
-    List<IMethodInstance> methodInstances = Lists.newArrayList();
+    List<IMethodInstance> methodInstances = new ArrayList<>();
     for (ITestNGMethod tm : arguments.getMethods()) {
       methodInstances.addAll(methodsToMultipleMethodInstances(tm));
     }
 
-    Set<Class<?>> processedClasses = Sets.newHashSet();
+    Set<Class<?>> processedClasses = new HashSet<>();
     Map<String, String> params = null;
     Class<?> prevClass = null;
     for (IMethodInstance im : methodInstances) {

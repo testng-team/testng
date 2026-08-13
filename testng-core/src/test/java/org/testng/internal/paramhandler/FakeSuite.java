@@ -3,6 +3,8 @@ package org.testng.internal.paramhandler;
 import com.google.inject.Injector;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +15,6 @@ import org.testng.ITestNGListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.SuiteRunState;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.annotations.JDK15AnnotationFinder;
@@ -36,7 +36,7 @@ public class FakeSuite implements ISuite {
 
   @Override
   public Map<String, ISuiteResult> getResults() {
-    return Maps.newHashMap();
+    return new HashMap<>();
   }
 
   @Override
@@ -71,7 +71,7 @@ public class FakeSuite implements ISuite {
 
   @Override
   public Map<String, Collection<ITestNGMethod>> getMethodsByGroups() {
-    return Maps.newHashMap();
+    return new HashMap<>();
   }
 
   @Override
@@ -133,7 +133,7 @@ public class FakeSuite implements ISuite {
 
   @Override
   public Set<String> getAttributeNames() {
-    return Sets.newHashSet();
+    return new HashSet<>();
   }
 
   @Override

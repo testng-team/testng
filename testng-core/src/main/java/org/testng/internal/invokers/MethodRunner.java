@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.collections.CollectionUtils;
-import org.testng.collections.Lists;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.ObjectBag;
 import org.testng.internal.Parameters;
@@ -41,7 +40,7 @@ public class MethodRunner implements IMethodRunner {
       FailureContext failure,
       Iterator<Object[]> allParamValues,
       boolean skipFailedInvocationCounts) {
-    List<ITestResult> result = Lists.newArrayList();
+    List<ITestResult> result = new ArrayList<>();
     int parametersIndex = 0;
     Iterable<Object[]> allParameterValues = CollectionUtils.asIterable(allParamValues);
     for (Object[] next : allParameterValues) {
@@ -54,7 +53,7 @@ public class MethodRunner implements IMethodRunner {
           Parameters.injectParameters(
               next, arguments.getTestMethod().getConstructorOrMethod().getMethod(), context);
 
-      List<ITestResult> tmpResults = Lists.newArrayList();
+      List<ITestResult> tmpResults = new ArrayList<>();
       int tmpResultsIndex = -1;
       TestMethodArguments tmArguments =
           new Builder()
@@ -75,7 +74,7 @@ public class MethodRunner implements IMethodRunner {
         if (failure.instances.isEmpty() || lastSuccess) {
           result.addAll(tmpResults);
         } else {
-          List<ITestResult> retryResults = Lists.newArrayList();
+          List<ITestResult> retryResults = new ArrayList<>();
           failure =
               testInvoker.retryFailed(tmArguments, retryResults, failure.count.get(), context);
           result.addAll(retryResults);
@@ -186,7 +185,7 @@ public class MethodRunner implements IMethodRunner {
     // Now that every row has finished, collect the results. join() here only reports an
     // already-computed outcome: it returns the result, or re-throws the first failure (exactly as
     // the async path did) without leaving any sibling row still running.
-    List<ITestResult> results = Lists.newArrayList();
+    List<ITestResult> results = new ArrayList<>();
     for (ForkJoinTask<List<ITestResult>> task : tasks) {
       results.addAll(task.join());
     }

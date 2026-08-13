@@ -1,5 +1,6 @@
 package org.testng.cli;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +13,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.ITestRunnerFactory;
 import org.testng.ListenerComparator;
 import org.testng.TestNG;
-import org.testng.collections.Lists;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -134,7 +134,7 @@ public final class CliConfigurer {
     String testClasses = cli.testClass;
     if (null != testClasses) {
       String[] strClasses = testClasses.split(",");
-      List<Class<?>> classes = Lists.newArrayList();
+      List<Class<?>> classes = new ArrayList<>();
       for (String c : strClasses) {
         classes.add(ClassHelper.fileToClass(c));
       }
@@ -187,7 +187,7 @@ public final class CliConfigurer {
         sep = ",";
       }
       String[] strs = Utils.split(cli.listener, sep);
-      List<Class<? extends ITestNGListener>> classes = Lists.newArrayList();
+      List<Class<? extends ITestNGListener>> classes = new ArrayList<>();
 
       for (String cls : strs) {
         Class<?> clazz = ClassHelper.fileToClass(cls);

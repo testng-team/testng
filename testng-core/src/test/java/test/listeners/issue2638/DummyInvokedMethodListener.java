@@ -1,22 +1,22 @@
 package test.listeners.issue2638;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 
 public class DummyInvokedMethodListener implements IInvokedMethodListener {
-  private static final Map<String, List<String>> methods = Maps.newHashMap();
+  private static final Map<String, List<String>> methods = new HashMap<>();
 
   @Override
   public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
     String suiteName = testResult.getTestContext().getSuite().getName();
     methods
-        .computeIfAbsent(suiteName, k -> Lists.newArrayList())
+        .computeIfAbsent(suiteName, k -> new ArrayList<>())
         .add(method.getTestMethod().getQualifiedName());
   }
 

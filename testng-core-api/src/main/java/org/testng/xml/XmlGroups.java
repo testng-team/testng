@@ -1,13 +1,13 @@
 package org.testng.xml;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.testng.collections.Lists;
 
 public class XmlGroups {
 
-  private List<XmlDefine> m_defines = Lists.newArrayList();
+  private List<XmlDefine> m_defines = new ArrayList<>();
   private XmlRun m_run;
-  private List<XmlDependencies> m_dependencies = Lists.newArrayList();
+  private List<XmlDependencies> m_dependencies = new ArrayList<>();
 
   public List<XmlDefine> getDefines() {
     return m_defines;

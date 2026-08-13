@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +16,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.reflect.ReflectionHelper;
 import org.testng.xml.XmlClass;
@@ -51,7 +50,7 @@ public final class ClassHelper {
   }
 
   static List<ClassLoader> appendContextualClassLoaders(List<ClassLoader> currentLoaders) {
-    List<ClassLoader> allClassLoaders = Lists.newArrayList();
+    List<ClassLoader> allClassLoaders = new ArrayList<>();
     ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
     if (contextClassLoader != null) {
       allClassLoaders.add(contextClassLoader);
@@ -164,9 +163,9 @@ public final class ClassHelper {
    */
   public static Set<Method> getAvailableMethods(Class<?> clazz) {
     if (clazz == null || clazz.equals(Object.class)) {
-      return Sets.newHashSet();
+      return new HashSet<>();
     }
-    Map<String, Set<Method>> methods = Maps.newHashMap();
+    Map<String, Set<Method>> methods = new HashMap<>();
     for (final Method declaredMethod : ReflectionHelper.getLocalMethods(clazz)) {
       appendMethod(methods, declaredMethod);
     }
@@ -188,7 +187,7 @@ public final class ClassHelper {
       }
     }
 
-    Set<Method> returnValue = Sets.newHashSet();
+    Set<Method> returnValue = new HashSet<>();
     for (Set<Method> each : methods.values()) {
       returnValue.addAll(each);
     }
@@ -197,13 +196,13 @@ public final class ClassHelper {
 
   private static void appendMethod(Map<String, Set<Method>> methods, Method declaredMethod) {
     Set<Method> declaredMethods =
-        methods.computeIfAbsent(declaredMethod.getName(), k -> Sets.newHashSet());
+        methods.computeIfAbsent(declaredMethod.getName(), k -> new HashSet<>());
     declaredMethods.add(declaredMethod);
   }
 
   private static Map<String, Set<Method>> extractMethods(
       Class<?> childClass, Class<?> clazz, Map<String, Set<Method>> collected) {
-    Map<String, Set<Method>> methods = Maps.newHashMap();
+    Map<String, Set<Method>> methods = new HashMap<>();
 
     Method[] declaredMethods = clazz.getDeclaredMethods();
 
@@ -373,7 +372,7 @@ public final class ClassHelper {
    * @return - All the {@link XmlClass} objects that share the same &lt;test&gt; tag as the class.
    */
   public static XmlClass[] findClassesInSameTest(Class<?> cls, XmlSuite suite) {
-    Collection<XmlClass> vResult = Sets.newHashSet();
+    Collection<XmlClass> vResult = new HashSet<>();
     for (XmlTest test : suite.getTests()) {
       vResult.addAll(findClassesInSameTest(cls, test));
     }
@@ -382,7 +381,7 @@ public final class ClassHelper {
   }
 
   private static Collection<XmlClass> findClassesInSameTest(Class<?> cls, XmlTest xmlTest) {
-    Collection<XmlClass> vResult = Sets.newHashSet();
+    Collection<XmlClass> vResult = new HashSet<>();
     String className = cls.getName();
     for (XmlClass testClass : xmlTest.getXmlClasses()) {
       if (testClass.getName().equals(className)) {

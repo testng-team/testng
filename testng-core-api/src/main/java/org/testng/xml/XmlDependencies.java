@@ -1,11 +1,11 @@
 package org.testng.xml;
 
+import java.util.HashMap;
 import java.util.Map;
-import org.testng.collections.Maps;
 
 public class XmlDependencies {
 
-  private Map<String, String> m_xmlDependencyGroups = Maps.newHashMap();
+  private Map<String, String> m_xmlDependencyGroups = new HashMap<>();
 
   public void onGroup(String name, String dependsOn) {
     m_xmlDependencyGroups.put(name, dependsOn);

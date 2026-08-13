@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,9 +25,6 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.testng.SuiteRunner.TestListenersContainer;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.Configuration;
 import org.testng.internal.DefaultListenerFactory;
@@ -123,7 +124,7 @@ public class TestNG {
   private static TestNG m_instance;
 
   private List<String> m_commandLineMethods;
-  protected List<XmlSuite> m_suites = Lists.newArrayList();
+  protected List<XmlSuite> m_suites = new ArrayList<>();
   private List<XmlSuite> m_cmdlineSuites;
   private String m_outputDir = DEFAULT_OUTPUTDIR;
   private String[] m_includedGroups;
@@ -136,16 +137,16 @@ public class TestNG {
 
   // These listeners can be overridden from the command line
   private final Map<Class<? extends IClassListener>, IClassListener> m_classListeners =
-      Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
   private final Map<Class<? extends ITestListener>, ITestListener> m_testListeners =
-      Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
   private final Map<Class<? extends ISuiteListener>, ISuiteListener> m_suiteListeners =
-      Maps.newLinkedHashMap();
-  private final Map<Class<? extends IReporter>, IReporter> m_reporters = Maps.newLinkedHashMap();
+      new LinkedHashMap<>();
+  private final Map<Class<? extends IReporter>, IReporter> m_reporters = new LinkedHashMap<>();
   private final Map<Class<? extends IDataProviderListener>, IDataProviderListener>
-      m_dataProviderListeners = Maps.newLinkedHashMap();
+      m_dataProviderListeners = new LinkedHashMap<>();
   private final Map<Class<? extends IDataProviderInterceptor>, IDataProviderInterceptor>
-      m_dataProviderInterceptors = Maps.newLinkedHashMap();
+      m_dataProviderInterceptors = new LinkedHashMap<>();
 
   public static final Integer DEFAULT_VERBOSE = 1;
 
@@ -158,15 +159,15 @@ public class TestNG {
   private String m_defaultSuiteName = DEFAULT_COMMAND_LINE_SUITE_NAME;
   private String m_defaultTestName = DEFAULT_COMMAND_LINE_TEST_NAME;
 
-  private final Map<String, Integer> m_methodDescriptors = Maps.newHashMap();
+  private final Map<String, Integer> m_methodDescriptors = new HashMap<>();
 
-  private final Set<XmlMethodSelector> m_selectors = Sets.newLinkedHashSet();
+  private final Set<XmlMethodSelector> m_selectors = new LinkedHashSet<>();
 
   private static final ITestObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultTestObjectFactory();
   private ITestObjectFactory m_objectFactory = DEFAULT_OBJECT_FACTORY;
 
   private final Map<Class<? extends IInvokedMethodListener>, IInvokedMethodListener>
-      m_invokedMethodListeners = Maps.newLinkedHashMap();
+      m_invokedMethodListeners = new LinkedHashMap<>();
 
   private Integer m_dataProviderThreadCount = null;
 
@@ -174,7 +175,7 @@ public class TestNG {
   /** The path of the testng.xml file inside the jar file */
   private String m_xmlPathInJar = CommandLineArgs.XML_PATH_IN_JAR_DEFAULT;
 
-  private List<String> m_stringSuites = Lists.newArrayList();
+  private List<String> m_stringSuites = new ArrayList<>();
 
   private IHookable m_hookable;
   private IConfigurable m_configurable;
@@ -183,7 +184,7 @@ public class TestNG {
   protected long m_start;
 
   private final Map<Class<? extends IAlterSuiteListener>, IAlterSuiteListener>
-      m_alterSuiteListeners = Maps.newLinkedHashMap();
+      m_alterSuiteListeners = new LinkedHashMap<>();
 
   private boolean m_isInitialized = false;
   private boolean isSuiteInitialized = false;
@@ -191,7 +192,7 @@ public class TestNG {
       new org.testng.internal.ExitCodeListener();
   private ExitCode exitCode;
   private final Map<Class<? extends IExecutionVisualiser>, IExecutionVisualiser>
-      m_executionVisualisers = Maps.newLinkedHashMap();
+      m_executionVisualisers = new LinkedHashMap<>();
 
   /** Default constructor. Setting also usage of default listeners/reporters. */
   public TestNG() {
@@ -457,7 +458,7 @@ public class TestNG {
   }
 
   public void setCommandLineSuite(XmlSuite suite) {
-    m_cmdlineSuites = Lists.newArrayList();
+    m_cmdlineSuites = new ArrayList<>();
     m_cmdlineSuites.add(suite);
     m_suites.add(suite);
   }
@@ -499,7 +500,7 @@ public class TestNG {
     //
     // Create the <classes> tag
     //
-    Set<Class> classes = Sets.newHashSet();
+    Set<Class> classes = new HashSet<>();
     for (String m : commandLineMethods) {
       Class c = ClassHelper.forName(splitMethod(m)[0]);
       if (c != null) {
@@ -512,7 +513,7 @@ public class TestNG {
     //
     // Add the method tags
     //
-    List<XmlClass> xmlClasses = Lists.newArrayList();
+    List<XmlClass> xmlClasses = new ArrayList<>();
     for (XmlSuite s : result) {
       for (XmlTest t : s.getTests()) {
         xmlClasses.addAll(t.getClasses());
@@ -542,7 +543,7 @@ public class TestNG {
 
     XmlClass[] xmlClasses =
         Arrays.stream(classes).map(clazz -> new XmlClass(clazz, true)).toArray(XmlClass[]::new);
-    Map<String, XmlSuite> suites = Maps.newHashMap();
+    Map<String, XmlSuite> suites = new HashMap<>();
     IAnnotationFinder finder = m_configuration.getAnnotationFinder();
 
     for (int i = 0; i < classes.length; i++) {
@@ -800,15 +801,15 @@ public class TestNG {
     // they are no longer
     // going to be getting the original set but only a copy of it (since we internally moved from
     // Sets to Maps)
-    return Sets.newHashSet(m_reporters.values());
+    return new HashSet<>(m_reporters.values());
   }
 
   public List<ITestListener> getTestListeners() {
-    return Lists.newArrayList(m_testListeners.values());
+    return new ArrayList<>(m_testListeners.values());
   }
 
   public List<ISuiteListener> getSuiteListeners() {
-    return Lists.newArrayList(m_suiteListeners.values());
+    return new ArrayList<>(m_suiteListeners.values());
   }
 
   /** If m_verbose gets set, it will override the verbose setting in testng.xml */
@@ -819,7 +820,7 @@ public class TestNG {
 
   private Boolean m_skipFailedInvocationCounts = false;
 
-  private final List<IMethodInterceptor> m_methodInterceptors = Lists.newArrayList();
+  private final List<IMethodInterceptor> m_methodInterceptors = new ArrayList<>();
 
   /** The list of test names to run from the given suite */
   private List<String> m_testNames;
@@ -1247,7 +1248,7 @@ public class TestNG {
       //
       // Generate the suites report
       //
-      return Lists.newArrayList(suiteRunnerMap.values());
+      return new ArrayList<>(suiteRunnerMap.values());
     }
     // Multithreaded: generate a dynamic graph that stores the suite hierarchy. This is then
     // used to run related suites in specific order. Parent suites are run only
@@ -1273,7 +1274,7 @@ public class TestNG {
     //
     // Generate the suites report
     //
-    return Lists.newArrayList(suiteRunnerMap.values());
+    return new ArrayList<>(suiteRunnerMap.values());
   }
 
   private static void error(String s) {
@@ -1360,7 +1361,7 @@ public class TestNG {
       xmlSuite.setDataProviderThreadCount(m_dataProviderThreadCount);
     }
 
-    Set<XmlMethodSelector> selectors = Sets.newHashSet();
+    Set<XmlMethodSelector> selectors = new HashSet<>();
     for (XmlTest t : xmlSuite.getTests()) {
       for (Map.Entry<String, Integer> ms : m_methodDescriptors.entrySet()) {
         XmlMethodSelector xms = new XmlMethodSelector();
@@ -1369,7 +1370,7 @@ public class TestNG {
         selectors.add(xms);
       }
       selectors.addAll(m_selectors);
-      t.getMethodSelectors().addAll(Lists.newArrayList(selectors));
+      t.getMethodSelectors().addAll(new ArrayList<>(selectors));
     }
 
     suiteRunnerMap.put(xmlSuite, createSuiteRunner(xmlSuite));
@@ -1519,7 +1520,7 @@ public class TestNG {
     String testClasses = cla.testClass;
     if (null != testClasses) {
       String[] strClasses = testClasses.split(",");
-      List<Class<?>> classes = Lists.newArrayList();
+      List<Class<?>> classes = new ArrayList<>();
       for (String c : strClasses) {
         classes.add(ClassHelper.fileToClass(c));
       }
@@ -1574,7 +1575,7 @@ public class TestNG {
         sep = ",";
       }
       String[] strs = Utils.split(cla.listener, sep);
-      List<Class<? extends ITestNGListener>> classes = Lists.newArrayList();
+      List<Class<? extends ITestNGListener>> classes = new ArrayList<>();
 
       for (String cls : strs) {
         Class<?> clazz = ClassHelper.fileToClass(cls);
@@ -1644,8 +1645,7 @@ public class TestNG {
    *     command line option.
    */
   public void setCommandLineMethods(List<String> methods) {
-    m_commandLineMethods =
-        methods == null || methods.isEmpty() ? null : Lists.newArrayList(methods);
+    m_commandLineMethods = methods == null || methods.isEmpty() ? null : new ArrayList<>(methods);
   }
 
   public void setOverrideIncludedMethods(boolean overrideIncludedMethods) {
@@ -2080,7 +2080,7 @@ public class TestNG {
 
   private URLClassLoader m_serviceLoaderClassLoader;
   private final Map<Class<? extends ITestNGListener>, ITestNGListener> serviceLoaderListeners =
-      Maps.newHashMap();
+      new HashMap<>();
 
   /*
    * Used to test ServiceClassLoader
@@ -2102,7 +2102,7 @@ public class TestNG {
    * Used to test ServiceClassLoader
    */
   public List<ITestNGListener> getServiceLoaderListeners() {
-    return Lists.newArrayList(serviceLoaderListeners.values());
+    return new ArrayList<>(serviceLoaderListeners.values());
   }
 
   public void setInjectorFactory(IInjectorFactory factory) {

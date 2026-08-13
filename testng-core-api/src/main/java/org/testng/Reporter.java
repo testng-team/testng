@@ -1,10 +1,10 @@
 package org.testng;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
+import java.util.concurrent.ConcurrentHashMap;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.Utils;
 import org.testng.util.Strings;
@@ -34,7 +34,7 @@ public class Reporter {
   /** All output logged in a sequential order. */
   private static final List<String> m_output = new LinkedList<>();
 
-  private static final Map<String, List<Integer>> m_methodOutputMap = Maps.newConcurrentMap();
+  private static final Map<String, List<Integer>> m_methodOutputMap = new ConcurrentHashMap<>();
 
   private static boolean m_escapeHtml = false;
   // This variable is responsible for persisting all output that is yet to be associated with any
@@ -94,7 +94,7 @@ public class Reporter {
     // Synchronization needed to ensure the line number and m_output are updated atomically.
     int n = getOutput().size();
 
-    List<Integer> lines = m_methodOutputMap.computeIfAbsent(m.id(), k -> Lists.newLinkedList());
+    List<Integer> lines = m_methodOutputMap.computeIfAbsent(m.id(), k -> new LinkedList<>());
 
     // Check if there was already some orphaned output for the current thread.
     if (m_orphanedOutput.get() != null) {
@@ -175,7 +175,7 @@ public class Reporter {
   }
 
   private static List<String> getOutputFromResult(ITestResult tr) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (tr == null) {
       // Guard against a possible NPE in scenarios wherein the test result object itself could be a
       // null value.

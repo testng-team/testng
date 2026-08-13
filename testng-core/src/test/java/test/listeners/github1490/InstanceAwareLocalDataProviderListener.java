@@ -1,14 +1,14 @@
 package test.listeners.github1490;
 
+import java.util.HashSet;
 import java.util.Set;
 import org.testng.IDataProviderMethod;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Sets;
 
 public class InstanceAwareLocalDataProviderListener extends LocalDataProviderListener {
-  public static Set<Object> instanceCollectionBeforeExecution = Sets.newHashSet();
-  public static Set<Object> instanceCollectionAfterExecution = Sets.newHashSet();
+  public static Set<Object> instanceCollectionBeforeExecution = new HashSet<>();
+  public static Set<Object> instanceCollectionAfterExecution = new HashSet<>();
 
   public InstanceAwareLocalDataProviderListener() {
     instanceCollectionBeforeExecution.clear();

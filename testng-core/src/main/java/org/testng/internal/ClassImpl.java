@@ -1,5 +1,6 @@
 package org.testng.internal;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import org.testng.ITest;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
 import org.testng.collections.Objects;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.objects.DefaultTestObjectFactory;
@@ -26,7 +26,7 @@ public class ClassImpl implements IClass, IObject {
   private final Class<?> m_class;
   private IObject.IdentifiableObject m_defaultInstance = null;
   private final IAnnotationFinder m_annotationFinder;
-  private final List<IObject.IdentifiableObject> identifiableObjects = Lists.newArrayList();
+  private final List<IObject.IdentifiableObject> identifiableObjects = new ArrayList<>();
   private final Map<Class<?>, IClass> m_classes;
   private long[] m_instanceHashCodes;
   private final IObject.IdentifiableObject m_instance;

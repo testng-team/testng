@@ -1,6 +1,8 @@
 package test.hook.samples;
 
-import static test.hook.HookableTest.*;
+import static test.hook.HookableTest.HOOK_INVOKED_ATTRIBUTE;
+import static test.hook.HookableTest.HOOK_METHOD_INVOKED_ATTRIBUTE;
+import static test.hook.HookableTest.HOOK_METHOD_PARAMS_ATTRIBUTE;
 
 import java.util.UUID;
 import org.testng.IHookCallBack;

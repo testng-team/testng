@@ -1,8 +1,18 @@
 package org.testng.internal;
 
-import static org.testng.internal.TestNGMethodFinder.MethodType.*;
+import static org.testng.internal.TestNGMethodFinder.MethodType.AFTER_CLASS;
+import static org.testng.internal.TestNGMethodFinder.MethodType.AFTER_GROUPS;
+import static org.testng.internal.TestNGMethodFinder.MethodType.AFTER_SUITE;
+import static org.testng.internal.TestNGMethodFinder.MethodType.AFTER_TEST;
+import static org.testng.internal.TestNGMethodFinder.MethodType.AFTER_TEST_METHOD;
+import static org.testng.internal.TestNGMethodFinder.MethodType.BEFORE_CLASS;
+import static org.testng.internal.TestNGMethodFinder.MethodType.BEFORE_GROUPS;
+import static org.testng.internal.TestNGMethodFinder.MethodType.BEFORE_SUITE;
+import static org.testng.internal.TestNGMethodFinder.MethodType.BEFORE_TEST;
+import static org.testng.internal.TestNGMethodFinder.MethodType.BEFORE_TEST_METHOD;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +21,6 @@ import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlTest;
@@ -112,7 +121,7 @@ public class TestNGMethodFinder implements ITestMethodFinder {
 
   private ITestNGMethod[] findConfiguration(
       final Class<?> clazz, final MethodType configurationType) {
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
 
     Set<Method> methods = ClassHelper.getAvailableMethodsExcludingDefaults(clazz);
 
@@ -205,10 +214,10 @@ public class TestNGMethodFinder implements ITestMethodFinder {
       }
     }
 
-    List<ITestNGMethod> excludedMethods = Lists.newArrayList();
+    List<ITestNGMethod> excludedMethods = new ArrayList<>();
     boolean unique = configurationType == BEFORE_SUITE || configurationType == AFTER_SUITE;
     return MethodHelper.collectAndOrderMethods(
-        Lists.newArrayList(vResult),
+        new ArrayList<>(vResult),
         false /* forTests */,
         runInfo,
         annotationFinder,

@@ -1,12 +1,12 @@
 package test.listeners.github1735;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.testng.IExecutionListener;
-import org.testng.collections.Lists;
 
 public class LocalExecutionListener implements IExecutionListener {
-  private static final List<String> start = Lists.newArrayList();
-  private static final List<String> finish = Lists.newArrayList();
+  private static final List<String> start = new ArrayList<>();
+  private static final List<String> finish = new ArrayList<>();
 
   @Override
   public void onExecutionStart() {

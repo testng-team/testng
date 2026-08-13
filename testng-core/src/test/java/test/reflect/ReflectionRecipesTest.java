@@ -3,7 +3,10 @@ package test.reflect;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testng.internal.reflect.ReflectionRecipes.*;
+import static org.testng.internal.reflect.ReflectionRecipes.exactMatch;
+import static org.testng.internal.reflect.ReflectionRecipes.getMethodParameters;
+import static org.testng.internal.reflect.ReflectionRecipes.isOrImplementsInterface;
+import static org.testng.internal.reflect.ReflectionRecipes.matchArrayEnding;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

@@ -1,16 +1,16 @@
 package test.groups.issue182;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
-import org.testng.collections.Maps;
 
 public class LocalListener implements IInvokedMethodListener {
 
-  private final Map<String, List<String>> mapping = Maps.newHashMap();
+  private final Map<String, List<String>> mapping = new HashMap<>();
 
   @Override
   public void afterInvocation(IInvokedMethod method, ITestResult testResult) {

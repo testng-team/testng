@@ -1,13 +1,13 @@
 package org.testng.internal;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import org.testng.ITestNGMethod;
 import org.testng.TestNGException;
-import org.testng.collections.Maps;
 
 class ScriptMethodSelector {
 
@@ -20,7 +20,7 @@ class ScriptMethodSelector {
   }
 
   boolean includeMethodFromExpression(ITestNGMethod tm) {
-    Map<String, String> groups = Maps.newHashMap();
+    Map<String, String> groups = new HashMap<>();
     for (String group : tm.getGroups()) {
       groups.put(group, group);
     }

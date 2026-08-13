@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,6 @@ import org.testng.TestNG;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
@@ -141,7 +141,7 @@ public class ParallelTestTest extends BaseTest {
 
     tng.run();
 
-    List<Map<Long, Long>> maps = Lists.newArrayList();
+    List<Map<Long, Long>> maps = new ArrayList<>();
     for (Class<?> clazz : classes) {
       maps.add(Helper.getMap(clazz.getName()));
     }

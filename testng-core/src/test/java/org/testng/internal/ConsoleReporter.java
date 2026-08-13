@@ -5,7 +5,10 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.testng.*;
+import org.testng.IReporter;
+import org.testng.ISuite;
+import org.testng.ISuiteResult;
+import org.testng.ITestResult;
 import org.testng.xml.XmlSuite;
 
 public class ConsoleReporter implements IReporter {

@@ -1,8 +1,10 @@
 package org.testng.internal;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,8 +14,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IConfigurationAnnotation;
 import org.testng.annotations.ITestAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.ConfigurationAnnotation;
 import org.testng.internal.annotations.IAfterClass;
@@ -158,7 +158,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       boolean isAfterMethod,
       XmlTest xmlTest,
       IObject.IdentifiableObject instance) {
-    List<ITestNGMethod> result = Lists.newArrayList();
+    List<ITestNGMethod> result = new ArrayList<>();
     for (ITestNGMethod method : methods) {
       if (Modifier.isStatic(method.getConstructorOrMethod().getMethod().getModifiers())) {
         String msg =
@@ -471,7 +471,7 @@ public class ConfigurationMethod extends BaseTestMethod {
           m_annotationFinder.findAnnotation(m_methodClass, ITestAnnotation.class);
       if (classAnnotation != null) {
         String[] groups = classAnnotation.getGroups();
-        Map<String, String> newGroups = Maps.newHashMap();
+        Map<String, String> newGroups = new HashMap<>();
         for (String g : getGroups()) {
           newGroups.put(g, g);
         }

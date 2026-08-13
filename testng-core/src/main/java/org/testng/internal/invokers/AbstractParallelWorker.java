@@ -2,12 +2,12 @@ package org.testng.internal.invokers;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import org.testng.ClassMethodMap;
 import org.testng.IClassListener;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
-import org.testng.collections.Lists;
 import org.testng.internal.ConfigurationGroupMethods;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.thread.IWorker;
@@ -94,7 +94,7 @@ public abstract class AbstractParallelWorker {
       }
 
       public Builder listeners(Collection<IClassListener> listeners) {
-        instance.listeners = Lists.newLinkedList(listeners);
+        instance.listeners = new LinkedList<>(listeners);
         return this;
       }
 

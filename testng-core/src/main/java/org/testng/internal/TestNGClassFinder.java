@@ -5,7 +5,9 @@ import static org.testng.internal.ClassHelper.getAvailableMethods;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +21,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.IObjectFactoryAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.xml.XmlClass;
@@ -34,7 +34,7 @@ public class TestNGClassFinder extends BaseClassFinder {
 
   private static final String PREFIX = "[TestNGClassFinder]";
   private final ITestContext m_testContext;
-  private final Map<Class<?>, List<IObject.IdentifiableObject>> m_instanceMap = Maps.newHashMap();
+  private final Map<Class<?>, List<IObject.IdentifiableObject>> m_instanceMap = new HashMap<>();
   private final DataProviderHolder holder;
   private final ITestObjectFactory objectFactory;
   private final IAnnotationFinder annotationFinder;
@@ -339,7 +339,7 @@ public class TestNGClassFinder extends BaseClassFinder {
   // See: https://github.com/cbeust/testng/issues/1070
   private <T, S extends T> void addInstance(Class<S> clazz, IObject.IdentifiableObject instance) {
     List<IObject.IdentifiableObject> instances =
-        m_instanceMap.computeIfAbsent(clazz, key -> Lists.newArrayList());
+        m_instanceMap.computeIfAbsent(clazz, key -> new ArrayList<>());
     instances.add(instance);
   }
 }

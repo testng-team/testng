@@ -1,7 +1,37 @@
 package test.listeners.ordering;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static test.listeners.ordering.Constants.*;
+import static test.listeners.ordering.Constants.IALTERSUITELISTENER_ALTER;
+import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_DATAPROVIDER;
+import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_FACTORY;
+import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_TRANSFORM_3_ARGS;
+import static test.listeners.ordering.Constants.IANNOTATIONTRANSFORMER_TRANSFORM_4_ARGS;
+import static test.listeners.ordering.Constants.ICLASSLISTENER_ON_AFTER_CLASS;
+import static test.listeners.ordering.Constants.ICLASSLISTENER_ON_BEFORE_CLASS;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_BEFORE_CONFIGURATION;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_ON_CONFIGURATION_FAILURE;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_ON_CONFIGURATION_SKIP;
+import static test.listeners.ordering.Constants.ICONFIGURATIONLISTENER_ON_CONFIGURATION_SUCCESS;
+import static test.listeners.ordering.Constants.IDATAPROVIDERLISTENER_AFTER_DATA_PROVIDER_EXECUTION;
+import static test.listeners.ordering.Constants.IDATAPROVIDERLISTENER_BEFORE_DATA_PROVIDER_EXECUTION;
+import static test.listeners.ordering.Constants.IEXECUTIONLISTENER_ON_EXECUTION_FINISH;
+import static test.listeners.ordering.Constants.IEXECUTIONLISTENER_ON_EXECUTION_START;
+import static test.listeners.ordering.Constants.IEXECUTION_VISUALISER_CONSUME_DOT_DEFINITION;
+import static test.listeners.ordering.Constants.IINVOKEDMETHODLISTENER_AFTER_INVOCATION;
+import static test.listeners.ordering.Constants.IINVOKEDMETHODLISTENER_AFTER_INVOCATION_WITH_CONTEXT;
+import static test.listeners.ordering.Constants.IINVOKEDMETHODLISTENER_BEFORE_INVOCATION;
+import static test.listeners.ordering.Constants.IINVOKEDMETHODLISTENER_BEFORE_INVOCATION_WITH_CONTEXT;
+import static test.listeners.ordering.Constants.IREPORTER_GENERATE_REPORT;
+import static test.listeners.ordering.Constants.ISUITELISTENER_ON_FINISH;
+import static test.listeners.ordering.Constants.ISUITELISTENER_ON_START;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_FINISH_TEST_TAG;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_START_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_START_TEST_TAG;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_FAILURE_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_SKIPPED_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_SUCCESS_TEST_METHOD;
+import static test.listeners.ordering.Constants.ITESTLISTENER_ON_TEST_TIMEOUT_TEST_METHOD;
+import static test.listeners.ordering.Constants.METHODINTERCEPTOR_INTERCEPT;
 
 import java.util.Arrays;
 import java.util.List;

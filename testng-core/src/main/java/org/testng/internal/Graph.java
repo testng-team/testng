@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +15,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.testng.TestNGException;
-import org.testng.collections.Lists;
 import org.testng.collections.Maps;
 import org.testng.log4testng.Logger;
 
@@ -24,7 +25,7 @@ import org.testng.log4testng.Logger;
  * @author Cedric Beust, Aug 19, 2004
  */
 public class Graph<T> {
-  private final Map<T, Node<T>> m_nodes = Maps.newLinkedHashMap();
+  private final Map<T, Node<T>> m_nodes = new LinkedHashMap<>();
   private List<T> m_strictlySortedNodes = null;
   private final Comparator<Node<T>> comparator;
 
@@ -85,7 +86,7 @@ public class Graph<T> {
 
   public void topologicalSort() {
     log("================ SORTING");
-    m_strictlySortedNodes = Lists.newArrayList();
+    m_strictlySortedNodes = new ArrayList<>();
     initializeIndependentNodes();
 
     //
@@ -137,11 +138,15 @@ public class Graph<T> {
   private void initializeIndependentNodes() {
     if (null == m_independentNodes) {
       m_independentNodes =
-          Lists.newArrayList(m_nodes.values()).stream()
-              .sorted(comparator)
-              .collect(
-                  Collectors.toMap(
-                      Node::getObject, Function.identity(), (a, b) -> a, Maps::newLinkedHashMap));
+          new ArrayList<>(m_nodes.values())
+              .stream()
+                  .sorted(comparator)
+                  .collect(
+                      Collectors.toMap(
+                          Node::getObject,
+                          Function.identity(),
+                          (a, b) -> a,
+                          Maps::newLinkedHashMap));
     }
   }
 
@@ -183,7 +188,7 @@ public class Graph<T> {
     Node<T> node = findNode(o);
     if (null == node) {
       // This can happen if an interceptor returned new methods
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
 
     // If we found the node, use breadth first search to find all
@@ -227,7 +232,7 @@ public class Graph<T> {
   //
   public static class Node<T> {
     private final T m_object;
-    private final Map<T, T> m_predecessors = Maps.newHashMap();
+    private final Map<T, T> m_predecessors = new HashMap<>();
 
     public Node(T tm) {
       m_object = tm;

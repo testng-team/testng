@@ -4,9 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
-import org.testng.collections.Lists;
 import org.testng.collections.Objects;
-import org.testng.internal.*;
+import org.testng.internal.ConfigurationMethod;
+import org.testng.internal.ConstructorOrMethod;
+import org.testng.internal.IObject;
+import org.testng.internal.IParameterInfo;
+import org.testng.internal.ITestClassConfigInfo;
+import org.testng.internal.NoOpTestClass;
+import org.testng.internal.TestNGMethod;
+import org.testng.internal.Utils;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.log4testng.Logger;
 import org.testng.xml.XmlClass;
@@ -55,7 +61,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
               methodList.addAll(b);
               return methodList;
             })
-        .orElse(Lists.newArrayList());
+        .orElse(new ArrayList<>());
   }
 
   @Override
@@ -257,7 +263,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
    * class).
    */
   private ITestNGMethod[] createTestMethods(ITestNGMethod[] methods) {
-    List<ITestNGMethod> vResult = Lists.newArrayList();
+    List<ITestNGMethod> vResult = new ArrayList<>();
     for (ITestNGMethod tm : methods) {
       ConstructorOrMethod m = tm.getConstructorOrMethod();
       if (m.getDeclaringClass().isAssignableFrom(m_testClass)) {

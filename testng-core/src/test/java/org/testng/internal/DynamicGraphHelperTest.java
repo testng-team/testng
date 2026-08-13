@@ -2,7 +2,11 @@ package org.testng.internal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +18,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.IAnnotation;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.annotations.Test;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.annotations.AnnotationHelper;
 import org.testng.internal.annotations.DefaultAnnotationTransformer;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -104,8 +105,8 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     XmlTest xmlTest = createXmlTest("suite", "test", classes);
     xmlTest.setGroupByInstances(true);
     ITestNGMethod[] methods = methods(ITestAnnotation.class, xmlTest, classes);
-    List<ITestNGMethod> methodList = Lists.newLinkedList();
-    List<FactoryTestClassSample> objects = Lists.newLinkedList();
+    List<ITestNGMethod> methodList = new LinkedList<>();
+    List<FactoryTestClassSample> objects = new LinkedList<>();
     objects.add(new FactoryTestClassSample("one"));
     objects.add(new FactoryTestClassSample("two"));
     for (FactoryTestClassSample object : objects) {
@@ -116,14 +117,14 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     ITestNGMethod[] allMethods = methodList.toArray(new ITestNGMethod[0]);
     for (Class<?> clazz : classes) {
       ITestClass testClass = new FakeTestClass(clazz);
-      List<ITestNGMethod> tstMethods = Lists.newArrayList();
+      List<ITestNGMethod> tstMethods = new ArrayList<>();
       MethodHelper.fixMethodsWithClass(allMethods, testClass, tstMethods);
     }
 
     DynamicGraph<ITestNGMethod> graph = DynamicGraphHelper.createDynamicGraph(allMethods, xmlTest);
     Map<ITestNGMethod, Integer> edges = searchForMethod("testMethod", graph, "two");
-    Set<String> actualObjectIds = Sets.newHashSet();
-    List<String> actualMethodNames = Lists.newLinkedList();
+    Set<String> actualObjectIds = new HashSet<>();
+    List<String> actualMethodNames = new LinkedList<>();
     for (ITestNGMethod to : edges.keySet()) {
       actualObjectIds.add(to.getInstance().toString());
       actualMethodNames.add(to.getMethodName());
@@ -170,7 +171,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
   }
 
   private static List<String> extractDestinationInfoFromEdge(Map<ITestNGMethod, Integer> edges) {
-    List<String> destinations = Lists.newLinkedList();
+    List<String> destinations = new LinkedList<>();
     for (ITestNGMethod to : edges.keySet()) {
       destinations.add(to.getMethodName());
     }
@@ -191,7 +192,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
         return edge.getValue();
       }
     }
-    return Maps.newHashMap();
+    return new HashMap<>();
   }
 
   private static DynamicGraph<ITestNGMethod> newGraph(Class<?>... classes) {
@@ -206,7 +207,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
 
   private static ITestNGMethod[] methods(
       Class<? extends IAnnotation> annotationClass, XmlTest xmlTest, Class<?>... classes) {
-    List<ITestNGMethod> allMethods = Lists.newArrayList();
+    List<ITestNGMethod> allMethods = new ArrayList<>();
     for (Class<?> clazz : classes) {
       List<ITestNGMethod> tstMethods = associateInstanceToMethods(clazz, xmlTest, annotationClass);
       allMethods.addAll(tstMethods);
@@ -219,7 +220,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
     ITestClass testClass = new FakeTestClass(clazz);
     ITestNGMethod[] rawMethods = methods(clazz, xmlTest, annotationClass);
     Object object = newInstance(clazz);
-    List<ITestNGMethod> fixedMethods = Lists.newArrayList();
+    List<ITestNGMethod> fixedMethods = new ArrayList<>();
     if (object == null) {
       // Looks like there was a non default constructor on the class (maybe because its driven by a
       // factory)
@@ -237,7 +238,7 @@ public class DynamicGraphHelperTest extends SimpleBaseTest {
         fixedMethods.add(m);
       }
     }
-    List<ITestNGMethod> tstMethods = Lists.newArrayList();
+    List<ITestNGMethod> tstMethods = new ArrayList<>();
     MethodHelper.fixMethodsWithClass(
         fixedMethods.toArray(new ITestNGMethod[0]), testClass, tstMethods);
     return tstMethods;

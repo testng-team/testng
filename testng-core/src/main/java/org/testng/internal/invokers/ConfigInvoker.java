@@ -26,8 +26,6 @@ import org.testng.Reporter;
 import org.testng.SuiteRunState;
 import org.testng.TestNGException;
 import org.testng.annotations.IConfigurationAnnotation;
-import org.testng.collections.Maps;
-import org.testng.collections.Sets;
 import org.testng.internal.AutoCloseableLock;
 import org.testng.internal.ClassHelper;
 import org.testng.internal.ConfigurationMethod;
@@ -50,7 +48,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   /** Test methods whose configuration methods have failed. */
   protected final Map<ITestNGMethod, Set<Object>> m_methodInvocationResults =
-      Maps.newConcurrentMap();
+      new ConcurrentHashMap<>();
 
   private final boolean m_continueOnFailedConfiguration;
   private boolean m_hasTestTagLevelFailures = false;
@@ -60,7 +58,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
   private final Set<ITestNGMethod> m_executedConfigMethods = ConcurrentHashMap.newKeySet();
 
   /** Group failures must be synced as the Invoker is accessed concurrently */
-  private final Map<String, Boolean> m_beforegroupsFailures = Maps.newConcurrentMap();
+  private final Map<String, Boolean> m_beforegroupsFailures = new ConcurrentHashMap<>();
 
   private final IConfigurationListener internalConfigurationListener;
 
@@ -553,8 +551,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
     if (method == null) {
       return;
     }
-    Set<Object> instances =
-        m_methodInvocationResults.computeIfAbsent(method, k -> Sets.newHashSet());
+    Set<Object> instances = m_methodInvocationResults.computeIfAbsent(method, k -> new HashSet<>());
     instances.add(TestNgMethodUtils.getMethodInvocationToken(method, instance));
   }
 
@@ -562,8 +559,7 @@ class ConfigInvoker extends BaseInvoker implements IConfigInvoker {
 
   private void setClassInvocationFailure(Class<?> clazz, Object instance) {
     try (AutoCloseableLock ignore = internalLock.lock()) {
-      Set<Object> instances =
-          m_classInvocationResults.computeIfAbsent(clazz, k -> Sets.newHashSet());
+      Set<Object> instances = m_classInvocationResults.computeIfAbsent(clazz, k -> new HashSet<>());
       Object objectToAdd = instance == null ? NULL_OBJECT : instance;
       instances.add(objectToAdd);
     }

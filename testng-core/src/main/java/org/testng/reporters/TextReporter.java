@@ -13,7 +13,6 @@ import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.CustomAttribute;
-import org.testng.collections.Lists;
 import org.testng.internal.Utils;
 
 /** A simple reporter that collects the results and prints them on standard out. */
@@ -90,8 +89,8 @@ public class TextReporter implements ITestListener {
 
     results = context.getSkippedTests().getAllResults();
     List<ITestResult> rawskipped = new ArrayList<>(results);
-    List<ITestResult> skippedTests = Lists.newArrayList();
-    List<ITestResult> retriedTests = Lists.newArrayList();
+    List<ITestResult> skippedTests = new ArrayList<>();
+    List<ITestResult> retriedTests = new ArrayList<>();
     for (ITestResult result : rawskipped) {
       if (result.wasRetried()) {
         retriedTests.add(result);

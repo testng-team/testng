@@ -1,12 +1,12 @@
 package org.testng.internal.thread;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import org.testng.collections.Lists;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.Utils;
 import org.testng.log4testng.Logger;
@@ -57,7 +57,7 @@ public class ThreadUtil {
                 new LinkedBlockingQueue<>(),
                 new TestNGThreadFactory(name));
 
-    List<Callable<Object>> callables = Lists.newArrayList();
+    List<Callable<Object>> callables = new ArrayList<>();
     for (final Runnable task : tasks) {
       callables.add(
           () -> {

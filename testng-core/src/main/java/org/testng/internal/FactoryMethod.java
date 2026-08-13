@@ -1,7 +1,9 @@
 package org.testng.internal;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,8 +22,6 @@ import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.annotations.IFactoryAnnotation;
 import org.testng.annotations.IListenersAnnotation;
-import org.testng.collections.Lists;
-import org.testng.collections.Maps;
 import org.testng.internal.annotations.IAnnotationFinder;
 import org.testng.internal.invokers.ParameterHolder;
 import org.testng.xml.XmlTest;
@@ -146,9 +146,9 @@ public class FactoryMethod extends BaseTestMethod {
   }
 
   public IParameterInfo[] invoke() {
-    List<IParameterInfo> result = Lists.newArrayList();
+    List<IParameterInfo> result = new ArrayList<>();
 
-    Map<String, String> allParameterNames = Maps.newHashMap();
+    Map<String, String> allParameterNames = new HashMap<>();
     Parameters.MethodParameters methodParameters =
         new Parameters.MethodParameters(
             m_testContext.getCurrentXmlTest().getAllParameters(),
