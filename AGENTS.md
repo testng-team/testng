@@ -138,6 +138,22 @@ gh pr create --repo testng-team/testng --base master --head <fork-owner>:<branch
 Conventional Commits. Record user-visible changes in `CHANGES.txt`, newest first, under the current
 version heading.
 
+Split a pull request that mixes a large mechanical sweep with changes that need judgement. The two
+halves have different review costs: a tool's output — an OpenRewrite run, a formatter pass, a
+rename across hundreds of files — is re-derivable from the recipe that produced it and needs little
+more than green CI, while the design decisions around it need a maintainer's attention. Bundled,
+the small half queues behind the large one and a reviewer becomes the bottleneck for both.
+
+Send the mechanical half first, then stack the reviewed half on its branch:
+
+```bash
+gh pr create --repo testng-team/testng --base <mechanical-branch> --head <fork-owner>:<branch>
+```
+
+The pull request then shows only the delta, and GitHub retargets it to `master` when the first one
+merges. Within each pull request, keep the machine output in its own commit, separate from the hand
+edits that follow it, so a reviewer can tell which hunks a human actually judged.
+
 ## Working style
 
 - **Verify claims before acting on them** — including your own. A pull request description, an issue
