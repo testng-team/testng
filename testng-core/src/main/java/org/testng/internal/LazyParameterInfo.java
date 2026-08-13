@@ -39,7 +39,11 @@ public class LazyParameterInfo implements IParameterInfo {
       synchronized (lock) {
         if (!materialized) {
           try {
-            instance = creator.get();
+            Object created = creator.get();
+            if (created == null) {
+              throw new IllegalStateException("Factory instance creator returned null");
+            }
+            instance = created;
           } catch (Throwable t) {
             failure = t;
           } finally {

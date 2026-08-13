@@ -683,6 +683,7 @@ public class XmlSuite implements Cloneable {
         prime * result + (m_configFailurePolicy == null ? 0 : m_configFailurePolicy.hashCode());
     result = prime * result + m_dataProviderThreadCount;
     result = prime * result + (m_fileName == null ? 0 : m_fileName.hashCode());
+    result = prime * result + (m_lazyFactory == null ? 0 : m_lazyFactory.hashCode());
     result = prime * result + (m_listeners == null ? 0 : m_listeners.hashCode());
 
     result = prime * result + (m_methodSelectors == null ? 0 : m_methodSelectors.hashCode());
@@ -726,6 +727,13 @@ public class XmlSuite implements Cloneable {
       return f();
     }
     if (m_dataProviderThreadCount != other.m_dataProviderThreadCount) {
+      return f();
+    }
+    if (m_lazyFactory == null) {
+      if (other.m_lazyFactory != null) {
+        return f();
+      }
+    } else if (!m_lazyFactory.equals(other.m_lazyFactory)) {
       return f();
     }
     if (m_listeners == null) {

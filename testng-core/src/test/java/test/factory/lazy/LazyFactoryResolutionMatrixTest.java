@@ -88,7 +88,13 @@ public class LazyFactoryResolutionMatrixTest extends SimpleBaseTest {
     applyConfig(tng, config);
     tng.run();
 
-    assertThat(wasLazy(aliveWhenEachTestRan(annotation)))
+    List<Integer> alive = aliveWhenEachTestRan(annotation);
+    assertThat(alive)
+        .as(
+            "every instance's test must run (config=%s, suite=%s, annotation=%s)",
+            config, suite, annotation)
+        .hasSize(4);
+    assertThat(wasLazy(alive))
         .as("config=%s, suite=%s, annotation=%s", config, suite, annotation)
         .isEqualTo(expectedLazy);
   }
@@ -165,7 +171,6 @@ public class LazyFactoryResolutionMatrixTest extends SimpleBaseTest {
    *     instances alive from the very first test, so this is {@code false}.
    */
   private static boolean wasLazy(List<Integer> aliveWhenEachTestRan) {
-    return !aliveWhenEachTestRan.isEmpty()
-        && aliveWhenEachTestRan.get(0) < aliveWhenEachTestRan.size();
+    return aliveWhenEachTestRan.get(0) < aliveWhenEachTestRan.size();
   }
 }

@@ -461,13 +461,13 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .collect(Collectors.toList());
 
     if (hasGroupConfigs) {
-      for (Object instance : instances) {
+      for (IObject.IdentifiableObject instance : instances) {
         GroupConfigMethodArguments arguments =
             new GroupConfigMethodArguments.Builder()
                 .forTestMethod(testMethod)
                 .withGroupConfigMethods(groupMethods)
                 .withParameters(parameters)
-                .forInstance(instance)
+                .forInstance(instance.getInstance())
                 .build();
         invoker.invokeAfterGroupsConfigurations(arguments);
       }
