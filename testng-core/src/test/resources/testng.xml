@@ -759,6 +759,9 @@
   <test name="Utils">
     <classes>
       <class name="org.testng.internal.UtilsTest" />
+      <class name="org.testng.internal.ConstructorOrMethodTest"/>
+      <class name="org.testng.internal.ExecutableCacheTest"/>
+      <class name="org.testng.internal.MemberKeyTest"/>
       <class name="org.testng.internal.ClassHelperTest"/>
       <class name="org.testng.internal.objects.InstanceCreatorTest"/>
       <class name="org.testng.util.StringsTest"/>

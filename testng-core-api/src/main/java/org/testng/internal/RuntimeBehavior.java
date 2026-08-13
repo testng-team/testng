@@ -23,8 +23,21 @@ public final class RuntimeBehavior {
   public static final String PREFERENTIAL_LISTENERS = "testng.preferential.listeners.package";
   public static final String FAVOR_CUSTOM_THREAD_POOL_EXECUTOR =
       "testng.favor.custom.thread-pool.executor";
+  public static final String INTERN_REFLECTIVE_MEMBERS = "testng.reflection.intern";
 
   private RuntimeBehavior() {}
+
+  /**
+   * @return - <code>true</code> (the default) when {@link org.testng.internal.ConstructorOrMethod}
+   *     should share one resolved {@link java.lang.reflect.Executable} per member through a
+   *     process-wide cache, instead of keeping a separate {@code Method}/{@code Constructor} for
+   *     every {@code @Factory} instance and clone. Set the system property {@value
+   *     #INTERN_REFLECTIVE_MEMBERS} to <code>false</code> to fall back to a handle per wrapper (the
+   *     behaviour before this change, i.e. 7.12 and earlier).
+   */
+  public static boolean internReflectiveMembers() {
+    return Boolean.parseBoolean(System.getProperty(INTERN_REFLECTIVE_MEMBERS, "true"));
+  }
 
   public static boolean ignoreCallbackInvocationSkips() {
     return Boolean.getBoolean(IGNORE_CALLBACK_INVOCATION_SKIPS);

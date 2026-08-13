@@ -3,60 +3,57 @@ package org.testng.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
-/** Encapsulation of either a method or a constructor. */
+/**
+ * Wraps either a method or a constructor.
+ *
+ * <p>In a big suite the same few methods get wrapped again and again — once per {@code @Factory}
+ * instance and per clone — so a plain wrapper would keep a separate reflective handle for each. To
+ * avoid that, this wrapper de-duplicates through the shared {@link ExecutableCache}: every wrapper
+ * for the same member points at one {@code Method}/{@code Constructor}.
+ *
+ * <p>Set {@link RuntimeBehavior#internReflectiveMembers()} to {@code false} to turn the sharing off
+ * and simply hold the handle you were given, exactly like older TestNG. Either way the behaviour
+ * visible to callers is identical.
+ */
 public class ConstructorOrMethod {
 
-  private Method m_method;
-  private Constructor<?> m_constructor;
+  // The wrapped handle: a shared, de-duplicated one when interning is on, or the exact one we were
+  // given when it is off.
+  private final Executable member;
+
   private boolean m_enabled = true;
 
-  public ConstructorOrMethod(Method m) {
-    m_method = m;
-  }
-
-  public ConstructorOrMethod(Constructor<?> c) {
-    m_constructor = c;
-  }
-
   public ConstructorOrMethod(Executable e) {
-    if (e instanceof Constructor) {
-      m_constructor = (Constructor<?>) e;
-    } else {
-      m_method = (Method) e;
-    }
+    this.member = RuntimeBehavior.internReflectiveMembers() ? ExecutableCache.DEFAULT.intern(e) : e;
   }
 
   public Class<?> getDeclaringClass() {
-    return getMethod() != null
-        ? getMethod().getDeclaringClass()
-        : getConstructor().getDeclaringClass();
+    return member.getDeclaringClass();
   }
 
   public String getName() {
-    return getMethod() != null ? getMethod().getName() : getConstructor().getName();
+    return member.getName();
   }
 
   public Class<?>[] getParameterTypes() {
-    return getMethod() != null
-        ? getMethod().getParameterTypes()
-        : getConstructor().getParameterTypes();
+    return member.getParameterTypes(); // the JDK returns a fresh copy each call
   }
 
   public Method getMethod() {
-    return m_method;
+    return member instanceof Method ? (Method) member : null;
   }
 
   public Constructor<?> getConstructor() {
-    return m_constructor;
+    return member instanceof Constructor ? (Constructor<?>) member : null;
   }
 
-  private Executable getInternalConstructorOrMethod() {
-    if (m_method != null) {
-      return m_method;
-    }
-    return m_constructor;
+  /**
+   * Makes the wrapped member accessible. When interning is on the handle is shared, so this is
+   * observable through every wrapper of the same member.
+   */
+  public void makeAccessible() {
+    member.setAccessible(true);
   }
 
   @Override
@@ -67,13 +64,17 @@ public class ConstructorOrMethod {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ConstructorOrMethod that = (ConstructorOrMethod) o;
-    return getInternalConstructorOrMethod().equals(that.getInternalConstructorOrMethod());
+    // Executable#equals is value-based, so this holds whether or not the two sides share one
+    // handle.
+    return member.equals(((ConstructorOrMethod) o).member);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getInternalConstructorOrMethod());
+    // Objects.hash(executable) — the exact value older TestNG produced, so the iteration order of
+    // any
+    // HashSet/HashMap holding these (e.g. FailedReporter's re-run set) is unchanged.
+    return 31 + member.hashCode();
   }
 
   public void setEnabled(boolean enabled) {
@@ -86,11 +87,7 @@ public class ConstructorOrMethod {
 
   @Override
   public String toString() {
-    if (m_method != null) {
-      return m_method.toString();
-    } else {
-      return m_constructor.toString();
-    }
+    return member.toString();
   }
 
   public String stringifyParameterTypes() {
