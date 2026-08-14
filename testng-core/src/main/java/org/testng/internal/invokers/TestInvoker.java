@@ -1113,8 +1113,11 @@ class TestInvoker extends BaseInvoker implements ITestInvoker {
             .ifPresent(it -> TestResult.copyAttributes(it, r));
         r.setStatus(TestResult.FAILURE);
         result.add(r);
-        runTestResultListener(r);
+        // Record the failure before notifying listeners: we get here because something threw, and
+        // if that something was a listener it is about to throw again, which would skip the
+        // registration and drop the failure from the exit status. See GITHUB-3238.
         m_notifier.addFailedTest(arguments.getTestMethod(), r);
+        runTestResultListener(r);
       } finally {
         // The runners above consume the iterator synchronously (runInParallel blocks until every
         // invocation has completed), so by this point the data provider has been fully drained or
