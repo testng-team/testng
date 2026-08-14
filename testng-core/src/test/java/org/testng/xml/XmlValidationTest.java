@@ -375,10 +375,14 @@ public class XmlValidationTest {
   }
 
   /**
-   * The documented cost of the same situation: a doctype with only an internal subset goes
-   * unnoticed, since {@code resolveEntity} is never called for one. Asserted so the trade-off is
-   * recorded rather than merely described in a comment -- and so that a future parser change which
-   * happens to fix it does not do so silently.
+   * The cost of the same situation, for a parser built by hand: a doctype with only an internal
+   * subset goes unnoticed, since {@code resolveEntity} is never called for one.
+   *
+   * <p>No longer the cost on the path users take. {@link XMLParser#parse} reads the prologue before
+   * building a parser, and tells the handler what it found, so a suite is judged the same way
+   * whether or not the parser accepted the lexical handler -- see {@link
+   * #aDoctypeFoundBeforeTheParseIsEnoughToReportViolations()}. This stays to pin what SAX alone
+   * reports, so that the two sources cannot be confused for one.
    */
   @Test
   public void anInternalSubsetIsMissedWithoutLexicalEvents() {
@@ -389,6 +393,32 @@ public class XmlValidationTest {
                 assertThat(parseValidating(pathOf(INTERNAL_SUBSET_SUITE), false).getName())
                     .isEqualTo("InternalSubsetOnly"))
         .doesNotThrowAnyException();
+  }
+
+  /**
+   * What the prologue scan found is enough on its own to have violations reported.
+   *
+   * <p>The lexical handler is optional in SAX, and without it a doctype carrying only an internal
+   * subset reaches neither {@code startDTD} nor {@code resolveEntity}. Reporting used to be gated
+   * on those two alone, so such a suite had its violations discarded even under strict. Asserted
+   * without either event, which is the only way to tell the prologue apart from the SAX events that
+   * normally arrive alongside it.
+   */
+  @Test
+  public void aDoctypeFoundBeforeTheParseIsEnoughToReportViolations() throws Exception {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+    SAXParseException violation = new SAXParseException("not conforming", null);
+
+    TestNGContentHandler unaware = new TestNGContentHandler("no-events.xml", false);
+    assertThatCode(() -> unaware.error(violation))
+        .as("with no grammar known, a violation is still discarded")
+        .doesNotThrowAnyException();
+
+    TestNGContentHandler told = new TestNGContentHandler("no-events.xml", false);
+    told.doctypeDeclared();
+    assertThatThrownBy(() -> told.error(violation))
+        .as("the doctype seen in the prologue is enough, with no lexical or entity event")
+        .isSameAs(violation);
   }
 
   private static Path pathOf(String suiteFile) {

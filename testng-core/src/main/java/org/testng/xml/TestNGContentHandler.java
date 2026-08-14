@@ -874,6 +874,19 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   }
 
   /**
+   * Records the doctype {@code XMLParser} saw in the prologue, before the parse began.
+   *
+   * <p>A second, independent source for what {@link #startDTD} reports. The lexical handler is
+   * optional in SAX, and on a parser that refuses it a doctype with only an internal subset is
+   * reported by nothing -- {@link #resolveEntity} fires solely for an external subset. Such a suite
+   * was then advised to declare the grammar it had just declared, and had its violations discarded
+   * even under strict. The prologue is read whatever the parser supports, so it closes that gap.
+   */
+  void doctypeDeclared() {
+    m_doctypeDeclared = true;
+  }
+
+  /**
    * Advises declaring a grammar when the document has none, once, on the root element.
    *
    * <p>The schema comes first: it is what TestNG writes and what it recommends. The doctype is

@@ -58,7 +58,7 @@ public abstract class XMLParser<T> implements IFileParser<T> {
       // Nothing to choose between, so neither the buffering nor the prologue scan below would be
       // read. This is also the path every parser that is not reading a suite takes.
       configureValidation(spf);
-      parse(spf, is, dh, false);
+      parse(spf, is, dh, false, false);
       return;
     }
     // Buffered because the grammar has to be chosen before the parser is built -- JAXP rejects
@@ -66,12 +66,17 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     // parsing is under way. Suite files are a few kilobytes; #3316 buffers the DTD on the same
     // grounds.
     byte[] document = is.readAllBytes();
-    boolean schemaValidated = configureGrammar(spf, XmlPrologue.declaresDoctype(document));
-    parse(spf, new ByteArrayInputStream(document), dh, schemaValidated);
+    boolean declaresDoctype = XmlPrologue.declaresDoctype(document);
+    boolean schemaValidated = configureGrammar(spf, declaresDoctype);
+    parse(spf, new ByteArrayInputStream(document), dh, schemaValidated, declaresDoctype);
   }
 
   private static void parse(
-      SAXParserFactory spf, InputStream is, DefaultHandler dh, boolean schemaValidated)
+      SAXParserFactory spf,
+      InputStream is,
+      DefaultHandler dh,
+      boolean schemaValidated,
+      boolean declaresDoctype)
       throws SAXException, IOException {
     SAXParser parser;
     try {
@@ -82,7 +87,13 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     }
     registerLexicalHandler(parser, dh);
     if (dh instanceof TestNGContentHandler) {
-      ((TestNGContentHandler) dh).setSchemaValidated(schemaValidated);
+      TestNGContentHandler handler = (TestNGContentHandler) dh;
+      handler.setSchemaValidated(schemaValidated);
+      if (declaresDoctype) {
+        // Only ever confirms: the scan answers "no doctype" for input it could not read, so a
+        // false here means "nothing found", not "nothing there".
+        handler.doctypeDeclared();
+      }
     }
     parser.parse(is, dh);
   }
@@ -173,9 +184,9 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     try {
       parser.setProperty("http://xml.org/sax/properties/lexical-handler", dh);
     } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
-      // Optional in SAX. Losing it costs detection of a doctype that has no external subset;
-      // TestNGContentHandler.resolveEntity still catches the external case, so this degrades
-      // rather than breaks and is not worth failing the parse over.
+      // Optional in SAX, and no longer costly for a suite: the prologue scan above already told
+      // the handler whether a doctype is declared, including the internal-subset-only case that
+      // neither startDTD nor resolveEntity would report here. Not worth failing the parse over.
       Logger.getLogger(XMLParser.class)
           .warn("The XML parser in use does not report doctype declarations: " + e);
     }
