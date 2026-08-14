@@ -80,14 +80,39 @@ public class XmlPrologueTest {
     assertThat(XmlPrologue.declaresDoctype(new byte[0])).isFalse();
   }
 
-  /** UTF-16 pads every ASCII character with a null byte; the scan must see through it. */
+  /**
+   * A suite file is not always UTF-8, and the answer must not depend on the encoding. Both UTF-16
+   * byte orders are covered because they differ in exactly the way a byte-level reading of the
+   * document would trip over.
+   */
   @Test
-  public void aDoctypeIsFoundInAUtf16Document() {
-    String document = "<?xml version=\"1.0\"?><!DOCTYPE suite SYSTEM \"x\"><suite name=\"s\"/>";
+  public void aDoctypeIsFoundWhateverTheEncoding() {
+    String utf16 =
+        "<?xml version=\"1.0\" encoding=\"UTF-16\"?><!DOCTYPE suite SYSTEM \"x\">"
+            + "<suite name=\"s\"/>";
+    // No encoding declared, so the same bytes stay readable with a byte order mark in front.
+    String utf8 = "<?xml version=\"1.0\"?><!DOCTYPE suite SYSTEM \"x\"><suite name=\"s\"/>";
 
-    assertThat(XmlPrologue.declaresDoctype(document.getBytes(StandardCharsets.UTF_16BE))).isTrue();
-    assertThat(
-            XmlPrologue.declaresDoctype("<suite name=\"s\"/>".getBytes(StandardCharsets.UTF_16BE)))
-        .isFalse();
+    assertThat(XmlPrologue.declaresDoctype(utf16.getBytes(StandardCharsets.UTF_16BE))).isTrue();
+    assertThat(XmlPrologue.declaresDoctype(utf16.getBytes(StandardCharsets.UTF_16LE))).isTrue();
+    assertThat(XmlPrologue.declaresDoctype(("﻿" + utf8).getBytes(StandardCharsets.UTF_8)))
+        .as("a byte order mark must not hide the declaration behind it")
+        .isTrue();
+  }
+
+  /**
+   * The external subset must not be fetched to answer the question: only the declaration matters,
+   * the parse that follows has a resolver for it, and reaching out to whatever a suite file names
+   * would be both slow and unsafe. The address is one nothing can serve, so a fetch would hang or
+   * throw rather than pass.
+   */
+  @Test
+  public void theExternalSubsetIsNotFetched() {
+    String document =
+        "<?xml version=\"1.0\"?>\n"
+            + "<!DOCTYPE suite SYSTEM \"http://127.0.0.1:1/unreachable.dtd\">\n"
+            + "<suite name=\"s\"/>\n";
+
+    assertThat(XmlPrologue.declaresDoctype(document.getBytes(StandardCharsets.UTF_8))).isTrue();
   }
 }

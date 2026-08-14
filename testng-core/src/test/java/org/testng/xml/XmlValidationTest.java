@@ -176,6 +176,42 @@ public class XmlValidationTest {
         .hasRootCauseInstanceOf(SAXParseException.class);
   }
 
+  /**
+   * Validating against a schema requires a namespace-aware parser, and that widens what counts as
+   * malformed: an undeclared prefix is now an error where it used to be read as part of the name. A
+   * suite that declares a doctype is unaffected, since that path stays as it was.
+   *
+   * <p>Characterization rather than a requirement -- the behaviour is a consequence of the schema
+   * being wired in, not something aimed for. It is pinned because it is the one way a file that
+   * used to parse can stop parsing, so it needs to be visible, and because {@code
+   * testng.xml.validation=off} is the way out.
+   */
+  @Test
+  public void anUndeclaredPrefixIsRejectedOnlyWhereTheSchemaApplies() {
+    String suite =
+        "<suite name=\"UndeclaredPrefix\">\n"
+            + "  <test name=\"t\" foo:bar=\"x\"><classes><class name=\"C\"/></classes></test>\n"
+            + "</suite>\n";
+    String withDoctype =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.1.dtd\">\n"
+            + suite;
+    String withoutDoctype = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + suite;
+
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "warn");
+    assertThatCode(() -> SuiteCorpus.parseString("with-doctype.xml", withDoctype))
+        .as("the DTD path is not namespace aware, so it reads foo:bar as a plain attribute name")
+        .doesNotThrowAnyException();
+    assertThatThrownBy(() -> SuiteCorpus.parseString("no-doctype.xml", withoutDoctype))
+        .as("the schema path is namespace aware, so an unbound prefix is malformed")
+        .isInstanceOf(TestNGException.class);
+
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "off");
+    assertThatCode(() -> SuiteCorpus.parseString("no-doctype.xml", withoutDoctype))
+        .as("turning validation off restores the previous behaviour")
+        .doesNotThrowAnyException();
+  }
+
   @Test
   public void strictModeAcceptsAValidSuite() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");

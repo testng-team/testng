@@ -152,8 +152,14 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
    */
   private boolean m_schemaValidated = false;
 
-  /** Whether the root element carries an {@code xsi:noNamespaceSchemaLocation}. */
+  /**
+   * Whether the root element carries an {@code xsi:noNamespaceSchemaLocation}. Read from the root
+   * only: a schema declaration deeper in the document is not one, and re-reading it on every
+   * element would let a nested element decide whether the file declared a grammar.
+   */
   private boolean m_schemaDeclared = false;
+
+  private boolean m_rootInspected = false;
 
   /**
    * Resolved once per parse rather than per violation, so a malformed suite cannot re-read the
@@ -651,7 +657,8 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
-    if (!m_schemaDeclared) {
+    if (!m_rootInspected) {
+      m_rootInspected = true;
       m_schemaDeclared = declaresASchema(attributes);
     }
     if (!m_doctypeDeclared && !m_schemaDeclared && !m_hasWarn) {
