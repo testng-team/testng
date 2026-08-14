@@ -135,16 +135,12 @@ public class XmlValidationTest {
    * pass, and neither shows up in any other test -- the corpus is 99 doctypes out of 101 files.
    */
   @Test
-  public void theSuiteParserReportsAViolationOfADeclaredSchema() throws Exception {
+  public void theSuiteParserReportsAViolationOfADeclaredSchema() {
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
 
-    try (InputStream stream =
-        Files.newInputStream(Paths.get(getPathToResource(SCHEMA_DECLARED_INVALID_SUITE)))) {
-      assertThatThrownBy(
-              () -> new SuiteXmlParser().parse(SCHEMA_DECLARED_INVALID_SUITE, stream, false))
-          .isInstanceOf(TestNGException.class)
-          .hasRootCauseInstanceOf(SAXParseException.class);
-    }
+    assertThatThrownBy(() -> SuiteCorpus.parseFile(SCHEMA_DECLARED_INVALID_SUITE))
+        .isInstanceOf(TestNGException.class)
+        .hasRootCauseInstanceOf(SAXParseException.class);
   }
 
   /**

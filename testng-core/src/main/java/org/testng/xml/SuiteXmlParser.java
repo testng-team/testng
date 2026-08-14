@@ -21,6 +21,12 @@ public class SuiteXmlParser extends XMLParser<XmlSuite> implements ISuiteParser 
     }
   }
 
+  /** This is the parser that reads suites, so this is the one the suite schema applies to. */
+  @Override
+  protected boolean validatesAgainstSuiteSchema() {
+    return true;
+  }
+
   @Override
   public boolean accept(String fileName) {
     return Parser.hasFileScheme(fileName) && fileName.endsWith(".xml");

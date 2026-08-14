@@ -31,9 +31,10 @@ final class XmlPrologue {
    * message that names the line and column.
    */
   static boolean declaresDoctype(byte[] document) {
-    XMLStreamReader reader = null;
     try {
-      reader = newFactory().createXMLStreamReader(new ByteArrayInputStream(document));
+      // Not closed: the reader wraps a byte array, so there is nothing to release.
+      XMLStreamReader reader =
+          newFactory().createXMLStreamReader(new ByteArrayInputStream(document));
       while (reader.hasNext()) {
         int event = reader.next();
         if (event == XMLStreamConstants.DTD) {
@@ -46,8 +47,6 @@ final class XmlPrologue {
       return false;
     } catch (XMLStreamException e) {
       return false;
-    } finally {
-      closeQuietly(reader);
     }
   }
 
@@ -66,17 +65,5 @@ final class XmlPrologue {
     factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
     return factory;
-  }
-
-  private static void closeQuietly(XMLStreamReader reader) {
-    if (reader == null) {
-      return;
-    }
-    try {
-      reader.close();
-    } catch (XMLStreamException e) {
-      // Closing a reader over a byte array releases nothing that matters, and letting this escape
-      // would replace whatever the caller was about to report.
-    }
   }
 }

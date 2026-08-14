@@ -6,6 +6,8 @@ import static org.testng.xml.SuiteCorpus.parseFile;
 import static org.testng.xml.SuiteCorpus.parseString;
 
 import java.io.IOException;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.internal.RuntimeBehavior;
 
@@ -22,6 +24,23 @@ import org.testng.internal.RuntimeBehavior;
  * model must survive unchanged, which pins the data (see {@link SuiteDigest}).
  */
 public class XmlRoundTripTest {
+
+  private String previousMode;
+
+  @BeforeMethod
+  public void rememberValidationMode() {
+    previousMode = System.getProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+  }
+
+  /** Restores rather than clears, for the reason given on {@code XmlValidationTest}. */
+  @AfterMethod(alwaysRun = true)
+  public void restoreValidationMode() {
+    if (previousMode == null) {
+      System.clearProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+    } else {
+      System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, previousMode);
+    }
+  }
 
   @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
   public void serializedSuiteIsAFixedPoint(String suiteFile) throws IOException {
@@ -61,22 +80,13 @@ public class XmlRoundTripTest {
   @Test(dataProvider = "suiteFiles", dataProviderClass = SuiteCorpus.class)
   public void serializedSuiteIsAcceptedInStrictMode(String suiteFile) throws Exception {
     String xml = parseFile(suiteFile).toXml();
-    String previousMode = System.getProperty(RuntimeBehavior.XML_VALIDATION_MODE);
     System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
 
-    try {
-      assertThatCode(() -> parseString(suiteFile, xml))
-          .as(
-              "the XML written for %s must be re-readable under strict validation:%n%s",
-              suiteFile, xml)
-          .doesNotThrowAnyException();
-    } finally {
-      if (previousMode == null) {
-        System.clearProperty(RuntimeBehavior.XML_VALIDATION_MODE);
-      } else {
-        System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, previousMode);
-      }
-    }
+    assertThatCode(() -> parseString(suiteFile, xml))
+        .as(
+            "the XML written for %s must be re-readable under strict validation:%n%s",
+            suiteFile, xml)
+        .doesNotThrowAnyException();
   }
 
   /**

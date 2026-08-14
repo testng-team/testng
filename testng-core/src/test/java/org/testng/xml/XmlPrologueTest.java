@@ -10,9 +10,9 @@ import org.testng.annotations.Test;
  * Which grammar validates a suite file is decided from its prologue, before a parser exists, so a
  * misreading here silently sends a document to the wrong schema -- or to none.
  *
- * <p>The case that motivates scanning rather than searching for the text is {@link
- * #aCommentedOutDoctypeIsNotADeclaration()}: a suite carrying a commented-out doctype would
- * otherwise be validated against the DTD it deliberately does not declare.
+ * <p>The case that motivates reading the prologue rather than searching for the text is the
+ * commented-out doctype below: a suite carrying one would otherwise be validated against the DTD it
+ * deliberately does not declare.
  */
 public class XmlPrologueTest {
 
@@ -42,19 +42,6 @@ public class XmlPrologueTest {
     assertThat(XmlPrologue.declaresDoctype(document.getBytes(StandardCharsets.UTF_8)))
         .as("a suite file whose prologue holds %s", description)
         .isEqualTo(expected);
-  }
-
-  /**
-   * Called out on its own because it is the whole reason the prologue is scanned rather than
-   * searched.
-   */
-  @Test
-  public void aCommentedOutDoctypeIsNotADeclaration() {
-    String document =
-        "<!-- <!DOCTYPE suite SYSTEM \"https://testng.org/testng-1.1.dtd\"> -->\n"
-            + "<suite name=\"s\"/>\n";
-
-    assertThat(XmlPrologue.declaresDoctype(document.getBytes(StandardCharsets.UTF_8))).isFalse();
   }
 
   /**

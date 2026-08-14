@@ -1,7 +1,6 @@
 package org.testng.xml;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -54,13 +53,26 @@ public abstract class XMLParser<T> implements IFileParser<T> {
    * changed, so the mode in effect is now simply read at each parse.
    */
   public void parse(InputStream is, DefaultHandler dh) throws SAXException, IOException {
+    SAXParserFactory spf = loadSAXParserFactory();
+    if (!validatesAgainstSuiteSchema() || !XmlValidationMode.current().isValidating()) {
+      // Nothing to choose between, so neither the buffering nor the prologue scan below would be
+      // read. This is also the path every parser that is not reading a suite takes.
+      configureValidation(spf);
+      parse(spf, is, dh, false);
+      return;
+    }
     // Buffered because the grammar has to be chosen before the parser is built -- JAXP rejects
     // setValidating(true) together with setSchema(...) -- while the doctype is only observed once
     // parsing is under way. Suite files are a few kilobytes; #3316 buffers the DTD on the same
     // grounds.
-    byte[] document = readFully(is);
-    SAXParserFactory spf = loadSAXParserFactory();
+    byte[] document = is.readAllBytes();
     boolean schemaValidated = configureGrammar(spf, XmlPrologue.declaresDoctype(document));
+    parse(spf, new ByteArrayInputStream(document), dh, schemaValidated);
+  }
+
+  private static void parse(
+      SAXParserFactory spf, InputStream is, DefaultHandler dh, boolean schemaValidated)
+      throws SAXException, IOException {
     SAXParser parser;
     try {
       parser = spf.newSAXParser();
@@ -72,7 +84,19 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     if (dh instanceof TestNGContentHandler) {
       ((TestNGContentHandler) dh).setSchemaValidated(schemaValidated);
     }
-    parser.parse(new ByteArrayInputStream(document), dh);
+    parser.parse(is, dh);
+  }
+
+  /**
+   * Whether a document with no doctype should be validated against the TestNG suite schema.
+   *
+   * <p>False here, and overridden only by {@link SuiteXmlParser}: this class is a generic SAX front
+   * end -- {@code TestsuiteXmlParser} reads JUnit reports through it -- and a {@code <testsuite>}
+   * document is not a suite. Validating one against {@code testng-1.1.xsd} would report violations
+   * for a grammar it was never meant to satisfy.
+   */
+  protected boolean validatesAgainstSuiteSchema() {
+    return false;
   }
 
   /**
@@ -89,23 +113,19 @@ public abstract class XMLParser<T> implements IFileParser<T> {
       configureValidation(spf);
       return false;
     }
-    if (!XmlValidationMode.current().isValidating()) {
-      return false;
-    }
-    Schema schema = bundledSchema();
-    if (schema == null) {
+    if (BundledSchema.INSTANCE == null) {
       return false;
     }
     // Schema validation is defined in terms of namespaces, even for a schema without one. Safe to
     // turn on here in a way it is not for the DTD path: with no DTD to validate against, an xmlns
     // attribute cannot become a validity error for being undeclared.
     spf.setNamespaceAware(true);
-    spf.setSchema(schema);
+    spf.setSchema(BundledSchema.INSTANCE);
     return true;
   }
 
   /**
-   * The bundled schema, compiled once.
+   * The bundled schema, compiled once and only when a suite is actually read without a doctype.
    *
    * <p>Loaded from the classpath rather than from the document's {@code
    * xsi:noNamespaceSchemaLocation}, for the reason the entity resolver loads the DTD from the
@@ -117,10 +137,6 @@ public abstract class XMLParser<T> implements IFileParser<T> {
    * <p>A missing or uncompilable schema degrades to "no validation" rather than failing the parse:
    * a repackaged jar that dropped the resource should still run suites.
    */
-  private static Schema bundledSchema() {
-    return BundledSchema.INSTANCE;
-  }
-
   private static final class BundledSchema {
     private static final Schema INSTANCE = compile();
 
@@ -141,16 +157,6 @@ public abstract class XMLParser<T> implements IFileParser<T> {
         return null;
       }
     }
-  }
-
-  private static byte[] readFully(InputStream is) throws IOException {
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    byte[] chunk = new byte[8192];
-    int read;
-    while ((read = is.read(chunk)) != -1) {
-      buffer.write(chunk, 0, read);
-    }
-    return buffer.toByteArray();
   }
 
   /**

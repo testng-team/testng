@@ -141,7 +141,6 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private final boolean m_loadClasses;
   private boolean m_validate = false;
   private boolean m_doctypeDeclared = false;
-  private boolean m_hasWarn = false;
 
   /**
    * Whether the parser was given the bundled schema, which {@code XMLParser} decides before the
@@ -153,12 +152,10 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private boolean m_schemaValidated = false;
 
   /**
-   * Whether the root element carries an {@code xsi:noNamespaceSchemaLocation}. Read from the root
-   * only: a schema declaration deeper in the document is not one, and re-reading it on every
+   * Whether the root element has been looked at yet. The hint below is decided there and nowhere
+   * else: a schema declaration deeper in the document is not one, and re-reading it on every
    * element would let a nested element decide whether the file declared a grammar.
    */
-  private boolean m_schemaDeclared = false;
-
   private boolean m_rootInspected = false;
 
   /**
@@ -659,18 +656,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
     if (!m_rootInspected) {
       m_rootInspected = true;
-      m_schemaDeclared = declaresASchema(attributes);
-    }
-    if (!m_doctypeDeclared && !m_schemaDeclared && !m_hasWarn) {
-      String msg =
-          String.format(
-              "It is strongly recommended to declare a schema at the top of the suite file [%s],"
-                  + " either xsi:noNamespaceSchemaLocation=\"%s\" on <suite> (recommended) or"
-                  + " \"<!DOCTYPE suite SYSTEM \"%s\" >\", otherwise TestNG may fail or not work as"
-                  + " expected.",
-              this.m_fileName, XMLParser.HTTPS_TESTNG_XSD_URL, Parser.HTTPS_TESTNG_DTD_URL);
-      Logger.getLogger(TestNGContentHandler.class).warn(msg);
-      m_hasWarn = true;
+      warnIfNoGrammarIsDeclared(attributes);
     }
     String name = attributes.getValue("name");
 
@@ -885,6 +871,26 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
    */
   void setSchemaValidated(boolean schemaValidated) {
     m_schemaValidated = schemaValidated;
+  }
+
+  /**
+   * Advises declaring a grammar when the document has none, once, on the root element.
+   *
+   * <p>The schema comes first: it is what TestNG writes and what it recommends. The doctype is
+   * still offered, because it is what every existing suite file carries and it stays supported.
+   */
+  private void warnIfNoGrammarIsDeclared(Attributes attributes) {
+    if (m_doctypeDeclared || declaresASchema(attributes)) {
+      return;
+    }
+    Logger.getLogger(TestNGContentHandler.class)
+        .warn(
+            String.format(
+                "It is strongly recommended to declare a schema at the top of the suite file [%s],"
+                    + " either xsi:noNamespaceSchemaLocation=\"%s\" on <suite> (recommended) or"
+                    + " \"<!DOCTYPE suite SYSTEM \"%s\" >\", otherwise TestNG may fail or not work"
+                    + " as expected.",
+                this.m_fileName, XMLParser.HTTPS_TESTNG_XSD_URL, Parser.HTTPS_TESTNG_DTD_URL));
   }
 
   /**
