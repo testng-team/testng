@@ -290,7 +290,9 @@ public class TestMethodWorker implements IWorker<ITestNGMethod> {
     // from the public IFactoryInstance the method hands out.
     ITestNGMethod method = mi.getMethod();
     IParameterInfo info =
-        method instanceof BaseTestMethod ? ((BaseTestMethod) method).factoryParameterInfo() : null;
+        method instanceof BaseTestMethod
+            ? ((BaseTestMethod) method).getFactoryParameterInfo()
+            : null;
     return info == null ? null : info.getInstantiationFailure();
   }
 

@@ -76,10 +76,12 @@ public class XmlInclude {
    *     org.testng.IFactoryInstance#getIndex()} reports.
    *     <p>This is a different axis from {@link #getInvocationNumbers()}, which selects rows of the
    *     test method's own data provider. A factory powered method can be filtered on both.
+   *     <p>Unmodifiable, and sorted ascending. {@link #getInvocationNumbers()} hands back a mutable
+   *     copy instead; that is its long-standing contract, not a pattern to follow.
    * @since 7.13.0
    */
   public List<Integer> getFactoryInstances() {
-    return new ArrayList<>(m_factoryInstances);
+    return List.copyOf(m_factoryInstances);
   }
 
   /** @since 7.13.0 */

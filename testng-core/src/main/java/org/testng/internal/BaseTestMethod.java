@@ -169,7 +169,7 @@ public abstract class BaseTestMethod
    *     creation.
    */
   public boolean isInstanceInstantiated() {
-    IParameterInfo info = factoryParameterInfo();
+    IParameterInfo info = getFactoryParameterInfo();
     return info == null || info.isInstanceInstantiated();
   }
 
@@ -317,7 +317,7 @@ public abstract class BaseTestMethod
 
   @Override
   public Optional<IFactoryInstance> getFactoryInstance() {
-    IParameterInfo info = factoryParameterInfo();
+    IParameterInfo info = getFactoryParameterInfo();
     return info == null ? Optional.empty() : Optional.ofNullable(info.getFactoryInstance());
   }
 
@@ -326,7 +326,7 @@ public abstract class BaseTestMethod
    *     deprecated {@link #getFactoryMethodParamsInfo()} this is not part of {@link ITestNGMethod},
    *     so the lazy-instantiation details stay available to TestNG without being published.
    */
-  public IParameterInfo factoryParameterInfo() {
+  public IParameterInfo getFactoryParameterInfo() {
     Object instance = m_instance == null ? null : m_instance.getInstance();
     return instance instanceof IParameterInfo ? (IParameterInfo) instance : null;
   }
@@ -866,7 +866,7 @@ public abstract class BaseTestMethod
   @Override
   @Deprecated
   public IParameterInfo getFactoryMethodParamsInfo() {
-    return factoryParameterInfo();
+    return getFactoryParameterInfo();
   }
 
   private long invocationTime;

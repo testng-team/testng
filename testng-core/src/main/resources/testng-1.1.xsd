@@ -384,8 +384,25 @@
       <xsd:group ref="anyDeclaredElement" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="description" type="xsd:string"/>
-      <xsd:attribute name="invocation-numbers" type="xsd:string"/>
-      <xsd:attribute name="factory-instances" type="xsd:string"/>
+      <xsd:attribute name="invocation-numbers" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+            Space separated, zero based indexes of the rows of the method's OWN data provider to
+            run. Ignored for a method that has no data provider. A separate axis from
+            factory-instances; the two may be combined.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="factory-instances" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+            Space separated indexes of the instances produced by the @Factory that created the test
+            class, numbered by their position in the factory output before @Factory(indices=...)
+            filters it. Ignored for a test class that no factory produced. A separate axis from
+            invocation-numbers; the two may be combined.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
     </xsd:complexType>
   </xsd:element>
 
