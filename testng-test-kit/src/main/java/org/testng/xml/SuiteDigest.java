@@ -90,6 +90,7 @@ public final class SuiteDigest {
         append(sb, includePrefix + ".name", include.getName());
         append(sb, includePrefix + ".description", include.getDescription());
         append(sb, includePrefix + ".invocationNumbers", include.getInvocationNumbers());
+        append(sb, includePrefix + ".factoryInstances", include.getFactoryInstances());
         append(sb, includePrefix + ".parameters", sorted(include.getLocalParameters()));
       }
     }

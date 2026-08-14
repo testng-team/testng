@@ -178,7 +178,8 @@ Defines additional groups ("groups of groups") and also which groups to include 
 <!ATTLIST include
     name CDATA #REQUIRED
     description CDATA #IMPLIED
-    invocation-numbers CDATA #IMPLIED>
+    invocation-numbers CDATA #IMPLIED
+    factory-instances CDATA #IMPLIED>
 
 <!-- Defines which groups to exclude from the current group of groups       -->
 <!ELEMENT exclude ANY>

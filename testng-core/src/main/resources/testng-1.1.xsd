@@ -385,6 +385,7 @@
       <xsd:attribute name="name" type="xsd:string" use="required"/>
       <xsd:attribute name="description" type="xsd:string"/>
       <xsd:attribute name="invocation-numbers" type="xsd:string"/>
+      <xsd:attribute name="factory-instances" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 

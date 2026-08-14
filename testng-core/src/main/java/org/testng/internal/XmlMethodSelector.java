@@ -157,12 +157,38 @@ public class XmlMethodSelector implements IMethodSelector {
       }
     }
 
+    result = result && matchesFactoryInstances(tm, includeList);
+
     Package pkg = method.getDeclaringClass().getPackage();
     String methodName = pkg != null ? pkg.getName() + "." + method.getName() : method.getName();
 
     logInclusion(result ? "Including" : "Excluding", "method", methodName + "()");
 
     return result;
+  }
+
+  /**
+   * Applies the <code>factory-instances</code> attribute of the matching &lt;include&gt; tags: when
+   * it names some of the instances a <code>@Factory</code> produced, only the methods bound to
+   * those instances run.
+   *
+   * <p>Not applicable, hence no filtering, when the attribute is absent or when the method was not
+   * produced by a factory -- mirroring <code>invocation-numbers</code>, which is ignored for a
+   * method that has no data provider. Reading the instance's index never instantiates it, so a lazy
+   * factory is unaffected.
+   */
+  private static boolean matchesFactoryInstances(ITestNGMethod tm, List<XmlInclude> includeList) {
+    if (includeList.isEmpty()) {
+      return true;
+    }
+    Set<Integer> wanted = new HashSet<>();
+    for (XmlInclude include : includeList) {
+      wanted.addAll(include.getFactoryInstances());
+    }
+    if (wanted.isEmpty()) {
+      return true;
+    }
+    return tm.getFactoryInstance().map(it -> wanted.contains(it.getIndex())).orElse(true);
   }
 
   private static boolean assignable(Class<?> sourceClass, Class<?> targetClass) {

@@ -24,11 +24,16 @@ public class DataProviderWithFactoryMultiFailedReporterTest extends SimpleBaseTe
     deleteDir(mTempDirectory);
   }
 
+  /**
+   * Still one grouped {@code <include>} per method rather than one per failure, which is what this
+   * issue was about; the failing instances just moved to the attribute that means "factory
+   * instance".
+   */
   @Test
-  public void multiFailedMethodWithDataProviderAndFactoryShouldHaveInvocationNumbers() {
+  public void multiFailedMethodWithDataProviderAndFactoryShouldGroupTheFailedInstances() {
     testFailedReporter(
         new String[] {"f1"},
-        "<include name=\"%s\" invocation-numbers=\"0 2\"/>",
+        "<include name=\"%s\" factory-instances=\"0 2\"/>",
         DataProviderWithFactoryMultiFailedReporterSample.class);
   }
 

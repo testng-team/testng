@@ -301,6 +301,17 @@ public class FailedReporter implements IReporter {
                                 return new ArrayList<>(set);
                               })
                           .ifPresent(tmpMethodName::addInvocationNumbers);
+                      // Same grouping for the other axis: one <include> per method name, carrying
+                      // every factory instance of that method that failed.
+                      each.stream()
+                          .map(XmlInclude::getFactoryInstances)
+                          .reduce(
+                              (a1, a2) -> {
+                                Set<Integer> set = new HashSet<>(a1);
+                                set.addAll(a2);
+                                return new ArrayList<>(set);
+                              })
+                          .ifPresent(tmpMethodName::addFactoryInstances);
                       return Collections.singletonList(tmpMethodName);
                     }
                     return each;
@@ -354,6 +365,12 @@ public class FailedReporter implements IReporter {
               XmlInclude methodName =
                   new XmlInclude(
                       m.getMethodName(), m.getFailedInvocationNumbers(), i.getAndIncrement());
+              // All the instances of one factory powered class collapse into a single <class> tag,
+              // so without this the regenerated suite could not say which of them failed.
+              m.getFactoryInstance()
+                  .ifPresent(
+                      it ->
+                          methodName.addFactoryInstances(Collections.singletonList(it.getIndex())));
               methodName.setParameters(findMethodLocalParameters(srcXmlTest, m));
               return methodName;
             })

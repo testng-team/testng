@@ -747,12 +747,14 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private static class Include {
     String name;
     String invocationNumbers;
+    String factoryInstances;
     String description;
     Map<String, String> parameters = new HashMap<>();
 
-    Include(String name, String numbers) {
+    Include(String name, String numbers, String factoryInstances) {
       this.name = name;
       this.invocationNumbers = numbers;
+      this.factoryInstances = factoryInstances;
     }
   }
 
@@ -760,7 +762,10 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     if (start) {
       m_locations.push(Location.INCLUDE);
       m_currentInclude =
-          new Include(attributes.getValue("name"), attributes.getValue("invocation-numbers"));
+          new Include(
+              attributes.getValue("name"),
+              attributes.getValue("invocation-numbers"),
+              attributes.getValue("factory-instances"));
       m_currentInclude.description = attributes.getValue("description");
     } else {
       String name = m_currentInclude.name;
@@ -771,6 +776,10 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
           include = new XmlInclude(name, stringToList(in), m_currentIncludeIndex++);
         } else {
           include = new XmlInclude(name, m_currentIncludeIndex++);
+        }
+        String factoryInstances = m_currentInclude.factoryInstances;
+        if (!Utils.isStringEmpty(factoryInstances)) {
+          include.addFactoryInstances(stringToList(factoryInstances));
         }
         for (Map.Entry<String, String> entry : m_currentInclude.parameters.entrySet()) {
           include.addParameter(entry.getKey(), entry.getValue());

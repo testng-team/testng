@@ -11,6 +11,7 @@ public class XmlInclude {
 
   private String m_name;
   private final Set<Integer> m_invocationNumbers;
+  private final Set<Integer> m_factoryInstances = new HashSet<>();
   private final int m_index;
   private String m_description;
   private final Map<String, String> m_parameters = new HashMap<>();
@@ -64,6 +65,24 @@ public class XmlInclude {
     m_invocationNumbers.addAll(invocationNumberList);
   }
 
+  /**
+   * @return - The indexes of the <code>@Factory</code> produced instances this method should run
+   *     on, as read from the <code>&lt;include factory-instances="..."&gt;</code> attribute. An
+   *     empty list -- the usual case -- means every instance. The indexes are the ones {@link
+   *     org.testng.IFactoryInstance#getIndex()} reports.
+   *     <p>This is a different axis from {@link #getInvocationNumbers()}, which selects rows of the
+   *     test method's own data provider. A factory powered method can be filtered on both.
+   * @since 7.13.0
+   */
+  public List<Integer> getFactoryInstances() {
+    return new ArrayList<>(m_factoryInstances);
+  }
+
+  /** @since 7.13.0 */
+  public void addFactoryInstances(List<Integer> factoryInstanceList) {
+    m_factoryInstances.addAll(factoryInstanceList);
+  }
+
   public int getIndex() {
     return m_index;
   }
@@ -83,6 +102,7 @@ public class XmlInclude {
     int result = 1;
     result = prime * result + m_index;
     result = prime * result + (m_invocationNumbers == null ? 0 : m_invocationNumbers.hashCode());
+    result = prime * result + m_factoryInstances.hashCode();
     result = prime * result + m_parameters.hashCode();
     return prime * result + (m_name == null ? 0 : m_name.hashCode());
   }
@@ -104,6 +124,9 @@ public class XmlInclude {
         return XmlSuite.f();
       }
     } else if (!m_invocationNumbers.equals(other.m_invocationNumbers)) {
+      return XmlSuite.f();
+    }
+    if (!m_factoryInstances.equals(other.m_factoryInstances)) {
       return XmlSuite.f();
     }
     if (m_name == null) {

@@ -24,11 +24,16 @@ public class DataProviderWithFactoryFailedReporterTest extends SimpleBaseTest {
     deleteDir(mTempDirectory);
   }
 
+  /**
+   * The failing instance is still named, but on the attribute that means "factory instance". {@code
+   * f1} has no data provider of its own, so it has no invocation number to record -- writing the
+   * factory index into {@code invocation-numbers} produced a suite TestNG could not read back.
+   */
   @Test
-  public void failedMethodWithDataProviderAndFactoryShouldHaveInvocationNumbers() {
+  public void failedMethodWithDataProviderAndFactoryShouldNameTheFailedInstance() {
     testFailedReporter(
         new String[] {"f1"},
-        "<include name=\"%s\" invocation-numbers=\"1\"/>",
+        "<include name=\"%s\" factory-instances=\"1\"/>",
         DataProviderWithFactoryFailedReporterSample.class);
   }
 
