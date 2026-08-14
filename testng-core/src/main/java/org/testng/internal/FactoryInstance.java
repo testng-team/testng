@@ -4,9 +4,9 @@ import org.testng.IFactory;
 import org.testng.IFactoryInstance;
 
 /**
- * The public view of one instance produced by a <code>@Factory</code>, and the single place holding
- * that instance's factory metadata. {@link ParameterInfo} and {@link LazyParameterInfo} delegate to
- * it rather than duplicating the state.
+ * The public view of one instance produced by a <code>&#64;Factory</code>, and the single place
+ * holding that instance's factory metadata. {@link ParameterInfo} and {@link LazyParameterInfo}
+ * delegate to it rather than duplicating the state.
  *
  * <p>Two indexes are recorded because two different questions are being asked:
  *

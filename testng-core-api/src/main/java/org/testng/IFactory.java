@@ -1,7 +1,7 @@
 package org.testng;
 
 /**
- * The <code>@Factory</code> that produced a test class instance.
+ * The <code>&#64;Factory</code> that produced a test class instance.
  *
  * <p>Reached through {@link IFactoryInstance#getFactory()}. The members below identify the factory;
  * none of them requires the produced instance to exist, so they can be read while a lazy factory
@@ -13,12 +13,12 @@ public interface IFactory {
 
   /**
    * @return - The name of the factory. For a factory method that is the method name; for a <code>
-   *     @Factory</code> annotated constructor it is the constructor's name, which the JDK reports
-   *     as the fully qualified name of {@link #getDeclaringClass()}.
+   *     &#64;Factory</code> annotated constructor it is the constructor's name, which the JDK
+   *     reports as the fully qualified name of {@link #getDeclaringClass()}.
    */
   String getName();
 
-  /** @return - The class that declares the <code>@Factory</code> method or constructor. */
+  /** @return - The class that declares the <code>&#64;Factory</code> method or constructor. */
   Class<?> getDeclaringClass();
 
   /**

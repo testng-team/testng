@@ -169,7 +169,7 @@ public class XmlMethodSelector implements IMethodSelector {
 
   /**
    * Applies the <code>factory-instances</code> attribute of the matching &lt;include&gt; tags: when
-   * it names some of the instances a <code>@Factory</code> produced, only the methods bound to
+   * it names some of the instances a <code>&#64;Factory</code> produced, only the methods bound to
    * those instances run.
    *
    * <p>Not applicable, hence no filtering, when the attribute is absent or when the method was not

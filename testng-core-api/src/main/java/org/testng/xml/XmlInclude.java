@@ -66,8 +66,8 @@ public class XmlInclude {
   }
 
   /**
-   * @return - The indexes of the <code>@Factory</code> produced instances this method should run
-   *     on, as read from the <code>&lt;include factory-instances="..."&gt;</code> attribute. An
+   * @return - The indexes of the <code>&#64;Factory</code> produced instances this method should
+   *     run on, as read from the <code>&lt;include factory-instances="..."&gt;</code> attribute. An
    *     empty list -- the usual case -- means every instance. The indexes are the ones {@link
    *     org.testng.IFactoryInstance#getIndex()} reports.
    *     <p>This is a different axis from {@link #getInvocationNumbers()}, which selects rows of the

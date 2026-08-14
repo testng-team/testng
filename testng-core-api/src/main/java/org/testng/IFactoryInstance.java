@@ -1,7 +1,7 @@
 package org.testng;
 
 /**
- * One test class instance produced by a <code>@Factory</code>.
+ * One test class instance produced by a <code>&#64;Factory</code>.
  *
  * <p>Obtained from {@link ITestResult#getFactoryInstance()} or {@link
  * ITestNGMethod#getFactoryInstance()}, which return an empty {@link java.util.Optional} for a test
@@ -17,8 +17,10 @@ public interface IFactoryInstance {
 
   /**
    * @return - The zero based position of this instance in the output of its factory, counted
-   *     <em>before</em> any filtering by the <code>indices</code> attribute of the <code>@Factory
-   *     </code> annotation. A factory producing four instances under <code>@Factory(indices = {1,
+   *     <em>before</em> any filtering by the <code>indices</code> attribute of the <code>
+   *     &#64;Factory
+   *     </code> annotation. A factory producing four instances under <code>
+   *     &#64;Factory(indices = {1,
    *     3})</code> therefore yields two instances whose indexes are <code>1</code> and <code>3
    *     </code>, not <code>0</code> and <code>1</code>. The value is stable for a given instance
    *     and unique among the instances of one factory.

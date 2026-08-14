@@ -81,7 +81,7 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
   Object[] getFactoryParameters();
 
   /**
-   * @return - The <code>@Factory</code> produced instance this result belongs to, or an empty
+   * @return - The <code>&#64;Factory</code> produced instance this result belongs to, or an empty
    *     {@link Optional} when no factory produced the test class. Gives access to the instance's
    *     index within the factory output, the parameters of the factory invocation that produced it,
    *     and the factory itself. Reading it never instantiates a lazily created instance.
