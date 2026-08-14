@@ -32,6 +32,7 @@ public class FactoryAndMethodDataProviderSample {
 
   @Test(dataProvider = "rows")
   public void f1(int row) {
+    ExecutedPairs.record(instance, row);
     if (instance == 1 && row == 2) {
       throw new RuntimeException("instance 1, row 2");
     }

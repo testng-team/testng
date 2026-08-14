@@ -30,7 +30,11 @@ public final class FactoryInstance implements IFactoryInstance {
   FactoryInstance(int invocationIndex, int slot, Object[] parameters, IFactory factory) {
     this.invocationIndex = invocationIndex;
     this.slot = slot;
-    this.parameters = parameters;
+    // Snapshot: an Iterator<Object[]> data provider is free to hand back the same array for every
+    // row (a reused buffer), and this outlives the invocation -- getParameters() is read from a
+    // listener, long after the provider has moved on. Without the copy every instance of such a
+    // factory would report the last row.
+    this.parameters = parameters.clone();
     this.factory = factory;
   }
 
@@ -55,9 +59,9 @@ public final class FactoryInstance implements IFactoryInstance {
   }
 
   /**
-   * @return - The invocation's parameters without copying them, for the callers that only read them
-   *     and for {@link IParameterInfo#getParameters()}, whose contract predates the defensive copy
-   *     {@link #getParameters()} makes.
+   * @return - This instance's snapshot of the invocation parameters, without the further copy
+   *     {@link #getParameters()} hands to callers. Backs {@link IParameterInfo#getParameters()},
+   *     whose contract predates that defensive copy.
    */
   Object[] rawParameters() {
     return parameters;

@@ -50,13 +50,40 @@ public class FactoryInstanceFailedReporterTest extends SimpleBaseTest {
 
   @Test(description = "GITHUB-3111")
   public void bothAxesAreRecordedSideBySide() throws Exception {
+    ExecutedPairs.clear();
     run(FactoryAndMethodDataProviderSample.class);
 
+    // Three instances x three rows.
+    assertThat(ExecutedPairs.pairs()).hasSize(9);
     // f1 failed on (instance 1, row 2) and (instance 2, row 0). Each axis keeps its own attribute;
     // the factory index no longer overwrites the data provider row.
     assertThat(includesOfFailedSuite())
         .containsExactly(
             "<include name=\"f1\" invocation-numbers=\"0 2\" factory-instances=\"1 2\"/>");
+  }
+
+  /**
+   * The two axes are recorded independently and applied independently, so a method failing on both
+   * re-runs their cross product rather than only the pairs that failed. That is a property of the
+   * flat {@code <include>} tag -- it has one list per axis, nowhere to say "instance 1 with row 2".
+   * Pinned here so the over-approximation is a known, measured cost rather than a surprise: four
+   * combinations re-run for two failures.
+   */
+  @Test(description = "GITHUB-3111")
+  public void rerunningAMethodThatFailedOnBothAxesCoversTheirCrossProduct() throws Exception {
+    ExecutedPairs.clear();
+    run(FactoryAndMethodDataProviderSample.class);
+    assertThat(ExecutedPairs.pairs()).contains("1/2", "2/0");
+
+    ExecutedPairs.clear();
+    File failed = new File(outputDir, "testng-failed.xml");
+    TestNG rerun = create();
+    rerun.setOutputDirectory(createDirInTempDir("testng-3111-both").getAbsolutePath());
+    rerun.setTestSuites(Collections.singletonList(failed.getAbsolutePath()));
+    rerun.run();
+
+    // Instances {1, 2} x rows {0, 2} -- the two that failed, plus the two that did not.
+    assertThat(ExecutedPairs.pairs()).containsExactly("1/0", "1/2", "2/0", "2/2");
   }
 
   @Test(description = "GITHUB-3111")

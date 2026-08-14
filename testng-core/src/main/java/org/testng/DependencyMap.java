@@ -3,6 +3,7 @@ package org.testng;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -130,7 +131,9 @@ public class DependencyMap {
     if (firstParams.length == 0 || secondParams.length == 0) {
       return false;
     }
-    return firstParams[0].equals(secondParams[0]);
+    // A data provider row may legitimately hold null, and this used to be a plain equals() call on
+    // it -- comparing thread affinity of two instances is no reason to throw.
+    return Objects.equals(firstParams[0], secondParams[0]);
   }
 
   private static boolean isSameInstance(

@@ -100,6 +100,16 @@ public class FactoryInstanceTest extends SimpleBaseTest {
   }
 
   @Test(description = "GITHUB-3111")
+  public void eachInstanceKeepsItsOwnRowWhenTheDataProviderReusesItsBuffer() {
+    // An Iterator<Object[]> may hand back the same array every row. Eager construction consumes it
+    // immediately, so the reuse used to be invisible -- but getParameters() reads the row back long
+    // afterwards, so without a snapshot every instance would report the last row.
+    List<IFactoryInstance> instances = run(test.factory.lazy.ReusedBufferFactorySample.class);
+
+    assertThat(parametersOf(instances)).containsExactly("[0]", "[1]", "[2]", "[3]");
+  }
+
+  @Test(description = "GITHUB-3111")
   public void everyParallelInstanceIsAccountedForExactlyOnce() {
     TestNG tng = create(ParallelFactorySample.class);
     tng.setParallel(XmlSuite.ParallelMode.INSTANCES);

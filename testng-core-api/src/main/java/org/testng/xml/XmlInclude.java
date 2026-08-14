@@ -6,12 +6,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class XmlInclude {
 
   private String m_name;
   private final Set<Integer> m_invocationNumbers;
-  private final Set<Integer> m_factoryInstances = new HashSet<>();
+  // Sorted, unlike the invocation numbers next to it: a HashSet of boxed ints only looks ordered
+  // while they stay under the table capacity, so an instance index of 17 next to 1 would be written
+  // out as "17 1". The generated suite should not depend on that.
+  private final Set<Integer> m_factoryInstances = new TreeSet<>();
   private final int m_index;
   private String m_description;
   private final Map<String, String> m_parameters = new HashMap<>();
