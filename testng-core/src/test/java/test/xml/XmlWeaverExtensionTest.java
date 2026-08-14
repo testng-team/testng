@@ -61,8 +61,9 @@ public class XmlWeaverExtensionTest {
   public void theRestOfTheSuiteStillComesFromTheBaseClass() {
     String xml = new ClassOnlyWeaver().asXml(createSuite());
 
-    assertThat(xml).contains("<!DOCTYPE suite SYSTEM");
-    assertThat(xml).contains("<suite name=\"Default Suite\"");
+    assertThat(xml).contains("<suite xmlns:xsi=");
+    assertThat(xml).contains("xsi:noNamespaceSchemaLocation=");
+    assertThat(xml).contains("name=\"Default Suite\"");
     assertThat(xml).contains("name=\"command_line_test\"");
     assertThat(xml).contains("</suite>");
   }

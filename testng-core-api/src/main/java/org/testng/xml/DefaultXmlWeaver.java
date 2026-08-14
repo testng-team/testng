@@ -67,6 +67,25 @@ public class DefaultXmlWeaver implements IWeaveXml {
 
   private static final String HTTPS_TESTNG_DTD_URL = "https://testng.org/" + TESTNG_DTD;
 
+  /**
+   * The name of the TestNG schema. Must stay in sync with {@code XMLParser.TESTNG_XSD}, which is
+   * the version the reader resolves from the classpath, for the reason given above for the DTD.
+   */
+  private static final String TESTNG_XSD = "testng-1.1.xsd";
+
+  private static final String HTTPS_TESTNG_XSD_URL = "https://testng.org/" + TESTNG_XSD;
+
+  private static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
+
+  /** The namespace declaration and the schema hint, in that order, for the {@code <suite>} tag. */
+  private static String schemaDeclaration() {
+    return " xmlns:xsi=\""
+        + XSI_NAMESPACE
+        + "\" xsi:noNamespaceSchemaLocation=\""
+        + HTTPS_TESTNG_XSD_URL
+        + '"';
+  }
+
   /** Immutable, so a single instance can serve every {@code asXmlFragment} call. */
   private static final DefaultXmlWeaver LEGACY_FRAGMENT_WEAVER = new DefaultXmlWeaver();
 
@@ -90,7 +109,6 @@ public class DefaultXmlWeaver implements IWeaveXml {
   public String asXml(XmlSuite xmlSuite) {
     XMLStringBuffer xsb = new XMLStringBuffer();
     xsb.setDefaultComment(defaultComment);
-    xsb.setDocType("suite SYSTEM \"" + HTTPS_TESTNG_DTD_URL + '\"');
     Properties p = new Properties();
     p.setProperty("name", xmlSuite.getName());
     if (xmlSuite.getVerbose() != null) {
@@ -156,7 +174,17 @@ public class DefaultXmlWeaver implements IWeaveXml {
         "allow-return-values",
         String.valueOf(xmlSuite.getAllowReturnValues()),
         DEFAULT_ALLOW_RETURN_VALUES.toString());
-    xsb.push("suite", p);
+    // The schema rather than a doctype: it is what TestNG recommends, and what the reader validates
+    // a suite against when it declares no doctype. Emitting a doctype here would have TestNG
+    // producing files it then reports as declaring the older grammar -- testng-failed.xml is
+    // rewritten on every failing run, so this output is most of what users ever see TestNG write.
+    // The two cannot both be declared: the DTD declares neither xmlns:xsi nor
+    // xsi:noNamespaceSchemaLocation, so a document carrying both is not DTD-valid.
+    //
+    // Passed as the tag's schema rather than through the attribute map, which is a Properties and
+    // so unordered: the declarations belong before the attributes they apply to, and a namespace
+    // declaration turning up after its own use reads like a mistake.
+    xsb.push("suite", schemaDeclaration(), p);
 
     if (xmlSuite.getGroups() != null) {
       asXml(xsb, xmlSuite.getGroups());
