@@ -59,10 +59,25 @@ public class XmlMethodSelector implements IMethodSelector {
       init(context);
     }
 
-    if (scriptSelector != null) {
-      return scriptSelector.includeMethodFromExpression(tm);
-    }
-    return includeMethodFromIncludeExclude(tm, isTestMethod);
+    boolean included =
+        scriptSelector != null
+            ? scriptSelector.includeMethodFromExpression(tm)
+            : includeMethodFromIncludeExclude(tm, isTestMethod);
+    // Applied whichever path selected the method: which factory instance a method is bound to is
+    // orthogonal to how it was picked, and FailedReporter carries the source suite's script
+    // selector into the regenerated one -- so gating this inside the include/exclude path alone
+    // would silently drop the filter from exactly the suites the attribute exists for.
+    return included && matchesFactoryInstances(tm, includedMethodsFor(tm));
+  }
+
+  /** @return - The &lt;include&gt; tags that name this method, empty when none do. */
+  private List<XmlInclude> includedMethodsFor(ITestNGMethod tm) {
+    String key =
+        tm.getTestClass() != null
+            ? makeMethodName(
+                tm.getTestClass().getRealClass().getName(), tm.getConstructorOrMethod().getName())
+            : MethodHelper.calculateMethodCanonicalName(tm);
+    return m_includedMethods.get(key);
   }
 
   private boolean includeMethodFromIncludeExclude(ITestNGMethod tm, boolean isTestMethod) {
@@ -156,8 +171,6 @@ public class XmlMethodSelector implements IMethodSelector {
         }
       }
     }
-
-    result = result && matchesFactoryInstances(tm, includeList);
 
     Package pkg = method.getDeclaringClass().getPackage();
     String methodName = pkg != null ? pkg.getName() + "." + method.getName() : method.getName();

@@ -110,6 +110,29 @@ public class FactoryInstanceFailedReporterTest extends SimpleBaseTest {
     assertThat(ExecutedPairs.instances()).containsExactly(1, 3);
   }
 
+  /**
+   * The selection reaches configuration methods too. An {@code <include>} names test methods, so
+   * the attribute cannot match a {@code @BeforeClass} directly -- but TestNG builds no worker for
+   * an instance left with no test method, so its configuration does not run either. Without that, a
+   * filtered re-run would still pay the setup cost of every instance the factory produced.
+   */
+  @Test(description = "GITHUB-3111")
+  public void configurationMethodsFollowTheSelectedInstances() throws Exception {
+    ExecutedPairs.clear();
+    run(ConfigAwareRerunSample.class);
+    assertThat(ExecutedPairs.pairs()).containsExactly("0/-1", "1/-1", "2/-1", "3/-1");
+
+    ExecutedPairs.clear();
+    TestNG rerun = create();
+    rerun.setOutputDirectory(createDirInTempDir("testng-3111-config").getAbsolutePath());
+    rerun.setTestSuites(
+        Collections.singletonList(new File(outputDir, "testng-failed.xml").getAbsolutePath()));
+    rerun.run();
+
+    assertThat(ExecutedPairs.pairs()).containsExactly("1/-1", "3/-1");
+    assertThat(ExecutedPairs.instances()).containsExactly(1, 3);
+  }
+
   private void run(Class<?> sample) {
     TestNG tng = create(outputDir.toPath(), sample);
     tng.setUseDefaultListeners(true);

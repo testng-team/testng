@@ -136,6 +136,25 @@ public class FactoryInstanceTest extends SimpleBaseTest {
     assertThat(indexesOf(listener.instances)).containsExactly(1, 3);
   }
 
+  /**
+   * A script method selector short-circuits the include/exclude path entirely, and {@code
+   * FailedReporter} copies the source suite's script into the regenerated one -- so the factory
+   * axis has to be applied on that path too, or the attribute would silently do nothing in exactly
+   * the suites it was generated for.
+   */
+  @Test(description = "GITHUB-3111")
+  public void factoryInstancesAreHonouredUnderAScriptMethodSelector() {
+    TestNG tng = create();
+    tng.setTestSuites(
+        Collections.singletonList(
+            getPathToResource("xml/issue3111/factory-instances-with-script.xml")));
+    CollectingListener listener = new CollectingListener();
+    tng.addListener(listener);
+    tng.run();
+
+    assertThat(indexesOf(listener.instances)).containsExactly(1, 3);
+  }
+
   @Test(description = "GITHUB-3111")
   public void readingTheMetadataOfALazyInstanceDoesNotCreateIt() {
     // An IMethodInterceptor runs before any instance is built, which is the moment that matters:
