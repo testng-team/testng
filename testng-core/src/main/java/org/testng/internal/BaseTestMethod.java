@@ -108,10 +108,6 @@ public abstract class BaseTestMethod
     m_instance = instance;
   }
 
-  protected final IObject.IdentifiableObject identifiableObject() {
-    return m_instance;
-  }
-
   /** {@inheritDoc} */
   @Override
   public boolean isAlwaysRun() {
@@ -173,12 +169,8 @@ public abstract class BaseTestMethod
    *     creation.
    */
   public boolean isInstanceInstantiated() {
-    Object wrapped =
-        Optional.ofNullable(m_instance).map(IObject.IdentifiableObject::getInstance).orElse(null);
-    if (wrapped instanceof IParameterInfo) {
-      return ((IParameterInfo) wrapped).isInstanceInstantiated();
-    }
-    return true;
+    IParameterInfo info = factoryParameterInfo();
+    return info == null || info.isInstanceInstantiated();
   }
 
   @Override
@@ -325,7 +317,8 @@ public abstract class BaseTestMethod
 
   @Override
   public Optional<IFactoryInstance> getFactoryInstance() {
-    return Optional.ofNullable(factoryParameterInfo()).map(IParameterInfo::getFactoryInstance);
+    IParameterInfo info = factoryParameterInfo();
+    return info == null ? Optional.empty() : Optional.ofNullable(info.getFactoryInstance());
   }
 
   /**
@@ -334,10 +327,7 @@ public abstract class BaseTestMethod
    *     so the lazy-instantiation details stay available to TestNG without being published.
    */
   public IParameterInfo factoryParameterInfo() {
-    Object instance =
-        Optional.ofNullable(identifiableObject())
-            .map(IObject.IdentifiableObject::getInstance)
-            .orElse(null);
+    Object instance = m_instance == null ? null : m_instance.getInstance();
     return instance instanceof IParameterInfo ? (IParameterInfo) instance : null;
   }
 

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.testng.ITestNGMethod;
 import org.testng.ITestObjectFactory;
@@ -50,7 +49,6 @@ public class ConfigurationMethod extends BaseTestMethod {
 
   private final boolean m_isIgnoreFailure;
   private boolean m_inheritGroupsFromTestClass = false;
-  private final IParameterInfo factoryMethodInfo;
 
   private ConfigurationMethod(
       ITestObjectFactory objectFactory,
@@ -74,13 +72,6 @@ public class ConfigurationMethod extends BaseTestMethod {
       init();
     }
 
-    this.factoryMethodInfo =
-        (IParameterInfo)
-            Optional.ofNullable(instance)
-                .map(IObject.IdentifiableObject::getInstance)
-                .filter(it -> it instanceof IParameterInfo)
-                .orElse(null);
-
     m_isBeforeSuiteConfiguration = isBeforeSuite;
     m_isAfterSuiteConfiguration = isAfterSuite;
 
@@ -97,11 +88,6 @@ public class ConfigurationMethod extends BaseTestMethod {
 
     m_beforeGroups = beforeGroups;
     m_afterGroups = afterGroups;
-  }
-
-  @Override
-  public IParameterInfo factoryParameterInfo() {
-    return this.factoryMethodInfo != null ? this.factoryMethodInfo : super.factoryParameterInfo();
   }
 
   public ConfigurationMethod(

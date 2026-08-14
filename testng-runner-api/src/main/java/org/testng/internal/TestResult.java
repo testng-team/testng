@@ -26,6 +26,8 @@ import org.testng.collections.Objects;
 /** This class represents the result of a test. */
 public class TestResult implements ITestResult {
 
+  private static final Object[] NO_FACTORY_PARAMETERS = {};
+
   private ITestNGMethod m_method = null;
   private List<ITestNGMethod> skippedDueTo = new ArrayList<>();
   private boolean skipAnalysed = false;
@@ -314,7 +316,7 @@ public class TestResult implements ITestResult {
     return this.m_method
         .getFactoryInstance()
         .map(IFactoryInstance::getParameters)
-        .orElse(new Object[0]);
+        .orElse(NO_FACTORY_PARAMETERS);
   }
 
   @Override

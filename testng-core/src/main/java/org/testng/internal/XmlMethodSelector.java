@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.testng.IFactoryInstance;
 import org.testng.IMethodSelector;
 import org.testng.IMethodSelectorContext;
 import org.testng.ITestNGMethod;
@@ -85,14 +86,7 @@ public class XmlMethodSelector implements IMethodSelector {
     ConstructorOrMethod method = tm.getConstructorOrMethod();
     Map<String, String> includedGroups = m_includedGroups;
     Map<String, String> excludedGroups = m_excludedGroups;
-    String key;
-    boolean hasTestClass = tm.getTestClass() != null;
-    if (hasTestClass) {
-      key = makeMethodName(tm.getTestClass().getRealClass().getName(), method.getName());
-    } else {
-      key = MethodHelper.calculateMethodCanonicalName(tm);
-    }
-    List<XmlInclude> includeList = m_includedMethods.get(key);
+    List<XmlInclude> includeList = includedMethodsFor(tm);
 
     // No groups were specified:
     if (includedGroups.isEmpty()
@@ -191,17 +185,17 @@ public class XmlMethodSelector implements IMethodSelector {
    * factory is unaffected.
    */
   private static boolean matchesFactoryInstances(ITestNGMethod tm, List<XmlInclude> includeList) {
-    if (includeList.isEmpty()) {
+    // Ordered so the common case costs nothing: a method no factory produced cannot be filtered by
+    // this axis, and that is almost every method of almost every suite.
+    Optional<IFactoryInstance> instance = tm.getFactoryInstance();
+    if (instance.isEmpty() || includeList.isEmpty()) {
       return true;
     }
     Set<Integer> wanted = new HashSet<>();
     for (XmlInclude include : includeList) {
       wanted.addAll(include.getFactoryInstances());
     }
-    if (wanted.isEmpty()) {
-      return true;
-    }
-    return tm.getFactoryInstance().map(it -> wanted.contains(it.getIndex())).orElse(true);
+    return wanted.isEmpty() || wanted.contains(instance.get().getIndex());
   }
 
   private static boolean assignable(Class<?> sourceClass, Class<?> targetClass) {
