@@ -1,10 +1,10 @@
 package org.testng;
 
 /** Represents the ability to retrieve the parameters associated with a factory method. */
-public interface ITestClassInstance {
+public interface ITestClassInstance<T> {
 
   /** @return - The actual instance associated with a factory method */
-  Object getInstance();
+  T getInstance();
 
   /**
    * @return - The actual index of instance associated with a factory method. This index has a 1:1
@@ -23,9 +23,6 @@ public interface ITestClassInstance {
    *     </code>
    */
   int getInvocationIndex();
-
-  /** @return - The parameters associated with the factory method as an array. */
-  Object[] getParameters();
 
   static Object embeddedInstance(Object original) {
     if (original instanceof ITestClassInstance) {

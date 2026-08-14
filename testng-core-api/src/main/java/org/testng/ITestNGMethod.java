@@ -2,6 +2,7 @@ package org.testng;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import org.testng.annotations.CustomAttribute;
@@ -267,6 +268,14 @@ public interface ITestNGMethod extends Cloneable {
    */
   default IParameterInfo getFactoryMethodParamsInfo() {
     return null;
+  }
+
+  /**
+   * @return - A {@link IFactoryMethod} implementation that contains attributes associated with a
+   *     factory method, wrapped within an {@link Optional}.
+   */
+  default Optional<IFactoryMethod> getFactoryMethod() {
+    return Optional.empty();
   }
 
   /**

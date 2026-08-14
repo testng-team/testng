@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.testng.IFactoryMethod;
 import org.testng.ITestNGMethod;
 
 public enum MethodSorting implements Comparator<ITestNGMethod> {
@@ -31,8 +32,10 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
               .thenComparing(Object::toString)
               .thenComparing(
                   method ->
-                      Optional.ofNullable(method.getFactoryMethodParamsInfo())
-                          .map(it -> Arrays.toString(it.getParameters()))
+                      method
+                          .getFactoryMethod()
+                          .flatMap(IFactoryMethod::getParameters)
+                          .map(Arrays::toString)
                           .orElse(""))
               .thenComparing(this::objectEquality);
       return comparator.compare(o1, o2);
