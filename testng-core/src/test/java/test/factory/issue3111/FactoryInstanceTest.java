@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -108,6 +109,21 @@ public class FactoryInstanceTest extends SimpleBaseTest {
     tng.run();
 
     assertThat(indexesOf(listener.instances)).containsExactly(0, 1, 2, 3);
+  }
+
+  @Test(description = "GITHUB-3111")
+  public void aSuiteCanSelectTheFactoryInstancesToRun() {
+    // The other half of what testng-failed.xml needs: the attribute is not just written, it is read
+    // back and honoured. The factory still produces all four instances -- like invocation-numbers,
+    // this filters after the fact -- but only the two named execute.
+    TestNG tng = create();
+    tng.setTestSuites(
+        Collections.singletonList(getPathToResource("xml/issue3111/factory-instances.xml")));
+    CollectingListener listener = new CollectingListener();
+    tng.addListener(listener);
+    tng.run();
+
+    assertThat(indexesOf(listener.instances)).containsExactly(1, 3);
   }
 
   @Test(description = "GITHUB-3111")
