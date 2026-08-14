@@ -76,7 +76,7 @@ public class LazyParameterInfo implements IParameterInfo {
   }
 
   @Override
-  public int currentIndex() {
+  public int getInvocationIndex() {
     return currentIndex;
   }
 

@@ -137,7 +137,7 @@ class TestClass extends NoOpTestClass implements ITestClass, ITestClassConfigInf
         // Only inspect instances that already exist; a lazy @Factory instance must not be created
         // just to look up an ITest name. Such instances fall back to the class/xml test name below.
         .filter(TestClass::isInstantiated)
-        .map(IParameterInfo::embeddedInstance)
+        .map(ITestClassInstance::embeddedInstance)
         .filter(it -> it instanceof ITest)
         .findFirst()
         .ifPresent(it -> testName = ((ITest) it).getTestName());

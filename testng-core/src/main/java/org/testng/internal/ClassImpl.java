@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.testng.IClass;
 import org.testng.ITest;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.annotations.ITestAnnotation;
@@ -169,7 +170,7 @@ public class ClassImpl implements IClass, IObject {
       // derive a stable one from its unique instance id instead.
       return identifiable.getInstanceId().hashCode();
     }
-    return org.testng.IParameterInfo.embeddedInstance(instance).hashCode();
+    return ITestClassInstance.embeddedInstance(instance).hashCode();
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {

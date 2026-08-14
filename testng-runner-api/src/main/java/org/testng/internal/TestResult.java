@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import org.testng.IAttributes;
 import org.testng.IClass;
 import org.testng.ITest;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -305,7 +306,7 @@ public class TestResult implements ITestResult {
 
   @Override
   public Object getInstance() {
-    return org.testng.IParameterInfo.embeddedInstance(this.m_method.getInstance());
+    return ITestClassInstance.embeddedInstance(this.m_method.getInstance());
   }
 
   @Override

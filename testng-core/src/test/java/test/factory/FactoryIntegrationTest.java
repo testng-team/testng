@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.testng.IParameterInfo;
+import org.testng.ITestClassInstance;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -81,7 +81,7 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
 
   @Test(dataProvider = "testdata", description = "GITHUB-3111")
   public void ensureCurrentIndexWorksForFactoryPoweredTests(Class<?> klass, Integer[] expected) {
-    List<IParameterInfo> params = new ArrayList<>();
+    List<ITestClassInstance> params = new ArrayList<>();
     TestNG testng = create(klass);
     testng.addListener(
         new ITestListener() {
@@ -92,7 +92,10 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
         });
     testng.run();
     List<Integer> actualIndices =
-        params.stream().map(IParameterInfo::currentIndex).sorted().collect(Collectors.toList());
+        params.stream()
+            .map(ITestClassInstance::getInvocationIndex)
+            .sorted()
+            .collect(Collectors.toList());
     assertThat(actualIndices).containsExactly(expected);
   }
 

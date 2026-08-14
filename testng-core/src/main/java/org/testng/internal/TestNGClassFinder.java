@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.testng.DataProviderHolder;
 import org.testng.IClass;
 import org.testng.IInstanceInfo;
+import org.testng.ITestClassInstance;
 import org.testng.ITestContext;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
