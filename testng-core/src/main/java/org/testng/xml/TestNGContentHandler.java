@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
+import javax.xml.XMLConstants;
 import org.testng.ITestObjectFactory;
 import org.testng.TestNGException;
 import org.testng.internal.RuntimeBehavior;
@@ -141,6 +142,18 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
   private boolean m_validate = false;
   private boolean m_doctypeDeclared = false;
   private boolean m_hasWarn = false;
+
+  /**
+   * Whether the parser was given the bundled schema, which {@code XMLParser} decides before the
+   * parse starts and only for a suite that declares no doctype.
+   *
+   * <p>Reporting is gated on having a grammar: without one a validating parser only ever complains
+   * that none was found, which would turn the "declare a schema" hint into a hard failure.
+   */
+  private boolean m_schemaValidated = false;
+
+  /** Whether the root element carries an {@code xsi:noNamespaceSchemaLocation}. */
+  private boolean m_schemaDeclared = false;
 
   /**
    * Resolved once per parse rather than per violation, so a malformed suite cannot re-read the
@@ -638,13 +651,17 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
    */
   @Override
   public void startElement(String uri, String localName, String qName, Attributes attributes) {
-    if (!m_doctypeDeclared && !m_hasWarn) {
+    if (!m_schemaDeclared) {
+      m_schemaDeclared = declaresASchema(attributes);
+    }
+    if (!m_doctypeDeclared && !m_schemaDeclared && !m_hasWarn) {
       String msg =
           String.format(
-              "It is strongly recommended to add "
-                  + "\"<!DOCTYPE suite SYSTEM \"%s\" >\" at the top of the suite file [%s]"
-                  + " otherwise TestNG may fail or not work as expected.",
-              Parser.HTTPS_TESTNG_DTD_URL, this.m_fileName);
+              "It is strongly recommended to declare a schema at the top of the suite file [%s],"
+                  + " either xsi:noNamespaceSchemaLocation=\"%s\" on <suite> (recommended) or"
+                  + " \"<!DOCTYPE suite SYSTEM \"%s\" >\", otherwise TestNG may fail or not work as"
+                  + " expected.",
+              this.m_fileName, XMLParser.HTTPS_TESTNG_XSD_URL, Parser.HTTPS_TESTNG_DTD_URL);
       Logger.getLogger(TestNGContentHandler.class).warn(msg);
       m_hasWarn = true;
     }
@@ -855,11 +872,34 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
     }
   }
 
+  /**
+   * Told by {@code XMLParser} whether it attached the bundled schema, which is the only thing that
+   * gives a doctype-less suite a grammar to be judged against.
+   */
+  void setSchemaValidated(boolean schemaValidated) {
+    m_schemaValidated = schemaValidated;
+  }
+
+  /**
+   * Whether the element declares a schema, in either spelling and whether or not the parser was
+   * namespace aware -- the DTD path leaves namespace awareness off, so the attribute arrives only
+   * under its qualified name there.
+   */
+  private static boolean declaresASchema(Attributes attributes) {
+    return attributes.getValue(
+                XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "noNamespaceSchemaLocation")
+            != null
+        || attributes.getValue(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "schemaLocation")
+            != null
+        || attributes.getValue("xsi:noNamespaceSchemaLocation") != null
+        || attributes.getValue("xsi:schemaLocation") != null;
+  }
+
   @Override
   public void error(SAXParseException e) throws SAXException {
-    if (!m_doctypeDeclared) {
-      // Without a doctype a validating parser only ever complains that no grammar was found, which
-      // would turn the existing "you should add a <!DOCTYPE>" hint into a hard failure.
+    if (!m_doctypeDeclared && !m_schemaValidated) {
+      // With no grammar a validating parser only ever complains that none was found, which would
+      // turn the "declare a schema" hint into a hard failure.
       return;
     }
     switch (m_validationMode) {
@@ -871,7 +911,7 @@ public class TestNGContentHandler extends DefaultHandler implements LexicalHandl
                 "The suite file ["
                     + m_fileName
                     + "] does not conform to "
-                    + Parser.TESTNG_DTD
+                    + (m_schemaValidated ? XMLParser.TESTNG_XSD : Parser.TESTNG_DTD)
                     + ": "
                     + e.getMessage()
                     + ". Run with [-D"

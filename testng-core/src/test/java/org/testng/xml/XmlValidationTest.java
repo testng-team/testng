@@ -46,6 +46,8 @@ public class XmlValidationTest {
   private static final String INVALID_SUITE = "xml/validation/wrong-element-order.xml";
   private static final String VALID_SUITE = "xml/goodWithDoctype.xml";
   private static final String INTERNAL_SUBSET_SUITE = "xml/validation/internal-subset-only.xml";
+  private static final String SCHEMA_DECLARED_INVALID_SUITE =
+      "xml/validation/schema-declared-wrong-element-order.xml";
 
   private String previousMode;
 
@@ -122,6 +124,56 @@ public class XmlValidationTest {
           .isInstanceOf(TestNGException.class)
           .hasRootCauseInstanceOf(SAXParseException.class);
     }
+  }
+
+  /**
+   * A suite that declares a schema instead of a doctype must be validated against it.
+   *
+   * <p>Nothing validated such a file: {@code error()} returned early unless a doctype had been
+   * seen, and {@code XMLParser} configured {@code setValidating(true)}, which is DTD validation, so
+   * a document carrying no DTD had no grammar to violate. Both halves have to be fixed for this to
+   * pass, and neither shows up in any other test -- the corpus is 99 doctypes out of 101 files.
+   */
+  @Test
+  public void theSuiteParserReportsAViolationOfADeclaredSchema() throws Exception {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+
+    try (InputStream stream =
+        Files.newInputStream(Paths.get(getPathToResource(SCHEMA_DECLARED_INVALID_SUITE)))) {
+      assertThatThrownBy(
+              () -> new SuiteXmlParser().parse(SCHEMA_DECLARED_INVALID_SUITE, stream, false))
+          .isInstanceOf(TestNGException.class)
+          .hasRootCauseInstanceOf(SAXParseException.class);
+    }
+  }
+
+  /**
+   * The schema TestNG validates against is the one it ships, not the one the suite file names.
+   *
+   * <p>The declaration is a hint for other tools -- IDEs and standalone validators read it -- and
+   * following it would mean a parse depends on reaching a host, and that any suite file could point
+   * the validator at a grammar of its choosing. The DTD path settled this years ago by resolving
+   * from the classpath; this pins the same property for schemas, using an address nothing can
+   * serve.
+   */
+  @Test
+  public void theBundledSchemaIsUsedRatherThanTheOneTheSuiteNames() {
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, "strict");
+    String xml =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<suite xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+            + "       xsi:noNamespaceSchemaLocation=\"http://127.0.0.1:1/unreachable.xsd\"\n"
+            + "       name=\"UnreachableSchema\">\n"
+            // <groups> may only be the first child of <suite>.
+            + "  <parameter name=\"before\" value=\"groups\"/>\n"
+            + "  <groups><run><include name=\"included\"/></run></groups>\n"
+            + "</suite>\n";
+
+    assertThatThrownBy(() -> SuiteCorpus.parseString("unreachable-schema.xml", xml))
+        .as(
+            "the violation must be found against the bundled schema, without fetching the named one")
+        .isInstanceOf(TestNGException.class)
+        .hasRootCauseInstanceOf(SAXParseException.class);
   }
 
   @Test
@@ -241,11 +293,12 @@ public class XmlValidationTest {
   /**
    * A suite with no doctype at all must keep parsing, even under strict.
    *
-   * <p>A validating parser reports "no grammar found" for such a document. Those errors are
-   * suppressed because neither {@code startDTD} nor {@code resolveEntity} fires, so {@code
-   * m_doctypeDeclared} stays false -- and that suppression is what keeps strict mode usable for the
-   * many suites that never declared a doctype. Tightening the gate would silently start rejecting
-   * all of them, which is the regression this pins.
+   * <p>Such a document used to be validated by nothing: a validating parser only reported "no
+   * grammar found", and those errors were suppressed because neither {@code startDTD} nor {@code
+   * resolveEntity} fires. It is now validated against the bundled schema instead, so what keeps
+   * strict mode usable for the many suites that never declared a doctype is that they satisfy the
+   * schema -- not that their violations are discarded. A schema that rejected them, or a gate that
+   * let "no grammar found" through, would break all of them at once; this pins both.
    *
    * <p>Written inline because the fixtures named {@code xml/*WithoutDoctype.xml} all declare one:
    * they are byte-identical to their {@code WithDoctype} counterparts apart from the root element's

@@ -820,6 +820,7 @@
       <class name="org.testng.xml.DeprecatedToXmlShimTest"/>
       <class name="org.testng.xml.XMLParserTest"/>
       <class name="org.testng.xml.XmlValidationTest"/>
+      <class name="org.testng.xml.XmlPrologueTest"/>
       <class name="org.testng.xml.XsdValidationTest"/>
       <class name="org.testng.xml.SchemaConsistencyTest"/>
     </classes>
