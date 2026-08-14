@@ -25,13 +25,15 @@ public class TestNGFutureTask<T> extends FutureTask<IWorker<T>> implements IWork
   @Override
   protected void done() {
     Throwable throwable = null;
-    IWorker<T> result = null;
     try {
-      result = super.get();
+      // get() is called only to detect exceptional completion; the result is always the worker
+      // itself (see super(worker, worker) above). The worker must reach the callback either way,
+      // or the orchestrator never learns which graph nodes finished. See GITHUB-3238.
+      super.get();
     } catch (InterruptedException | ExecutionException e) {
       throwable = e;
     }
-    callback.accept(result, throwable);
+    callback.accept(worker, throwable);
   }
 
   @Override

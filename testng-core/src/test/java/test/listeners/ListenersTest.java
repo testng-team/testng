@@ -15,11 +15,13 @@ import java.util.Map;
 import org.assertj.core.api.SoftAssertions;
 import org.testng.CommandLineArgs;
 import org.testng.ITestNGListener;
+import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.internal.ExitCode;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlSuite.ParallelMode;
 import test.SimpleBaseTest;
 import test.listeners.issue2381.FactoryTestClassSample;
 import test.listeners.issue2381.SampleGlobalListener;
@@ -59,6 +61,8 @@ import test.listeners.issue3064.SampleTestCase;
 import test.listeners.issue3082.ObjectRepository;
 import test.listeners.issue3082.ObjectTrackingMethodListener;
 import test.listeners.issue3095.ChildClassSample;
+import test.listeners.issue3238.TestClassWithFailingTestMethodSample;
+import test.listeners.issue3238.TestClassWithPassingTestMethodSample;
 
 public class ListenersTest extends SimpleBaseTest {
   public static final String[] github2638ExpectedList =
@@ -593,6 +597,38 @@ public class ListenersTest extends SimpleBaseTest {
         .isInstanceOf(NoClassDefFoundError.class)
         .hasCauseInstanceOf(ClassNotFoundException.class);
     assertThatCode(testng::run).doesNotThrowAnyException();
+  }
+
+  @Test(description = "GITHUB-3238", dataProvider = "dp-3238")
+  public void ensureListenerFailureDoesNotBreakTestNG(ParallelMode parallelMode) {
+    XmlSuite xmlSuite =
+        createXmlSuite(
+            "3238_suite",
+            "3238_test",
+            TestClassWithFailingTestMethodSample.class,
+            TestClassWithPassingTestMethodSample.class);
+    xmlSuite.setParallel(parallelMode);
+    TestNG testng = create(xmlSuite);
+    TestListenerAdapter listener = new TestListenerAdapter();
+    testng.addListener(listener);
+    // This run used to never come back. See TestNGFutureTask#done.
+    testng.run();
+    assertThat(listener.getPassedTests())
+        .withFailMessage(
+            "the 5 invocations of TestClassWithPassingTestMethodSample (2 methods plus 3 data "
+                + "provider rows) do not involve the failing listener and must still run")
+        .hasSize(5);
+    assertThat(listener.getFailedTests())
+        .withFailMessage("listeners must still be told about the failure")
+        .isNotEmpty();
+    assertThat(testng.getStatus())
+        .withFailMessage("a run whose test method failed must not report success")
+        .isEqualTo(ExitCode.FAILED);
+  }
+
+  @DataProvider(name = "dp-3238")
+  public Object[][] getTestData() {
+    return new Object[][] {{ParallelMode.CLASSES}, {ParallelMode.METHODS}};
   }
 
   private void setupTest(boolean addExplicitListener) {
