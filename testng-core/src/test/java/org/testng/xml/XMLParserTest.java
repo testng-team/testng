@@ -7,7 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.internal.RuntimeBehavior;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -77,6 +79,57 @@ public class XMLParserTest {
     }
 
     assertThat(blockedFailure.get()).isNull();
+  }
+
+  /**
+   * The stream a suite is read from must be closed by the time the parse returns.
+   *
+   * <p>{@code Parser} opens a {@code FileInputStream} per suite file and never closes it, leaving
+   * that to whoever consumes it; {@code JarFileUtils} then deletes the directory it extracted a jar
+   * into, right after parsing. On Windows a file still held open cannot be deleted, so a stream
+   * left behind here surfaces far away, as a {@code FileSystemException} in a jar test -- and on
+   * Linux and macOS not at all, which is why this asserts the invariant directly rather than
+   * through a deletion.
+   *
+   * <p>Both modes are covered because they take different paths: only the validating one reads the
+   * document itself, to choose the grammar before building a parser.
+   */
+  @Test(dataProvider = "validationModes")
+  public void theStreamIsClosedByTheTimeTheParseReturns(String mode) throws Exception {
+    String previous = System.getProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+    System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, mode);
+    ClosingAwareStream stream = new ClosingAwareStream(SUITE.getBytes(StandardCharsets.UTF_8));
+
+    try {
+      new SuiteXmlParser().parse(stream, new NameCollector());
+
+      assertThat(stream.closed).as("the suite stream must be closed in [%s] mode", mode).isTrue();
+    } finally {
+      if (previous == null) {
+        System.clearProperty(RuntimeBehavior.XML_VALIDATION_MODE);
+      } else {
+        System.setProperty(RuntimeBehavior.XML_VALIDATION_MODE, previous);
+      }
+    }
+  }
+
+  @DataProvider
+  public static Object[][] validationModes() {
+    return new Object[][] {{"warn"}, {"strict"}, {"off"}};
+  }
+
+  private static final class ClosingAwareStream extends ByteArrayInputStream {
+    private boolean closed;
+
+    ClosingAwareStream(byte[] bytes) {
+      super(bytes);
+    }
+
+    @Override
+    public void close() throws java.io.IOException {
+      closed = true;
+      super.close();
+    }
   }
 
   private static void parse(DefaultHandler handler) throws Exception {

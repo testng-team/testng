@@ -65,7 +65,15 @@ public abstract class XMLParser<T> implements IFileParser<T> {
     // setValidating(true) together with setSchema(...) -- while the doctype is only observed once
     // parsing is under way. Suite files are a few kilobytes; #3316 buffers the DTD on the same
     // grounds.
-    byte[] document = is.readAllBytes();
+    //
+    // Closed here rather than left to the parser, which is what consumes -- and closes -- the
+    // stream on the path below. Parser opens a FileInputStream per suite file and closes none, and
+    // JarFileUtils deletes the directory it extracted a jar into as soon as parsing returns: on
+    // Windows a file still held open cannot be deleted.
+    byte[] document;
+    try (InputStream source = is) {
+      document = source.readAllBytes();
+    }
     boolean declaresDoctype = XmlPrologue.declaresDoctype(document);
     boolean schemaValidated = configureGrammar(spf, declaresDoctype);
     parse(spf, new ByteArrayInputStream(document), dh, schemaValidated, declaresDoctype);
