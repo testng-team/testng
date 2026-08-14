@@ -17,6 +17,7 @@ public class LazyParameterInfo implements IParameterInfo {
 
   private final int index;
   private final Object[] parameters;
+  private final int currentIndex;
   private final Class<?> targetClass;
   private final Supplier<Object> creator;
 
@@ -26,9 +27,14 @@ public class LazyParameterInfo implements IParameterInfo {
   private volatile Throwable failure;
 
   public LazyParameterInfo(
-      int index, Object[] parameters, Class<?> targetClass, Supplier<Object> creator) {
+      int index,
+      Object[] parameters,
+      int currentIndex,
+      Class<?> targetClass,
+      Supplier<Object> creator) {
     this.index = index;
     this.parameters = parameters;
+    this.currentIndex = currentIndex;
     this.targetClass = targetClass;
     this.creator = creator;
   }
@@ -67,6 +73,11 @@ public class LazyParameterInfo implements IParameterInfo {
   @Override
   public int getIndex() {
     return index;
+  }
+
+  @Override
+  public int currentIndex() {
+    return currentIndex;
   }
 
   @Override

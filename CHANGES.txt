@@ -67,6 +67,8 @@ Fixed: GITHUB-3135: assertEquals on arrays - Failure message is missing informat
 Fixed: GITHUB-3140: assertEqualsDeep on Sets - Deep comparison was using the wrong expected value
 Fixed: GITHUB-3189: Incorrect number of ignored tests displayed in the XML results
 Fixed: GITHUB-3196: support to execlude somes tests in option of command line
+Current (7.11.0)
+Fixed: GITHUB-3111: Replacement API for IClass.getInstanceHashCodes() and IClass.getInstances(boolean) (Krishnan Mahadevan)
 
 7.10.2
 Fixed: GITHUB-3117: ListenerComparator doesn't work (Krishnan Mahadevan)

@@ -169,7 +169,7 @@ public class ClassImpl implements IClass, IObject {
       // derive a stable one from its unique instance id instead.
       return identifiable.getInstanceId().hashCode();
     }
-    return IParameterInfo.embeddedInstance(instance).hashCode();
+    return org.testng.IParameterInfo.embeddedInstance(instance).hashCode();
   }
 
   private DetailedAttributes newDetailedAttributes(boolean create, String errMsgPrefix) {

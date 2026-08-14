@@ -1,14 +1,16 @@
 package org.testng.internal;
 
 public class ParameterInfo implements IParameterInfo {
-  private Object instance;
+  private final Object instance;
   private final int index;
-  private Object[] parameters;
+  private final Object[] parameters;
+  private final int currentIndex;
 
-  public ParameterInfo(Object instance, int index, Object[] parameters) {
+  public ParameterInfo(Object instance, int index, Object[] parameters, int currentIndex) {
     this.instance = instance;
     this.index = index;
     this.parameters = parameters;
+    this.currentIndex = currentIndex;
   }
 
   @Override
@@ -19,6 +21,11 @@ public class ParameterInfo implements IParameterInfo {
   @Override
   public int getIndex() {
     return index;
+  }
+
+  @Override
+  public int currentIndex() {
+    return currentIndex;
   }
 
   @Override
