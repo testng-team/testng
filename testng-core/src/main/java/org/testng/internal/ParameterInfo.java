@@ -1,16 +1,14 @@
 package org.testng.internal;
 
+import org.testng.IFactoryInstance;
+
 public class ParameterInfo implements IParameterInfo {
   private final Object instance;
-  private final int index;
-  private final Object[] parameters;
-  private final int invocationIndex;
+  private final FactoryInstance factoryInstance;
 
-  public ParameterInfo(Object instance, int index, Object[] parameters, int invocationIndex) {
+  public ParameterInfo(Object instance, FactoryInstance factoryInstance) {
     this.instance = instance;
-    this.index = index;
-    this.parameters = parameters;
-    this.invocationIndex = invocationIndex;
+    this.factoryInstance = factoryInstance;
   }
 
   @Override
@@ -19,17 +17,18 @@ public class ParameterInfo implements IParameterInfo {
   }
 
   @Override
+  @Deprecated
   public int getIndex() {
-    return index;
-  }
-
-  @Override
-  public int getInvocationIndex() {
-    return invocationIndex;
+    return factoryInstance.getInvocationIndex();
   }
 
   @Override
   public Object[] getParameters() {
-    return parameters;
+    return factoryInstance.rawParameters();
+  }
+
+  @Override
+  public IFactoryInstance getFactoryInstance() {
+    return factoryInstance;
   }
 }

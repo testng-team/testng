@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.testng.IFactoryMethod;
+import org.testng.IFactoryInstance;
 import org.testng.ITestNGMethod;
 
 public enum MethodSorting implements Comparator<ITestNGMethod> {
@@ -33,8 +33,8 @@ public enum MethodSorting implements Comparator<ITestNGMethod> {
               .thenComparing(
                   method ->
                       method
-                          .getFactoryMethod()
-                          .flatMap(IFactoryMethod::getParameters)
+                          .getFactoryInstance()
+                          .map(IFactoryInstance::getParameters)
                           .map(Arrays::toString)
                           .orElse(""))
               .thenComparing(this::objectEquality);

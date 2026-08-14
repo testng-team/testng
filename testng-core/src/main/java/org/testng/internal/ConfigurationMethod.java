@@ -100,11 +100,8 @@ public class ConfigurationMethod extends BaseTestMethod {
   }
 
   @Override
-  public IParameterInfo getFactoryMethodParamsInfo() {
-    if (this.factoryMethodInfo != null) {
-      return this.factoryMethodInfo;
-    }
-    return super.getFactoryMethodParamsInfo();
+  public IParameterInfo factoryParameterInfo() {
+    return this.factoryMethodInfo != null ? this.factoryMethodInfo : super.factoryParameterInfo();
   }
 
   public ConfigurationMethod(

@@ -1,23 +1,33 @@
 package org.testng.internal;
 
-import org.testng.ITestClassInstance;
-import org.testng.ITestNGMethod;
+import org.testng.IFactoryInstance;
 
-/**
- * Represents the ability to retrieve the parameters associated with a factory method.
- *
- * @deprecated - This interface stands deprecated as of TestNG <code>7.11.0</code>.
- */
-@Deprecated
-public interface IParameterInfo extends ITestClassInstance {
+/** Represents the ability to retrieve the parameters associated with a factory method. */
+public interface IParameterInfo {
+
+  /** @return - The actual instance associated with a factory method */
+  Object getInstance();
 
   /**
-   * @return - The parameters associated with the factory method as an array.
-   * @deprecated - This method stands deprecated as of TestNG <code>7.11.0</code> Please use {@link
-   *     ITestNGMethod#getFactoryMethod()} to retrieve the parameters.
+   * @return - The index of the factory <em>invocation</em> that produced this instance. A factory
+   *     method returning several instances from one invocation gives all of them the same value.
+   * @deprecated - As of TestNG <code>v7.13.0</code>. Use {@link IFactoryInstance#getIndex()}, which
+   *     identifies the instance rather than the invocation.
    */
   @Deprecated
+  int getIndex();
+
+  /** @return - The parameters associated with the factory method as an array. */
   Object[] getParameters();
+
+  /**
+   * @return - The public view of the factory instance this object describes, or <code>null</code>
+   *     for an implementation that does not provide one. Reading it never instantiates a lazy
+   *     instance.
+   */
+  default IFactoryInstance getFactoryInstance() {
+    return null;
+  }
 
   /**
    * @return - The class of the instance produced by the factory, known <em>without</em> having to
@@ -59,6 +69,9 @@ public interface IParameterInfo extends ITestClassInstance {
   }
 
   static Object embeddedInstance(Object original) {
-    return ITestClassInstance.embeddedInstance(original);
+    if (original instanceof IParameterInfo) {
+      return ((IParameterInfo) original).getInstance();
+    }
+    return original;
   }
 }

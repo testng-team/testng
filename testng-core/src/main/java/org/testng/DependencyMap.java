@@ -110,8 +110,7 @@ public class DependencyMap {
     boolean result =
         IInstanceIdentity.getInstanceId(derivedClassMethod) != null
             || IInstanceIdentity.getInstanceId(baseClassMethod) != null;
-    boolean params =
-        baseClassMethod.getFactoryMethod().flatMap(IFactoryMethod::getParameters).isPresent();
+    boolean params = baseClassMethod.getFactoryInstance().isPresent();
 
     if (result && params && RuntimeBehavior.enforceThreadAffinity()) {
       return hasSameParameters(baseClassMethod, derivedClassMethod);
@@ -121,17 +120,17 @@ public class DependencyMap {
 
   private static boolean hasSameParameters(
       ITestNGMethod baseClassMethod, ITestNGMethod derivedClassMethod) {
-    Optional<IFactoryMethod> first = baseClassMethod.getFactoryMethod();
-    Optional<IFactoryMethod> second = derivedClassMethod.getFactoryMethod();
-    if (first.isPresent() && second.isPresent()) {
-      Optional<Object[]> firstParams = first.get().getParameters();
-      Optional<Object[]> secondParams = second.get().getParameters();
-      if (firstParams.isPresent() && secondParams.isPresent()) {
-        return firstParams.get()[0].equals(secondParams.get()[0]);
-      }
+    Optional<IFactoryInstance> first = baseClassMethod.getFactoryInstance();
+    Optional<IFactoryInstance> second = derivedClassMethod.getFactoryInstance();
+    if (first.isEmpty() || second.isEmpty()) {
       return false;
     }
-    return false;
+    Object[] firstParams = first.get().getParameters();
+    Object[] secondParams = second.get().getParameters();
+    if (firstParams.length == 0 || secondParams.length == 0) {
+      return false;
+    }
+    return firstParams[0].equals(secondParams[0]);
   }
 
   private static boolean isSameInstance(
@@ -145,7 +144,7 @@ public class DependencyMap {
     Class<?> baseClass = instanceClassOf(baseClassMethod);
     Class<?> derivedClass = instanceClassOf(derivedClassMethod);
     boolean assignable = baseClass.isAssignableFrom(derivedClass);
-    if (null != baseClassMethod.getFactoryMethodParamsInfo()
+    if (baseClassMethod.getFactoryInstance().isPresent()
         && RuntimeBehavior.enforceThreadAffinity()) {
       return assignable && hasSameParameters(baseClassMethod, derivedClassMethod);
     }

@@ -3,7 +3,7 @@ package test.configuration.issue2426;
 import java.util.HashMap;
 import java.util.Map;
 import org.testng.IConfigurationListener;
-import org.testng.IFactoryMethod;
+import org.testng.IFactoryInstance;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -22,8 +22,8 @@ public class MyMethodListener implements IConfigurationListener {
   public void onConfigurationSuccess(ITestResult tr) {
     Object[] values =
         tr.getMethod()
-            .getFactoryMethod()
-            .flatMap(IFactoryMethod::getParameters)
+            .getFactoryInstance()
+            .map(IFactoryInstance::getParameters)
             .orElse(new Object[0]);
     if (tr.getMethod().isBeforeSuiteConfiguration()) {
       contents.put(BeforeSuite.class, values);

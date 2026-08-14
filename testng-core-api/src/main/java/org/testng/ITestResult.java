@@ -3,6 +3,7 @@ package org.testng;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.testng.internal.thread.ThreadTimeoutException;
 
 /**
@@ -78,6 +79,17 @@ public interface ITestResult extends IAttributes, Comparable<ITestResult> {
    *     otherwise.
    */
   Object[] getFactoryParameters();
+
+  /**
+   * @return - The <code>@Factory</code> produced instance this result belongs to, or an empty
+   *     {@link Optional} when no factory produced the test class. Gives access to the instance's
+   *     index within the factory output, the parameters of the factory invocation that produced it,
+   *     and the factory itself. Reading it never instantiates a lazily created instance.
+   * @since 7.13.0
+   */
+  default Optional<IFactoryInstance> getFactoryInstance() {
+    return Optional.ofNullable(getMethod()).flatMap(ITestNGMethod::getFactoryInstance);
+  }
 
   /**
    * @return The test name if this result's related instance implements ITest or

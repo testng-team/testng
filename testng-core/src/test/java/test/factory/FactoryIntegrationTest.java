@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.testng.ITestClassInstance;
+import org.testng.IFactoryInstance;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
@@ -80,22 +80,20 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
   }
 
   @Test(dataProvider = "testdata", description = "GITHUB-3111")
-  public void ensureCurrentIndexWorksForFactoryPoweredTests(Class<?> klass, Integer[] expected) {
-    List<ITestClassInstance> params = new ArrayList<>();
+  public void ensureFactoryInstanceIndexWorksForFactoryPoweredTests(
+      Class<?> klass, Integer[] expected) {
+    List<IFactoryInstance> instances = new ArrayList<>();
     TestNG testng = create(klass);
     testng.addListener(
         new ITestListener() {
           @Override
           public void onTestSuccess(ITestResult result) {
-            params.add(result.getMethod().getFactoryMethodParamsInfo());
+            result.getFactoryInstance().ifPresent(instances::add);
           }
         });
     testng.run();
     List<Integer> actualIndices =
-        params.stream()
-            .map(ITestClassInstance::getInvocationIndex)
-            .sorted()
-            .collect(Collectors.toList());
+        instances.stream().map(IFactoryInstance::getIndex).sorted().collect(Collectors.toList());
     assertThat(actualIndices).containsExactly(expected);
   }
 
@@ -103,9 +101,9 @@ public class FactoryIntegrationTest extends SimpleBaseTest {
   public Object[][] testdata() {
     return new Object[][] {
       {SimpleFactoryPoweredTestSample.class, new Integer[] {0, 1, 2}},
-      {SimpleFactoryPoweredTestWithIndicesSample.class, new Integer[] {0}},
+      {SimpleFactoryPoweredTestWithIndicesSample.class, new Integer[] {1}},
       {SimpleFactoryPoweredTestWithoutDataProviderSample.class, new Integer[] {0, 1, 2}},
-      {SimpleFactoryPoweredTestWithoutDataProviderWithIndicesSample.class, new Integer[] {0}},
+      {SimpleFactoryPoweredTestWithoutDataProviderWithIndicesSample.class, new Integer[] {1}},
     };
   }
 }

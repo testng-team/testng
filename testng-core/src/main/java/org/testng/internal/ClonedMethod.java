@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.testng.IClass;
+import org.testng.IFactoryInstance;
 import org.testng.IRetryAnalyzer;
 import org.testng.ITestClass;
 import org.testng.ITestNGMethod;
@@ -96,6 +98,11 @@ public class ClonedMethod implements ITestNGMethod {
   @Override
   public Object getInstance() {
     return m_method.getInstance();
+  }
+
+  @Override
+  public Optional<IFactoryInstance> getFactoryInstance() {
+    return m_method.getFactoryInstance();
   }
 
   @Override

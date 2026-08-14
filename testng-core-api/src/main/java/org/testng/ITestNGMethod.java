@@ -265,16 +265,21 @@ public interface ITestNGMethod extends Cloneable {
   /**
    * @return - A {@link IParameterInfo} object that represents details about the parameters
    *     associated with the factory method.
+   * @deprecated - As of TestNG <code>v7.13.0</code>. It exposes a type from an internal package;
+   *     use {@link #getFactoryInstance()} instead.
    */
+  @Deprecated
   default IParameterInfo getFactoryMethodParamsInfo() {
     return null;
   }
 
   /**
-   * @return - A {@link IFactoryMethod} implementation that contains attributes associated with a
-   *     factory method, wrapped within an {@link Optional}.
+   * @return - The <code>@Factory</code> produced instance this method is bound to, or an empty
+   *     {@link Optional} when no factory produced the test class. Reading it never instantiates a
+   *     lazily created instance.
+   * @since 7.13.0
    */
-  default Optional<IFactoryMethod> getFactoryMethod() {
+  default Optional<IFactoryInstance> getFactoryInstance() {
     return Optional.empty();
   }
 
