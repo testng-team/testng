@@ -16,8 +16,10 @@ package org.testng;
 public interface IFactoryInstance {
 
   /**
-   * @return - The zero based position of this instance in the output of its factory, counted
-   *     <em>before</em> any filtering by the <code>indices</code> attribute of the <code>
+   * Returns the position of this instance in the output of its factory.
+   *
+   * @return - The zero based position, counted <em>before</em> any filtering by the <code>indices
+   *     </code> attribute of the <code>
    *     &#64;Factory
    *     </code> annotation. A factory producing four instances under <code>
    *     &#64;Factory(indices = {1,
@@ -28,14 +30,19 @@ public interface IFactoryInstance {
   int getIndex();
 
   /**
-   * @return - A copy of the parameters of the factory invocation that produced this instance. For a
-   *     data provider driven factory that is the data provider row; for a factory taking no
-   *     parameters it is an empty array. A factory method returning several instances from a single
-   *     invocation gives all of them the same parameters -- {@link #getIndex()} is what tells those
-   *     instances apart.
+   * Returns the parameters of the factory invocation that produced this instance.
+   *
+   * @return - A copy of those parameters. For a data provider driven factory that is the data
+   *     provider row; for a factory taking no parameters it is an empty array. A factory method
+   *     returning several instances from a single invocation gives all of them the same parameters
+   *     -- {@link #getIndex()} is what tells those instances apart.
    */
   Object[] getParameters();
 
-  /** @return - The factory that produced this instance. Never <code>null</code>. */
+  /**
+   * Returns the factory that produced this instance.
+   *
+   * @return - The factory. Never <code>null</code>.
+   */
   IFactory getFactory();
 }

@@ -274,9 +274,10 @@ public interface ITestNGMethod extends Cloneable {
   }
 
   /**
-   * @return - The <code>&#64;Factory</code> produced instance this method is bound to, or an empty
-   *     {@link Optional} when no factory produced the test class. Reading it never instantiates a
-   *     lazily created instance.
+   * Returns the <code>&#64;Factory</code> produced instance this method is bound to.
+   *
+   * @return - The instance, or an empty {@link Optional} when no factory produced the test class.
+   *     Reading it never instantiates a lazily created instance.
    * @since 7.13.0
    */
   default Optional<IFactoryInstance> getFactoryInstance() {

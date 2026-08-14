@@ -322,9 +322,11 @@ public abstract class BaseTestMethod
   }
 
   /**
-   * @return - The internal factory metadata this method is bound to, or {@code null}. Unlike the
-   *     deprecated {@link #getFactoryMethodParamsInfo()} this is not part of {@link ITestNGMethod},
-   *     so the lazy-instantiation details stay available to TestNG without being published.
+   * Returns the internal factory metadata this method is bound to.
+   *
+   * @return - The metadata, or {@code null}. Unlike the deprecated {@link
+   *     #getFactoryMethodParamsInfo()} this is not part of {@link ITestNGMethod}, so the
+   *     lazy-instantiation details stay available to TestNG without being published.
    */
   public IParameterInfo getFactoryParameterInfo() {
     Object instance = m_instance == null ? null : m_instance.getInstance();

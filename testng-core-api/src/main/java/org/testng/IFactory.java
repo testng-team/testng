@@ -12,19 +12,26 @@ package org.testng;
 public interface IFactory {
 
   /**
-   * @return - The name of the factory. For a factory method that is the method name; for a <code>
-   *     &#64;Factory</code> annotated constructor it is the constructor's name, which the JDK
-   *     reports as the fully qualified name of {@link #getDeclaringClass()}.
+   * Returns the name of the factory.
+   *
+   * @return - For a factory method, the method name; for a <code>&#64;Factory</code> annotated
+   *     constructor, the constructor's name, which the JDK reports as the fully qualified name of
+   *     {@link #getDeclaringClass()}.
    */
   String getName();
 
-  /** @return - The class that declares the <code>&#64;Factory</code> method or constructor. */
+  /**
+   * Returns the class that declares the factory.
+   *
+   * @return - The class the <code>&#64;Factory</code> method or constructor is declared on.
+   */
   Class<?> getDeclaringClass();
 
   /**
-   * @return - <code>true</code> if this factory creates its instances just-in-time, right before
-   *     the first configuration or test method of each instance runs, rather than up-front during
-   *     test collection.
+   * Tells whether this factory creates its instances lazily.
+   *
+   * @return - <code>true</code> if the instances are created just-in-time, right before the first
+   *     configuration or test method of each one runs, rather than up-front during test collection.
    * @see org.testng.annotations.Factory#lazy()
    */
   boolean isLazy();
