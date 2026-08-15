@@ -6,6 +6,7 @@ import com.beust.jcommander.ParameterException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,8 +27,11 @@ import org.testng.xml.internal.Parser;
  */
 public class Converter {
 
+  // Pre-seeded rather than left null: JCommander reuses a main parameter list it finds in place
+  // and clears it before the first value, so the empty list changes nothing -- and `required` is
+  // enforced from the parameter description, not from this field being null.
   @Parameter(description = "file1 [file2 file3...]", required = true)
-  private List<String> m_files;
+  private List<String> m_files = new ArrayList<>();
 
   @Parameter(names = "-d", description = "The directory where the file(s) will be created")
   private String m_outputDirectory = ".";
