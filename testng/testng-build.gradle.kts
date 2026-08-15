@@ -111,6 +111,7 @@ val verifyPublishedPomDependencies = tasks.register("verifyPublishedPomDependenc
     val expected = listOf(
         "com.google.inject:guice scope=compile optional=true",
         "org.jcommander:jcommander scope=compile optional=false",
+        "org.jspecify:jspecify scope=compile optional=false",
         "org.slf4j:slf4j-api scope=compile optional=false",
         "org.testng:testng-asserts scope=compile optional=false",
         "org.yaml:snakeyaml scope=runtime optional=true",
