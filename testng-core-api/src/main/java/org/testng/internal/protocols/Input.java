@@ -46,12 +46,12 @@ public class Input {
   }
 
   public static final class Builder {
-    private List<String> included;
-    private List<String> excluded;
-    private String packageWithoutWildCards;
+    private List<String> included = List.of();
+    private List<String> excluded = List.of();
+    private String packageWithoutWildCards = "";
     private boolean recursive;
-    private String packageDirName;
-    private String packageName;
+    private String packageDirName = "";
+    private String packageName = "";
 
     private Builder() {}
 
