@@ -442,8 +442,11 @@ public class XmlTest implements Cloneable {
       }
     }
 
+    // Empty for all but the <include invocation-numbers="..."> methods, and every test method of
+    // every @Factory instance asks once - so hand back a shared empty list instead of a throwaway
+    // one that the caller then holds on to for the length of the run.
     List<Integer> numbers = cached.get(method);
-    return numbers != null ? numbers : new ArrayList<>();
+    return numbers != null ? numbers : Collections.emptyList();
   }
 
   public void setPreserveOrder(Boolean preserveOrder) {

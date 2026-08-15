@@ -21,11 +21,14 @@ import org.testng.xml.XmlTest;
 /** This class represents a test method. */
 public class TestNGMethod extends BaseTestMethod {
 
+  /** Shared for the same reason as {@link BaseTestMethod#EMPTY_STRING_ARRAY}. */
+  private static final CustomAttribute[] NO_ATTRIBUTES = new CustomAttribute[0];
+
   private int m_threadPoolSize = 0;
   private int m_invocationCount = 1;
   private int m_successPercentage = 100;
   private boolean isDataDriven = false;
-  private CustomAttribute[] m_attributes = {};
+  private CustomAttribute[] m_attributes = NO_ATTRIBUTES;
   private @Nullable IDataProviderMethod dataProviderMethod = null;
 
   /** Constructs a <code>TestNGMethod</code> */

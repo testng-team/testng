@@ -167,8 +167,8 @@ public class ConfigurationMethod extends BaseTestMethod {
               isBeforeMethod,
               isAfterMethod,
               method.isIgnoreFailure(),
-              new String[0],
-              new String[0],
+              EMPTY_STRING_ARRAY,
+              EMPTY_STRING_ARRAY,
               xmlTest,
               instance));
     }
@@ -267,8 +267,8 @@ public class ConfigurationMethod extends BaseTestMethod {
               false,
               false,
               false,
-              isBefore ? methods[i].getBeforeGroups() : new String[0],
-              new String[0],
+              isBefore ? methods[i].getBeforeGroups() : EMPTY_STRING_ARRAY,
+              EMPTY_STRING_ARRAY,
               null,
               instance);
     }
@@ -299,7 +299,7 @@ public class ConfigurationMethod extends BaseTestMethod {
                     false,
                     false,
                     false,
-                    new String[0],
+                    EMPTY_STRING_ARRAY,
                     isBefore ? m.getBeforeGroups() : m.getAfterGroups(),
                     null,
                     instance))
@@ -464,7 +464,7 @@ public class ConfigurationMethod extends BaseTestMethod {
           for (String g : groups) {
             newGroups.put(g, g);
           }
-          setGroups(newGroups.values().toArray(new String[0]));
+          setGroups(newGroups.values().toArray(EMPTY_STRING_ARRAY));
         }
       }
     }
@@ -537,7 +537,7 @@ public class ConfigurationMethod extends BaseTestMethod {
       beforeAfter = m_annotationFinder.findAnnotation(getConstructorOrMethod(), IAfterMethod.class);
     }
     if (beforeAfter == null) {
-      return new String[0];
+      return EMPTY_STRING_ARRAY;
     }
     return beforeAfter.getGroupFilters();
   }
