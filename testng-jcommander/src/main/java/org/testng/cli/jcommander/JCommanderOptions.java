@@ -3,6 +3,7 @@ package org.testng.cli.jcommander;
 import com.beust.jcommander.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.cli.CliOptions;
 import org.testng.xml.XmlSuite;
 
@@ -20,20 +21,20 @@ public class JCommanderOptions {
   @Parameter(
       names = {CliOptions.LOG, CliOptions.VERBOSE},
       description = "Level of verbosity")
-  public Integer verbose;
+  public @Nullable Integer verbose;
 
   @Parameter(
       names = CliOptions.GROUPS,
       description = "Comma-separated list of group names to be run")
-  public String groups;
+  public @Nullable String groups;
 
   @Parameter(
       names = CliOptions.EXCLUDED_GROUPS,
       description = "Comma-separated list of group names to " + " exclude")
-  public String excludedGroups;
+  public @Nullable String excludedGroups;
 
   @Parameter(names = CliOptions.OUTPUT_DIRECTORY, description = "Output directory")
-  public String outputDirectory;
+  public @Nullable String outputDirectory;
 
   /** Accepted for backwards compatibility; TestNG has never acted on it. */
   @Parameter(
@@ -48,60 +49,60 @@ public class JCommanderOptions {
       description =
           "List of .class files or list of class names"
               + " implementing ITestListener or ISuiteListener")
-  public String listener;
+  public @Nullable String listener;
 
   @Parameter(
       names = CliOptions.LISTENER_COMPARATOR,
       description =
           "An implementation of ListenerComparator that will be used by TestNG to determine order of execution for listeners")
-  public String listenerComparator;
+  public @Nullable String listenerComparator;
 
   @Parameter(
       names = CliOptions.METHOD_SELECTORS,
       description = "List of .class files or list of class " + "names implementing IMethodSelector")
-  public String methodSelectors;
+  public @Nullable String methodSelectors;
 
   @Parameter(
       names = CliOptions.OBJECT_FACTORY,
       description =
           "Fully qualified class name that implements org.testng.ITestObjectFactory which can be used to create test class and listener instances.")
-  public String objectFactory;
+  public @Nullable String objectFactory;
 
   @Parameter(names = CliOptions.PARALLEL, description = "Parallel mode (methods, tests or classes)")
-  public XmlSuite.ParallelMode parallelMode;
+  public XmlSuite.@Nullable ParallelMode parallelMode;
 
   @Parameter(
       names = CliOptions.CONFIG_FAILURE_POLICY,
       description = "Configuration failure policy (skip or continue)")
-  public String configFailurePolicy;
+  public @Nullable String configFailurePolicy;
 
   @Parameter(
       names = CliOptions.THREAD_COUNT,
       description = "Number of threads to use when running tests " + "in parallel")
-  public Integer threadCount;
+  public @Nullable Integer threadCount;
 
   @Parameter(
       names = CliOptions.DATA_PROVIDER_THREAD_COUNT,
       description = "Number of threads to use when " + "running data providers")
-  public Integer dataProviderThreadCount;
+  public @Nullable Integer dataProviderThreadCount;
 
   @Parameter(
       names = CliOptions.SUITE_NAME,
       description =
           "Default name of test suite, if not specified "
               + "in suite definition file or source code")
-  public String suiteName;
+  public @Nullable String suiteName;
 
   @Parameter(
       names = CliOptions.TEST_NAME,
       description =
           "Default name of test, if not specified in suite" + "definition file or source code")
-  public String testName;
+  public @Nullable String testName;
 
   @Parameter(
       names = CliOptions.REPORTER,
       description = "Extended configuration for custom report listener")
-  public String reporter;
+  public @Nullable String reporter;
 
   @Parameter(
       names = CliOptions.USE_DEFAULT_LISTENERS,
@@ -109,13 +110,13 @@ public class JCommanderOptions {
   public String useDefaultListeners = "true";
 
   @Parameter(names = CliOptions.SKIP_FAILED_INVOCATION_COUNTS, hidden = true)
-  public Boolean skipFailedInvocationCounts;
+  public @Nullable Boolean skipFailedInvocationCounts;
 
   @Parameter(names = CliOptions.TEST_CLASS, description = "The list of test classes")
-  public String testClass;
+  public @Nullable String testClass;
 
   @Parameter(names = CliOptions.TEST_NAMES, description = "The list of test names to run")
-  public String testNames;
+  public @Nullable String testNames;
 
   @Parameter(
       names = CliOptions.IGNORE_MISSED_TEST_NAMES,
@@ -124,7 +125,7 @@ public class JCommanderOptions {
   public boolean ignoreMissedTestNames = false;
 
   @Parameter(names = CliOptions.TEST_JAR, description = "A jar file containing the tests")
-  public String testJar;
+  public @Nullable String testJar;
 
   @Parameter(
       names = CliOptions.XML_PATH_IN_JAR,
@@ -135,12 +136,12 @@ public class JCommanderOptions {
   @Parameter(
       names = {CliOptions.TEST_RUNNER_FACTORY, "-testRunFactory"},
       description = "The factory used to create tests")
-  public String testRunnerFactory;
+  public @Nullable String testRunnerFactory;
 
   @Parameter(
       names = CliOptions.LISTENER_FACTORY,
       description = "The factory used to create TestNG listeners")
-  public String listenerFactory;
+  public @Nullable String listenerFactory;
 
   @Parameter(names = CliOptions.METHODS, description = "Comma separated of test methods")
   public List<String> commandLineMethods = new ArrayList<>();
@@ -164,12 +165,12 @@ public class JCommanderOptions {
   @Parameter(
       names = CliOptions.THREAD_POOL_FACTORY_CLASS,
       description = "The threadpool executor factory implementation that TestNG should use.")
-  public String threadPoolFactoryClass;
+  public @Nullable String threadPoolFactoryClass;
 
   @Parameter(
       names = CliOptions.DEPENDENCY_INJECTOR_FACTORY,
       description = "The dependency injector factory implementation that TestNG should use.")
-  public String dependencyInjectorFactoryClass;
+  public @Nullable String dependencyInjectorFactoryClass;
 
   @Parameter(
       names = CliOptions.FAIL_IF_ALL_TESTS_SKIPPED,
