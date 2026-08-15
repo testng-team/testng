@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.jspecify.annotations.Nullable;
 
 public abstract class MultiMap<K, V, C extends Collection<V>> {
   protected final Map<K, C> m_objects;
@@ -52,7 +53,7 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     Set<K> indices = keySet();
     for (K i : indices) {
       result.append("\n    ").append(i).append(" <-- ");
-      for (Object o : m_objects.get(i)) {
+      for (Object o : get(i)) {
         result.append(o).append(" ");
       }
     }
@@ -71,7 +72,13 @@ public abstract class MultiMap<K, V, C extends Collection<V>> {
     return get(key).remove(value);
   }
 
-  public C removeAll(K key) {
+  /**
+   * Drops a key and every value held for it.
+   *
+   * @param key the key to drop.
+   * @return the values that were held, or {@code null} when the key was not present.
+   */
+  public @Nullable C removeAll(K key) {
     return m_objects.remove(key);
   }
 

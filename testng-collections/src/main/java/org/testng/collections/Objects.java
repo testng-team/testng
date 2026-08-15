@@ -2,6 +2,7 @@ package org.testng.collections;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.util.Strings;
 
 public final class Objects {
@@ -51,17 +52,17 @@ public final class Objects {
       return this;
     }
 
-    public ToStringHelper add(String name, String value) {
+    public ToStringHelper add(String name, @Nullable String value) {
       values.add(new ValueHolder(name, s(value)));
       return this;
     }
 
-    public ToStringHelper add(String name, Object value) {
+    public ToStringHelper add(String name, @Nullable Object value) {
       values.add(new ValueHolder(name, s(value)));
       return this;
     }
 
-    private String s(Object o) {
+    private String s(@Nullable Object o) {
       return o != null ? (o.toString().isEmpty() ? "\"\"" : o.toString()) : "{null}";
     }
 
