@@ -6,6 +6,13 @@ plugins {
     id("testng.testing")
 }
 
+dependencies {
+    // The annotations NullAway reads. JSpecify asks for a regular dependency rather than
+    // compileOnly: the annotations are runtime-retained, so hiding them would strip nullness
+    // information from the published artifact that consumers and their own checkers can use.
+    api("org.jspecify:jspecify:1.0.0")
+}
+
 tasks.withType<Javadoc>().configureEach {
     excludes.add("org/testng/internal/**")
 }
