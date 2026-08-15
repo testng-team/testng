@@ -1,5 +1,6 @@
 package org.testng.cli;
 
+import org.jspecify.annotations.Nullable;
 import org.testng.ITestListener;
 import org.testng.ITestNGCliRunner;
 import org.testng.TestNG;
@@ -27,7 +28,7 @@ public abstract class AbstractCliRunner implements ITestNGCliRunner {
   protected abstract CliOptions parse(String[] argv);
 
   @Override
-  public TestNG run(String[] argv, ITestListener listener) {
+  public TestNG run(String[] argv, @Nullable ITestListener listener) {
     TestNG result = new TestNG();
 
     if (null != listener) {

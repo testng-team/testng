@@ -2,6 +2,7 @@ package org.testng.cli;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 import org.testng.xml.XmlSuite;
 
 /**
@@ -71,52 +72,52 @@ public class CliOptions {
   public List<String> suiteFiles = new ArrayList<>();
 
   /** Level of verbosity. */
-  public Integer verbose;
+  public @Nullable Integer verbose;
 
   /** Comma-separated list of group names to be run. */
-  public String groups;
+  public @Nullable String groups;
 
   /** Comma-separated list of group names to exclude. */
-  public String excludedGroups;
+  public @Nullable String excludedGroups;
 
   /** Output directory. */
-  public String outputDirectory;
+  public @Nullable String outputDirectory;
 
   /**
    * List of {@code .class} files or list of class names implementing {@code ITestListener} or
    * {@code ISuiteListener}.
    */
-  public String listener;
+  public @Nullable String listener;
 
   /** An implementation of {@code ListenerComparator} that orders listener execution. */
-  public String listenerComparator;
+  public @Nullable String listenerComparator;
 
   /** List of {@code .class} files or list of class names implementing {@code IMethodSelector}. */
-  public String methodSelectors;
+  public @Nullable String methodSelectors;
 
   /** Fully qualified class name that implements {@code org.testng.ITestObjectFactory}. */
-  public String objectFactory;
+  public @Nullable String objectFactory;
 
   /** Parallel mode (methods, tests or classes). */
-  public XmlSuite.ParallelMode parallelMode;
+  public XmlSuite.@Nullable ParallelMode parallelMode;
 
   /** Configuration failure policy (skip or continue). */
-  public String configFailurePolicy;
+  public @Nullable String configFailurePolicy;
 
   /** Number of threads to use when running tests in parallel. */
-  public Integer threadCount;
+  public @Nullable Integer threadCount;
 
   /** Number of threads to use when running data providers. */
-  public Integer dataProviderThreadCount;
+  public @Nullable Integer dataProviderThreadCount;
 
   /** Default name of test suite, if not specified in suite definition file or source code. */
-  public String suiteName;
+  public @Nullable String suiteName;
 
   /** Default name of test, if not specified in suite definition file or source code. */
-  public String testName;
+  public @Nullable String testName;
 
   /** Extended configuration for custom report listener. */
-  public String reporter;
+  public @Nullable String reporter;
 
   /**
    * Whether to use the default listeners. This is a {@code String} because the option has an arity
@@ -124,28 +125,28 @@ public class CliOptions {
    */
   public String useDefaultListeners = "true";
 
-  public Boolean skipFailedInvocationCounts;
+  public @Nullable Boolean skipFailedInvocationCounts;
 
   /** The list of test classes. */
-  public String testClass;
+  public @Nullable String testClass;
 
   /** The list of test names to run. */
-  public String testNames;
+  public @Nullable String testNames;
 
   /** Ignore missed test names given by {@code -testnames} and continue to run existing tests. */
   public boolean ignoreMissedTestNames = false;
 
   /** A jar file containing the tests. */
-  public String testJar;
+  public @Nullable String testJar;
 
   /** The full path to the xml file inside the jar file, only valid with {@code -testjar}. */
   public String xmlPathInJar = XML_PATH_IN_JAR_DEFAULT;
 
   /** The factory used to create tests. */
-  public String testRunnerFactory;
+  public @Nullable String testRunnerFactory;
 
   /** The factory used to create TestNG listeners. */
-  public String listenerFactory;
+  public @Nullable String listenerFactory;
 
   /** Comma separated list of test methods. */
   public List<String> commandLineMethods = new ArrayList<>();
@@ -160,10 +161,10 @@ public class CliOptions {
   public Boolean alwaysRunListeners = Boolean.TRUE;
 
   /** The threadpool executor factory implementation that TestNG should use. */
-  public String threadPoolFactoryClass;
+  public @Nullable String threadPoolFactoryClass;
 
   /** The dependency injector factory implementation that TestNG should use. */
-  public String dependencyInjectorFactoryClass;
+  public @Nullable String dependencyInjectorFactoryClass;
 
   /** Should TestNG fail execution if all tests were skipped and nothing was run. */
   public Boolean failIfAllTestsSkipped = false;
